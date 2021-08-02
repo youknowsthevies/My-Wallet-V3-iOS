@@ -3,7 +3,6 @@
 import Foundation
 
 /// Enumerates app features that can be dynamically configured (e.g. enabled/disabled)
-@objc
 public enum AppFeature: Int, CaseIterable {
 
     // MARK: - Local features
@@ -21,14 +20,8 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Secure Channel
     case secureChannel
 
-    /// Enable receiving to trading account
-    case tradingAccountReceive
-
-    /// Enable sending from a trading account to any crypto address.
-    case tradingAccountExternalSend
-
-    /// Enable resolving a domain name when sending crypto.
-    case sendToDomainName
+    /// Custodial only tokens.
+    case custodialOnlyTokens
 
     // MARK: Onboarding (After Login)
 
@@ -45,24 +38,35 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enables SDD checks. If `false`, all checks immediately fail
     case sddEnabled
+
+    /// Enable ACH withdraw and deposit
+    case withdrawAndDepositACH
+
+    /// Enable interest withdraw and deposit
+    case interestWithdrawAndDeposit
+
+    /// Enable non-custodial sell
+    case nonCustodialSell
 }
 
 extension AppFeature {
     /// The remote key which determines if this feature is enabled or not
     public var remoteEnabledKey: String? {
         switch self {
+        case .interestWithdrawAndDeposit:
+            return "ios_interest_deposit_withdraw"
+        case .nonCustodialSell:
+            return "ios_non_custodial_sell"
         case .announcements:
             return "announcements"
         case .siftScienceEnabled:
             return "sift_science_enabled"
         case .secureChannel:
             return "secure_channel_ios"
-        case .tradingAccountReceive:
-            return "trading_account_receive_ios"
-        case .tradingAccountExternalSend:
-            return "trading_account_external_send_ios"
-        case .sendToDomainName:
-            return "send_to_domain_name_ios"
+        case .withdrawAndDepositACH:
+            return "ach_withdraw_deposit_enabled"
+        case .custodialOnlyTokens:
+            return "custodial_only_tokens"
         case .biometry:
             return nil
         case .showOnboardingAfterSignUp:
@@ -73,6 +77,36 @@ extension AppFeature {
             return "show_email_verification_in_buy_flow_ios"
         case .sddEnabled:
             return "sdd_enabled_ios"
+        }
+    }
+
+    /// Enables the feature for alpha release by overriding remote config settings.
+    var isAlphaReady: Bool {
+        switch self {
+        case .interestWithdrawAndDeposit:
+            return false
+        case .nonCustodialSell:
+            return false
+        case .announcements:
+            return false
+        case .siftScienceEnabled:
+            return false
+        case .secureChannel:
+            return false
+        case .withdrawAndDepositACH:
+            return false
+        case .custodialOnlyTokens:
+            return false
+        case .biometry:
+            return false
+        case .showOnboardingAfterSignUp:
+            return false
+        case .showEmailVerificationInOnboarding:
+            return false
+        case .showEmailVerificationInBuyFlow:
+            return false
+        case .sddEnabled:
+            return false
         }
     }
 }

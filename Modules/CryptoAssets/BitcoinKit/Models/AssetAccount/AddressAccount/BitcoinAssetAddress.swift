@@ -5,7 +5,7 @@ import PlatformKit
 public struct BitcoinAssetAddress: AssetAddress, Importable, Hashable {
     public let isImported: Bool
     public let publicKey: String
-    public let cryptoCurrency: CryptoCurrency = .bitcoin
+    public let cryptoCurrency: CryptoCurrency = .coin(.bitcoin)
 
     public init(isImported: Bool = false, publicKey: String) {
         self.isImported = isImported

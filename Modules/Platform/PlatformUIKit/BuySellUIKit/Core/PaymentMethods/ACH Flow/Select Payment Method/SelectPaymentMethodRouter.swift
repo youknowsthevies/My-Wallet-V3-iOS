@@ -12,7 +12,8 @@ protocol SelectPaymentMethodViewControllable: ViewControllable {
 }
 
 final class SelectPaymentMethodRouter: ViewableRouter<SelectPaymentMethodInteractable, SelectPaymentMethodViewControllable>,
-                                       SelectPaymentMethodRouting {
+    SelectPaymentMethodRouting
+{
 
     // Constructor inject child builder protocols to allow building children.
     override init(interactor: SelectPaymentMethodInteractable, viewController: SelectPaymentMethodViewControllable) {

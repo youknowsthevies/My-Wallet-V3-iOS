@@ -26,11 +26,13 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
 
     // MARK: - Setup
 
-    init(eligibleMethodsClient: PaymentEligibleMethodsClientAPI = resolve(),
-         tiersService: KYCTiersServiceAPI = resolve(),
-         reactiveWallet: ReactiveWalletAPI = resolve(),
-         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
+    init(
+        eligibleMethodsClient: PaymentEligibleMethodsClientAPI = resolve(),
+        tiersService: KYCTiersServiceAPI = resolve(),
+        reactiveWallet: ReactiveWalletAPI = resolve(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()
+    ) {
         self.eligibleMethodsClient = eligibleMethodsClient
         self.tiersService = tiersService
         self.fiatCurrencyService = fiatCurrencyService
@@ -39,7 +41,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
         let bankTransferEligibleFiatCurrencies = enabledCurrenciesService.bankTransferEligibleFiatCurrencies
         let fetch = fiatCurrencyService.fiatCurrencyObservable
-            .flatMap { [tiersService, eligibleMethodsClient] (fiatCurrency) ->  Observable<[PaymentMethod]> in
+            .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Observable<[PaymentMethod]> in
                 let fetchTiers = tiersService.fetchTiers()
                 return fetchTiers.flatMap { tiersResult -> Single<(KYC.UserTiers, SimplifiedDueDiligenceResponse)> in
                     tiersService.simplifiedDueDiligenceEligibility(for: tiersResult.latestApprovedTier)
@@ -47,7 +49,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         .asSingle()
                         .map { sddEligibiliy in (tiersResult, sddEligibiliy) }
                 }
-                .flatMap { (tiersResult, sddEligility) -> Single<([PaymentMethodsResponse.Method], Bool)> in
+                .flatMap { tiersResult, sddEligility -> Single<([PaymentMethodsResponse.Method], Bool)> in
                     eligibleMethodsClient.eligiblePaymentMethods(
                         for: fiatCurrency.code,
                         currentTier: tiersResult.latestApprovedTier,
@@ -57,7 +59,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     )
                     .map { ($0, sddEligility.eligible) }
                 }
-                .map { (methods, sddEligible) -> [PaymentMethod] in
+                .map { methods, sddEligible -> [PaymentMethod] in
                     let paymentMethods: [PaymentMethod] = .init(
                         methods: methods,
                         currency: fiatCurrency,
@@ -114,6 +116,62 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     return types
                 case .bankAccount, .bankTransfer, .funds:
                     return []
+                }
+            }
+    }
+
+    func supportedPaymentMethods(
+        for currency: FiatCurrency
+    ) -> Single<[PaymentMethod]> {
+        let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
+        let bankTransferEligibleFiatCurrencies = enabledCurrenciesService.bankTransferEligibleFiatCurrencies
+        return Single
+            .just(currency)
+            .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Single<[PaymentMethod]> in
+                let fetchTiers = tiersService.fetchTiers()
+                return fetchTiers.flatMap { tiersResult -> Single<(KYC.UserTiers, SimplifiedDueDiligenceResponse)> in
+                    tiersService.simplifiedDueDiligenceEligibility(for: tiersResult.latestApprovedTier)
+                        .asObservable()
+                        .asSingle()
+                        .map { sddEligibiliy in (tiersResult, sddEligibiliy) }
+                }
+                .flatMap { tiersResult, sddEligility -> Single<([PaymentMethodsResponse.Method], Bool)> in
+                    eligibleMethodsClient.eligiblePaymentMethods(
+                        for: fiatCurrency.code,
+                        currentTier: tiersResult.latestApprovedTier,
+                        sddEligibleTier: ( // get SDD limits for eligible users
+                            (tiersResult.isTier0 || tiersResult.isTier1Approved) && sddEligility.eligible
+                        ) ? sddEligility.tier : nil
+                    )
+                    .map { ($0, sddEligility.eligible) }
+                }
+                .map { methods, sddEligible -> [PaymentMethod] in
+                    let paymentMethods: [PaymentMethod] = .init(
+                        methods: methods,
+                        currency: fiatCurrency,
+                        supportedFiatCurrencies: enabledFiatCurrencies
+                    )
+                    guard sddEligible else {
+                        return paymentMethods
+                    }
+                    return paymentMethods.filter(\.isVisible) // only visible payment methods should be shown to the user
+                }
+                .map { paymentMethods in
+                    paymentMethods.filter { paymentMethod in
+                        switch paymentMethod.type {
+                        case .card:
+                            return true
+                        case .funds(let currencyType):
+                            return currencyType.code == fiatCurrency.code
+                        case .bankTransfer:
+                            // this gets special treatment as we currently only support bank linkage in the US.
+                            return bankTransferEligibleFiatCurrencies.contains(paymentMethod.min.currencyType)
+                        case .bankAccount:
+                            // Filter out bank transfer details from currencies we do not
+                            //  have local support/UI.
+                            return enabledFiatCurrencies.contains(paymentMethod.min.currencyType)
+                        }
+                    }
                 }
             }
     }

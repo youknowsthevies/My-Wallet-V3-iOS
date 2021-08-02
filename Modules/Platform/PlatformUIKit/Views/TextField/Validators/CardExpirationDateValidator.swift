@@ -3,6 +3,7 @@
 import Localization
 import RxRelay
 import RxSwift
+import ToolKit
 
 public final class CardExpirationDateValidator: TextValidating {
 
@@ -39,7 +40,7 @@ public final class CardExpirationDateValidator: TextValidating {
     }
 
     private var dateValidationState: Single<TextValidationState> {
-        self.date
+        date
             .map { date in
                 guard let date = date else { return false }
                 return date > Date()

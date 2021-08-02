@@ -46,7 +46,13 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             text = "\(prefix) \(postfix)"
         case .swap(let event):
             let pair = event.pair
-            text = "\(LocalizationStrings.swap) \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
+            switch pair.outputCurrencyType {
+            case .crypto:
+                text = "\(LocalizationStrings.swap) \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
+            case .fiat:
+                text = "\(LocalizationStrings.sell) \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
+            }
+
         case .transactional(let event):
             switch event.type {
             case .receive:
@@ -55,14 +61,18 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 text = LocalizationStrings.send + " \(event.currency.displayCode)"
             }
         case .fiat(let event):
-            let type = event.type
-            switch type {
+            switch event.type {
             case .deposit:
-                text = LocalizationStrings.deposit + " \(event.fiatValue.currencyCode)"
+                text = LocalizationStrings.deposit + " \(event.amount.displayCode)"
             case .withdrawal:
-                text = LocalizationStrings.withdraw + " \(event.fiatValue.currencyCode)"
-            case .unknown:
-                text = ""
+                text = LocalizationStrings.withdraw + " \(event.amount.displayCode)"
+            }
+        case .crypto(let event):
+            switch event.type {
+            case .deposit:
+                text = LocalizationStrings.receive + " \(event.amount.displayCode)"
+            case .withdrawal:
+                text = LocalizationStrings.send + " \(event.amount.displayCode)"
             }
         }
         return .init(
@@ -102,16 +112,19 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             )
 
             switch status {
-            case .fiat(let fiatStatus):
-                if fiatStatus == .failed || fiatStatus == .rejected {
+            case .custodial(let status):
+                switch status {
+                case .failed:
+                    return failedLabelContent
+                case .completed, .pending:
+                    break
+                }
+            case .buySell(let status):
+                if status == .failed {
                     return failedLabelContent
                 }
-            case .buySell(let buySellStatus):
-                if buySellStatus == .failed {
-                    return failedLabelContent
-                }
-            case .swap(let swapStatus):
-                if swapStatus == .failed {
+            case .swap(let status):
+                if status == .failed {
                     return failedLabelContent
                 }
             }
@@ -130,37 +143,36 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     public var eventColor: UIColor {
         switch event {
         case .buySell(let orderDetails):
-            if orderDetails.status == .failed {
+            switch (orderDetails.status, orderDetails.isBuy) {
+            case (.failed, _):
                 return .destructive
-            }
-
-            switch orderDetails.isBuy {
-            case true:
+            case (_, true):
                 return orderDetails.outputValue.currencyType.brandColor
-            case false:
+            case (_, false):
                 return orderDetails.inputValue.currencyType.brandColor
             }
         case .swap(let event):
             if event.status == .failed {
                 return .destructive
             }
-
             return event.pair.inputCurrencyType.brandColor
         case .fiat(let event):
-            switch event.status {
-            case .failed,
-                 .rejected:
+            switch event.state {
+            case .failed:
                 return .destructive
-            case .manualReview,
-                 .fraudReview,
-                 .pending,
-                 .created,
-                 .unidentified:
+            case .pending:
                 return .mutedText
-            case .complete,
-                 .cleared,
-                 .refunded:
-                return .fiat
+            case .completed:
+                return event.amount.currencyType.brandColor
+            }
+        case .crypto(let event):
+            switch event.state {
+            case .failed:
+                return .destructive
+            case .pending:
+                return .mutedText
+            case .completed:
+                return event.amount.currencyType.brandColor
             }
         case .transactional(let event):
             switch event.status {
@@ -187,47 +199,50 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
 
             return value.isBuy ? "plus-icon" : "minus-icon"
         case .fiat(let event):
-            switch event.status {
-            case .failed,
-                 .rejected:
+            switch event.state {
+            case .failed:
                 return "activity-failed-icon"
-            case .manualReview,
-                 .fraudReview,
-                 .pending,
-                 .created,
-                 .unidentified:
+            case .pending:
                 return "clock-icon"
-            case .complete,
-                 .cleared,
-                 .refunded:
+            case .completed:
                 switch event.type {
                 case .deposit:
                     return "deposit-icon"
                 case .withdrawal:
                     return "withdraw-icon"
-                case .unknown:
-                    return ""
+                }
+            }
+        case .crypto(let event):
+            switch event.state {
+            case .failed:
+                return "activity-failed-icon"
+            case .pending:
+                return "clock-icon"
+            case .completed:
+                switch event.type {
+                case .deposit:
+                    return "receive-icon"
+                case .withdrawal:
+                    return "send-icon"
                 }
             }
         case .swap(let event):
             if event.status == .failed {
                 return "activity-failed-icon"
             }
-
             return "swap-icon"
         case .transactional(let event):
-            if case .pending = event.status {
+            switch (event.status, event.type) {
+            case (.pending, _):
                 return "clock-icon"
-            }
-
-            switch event.type {
-            case .send:
+            case (_, .send):
                 return "send-icon"
-            case .receive:
+            case (_, .receive):
                 return "receive-icon"
             }
         }
     }
+
     public let event: ActivityItemEvent
 
     public init(event: ActivityItemEvent) {
@@ -237,7 +252,6 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(event)
     }
-
 }
 
 extension ActivityItemViewModel: Equatable {

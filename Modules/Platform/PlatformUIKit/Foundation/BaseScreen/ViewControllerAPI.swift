@@ -5,6 +5,7 @@ import Foundation
 public protocol ViewControllerAPI: AnyObject {
     var presentedViewControllerAPI: ViewControllerAPI? { get }
     var navigationControllerAPI: NavigationControllerAPI? { get }
+
     func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?)
     func dismiss(animated flag: Bool, completion: (() -> Void)?)
 }

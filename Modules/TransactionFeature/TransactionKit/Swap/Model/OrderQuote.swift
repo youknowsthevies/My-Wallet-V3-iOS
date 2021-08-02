@@ -4,8 +4,10 @@ public struct OrderQuote {
     public let pair: OrderPair
     public let priceTiers: [OrderPriceTier]
 
-    public init(pair: OrderPair,
-                priceTiers: [OrderPriceTier]) {
+    public init(
+        pair: OrderPair,
+        priceTiers: [OrderPriceTier]
+    ) {
         self.pair = pair
         self.priceTiers = priceTiers
     }

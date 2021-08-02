@@ -16,13 +16,15 @@ public struct TransactionLimits {
     public let weekly: TransactionLimit?
     public let annual: TransactionLimit?
 
-    public init(currency: FiatCurrency,
-                minOrder: FiatValue,
-                maxOrder: FiatValue,
-                maxPossibleOrder: FiatValue,
-                daily: TransactionLimit?,
-                weekly: TransactionLimit?,
-                annual: TransactionLimit?) {
+    public init(
+        currency: FiatCurrency,
+        minOrder: FiatValue,
+        maxOrder: FiatValue,
+        maxPossibleOrder: FiatValue,
+        daily: TransactionLimit?,
+        weekly: TransactionLimit?,
+        annual: TransactionLimit?
+    ) {
         self.currency = currency
         self.minOrder = minOrder
         self.maxOrder = maxOrder

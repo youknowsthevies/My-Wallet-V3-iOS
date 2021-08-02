@@ -22,13 +22,15 @@ final class SavingAccountService: SavingAccountServiceAPI {
 
     // MARK: - Setup
 
-    init(client: SavingsAccountClientAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve()) {
+    init(
+        client: SavingsAccountClientAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve()
+    ) {
         self.client = client
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiersService = kycTiersService
-        self.cachedValue = CachedValue(configuration: .periodic(60))
+        cachedValue = CachedValue(configuration: .periodic(60))
         cachedValue.setFetch(weak: self) { (self) in
             self.fetchBalancesResponse()
         }
@@ -71,7 +73,7 @@ final class SavingAccountService: SavingAccountServiceAPI {
 
     func rate(for currency: CryptoCurrency) -> Single<Double> {
         client.rate(for: currency.code)
-            .map { $0.rate }
+            .map(\.rate)
     }
 
     private func fetchBalancesResponse() -> Single<SavingsAccountBalanceResponse> {

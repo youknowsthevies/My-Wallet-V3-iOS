@@ -3,7 +3,7 @@
 import Combine
 import RxSwift
 
-public struct WalletSetup {
+public enum WalletSetup {
     public enum StateError: Error {
         case walletUnitinialized
     }

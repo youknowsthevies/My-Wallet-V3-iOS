@@ -28,11 +28,13 @@ struct PendingTransactionPageState {
         buttonViewModel: nil
     )
 
-    init(title: String,
-         subtitle: String,
-         compositeViewType: CompositeStatusViewType,
-         effect: Effect = .none,
-         buttonViewModel: ButtonViewModel?) {
+    init(
+        title: String,
+        subtitle: String,
+        compositeViewType: CompositeStatusViewType,
+        effect: Effect = .none,
+        buttonViewModel: ButtonViewModel?
+    ) {
         self.title = .init(
             text: title,
             font: .main(.semibold, 20.0),

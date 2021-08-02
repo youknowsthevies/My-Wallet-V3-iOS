@@ -20,7 +20,7 @@ final class WalletView: UIView {
 
     // MARK: - Injected
 
-    public var viewModel: WalletViewViewModel! {
+    var viewModel: WalletViewViewModel! {
         willSet {
             disposeBag = DisposeBag()
         }
@@ -49,17 +49,17 @@ final class WalletView: UIView {
 
     // MARK: - Setup
 
-    public override init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
 
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
 
-    public convenience init() {
+    convenience init() {
         self.init(frame: .zero)
     }
 

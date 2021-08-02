@@ -22,7 +22,7 @@ public final class FiatBalanceCollectionViewInteractor {
 
     var interactors: Observable<[FiatCustodialBalanceViewInteractor]> {
         interactorsState
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .startWith([])
     }
 
@@ -67,7 +67,7 @@ public final class FiatBalanceCollectionViewInteractor {
                     .map { accounts in
                         accounts
                             .sorted { $0.currencyType.code < $1.currencyType.code }
-                            .sorted { (lhs, _) -> Bool in lhs.currencyType.code == data.fiatCurrency.code }
+                            .sorted { lhs, _ -> Bool in lhs.currencyType.code == data.fiatCurrency.code }
                             .map(FiatCustodialBalanceViewInteractor.init(account:))
                     }
             }
@@ -108,7 +108,7 @@ extension FiatBalanceCollectionViewInteractor: Equatable {
 extension FiatBalanceCollectionViewInteractor: FiatBalancesInteracting {
     public var hasBalances: Observable<Bool> {
         interactorsState
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .map { $0.count > 0 }
             .catchErrorJustReturn(false)
     }

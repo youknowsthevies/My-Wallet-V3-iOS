@@ -8,17 +8,19 @@ public struct AppVersion {
     public let patch: Int
 }
 
-public extension AppVersion {
-    init?(string: String) {
+extension AppVersion {
+    public init?(string: String) {
         let components = string.components(separatedBy: ".")
         guard let majorStr = components.safe(0),
-            let minorStr = components.safe(1),
-            let patchStr = components.safe(2) else {
-                return nil
+              let minorStr = components.safe(1),
+              let patchStr = components.safe(2)
+        else {
+            return nil
         }
         guard let major = Int(majorStr),
-            let minor = Int(minorStr),
-            let patch = Int(patchStr) else {
+              let minor = Int(minorStr),
+              let patch = Int(patchStr)
+        else {
             return nil
         }
         self.major = major
@@ -62,8 +64,8 @@ extension AppVersion: Comparable, Equatable {
     }
 }
 
-fileprivate extension Array {
-    func safe(_ index: Int) -> Element? {
+extension Array {
+    fileprivate func safe(_ index: Int) -> Element? {
         guard (0..<count).contains(index) else { return nil }
         return self[index]
     }

@@ -19,20 +19,23 @@ class LocationSuggestionCoordinator {
             delegate?.coordinator(self, updated: model)
         }
     }
+
     private weak var delegate: LocationSuggestionCoordinatorDelegate?
     private weak var interface: LocationSuggestionInterface?
 
     private let disposeBag = DisposeBag()
 
-    init(_ delegate: LocationSuggestionCoordinatorDelegate,
-         interface: LocationSuggestionInterface,
-         locationUpdateService: LocationUpdateService = LocationUpdateService(),
-         locationSuggestionService: LocationSuggestionService = LocationSuggestionService()) {
+    init(
+        _ delegate: LocationSuggestionCoordinatorDelegate,
+        interface: LocationSuggestionInterface,
+        locationUpdateService: LocationUpdateService = LocationUpdateService(),
+        locationSuggestionService: LocationSuggestionService = LocationSuggestionService()
+    ) {
         self.locationUpdateService = locationUpdateService
         self.locationSuggestionService = locationSuggestionService
         self.delegate = delegate
         self.interface = interface
-        self.model = .empty
+        model = .empty
 
         if let controller = delegate as? KYCAddressController {
             controller.searchDelegate = self
@@ -63,8 +66,8 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
         model = newModel
 
         if let input = selection as? LocationSuggestion {
-            locationSuggestionService.fetchAddress(from: input) { (_) in
-                // TODO: May no longer be necessary 
+            locationSuggestionService.fetchAddress(from: input) { _ in
+                // TODO: May no longer be necessary
             }
         }
     }
@@ -74,7 +77,7 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
             interface?.searchFieldText("")
             interface?.suggestionsList(.hidden)
             interface?.updateActivityIndicator(.visible)
-            locationSuggestionService.fetchAddress(from: input) { [weak self] (address) in
+            locationSuggestionService.fetchAddress(from: input) { [weak self] address in
                 guard let this = self else { return }
                 this.interface?.termsOfServiceDisclaimer(.visible)
                 this.interface?.addressEntryView(.visible)
@@ -136,7 +139,7 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
             locationSuggestionService.cancel()
         }
 
-        locationSuggestionService.search(for: query) { [weak self] (suggestions, error) in
+        locationSuggestionService.search(for: query) { [weak self] suggestions, error in
             guard let this = self else { return }
 
             let state: LocationSearchResult.SearchUIState = error != nil ? .error(error) : .success
@@ -147,8 +150,8 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
                 suggestions: suggestions ?? empty
             )
 
-            let listVisibility: Visibility = suggestions != nil ? .visible: .hidden
-            let termsVisibility: Visibility = suggestions != nil ? .hidden: .visible
+            let listVisibility: Visibility = suggestions != nil ? .visible : .hidden
+            let termsVisibility: Visibility = suggestions != nil ? .hidden : .visible
             this.interface?.updateActivityIndicator(.hidden)
             this.interface?.suggestionsList(listVisibility)
             this.interface?.termsOfServiceDisclaimer(termsVisibility)

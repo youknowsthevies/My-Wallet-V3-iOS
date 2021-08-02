@@ -16,6 +16,7 @@ struct TransactionState: Equatable, StateType {
             Logger.shared.debug("TransactionTarget: \(String(describing: destination))")
         }
     }
+
     var destinationToFiatPair: MoneyValuePair?
     var errorState: TransactionErrorState = .none
     var executionStatus: TransactionExecutionStatus = .notStarted
@@ -32,6 +33,7 @@ struct TransactionState: Equatable, StateType {
             isGoingBack = false
         }
     }
+
     var stepsBackStack: [TransactionStep] = []
 
     static func == (lhs: TransactionState, rhs: TransactionState) -> Bool {
@@ -151,7 +153,7 @@ struct TransactionState: Equatable, StateType {
         guard let exchange = sourceDestinationPair else {
             return .success(.zero(currency: currencyType))
         }
-        guard case let .crypto(currency) = exchange.quote.currencyType else {
+        guard case .crypto(let currency) = exchange.quote.currencyType else {
             return .failure(.unexpectedCurrencyType(exchange.quote.currencyType))
         }
         guard let sourceQuote = sourceToFiatPair?.quote.fiatValue else {
@@ -161,9 +163,11 @@ struct TransactionState: Equatable, StateType {
             return .failure(.emptyDestinationExchangeRate)
         }
 
-        switch (amount.cryptoValue,
-                amount.fiatValue,
-                exchange.quote.cryptoValue) {
+        switch (
+            amount.cryptoValue,
+            amount.fiatValue,
+            exchange.quote.cryptoValue
+        ) {
         case (.none, .some(let fiat), .some(let cryptoPrice)):
             /// Conver the `fiatValue` amount entered into
             /// a `CryptoValue`
@@ -247,7 +251,7 @@ extension TransactionState {
                 guard let networkError = error as? NabuNetworkError else {
                     return LocalizationIds.unknownError
                 }
-                guard case let .nabuError(nabu) = networkError else {
+                guard case .nabuError(let nabu) = networkError else {
                     return LocalizationIds.unknownError
                 }
 
@@ -314,6 +318,7 @@ enum TransactionStep: Equatable {
     case initial
     case enterPassword
     case selectSource
+    case linkABank
     case enterAddress
     case selectTarget
     case enterAmount
@@ -332,7 +337,8 @@ enum TransactionStep: Equatable {
              .confirmDetail,
              .enterPassword,
              .inProgress,
-             .initial:
+             .initial,
+             .linkABank:
             return false
         }
     }

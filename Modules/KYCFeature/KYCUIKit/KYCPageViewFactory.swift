@@ -8,16 +8,16 @@ import ToolKit
 
 /// Factory for constructing a KYCBaseViewController
 class KYCPageViewFactory {
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
-    init(analyticsRecorder: AnalyticsEventRecording = resolve()) {
+    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
     }
 
     // swiftlint:disable:next cyclomatic_complexity
     func createFrom(
         pageType: KYCPageType,
-        in coordinator: KYCCoordinator,
+        in coordinator: KYCRouter,
         payload: KYCPagePayload? = nil
     ) -> KYCBaseViewController {
         switch pageType {
@@ -27,7 +27,7 @@ class KYCPageViewFactory {
         case .confirmEmail:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycConfirmEmail)
             let confirmEmailController = KYCConfirmEmailController.make(with: coordinator)
-            if let payload = payload, case let .emailPendingVerification(email) = payload {
+            if let payload = payload, case .emailPendingVerification(let email) = payload {
                 confirmEmailController.email = email
             }
             return confirmEmailController
@@ -46,7 +46,7 @@ class KYCPageViewFactory {
         case .states:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycStates)
             let stateController = KYCStateSelectionController.make(with: coordinator)
-            if let payload = payload, case let .countrySelected(country) = payload {
+            if let payload = payload, case .countrySelected(let country) = payload {
                 stateController.country = country
             }
             return stateController
@@ -62,7 +62,7 @@ class KYCPageViewFactory {
         case .confirmPhone:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycConfirmPhone)
             let confirmPhoneNumberController = KYCConfirmPhoneNumberController.make(with: coordinator)
-            if let payload = payload, case let .phoneNumberUpdated(number) = payload {
+            if let payload = payload, case .phoneNumberUpdated(let number) = payload {
                 confirmPhoneNumberController.phoneNumber = number
             }
             return confirmPhoneNumberController
@@ -75,7 +75,7 @@ class KYCPageViewFactory {
         case .accountStatus:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycAccountStatus)
             let controller = KYCInformationController.make(with: coordinator)
-            if let payload = payload, case let .accountStatus(status: status, isReceivingAirdrop: airdrop) = payload {
+            if let payload = payload, case .accountStatus(status: let status, isReceivingAirdrop: let airdrop) = payload {
                 let model = KYCInformationViewModel.create(for: status)
                 let config = KYCInformationViewConfig.create(for: status, isReceivingAirdrop: airdrop)
                 controller.viewConfig = config

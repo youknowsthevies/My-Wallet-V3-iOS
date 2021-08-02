@@ -22,6 +22,7 @@ final class RecoveryPhraseViewController: BaseScreenViewController {
         super.init(nibName: RecoveryPhraseViewController.objectName, bundle: Bundle(for: Self.self))
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -39,9 +40,11 @@ final class RecoveryPhraseViewController: BaseScreenViewController {
 
     private func setupNavigationBar() {
         titleViewStyle = presenter.titleView
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton)
+            trailingButtonStyle: presenter.trailingButton
+        )
     }
 
     // MARK: - Navigation

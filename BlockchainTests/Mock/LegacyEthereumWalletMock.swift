@@ -11,16 +11,18 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         unimplemented()
     }
 
-    var underlyingEthereumAccounts: ((String?, ([[String : Any]]) -> Void, (String) -> Void) -> Void)?
+    var underlyingEthereumAccounts: ((String?, ([[String: Any]]) -> Void, (String) -> Void) -> Void)?
+
     func ethereumAccounts(
         with secondPassword: String?,
-        success: @escaping ([[String : Any]]) -> Void,
+        success: @escaping ([[String: Any]]) -> Void,
         error: @escaping (String) -> Void
     ) {
         underlyingEthereumAccounts!(secondPassword, success, error)
     }
 
     var underlyingGetLabelForEthereumAccount: ((String?, (String) -> Void, (String) -> Void) -> Void)?
+
     func getLabelForEthereumAccount(
         with secondPassword: String?,
         success: @escaping (String) -> Void,
@@ -30,6 +32,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     }
 
     var underlyingGetEthereumAddress: ((String?, (String) -> Void, (String) -> Void) -> Void)?
+
     func getEthereumAddress(
         with secondPassword: String?,
         success: @escaping (String) -> Void,
@@ -52,7 +55,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
 
     func erc20Tokens(
         with secondPassword: String?,
-        success: @escaping ([String : [String : Any]]) -> Void,
+        success: @escaping ([String: [String: Any]]) -> Void,
         error: @escaping (String) -> Void
     ) {
         unimplemented()
@@ -75,7 +78,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         unimplemented()
     }
 
-    func updateAccountLabel(_ cryptoCurrency: CryptoCurrency, index: Int, label: String) -> Completable {
+    func updateAccountLabel(_ cryptoCurrency: NonCustodialCoinCode, index: Int, label: String) -> Completable {
         unimplemented()
     }
 

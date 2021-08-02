@@ -4,11 +4,13 @@ import RxCocoa
 import RxSwift
 
 extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.SignalSharingStrategy {
-    public func emit<A: AnyObject>(weak object: A,
-                                   onNext: ((A, Element) -> Void)? = nil,
-                                   onCompleted: ((A) -> Void)? = nil,
-                                   onDisposed: ((A) -> Void)? = nil) -> Disposable {
-        self.emit(
+    public func emit<A: AnyObject>(
+        weak object: A,
+        onNext: ((A, Element) -> Void)? = nil,
+        onCompleted: ((A) -> Void)? = nil,
+        onDisposed: ((A) -> Void)? = nil
+    ) -> Disposable {
+        emit(
             onNext: { [weak object] element in
                 guard let object = object else { return }
                 onNext?(object, element)
@@ -24,9 +26,11 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.Si
         )
     }
 
-    public func emit<A: AnyObject>(weak object: A,
-                                   onNext: ((A, Element) -> Void)? = nil) -> Disposable {
-        self.emit(
+    public func emit<A: AnyObject>(
+        weak object: A,
+        onNext: ((A, Element) -> Void)? = nil
+    ) -> Disposable {
+        emit(
             onNext: { [weak object] element in
                 guard let object = object else { return }
                 onNext?(object, element)
@@ -34,9 +38,11 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.Si
         )
     }
 
-    public func emit<A: AnyObject>(weak object: A,
-                                   onNext: ((A) -> Void)? = nil) -> Disposable {
-        self.emit(
+    public func emit<A: AnyObject>(
+        weak object: A,
+        onNext: ((A) -> Void)? = nil
+    ) -> Disposable {
+        emit(
             onNext: { [weak object] _ in
                 guard let object = object else { return }
                 onNext?(object)

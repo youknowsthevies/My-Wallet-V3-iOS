@@ -28,11 +28,11 @@ public final class CollectionTextMatchValidator: TextMatchValidatorAPI {
     public init(_ collection: TextSource..., options: Options = [], invalidReason: String) {
         self.collection = collection
         Observable
-            .combineLatest(collection.map { $0.valueRelay })
+            .combineLatest(collection.map(\.valueRelay))
             .map { array -> Bool in
                 if array.areAllElementsEqual {
                     return true
-                // If there is an empty string in the array and it should be validated
+                    // If there is an empty string in the array and it should be validated
                 } else if array.containsEmpty {
                     return !options.contains(.validateEmpty)
                 } else {

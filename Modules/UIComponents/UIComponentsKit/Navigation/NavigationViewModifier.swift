@@ -32,12 +32,7 @@ extension View {
         configureNavigationBar {
             $0.navigationBar.prefersLargeTitles = false
             $0.navigationBar.barTintColor = .white
-            $0.navigationBar.backItem?.backBarButtonItem = UIBarButtonItem(
-                title: "",
-                style: .plain,
-                target: nil,
-                action: nil
-            )
+            $0.navigationBar.backItem?.backButtonTitle = ""
             $0.navigationBar.tintColor = UIColor.blue600
             $0.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
             $0.navigationBar.shadowImage = UIImage() // remove shadow
@@ -93,7 +88,7 @@ struct NavigationConfigurator: UIViewControllerRepresentable {
     func updateUIViewController(
         _ uiViewController: NavigationConfigurationViewController,
         context: UIViewControllerRepresentableContext<NavigationConfigurator>
-    ) { }
+    ) {}
 }
 
 final class NavigationConfigurationViewController: UIViewController {
@@ -104,6 +99,7 @@ final class NavigationConfigurationViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

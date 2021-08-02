@@ -10,6 +10,7 @@ final class SellIdentityIntroductionViewController: BaseScreenViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -46,9 +47,11 @@ final class SellIdentityIntroductionViewController: BaseScreenViewController {
     }
 
     private func setupNavigationBar() {
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton)
+            trailingButtonStyle: presenter.trailingButton
+        )
         titleViewStyle = presenter.titleView
     }
 }
@@ -56,13 +59,17 @@ final class SellIdentityIntroductionViewController: BaseScreenViewController {
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension SellIdentityIntroductionViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
         presenter.cellCount
     }
 
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
         let cell: UITableViewCell
         let type = presenter.cellArrangement[indexPath.row]
         switch type {

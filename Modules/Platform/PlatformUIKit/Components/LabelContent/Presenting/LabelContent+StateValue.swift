@@ -9,9 +9,10 @@ extension LabelContent {
         public typealias Interaction = LoadingState<LabelContent.Value.Interaction.Content>
         public typealias Presentation = LoadingState<LabelContent.Value.Presentation.Content>
     }
+
     public enum Value {
-        public enum Interaction { }
-        public enum Presentation { }
+        public enum Interaction {}
+        public enum Presentation {}
     }
 }
 
@@ -29,8 +30,9 @@ extension ObservableType where Element == String? {
 
 extension LabelContent.Value.Interaction {
 
-   public struct Content {
+    public struct Content {
         public let text: String
+
         public init(text: String) {
             self.text = text
         }
@@ -39,7 +41,7 @@ extension LabelContent.Value.Interaction {
 
 extension LabelContent.Value.Presentation {
 
-   public struct Content {
+    public struct Content {
 
         /// Descriptors that allows customized content and style
         public struct Descriptors {
@@ -119,9 +121,11 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
     }
 }
 
-public extension LoadingState where Content == LabelContent.Value.Presentation.Content {
-    init(with state: LoadingState<LabelContent.Value.Interaction.Content>,
-         descriptors: LabelContent.Value.Presentation.Content.Descriptors) {
+extension LoadingState where Content == LabelContent.Value.Presentation.Content {
+    public init(
+        with state: LoadingState<LabelContent.Value.Interaction.Content>,
+        descriptors: LabelContent.Value.Presentation.Content.Descriptors
+    ) {
         switch state {
         case .loading:
             self = .loading

@@ -16,8 +16,10 @@ final class WithdrawAmountPageBuilder: WithdrawAmountPageBuildable {
     private let currency: FiatCurrency
     private let fiatCurrencyService: FiatCurrencyServiceAPI
 
-    public init(currency: FiatCurrency,
-                fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+    init(
+        currency: FiatCurrency,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
         self.currency = currency
         self.fiatCurrencyService = fiatCurrencyService
     }
@@ -25,8 +27,10 @@ final class WithdrawAmountPageBuilder: WithdrawAmountPageBuildable {
     func build(listener: WithdrawAmountPageListener, beneficiary: Beneficiary) -> WithdrawAmountPageRouter {
         let displayBundle: DisplayBundle = .withdraw(currency: currency)
 
-        let singleViewInteractor = SingleAmountInteractor(currencyService: fiatCurrencyService,
-                                                          inputCurrency: currency)
+        let singleViewInteractor = SingleAmountInteractor(
+            currencyService: fiatCurrencyService,
+            inputCurrency: currency
+        )
         let singleViewPresenter = SingleAmountPresenter(interactor: singleViewInteractor)
         let amountView = SingleAmountView(presenter: singleViewPresenter)
 
@@ -34,25 +38,33 @@ final class WithdrawAmountPageBuilder: WithdrawAmountPageBuildable {
         let continueButtonViewModel = ButtonViewModel.primary(with: displayBundle.strings.ctaButton)
         let topSelectionButtonViewModel = SelectionButtonViewModel(showSeparator: false)
 
-        let viewController = WithdrawAmountViewController(displayBundle: displayBundle,
-                                                          devicePresenterType: DevicePresenter.type,
-                                                          digitPadViewModel: digitPadViewModel,
-                                                          continueButtonViewModel: continueButtonViewModel,
-                                                          topSelectionButtonViewModel: topSelectionButtonViewModel,
-                                                          amountViewProvider: amountView)
+        let viewController = WithdrawAmountViewController(
+            displayBundle: displayBundle,
+            devicePresenterType: DevicePresenter.type,
+            digitPadViewModel: digitPadViewModel,
+            continueButtonViewModel: continueButtonViewModel,
+            topSelectionButtonViewModel: topSelectionButtonViewModel,
+            amountViewProvider: amountView
+        )
 
-        let validationService = WithdrawAmountValidationService(fiatCurrency: currency,
-                                                                beneficiary: beneficiary)
+        let validationService = WithdrawAmountValidationService(
+            fiatCurrency: currency,
+            beneficiary: beneficiary
+        )
         let feeService = WithdrawalFeeService()
-        let interactor = WithdrawAmountPageInteractor(presenter: viewController,
-                                                      fiatCurrency: currency,
-                                                      beneficiary: beneficiary,
-                                                      amountInteractor: singleViewInteractor,
-                                                      withdrawalFeeService: feeService,
-                                                      validationService: validationService)
+        let interactor = WithdrawAmountPageInteractor(
+            presenter: viewController,
+            fiatCurrency: currency,
+            beneficiary: beneficiary,
+            amountInteractor: singleViewInteractor,
+            withdrawalFeeService: feeService,
+            validationService: validationService
+        )
         interactor.listener = listener
-        let router = WithdrawAmountPageRouter(interactor: interactor,
-                                              viewController: viewController)
+        let router = WithdrawAmountPageRouter(
+            interactor: interactor,
+            viewController: viewController
+        )
         return router
     }
 

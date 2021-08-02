@@ -4,16 +4,16 @@ import Charts
 import PlatformKit
 
 /// Any util / data related to the pie chart presentation / interaction layers
-public struct AssetLineChart {
+public enum AssetLineChart {
 
-    public struct State {
+    public enum State {
         public typealias Interaction = LoadingState<AssetLineChart.Value.Interaction>
         public typealias Presentation = LoadingState<(AssetLineChartMarkerView.Theme, LineChartData)>
     }
 
     // MARK: - Value namespace
 
-    public struct Value {
+    public enum Value {
 
         /// Value for the interaction level
         public struct Interaction {

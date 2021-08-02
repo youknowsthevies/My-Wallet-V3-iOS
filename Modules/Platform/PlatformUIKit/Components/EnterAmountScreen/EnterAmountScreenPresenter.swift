@@ -88,9 +88,9 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
         self.backwardsNavigation = backwardsNavigation
-        self.title = displayBundle.strings.title
+        title = displayBundle.strings.title
         self.displayBundle = displayBundle
-        self.inputTypeToggleVisiblity = inputTypeToggleVisibility
+        inputTypeToggleVisiblity = inputTypeToggleVisibility
         bottomAuxiliaryItemSeparatorViewModel = TitledSeparatorViewModel(
             title: displayBundle.strings.bottomAuxiliaryItemSeparatorTitle,
             separatorColor: displayBundle.colors.bottomAuxiliaryItemSeparator,
@@ -109,7 +109,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
 
     // MARK: - Exposed methods
 
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         interactor.hasValidState
@@ -134,7 +134,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
             .disposed(by: disposeBag)
 
         interactor.selectedCurrencyType
-            .map { $0.name }
+            .map(\.name)
             .bindAndCatch(to: topSelectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
 
@@ -147,7 +147,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
 
         interactor.selectedCurrencyType
             .map { displayBundle.events.sourceAccountChanged($0.code) }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .subscribe(onNext: analyticsRecorder.record(event:))
             .disposed(by: disposeBag)
 
         topSelectionButtonViewModel.trailingContentRelay.accept(
@@ -161,7 +161,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         interactor.didLoad()
     }
 
-    open override func viewWillAppear() {
+    override open func viewWillAppear() {
         super.viewWillAppear()
         analyticsRecorder.record(events: displayBundle.events.didAppear)
     }

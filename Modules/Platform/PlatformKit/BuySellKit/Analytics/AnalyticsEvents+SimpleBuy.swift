@@ -345,7 +345,7 @@ extension AnalyticsEvents {
             }
         }
 
-        public var params: [String : String]? {
+        public var params: [String: String]? {
 
             switch self {
             case .sbCheckoutCompleted(status: let status):
@@ -356,26 +356,26 @@ extension AnalyticsEvents {
                  .sbPendingModalShown(currencyCode: let currencyCode),
                  .sbBuyFormFiatChanged(currencyCode: let currencyCode),
                  .sbCurrencySelected(currencyCode: let currencyCode),
-                 .sbLinkBankScreenShown(currencyCode:  let currencyCode),
+                 .sbLinkBankScreenShown(currencyCode: let currencyCode),
                  .sbLinkBankLoadingError(currencyCode: let currencyCode):
-                return [ParameterName.currency : currencyCode]
+                return [ParameterName.currency: currencyCode]
             case .sbTradingWalletSend(asset: let currency),
                  .sbTradingWalletClicked(asset: let currency),
                  .sbWithdrawalScreenShown(asset: let currency),
                  .sbWithdrawalScreenClicked(asset: let currency):
                 return ["asset": currency.code]
             case .sbBuyFormConfirmClick(currencyCode: let currencyCode, amount: let amount, additionalParameters: let additionalParameters):
-                let parameters =  [
-                    ParameterName.currency : currencyCode,
-                    ParameterName.amount : amount
+                let parameters = [
+                    ParameterName.currency: currencyCode,
+                    ParameterName.amount: amount
                 ]
                 return parameters + additionalParameters
             case .sbCheckoutShown(paymentMethod: let method):
-                return [ ParameterName.paymentMethod : method.string ]
+                return [ParameterName.paymentMethod: method.string]
             case .sbCheckoutCancelConfirmed(paymentMethod: let method):
-                return [ ParameterName.paymentMethod : method.string ]
+                return [ParameterName.paymentMethod: method.string]
             case .sbCheckoutConfirm(paymentMethod: let method):
-                return [ ParameterName.paymentMethod : method.string ]
+                return [ParameterName.paymentMethod: method.string]
             case .sbBankDetailsCopied(bankName: let bankName):
                 return ["bank field name": bankName]
             case .sbBankLinkSplashCTA(let partner),

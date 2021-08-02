@@ -9,7 +9,7 @@ final class EligibilityService: EligibilityServiceAPI {
 
     // MARK: - Properties
 
-    public var isEligible: Single<Bool> {
+    var isEligible: Single<Bool> {
         isEligibileValue.valueSingle
     }
 
@@ -20,13 +20,15 @@ final class EligibilityService: EligibilityServiceAPI {
 
     // MARK: - Setup
 
-    init(client: EligibilityClientAPI = resolve(),
-         reactiveWallet: ReactiveWalletAPI = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
+    init(
+        client: EligibilityClientAPI = resolve(),
+        reactiveWallet: ReactiveWalletAPI = resolve(),
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()
+    ) {
         self.client = client
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencyService = fiatCurrencyService
-        self.isEligibileValue = CachedValue(
+        isEligibileValue = CachedValue(
             configuration: .periodic(30)
         )
 

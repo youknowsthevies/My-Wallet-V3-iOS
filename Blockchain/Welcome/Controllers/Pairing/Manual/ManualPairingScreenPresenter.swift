@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -49,17 +50,17 @@ final class ManualPairingScreenPresenter {
 
     // MARK: - Setup
 
-    init(interactor: ManualPairingInteractor = ManualPairingInteractor(),
-         routerStateProvider: OnboardingRouterStateProviding = resolve(),
-         alertPresenter: AlertViewPresenter = .shared,
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+    init(
+        interactor: ManualPairingInteractor = ManualPairingInteractor(),
+        routerStateProvider: OnboardingRouterStateProviding = resolve(),
+        alertPresenter: AlertViewPresenter = .shared,
+        loadingViewPresenter: LoadingViewPresenting = resolve()
+    ) {
         self.routerStateProvider = routerStateProvider
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter
         self.interactor = interactor
-        emailAuthorizationPresenter = EmailAuthorizationPresenter(
-            emailAuthorizationService: interactor.dependencies.emailAuthorizationService
-        )
+        emailAuthorizationPresenter = EmailAuthorizationPresenter()
         walletIdTextFieldViewModel = TextFieldViewModel(
             with: .walletIdentifier,
             validator: TextValidationFactory.Info.walletIdentifier,
@@ -92,13 +93,13 @@ final class ManualPairingScreenPresenter {
 
         /// Controls button `isEnabled` property
         stateObservable
-            .map { $0.isValid }
+            .map(\.isValid)
             .bindAndCatch(to: buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         // Extract the latest valid values to the interaction layer
         latestStatesObservable
-            .compactMap { (walletIdState, passwordState) -> ManualPairingInteractor.Content? in
+            .compactMap { walletIdState, passwordState -> ManualPairingInteractor.Content? in
                 guard let walletId = walletIdState.value, let password = passwordState.value else { return nil }
                 return .init(walletIdentifier: walletId, password: password)
             }
@@ -118,7 +119,7 @@ final class ManualPairingScreenPresenter {
             .bind { [weak self] action in
                 guard let self = self else { return }
                 switch action {
-                case.authorizeLoginWithEmail:
+                case .authorizeLoginWithEmail:
                     self.displayEmailAuthorizationAlert()
                 case .authorizeLoginWith2FA(let type):
                     self.display2FAAlert(
@@ -177,7 +178,7 @@ final class ManualPairingScreenPresenter {
     }
 
     /// Requests an OTP by SMS
-    private func requestOTPMessage(title: String, message: String, type: AuthenticatorType) {
+    private func requestOTPMessage(title: String, message: String, type: WalletAuthenticatorType) {
         display2FAAlert(title: title, message: message, type: type)
         interactor.requestOTPMessage()
             .subscribe(
@@ -194,7 +195,7 @@ final class ManualPairingScreenPresenter {
 
     /// Displays an alert asking the user for second OTP using one
     /// of the supported `AuthenticatorType` values
-    private func display2FAAlert(title: String, message: String, type: AuthenticatorType) {
+    private func display2FAAlert(title: String, message: String, type: WalletAuthenticatorType) {
         routerStateProvider.state = .pending2FA
 
         let cancel = { [weak self] () -> Void in
@@ -218,9 +219,10 @@ final class ManualPairingScreenPresenter {
                 title: title,
                 message: message,
                 resendAction: resend,
-                cancel: cancel) { otp in
-                    self.pair(using: .twoFA(otp))
-                }
+                cancel: cancel
+            ) { otp in
+                self.pair(using: .twoFA(otp))
+            }
         }
     }
 
@@ -258,8 +260,8 @@ final class ManualPairingScreenPresenter {
 
 /// NOTE: This is here rather than in `PlatformKit` to prevent having to add
 /// `Localization.framework` as a dependency for `PlatformKit`
-fileprivate extension AuthenticatorType {
-    var name: String {
+extension WalletAuthenticatorType {
+    fileprivate var name: String {
         switch self {
         case .google:
             return LocalizationConstants.AuthType.google

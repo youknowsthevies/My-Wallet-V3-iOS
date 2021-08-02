@@ -16,8 +16,8 @@ public struct HistoricalFiatPriceResponse {
     // MARK: - Init
 
     public init(prices: HistoricalPriceSeries, fiatValue: FiatValue, priceWindow: PriceWindow) {
-        self.historicalPrices = prices
-        self.currentFiatValue = fiatValue
+        historicalPrices = prices
+        currentFiatValue = fiatValue
         self.priceWindow = priceWindow
     }
 }

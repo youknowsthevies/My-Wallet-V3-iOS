@@ -36,7 +36,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
     public init(services: ActivityServiceContaining = resolve()) {
         let router = ActivityRouter(container: services)
         let interactor = ActivityScreenInteractor(serviceContainer: services)
-        self.presenter = ActivityScreenPresenter(router: router, interactor: interactor)
+        presenter = ActivityScreenPresenter(router: router, interactor: interactor)
         super.init(nibName: ActivityScreenViewController.objectName, bundle: Self.bundle)
     }
 
@@ -47,13 +47,12 @@ public final class ActivityScreenViewController: BaseScreenViewController {
 
     // MARK: - Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         selectionButtonView.viewModel = presenter.selectionButtonViewModel
         setupNavigationBar()
         setupTableView()
         setupEmptyState()
-        presenter.refresh()
 
         let longPress = UILongPressGestureRecognizer()
         longPress
@@ -71,22 +70,23 @@ public final class ActivityScreenViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
 
         tableView.addGestureRecognizer(longPress)
-    }
 
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
-            guard let self = self else { return }
-            self.presenter.refresh()
-        }
+        rx.viewDidAppear
+            .take(1)
+            .bind { [weak self] _ in
+                self?.presenter.refresh()
+            }
+            .disposed(by: disposeBag)
     }
 
     // MARK: - Setup
 
     private func setupNavigationBar() {
-        set(barStyle: .lightContent(),
+        set(
+            barStyle: .lightContent(),
             leadingButtonStyle: .drawer,
-            trailingButtonStyle: .none)
+            trailingButtonStyle: .none
+        )
         titleViewStyle = .text(value: presenter.title)
     }
 
@@ -96,7 +96,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
 
         let alpha = presenter
             .emptySubviewsVisibility
-            .map { $0.defaultAlpha }
+            .map(\.defaultAlpha)
 
         alpha
             .drive(emptyActivitySubtitleLabel.rx.alpha)
@@ -114,7 +114,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
             .map { $0 == 0 }
             .drive(empyActivityStackView.rx.isHidden)
             .disposed(by: disposeBag)
-        }
+    }
 
     private func setupTableView() {
         tableView.backgroundColor = .clear
@@ -161,7 +161,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
 
     // MARK: - Navigation
 
-    public override func navigationBarLeadingButtonPressed() {
+    override public func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonPressed()
     }
 

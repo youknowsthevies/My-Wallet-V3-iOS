@@ -10,5 +10,6 @@ struct ERC20TransfersResponse: Decodable {
         let transactionHash: String
         let value: String
     }
+
     let transfers: [Transfer]
 }

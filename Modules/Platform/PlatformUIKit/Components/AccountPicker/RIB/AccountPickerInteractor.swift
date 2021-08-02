@@ -27,16 +27,18 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
 
     // MARK: - Init
 
-    init(presenter: AccountPickerPresentable,
-         accountProvider: AccountPickerAccountProviding,
-         listener: AccountPickerListenerBridge) {
+    init(
+        presenter: AccountPickerPresentable,
+        accountProvider: AccountPickerAccountProviding,
+        listener: AccountPickerListenerBridge
+    ) {
         self.accountProvider = accountProvider
         switch listener {
         case .simple(let didSelect):
             self.didSelect = didSelect
             self.listener = nil
         case .listener(let listener):
-            self.didSelect = nil
+            didSelect = nil
             self.listener = listener
         }
         super.init(presenter: presenter)
@@ -47,11 +49,28 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
     override func didBecomeActive() {
         super.didBecomeActive()
 
+        let button = presenter.button
+        if let button = button {
+            button.tapRelay
+                .bind { [weak self] in
+                    guard let self = self else { return }
+                    self.listener?.didSelectActionButton()
+                }
+                .disposeOnDeactivate(interactor: self)
+        }
+
         let interactorState: Driver<State> = accountProvider.accounts
             .map { accounts -> [AccountPickerCellItem.Interactor] in
                 accounts.map(\.accountPickerCellItemInteractor)
             }
-            .map { (interactors) -> State in
+            .map { accounts in
+                if let button = button {
+                    return accounts + [.button(button)]
+                } else {
+                    return accounts
+                }
+            }
+            .map { interactors -> State in
                 State(interactors: interactors)
             }
             .asDriver(onErrorJustReturn: .empty)
@@ -93,8 +112,8 @@ extension AccountPickerInteractor {
     }
 }
 
-fileprivate extension BlockchainAccount {
-    var accountPickerCellItemInteractor: AccountPickerCellItem.Interactor {
+extension BlockchainAccount {
+    fileprivate var accountPickerCellItemInteractor: AccountPickerCellItem.Interactor {
         switch self {
         case is LinkedBankAccount:
             let account = self as! LinkedBankAccount

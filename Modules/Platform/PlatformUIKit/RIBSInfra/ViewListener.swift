@@ -9,9 +9,9 @@ public protocol ViewListener: AnyObject {
     func viewDidDisappear()
 }
 
-public extension ViewListener {
-    func viewDidLoad() { }
-    func viewWillAppear() { }
-    func viewDidAppear() { }
-    func viewDidDisappear() { }
+extension ViewListener {
+    public func viewDidLoad() {}
+    public func viewWillAppear() {}
+    public func viewDidAppear() {}
+    public func viewDidDisappear() {}
 }

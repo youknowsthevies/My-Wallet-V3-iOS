@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import DIKit
 import NetworkKit
 import ToolKit
@@ -127,22 +128,26 @@ extension DependencyContainer {
         single { () -> CoincoreAPI in
             let provider: EnabledCurrenciesServiceAPI = DIKit.resolve()
             let allEnabledCryptoCurrencies = provider.allEnabledCryptoCurrencies
-            let base = allEnabledCryptoCurrencies
-                .filter { !$0.isERC20 && !$0.isOther }
+            let nonCustodialCoinCodes = NonCustodialCoinCode.allCases.map(\.rawValue)
+
+            let nonCustodialAssets = allEnabledCryptoCurrencies
+                .filter(\.isCoin)
+                .filter { nonCustodialCoinCodes.contains($0.code) }
                 .map { cryptoCurrency -> CryptoAsset in
                     let asset: CryptoAsset = DIKit.resolve(tag: cryptoCurrency)
                     return asset
                 }
-            let other = allEnabledCryptoCurrencies
-                .filter { $0.isOther }
+            let custodialAssets = allEnabledCryptoCurrencies
+                .filter(\.isCoin)
+                .filter { !nonCustodialCoinCodes.contains($0.code) }
                 .map { cryptoCurrency -> CryptoAsset in
                     CustodialCryptoAsset(asset: cryptoCurrency)
                 }
             let erc20Factory: ERC20AssetFactoryAPI = DIKit.resolve()
-            let erc20 = allEnabledCryptoCurrencies
+            let erc20Assets = allEnabledCryptoCurrencies
                 .filter(\.isERC20)
                 .compactMap { cryptoCurrency -> ERC20AssetModel? in
-                    guard case let .erc20(model) = cryptoCurrency else {
+                    guard case .erc20(let model) = cryptoCurrency else {
                         return nil
                     }
                     return model
@@ -150,7 +155,7 @@ extension DependencyContainer {
                 .compactMap { erc20Factory.erc20Asset(erc20AssetModel: $0) }
 
             return Coincore(
-                cryptoAssets: base + other + erc20
+                cryptoAssets: nonCustodialAssets + custodialAssets + erc20Assets
             )
         }
 
@@ -212,14 +217,6 @@ extension DependencyContainer {
             let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettings
         }
-
-        // MARK: - Activity Services
-
-        factory(tag: FiatCurrency.EUR) { FiatActivityItemEventService(fiatCurrency: .EUR) as FiatActivityItemEventServiceAPI }
-
-        factory(tag: FiatCurrency.GBP) { FiatActivityItemEventService(fiatCurrency: .GBP) as FiatActivityItemEventServiceAPI }
-
-        factory(tag: FiatCurrency.USD) { FiatActivityItemEventService(fiatCurrency: .USD) as FiatActivityItemEventServiceAPI }
 
         // MARK: - KYC
 
@@ -299,6 +296,11 @@ extension DependencyContainer {
             return client as LinkedBanksClientAPI
         }
 
+        factory { () -> OrdersActivityClientAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client as OrdersActivityClientAPI
+        }
+
         factory { WithdrawalService() as WithdrawalServiceAPI }
 
         // MARK: - Clients - Cards
@@ -324,6 +326,8 @@ extension DependencyContainer {
 
         // MARK: - Services - General
 
+        factory { OrdersActivityService() as OrdersActivityServiceAPI }
+
         factory { OrderConfirmationService() as OrderConfirmationServiceAPI }
 
         factory { OrderQuoteService() as OrderQuoteServiceAPI }
@@ -331,10 +335,6 @@ extension DependencyContainer {
         factory { EventCache() }
 
         single { OrdersService() as OrdersServiceAPI }
-
-        factory { OrdersFiatActivityItemEventService() as FiatActivityItemEventFetcherAPI }
-
-        factory { OrdersActivityEventService() as OrdersActivityEventServiceAPI }
 
         factory { PendingOrderDetailsService() as PendingOrderDetailsServiceAPI }
 

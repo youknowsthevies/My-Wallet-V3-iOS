@@ -7,8 +7,7 @@ protocol SwapLandingInteractable: Interactable {
     var listener: SwapLandingListener? { get set }
 }
 
-protocol SwapLandingViewControllable: ViewControllable {
-}
+protocol SwapLandingViewControllable: ViewControllable {}
 
 final class SwapLandingRouter: ViewableRouter<SwapLandingInteractable, SwapLandingViewControllable>, SwapLandingRouting {
 

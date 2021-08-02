@@ -18,7 +18,7 @@ public class AsyncBlockOperation: AsyncOperation {
 
     // MARK: Overrides
 
-    public override func begin(done: @escaping () -> Void) {
+    override public func begin(done: @escaping () -> Void) {
         executionBlock(done)
     }
 }

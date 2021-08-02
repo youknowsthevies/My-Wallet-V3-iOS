@@ -19,9 +19,9 @@ public final class BuySellSegmentedViewScreenPresenter: SegmentedViewScreenPrese
 
     public let barStyle: Screen.Style.Bar = .lightContent()
 
-    private(set) public lazy var segmentedViewModel: SegmentedViewModel = createSegmentedViewModel()
+    public private(set) lazy var segmentedViewModel: SegmentedViewModel = createSegmentedViewModel()
 
-    private(set) public lazy var items: [SegmentedViewScreenItem] = segmentedItemsFactory.createItems()
+    public private(set) lazy var items: [SegmentedViewScreenItem] = segmentedItemsFactory.createItems()
 
     public let itemIndexSelectedRelay: BehaviorRelay<Int?> = .init(value: nil)
 

@@ -11,20 +11,20 @@ public struct StellarAccountDetails {
 
 // MARK: Extension
 
-public extension StellarAccountDetails {
-    static func unfunded(accountID: String) -> StellarAccountDetails {
+extension StellarAccountDetails {
+    public static func unfunded(accountID: String) -> StellarAccountDetails {
         let account = StellarAssetAccount(
             accountAddress: accountID,
-            name: CryptoCurrency.stellar.defaultWalletName,
-            description: CryptoCurrency.stellar.defaultWalletName,
+            name: CryptoCurrency.coin(.stellar).defaultWalletName,
+            description: CryptoCurrency.coin(.stellar).defaultWalletName,
             sequence: 0,
             subentryCount: 0
         )
 
         return StellarAccountDetails(
             account: account,
-            balance: .stellarZero,
-            actionableBalance: .stellarZero
+            balance: .zero(currency: .coin(.stellar)),
+            actionableBalance: .zero(currency: .coin(.stellar))
         )
     }
 }

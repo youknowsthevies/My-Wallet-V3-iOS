@@ -19,8 +19,8 @@ final class ExchangeCoordinator {
 
     private var navController: BaseNavigationController!
     private weak var rootViewController: UIViewController?
-    private let disposables: CompositeDisposable = CompositeDisposable()
-    private let bag: DisposeBag = DisposeBag()
+    private let disposables = CompositeDisposable()
+    private let bag = DisposeBag()
     private let repository: ExchangeAccountRepositoryAPI
     private let authenticator: ExchangeAccountAuthenticatorAPI
     private let loadingIndicatorAPI: LoadingViewPresenting
@@ -30,12 +30,14 @@ final class ExchangeCoordinator {
 
     // MARK: Init
 
-    init(repository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository(),
-         authenticator: ExchangeAccountAuthenticatorAPI = ExchangeAccountAuthenticator(),
-         loadingIndicatorAPI: LoadingViewPresenting = resolve(),
-         campaignComposer: CampaignComposer = CampaignComposer(),
-         appSettings: BlockchainSettings.App = resolve(),
-         drawerRouter: DrawerRouting = resolve()) {
+    init(
+        repository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository(),
+        authenticator: ExchangeAccountAuthenticatorAPI = ExchangeAccountAuthenticator(),
+        loadingIndicatorAPI: LoadingViewPresenting = resolve(),
+        campaignComposer: CampaignComposer = CampaignComposer(),
+        appSettings: BlockchainSettings.App = resolve(),
+        drawerRouter: DrawerRouting = resolve()
+    ) {
         self.repository = repository
         self.campaignComposer = campaignComposer
         self.authenticator = authenticator
@@ -67,7 +69,7 @@ final class ExchangeCoordinator {
         }, onError: { error in
             Logger.shared.error(error)
         })
-        .disposed(by: bag)
+            .disposed(by: bag)
 
         appSettings.didTapOnExchangeDeepLink = false
     }
@@ -135,7 +137,7 @@ final class ExchangeCoordinator {
                 guard let self = self else { return }
                 emailConfirmationScreen.dismiss(animated: true, completion: nil)
                 self.showEmailVerifiedAlert()
-            }, onError: { (error) in
+            }, onError: { error in
                 Logger.shared.error(error)
             })
 
@@ -148,7 +150,7 @@ final class ExchangeCoordinator {
     @discardableResult private func presentInNavigationController(
         _ viewController: UIViewController,
         in presentingViewController: UIViewController
-        ) -> BaseNavigationController {
+    ) -> BaseNavigationController {
         let navController = BaseNavigationController(rootViewController: viewController)
         navController.modalPresentationStyle = .fullScreen
         navController.modalTransitionStyle = .coverVertical
@@ -165,7 +167,8 @@ final class ExchangeCoordinator {
         }
         let action = AlertAction(
             style: .default(LocalizationConstants.Exchange.ConnectionPage.Actions.connectNow),
-            metadata: .block(block))
+            metadata: .block(block)
+        )
         let alert = AlertModel(
             headline: LocalizationConstants.Exchange.EmailVerification.verified,
             body: LocalizationConstants.Exchange.EmailVerification.verifiedDescription,
@@ -175,7 +178,7 @@ final class ExchangeCoordinator {
         )
         let alertView = AlertView.make(with: alert) { action in
             if let metadata = action.metadata {
-                guard case let .block(value) = metadata else { return }
+                guard case .block(let value) = metadata else { return }
                 value()
             }
         }
@@ -191,14 +194,14 @@ final class ExchangeCoordinator {
     }
 
     private func syncAddressAndLinkWalletToExchange() {
-        /// Users that have linked their Exchange account should be sent to the `/trade`
-        /// page and not the Exchange landing page.
+        // Users that have linked their Exchange account should be sent to the `/trade`
+        // page and not the Exchange landing page.
         guard let exchangeURL = URL(string: BlockchainAPI.shared.exchangeURL + "/trade") else { return }
         repository.syncDepositAddresses()
             .andThen(hasLinkedExchangeAccount())
-            .flatMap(weak: self, { (self, hasLinkedExchangeAccount) -> Single<URL> in
+            .flatMap(weak: self) { (self, hasLinkedExchangeAccount) -> Single<URL> in
                 hasLinkedExchangeAccount ? Single.just(exchangeURL) : self.authenticator.exchangeURL
-            })
+            }
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .observeOn(MainScheduler.instance)
             .showSheetOnSubscription(bottomAlertSheet: syncingBottomAlertSheet)
@@ -275,21 +278,26 @@ final class ExchangeCoordinator {
     }()
 }
 
-fileprivate extension ObservableType {
+extension ObservableType {
 
-    func dismissNavControllerOnDisposal(navController: BaseNavigationController, drawerRouter: DrawerRouting) -> Observable<Element> {
+    fileprivate func dismissNavControllerOnDisposal(
+        navController: BaseNavigationController,
+        drawerRouter: DrawerRouting
+    ) -> Observable<Element> {
         self.do(onDispose: {
             navController.popToRootViewController(animated: true)
             navController.dismiss(animated: true, completion: nil)
             drawerRouter.closeSideMenu()
         })
     }
-
 }
 
-private extension PrimitiveSequenceType where Trait == CompletableTrait, Element == Never {
+extension PrimitiveSequenceType where Trait == CompletableTrait, Element == Never {
 
-    func dismissNavControllerOnDisposal(navController: BaseNavigationController?, drawerRouter: DrawerRouting) -> Completable {
+    fileprivate func dismissNavControllerOnDisposal(
+        navController: BaseNavigationController?,
+        drawerRouter: DrawerRouting
+    ) -> Completable {
         self.do(onDispose: {
             navController?.popToRootViewController(animated: true)
             navController?.dismiss(animated: true, completion: nil)
@@ -297,12 +305,14 @@ private extension PrimitiveSequenceType where Trait == CompletableTrait, Element
         })
     }
 
-    func dismissNavControllerOnSubscription(navController: BaseNavigationController?, drawerRouter: DrawerRouting) -> Completable {
+    fileprivate func dismissNavControllerOnSubscription(
+        navController: BaseNavigationController?,
+        drawerRouter: DrawerRouting
+    ) -> Completable {
         self.do(onSubscribed: {
             navController?.popToRootViewController(animated: true)
             navController?.dismiss(animated: true, completion: nil)
             drawerRouter.closeSideMenu()
         })
     }
-
 }

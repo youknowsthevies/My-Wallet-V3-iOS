@@ -22,7 +22,7 @@ enum ActivityCellItem: IdentifiableType {
 }
 
 extension ActivityCellItem: Equatable {
-    static func ==(lhs: ActivityCellItem, rhs: ActivityCellItem) -> Bool {
+    static func == (lhs: ActivityCellItem, rhs: ActivityCellItem) -> Bool {
         switch (lhs, rhs) {
         case (.selection(let left), .selection(let right)):
             return left.titleRelay.value == right.titleRelay.value &&

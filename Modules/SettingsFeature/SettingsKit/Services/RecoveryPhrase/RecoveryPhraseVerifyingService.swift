@@ -11,7 +11,7 @@ public final class RecoveryPhraseVerifyingService: RecoveryPhraseVerifyingServic
     private let verificationService: MnemonicVerificationService
 
     public init(wallet: WalletRecoveryVerifing) {
-        self.verificationService = MnemonicVerificationService(walletRecoveryVerifier: wallet)
+        verificationService = MnemonicVerificationService(walletRecoveryVerifier: wallet)
     }
 
     public func markBackupVerified() -> Completable {

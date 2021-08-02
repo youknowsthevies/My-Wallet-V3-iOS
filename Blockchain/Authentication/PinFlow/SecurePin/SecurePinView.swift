@@ -42,8 +42,10 @@ final class SecurePinView: UIView {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        titleLabel.accessibility = Accessibility(id: AccessibilityIdentifiers.PinScreen.pinSecureViewTitle,
-                                                 traits: .header)
+        titleLabel.accessibility = Accessibility(
+            id: AccessibilityIdentifiers.PinScreen.pinSecureViewTitle,
+            traits: .header
+        )
         for (index, view) in pinViewsArray.enumerated() {
             view.accessibility = .id("\(AccessibilityIdentifiers.PinScreen.pinIndicatorFormat)\(index)")
         }
@@ -87,10 +89,10 @@ final class SecurePinView: UIView {
         }
         animator.addAnimations({
             self.transform = CGAffineTransform(translationX: -10, y: 0)
-        }, delayFactor: CGFloat(duration) * 1.0/3.0)
+        }, delayFactor: CGFloat(duration) * 1.0 / 3.0)
         animator.addAnimations({
             self.transform = .identity
-        }, delayFactor: CGFloat(duration) * 2.0/3.0)
+        }, delayFactor: CGFloat(duration) * 2.0 / 3.0)
         return animator
     }
 }

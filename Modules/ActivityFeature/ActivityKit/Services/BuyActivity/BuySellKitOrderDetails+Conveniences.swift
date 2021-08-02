@@ -29,6 +29,7 @@ extension BuySellActivityItemEvent {
         )
     }
 }
+
 extension OrderDetails {
     fileprivate var eventStatus: BuySellActivityItemEvent.EventStatus {
         switch state {

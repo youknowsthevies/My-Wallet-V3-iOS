@@ -11,7 +11,7 @@ class EthereumAddressTests: XCTestCase {
 
         XCTAssertNil(EthereumAddress(address: address))
 
-        XCTAssertThrowsError(try EthereumAddress(string: address)) { (error) in
+        XCTAssertThrowsError(try EthereumAddress(string: address)) { error in
             XCTAssertEqual(error as? AddressValidationError, .invalidLength)
         }
     }
@@ -25,7 +25,7 @@ class EthereumAddressTests: XCTestCase {
 
         for address in invalidAddresses {
             XCTAssertNil(EthereumAddress(address: address))
-            XCTAssertThrowsError(try EthereumAddress(string: address)) { (error) in
+            XCTAssertThrowsError(try EthereumAddress(string: address)) { error in
                 XCTAssertEqual(error as? AddressValidationError, .containsInvalidCharacters)
             }
         }
@@ -40,7 +40,7 @@ class EthereumAddressTests: XCTestCase {
 
         for address in invalidAddresses {
             XCTAssertNil(EthereumAddress(address: address))
-            XCTAssertThrowsError(try EthereumAddress(string: address)) { (error) in
+            XCTAssertThrowsError(try EthereumAddress(string: address)) { error in
                 XCTAssertEqual(error as? AddressValidationError, .invalidLength)
             }
         }

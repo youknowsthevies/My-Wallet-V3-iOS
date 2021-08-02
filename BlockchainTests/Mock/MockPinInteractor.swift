@@ -11,8 +11,10 @@ class MockPinInteractor: PinInteracting {
     let expectedPassword: String
     let expectedError: PinError?
 
-    init(expectedError: PinError? = nil,
-         expectedPassword: String = "expected password") {
+    init(
+        expectedError: PinError? = nil,
+        expectedPassword: String = "expected password"
+    ) {
         self.expectedError = expectedError
         self.expectedPassword = expectedPassword
     }

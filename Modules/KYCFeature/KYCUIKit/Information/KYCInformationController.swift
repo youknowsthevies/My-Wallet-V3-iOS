@@ -28,16 +28,15 @@ final class KYCInformationController: KYCBaseViewController {
     var viewModel: KYCInformationViewModel?
 
     /// The view configuration for this view
-    var viewConfig: KYCInformationViewConfig = KYCInformationViewConfig.defaultConfig
+    var viewConfig = KYCInformationViewConfig.defaultConfig
 
-    @Inject
-    private var analyticsRecorder: AnalyticsEventRecording
+    @Inject private var analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCInformationController {
+    override class func make(with coordinator: KYCRouter) -> KYCInformationController {
         let controller: KYCInformationController = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .accountStatus
         return controller
     }
@@ -46,7 +45,7 @@ final class KYCInformationController: KYCBaseViewController {
 
     @IBAction func dismiss(_ sender: Any) {
         dismiss(animated: true, completion: {
-            self.coordinator.finish()
+            self.router.finish()
         })
     }
 
@@ -108,6 +107,6 @@ final class KYCInformationController: KYCBaseViewController {
     }
 
     override func navControllerRightBarButtonTapped(_ navController: KYCOnboardingNavigationController) {
-        coordinator.handle(event: .nextPageFromPageType(pageType, nil))
+        router.handle(event: .nextPageFromPageType(pageType, nil))
     }
 }

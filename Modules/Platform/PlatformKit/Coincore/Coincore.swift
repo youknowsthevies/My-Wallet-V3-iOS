@@ -30,7 +30,7 @@ final class Coincore: CoincoreAPI {
 
     // MARK: - Public Properties
 
-    public var allAccounts: Single<AccountGroup> {
+    var allAccounts: Single<AccountGroup> {
         reactiveWallet.waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) in
                 Single.zip(
@@ -38,7 +38,11 @@ final class Coincore: CoincoreAPI {
                 )
             }
             .map { accountGroups -> [SingleAccount] in
-                accountGroups.map { $0.accounts }.reduce([SingleAccount](), +)
+                accountGroups
+                    .map(\.accounts)
+                    .reduce(into: [SingleAccount]()) { result, accounts in
+                        result.append(contentsOf: accounts)
+                    }
             }
             .map { accounts -> AccountGroup in
                 AllAccountsGroup(accounts: accounts)
@@ -50,6 +54,7 @@ final class Coincore: CoincoreAPI {
     var allAssets: [Asset] {
         [fiatAsset] + cryptoAssets
     }
+
     let fiatAsset: Asset
     let cryptoAssets: [CryptoAsset]
 
@@ -68,7 +73,7 @@ final class Coincore: CoincoreAPI {
     }
 
     /// Gives a chance for all assets to initialize themselves.
-    public func initialize() -> Completable {
+    func initialize() -> Completable {
         var completables = cryptoAssets
             .map { asset -> Completable in
                 asset.initialize()
@@ -77,7 +82,7 @@ final class Coincore: CoincoreAPI {
         return Completable.concat(completables)
     }
 
-    public subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
+    subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
         guard let asset = cryptoAssets.first(where: { $0.asset == cryptoCurrency }) else {
             fatalError("Unknown crypto currency '\(cryptoCurrency.code)'.")
         }
@@ -86,7 +91,7 @@ final class Coincore: CoincoreAPI {
 
     /// We are looking for targets of our action.
     /// Action is considered what the source account wants to do.
-    public func getTransactionTargets(
+    func getTransactionTargets(
         sourceAccount: BlockchainAccount,
         action: AssetAction
     ) -> Single<[SingleAccount]> {
@@ -97,7 +102,7 @@ final class Coincore: CoincoreAPI {
             }
             return allAccounts
                 .map(\.accounts)
-                .map { (accounts) -> [SingleAccount] in
+                .map { accounts -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
                         Self.getActionFilter(
                             sourceAccount: cryptoAccount,
@@ -110,14 +115,9 @@ final class Coincore: CoincoreAPI {
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
             }
-            let sourceCryptoAsset = self[cryptoAccount.asset]
-            return Single
-                .zip(
-                    sourceCryptoAsset.transactionTargets(account: cryptoAccount),
-                    fiatAsset.accountGroup(filter: .all).map(\.accounts)
-                )
-                .map(+)
-                .map { (accounts) -> [SingleAccount] in
+            return self[cryptoAccount.asset]
+                .transactionTargets(account: cryptoAccount)
+                .map { accounts -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
                         Self.getActionFilter(
                             sourceAccount: cryptoAccount,
@@ -137,25 +137,68 @@ final class Coincore: CoincoreAPI {
         }
     }
 
-    private static func getActionFilter(sourceAccount: CryptoAccount, destinationAccount: SingleAccount, action: AssetAction) -> Bool {
+    private static func getActionFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
         switch action {
         case .buy:
             unimplemented("WIP")
         case .sell:
             return destinationAccount is FiatAccount
         case .swap:
-            return destinationAccount is CryptoAccount
-                && destinationAccount.currencyType != sourceAccount.currencyType
-                && !(destinationAccount is FiatAccount)
-                && !(destinationAccount is CryptoInterestAccount)
-                && (sourceAccount is TradingAccount ? destinationAccount is TradingAccount : true)
+            return swapActionFilter(
+                sourceAccount: sourceAccount,
+                destinationAccount: destinationAccount,
+                action: action
+            )
         case .send:
-            return !(destinationAccount is FiatAccount)
-                && !(destinationAccount is CryptoInterestAccount)
+            return sendActionFilter(
+                sourceAccount: sourceAccount,
+                destinationAccount: destinationAccount,
+                action: action
+            )
         case .deposit,
              .receive,
              .viewActivity,
              .withdraw:
+            return false
+        }
+    }
+
+    private static func swapActionFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
+        guard destinationAccount.currencyType != sourceAccount.currencyType else {
+            return false
+        }
+        switch (sourceAccount, destinationAccount) {
+        case (is CryptoTradingAccount, is CryptoTradingAccount),
+             (is CryptoNonCustodialAccount, is CryptoTradingAccount),
+             (is CryptoNonCustodialAccount, is CryptoNonCustodialAccount):
+            return true
+        default:
+            return false
+        }
+    }
+
+    private static func sendActionFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
+        guard destinationAccount.currencyType == sourceAccount.currencyType else {
+            return false
+        }
+        switch destinationAccount {
+        case is CryptoTradingAccount,
+             is CryptoExchangeAccount,
+             is CryptoNonCustodialAccount:
+            return true
+        default:
             return false
         }
     }

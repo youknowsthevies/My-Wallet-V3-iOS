@@ -14,7 +14,7 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
         data.state
     }
 
-    private let eventRecorder: AnalyticsEventRecording
+    private let eventRecorder: AnalyticsEventRecorderAPI
 
     private let data: PartnerAuthorizationData
     private var hasRedirected = false
@@ -23,9 +23,11 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
 
     // MARK: - Setup
 
-    init(interactor: CardAuthorizationScreenInteractor,
-         data: PartnerAuthorizationData,
-         eventRecorder: AnalyticsEventRecording = resolve()) {
+    init(
+        interactor: CardAuthorizationScreenInteractor,
+        data: PartnerAuthorizationData,
+        eventRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.eventRecorder = eventRecorder
         self.interactor = interactor
         self.data = data
@@ -33,10 +35,10 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
     }
 
     func redirect() {
-        /// Might get called multiple times from the `WKNavigationDelegate`
+        // Might get called multiple times from the `WKNavigationDelegate`
         guard !hasRedirected else { return }
         hasRedirected = true
-        self.eventRecorder.record(event: AnalyticsEvents.SimpleBuy.sbThreeDSecureComplete)
+        eventRecorder.record(event: AnalyticsEvents.SimpleBuy.sbThreeDSecureComplete)
         interactor.cardAuthorized(with: data.paymentMethodId)
     }
 }

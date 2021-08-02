@@ -25,12 +25,12 @@ public final class WalletBalanceView: UIView {
                 .disposed(by: disposeBag)
 
             presenter.state
-                .compactMap { $0.value }
+                .compactMap(\.value)
                 .bindAndCatch(to: rx.values)
                 .disposed(by: disposeBag)
 
             presenter.state
-                .map { $0.isLoading }
+                .map(\.isLoading)
                 .mapToVoid()
                 .bind { [weak self] in
                     self?.startShimmering()
@@ -89,8 +89,8 @@ public final class WalletBalanceView: UIView {
     private func stopShimmering() {
         guard fiatLabelShimmeringView != nil else { return }
         guard currencyCodeLabelShimmeringView != nil else { return }
-        guard fiatLabelShimmeringView.isShimmering &&
-            currencyCodeLabelShimmeringView.isShimmering else { return }
+        guard fiatLabelShimmeringView.isShimmering,
+              currencyCodeLabelShimmeringView.isShimmering else { return }
 
         fiatBalanceLabel.alpha = 0
         currencyCodeLabel.alpha = 0

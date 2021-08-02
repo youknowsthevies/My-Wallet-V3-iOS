@@ -13,10 +13,12 @@ final class TargetSelectionInteractor {
     private let featureFetcher: FeatureFetching
     private let nameResolutionService: BlockchainNameResolutionServiceAPI
 
-    init(coincore: CoincoreAPI = resolve(),
-         nameResolutionService: BlockchainNameResolutionServiceAPI = resolve(),
-         featureFetcher: FeatureFetching = resolve(),
-         linkedBanksFactory: LinkedBanksFactoryAPI = resolve()) {
+    init(
+        coincore: CoincoreAPI = resolve(),
+        nameResolutionService: BlockchainNameResolutionServiceAPI = resolve(),
+        featureFetcher: FeatureFetching = resolve(),
+        linkedBanksFactory: LinkedBanksFactoryAPI = resolve()
+    ) {
         self.coincore = coincore
         self.linkedBanksFactory = linkedBanksFactory
         self.featureFetcher = featureFetcher
@@ -24,11 +26,13 @@ final class TargetSelectionInteractor {
     }
 
     func getBitPayInvoiceTarget(data: String, asset: CryptoCurrency) -> Single<BitPayInvoiceTarget> {
-        BitPayInvoiceTarget.make(from: data, asset: .bitcoin)
+        BitPayInvoiceTarget.make(from: data, asset: .coin(.bitcoin))
     }
 
-    func getAvailableTargetAccounts(sourceAccount: BlockchainAccount,
-                                    action: AssetAction) -> Single<[SingleAccount]> {
+    func getAvailableTargetAccounts(
+        sourceAccount: BlockchainAccount,
+        action: AssetAction
+    ) -> Single<[SingleAccount]> {
         switch action {
         case .swap,
              .send:
@@ -64,24 +68,18 @@ final class TargetSelectionInteractor {
     }
 
     private func validate(domainName: String, currency: CryptoCurrency) -> Single<Result<ReceiveAddress, Error>> {
-        featureFetcher.fetchBool(for: .sendToDomainName)
-            .flatMap(weak: self) { (self, isEnabled) -> Single<Result<ReceiveAddress, Error>> in
-                guard isEnabled else {
-                    return .just(.failure(CryptoAssetError.addressParseFailure))
+        nameResolutionService
+            .validate(domainName: domainName, currency: currency)
+            .asObservable()
+            .take(1)
+            .asSingle()
+            .map { receiveAddress -> Result<ReceiveAddress, Error> in
+                switch receiveAddress {
+                case .some(let receiveAddress):
+                    return .success(receiveAddress)
+                case .none:
+                    return .failure(CryptoAssetError.addressParseFailure)
                 }
-                return self.nameResolutionService
-                    .validate(domainName: domainName, currency: currency)
-                    .asObservable()
-                    .take(1)
-                    .asSingle()
-                    .map { receiveAddress -> Result<ReceiveAddress, Error> in
-                        switch receiveAddress {
-                        case .some(let receiveAddress):
-                            return .success(receiveAddress)
-                        case .none:
-                            return .failure(CryptoAssetError.addressParseFailure)
-                        }
-                    }
             }
     }
 }

@@ -45,9 +45,11 @@ public final class TransactionProcessor {
 
     // MARK: - Init
 
-    init(sourceAccount: BlockchainAccount,
-         transactionTarget: TransactionTarget,
-         engine: TransactionEngine) {
+    init(
+        sourceAccount: BlockchainAccount,
+        transactionTarget: TransactionTarget,
+        engine: TransactionEngine
+    ) {
         self.engine = engine
         pendingTxSubject = BehaviorSubject(value: .zero(currencyType: sourceAccount.currencyType))
         engine.start(
@@ -68,7 +70,7 @@ public final class TransactionProcessor {
     public func reset() {
         do {
             engine.stop(pendingTransaction: try pendingTransaction())
-        } catch { }
+        } catch {}
     }
 
     // Set the option to the passed option value. If the option is not supported, it will not be
@@ -98,7 +100,7 @@ public final class TransactionProcessor {
                 })
                 .asObservable()
                 .ignoreElements()
-        } catch let error {
+        } catch {
             return .just(event: .error(error))
         }
     }
@@ -119,7 +121,7 @@ public final class TransactionProcessor {
                         .validateAmount(pendingTransaction: transaction)
                         .map { transaction -> PendingTransaction in
                             // Remove initial "insufficient funds' warning
-                            if transaction.amount.isZero && isFreshTx {
+                            if transaction.amount.isZero, isFreshTx {
                                 var newTx = transaction
                                 newTx.validationState = .uninitialized
                                 return newTx
@@ -132,8 +134,7 @@ public final class TransactionProcessor {
                     self?.updatePendingTx(pendingTransaction)
                 })
                 .asCompletable()
-
-        } catch let error {
+        } catch {
             return .just(event: .error(error))
         }
     }
@@ -155,7 +156,7 @@ public final class TransactionProcessor {
                 .flatMap(weak: self) { (self, transaction) -> Single<TransactionResult> in
                     self.engine.execute(pendingTransaction: transaction, secondPassword: secondPassword)
                 }
-        } catch let error {
+        } catch {
             return .error(error)
         }
     }

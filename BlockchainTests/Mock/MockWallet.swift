@@ -18,17 +18,19 @@ class MockWallet: Wallet {
 
     /// When called, invokes the delegate's walletDidDecrypt and walletDidFinishLoad methods
     override func load(withGuid guid: String, sharedKey: String?, password: String?) {
-        self.delegate?.walletDidDecrypt?(withSharedKey: sharedKey, guid: guid)
-        self.delegate?.walletDidFinishLoad?()
+        delegate?.walletDidDecrypt?(withSharedKey: sharedKey, guid: guid)
+        delegate?.walletDidFinishLoad?()
     }
 
     var fetchCalled = false
+
     override func fetch(with password: String) {
         fetchCalled = true
         self.password = password
     }
 
     var getHistoryForAllAssetsCalled = false
+
     override func getHistoryForAllAssets() {
         getHistoryForAllAssetsCalled = true
     }

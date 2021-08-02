@@ -2,9 +2,9 @@
 
 import PlatformUIKit
 
-public extension Accessibility.Identifier {
+extension Accessibility.Identifier {
 
-    enum KYCVerifyIdentityScreen {
+    public enum KYCVerifyIdentityScreen {
         static let headerText = "KYCVerifyIdentityScreen.headerText"
         static let subheaderText = "KYCVerifyIdentityScreen.subheaderText"
         static let passportText = "KYCVerifyIdentityScreen.passportText"
@@ -16,5 +16,4 @@ public extension Accessibility.Identifier {
         static let countrySupportedHeaderText = "KYCVerifyIdentityScreen.countrySupportedHeaderText"
         static let countrySupportedSubheaderText = "KYCVerifyIdentityScreen.countrySupportedSubheaderText"
     }
-
 }

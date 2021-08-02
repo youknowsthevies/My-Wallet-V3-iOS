@@ -3,10 +3,10 @@
 import BigInt
 import ToolKit
 
-public final class LinearInterpolator {
+public enum LinearInterpolator {
     /// Formula：Y = ( ( X - X1 )( Y2 - Y1) / ( X2 - X1) ) + Y1
     /// X1, Y1 = first value, X2, Y2 = second value, X = target value, Y = result
-    public static func interpolate(x: Array<BigInt>, y: Array<BigInt>, xi: BigInt) -> BigInt {
+    public static func interpolate(x: [BigInt], y: [BigInt], xi: BigInt) -> BigInt {
         let zero = BigInt.zero
         precondition(x.count == y.count)
         precondition(x.count == 2)

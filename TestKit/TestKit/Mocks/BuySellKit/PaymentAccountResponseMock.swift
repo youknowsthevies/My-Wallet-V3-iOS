@@ -22,7 +22,13 @@ extension CustodialBalanceResponse {
         balances: [
             "BTC": .zero,
             "BCH": .zero,
-            "ETH": Balance(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "2000", withdrawable: "0"),
+            "ETH": Balance(
+                pending: "0",
+                pendingDeposit: "0",
+                pendingWithdrawal: "0",
+                available: "2000",
+                withdrawable: "0"
+            ),
             "PAX": .zero,
             "XLM": .zero,
             "ALGO": .zero

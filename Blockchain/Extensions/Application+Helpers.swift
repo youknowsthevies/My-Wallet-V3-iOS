@@ -10,6 +10,6 @@ extension UIApplication {
 
     @objc public func openAppStore() {
         let url = URL(string: "\(Constants.Url.appStoreLinkPrefix)\(Constants.AppStore.AppID)")!
-        self.open(url)
+        open(url)
     }
 }

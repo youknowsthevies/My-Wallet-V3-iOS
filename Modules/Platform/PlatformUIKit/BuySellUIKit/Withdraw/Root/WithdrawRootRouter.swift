@@ -5,16 +5,18 @@ import RIBs
 import RxCocoa
 
 protocol WithdrawFlowInteractable: Interactable,
-                                   LinkedBanksSelectionListener,
-                                   WithdrawAmountPageListener,
-                                   CheckoutPageListener {
+    LinkedBanksSelectionListener,
+    WithdrawAmountPageListener,
+    CheckoutPageListener
+{
     var router: WithdrawFlowRouting? { get set }
     var listener: WithdrawFlowListener? { get set }
 }
 
 final class WithdrawRootRouter: RIBs.Router<WithdrawFlowInteractable>,
-                                WithdrawFlowRouting,
-                                WithdrawFlowStarter {
+    WithdrawFlowRouting,
+    WithdrawFlowStarter
+{
 
     private let selectBanksBuilder: LinkedBanksSelectionBuildable
     private let enterAmountBuilder: WithdrawAmountPageBuildable
@@ -23,11 +25,13 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawFlowInteractable>,
 
     private var dismissFlow: (() -> Void)?
 
-    init(interactor: WithdrawFlowInteractable,
-         navigation: RootNavigatable,
-         selectBanksBuilder: LinkedBanksSelectionBuildable,
-         enterAmountBuilder: WithdrawAmountPageBuildable,
-         checkoutPageBuilder: CheckoutPageBuildable) {
+    init(
+        interactor: WithdrawFlowInteractable,
+        navigation: RootNavigatable,
+        selectBanksBuilder: LinkedBanksSelectionBuildable,
+        enterAmountBuilder: WithdrawAmountPageBuildable,
+        checkoutPageBuilder: CheckoutPageBuildable
+    ) {
         self.navigation = navigation
         self.selectBanksBuilder = selectBanksBuilder
         self.enterAmountBuilder = enterAmountBuilder
@@ -36,7 +40,7 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawFlowInteractable>,
         interactor.router = self
     }
 
-    public override func didLoad() {
+    override func didLoad() {
         super.didLoad()
     }
 
@@ -69,7 +73,7 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawFlowInteractable>,
 
     // MARK: - WithdrawFlowStarter
 
-    public func startFlow(flowDismissed: @escaping () -> Void) {
+    func startFlow(flowDismissed: @escaping () -> Void) {
         dismissFlow = flowDismissed
         interactable.activate()
         load()

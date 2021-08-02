@@ -3,14 +3,14 @@
 import Foundation
 import RxSwift
 
-/// TODO: Consider renaming. HD is mapping one account to many addresses. 
+// TODO: Consider renaming. HD is mapping one account to many addresses.
 public protocol MultiAccountAssetAPI {
     associatedtype Account: AssetAccount
     typealias AccountID = String
 
     /// The getter should return a `BehaviorRelay<Account?>`.
     /// The wallet metadata has a default index. This is the index that is
-    /// used for returning the correct `Account` from `assetAccounts`. 
+    /// used for returning the correct `Account` from `assetAccounts`.
     var defaultAssetAccount: Account? { get }
 
     /// The getter should return a `BehaviorRelay<[Account]>`.

@@ -23,9 +23,11 @@ final class RemoteNotificationRelay: NSObject {
 
     // MARK: - Setup
 
-    init(userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
-         messagingService: FirebaseCloudMessagingServiceAPI = Messaging.messaging(),
-         secureChannelNotificationRelay: SecureChannelNotificationRelaying = resolve()) {
+    init(
+        userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
+        messagingService: FirebaseCloudMessagingServiceAPI = Messaging.messaging(),
+        secureChannelNotificationRelay: SecureChannelNotificationRelaying = resolve()
+    ) {
         self.userNotificationCenter = userNotificationCenter
         self.messagingService = messagingService
         self.secureChannelNotificationRelay = secureChannelNotificationRelay
@@ -44,7 +46,7 @@ extension RemoteNotificationRelay: RemoteNotificationEmitting {
 
 extension RemoteNotificationRelay: RemoteNotificationBackgroundReceiving {
     func didReceiveRemoteNotification(
-        _ userInfo: [AnyHashable : Any],
+        _ userInfo: [AnyHashable: Any],
         onApplicationState applicationState: UIApplication.State,
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
@@ -69,9 +71,11 @@ extension RemoteNotificationRelay: RemoteNotificationBackgroundReceiving {
 extension RemoteNotificationRelay: UNUserNotificationCenterDelegate {
 
     /// Use this method to process the user's response to a notification.
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                didReceive response: UNNotificationResponse,
-                                withCompletionHandler completionHandler: @escaping () -> Void) {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
         let userInfo = response.notification.request.content.userInfo
         Logger.shared.debug("Notification didReceive: \(userInfo)")
         if secureChannelNotificationRelay.isSecureChannelNotification(userInfo) {
@@ -84,9 +88,11 @@ extension RemoteNotificationRelay: UNUserNotificationCenterDelegate {
 
     /// If the app is in foreground when a notification arrives, the shared user notification
     /// center calls this method to deliver the notification directly to the app.
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                willPresent notification: UNNotification,
-                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
         let userInfo = notification.request.content.userInfo
         Logger.shared.debug("Notification willPresent: \(userInfo)")
         if secureChannelNotificationRelay.isSecureChannelNotification(userInfo) {
@@ -97,15 +103,10 @@ extension RemoteNotificationRelay: UNUserNotificationCenterDelegate {
             completionHandler(.defaultPresentationOptions)
         }
     }
-
 }
 
 extension UNNotificationPresentationOptions {
     static let defaultPresentationOptions: UNNotificationPresentationOptions = {
-        if #available(iOS 14, *) {
-            return [.banner, .list, .badge, .sound]
-        } else {
-            return [.alert, .badge, .sound]
-        }
+        [.banner, .list, .badge, .sound]
     }()
 }

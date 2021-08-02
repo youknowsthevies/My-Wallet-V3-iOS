@@ -24,9 +24,9 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCResubmitIdentityController {
+    override class func make(with coordinator: KYCRouter) -> KYCResubmitIdentityController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .verifyIdentity
         return controller
     }
@@ -51,12 +51,12 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
 
     private var presenter: KYCVerifyIdentityPresenter!
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
-    let analyticsRecorder: AnalyticsEventRecording = resolve()
+    let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
-    // MARK: - KYCCoordinatorDelegate
+    // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
-        guard case let .verifyIdentity(countryCode) = model else { return }
+        guard case .verifyIdentity(let countryCode) = model else { return }
         self.countryCode = countryCode
     }
 
@@ -125,16 +125,19 @@ extension KYCResubmitIdentityController: LoadingView {
 extension KYCResubmitIdentityController: VeriffController {
     func onVeriffSubmissionCompleted() {
         loadingViewPresenter.show(with: LocalizationConstants.KYC.submittingInformation)
-        delegate?.submitVerification(onCompleted: { [unowned self] in
-            self.dismiss(animated: true, completion: {
-                self.coordinator.handle(event: .nextPageFromPageType(self.pageType, nil))
-            })},
-        onError: { error in
-            self.dismiss(animated: true, completion: {
-                AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.genericError)
-            })
-            Logger.shared.error("Failed to submit verification \(String(describing: error))")
-        })
+        delegate?.submitVerification(
+            onCompleted: { [unowned self] in
+                self.dismiss(animated: true, completion: {
+                    self.router.handle(event: .nextPageFromPageType(self.pageType, nil))
+                })
+            },
+            onError: { error in
+                self.dismiss(animated: true, completion: {
+                    AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.genericError)
+                })
+                Logger.shared.error("Failed to submit verification \(String(describing: error))")
+            }
+        )
     }
 
     func onVeriffError(message: String) {
@@ -145,7 +148,7 @@ extension KYCResubmitIdentityController: VeriffController {
         loadingViewPresenter.hide()
         dismiss(animated: true, completion: { [weak self] in
             guard let this = self else { return }
-            this.coordinator.handle(event: .nextPageFromPageType(this.pageType, nil))
+            this.router.handle(event: .nextPageFromPageType(this.pageType, nil))
         })
     }
 
@@ -159,7 +162,7 @@ extension KYCResubmitIdentityController: VeriffController {
     }
 }
 
-extension KYCResubmitIdentityController: CameraPromptingDelegate { }
+extension KYCResubmitIdentityController: CameraPromptingDelegate {}
 
 extension KYCResubmitIdentityController: MicrophonePromptingDelegate {
     func onMicrophonePromptingComplete() {

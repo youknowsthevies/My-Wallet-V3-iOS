@@ -7,4 +7,5 @@ public enum AssetFilter {
     case nonCustodial
     case custodial
     case interest
+    case exchange
 }

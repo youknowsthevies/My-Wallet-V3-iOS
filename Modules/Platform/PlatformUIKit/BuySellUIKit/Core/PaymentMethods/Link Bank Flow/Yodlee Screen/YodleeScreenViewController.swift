@@ -8,8 +8,9 @@ import UIKit
 import WebKit
 
 final class YodleeScreenViewController: BaseScreenViewController,
-                                        YodleeScreenPresentable,
-                                        YodleeScreenViewControllable {
+    YodleeScreenPresentable,
+    YodleeScreenViewControllable
+{
 
     private let disposeBag = DisposeBag()
     private let closeTriggerred = PublishSubject<Bool>()
@@ -19,11 +20,12 @@ final class YodleeScreenViewController: BaseScreenViewController,
     private let pendingView: YodleePendingView
 
     init(webConfiguration: WKWebViewConfiguration) {
-        self.webview = WKWebView(frame: .zero, configuration: webConfiguration)
-        self.pendingView = YodleePendingView()
+        webview = WKWebView(frame: .zero, configuration: webConfiguration)
+        pendingView = YodleePendingView()
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -75,7 +77,7 @@ final class YodleeScreenViewController: BaseScreenViewController,
         webview.rx.observeWeakly(Bool.self, "loading", options: [.new])
             .compactMap { $0 }
             .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onNext: { [weak self] (loading) in
+            .subscribe(onNext: { [weak self] loading in
                 guard let self = self else { return }
                 self.toggle(visibility: loading, of: self.pendingView)
                 self.toggle(visibility: !loading, of: self.webview)
@@ -106,9 +108,11 @@ final class YodleeScreenViewController: BaseScreenViewController,
 
     private func setupUI() {
         titleViewStyle = .text(value: LocalizationConstants.SimpleBuy.YodleeWebScreen.title)
-        set(barStyle: .darkContent(),
+        set(
+            barStyle: .darkContent(),
             leadingButtonStyle: .back,
-            trailingButtonStyle: .close)
+            trailingButtonStyle: .close
+        )
 
         view.addSubview(webview)
         view.addSubview(pendingView)
@@ -119,7 +123,6 @@ final class YodleeScreenViewController: BaseScreenViewController,
         pendingView.layoutToSuperview(.leading)
         pendingView.layoutToSuperview(.trailing)
         pendingView.layoutToSuperview(.bottom)
-
     }
 
     private func toggle(visibility: Bool, of view: UIView) {

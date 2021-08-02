@@ -26,7 +26,7 @@ final class EthereumKeyPairDeriverTests: XCTestCase {
         )
 
         // Act
-        guard case let .success(result) = subject.derive(input: keyDerivationInput) else {
+        guard case .success(let result) = subject.derive(input: keyDerivationInput) else {
             XCTFail("The transaction should be built successfully")
             return
         }

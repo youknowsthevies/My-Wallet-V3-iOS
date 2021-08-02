@@ -2,7 +2,7 @@
 
 import Foundation
 
-public final class DevicePresenter {
+public enum DevicePresenter {
     public enum DeviceType: Int, Comparable {
         case superCompact = 1 // SE
         case compact = 2 // 8
@@ -13,6 +13,7 @@ public final class DevicePresenter {
             lhs.rawValue < rhs.rawValue
         }
     }
+
     public static let type: DeviceType = {
         UIDevice.current.type
     }()
@@ -29,7 +30,7 @@ extension UIDevice {
 
     fileprivate var type: DevicePresenter.DeviceType {
         guard userInterfaceIdiom == .phone
-            else { return .regular }
+        else { return .regular }
         let size = UIScreen.main.bounds.size
         let height = max(size.width, size.height)
         switch height {
@@ -43,28 +44,28 @@ extension UIDevice {
             return .max
 
         default:
-            /// Impossible case
+            // Impossible case
             return .regular
         }
     }
 
     private func modelName(for machineName: String) -> String {
         switch machineName {
-        /// iPod Touch line
+        // iPod Touch line
         case "iPod7,1":
             return "iPod Touch 6"
         case "iPod9,1":
             return "iPod Touch 7"
 
-        /// iPhone 5 line
+        // iPhone 5 line
         case "iPhone6,1", "iPhone6,2":
             return "iPhone 5s"
 
-        /// iPhone SE line
+        // iPhone SE line
         case "iPhone8,4":
             return "iPhone SE"
 
-        /// iPhone 6 line
+        // iPhone 6 line
         case "iPhone7,2":
             return "iPhone 6"
         case "iPhone7,1":
@@ -74,19 +75,19 @@ extension UIDevice {
         case "iPhone8,2":
             return "iPhone 6s Plus"
 
-        /// iPhone 7 line
+        // iPhone 7 line
         case "iPhone9,1", "iPhone9,3":
             return "iPhone 7"
         case "iPhone9,2", "iPhone9,4":
             return "iPhone 7 Plus"
 
-        /// iPhone 8 line
+        // iPhone 8 line
         case "iPhone10,1", "iPhone10,4":
             return "iPhone 8"
         case "iPhone10,2", "iPhone10,5":
             return "iPhone 8 Plus"
 
-        /// iPhone X Line
+        // iPhone X Line
         case "iPhone10,3", "iPhone10,6":
             return "iPhone X"
         case "iPhone11,2":
@@ -96,7 +97,7 @@ extension UIDevice {
         case "iPhone11,8":
             return "iPhone XR"
 
-        /// iPhone 11 Line
+        // iPhone 11 Line
         case "iPhone12,1":
             return "iPhone 11"
         case "iPhone12,3":
@@ -104,7 +105,7 @@ extension UIDevice {
         case "iPhone12,5":
             return "iPhone 11 Pro Max"
 
-        /// iPad Air Line
+        // iPad Air Line
         case "iPad4,1", "iPad4,2", "iPad4,3":
             return "iPad Air"
         case "iPad5,3", "iPad5,4":
@@ -112,7 +113,7 @@ extension UIDevice {
         case "iPad11,3", "iPad11,4":
             return "iPad Air 3"
 
-        /// iPad Line
+        // iPad Line
         case "iPad6,11", "iPad6,12":
             return "iPad 5"
         case "iPad7,5", "iPad7,6":
@@ -120,7 +121,7 @@ extension UIDevice {
         case "iPad7,11", "iPad7,12":
             return "iPad 7"
 
-        /// iPad Mini Line
+        // iPad Mini Line
         case "iPad4,4", "iPad4,5", "iPad4,6":
             return "iPad Mini 2"
         case "iPad4,7", "iPad4,8", "iPad4,9":
@@ -128,7 +129,7 @@ extension UIDevice {
         case "iPad5,1", "iPad5,2":
             return "iPad Mini 4"
 
-        /// iPad Pro Line
+        // iPad Pro Line
         case "iPad6,3", "iPad6,4":
             return "iPad Pro 9.7 Inch"
         case "iPad6,7", "iPad6,8":

@@ -38,7 +38,7 @@ final class UpdateMobileScreenSetupInteractor {
     private let disposeBag = DisposeBag()
 
     init(service: SettingsServiceAPI) {
-        self.serviceAPI = service
+        serviceAPI = service
         setupTrigger
             .bindAndCatch(weak: self) { (self) in
                 self.setup()
@@ -51,7 +51,7 @@ final class UpdateMobileScreenSetupInteractor {
         serviceAPI
             .valueObservable
             .map {
-                .init(
+                InteractionModel(
                     badgeItem: $0.isSMSVerified ? .verified : .unverified,
                     is2FAEnabled: $0.authenticator == .sms,
                     isSMSVerified: $0.isSMSVerified,

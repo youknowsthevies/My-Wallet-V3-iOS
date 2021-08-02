@@ -37,7 +37,7 @@ class ValidationTextField: NibBasedView {
 
     // MARK: Private Class Properties
 
-    fileprivate static let primaryFont: UIFont = UIFont(
+    fileprivate static let primaryFont = UIFont(
         name: Constants.FontNames.montserratRegular,
         size: Constants.FontSizes.Small
     ) ?? UIFont.systemFont(ofSize: 16)
@@ -48,7 +48,7 @@ class ValidationTextField: NibBasedView {
 
     // MARK: IBInspectable Properties
 
-    @IBInspectable var baselineFillColor: UIColor = UIColor.gray3 {
+    @IBInspectable var baselineFillColor = UIColor.gray3 {
         didSet {
             baselineView.backgroundColor = baselineFillColor
         }
@@ -61,7 +61,7 @@ class ValidationTextField: NibBasedView {
     }
 
     /// Fill color for placeholder text.
-    @IBInspectable var placeholderFillColor: UIColor = UIColor.gray3
+    @IBInspectable var placeholderFillColor = UIColor.gray3
 
     /// If the field is optional than this should be `true`.
     /// This prevents you from having to check the field for
@@ -74,18 +74,19 @@ class ValidationTextField: NibBasedView {
             let font = UIFont(
                 name: Constants.FontNames.montserratRegular,
                 size: Constants.FontSizes.Small
-                ) ?? UIFont.systemFont(ofSize: 16)
+            ) ?? UIFont.systemFont(ofSize: 16)
             let value = NSAttributedString(
                 string: placeholder,
                 attributes: [
                     NSAttributedString.Key.font: font,
                     NSAttributedString.Key.foregroundColor: placeholderFillColor
-                ])
+                ]
+            )
             textField.attributedPlaceholder = value
         }
     }
 
-    @IBInspectable var textColor: UIColor = UIColor.darkGray {
+    @IBInspectable var textColor = UIColor.darkGray {
         didSet {
             textField.textColor = textColor
         }
@@ -138,7 +139,7 @@ class ValidationTextField: NibBasedView {
         }
     }
 
-    var textFieldInputView: UIView? = nil {
+    var textFieldInputView: UIView? {
         didSet {
             textField.inputView = textFieldInputView
         }

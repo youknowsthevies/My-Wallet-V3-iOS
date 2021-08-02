@@ -11,6 +11,7 @@ public struct BankLinkageData {
         case yodlee
         case yapily
     }
+
     public let token: String?
     public let fastlinkUrl: String?
     public let fastlinkParams: FastlinkConfiguration

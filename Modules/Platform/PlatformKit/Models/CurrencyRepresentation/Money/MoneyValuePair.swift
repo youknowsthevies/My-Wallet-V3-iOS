@@ -60,13 +60,13 @@ public struct MoneyValuePair: Equatable {
 
     // MARK: - Arithmetics
 
-    public static func +(lhs: MoneyValuePair, rhs: MoneyValuePair) throws -> MoneyValuePair {
+    public static func + (lhs: MoneyValuePair, rhs: MoneyValuePair) throws -> MoneyValuePair {
         let base = try lhs.base + rhs.base
         let quote = try lhs.quote + rhs.quote
         return MoneyValuePair(base: base, quote: quote)
     }
 
-    public static func -(lhs: MoneyValuePair, rhs: MoneyValuePair) throws -> MoneyValuePair {
+    public static func - (lhs: MoneyValuePair, rhs: MoneyValuePair) throws -> MoneyValuePair {
         let base = try lhs.base - rhs.base
         let quote = try lhs.quote - rhs.quote
         return MoneyValuePair(base: base, quote: quote)

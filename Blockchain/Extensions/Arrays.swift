@@ -18,7 +18,7 @@ extension Array where Element: Any {
     /// - Parameter type: the type
     /// - Returns: the casted array
     func castJsonObjects<Type: Codable>(type: Type.Type) -> [Type] {
-        self.compactMap { value -> [String: Any]? in
+        compactMap { value -> [String: Any]? in
             guard let jsonObj = value as? [String: Any] else {
                 Logger.shared.warning("Failed to cast instance \(value) to dictionary.")
                 return nil
@@ -37,7 +37,7 @@ extension Array where Element == [String: Any] {
     /// - Returns: the casted array
     func decodeJSONObjects<T: Codable>(type: T.Type) -> [T] {
         let jsonDecoder = JSONDecoder()
-        return self.compactMap { value -> T? in
+        return compactMap { value -> T? in
             guard let data = try? JSONSerialization.data(withJSONObject: value, options: []) else {
                 Logger.shared.warning("Failed to serialize dictionary.")
                 return nil

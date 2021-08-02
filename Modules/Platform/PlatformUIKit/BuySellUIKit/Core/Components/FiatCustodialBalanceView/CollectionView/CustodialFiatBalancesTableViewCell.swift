@@ -54,7 +54,7 @@ public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         collectionView = FiatBalanceCollectionView()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(collectionView)
@@ -70,7 +70,7 @@ public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
     @available(*, unavailable)
     public required init?(coder: NSCoder) { nil }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         presenter = nil
         super.prepareForReuse()
     }

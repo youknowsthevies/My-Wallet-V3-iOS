@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import AuthenticationKit
 import DIKit
 import PlatformKit
 import RxRelay
@@ -21,20 +22,20 @@ final class AutoPairingScreenInteractor {
     /// The service responsible for taking the parser code and the login using it
     private let service: AutoWalletPairingServiceAPI
 
-    private let walletFetcher: PairingWalletFetching
+    private let walletFetcher: WalletPairingFetcherAPI
 
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let errorRelay = PublishRelay<Error>()
 
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    init(service: AutoWalletPairingServiceAPI = AutoWalletPairingService(
-            repository: WalletManager.shared.repository
-         ),
-         walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
-         analyticsRecorder: AnalyticsEventRecording = resolve()) {
+    init(
+        service: AutoWalletPairingServiceAPI = resolve(),
+        walletFetcher: WalletPairingFetcherAPI = AuthenticationCoordinator.shared,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.service = service
         self.analyticsRecorder = analyticsRecorder
         self.walletFetcher = walletFetcher

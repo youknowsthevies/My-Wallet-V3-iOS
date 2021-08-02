@@ -11,12 +11,23 @@ public enum AccountPickerListenerBridge {
 }
 
 public protocol AccountPickerBuildable: RIBs.Buildable {
-    func build(listener: AccountPickerListenerBridge,
-               navigationModel: ScreenNavigationModel,
-               headerModel: AccountPickerHeaderType) -> AccountPickerRouting
+
+    /// Builder for the Account Picker
+    /// - Parameters:
+    ///   - listener: Listener for interaction callbacks.
+    ///   - navigationModel: Navigation Model for the UINavigationController
+    ///   - headerModel: Header Model
+    ///   - buttonViewModel: Optional button. (e.g. `+Add New` below a list of banks)
+    func build(
+        listener: AccountPickerListenerBridge,
+        navigationModel: ScreenNavigationModel,
+        headerModel: AccountPickerHeaderType,
+        buttonViewModel: ButtonViewModel?
+    ) -> AccountPickerRouting
 }
 
 public protocol AccountPickerListener: AnyObject {
+    func didSelectActionButton()
     func didSelect(blockchainAccount: BlockchainAccount)
     func didTapBack()
     func didTapClose()
@@ -31,8 +42,10 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
 
     // MARK: - Init
 
-    public convenience init(singleAccountsOnly: Bool,
-                            action: AssetAction) {
+    public convenience init(
+        singleAccountsOnly: Bool,
+        action: AssetAction
+    ) {
         let provider = AccountPickerAccountProvider(
             singleAccountsOnly: singleAccountsOnly,
             action: action,
@@ -41,17 +54,22 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
         self.init(accountProvider: provider, action: action)
     }
 
-    public init(accountProvider: AccountPickerAccountProviding,
-                action: AssetAction) {
+    public init(
+        accountProvider: AccountPickerAccountProviding,
+        action: AssetAction
+    ) {
         self.accountProvider = accountProvider
         self.action = action
     }
 
     // MARK: - Public Methods
 
-    public func build(listener: AccountPickerListenerBridge,
-                      navigationModel: ScreenNavigationModel,
-                      headerModel: AccountPickerHeaderType) -> AccountPickerRouting {
+    public func build(
+        listener: AccountPickerListenerBridge,
+        navigationModel: ScreenNavigationModel,
+        headerModel: AccountPickerHeaderType,
+        buttonViewModel: ButtonViewModel? = nil
+    ) -> AccountPickerRouting {
         let shouldOverrideNavigationEffects: Bool
         switch listener {
         case .listener:
@@ -66,7 +84,8 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
             viewController: viewController,
             action: action,
             navigationModel: navigationModel,
-            headerModel: headerModel
+            headerModel: headerModel,
+            buttonViewModel: buttonViewModel
         )
         let interactor = AccountPickerInteractor(
             presenter: presenter,

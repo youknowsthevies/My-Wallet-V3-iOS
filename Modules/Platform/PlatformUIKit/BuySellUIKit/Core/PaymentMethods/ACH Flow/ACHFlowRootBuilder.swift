@@ -25,10 +25,12 @@ final class ACHFlowRootBuilder: ACHFlowRootBuildable {
         )
         let addNewPaymentMethodBuilder = AddNewPaymentMethodBuilder(paymentMethodService: paymentMethodService)
         let interactor = ACHFlowRootInteractor(stateService: stateService, paymentMethodService: paymentMethodService)
-        let router = ACHFlowRootRouter(interactor: interactor,
-                                       navigation: presentingController,
-                                       selectPaymentMethodBuilder: selectPaymentMethodBuilder,
-                                       addNewPaymentMethodBuilder: addNewPaymentMethodBuilder)
+        let router = ACHFlowRootRouter(
+            interactor: interactor,
+            navigation: presentingController,
+            selectPaymentMethodBuilder: selectPaymentMethodBuilder,
+            addNewPaymentMethodBuilder: addNewPaymentMethodBuilder
+        )
         return router
     }
 }

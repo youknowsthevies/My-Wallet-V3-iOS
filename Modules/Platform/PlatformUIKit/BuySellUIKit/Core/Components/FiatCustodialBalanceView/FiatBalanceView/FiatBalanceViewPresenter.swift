@@ -39,10 +39,10 @@ public final class FiatBalanceViewPresenter {
         descriptors: FiatBalanceViewAsset.Value.Presentation.Descriptors
     ) {
         self.interactor = interactor
-        self.alignmentRelay.accept(alignment)
+        alignmentRelay.accept(alignment)
 
-        /// Map interaction state into presentation state
-        /// and bind it to `stateRelay`
+        // Map interaction state into presentation state
+        // and bind it to `stateRelay`
         interactor.state
             .map {
                 .init(with: $0, descriptors: descriptors)

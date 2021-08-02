@@ -48,7 +48,8 @@ extension AnnouncementRecord.State: Decodable {
         } else if (try? container.decode(Base.self, forKey: .removed)) != nil {
             self = .removed
         } else if let date = try? container.decode(Date.self, forKey: .dateOfDismissal),
-                  let count = try? container.decode(Int.self, forKey: .numberOfDismissals) {
+                  let count = try? container.decode(Int.self, forKey: .numberOfDismissals)
+        {
             self = .dismissed(on: date, count: count)
         } else {
             throw DecodingError.parse

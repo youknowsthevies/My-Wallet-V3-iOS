@@ -31,7 +31,7 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & Acti
                 self.action()
                 self.dismiss()
             })
-            .disposed(by: self.disposeBag)
+            .disposed(by: disposeBag)
         return .init(
             type: type,
             badgeImage: .init(
@@ -63,7 +63,7 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & Acti
     }
 
     let type = AnnouncementType.interestFunds
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -76,14 +76,16 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & Acti
 
     // MARK: - Setup
 
-    init(isKYCVerified: Bool,
-         cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
+    init(
+        isKYCVerified: Bool,
+        cacheSuite: CacheSuite = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
         self.isKYCVerified = isKYCVerified
-        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

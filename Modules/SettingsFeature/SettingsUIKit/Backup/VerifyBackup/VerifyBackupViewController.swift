@@ -36,6 +36,7 @@ final class VerifyBackupViewController: BaseScreenViewController {
         super.init(nibName: VerifyBackupViewController.objectName, bundle: Bundle(for: Self.self))
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -68,14 +69,15 @@ final class VerifyBackupViewController: BaseScreenViewController {
         buttonView.viewModel = presenter.verifyButtonViewModel
 
         presenter.errorDescriptionVisibility
-            .map { $0.isHidden }
+            .map(\.isHidden)
             .drive(errorLabel.rx.isHidden)
             .disposed(by: disposeBag)
     }
 
     private func setupNavigationBar() {
         titleViewStyle = presenter.titleView
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
             trailingButtonStyle: presenter.trailingButton
         )

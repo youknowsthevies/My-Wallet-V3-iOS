@@ -72,13 +72,15 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
     private let yodleeActivationService: YodleeActivateService
     private let contentReducer: YodleeScreenContentReducer
 
-    init(presenter: YodleeScreenPresentable,
-         bankLinkageData: BankLinkageData,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         yodleeRequestProvider: YodleeRequestProvider,
-         yodleeMessageService: YodleeMessageService,
-         yodleeActivationService: YodleeActivateService,
-         contentReducer: YodleeScreenContentReducer) {
+    init(
+        presenter: YodleeScreenPresentable,
+        bankLinkageData: BankLinkageData,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        yodleeRequestProvider: YodleeRequestProvider,
+        yodleeMessageService: YodleeMessageService,
+        yodleeActivationService: YodleeActivateService,
+        contentReducer: YodleeScreenContentReducer
+    ) {
         self.bankLinkageData = bankLinkageData
         self.analyticsRecorder = analyticsRecorder
         self.yodleeRequestProvider = yodleeRequestProvider
@@ -173,25 +175,29 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             })
             .disposeOnDeactivate(interactor: self)
 
-        let retryContentFromTap = Signal.merge(contentReducer.tryAgainButtonViewModel.tap,
-                                               contentReducer.tryDifferentBankButtonViewModel.tap)
-            .map { [contentReducer] _ in
-                YodleeScreen.Action.pending(content: contentReducer.webviewPendingContent())
-            }
-            .asDriver(onErrorJustReturn: .none)
+        let retryContentFromTap = Signal.merge(
+            contentReducer.tryAgainButtonViewModel.tap,
+            contentReducer.tryDifferentBankButtonViewModel.tap
+        )
+        .map { [contentReducer] _ in
+            YodleeScreen.Action.pending(content: contentReducer.webviewPendingContent())
+        }
+        .asDriver(onErrorJustReturn: .none)
 
         let retryLoadAction = retryContentFromTap
-            .compactMap({ [weak self] _ -> URLRequest? in
+            .compactMap { [weak self] _ -> URLRequest? in
                 guard let self = self else { return nil }
                 return self.yodleeRequestProvider.provideRequest(using: self.bankLinkageData)
-            })
+            }
             .map(YodleeScreen.Action.load)
 
-        Signal.merge(contentReducer.cancelButtonViewModel.tap,
-                     contentReducer.okButtonViewModel.tap)
-            .map { _ in YodleeScreen.Effect.closeFlow(false) }
-            .emit(onNext: handle(effect:))
-            .disposeOnDeactivate(interactor: self)
+        Signal.merge(
+            contentReducer.cancelButtonViewModel.tap,
+            contentReducer.okButtonViewModel.tap
+        )
+        .map { _ in YodleeScreen.Effect.closeFlow(false) }
+        .emit(onNext: handle(effect:))
+        .disposeOnDeactivate(interactor: self)
 
         // Presenter Connection
         let pendingActions = Driver.merge(
@@ -245,7 +251,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             ])
         case .inactive(let error):
             guard let error = error else {
-                 return
+                return
             }
             recordAnalytics(for: error)
         case .timeout:

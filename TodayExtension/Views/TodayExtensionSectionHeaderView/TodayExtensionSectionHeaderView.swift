@@ -18,7 +18,7 @@ final class TodayExtensionSectionHeaderView: UITableViewHeaderFooterView {
     }
 
     @available(*, unavailable)
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }

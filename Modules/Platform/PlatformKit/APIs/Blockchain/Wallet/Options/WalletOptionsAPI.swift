@@ -16,23 +16,28 @@ public struct ServerIncidents: Decodable {
             self.url = url
         }
     }
+
     public struct Incident: Decodable {
         public let id: String
         public let name: String
         public let status: String
         public let components: [Component]
     }
+
     public struct Component: Decodable {
         /// we check against this parameter
         fileprivate static let wallet = "Wallet"
+
         public enum Status: String, Decodable {
-            case operational = "operational"
+            case operational
             case majorOutage = "major_outage"
         }
+
         public let id: String
         public let name: String
         public let status: Status
     }
+
     public let page: Page
     public let incidents: [Incident]
 
@@ -43,7 +48,7 @@ public struct ServerIncidents: Decodable {
 
     /// If there is an incident with a component name = Wallet whose component status is NOT Operational,
     public var hasActiveMajorIncident: Bool {
-        incidents.flatMap { $0.components }
+        incidents.flatMap(\.components)
             .filter { $0.name == Component.wallet }
             .filter { $0.status != .operational }
             .count > 0

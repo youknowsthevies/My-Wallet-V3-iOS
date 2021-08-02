@@ -24,7 +24,7 @@ extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
     }
 
     public static func fromCallable<A: AnyObject>(weak object: A, _ callable: @escaping (A) throws -> Void) -> Completable {
-        Completable.create(weak: object) { (object, observer) -> Disposable in
+        Completable.create(weak: object) { object, observer -> Disposable in
             do {
                 try callable(object)
                 observer(CompletableEvent.completed)

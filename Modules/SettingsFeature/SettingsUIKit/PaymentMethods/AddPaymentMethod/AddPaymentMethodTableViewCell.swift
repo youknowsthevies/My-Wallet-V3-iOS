@@ -27,7 +27,7 @@ final class AddPaymentMethodTableViewCell: UITableViewCell {
                 .disposed(by: disposeBag)
 
             presenter.addIconImageVisibility
-                .map { $0.defaultAlpha }
+                .map(\.defaultAlpha)
                 .drive(iconAddImageView.rx.alpha)
                 .disposed(by: disposeBag)
         }

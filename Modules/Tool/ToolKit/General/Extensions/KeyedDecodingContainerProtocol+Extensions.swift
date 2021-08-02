@@ -12,8 +12,10 @@ extension KeyedDecodingContainerProtocol {
     /// - throws: `DecodingError.dataCorruptedError` if the encountered `String` value
     ///   is not convertible to `Decimal`.
     ///   Plus, same as `decode(_ type: String.Type, forKey key: Self.Key) throws -> String`
-    public func decodeDecimalFromString(forKey key: KeyedDecodingContainer<Self.Key>.Key,
-                                        locale: Locale = .Posix) throws -> Decimal {
+    public func decodeDecimalFromString(
+        forKey key: KeyedDecodingContainer<Self.Key>.Key,
+        locale: Locale = .Posix
+    ) throws -> Decimal {
         let stringValue = try decode(String.self, forKey: key)
         guard let value = Decimal(string: stringValue, locale: .Posix) else {
             throw DecodingError.dataCorruptedError(
@@ -37,8 +39,10 @@ extension KeyedDecodingContainerProtocol {
     /// - throws: `DecodingError.dataCorruptedError` if an encountered `String` value
     ///   is not convertible to `Decimal`.
     ///   Plus, same as `func decodeIfPresent(_ type: String.Type, forKey key: Self.Key) throws -> String?`
-    public func decodeIfPresentDecimalFromString(forKey key: KeyedDecodingContainer<Self.Key>.Key,
-                                                 locale: Locale = .Posix) throws -> Decimal? {
+    public func decodeIfPresentDecimalFromString(
+        forKey key: KeyedDecodingContainer<Self.Key>.Key,
+        locale: Locale = .Posix
+    ) throws -> Decimal? {
         guard let stringValue = try decodeIfPresent(String.self, forKey: key) else {
             return nil
         }

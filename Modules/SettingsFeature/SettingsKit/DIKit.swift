@@ -4,14 +4,12 @@ import DIKit
 import Foundation
 import ToolKit
 
-public extension DependencyContainer {
+extension DependencyContainer {
 
-    static var settingsKit = module {
+    public static var settingsKit = module {
 
         factory { PITConnectionStatusProvider() as PITConnectionStatusProviding }
 
         factory { TierLimitsProvider() as TierLimitsProviding }
-
     }
-
 }

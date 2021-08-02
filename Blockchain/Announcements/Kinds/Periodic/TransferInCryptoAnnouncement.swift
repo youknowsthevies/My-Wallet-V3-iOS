@@ -54,7 +54,7 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
     }
 
     let type = AnnouncementType.transferBitcoin
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -68,13 +68,15 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
 
     // MARK: - Setup
 
-    init(isKycSupported: Bool,
-         cacheSuite: CacheSuite = resolve(),
-         reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
+    init(
+        isKycSupported: Bool,
+        cacheSuite: CacheSuite = resolve(),
+        reappearanceTimeInterval: TimeInterval,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
         self.isKycSupported = isKycSupported
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)

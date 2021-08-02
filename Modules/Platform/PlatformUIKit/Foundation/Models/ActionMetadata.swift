@@ -2,7 +2,7 @@
 
 import Foundation
 
-public protocol ActionPayload { }
+public protocol ActionPayload {}
 
 /// This may be renamed but the idea here is that where `AlertActions` or `BottomSheetActions` are built
 /// you can define different things that should happen when the action is selected like

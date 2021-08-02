@@ -12,7 +12,7 @@ final class UpdateEmailScreenInteractor {
     typealias BadgeItem = BadgeAsset.Value.Interaction.BadgeItem
 
     typealias EmailSettingsService = EmailSettingsServiceAPI &
-                                     SettingsServiceAPI
+        SettingsServiceAPI
 
     typealias InteractionState = LoadingState<InteractionModel>
 
@@ -66,10 +66,12 @@ final class UpdateEmailScreenInteractor {
     private let interactionStateRelay = BehaviorRelay<State>(value: .ready)
     private let disposeBag = DisposeBag()
 
-    init(emailSettingsService: CompleteSettingsServiceAPI = resolve(),
-         emailVerificationService: EmailVerificationServiceAPI = resolve()) {
+    init(
+        emailSettingsService: CompleteSettingsServiceAPI = resolve(),
+        emailVerificationService: EmailVerificationServiceAPI = resolve()
+    ) {
         self.emailSettingsService = emailSettingsService
-        self.verificationService = emailVerificationService
+        verificationService = emailVerificationService
 
         Observable.combineLatest(emailSettingsService.valueObservable, interactionStateRelay)
             .map {
@@ -118,9 +120,10 @@ final class UpdateEmailScreenInteractor {
                 onCompleted: { [weak self] in
                     self?.interactionStateRelay.accept(.ready)
                 },
-                onError: { [weak self] (_) in
+                onError: { [weak self] _ in
                     self?.interactionStateRelay.accept(.failed)
-                })
+                }
+            )
             .disposed(by: disposeBag)
     }
 
@@ -139,14 +142,15 @@ final class UpdateEmailScreenInteractor {
                 onCompleted: { [weak self] in
                     self?.interactionStateRelay.accept(.verified)
                 },
-                onError: { [weak self] (_) in
+                onError: { [weak self] _ in
                     self?.interactionStateRelay.accept(.failed)
-                })
+                }
+            )
             .disposed(by: disposeBag)
     }
 
     private func update(state: State) -> Completable {
-        Completable.create { [weak self] (observer) -> Disposable in
+        Completable.create { [weak self] observer -> Disposable in
             self?.interactionStateRelay.accept(state)
             observer(.completed)
             return Disposables.create()

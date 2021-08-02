@@ -54,7 +54,7 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     }
 
     let type = AnnouncementType.buyBitcoin
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
     let action: CardAnnouncementAction
@@ -64,15 +64,18 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
 
     private let isEnabled: Bool
     private let disposeBag = DisposeBag()
+
     // MARK: - Setup
 
-    init(isEnabled: Bool,
-         cacheSuite: CacheSuite = resolve(),
-         reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
+    init(
+        isEnabled: Bool,
+        cacheSuite: CacheSuite = resolve(),
+        reappearanceTimeInterval: TimeInterval,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
         self.isEnabled = isEnabled
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)

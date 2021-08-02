@@ -65,7 +65,13 @@ final class OnboardingRouter: OnboardingRouterStateProviding {
             .disposed(by: bag)
         presenter.loginTapRelay
             .bind { [weak self] _ in
+                // IOS: 4806: Hiding the web log in for production build as pair wallet with QR code has been deprecated
+                // Web log in is enabled in internal production to ease QA testing
+                #if INTERNAL_BUILD
                 self?.navigateToPairingIntroScreen()
+                #else
+                self?.navigateToManualPairingScreen()
+                #endif
             }
             .disposed(by: bag)
         presenter.recoverFundsTapRelay
@@ -104,8 +110,8 @@ final class OnboardingRouter: OnboardingRouterStateProviding {
         presenter.continueTappedRelay
             .bind { [weak self] mnemonic in
                 self?.navigateToCreateRecoveryWalletScreen(mnemonic)
-        }
-        .disposed(by: bag)
+            }
+            .disposed(by: bag)
         let controller = RecoverFundsViewController(presenter: presenter)
 
         navigate(to: controller)

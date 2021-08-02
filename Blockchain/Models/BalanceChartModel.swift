@@ -8,6 +8,7 @@ import Foundation
         get { _balance == nil ? "0" : _balance }
         set { _balance = newValue }
     }
+
     @objc var fiatBalance: Double = 0
 }
 
@@ -15,6 +16,6 @@ import Foundation
     @objc var watchOnly: BalanceChartModel
 
     override init() {
-        self.watchOnly = BalanceChartModel()
+        watchOnly = BalanceChartModel()
     }
 }

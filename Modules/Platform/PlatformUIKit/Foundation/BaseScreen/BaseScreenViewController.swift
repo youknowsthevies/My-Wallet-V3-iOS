@@ -6,7 +6,7 @@ open class BaseScreenViewController: UIViewController {
 
     // MARK: - Types
 
-    private struct Constant {
+    private enum Constant {
         static let titleViewHeight: CGFloat = 40
     }
 
@@ -108,7 +108,7 @@ open class BaseScreenViewController: UIViewController {
     private var baseNavigationController: UINavigationController? {
         if _baseNavigationController == nil {
             var result: UIViewController? = self
-            while result != nil && !(result is UINavigationController) {
+            while result != nil, !(result is UINavigationController) {
                 result = result?.parent
             }
             _baseNavigationController = result as? UINavigationController
@@ -162,7 +162,7 @@ open class BaseScreenViewController: UIViewController {
         currentNavigationItem?.setHidesBackButton(true, animated: false)
     }
 
-    open override func viewWillLayoutSubviews() {
+    override open func viewWillLayoutSubviews() {
         updateExtendSafeAreaUnderNavigationBar()
         super.viewWillLayoutSubviews()
     }
@@ -234,21 +234,27 @@ open class BaseScreenViewController: UIViewController {
 
     public func setStandardDarkContentStyle() {
         let (leading, trailing) = standardNavigationBarButtonStyles
-        set(barStyle: .darkContent(),
+        set(
+            barStyle: .darkContent(),
             leadingButtonStyle: leading,
-            trailingButtonStyle: trailing)
+            trailingButtonStyle: trailing
+        )
     }
 
     public func setStandardLightContentStyle() {
         let (leading, trailing) = standardNavigationBarButtonStyles
-        set(barStyle: .lightContent(),
+        set(
+            barStyle: .lightContent(),
             leadingButtonStyle: leading,
-            trailingButtonStyle: trailing)
+            trailingButtonStyle: trailing
+        )
     }
 
-    public func set(barStyle: Screen.Style.Bar,
-                    leadingButtonStyle: Screen.Style.LeadingButton = .none,
-                    trailingButtonStyle: Screen.Style.TrailingButton = .none) {
+    public func set(
+        barStyle: Screen.Style.Bar,
+        leadingButtonStyle: Screen.Style.LeadingButton = .none,
+        trailingButtonStyle: Screen.Style.TrailingButton = .none
+    ) {
         self.barStyle = barStyle
         self.leadingButtonStyle = leadingButtonStyle
         self.trailingButtonStyle = trailingButtonStyle
@@ -271,6 +277,7 @@ open class BaseScreenViewController: UIViewController {
     }
 
     private lazy var drawerRouter: DrawerRouting = resolve()
+
     open func navigationBarLeadingButtonPressed() {
         switch leadingButtonStyle {
         case .back:

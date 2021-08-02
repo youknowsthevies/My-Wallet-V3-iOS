@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
@@ -53,9 +54,12 @@ final class UpdateEmailScreenPresenter {
     private let badgeRelay = BehaviorRelay<LoadingState<BadgeItem>>(value: .loading)
     private let interactor: UpdateEmailScreenInteractor
 
-    init(emailScreenInteractor: UpdateEmailScreenInteractor,
-         loadingViewPresenting: LoadingViewPresenting = resolve()) {
-        self.interactor = emailScreenInteractor
+    init(
+        emailScreenInteractor: UpdateEmailScreenInteractor,
+        loadingViewPresenting: LoadingViewPresenting = resolve(),
+        analyticsRecoder: AnalyticsEventRecorderAPI = resolve()
+    ) {
+        interactor = emailScreenInteractor
         textField = .init(
             with: .email,
             validator: TextValidationFactory.Info.email,
@@ -70,51 +74,65 @@ final class UpdateEmailScreenPresenter {
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
 
-        updateButtonViewModel = .primary(with: LocalizationIDs.update, accessibilityId: AccessibilityIDs.updateEmailButton)
-        resendButtonViewModel = .secondary(with: LocalizationIDs.resend, accessibilityId: AccessibilityIDs.resendEmailButton)
+        updateButtonViewModel = .primary(
+            with: LocalizationIDs.update,
+            accessibilityId: AccessibilityIDs.updateEmailButton
+        )
+        resendButtonViewModel = .secondary(
+            with: LocalizationIDs.resend,
+            accessibilityId: AccessibilityIDs.resendEmailButton
+        )
 
         resendButtonViewModel.tapRelay
+            .record(
+                analyticsEvent: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification),
+                using: analyticsRecoder
+            )
             .bindAndCatch(to: interactor.resendRelay)
             .disposed(by: disposeBag)
 
         updateButtonViewModel.tapRelay
+            .record(
+                analyticsEvent: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification),
+                using: analyticsRecoder
+            )
             .bindAndCatch(to: interactor.triggerRelay)
             .disposed(by: disposeBag)
 
         textField.state
-            .map { $0.isValid }
+            .map(\.isValid)
             .bindAndCatch(to: updateButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         textField.state
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .bindAndCatch(to: interactor.contentRelay)
             .disposed(by: disposeBag)
 
         interactor.interactionState
-            .compactMap { $0.value }
-            .map { $0.values.isEmailVerified }
+            .compactMap(\.value)
+            .map(\.values.isEmailVerified)
             .map { $0 ? .hidden : .visible }
             .bindAndCatch(to: resendVisibilityRelay)
             .disposed(by: disposeBag)
 
         interactor.interactionState
             .filter { $0.value?.state != .updating }
-            .compactMap { $0.value }
-            .map { $0.values.email }
+            .compactMap(\.value)
+            .map(\.values.email)
             .bindAndCatch(to: textField.textRelay)
             .disposed(by: disposeBag)
 
         interactor.interactionState
-            .map { $0.isLoading }
+            .map(\.isLoading)
             .bindAndCatch(to: updateButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
-         let interactionStateValue = interactor.interactionState
-            .compactMap { $0.value }
+        let interactionStateValue = interactor.interactionState
+            .compactMap(\.value)
 
         Observable.combineLatest(interactionStateValue, textField.state)
-            .map { (value) -> Bool in
+            .map { value -> Bool in
                 let interactionState = value.0.state
                 let settingsValue = value.0.values.email
                 let validEntry = value.1.isValid
@@ -125,7 +143,7 @@ final class UpdateEmailScreenPresenter {
             .disposed(by: disposeBag)
 
         interactor.interactionState
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .map { $0.state != .updating }
             .bindAndCatch(to: updateButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
@@ -136,7 +154,7 @@ final class UpdateEmailScreenPresenter {
             .disposed(by: disposeBag)
 
         interactor.interactionState
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .map { $0.state == .updating }
             .bind { value in
                 switch value {

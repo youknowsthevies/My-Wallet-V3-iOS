@@ -23,7 +23,7 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
 
     weak var listener: SwapLandingPresentableListener?
 
-    public override init() {
+    override init() {
         super.init()
     }
 
@@ -44,11 +44,11 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
     func connect(state: Driver<SwapLandingScreenState>) -> Driver<SwapLandingSelectionEffects> {
         disposeBag = DisposeBag()
         let stateWait: Driver<SwapLandingScreenState> =
-            self.rx.viewDidLoad
-            .asDriver()
-            .flatMap { _ in
-                state
-            }
+            rx.viewDidLoad
+                .asDriver()
+                .flatMap { _ in
+                    state
+                }
 
         let items: Driver<[SwapLandingSectionModel]> = stateWait
             .map(\.action)
@@ -66,7 +66,7 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
             .disposed(by: disposeBag)
 
         let dataSource = RxDataSource(
-            configureCell: { [weak self] (_, _, indexPath, item) -> UITableViewCell in
+            configureCell: { [weak self] _, _, indexPath, item -> UITableViewCell in
                 guard let self = self else { return UITableViewCell() }
                 switch item {
                 case .pair(let viewModel):
@@ -84,20 +84,20 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
         let tap = setupButtonView()
 
         tableView
-          .rx.setDelegate(self)
-          .disposed(by: disposeBag)
+            .rx.setDelegate(self)
+            .disposed(by: disposeBag)
 
         /// Effects
         let cellSelected = tableView.rx
             .modelSelected(SwapLandingSectionItem.self)
-            .map({ (item) -> SwapLandingSelectionEffects in
+            .map { item -> SwapLandingSelectionEffects in
                 switch item {
                 case .pair(let viewModel):
                     return .swap(viewModel.trendingPair)
                 case .separator:
                     return .none
                 }
-            })
+            }
             .asDriver(onErrorJustReturn: .none)
 
         return Driver.merge(cellSelected, tap)

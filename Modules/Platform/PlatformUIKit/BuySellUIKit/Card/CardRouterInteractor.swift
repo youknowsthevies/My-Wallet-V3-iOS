@@ -110,7 +110,7 @@ public final class CardRouterInteractor: Interactor {
 
     // MARK: - Lifecycle
 
-    public override func didBecomeActive() {
+    override public func didBecomeActive() {
         super.didBecomeActive()
 
         previousRelay

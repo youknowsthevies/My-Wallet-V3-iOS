@@ -5,8 +5,8 @@ import RxSwift
 import UserNotifications
 
 public typealias RemoteNotificationAuthorizing = RemoteNotificationRegistering &
-                                          RemoteNotificationAuthorizationRequesting &
-                                          RemoteNotificationAuthorizationStatusProviding
+    RemoteNotificationAuthorizationRequesting &
+    RemoteNotificationAuthorizationStatusProviding
 
 /// A protocol that encapsulates the registration to any notification service
 /// The app delegate should hold its instance and inform it about registration events.

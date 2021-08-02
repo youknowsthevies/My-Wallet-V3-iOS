@@ -19,10 +19,12 @@ struct SpendableUnspentOutputs: Equatable {
 
     let isReplayProtected: Bool
 
-    init(spendableOutputs: [UnspentOutput] = [],
-         absoluteFee: BigUInt = BigUInt.zero,
-         consumedAmount: BigUInt = BigUInt.zero,
-         isReplayProtected: Bool = false) {
+    init(
+        spendableOutputs: [UnspentOutput] = [],
+        absoluteFee: BigUInt = BigUInt.zero,
+        consumedAmount: BigUInt = BigUInt.zero,
+        isReplayProtected: Bool = false
+    ) {
         self.spendableOutputs = spendableOutputs
         self.absoluteFee = absoluteFee
         self.consumedAmount = consumedAmount

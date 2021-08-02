@@ -9,9 +9,11 @@ final class FundsAndBankOrderCreationService: PendingOrderCreationServiceAPI {
     private let orderQuoteService: OrderQuoteServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
 
-    init(paymentAccountService: PaymentAccountServiceAPI = resolve(),
-         orderQuoteService: OrderQuoteServiceAPI = resolve(),
-         orderCreationService: OrderCreationServiceAPI = resolve()) {
+    init(
+        paymentAccountService: PaymentAccountServiceAPI = resolve(),
+        orderQuoteService: OrderQuoteServiceAPI = resolve(),
+        orderCreationService: OrderCreationServiceAPI = resolve()
+    ) {
         self.paymentAccountService = paymentAccountService
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService

@@ -64,7 +64,7 @@ import UIKit
         set {
             lock.lock()
             defer { lock.unlock() }
-            self._isEnabled = newValue
+            _isEnabled = newValue
         }
     }
 
@@ -200,7 +200,7 @@ import UIKit
 
                 let isLevelNormalOrStatusBar = window.windowLevel == .normal || window.windowLevel == .statusBar
                 return onMainScreen && isVisible && isLevelNormalOrStatusBar
-        }!
+            }!
         attach(to: topWindow)
     }
 }

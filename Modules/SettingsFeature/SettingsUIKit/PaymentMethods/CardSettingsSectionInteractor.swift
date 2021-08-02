@@ -46,8 +46,10 @@ final class CardSettingsSectionInteractor {
 
     // MARK: - Setup
 
-    init(paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-         tierLimitsProvider: TierLimitsProviding) {
+    init(
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+        tierLimitsProvider: TierLimitsProviding
+    ) {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProvider = tierLimitsProvider
 

@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct LayoutConstants {
+public enum LayoutConstants {
 
     public static let buttonCornerRadious: CGFloat = 8
     public static let buttonMinHeight: CGFloat = 48
@@ -8,7 +8,7 @@ public struct LayoutConstants {
 
 extension LayoutConstants {
 
-    public struct VerticalSpacing {
+    public enum VerticalSpacing {
         public static let betweenContentGroups: CGFloat = 16
         public static let betweenContentGroupsLarge: CGFloat = 24
         public static let withinButtonsGroup: CGFloat = 16
@@ -18,9 +18,9 @@ extension LayoutConstants {
 
 extension LayoutConstants {
 
-    struct Text {
+    enum Text {
 
-        struct FontSize {
+        enum FontSize {
             static let title: CGFloat = 20
             static let heading: CGFloat = 16
             static let subheading: CGFloat = 14
@@ -28,7 +28,7 @@ extension LayoutConstants {
             static let formField: CGFloat = 16
         }
 
-        struct LineHeight {
+        enum LineHeight {
             static let title: CGFloat = 30
             static let heading: CGFloat = 24
             static let subheading: CGFloat = 20
@@ -36,7 +36,7 @@ extension LayoutConstants {
             static let formField: CGFloat = 24
         }
 
-        struct LineSpacing {
+        enum LineSpacing {
             static let title: CGFloat = LineHeight.title - FontSize.title
             static let heading: CGFloat = LineHeight.heading - FontSize.heading
             static let subheading: CGFloat = LineHeight.subheading - FontSize.subheading

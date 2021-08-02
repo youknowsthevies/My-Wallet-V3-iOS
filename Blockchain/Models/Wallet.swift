@@ -27,7 +27,7 @@ extension Wallet {
     ///   - cryptoCurrency: The CryptoCurrency of the account you want to update.
     ///   - index: The derivation index of the account you want to update.
     func updateAccountLabel(
-        _ cryptoCurrency: CryptoCurrency,
+        _ cryptoCurrency: NonCustodialCoinCode,
         index: Int,
         label: String
     ) -> Completable {
@@ -44,7 +44,7 @@ extension Wallet {
     ///   - label: The new account name.
     ///   - cryptoCurrency: The CryptoCurrency of the account you want to update.
     ///   - index: The derivation index of the account you want to update.
-    private func updateLabel(_ label: String, for cryptoCurrency: CryptoCurrency, index: Int) {
+    private func updateLabel(_ label: String, for cryptoCurrency: NonCustodialCoinCode, index: Int) {
         guard isInitialized() else {
             return
         }
@@ -52,10 +52,12 @@ extension Wallet {
         case .bitcoin:
             isSyncing = true
             context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.setLabelForAccount(\(index), \"\(label)\")")
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(didSetLabelForAccount),
-                                                   name: Constants.NotificationKeys.backupSuccess,
-                                                   object: nil)
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(didSetLabelForAccount),
+                name: Constants.NotificationKeys.backupSuccess,
+                object: nil
+            )
         case .bitcoinCash:
             context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.bch.setLabelForAccount(\(index), \"\(label)\")")
             getHistory()
@@ -65,8 +67,6 @@ extension Wallet {
         case .ethereum:
             context.evaluateScriptCheckIsOnMainQueue("MyWallet.wallet.eth.accounts[\(index)].label = \"\(label)\"")
             getHistory()
-        default:
-            impossible()
         }
     }
 
@@ -75,13 +75,15 @@ extension Wallet {
             AlertViewPresenter.shared.internetConnection()
             return
         }
-        updateLabel(label, for: assetType.cryptoCurrency, index: index)
+        updateLabel(label, for: assetType.nonCustodialCoinCode, index: index)
     }
 
     @objc func didSetLabelForAccount() {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: Constants.NotificationKeys.backupSuccess,
-                                                  object: nil)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: Constants.NotificationKeys.backupSuccess,
+            object: nil
+        )
         getHistory()
     }
 }

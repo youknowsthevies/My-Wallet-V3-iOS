@@ -50,7 +50,7 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
                 fetchTriggerRelay.asObservable(),
                 reactiveWallet.waitUntilInitialized
             )
-            .map { $0.0 }
+            .map(\.0)
             .flatMapLatest(weak: self) { (self, currency) -> Observable<[FiatValue]> in
                 self.fetchSuggestedAmounts(for: currency).asObservable()
             }
@@ -62,13 +62,15 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
 
     // MARK: - Setup
 
-    init(client: SuggestedAmountsClientAPI = resolve(),
-         reactiveWallet: ReactiveWalletAPI = resolve(),
-         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
+    init(
+        client: SuggestedAmountsClientAPI = resolve(),
+        reactiveWallet: ReactiveWalletAPI = resolve(),
+        fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()
+    ) {
         self.client = client
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
-        self.fetchTriggerRelay = PublishRelay<Void>()
+        fetchTriggerRelay = PublishRelay<Void>()
     }
 
     /// Refreshes the cached data set

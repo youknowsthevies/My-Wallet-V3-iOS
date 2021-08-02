@@ -3,7 +3,7 @@
 import Foundation
 
 /// Embeds any nesting types: e.g topics and types of notifications
-public struct RemoteNotification {
+public enum RemoteNotification {
     /// A data bag for push notification format
     public enum NotificationType {
 
@@ -12,7 +12,7 @@ public struct RemoteNotification {
         /// Received bitcoin transaction
         case bitcoinTransactionReceived
 
-        /// TODO: Delete this once the type logic is handled (parsing & generalizing)
+        // TODO: Delete this once the type logic is handled (parsing & generalizing)
         case general
 
         // MARK: - Setup

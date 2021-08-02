@@ -25,7 +25,7 @@ public final class ActionableLabel: UILabel {
         commonInit()
     }
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
     }
@@ -70,5 +70,4 @@ public final class ActionableLabel: UILabel {
 
         return NSLocationInRange(index, targetRange)
     }
-
 }

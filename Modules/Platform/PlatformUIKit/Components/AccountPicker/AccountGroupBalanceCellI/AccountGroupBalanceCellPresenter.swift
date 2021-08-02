@@ -14,7 +14,7 @@ final class AccountGroupBalanceCellPresenter {
     /// Returns the `Description`
     var description: Driver<LabelContent> {
         Driver.just(
-            LabelContent.init(
+            LabelContent(
                 text: LocalizationConstants.Dashboard.Balance.totalBalance,
                 font: .main(.medium, 14.0),
                 color: .descriptionText,
@@ -27,7 +27,7 @@ final class AccountGroupBalanceCellPresenter {
     /// Returns the `Title`
     var title: Driver<LabelContent> {
         Driver.just(
-            LabelContent.init(
+            LabelContent(
                 text: account.label,
                 font: .main(.semibold, 16.0),
                 color: .titleText,
@@ -50,15 +50,15 @@ final class AccountGroupBalanceCellPresenter {
     init(account: AccountGroup, interactor: AccountGroupBalanceCellInteractor) {
         self.account = account
         self.interactor = interactor
-        self.walletBalanceViewPresenter = WalletBalanceViewPresenter(
+        walletBalanceViewPresenter = WalletBalanceViewPresenter(
             interactor: interactor.balanceViewInteractor
         )
 
-        self.badgeImageViewModel = .primary(
+        badgeImageViewModel = .primary(
             image: .local(name: "icon-card", bundle: .platformUIKit),
             cornerRadius: .round,
             accessibilityIdSuffix: "walletBalance"
         )
-        self.badgeImageViewModel.marginOffsetRelay.accept(0)
+        badgeImageViewModel.marginOffsetRelay.accept(0)
     }
 }

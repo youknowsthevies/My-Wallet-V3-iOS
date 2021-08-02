@@ -4,26 +4,29 @@
 
 final class MockQRCodeScanner: QRCodeScannerProtocol {
 
-    var videoPreviewLayer: CALayer = CALayer()
+    var videoPreviewLayer = CALayer()
 
     weak var delegate: QRCodeScannerDelegate?
 
-    var startReadingQRCodeCalled: () -> Void = { }
+    var startReadingQRCodeCalled: () -> Void = {}
     var startReadingQRCodeCallCount: Int = 0
+
     func startReadingQRCode(from scannableArea: QRCodeScannableArea) {
         startReadingQRCodeCallCount += 1
         startReadingQRCodeCalled()
     }
 
-    var handleSelectedQRImageCalled: () -> Void = { }
+    var handleSelectedQRImageCalled: () -> Void = {}
     var handleSelectedQRImageCallCount: Int = 0
+
     func handleSelectedQRImage(_ image: UIImage) {
         handleSelectedQRImageCallCount += 1
         handleSelectedQRImageCalled()
     }
 
-    var stopReadingQRCodeCalled: () -> Void = { }
+    var stopReadingQRCodeCalled: () -> Void = {}
     var stopReadingQRCodeCallCount: Int = 0
+
     func stopReadingQRCode(complete: (() -> Void)?) {
         stopReadingQRCodeCallCount += 1
         stopReadingQRCodeCalled()

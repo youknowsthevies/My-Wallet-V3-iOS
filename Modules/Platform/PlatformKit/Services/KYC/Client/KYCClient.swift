@@ -46,28 +46,30 @@ public final class KYCClient: KYCClientAPI {
         // GET
 
         static let tiers = ["kyc", "tiers"]
-        static let credentials = [ "kyc", "credentials" ]
-        static let credentiasForVeriff = [ "kyc", "credentials", "veriff" ]
-        static let currentUser = [ "users", "current" ]
+        static let credentials = ["kyc", "credentials"]
+        static let credentiasForVeriff = ["kyc", "credentials", "veriff"]
+        static let currentUser = ["users", "current"]
         static let simplifiedDueDiligenceEligibility = ["sdd", "eligible"]
         static let simplifiedDueDiligenceVerification = ["sdd", "verified"]
+
         static func supportedDocuments(for country: String) -> [String] {
-            [ "kyc", "supported-documents", country ]
+            ["kyc", "supported-documents", country]
         }
+
         static func listOfStates(in country: String) -> [String] {
             ["countries", country, "states"]
         }
 
         // POST
 
-        static let country = [ "users", "current", "country" ]
-        static let verifications = [ "verifications" ]
-        static let submitVerification = [ "kyc", "verifications" ]
+        static let country = ["users", "current", "country"]
+        static let verifications = ["verifications"]
+        static let submitVerification = ["kyc", "verifications"]
 
         // PUT
 
-        static let updateAddress = [ "users", "current", "address" ]
-        static let updateUserDetails = [ "users", "current" ]
+        static let updateAddress = ["users", "current", "address"]
+        static let updateUserDetails = ["users", "current"]
     }
 
     // MARK: - Properties
@@ -77,8 +79,10 @@ public final class KYCClient: KYCClientAPI {
 
     // MARK: - Setup
 
-    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+    public init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
@@ -150,7 +154,7 @@ public final class KYCClient: KYCClientAPI {
 
             init(applicantId: String) {
                 self.applicantId = applicantId
-                self.clientType = HttpHeaderValue.clientTypeApp
+                clientType = HttpHeaderValue.clientTypeApp
             }
         }
 
@@ -168,10 +172,12 @@ public final class KYCClient: KYCClientAPI {
             )
     }
 
-    public func selectCountry(country: String,
-                              state: String?,
-                              notifyWhenAvailable: Bool,
-                              jwtToken: String) -> Completable {
+    public func selectCountry(
+        country: String,
+        state: String?,
+        notifyWhenAvailable: Bool,
+        jwtToken: String
+    ) -> Completable {
         struct Payload: Encodable {
             let jwt: String
             let countryCode: String
@@ -180,7 +186,7 @@ public final class KYCClient: KYCClientAPI {
 
             init(jwt: String, country: String, state: String?, notifyWhenAvailable: Bool) {
                 self.jwt = jwt
-                self.countryCode = country
+                countryCode = country
                 self.state = state
                 self.notifyWhenAvailable = "\(notifyWhenAvailable)"
             }

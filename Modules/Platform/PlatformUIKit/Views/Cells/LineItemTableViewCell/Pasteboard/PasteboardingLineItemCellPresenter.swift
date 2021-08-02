@@ -24,12 +24,14 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
         let interactionDuration: Int
         let analyticsEvent: AnalyticsEvent?
 
-        public init(title: String,
-                    titleInteractionText: String,
-                    description: String,
-                    descriptionInteractionText: String,
-                    analyticsEvent: AnalyticsEvent? = nil,
-                    interactionDuration: Int = 4) {
+        public init(
+            title: String,
+            titleInteractionText: String,
+            description: String,
+            descriptionInteractionText: String,
+            analyticsEvent: AnalyticsEvent? = nil,
+            interactionDuration: Int = 4
+        ) {
             self.title = title
             self.titleInteractionText = titleInteractionText
             self.description = description
@@ -81,10 +83,12 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
 
     // MARK: - Init
 
-    public init(input: Input,
-                pasteboard: Pasteboarding = resolve(),
-                analyticsRecorder: AnalyticsEventRecorderAPI,
-                accessibilityIdPrefix: String) {
+    public init(
+        input: Input,
+        pasteboard: Pasteboarding = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI,
+        accessibilityIdPrefix: String
+    ) {
         self.analyticsRecorder = analyticsRecorder
         pasteboardValue = input.description
 
@@ -146,7 +150,7 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
 
         tapRelay
             .compactMap { input.analyticsEvent }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .subscribe(onNext: analyticsRecorder.record(event:))
             .disposed(by: disposeBag)
 
         let delay = tapRelay

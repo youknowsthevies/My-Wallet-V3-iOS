@@ -20,7 +20,7 @@ public class MnemonicTextView: UIView {
 
     // MARK: - Setup
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
@@ -43,11 +43,13 @@ public class MnemonicTextView: UIView {
     // MARK: - API
 
     /// Must be called by specialized subclasses
-    public func setup(viewModel: MnemonicTextViewViewModel,
-                      keyboardInteractionController: KeyboardInteractionController) {
+    public func setup(
+        viewModel: MnemonicTextViewViewModel,
+        keyboardInteractionController: KeyboardInteractionController
+    ) {
         self.keyboardInteractionController = keyboardInteractionController
         self.viewModel = viewModel
-        self.accessibility = viewModel.accessibility
+        accessibility = viewModel.accessibility
 
         textView.layer.borderWidth = 1.0
         textView.layer.cornerRadius = 8.0

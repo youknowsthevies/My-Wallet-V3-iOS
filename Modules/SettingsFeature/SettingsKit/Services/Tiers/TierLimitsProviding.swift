@@ -17,7 +17,7 @@ final class TierLimitsProvider: TierLimitsProviding {
     private let tiersService: KYCTiersServiceAPI
 
     var tiers: Observable<KYC.UserTiers> {
-        Observable.combineLatest(tiersService.tiers.asObservable(), fetchTriggerRelay).map { $0.0 }
+        Observable.combineLatest(tiersService.tiers.asObservable(), fetchTriggerRelay).map(\.0)
     }
 
     init(tiersService: KYCTiersServiceAPI = resolve()) {

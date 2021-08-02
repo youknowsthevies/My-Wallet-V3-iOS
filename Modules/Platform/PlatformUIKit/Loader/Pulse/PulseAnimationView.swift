@@ -2,8 +2,8 @@
 
 import Foundation
 
-fileprivate extension UIColor {
-    static let pulseBlue = #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1)
+extension UIColor {
+    fileprivate static let pulseBlue = #colorLiteral(red: 0.05, green: 0.42, blue: 0.95, alpha: 1)
 }
 
 final class PulseAnimationView: PassthroughView {
@@ -11,8 +11,8 @@ final class PulseAnimationView: PassthroughView {
     private static let strokeWidth: CGFloat = 3.0
     private static let animationGroupKey: String = "animationGroup"
 
-    private let expandingShapeLayer: CAShapeLayer = CAShapeLayer()
-    private let animationGroup: CAAnimationGroup = CAAnimationGroup()
+    private let expandingShapeLayer = CAShapeLayer()
+    private let animationGroup = CAAnimationGroup()
 
     // MARK: - Setup
 
@@ -22,6 +22,7 @@ final class PulseAnimationView: PassthroughView {
         isAccessibilityElement = false
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -31,7 +32,7 @@ final class PulseAnimationView: PassthroughView {
         expandingShapeLayer.path = UIBezierPath(
             roundedRect: bounds,
             cornerRadius: layer.cornerRadius
-            ).cgPath
+        ).cgPath
         expandingShapeLayer.frame = bounds
         expandingShapeLayer.cornerRadius = bounds.height / 2.0
         expandingShapeLayer.masksToBounds = true
@@ -92,7 +93,7 @@ final class PulseAnimationView: PassthroughView {
     }
 
     private func setupSubviews() {
-        layer.cornerRadius = self.bounds.height / 2
+        layer.cornerRadius = bounds.height / 2
         backgroundColor = UIColor.pulseBlue.withAlphaComponent(0.2)
     }
 

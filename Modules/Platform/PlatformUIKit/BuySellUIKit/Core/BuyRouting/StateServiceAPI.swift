@@ -16,6 +16,7 @@ public protocol StateReceiverServiceAPI: AnyObject {
 /// A checkout service API
 public protocol CheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     var previousRelay: PublishRelay<Void> { get }
+
     func nextFromBuyCrypto(with checkoutData: CheckoutData)
     func nextFromBankLinkSelection()
     func ineligible(with checkoutData: CheckoutData)
@@ -75,15 +76,15 @@ public protocol URLSelectionServiceAPI: AnyObject {
 
 /// A composition of all of Simple-Buy state-services
 public typealias StateServiceAPI = RoutingStateEmitterAPI &
-                                   StateReceiverServiceAPI &
-                                   TransferDetailsServiceAPI &
-                                   ConfirmCheckoutServiceAPI &
-                                   StateCacheProviderAPI &
-                                   CheckoutServiceAPI &
-                                   CancelTransferServiceAPI &
-                                   CurrencySelectionServiceAPI &
-                                   CardAuthorizationRoutingInteractorAPI &
-                                   PendingOrderCompletionStateServiceAPI &
-                                   ElibilityRelayAPI &
-                                   URLSelectionServiceAPI &
-                                   PaymentMethodsStateAPI
+    StateReceiverServiceAPI &
+    TransferDetailsServiceAPI &
+    ConfirmCheckoutServiceAPI &
+    StateCacheProviderAPI &
+    CheckoutServiceAPI &
+    CancelTransferServiceAPI &
+    CurrencySelectionServiceAPI &
+    CardAuthorizationRoutingInteractorAPI &
+    PendingOrderCompletionStateServiceAPI &
+    ElibilityRelayAPI &
+    URLSelectionServiceAPI &
+    PaymentMethodsStateAPI

@@ -4,6 +4,7 @@
 public struct BackgroundTaskIdentifier {
     /// A UIBackgroundTaskIdentifier
     public let identifier: Any
+
     public init(identifier: Any) {
         self.identifier = identifier
     }
@@ -12,7 +13,10 @@ public struct BackgroundTaskIdentifier {
 /// Allows UIApplication Background Tasks API access
 /// Extend UIApplication on main bundle, conforming to this API and relaying them to the respective UIApplication methods
 public protocol ApplicationBackgroundTaskAPI {
-    func beginToolKitBackgroundTask(withName taskName: String?, expirationHandler handler: (() -> Void)?) -> BackgroundTaskIdentifier
+    func beginToolKitBackgroundTask(
+        withName taskName: String?,
+        expirationHandler handler: (() -> Void)?
+    ) -> BackgroundTaskIdentifier
     func endToolKitBackgroundTask(_ identifier: BackgroundTaskIdentifier)
 }
 
@@ -35,11 +39,15 @@ public final class BackgroundTaskTimer {
     /// - Parameter timeInterval: TimeInterval in seconds that the background thread is going to run for.
     /// - Parameter name: A name for the BackgroundTask.
     /// - Parameter invalidBackgroundTaskIdentifier: A BackgroundTaskIdentifier wrapping UIBackgroundTaskIdentifier.invalid.
-    public init(timeInterval: TimeInterval = 180, name: String = UUID().uuidString, invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier) {
+    public init(
+        timeInterval: TimeInterval = 180,
+        name: String = UUID().uuidString,
+        invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier
+    ) {
         self.timeInterval = timeInterval
         self.name = name
         self.invalidBackgroundTaskIdentifier = invalidBackgroundTaskIdentifier
-        self.backgroundTaskID = invalidBackgroundTaskIdentifier
+        backgroundTaskID = invalidBackgroundTaskIdentifier
     }
 
     // MARK: Public Methods

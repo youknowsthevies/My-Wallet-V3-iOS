@@ -71,7 +71,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         cryptoAmountRelay.asObservable()
     }
 
-    /// Streams the amount depending on the `ActiveAmountInput` type. 
+    /// Streams the amount depending on the `ActiveAmountInput` type.
     public var amount: Observable<MoneyValue> {
         Observable
             .combineLatest(cryptoAmount, fiatAmount, activeInput)
@@ -107,12 +107,14 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
     // MARK: - Setup
 
-    public init(fiatCurrencyService: FiatCurrencyServiceAPI,
-                cryptoCurrencyService: CryptoCurrencyServiceAPI,
-                priceProvider: AmountTranslationPriceProviding = AmountTranslationPriceProvider(),
-                defaultFiatCurrency: FiatCurrency = .default,
-                defaultCryptoCurrency: CryptoCurrency,
-                initialActiveInput: ActiveAmountInput) {
+    public init(
+        fiatCurrencyService: FiatCurrencyServiceAPI,
+        cryptoCurrencyService: CryptoCurrencyServiceAPI,
+        priceProvider: AmountTranslationPriceProviding = AmountTranslationPriceProvider(),
+        defaultFiatCurrency: FiatCurrency = .default,
+        defaultCryptoCurrency: CryptoCurrency,
+        initialActiveInput: ActiveAmountInput
+    ) {
         activeInputRelay = BehaviorRelay(value: initialActiveInput)
         cryptoAmountRelay = BehaviorRelay(value: .zero(currency: defaultCryptoCurrency))
         fiatInteractor = InputAmountLabelInteractor(currency: defaultFiatCurrency)
@@ -181,7 +183,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
             // Only when the fiat is under focus
             .filter { $0.activeInputType == .fiat }
             // Get the value
-            .map { $0.input }
+            .map(\.input)
             .flatMapLatest(weak: self) { (self, value) -> Observable<MoneyValuePair> in
                 self.pairFromFiatInput(amount: value.amount).asObservable()
             }
@@ -197,7 +199,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
                     .map { (activeInputType: $0, input: input) }
             }
             .filter { $0.activeInputType == .crypto }
-            .map { $0.input }
+            .map(\.input)
             .flatMapLatest(weak: self) { (self, value) -> Observable<MoneyValuePair> in
                 self.pairFromCryptoInput(amount: value.amount).asObservable()
             }
@@ -272,13 +274,13 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
         insertAction
             .filter { $0.0 == .fiat }
-            .map { $0.1 }
+            .map(\.1)
             .bindAndCatch(to: fiatInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
 
         insertAction
             .filter { $0.0 == .crypto }
-            .map { $0.1 }
+            .map(\.1)
             .bindAndCatch(to: cryptoInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
 
@@ -304,14 +306,14 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
         inputInjectionAction
             .filter { $0.0 == .fiat }
-            .map { $0.1 }
+            .map(\.1)
             .map { .init(decimal: $0) }
             .bindAndCatch(to: fiatInteractor.scanner.internalInputRelay)
             .disposed(by: disposeBag)
 
         inputInjectionAction
             .filter { $0.0 == .crypto }
-            .map { $0.1 }
+            .map(\.1)
             .map { .init(decimal: $0) }
             .bindAndCatch(to: cryptoInteractor.scanner.internalInputRelay)
             .disposed(by: disposeBag)
@@ -322,14 +324,14 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         input
             .compactMap(\.character)
             .asObservable()
-            .bindAndCatch(to: self.appendNewRelay)
+            .bindAndCatch(to: appendNewRelay)
             .disposed(by: disposeBag)
 
         input
             .filter { $0.character == nil }
             .asObservable()
             .mapToVoid()
-            .bindAndCatch(to: self.deleteLastRelay)
+            .bindAndCatch(to: deleteLastRelay)
             .disposed(by: disposeBag)
 
         return state
@@ -386,8 +388,10 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
     private func pairFromFiatInput(amount: String) -> Single<MoneyValuePair> {
         Single
-            .zip(cryptoCurrencyService.cryptoCurrency,
-                 fiatCurrencyService.fiatCurrency)
+            .zip(
+                cryptoCurrencyService.cryptoCurrency,
+                fiatCurrencyService.fiatCurrency
+            )
             .flatMap(weak: self) { (self, currencies) -> Single<MoneyValuePair> in
                 let (cryptoCurrency, fiatCurrency) = currencies
                 return self.priceProvider
@@ -401,8 +405,10 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
     private func pairFromCryptoInput(amount: String) -> Single<MoneyValuePair> {
         Single
-            .zip(cryptoCurrencyService.cryptoCurrency,
-                 fiatCurrencyService.fiatCurrency)
+            .zip(
+                cryptoCurrencyService.cryptoCurrency,
+                fiatCurrencyService.fiatCurrency
+            )
             .flatMap(weak: self) { (self, currencies) -> Single<MoneyValuePair> in
                 let (cryptoCurrency, fiatCurrency) = currencies
                 return self.priceProvider
@@ -457,8 +463,8 @@ extension Observable {
         self.do(onError: { [weak handler] error in
             handler?.handleCurrency(error: error)
         })
-        .catchError { _ in
-            Observable<Element>.empty()
-        }
+            .catchError { _ in
+                Observable<Element>.empty()
+            }
     }
 }

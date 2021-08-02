@@ -20,7 +20,7 @@ final class StellarTransactionDispatcher {
     private let accountRepository: StellarWalletAccountRepositoryAPI
     private let horizonProxy: HorizonProxyAPI
 
-    private let minSend = CryptoValue(amount: 1, currency: .stellar)
+    private let minSend = CryptoValue(amount: 1, currency: .coin(.stellar))
     private var sendTimeOutSeconds: Single<Int> {
         walletOptions.walletOptions
             .map(\.xlmMetadata?.sendTimeOutSeconds)
@@ -28,9 +28,11 @@ final class StellarTransactionDispatcher {
             .catchErrorJustReturn(10)
     }
 
-    init(accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
-         walletOptions: WalletOptionsAPI = resolve(),
-         horizonProxy: HorizonProxyAPI = resolve()) {
+    init(
+        accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
+        walletOptions: WalletOptionsAPI = resolve(),
+        horizonProxy: HorizonProxyAPI = resolve()
+    ) {
         self.walletOptions = walletOptions
         self.accountRepository = accountRepository
         self.horizonProxy = horizonProxy
@@ -50,7 +52,7 @@ final class StellarTransactionDispatcher {
     func isExchangeAddresses(address: String) -> Single<Bool> {
         walletOptions.walletOptions
             .map(\.xlmExchangeAddresses)
-            .map { addresses  -> Bool in
+            .map { addresses -> Bool in
                 guard let addresses = addresses else {
                     return false
                 }
@@ -89,10 +91,10 @@ final class StellarTransactionDispatcher {
     // MARK: Private Methods
 
     private func checkInput(sendDetails: SendDetails) -> Completable {
-        guard sendDetails.value.currencyType == .stellar else {
+        guard sendDetails.value.currencyType == .coin(.stellar) else {
             return .error(SendFailureReason.unknown)
         }
-        guard sendDetails.fee.currencyType == .stellar else {
+        guard sendDetails.fee.currencyType == .coin(.stellar) else {
             return .error(SendFailureReason.unknown)
         }
         return .empty()
@@ -109,7 +111,7 @@ final class StellarTransactionDispatcher {
 
     private func checkSourceAccount(sendDetails: SendDetails) -> Completable {
         horizonProxy.accountResponse(for: sendDetails.fromAddress)
-            .map(weak: self) {  (self, response) -> AccountResponse in
+            .map(weak: self) { (self, response) -> AccountResponse in
                 let total = try sendDetails.value + sendDetails.fee
                 let minBalance = self.horizonProxy.minimumBalance(subentryCount: response.subentryCount)
                 if try response.totalBalance < (total + minBalance) {
@@ -148,9 +150,11 @@ final class StellarTransactionDispatcher {
             }
     }
 
-    private func submitTransaction(transaction: StellarTransaction,
-                                   with configuration: StellarConfiguration) -> Single<TransactionPostResponseEnum> {
-        Single.create(weak: self) { (_, observer) -> Disposable in
+    private func submitTransaction(
+        transaction: StellarTransaction,
+        with configuration: StellarConfiguration
+    ) -> Single<TransactionPostResponseEnum> {
+        Single.create(weak: self) { _, observer -> Disposable in
             do {
                 try configuration.sdk.transactions
                     .submitTransaction(transaction: transaction) { response in
@@ -166,10 +170,10 @@ final class StellarTransactionDispatcher {
     private func transaction(sendDetails: SendDetails) -> Single<StellarTransaction> {
         horizonProxy.accountResponse(for: sendDetails.fromAddress)
             .flatMap(weak: self) { (self, sourceAccount) -> Single<StellarTransaction> in
-                guard sendDetails.value.currencyType == .stellar else {
+                guard sendDetails.value.currencyType == .coin(.stellar) else {
                     return .error(PlatformKitError.illegalArgument)
                 }
-                guard sendDetails.fee.currencyType == .stellar else {
+                guard sendDetails.fee.currencyType == .coin(.stellar) else {
                     return .error(PlatformKitError.illegalArgument)
                 }
                 return self.createTransaction(sendDetails: sendDetails, sourceAccount: sourceAccount)
@@ -179,7 +183,7 @@ final class StellarTransactionDispatcher {
     private func createTransaction(sendDetails: SendDetails, sourceAccount: AccountResponse) -> Single<StellarTransaction> {
         Single
             .zip(operation(sendDetails: sendDetails), sendTimeOutSeconds)
-            .map { (operation, sendTimeOutSeconds) -> StellarTransaction in
+            .map { operation, sendTimeOutSeconds -> StellarTransaction in
                 var timebounds: TimeBounds?
                 let expirationDate = Calendar.current.date(
                     byAdding: .second,
@@ -209,7 +213,7 @@ final class StellarTransactionDispatcher {
             .map { response -> stellarsdk.Operation in
                 try stellarsdk.PaymentOperation(
                     sourceAccountId: sendDetails.fromAddress,
-                    destinationAccountId:  response.accountId,
+                    destinationAccountId: response.accountId,
                     asset: stellarsdk.Asset(type: stellarsdk.AssetType.ASSET_TYPE_NATIVE)!,
                     amount: sendDetails.value.displayMajorValue
                 )
@@ -232,13 +236,13 @@ final class StellarTransactionDispatcher {
     }
 }
 
-fileprivate extension stellarsdk.TransactionPostResponseEnum {
-    func toSendConfirmationDetails(sendDetails: SendDetails) throws -> SendConfirmationDetails {
+extension stellarsdk.TransactionPostResponseEnum {
+    fileprivate func toSendConfirmationDetails(sendDetails: SendDetails) throws -> SendConfirmationDetails {
         switch self {
         case .success(let details):
             let feeCharged = CryptoValue(
                 amount: BigInt(details.transactionResult.feeCharged),
-                currency: .stellar
+                currency: .coin(.stellar)
             )
             return SendConfirmationDetails(
                 sendDetails: sendDetails,
@@ -253,8 +257,8 @@ fileprivate extension stellarsdk.TransactionPostResponseEnum {
     }
 }
 
-fileprivate extension SendDetails {
-    var horizonMemo: stellarsdk.Memo {
+extension SendDetails {
+    fileprivate var horizonMemo: stellarsdk.Memo {
         switch memo {
         case nil:
             return .none

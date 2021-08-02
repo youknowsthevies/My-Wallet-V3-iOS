@@ -9,9 +9,10 @@ public struct WordList {
     private init(words: [String]) {
         self.words = words
     }
-
 }
 
+// swiftlint:disable type_body_length
+// swiftlint:disable file_length
 private enum BIP39Words {
     static let english: [String] = [
         "abandon",

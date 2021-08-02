@@ -22,7 +22,7 @@ final class ERC20AccountService: ERC20AccountServiceAPI {
         addressLookupCache: Atomic<[String: Bool]> = resolve(tag: Tag.isContractAddressCache)
     ) {
         self.accountClient = accountClient
-        self.addresses = addressLookupCache
+        addresses = addressLookupCache
     }
 
     func isContract(address: String) -> Single<Bool> {

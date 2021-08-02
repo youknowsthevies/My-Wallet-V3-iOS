@@ -34,6 +34,7 @@ final class WelcomeScreenPresenter {
         let suffix = NSAttributedString(LocalizedString.Description.suffix, font: font, color: .mutedText)
         return prefix + send + comma + receive + comma + store + and + trade + suffix
     }()
+
     let version = LabelContent(
         text: Bundle.applicationVersion ?? "",
         font: .main(.medium, 12),
@@ -59,8 +60,10 @@ final class WelcomeScreenPresenter {
 
     // MARK: - Setup
 
-    init(alertPresenter: AlertViewPresenter = .shared,
-         launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter()) {
+    init(
+        alertPresenter: AlertViewPresenter = .shared,
+        launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter()
+    ) {
         self.launchAnnouncementPresenter = launchAnnouncementPresenter
         self.alertPresenter = alertPresenter
 

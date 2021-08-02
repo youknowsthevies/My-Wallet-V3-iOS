@@ -8,10 +8,12 @@ public struct TabItemContent {
     let selectedImage: String
     let accessibility: Accessibility
 
-    public init(title: String,
-                image: String,
-                selectedImage: String,
-                accessibility: Accessibility) {
+    public init(
+        title: String,
+        image: String,
+        selectedImage: String,
+        accessibility: Accessibility
+    ) {
         self.title = title
         self.image = image
         self.selectedImage = selectedImage

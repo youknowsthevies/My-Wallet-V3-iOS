@@ -24,6 +24,7 @@ final class IneligibleCurrencyViewController: UIViewController {
         super.init(nibName: IneligibleCurrencyViewController.objectName, bundle: Self.bundle)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -56,5 +57,4 @@ final class IneligibleCurrencyViewController: UIViewController {
             }
             .disposed(by: disposeBag)
     }
-
 }

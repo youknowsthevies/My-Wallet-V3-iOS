@@ -7,6 +7,8 @@ import CombineExt
 import ToolKit
 import XCTest
 
+// swiftlint:disable type_body_length
+
 class NabuAuthenticationExecutorTests: XCTestCase {
 
     private var cancellables: Set<AnyCancellable>!
@@ -93,7 +95,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             )
         )
 
-        let offlineTokenResponseSetExpectation = self.expectation(
+        let offlineTokenResponseSetExpectation = expectation(
             description: "The offline token was set successfully"
         )
         walletRepository
@@ -120,7 +122,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             )
         )
 
-        let guidSetExpectation = self.expectation(
+        let guidSetExpectation = expectation(
             description: "The GUID was set successfully"
         )
         walletRepository
@@ -137,7 +139,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             }, receiveValue: { _ in })
             .store(in: &cancellables)
 
-        let sharedKeySetExpectation = self.expectation(
+        let sharedKeySetExpectation = expectation(
             description: "The Shared Key was set successfully"
         )
         walletRepository
@@ -164,10 +166,10 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             enforceOrder: false
         )
 
-        let receivedValidTokenExpectation = self.expectation(
+        let receivedValidTokenExpectation = expectation(
             description: "Received Valid token"
         )
-        let authenticationSuccessfulExpectation = self.expectation(
+        let authenticationSuccessfulExpectation = expectation(
             description: "The user was created and sucessfully authenticated"
         )
 
@@ -253,7 +255,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             )
         )
 
-        let guidSetExpectation = self.expectation(
+        let guidSetExpectation = expectation(
             description: "The GUID was set successfully"
         )
         walletRepository
@@ -269,7 +271,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             }, receiveValue: { _ in })
             .store(in: &cancellables)
 
-        let sharedKeySetExpectation = self.expectation(
+        let sharedKeySetExpectation = expectation(
             description: "The Shared Key was set successfully"
         )
         walletRepository
@@ -285,12 +287,12 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             }, receiveValue: { _ in })
             .store(in: &cancellables)
 
-        wait(for: [ guidSetExpectation, sharedKeySetExpectation ], timeout: 5, enforceOrder: false)
+        wait(for: [guidSetExpectation, sharedKeySetExpectation], timeout: 5, enforceOrder: false)
 
-        let receivedValidTokenExpectation = self.expectation(
+        let receivedValidTokenExpectation = expectation(
             description: "Received Valid token"
         )
-        let authenticationSuccessfulExpectation = self.expectation(
+        let authenticationSuccessfulExpectation = expectation(
             description: "The user was created and sucessfully authenticated"
         )
 
@@ -332,7 +334,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
 
         // Assert
         wait(
-            for: [ receivedValidTokenExpectation, authenticationSuccessfulExpectation ],
+            for: [receivedValidTokenExpectation, authenticationSuccessfulExpectation],
             timeout: 20,
             enforceOrder: true
         )
@@ -362,7 +364,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             expiresAt: Date.distantFuture
         )
 
-        let expiredAuthTokenStoredExpectation = self.expectation(
+        let expiredAuthTokenStoredExpectation = expectation(
             description: "The expired auth token was successfully stored"
         )
         // Store expired session token
@@ -399,9 +401,9 @@ class NabuAuthenticationExecutorTests: XCTestCase {
 
         authenticationClient.expectedSessionTokenResult = .success(newSessionTokenResponse)
 
-        wait(for: [ expiredAuthTokenStoredExpectation ], timeout: 5, enforceOrder: true)
+        wait(for: [expiredAuthTokenStoredExpectation], timeout: 5, enforceOrder: true)
 
-        let offlineTokenResponseSetExpectation = self.expectation(
+        let offlineTokenResponseSetExpectation = expectation(
             description: "The offline token was set successfully"
         )
         walletRepository
@@ -417,7 +419,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             }, receiveValue: { _ in })
             .store(in: &cancellables)
 
-        let guidSetExpectation = self.expectation(
+        let guidSetExpectation = expectation(
             description: "The GUID was set successfully"
         )
         walletRepository
@@ -433,7 +435,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             }, receiveValue: { _ in })
             .store(in: &cancellables)
 
-        let sharedKeySetExpectation = self.expectation(
+        let sharedKeySetExpectation = expectation(
             description: "The Shared Key was set successfully"
         )
         walletRepository
@@ -460,10 +462,10 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         )
 
         // Act
-        let receivedValidTokenExpectation = self.expectation(
+        let receivedValidTokenExpectation = expectation(
             description: "Received Valid token"
         )
-        let authenticationSuccessfulExpectation = self.expectation(
+        let authenticationSuccessfulExpectation = expectation(
             description: "The user was created and sucessfully authenticated"
         )
 
@@ -531,5 +533,4 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             enforceOrder: true
         )
     }
-
 }

@@ -9,7 +9,7 @@ import RxCocoa
 /// and an `AmountTranslationView`.
 /// All views that show the amount that the user is entering must conform
 /// to this protocol. By having a shared API across these views we can support
-/// multiple ways of rendering what the user has entered. 
+/// multiple ways of rendering what the user has entered.
 public protocol AmountViewable {
     /// The view. Accessed by the `EnterAmountViewController`
     var view: UIView { get }

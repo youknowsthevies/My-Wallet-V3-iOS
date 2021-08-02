@@ -5,8 +5,9 @@ import RxSwift
 import UIKit
 
 final class WithdrawAmountViewController: BaseScreenViewController,
-                                          WithdrawAmountViewControllable,
-                                          WithdrawAmountPagePresentable {
+    WithdrawAmountViewControllable,
+    WithdrawAmountPagePresentable
+{
 
     // MARK: - Types
 
@@ -17,6 +18,7 @@ final class WithdrawAmountViewController: BaseScreenViewController,
             static let topSelectionViewHeight: CGFloat = 48
             static let bottomAuxiliaryViewOffset: CGFloat = 8
         }
+
         enum Standard {
             static let topSelectionViewHeight: CGFloat = 78
         }
@@ -52,16 +54,18 @@ final class WithdrawAmountViewController: BaseScreenViewController,
 
     // MARK: - Lifecycle
 
-    init(displayBundle: DisplayBundle,
-         devicePresenterType: DevicePresenter.DeviceType = DevicePresenter.type,
-         digitPadViewModel: DigitPadViewModel,
-         continueButtonViewModel: ButtonViewModel,
-         topSelectionButtonViewModel: SelectionButtonViewModel,
-         amountViewProvider: AmountViewable) {
+    init(
+        displayBundle: DisplayBundle,
+        devicePresenterType: DevicePresenter.DeviceType = DevicePresenter.type,
+        digitPadViewModel: DigitPadViewModel,
+        continueButtonViewModel: ButtonViewModel,
+        topSelectionButtonViewModel: SelectionButtonViewModel,
+        amountViewProvider: AmountViewable
+    ) {
         self.displayBundle = displayBundle
         self.devicePresenterType = devicePresenterType
-        self.amountViewable = amountViewProvider
-        self.continueButtonTapped = continueButtonViewModel.tap
+        amountViewable = amountViewProvider
+        continueButtonTapped = continueButtonViewModel.tap
         super.init(nibName: nil, bundle: nil)
 
         digitPadView.viewModel = digitPadViewModel
@@ -70,7 +74,8 @@ final class WithdrawAmountViewController: BaseScreenViewController,
         bottomAuxiliaryItemSeparatorView.viewModel = TitledSeparatorViewModel(
             title: displayBundle.strings.bottomAuxiliaryItemSeparatorTitle,
             separatorColor: displayBundle.colors.bottomAuxiliaryItemSeparator,
-            accessibilityId: displayBundle.accessibilityIdentifiers.bottomAuxiliaryItemSeparatorTitle)
+            accessibilityId: displayBundle.accessibilityIdentifiers.bottomAuxiliaryItemSeparatorTitle
+        )
 
         bottomAuxiliaryButtonViewHeightConstraint = bottomAuxiliaryView.layout(
             dimension: .height,
@@ -81,7 +86,7 @@ final class WithdrawAmountViewController: BaseScreenViewController,
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 
-    public override func loadView() {
+    override func loadView() {
         view = UIView()
         view.backgroundColor = .white
 
@@ -141,26 +146,26 @@ final class WithdrawAmountViewController: BaseScreenViewController,
         digitPadTopSeparatorView.backgroundColor = displayBundle.colors.digitPadTopSeparator
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupNavigationBar()
     }
 
-    public override func viewDidDisappear(_ animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
     }
 
-    public override func viewWillLayoutSubviews() {
+    override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        /// NOTE: This must be in `viewWillLayoutSubviews`
-        /// This is a special treatment due to the manner view controllers
-        /// are modally displayed on iOS 13 (with additional gap on the top that enable
-        /// dismissal of the screen.
+        // NOTE: This must be in `viewWillLayoutSubviews`
+        // This is a special treatment due to the manner view controllers
+        // are modally displayed on iOS 13 (with additional gap on the top that enable
+        // dismissal of the screen.
         if view.bounds.height <= UIDevice.PhoneHeight.eight.rawValue {
             digitPadHeightConstraint.constant = Constant.SuperCompact.digitPadHeight
             digitPadSeparatorTopConstraint.constant = Constant.SuperCompact.continueButtonViewBottomOffset
@@ -238,9 +243,11 @@ final class WithdrawAmountViewController: BaseScreenViewController,
 
     private func setupNavigationBar() {
         titleViewStyle = .text(value: displayBundle.strings.title)
-        set(barStyle: .darkContent(),
+        set(
+            barStyle: .darkContent(),
             leadingButtonStyle: .back,
-            trailingButtonStyle: .close)
+            trailingButtonStyle: .close
+        )
     }
 
     private func bottomAuxiliaryViewModelStateDidChange(to state: WithdrawAmountPageInteractor.BottomAuxiliaryViewModelState) {
@@ -280,12 +287,11 @@ final class WithdrawAmountViewController: BaseScreenViewController,
 
     // MARK: - Navigation
 
-    public override func navigationBarLeadingButtonPressed() {
+    override func navigationBarLeadingButtonPressed() {
         backTriggered.onNext(())
     }
 
-    public override func navigationBarTrailingButtonPressed() {
+    override func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
     }
-
 }

@@ -33,17 +33,19 @@ public class SparklineImagePresenter {
     let interactor: SparklineInteracting
     let accessibility: Accessibility
 
-    public init(with interactor: SparklineInteracting,
-                calculator: SparklineCalculator,
-                fillColor: UIColor,
-                scale: CGFloat) {
+    public init(
+        with interactor: SparklineInteracting,
+        calculator: SparklineCalculator,
+        fillColor: UIColor,
+        scale: CGFloat
+    ) {
         self.fillColor = fillColor
         self.scale = scale
         self.calculator = calculator
         self.interactor = interactor
-        self.accessibility = .id(Accessibility.Identifier.SparklineView.prefix)
+        accessibility = .id(Accessibility.Identifier.SparklineView.prefix)
 
-        self.interactor.calculationState.map(weak: self, { (self, calculationState) -> State in
+        self.interactor.calculationState.map(weak: self) { (self, calculationState) -> State in
             switch calculationState {
             case .calculating:
                 return .loading
@@ -54,13 +56,13 @@ public class SparklineImagePresenter {
                 guard let image = self.imageFromPath(path) else { return .invalid }
                 return .valid(image: image)
             }
-        })
+        }
         .bindAndCatch(to: stateRelay)
         .disposed(by: disposeBag)
 
         stateRelay.compactMap { [weak self] state -> UIImage? in
             guard self != nil else { return nil }
-            guard case let .valid(image) = state else { return nil }
+            guard case .valid(let image) = state else { return nil }
             return image
         }
         .bindAndCatch(to: imageRelay)

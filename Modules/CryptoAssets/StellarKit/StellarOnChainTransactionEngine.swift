@@ -63,11 +63,13 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     // MARK: - Init
 
-    init(requireSecondPassword: Bool,
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         feeService: AnyCryptoFeeService<StellarTransactionFee> = resolve(),
-         transactionDispatcher: StellarTransactionDispatcher = resolve()) {
+    init(
+        requireSecondPassword: Bool,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        feeService: AnyCryptoFeeService<StellarTransactionFee> = resolve(),
+        transactionDispatcher: StellarTransactionDispatcher = resolve()
+    ) {
         self.requireSecondPassword = requireSecondPassword
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
@@ -79,7 +81,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     func assertInputsValid() {
         defaultAssertInputsValid()
-        precondition(sourceCryptoCurrency == .stellar)
+        precondition(sourceCryptoCurrency == .coin(.stellar))
     }
 
     func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -133,7 +135,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     func initializeTransaction() -> Single<PendingTransaction> {
         Single.zip(userFiatCurrency, isMemoRequired)
-            .map { [receiveAddress] (fiatCurrency, isMemoRequired) -> PendingTransaction in
+            .map { [receiveAddress] fiatCurrency, isMemoRequired -> PendingTransaction in
                 var memo: String?
                 if let stellarReceive = receiveAddress as? StellarReceiveAddress {
                     memo = stellarReceive.memo
@@ -142,7 +144,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                     textMemo: memo,
                     required: isMemoRequired
                 )
-                let zeroStellar = CryptoValue.zero(currency: .stellar).moneyValue
+                let zeroStellar = CryptoValue.zero(currency: .coin(.stellar)).moneyValue
                 var transaction = PendingTransaction(
                     amount: zeroStellar,
                     available: zeroStellar,
@@ -151,7 +153,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                     feeSelection: .init(
                         selectedLevel: .regular,
                         availableLevels: [.regular],
-                        asset: .crypto(.stellar)
+                        asset: .crypto(.coin(.stellar))
                     ),
                     selectedFiatCurrency: fiatCurrency,
                     minimumLimit: nil,
@@ -163,15 +165,15 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        precondition(amount.currency == .crypto(.stellar))
+        precondition(amount.currency == .crypto(.coin(.stellar)))
         let actionableBalance = sourceAccount.actionableBalance.map(\.cryptoValue)
         return Single
             .zip(actionableBalance, absoluteFee)
-            .map { (actionableBalance, fees) -> PendingTransaction in
+            .map { actionableBalance, fees -> PendingTransaction in
                 guard let actionableBalance = actionableBalance else {
                     throw PlatformKitError.illegalStateException(message: "actionableBalance not CryptoValue")
                 }
-                let zeroStellar = CryptoValue.zero(currency: .stellar)
+                let zeroStellar = CryptoValue.zero(currency: .coin(.stellar))
                 let total = try actionableBalance - fees
                 let available = (try total < zeroStellar) ? zeroStellar : total
                 var pendingTransaction = pendingTransaction
@@ -226,7 +228,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
-            if try pendingTransaction.amount <= .init(cryptoValue: .stellarZero) {
+            guard pendingTransaction.amount.isPositive else {
                 throw TransactionValidationFailure(state: .invalidAmount)
             }
         }
@@ -234,7 +236,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
         Single.zip(sourceAccount.actionableBalance, absoluteFee)
-            .map { (balance, fee) -> Void in
+            .map { balance, fee -> Void in
                 if try (try fee.moneyValue + pendingTransaction.amount) > balance {
                     throw TransactionValidationFailure(state: .insufficientFunds)
                 }
@@ -260,10 +262,10 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     private func isMemoValid(memo: TransactionConfirmation.Model.Memo?) -> Single<Bool> {
         func validText(memo: TransactionConfirmation.Model.Memo) -> Bool {
-            guard case let .text(text) = memo.value else {
+            guard case .text(let text) = memo.value else {
                 return false
             }
-            return 1 ... 28 ~= text.count
+            return 1...28 ~= text.count
         }
         func validIdentifier(memo: TransactionConfirmation.Model.Memo) -> Bool {
             guard case .identifier = memo.value else {
@@ -309,8 +311,10 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
         }
     }
 
-    private func makeFeeSelectionOption(pendingTransaction: PendingTransaction,
-                                        feesFiat: MoneyValue) -> TransactionConfirmation.Model.FeeSelection {
+    private func makeFeeSelectionOption(
+        pendingTransaction: PendingTransaction,
+        feesFiat: MoneyValue
+    ) -> TransactionConfirmation.Model.FeeSelection {
         TransactionConfirmation.Model.FeeSelection(
             feeState: .valid(absoluteFee: pendingTransaction.feeAmount),
             selectedLevel: pendingTransaction.feeLevel,
@@ -336,9 +340,9 @@ extension TransactionConfirmation.Model.Memo {
         switch value {
         case .none:
             return nil
-        case let .text(text):
+        case .text(let text):
             return text.isEmpty ? nil : StellarMemo.text(text)
-        case let .identifier(identifier):
+        case .identifier(let identifier):
             return StellarMemo.id(UInt64(identifier))
         }
     }

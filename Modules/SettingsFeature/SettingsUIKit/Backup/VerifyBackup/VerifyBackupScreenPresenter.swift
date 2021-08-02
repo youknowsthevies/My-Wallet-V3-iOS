@@ -62,9 +62,11 @@ final class VerifyBackupScreenPresenter {
 
     // MARK: - Init
 
-    init(stateService: BackupRouterStateService,
-         service: RecoveryPhraseVerifyingServiceAPI,
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+    init(
+        stateService: BackupRouterStateService,
+        service: RecoveryPhraseVerifyingServiceAPI,
+        loadingViewPresenter: LoadingViewPresenting = resolve()
+    ) {
         self.stateService = stateService
         self.loadingViewPresenter = loadingViewPresenter
         self.service = service
@@ -169,7 +171,7 @@ final class VerifyBackupScreenPresenter {
             .catchError { _ in
                 // There was an error syncing wallet
                 // Ignore
-                return .empty()
+                .empty()
             }
             .andThen(Observable.just(()))
             .bindAndCatch(to: stateService.nextRelay)

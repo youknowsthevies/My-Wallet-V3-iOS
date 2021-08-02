@@ -46,9 +46,11 @@ public final class LabeledButtonCollectionView<ViewModel: LabeledButtonViewModel
         register(CellType.self)
         viewModelsRelay
             .observeOn(MainScheduler.instance)
-            .bind(to: rx.items(
-                cellIdentifier: CellType.objectName,
-                cellType: CellType.self),
+            .bind(
+                to: rx.items(
+                    cellIdentifier: CellType.objectName,
+                    cellType: CellType.self
+                ),
                 curriedArgument: { _, viewModel, cell in
                     cell.viewModel = viewModel
                 }

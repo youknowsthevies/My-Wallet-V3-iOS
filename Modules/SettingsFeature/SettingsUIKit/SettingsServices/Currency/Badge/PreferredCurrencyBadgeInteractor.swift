@@ -9,11 +9,13 @@ final class PreferredCurrencyBadgeInteractor: DefaultBadgeAssetInteractor {
 
     // MARK: - Setup
 
-    init(settingsService: SettingsServiceAPI,
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
+    init(
+        settingsService: SettingsServiceAPI,
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI
+    ) {
         super.init()
         let settingsFiatCurrency = settingsService.valueObservable
-            .map { $0.currency }
+            .map(\.currency)
         let fiatCurrency = fiatCurrencyService.fiatCurrencyObservable
 
         Observable

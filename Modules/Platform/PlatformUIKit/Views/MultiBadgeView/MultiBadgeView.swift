@@ -18,7 +18,7 @@ class MultiBadgeView: UIView {
 
     // MARK: - Public Properties
 
-    public var model: MultiBadgeViewModel! {
+    var model: MultiBadgeViewModel! {
         willSet {
             disposeBag = DisposeBag()
             stackView.removeSubviews()
@@ -91,7 +91,7 @@ class MultiBadgeView: UIView {
 
 extension Reactive where Base: MultiBadgeView {
     var viewModel: Binder<MultiBadgeViewModel> {
-        Binder(base) { (view, model) in
+        Binder(base) { view, model in
             view.model = model
         }
     }

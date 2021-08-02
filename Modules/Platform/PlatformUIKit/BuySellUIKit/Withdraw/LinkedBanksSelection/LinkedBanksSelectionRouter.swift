@@ -7,16 +7,19 @@ protocol LinkedBanksSelectionInteractable: Interactable, AddNewBankAccountListen
     var listener: LinkedBanksSelectionListener? { get set }
 }
 
-protocol LinkedBanksSelectionViewControllable: ViewControllable { }
+protocol LinkedBanksSelectionViewControllable: ViewControllable {}
 
 final class LinkedBanksSelectionRouter: ViewableRouter<LinkedBanksSelectionInteractable, LinkedBanksSelectionViewControllable>,
-                                        LinkedBanksSelectionRouting {
+    LinkedBanksSelectionRouting
+{
 
     private let addNewBankBuilder: AddNewBankAccountBuildable
 
-    init(interactor: LinkedBanksSelectionInteractable,
-         viewController: LinkedBanksSelectionViewControllable,
-         addNewBankBuilder: AddNewBankAccountBuildable) {
+    init(
+        interactor: LinkedBanksSelectionInteractable,
+        viewController: LinkedBanksSelectionViewControllable,
+        addNewBankBuilder: AddNewBankAccountBuildable
+    ) {
         self.addNewBankBuilder = addNewBankBuilder
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self

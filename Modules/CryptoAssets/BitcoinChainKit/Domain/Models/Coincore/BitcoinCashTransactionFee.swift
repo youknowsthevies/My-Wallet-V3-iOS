@@ -5,7 +5,7 @@ import PlatformKit
 
 public struct BitcoinCashTransactionFee: TransactionFee, Decodable {
 
-    public static var cryptoType: HasPathComponent = CryptoCurrency.bitcoinCash
+    public static var cryptoType: HasPathComponent = CryptoCurrency.coin(.bitcoinCash)
     public static let `default` = BitcoinCashTransactionFee(
         limits: BitcoinCashTransactionFee.defaultLimits,
         regular: 5,
@@ -27,14 +27,14 @@ public struct BitcoinCashTransactionFee: TransactionFee, Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let regularFee = try values.decode(Int.self, forKey: .regular)
         let priorityFee = try values.decode(Int.self, forKey: .priority)
-        regular = CryptoValue(amount: BigInt(regularFee), currency: .bitcoinCash)
-        priority = CryptoValue(amount: BigInt(priorityFee), currency: .bitcoinCash)
+        regular = CryptoValue(amount: BigInt(regularFee), currency: .coin(.bitcoinCash))
+        priority = CryptoValue(amount: BigInt(priorityFee), currency: .coin(.bitcoinCash))
         limits = try values.decode(TransactionFeeLimits.self, forKey: .limits)
     }
 
     init(limits: TransactionFeeLimits, regular: Int, priority: Int) {
         self.limits = limits
-        self.regular = CryptoValue(amount: BigInt(regular), currency: .bitcoinCash)
-        self.priority = CryptoValue(amount: BigInt(priority), currency: .bitcoinCash)
+        self.regular = CryptoValue(amount: BigInt(regular), currency: .coin(.bitcoinCash))
+        self.priority = CryptoValue(amount: BigInt(priority), currency: .coin(.bitcoinCash))
     }
 }

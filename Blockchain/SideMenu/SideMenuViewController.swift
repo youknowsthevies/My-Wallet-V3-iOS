@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import Foundation
 import PlatformKit
@@ -56,7 +57,8 @@ class SideMenuViewController: UIViewController {
     }
 
     private let recorder: ErrorRecording = CrashlyticsRecorder()
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - View Controller Lifecycle
 
@@ -74,18 +76,19 @@ class SideMenuViewController: UIViewController {
         initializeTableView()
         addShadow()
 
-        presenter.sideMenuItems
-            .subscribe(onNext: { [weak self] items in
+        presenter
+            .sideMenuItems
+            .sink { [weak self] items in
                 guard let self = self else { return }
                 self.sideMenuItems = items
-            })
-            .disposed(by: disposeBag)
+            }
+            .store(in: &cancellables)
 
         presenter.sideMenuFooterItems
-            .bind(onNext: { [weak self] items in
+            .sink { [weak self] items in
                 self?.footerView.model = .init(top: items.top, bottom: items.bottom)
-            })
-            .disposed(by: disposeBag)
+            }
+            .store(in: &cancellables)
 
         footerView.itemTapped
             .emit(weak: self) { (self, item) in
@@ -199,7 +202,11 @@ extension SideMenuViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let sideMenuCell = tableView.dequeueReusableCell(withIdentifier: SideMenuCell.identifier) as? SideMenuCell else {
+        guard let sideMenuCell = tableView
+            .dequeueReusableCell(
+                withIdentifier: SideMenuCell.identifier
+            ) as? SideMenuCell
+        else {
             Logger.shared.debug("Could not get SideMenuCell")
             return UITableViewCell()
         }

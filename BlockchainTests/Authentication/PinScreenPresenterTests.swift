@@ -41,14 +41,16 @@ class PinScreenPresenterTests: XCTestCase {
             XCTAssertEqual(input.password, interactor.expectedPassword)
         }
 
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           interactor: interactor,
-                                           biometryProvider: biometryProvider,
-                                           appSettings: appSettings,
-                                           credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward,
-                                           performEffect: { _ in })
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            interactor: interactor,
+            biometryProvider: biometryProvider,
+            appSettings: appSettings,
+            credentialsStore: CredentialsStoreAPIMock(),
+            forwardRouting: forward,
+            performEffect: { _ in }
+        )
         presenter.reset(to: "5740")
 
         do {
@@ -66,14 +68,16 @@ class PinScreenPresenterTests: XCTestCase {
         let forward: PinRouting.RoutingType.Forward = { _ in
             XCTFail("expected an error \(PinError.incorrectPin). `forwardRouting` was invoked instead")
         }
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           interactor: interactor,
-                                           biometryProvider: biometryProvider,
-                                           appSettings: appSettings,
-                                           credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward,
-                                           performEffect: { _ in })
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            interactor: interactor,
+            biometryProvider: biometryProvider,
+            appSettings: appSettings,
+            credentialsStore: CredentialsStoreAPIMock(),
+            forwardRouting: forward,
+            performEffect: { _ in }
+        )
         presenter.reset(to: "5740")
 
         do {
@@ -95,16 +99,17 @@ class PinScreenPresenterTests: XCTestCase {
         let useCase = PinScreenUseCase.select(previousPin: nil)
         let interactor = MockPinInteractor()
         let forward: PinRouting.RoutingType.Forward = { _ in
-
         }
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           interactor: interactor,
-                                           biometryProvider: biometryProvider,
-                                           appSettings: appSettings,
-                                           credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward,
-                                           performEffect: { _ in })
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            interactor: interactor,
+            biometryProvider: biometryProvider,
+            appSettings: appSettings,
+            credentialsStore: CredentialsStoreAPIMock(),
+            forwardRouting: forward,
+            performEffect: { _ in }
+        )
         presenter.reset(to: "5740")
 
         do {
@@ -120,14 +125,16 @@ class PinScreenPresenterTests: XCTestCase {
         let useCase = PinScreenUseCase.select(previousPin: nil)
         let interactor = MockPinInteractor()
         let forward: PinRouting.RoutingType.Forward = { _ in }
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           interactor: interactor,
-                                           biometryProvider: biometryProvider,
-                                           appSettings: appSettings,
-                                           credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward,
-                                           performEffect: { _ in })
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            interactor: interactor,
+            biometryProvider: biometryProvider,
+            appSettings: appSettings,
+            credentialsStore: CredentialsStoreAPIMock(),
+            forwardRouting: forward,
+            performEffect: { _ in }
+        )
         presenter.reset(to: Pin.invalid.toString)
 
         do {
@@ -148,16 +155,17 @@ class PinScreenPresenterTests: XCTestCase {
         let useCase = PinScreenUseCase.create(firstPin: selectedPin)
         let interactor = MockPinInteractor()
         let forward: PinRouting.RoutingType.Forward = { _ in
-
         }
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           interactor: interactor,
-                                           biometryProvider: biometryProvider,
-                                           appSettings: appSettings,
-                                           credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward,
-                                           performEffect: { _ in })
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            interactor: interactor,
+            biometryProvider: biometryProvider,
+            appSettings: appSettings,
+            credentialsStore: CredentialsStoreAPIMock(),
+            forwardRouting: forward,
+            performEffect: { _ in }
+        )
         presenter.reset(to: selectedPin.toString)
 
         do {
@@ -177,15 +185,17 @@ class PinScreenPresenterTests: XCTestCase {
             XCTFail("expected \(PinError.pinMismatch). got \(input) instead")
         }
         let backward: PinRouting.RoutingType.Backward = {}
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           interactor: interactor,
-                                           biometryProvider: biometryProvider,
-                                           appSettings: appSettings,
-                                           credentialsStore: CredentialsStoreAPIMock(),
-                                           backwardRouting: backward,
-                                           forwardRouting: forward,
-                                           performEffect: { _ in })
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            interactor: interactor,
+            biometryProvider: biometryProvider,
+            appSettings: appSettings,
+            credentialsStore: CredentialsStoreAPIMock(),
+            backwardRouting: backward,
+            forwardRouting: forward,
+            performEffect: { _ in }
+        )
 
         // Set a different value than the previosly selected one
         presenter.reset(to: "9154")
@@ -208,14 +218,16 @@ class PinScreenPresenterTests: XCTestCase {
         let forward: PinRouting.RoutingType.Forward = { input in
             XCTAssertEqual(input.pin!.toString, pin)
         }
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           interactor: interactor,
-                                           biometryProvider: biometryProvider,
-                                           appSettings: appSettings,
-                                           credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward,
-                                           performEffect: { _ in })
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            interactor: interactor,
+            biometryProvider: biometryProvider,
+            appSettings: appSettings,
+            credentialsStore: CredentialsStoreAPIMock(),
+            forwardRouting: forward,
+            performEffect: { _ in }
+        )
         presenter.reset(to: pin)
 
         do {
@@ -231,14 +243,16 @@ class PinScreenPresenterTests: XCTestCase {
         let useCase = PinScreenUseCase.select(previousPin: previousPin)
         let interactor = MockPinInteractor()
         let forward: PinRouting.RoutingType.Forward = { _ in }
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           interactor: interactor,
-                                           biometryProvider: biometryProvider,
-                                           appSettings: appSettings,
-                                           credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward,
-                                           performEffect: { _ in })
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            interactor: interactor,
+            biometryProvider: biometryProvider,
+            appSettings: appSettings,
+            credentialsStore: CredentialsStoreAPIMock(),
+            forwardRouting: forward,
+            performEffect: { _ in }
+        )
         presenter.reset(to: previousPin.toString)
 
         do {

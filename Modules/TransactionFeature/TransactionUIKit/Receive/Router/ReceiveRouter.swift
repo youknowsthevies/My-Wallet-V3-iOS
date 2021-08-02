@@ -15,13 +15,15 @@ final class ReceiveRouter: ReceiveRouterAPI {
 
     private let webViewService: WebViewServiceAPI
 
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     private let disposeBag = DisposeBag()
 
-    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         webViewService: WebViewServiceAPI = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve()) {
+    init(
+        navigationRouter: NavigationRouterAPI = NavigationRouter(),
+        webViewService: WebViewServiceAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.navigationRouter = navigationRouter
         self.webViewService = webViewService
         self.analyticsRecorder = analyticsRecorder

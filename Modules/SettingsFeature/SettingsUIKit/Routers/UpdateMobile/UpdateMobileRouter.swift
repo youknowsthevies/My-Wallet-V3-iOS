@@ -13,9 +13,11 @@ final class UpdateMobileRouter {
     private let navigationRouter: NavigationRouterAPI
     private let disposeBag = DisposeBag()
 
-    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         service: MobileSettingsServiceAPI = resolve()) {
-        self.serviceProvider = service
+    init(
+        navigationRouter: NavigationRouterAPI = NavigationRouter(),
+        service: MobileSettingsServiceAPI = resolve()
+    ) {
+        serviceProvider = service
         self.navigationRouter = navigationRouter
     }
 

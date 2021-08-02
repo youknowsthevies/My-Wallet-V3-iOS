@@ -14,7 +14,7 @@ final class MockRemoteNotificationRelay: RemoteNotificationEmitting, RemoteNotif
     }
 
     func didReceiveRemoteNotification(
-        _ userInfo: [AnyHashable : Any],
+        _ userInfo: [AnyHashable: Any],
         onApplicationState applicationState: UIApplication.State,
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {

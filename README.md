@@ -8,8 +8,6 @@
 
 ## Install Xcode
 
-⚠️ **We're currently using Xcode 12.2!** The app won't compile on newer versions of the IDE! You can download it [here](https://developer.apple.com/download/more/). ⚠️
-
 After installing Xcode, open it to begin the Command Line Tools installation. After finished, make sure that a valid CL Tool version is selected in `Xcode > Preferences > Locations > Command Line Tools`.
 
 ## Install Git submodules
@@ -81,18 +79,6 @@ Install the correct node version:
     $ cd ./Submodules/OpenSSL-for-iPhone
     $ ./build-libssl.sh --cleanup --archs="x86_64 arm64"
 
-## Bootstrap Carthage Dependencies
-
-To workaround a error when bootstraping Firebase dependencies, use this custom script:
-
-    $ sh scripts/carthage-bootstrap.sh
-    
-👉 Beware that this will take a while. Feel free to read some docs, a 📖, get a ☕, or go for a 🚶 while it runs…
-
-⚠️ You may need to run the following command if you encounter an `xcode-select` error:
-
-    $ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-
 ## Add production Config file
 
 Clone the [wallet-ios-credentials](https://github.com/blockchain/wallet-ios-credentials) repository and copy it's `Config` directory to this project root directory, it contains a `.xcconfig` for each environment:
@@ -101,19 +87,21 @@ Clone the [wallet-ios-credentials](https://github.com/blockchain/wallet-ios-cred
 Config/BlockchainConfig/Dev.xcconfig
 Config/BlockchainConfig/Production.xcconfig
 Config/BlockchainConfig/Staging.xcconfig
+Config/BlockchainConfig/Alpha.xcconfig
 Config/NetworkKitConfig/Dev.xcconfig
 Config/NetworkKitConfig/Production.xcconfig
 Config/NetworkKitConfig/Staging.xcconfig
+Config/NetworkKitConfig/Alpha.xcconfig
 ```
 
-This is how `BlockchainConfig/Production.xcconfig` looks like:
+For example, This is how `BlockchainConfig/Production.xcconfig` looks like:
 
 ```
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
 OPENSSL_CERT_URL = blockchain.info
 ```
 
-This is how `NetworkKitConfig/Production.xcconfig` looks like:
+For example, This is how `NetworkKitConfig/Production.xcconfig` looks like:
 
 ```
 API_URL = api.blockchain.info
@@ -134,23 +122,30 @@ Clone `wallet-ios-credentials` repository and copy it's `Firebase` directory int
 Firease/Dev/GoogleService-Info.plist
 Firease/Prod/GoogleService-Info.plist
 Firease/Staging/GoogleService-Info.plist
+Firease/Alpha/GoogleService-Info.plist
 ```
 
+## Add environment variables for scripts
+
+Clone `wallet-ios-credentials` repository and copy the `env` to the root folder of the project, hide the file by using `mv env .env`
+
 ## XcodeGen
+
+We are integrating XcodeGen and, despite still committing project files in git, we should generate project files using the following script:
 
 ### Installing:
 
     $ brew install xcodegen
 
-### Generate projects:
+## Generate projects & dependencies: 
 
-We are integrating XcodeGen and, despite still committing project files in git, we should generate project files using the following script:
+    $ sh scripts/bootstrap.sh
 
-    $ sh scripts/generate_projects.sh
+👉 Beware that this will take a while. Feel free to read some docs, a 📖, get a ☕, or go for a 🚶 while it runs…
 
-## Open the project in Xcode
+⚠️ You may need to run the following command if you encounter an `xcode-select` error:
 
-    $ open Blockchain.xcworkspace
+    $ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
 ## Build the project
 

@@ -7,8 +7,8 @@ import RxSwift
 public final class KYCPager: KYCPagerAPI {
 
     private let dataRepository: DataRepositoryAPI
-    private(set) public var tier: KYC.Tier
-    private(set) public var tiersResponse: KYC.UserTiers
+    public private(set) var tier: KYC.Tier
+    public private(set) var tiersResponse: KYC.UserTiers
 
     public init(
         dataRepository: DataRepositoryAPI = resolve(),
@@ -208,7 +208,7 @@ extension KYCPageType {
                 if tiersResponse.canCompleteTier2 {
                     return user.needsDocumentResubmission == nil ? .verifyIdentity : .resubmitIdentity
                 }
-                /// The user can't complete tier2, so they should see their account status.
+                // The user can't complete tier2, so they should see their account status.
                 return .accountStatus
             }
             return .enterPhone

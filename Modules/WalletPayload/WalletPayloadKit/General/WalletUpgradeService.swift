@@ -38,8 +38,10 @@ final class WalletUpgradeService: WalletUpgradeServicing {
 
     // MARK: Init
 
-    init(wallet: WalletUpgradingAPI = resolve(),
-         walletUpgradeJSService: WalletUpgradeJSServicing = resolve()) {
+    init(
+        wallet: WalletUpgradingAPI = resolve(),
+        walletUpgradeJSService: WalletUpgradeJSServicing = resolve()
+    ) {
         self.wallet = wallet
         self.walletUpgradeJSService = walletUpgradeJSService
     }
@@ -124,7 +126,7 @@ final class WalletUpgradeService: WalletUpgradeServicing {
                     self.workflow(for: version)
                         .asObservable()
                         .startWith(version.rawValue)
-                        .catchError { error -> Observable<String> in
+                        .catchError { _ -> Observable<String> in
                             .error(WalletUpgradeError.errorUpgrading(version: version.rawValue))
                         }
                 }

@@ -34,8 +34,10 @@ final class YodleeActivateService {
     private let activationService: LinkedBankActivationServiceAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
 
-    init(activationService: LinkedBankActivationServiceAPI = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve()) {
+    init(
+        activationService: LinkedBankActivationServiceAPI = resolve(),
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve()
+    ) {
         self.activationService = activationService
         self.paymentMethodTypesService = paymentMethodTypesService
     }
@@ -77,7 +79,7 @@ extension YodleeActivateService.State {
             )
         case .inactive(let error):
             guard let error = error else {
-                 return .pending(
+                return .pending(
                     content: reducer.webviewPendingContent()
                 )
             }

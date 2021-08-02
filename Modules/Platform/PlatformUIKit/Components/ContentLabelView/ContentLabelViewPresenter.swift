@@ -27,7 +27,7 @@ final class ContentLabelViewPresenter {
 
     var containsDescription: Driver<Bool> {
         interactor.contentCalculationState
-            .map { $0.isValue }
+            .map(\.isValue)
             .asDriver(onErrorJustReturn: false)
     }
 
@@ -45,10 +45,12 @@ final class ContentLabelViewPresenter {
 
     // MARK: - Init
 
-    init(title: String,
-         alignment: NSTextAlignment,
-         interactor: ContentLabelViewInteractorAPI,
-         accessibilityPrefix: String) {
+    init(
+        title: String,
+        alignment: NSTextAlignment,
+        interactor: ContentLabelViewInteractorAPI,
+        accessibilityPrefix: String
+    ) {
         self.interactor = interactor
         titleRelay = BehaviorRelay<String>(value: title)
         titleLabelContent = titleRelay
@@ -63,7 +65,7 @@ final class ContentLabelViewPresenter {
                 )
             }
         descriptionLabelContent = interactor.contentCalculationState
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .map {
                 LabelContent(
                     text: $0,

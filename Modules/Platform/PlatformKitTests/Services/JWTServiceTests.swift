@@ -1,7 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationDataKit
+import AuthenticationKit
 import Combine
 import CombineExt
+import RxBlocking
 import RxSwift
 import XCTest
 
@@ -61,7 +64,7 @@ final class JWTServiceTests: XCTestCase {
             .toBlocking()
             .first()
 
-        let correctTokenSetExpectation = self.expectation(
+        let correctTokenSetExpectation = expectation(
             description: "Correct token set"
         )
 
@@ -115,7 +118,7 @@ final class JWTServiceTests: XCTestCase {
             .toBlocking()
             .first()
 
-        let missingCredentialsErrorExpectation = self.expectation(
+        let missingCredentialsErrorExpectation = expectation(
             description: "Expect a missing credentials error"
         )
 

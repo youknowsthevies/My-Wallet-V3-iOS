@@ -27,15 +27,18 @@ final class MobileCodeEntryViewController: BaseScreenViewController {
         super.init(nibName: MobileCodeEntryViewController.objectName, bundle: Bundle(for: Self.self))
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: .none)
+            trailingButtonStyle: .none
+        )
         titleViewStyle = presenter.titleView
         keyboardInteractionController = KeyboardInteractionController(in: self)
 

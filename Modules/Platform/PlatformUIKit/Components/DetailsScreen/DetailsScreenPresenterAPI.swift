@@ -7,6 +7,7 @@ import RxSwift
 
 public protocol HeaderBuilder {
     var defaultHeight: CGFloat { get }
+
     func view(fittingWidth width: CGFloat, customHeight: CGFloat?) -> UIView?
 }
 
@@ -29,21 +30,21 @@ public protocol DetailsScreenPresenterAPI: AnyObject {
     func header(for section: Int) -> HeaderBuilder?
 }
 
-public extension DetailsScreenPresenterAPI {
+extension DetailsScreenPresenterAPI {
 
-    var extendSafeAreaUnderNavigationBar: Bool { false }
+    public var extendSafeAreaUnderNavigationBar: Bool { false }
 
-    var buttons: [ButtonViewModel] { [] }
+    public var buttons: [ButtonViewModel] { [] }
 
-    var titleView: Driver<Screen.Style.TitleView> {
+    public var titleView: Driver<Screen.Style.TitleView> {
         titleViewRelay.asDriver()
     }
 
-    var reload: Signal<Void> {
+    public var reload: Signal<Void> {
         reloadRelay.asSignal()
     }
 
-    func viewDidLoad() { /* NOOP */ }
+    public func viewDidLoad() { /* NOOP */ }
 
-    func header(for section: Int) -> HeaderBuilder? { nil }
+    public func header(for section: Int) -> HeaderBuilder? { nil }
 }

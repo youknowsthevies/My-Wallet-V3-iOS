@@ -26,6 +26,9 @@ public protocol RouterAPI: AnyObject {
     func presentKYCIfNeeded() -> AnyPublisher<KYCRoutingResult, RouterError>
 }
 
+// swiftlint:disable type_body_length
+// swiftlint:disable file_length
+
 /// This object is used as a router for Simple-Buy flow
 public final class Router: RouterAPI {
 
@@ -67,7 +70,7 @@ public final class Router: RouterAPI {
 
     public init(
         builder: Buildable,
-        currency: CryptoCurrency = .bitcoin,
+        currency: CryptoCurrency,
         navigationRouter: NavigationRouterAPI = resolve(),
         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
         settingsService: CompleteSettingsServiceAPI = resolve(),
@@ -77,13 +80,12 @@ public final class Router: RouterAPI {
         kycRouter: KYCRouterAPI = resolve(), // TODO: merge with the following or remove (IOS-4471)
         newKYCRouter: KYCRouting = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
-
     ) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
         self.settingsService = settingsService
         self.alertViewPresenter = alertViewPresenter
-        self.stateService = builder.stateService
+        stateService = builder.stateService
         self.tiersService = tiersService
         self.kycRouter = kycRouter
         self.newKYCRouter = newKYCRouter
@@ -112,9 +114,10 @@ public final class Router: RouterAPI {
     }
 
     public func showFailureAlert() {
-        alertViewPresenter.error(in: navigationRouter.topMostViewControllerProvider.topMostViewController) { [weak self] in
-            self?.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
-        }
+        alertViewPresenter
+            .error(in: navigationRouter.topMostViewControllerProvider.topMostViewController) { [weak self] in
+                self?.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+            }
     }
 
     /// Should be called once
@@ -185,9 +188,17 @@ public final class Router: RouterAPI {
             showPaymentMethodsScreen()
         case .bankTransferDetails(let data):
             showBankTransferDetailScreen(with: data)
-        case .fundsTransferDetails(let currency, isOriginPaymentMethods: let isOriginPaymentMethods, let isOriginDeposit):
+        case .fundsTransferDetails(
+            let currency,
+            isOriginPaymentMethods: let isOriginPaymentMethods,
+            let isOriginDeposit
+        ):
             guard let fiatCurrency = currency.fiatCurrency else { return }
-            showFundsTransferDetailsScreen(with: fiatCurrency, shouldDismissModal: isOriginPaymentMethods, isOriginDeposit: isOriginDeposit)
+            showFundsTransferDetailsScreen(
+                with: fiatCurrency,
+                shouldDismissModal: isOriginPaymentMethods,
+                isOriginDeposit: isOriginDeposit
+            )
         case .transferCancellation(let data):
             showTransferCancellation(with: data)
         case .kyc:
@@ -216,7 +227,9 @@ public final class Router: RouterAPI {
         case .kyc, .selectFiat, .changeFiat, .unsupportedFiat, .addCard, .linkBank:
             break
         case .paymentMethods, .bankTransferDetails, .fundsTransferDetails:
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
+            navigationRouter.topMostViewControllerProvider
+                .topMostViewController?
+                .dismiss(animated: true, completion: nil)
         default:
             navigationRouter.dismiss()
         }
@@ -236,7 +249,7 @@ public final class Router: RouterAPI {
             routingType: .modal
         )
 
-        /// TODO: This is a temporary patch of the card router intialization, and should not be called directly.
+        // TODO: This is a temporary patch of the card router intialization, and should not be called directly.
         /// The reason that it is called directly now is that the `Self` is not a RIBs based. Once BuySell's router
         /// moves into RIBs we will delete that like
         cardRouter.load()
@@ -274,7 +287,7 @@ public final class Router: RouterAPI {
 
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
-            .flatMap(weak: self, { (self, currency) -> Single<FiatCurrency> in
+            .flatMap(weak: self) { (self, currency) -> Single<FiatCurrency> in
                 // TICKET: IOS-3144
                 self.settingsService
                     .update(
@@ -282,12 +295,12 @@ public final class Router: RouterAPI {
                         context: .simpleBuy
                     )
                     .andThen(Single.just(currency))
-            })
+            }
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] currency in
                     guard let self = self else { return }
-                    /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
+                    // TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
                     /// `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
                     self.analyticsRecorder.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: currency.code))
@@ -325,7 +338,7 @@ public final class Router: RouterAPI {
 
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
-            .flatMap(weak: self, { (self, currency) -> Single<(FiatCurrency, Bool)> in
+            .flatMap(weak: self) { (self, currency) -> Single<(FiatCurrency, Bool)> in
 
                 let isCurrencySupported = self.supportedPairsInteractor
                     .fetch()
@@ -343,12 +356,12 @@ public final class Router: RouterAPI {
                         Single.just(currency),
                         isCurrencySupported
                     ))
-            })
+            }
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] value in
                     guard let self = self else { return }
-                    /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
+                    // TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
                     /// `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
                     self.analyticsRecorder.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: value.0.code))
@@ -392,7 +405,7 @@ public final class Router: RouterAPI {
         let builder = ACHFlowRootBuilder(stateService: stateService)
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
         let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
-        self.achFlowRouter = router
+        achFlowRouter = router
         let flowDimissed: () -> Void = { [weak self] in
             guard let self = self else { return }
             self.achFlowRouter = nil
@@ -404,7 +417,7 @@ public final class Router: RouterAPI {
         let builder = LinkBankFlowRootBuilder()
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
         let router = builder.build()
-        self.linkBankFlowRouter = router
+        linkBankFlowRouter = router
         let flowDismissed: () -> Void = { [weak self] in
             guard let self = self else { return }
             self.linkBankFlowRouter = nil
@@ -415,7 +428,7 @@ public final class Router: RouterAPI {
             .skipWhile { $0.shouldSkipEffect }
             .subscribe(onNext: { [weak self] effect in
                 guard let self = self else { return }
-                guard case let .closeFlow(isInteractive) = effect, !isInteractive else {
+                guard case .closeFlow(let isInteractive) = effect, !isInteractive else {
                     self.stateService.previousRelay.accept(())
                     flowDismissed()
                     return
@@ -435,7 +448,9 @@ public final class Router: RouterAPI {
         controller.transitioningDelegate = sheetPresenter
         controller.modalPresentationStyle = .custom
         analyticsRecorder.record(event: AnalyticsEvent.sbCurrencyUnsupported)
-        navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+        navigationRouter.topMostViewControllerProvider
+            .topMostViewController?
+            .present(controller, animated: true, completion: nil)
     }
 
     /// Shows the checkout details screen
@@ -457,14 +472,28 @@ public final class Router: RouterAPI {
         navigationRouter.present(viewController: viewController)
     }
 
-    private func showFundsTransferDetailsScreen(with fiatCurrency: FiatCurrency, shouldDismissModal: Bool, isOriginDeposit: Bool) {
-        let viewController = builder.fundsTransferDetailsViewController(for: fiatCurrency, isOriginDeposit: isOriginDeposit)
+    private func showFundsTransferDetailsScreen(
+        with fiatCurrency: FiatCurrency,
+        shouldDismissModal: Bool,
+        isOriginDeposit: Bool
+    ) {
+        let viewController = builder.fundsTransferDetailsViewController(
+            for: fiatCurrency,
+            isOriginDeposit: isOriginDeposit
+        )
         if shouldDismissModal {
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true) { [weak self] in
-                self?.navigationRouter.navigationControllerAPI?.present(viewController, animated: true, completion: nil)
-            }
+            navigationRouter.topMostViewControllerProvider
+                .topMostViewController?
+                .dismiss(animated: true) { [weak self] in
+                    self?.navigationRouter
+                        .navigationControllerAPI?
+                        .present(viewController, animated: true, completion: nil)
+                }
         } else {
-            navigationRouter.present(viewController: viewController, using: .modalOverTopMost)
+            navigationRouter.present(
+                viewController: viewController,
+                using: .modalOverTopMost
+            )
         }
     }
 
@@ -484,7 +513,9 @@ public final class Router: RouterAPI {
         let viewController = TransferCancellationViewController(presenter: presenter)
         viewController.transitioningDelegate = sheetPresenter
         viewController.modalPresentationStyle = .custom
-        navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
+        navigationRouter.topMostViewControllerProvider
+            .topMostViewController?
+            .present(viewController, animated: true, completion: nil)
     }
 
     /// Shows the checkout screen
@@ -615,11 +646,32 @@ public final class Router: RouterAPI {
             .disposed(by: kycDisposeBag)
 
         if afterDismissal {
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true) { [weak self] in
-                self?.kycRouter.start(from: kycRootViewController, tier: .tier2, parentFlow: .simpleBuy)
-            }
+            navigationRouter.topMostViewControllerProvider
+                .topMostViewController?
+                .dismiss(animated: true) { [weak self] in
+                    self?.kycRouter.start(
+                        tier: .tier2,
+                        parentFlow: .simpleBuy,
+                        from: kycRootViewController
+                    )
+                }
         } else {
-            kycRouter.start(from: kycRootViewController, tier: .tier2, parentFlow: .simpleBuy)
+            tiersService
+                .tiers
+                .subscribe { [kycRouter] tiersResponse in
+                    kycRouter.start(
+                        tier: tiersResponse.latestApprovedTier,
+                        parentFlow: .simpleBuy,
+                        from: kycRootViewController
+                    )
+                } onError: { [kycRouter] error in
+                    Logger.shared.error(String(describing: error))
+                    kycRouter.start(
+                        tier: .tier0,
+                        parentFlow: .simpleBuy,
+                        from: kycRootViewController
+                    )
+                }
         }
     }
 

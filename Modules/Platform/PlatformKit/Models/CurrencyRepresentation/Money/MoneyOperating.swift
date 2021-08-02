@@ -54,12 +54,12 @@ extension MoneyOperating {
 
     public static func + (lhs: Self, rhs: Self) throws -> Self {
         try ensureComparable(value: lhs, other: rhs)
-        return Self.init(amount: lhs.amount + rhs.amount, currency: lhs.currencyType)
+        return Self(amount: lhs.amount + rhs.amount, currency: lhs.currencyType)
     }
 
     public static func - (lhs: Self, rhs: Self) throws -> Self {
         try ensureComparable(value: lhs, other: rhs)
-        return Self.init(amount: lhs.amount - rhs.amount, currency: lhs.currencyType)
+        return Self(amount: lhs.amount - rhs.amount, currency: lhs.currencyType)
     }
 
     public static func * (lhs: Self, rhs: Self) throws -> Self {
@@ -67,7 +67,7 @@ extension MoneyOperating {
         let amount = (lhs.amount * rhs.amount)
             .quotientAndRemainder(dividingBy: BigInt(10 ^^ lhs.maxDecimalPlaces))
             .quotient
-        return Self.init(amount: amount, currency: lhs.currencyType)
+        return Self(amount: amount, currency: lhs.currencyType)
     }
 
     /// Calculates the value of `self` before a given percentage change happened.
@@ -109,10 +109,10 @@ extension MoneyOperating {
         let quotientResult = quotientAndRemainder.quotient * BigInt(10 ^^ maxDecimalPlaces)
         let remainderDivisor = rhs.amount / BigInt(10 ^^ maxDecimalPlaces)
         guard quotientAndRemainder.remainder != 0, remainderDivisor != 0 else {
-            return Self.init(amount: quotientResult, currency: lhs.currencyType)
+            return Self(amount: quotientResult, currency: lhs.currencyType)
         }
         let remainderResult = quotientAndRemainder.remainder / remainderDivisor
-        return Self.init(amount: quotientResult + remainderResult, currency: lhs.currencyType)
+        return Self(amount: quotientResult + remainderResult, currency: lhs.currencyType)
     }
 
     public static func += (lhs: inout Self, rhs: Self) throws {

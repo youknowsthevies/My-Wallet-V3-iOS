@@ -32,7 +32,7 @@ final class RemoteNotificationAuthorizer {
     // MARK: - Private Properties
 
     private let application: UIApplicationRemoteNotificationsAPI
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let userNotificationCenter: UNUserNotificationCenterAPI
     private let options: UNAuthorizationOptions
 
@@ -40,10 +40,12 @@ final class RemoteNotificationAuthorizer {
 
     // MARK: - Setup
 
-    init(application: UIApplicationRemoteNotificationsAPI = UIApplication.shared,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
-         options: UNAuthorizationOptions = [.alert, .badge, .sound]) {
+    init(
+        application: UIApplicationRemoteNotificationsAPI = UIApplication.shared,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
+        options: UNAuthorizationOptions = [.alert, .badge, .sound]
+    ) {
         self.application = application
         self.analyticsRecorder = analyticsRecorder
         self.userNotificationCenter = userNotificationCenter
@@ -71,7 +73,7 @@ final class RemoteNotificationAuthorizer {
                     observer(.success(()))
                 }
                 return Disposables.create()
-        }
+            }
     }
 
     private var isNotDetermined: Single<Bool> {

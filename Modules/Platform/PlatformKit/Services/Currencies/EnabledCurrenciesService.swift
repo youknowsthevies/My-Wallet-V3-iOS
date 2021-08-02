@@ -6,56 +6,100 @@ import ToolKit
 public protocol EnabledCurrenciesServiceAPI {
     var allEnabledCryptoCurrencies: [CryptoCurrency] { get }
     var allEnabledFiatCurrencies: [FiatCurrency] { get }
-    var depositEnabledFiatCurrencies: [FiatCurrency] { get }
-    var withdrawEnabledFiatCurrencies: [FiatCurrency] { get }
     /// This returns the supported currencies that a user can link a bank through a partner, eg Yodlee
     var bankTransferEligibleFiatCurrencies: [FiatCurrency] { get }
 }
 
 final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
-    private var nonErc20Currencies: [CryptoCurrency] = [
-        .bitcoin,
-        .ethereum,
-        .bitcoinCash,
-        .stellar,
-        .other(.algorand),
-        .other(.polkadot)
+    private let nonErc20Currencies: [CryptoCurrency] = [
+        .coin(.bitcoin),
+        .coin(.ethereum),
+        .coin(.bitcoinCash),
+        .coin(.stellar),
+        .coin(.algorand),
+        .coin(.polkadot)
     ].sorted()
 
-    private var erc20Currencies: [CryptoCurrency] {
-        repository.erc20Assets
+    private lazy var erc20Currencies: [CryptoCurrency] = {
+        var models: [ERC20AssetModel] = repository.erc20Assets
             .currencies
             .compactMap { $0 as? ERC20AssetModel }
-            .map { .erc20($0) }
-    }
+
+        // Some ERC20 coins are been controlled by Firebase feature flag `custodial_only_token`, so
+        // we will iterate between the known set of ERC20 coins `repository` returned and overwrite
+        // these coins 'products' field with `.privateKey` if they are enabled. The ones that aren't
+        // enabled will be filtered out.
+        let enabledCustodial: Result<[String: [String]], FeatureConfigurationError> = featureConfigurator
+            .configuration(for: .custodialOnlyTokens)
+        switch enabledCustodial {
+        case .failure:
+            return models
+                .filter { !$0.products.isEmpty }
+                .map(CryptoCurrency.erc20)
+        case .success(let enabledCustodial):
+            let legacyERC20Codes = LegacyERC20Code.allCases.map(\.rawValue)
+            return models
+                .compactMap { model in
+                    guard !legacyERC20Codes.contains(model.code) else {
+                        // This is one of the currently supported ERC20 currency, do nothing.
+                        return model
+                    }
+                    guard enabledCustodial.keys.contains(model.code) else {
+                        // This currency is completely disabled.
+                        return nil
+                    }
+                    return model.with(products: [.privateKey])
+                }
+                .filter { !$0.products.isEmpty }
+                .map(CryptoCurrency.erc20)
+        }
+    }()
+
+    private lazy var enabledOptionalCustodial: [CryptoCurrency] = {
+        let optionalCustodial: [CryptoCurrency] = [
+            .coin(.bitClout),
+            .coin(.blockstack),
+            .coin(.dogecoin),
+            .coin(.eos),
+            .coin(.ethereumClassic),
+            .coin(.litecoin),
+            .coin(.mobileCoin),
+            .coin(.near),
+            .coin(.tezos),
+            .coin(.theta)
+        ]
+        let enabledCustodial: Result<[String: [String]], FeatureConfigurationError> = featureConfigurator
+            .configuration(for: .custodialOnlyTokens)
+        switch enabledCustodial {
+        case .failure:
+            return []
+        case .success(let enabledCustodial):
+            return optionalCustodial.filter { enabledCustodial.keys.contains($0.code) }
+        }
+    }()
 
     lazy var allEnabledCryptoCurrencies: [CryptoCurrency] = {
-        nonErc20Currencies + erc20Currencies
+        (nonErc20Currencies + enabledOptionalCustodial + erc20Currencies).sorted()
     }()
 
     let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
-
-    var depositEnabledFiatCurrencies: [FiatCurrency] {
-        featureFlagService.isEnabled(.withdrawAndDepositACH) ? [.USD, .EUR, .GBP] : [.EUR, .GBP]
-    }
-
-    var withdrawEnabledFiatCurrencies: [FiatCurrency] {
-        featureFlagService.isEnabled(.withdrawAndDepositACH) ? [.USD, .EUR, .GBP] : [.EUR, .GBP]
-    }
 
     var bankTransferEligibleFiatCurrencies: [FiatCurrency] {
         [.USD]
     }
 
     private let featureFlagService: InternalFeatureFlagServiceAPI
+    private let featureConfigurator: FeatureConfiguring
     private let repository: SupportedAssetsRepositoryAPI
 
     init(
         featureFlagService: InternalFeatureFlagServiceAPI = resolve(),
+        featureConfigurator: FeatureConfiguring = resolve(),
         repository: SupportedAssetsRepositoryAPI = resolve()
     ) {
         self.featureFlagService = featureFlagService
+        self.featureConfigurator = featureConfigurator
         self.repository = repository
     }
 }

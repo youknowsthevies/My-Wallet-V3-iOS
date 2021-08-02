@@ -28,7 +28,7 @@ struct SettingsResponse {
     let invited: [Feature: Bool]
 }
 
-extension  SettingsResponse: Decodable {
+extension SettingsResponse: Decodable {
 
     // MARK: Types
 
@@ -63,7 +63,7 @@ extension  SettingsResponse: Decodable {
         emailNotificationsEnabled = notifications.contains(1)
         invited = try values
             .decode([String: Bool].self, forKey: .invited)
-            .reduce(into: [Feature: Bool]()) { (result, this) in
+            .reduce(into: [Feature: Bool]()) { result, this in
                 guard let feature = Feature(rawValue: this.key) else {
                     return
                 }

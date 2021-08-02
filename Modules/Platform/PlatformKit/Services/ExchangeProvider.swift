@@ -34,8 +34,10 @@ public final class ExchangeProvider: ExchangeProviding {
 
     // MARK: - Setup
 
-    public init(fiats: [FiatCurrency: PairExchangeServiceAPI],
-                cryptos: [CryptoCurrency: PairExchangeServiceAPI]) {
+    public init(
+        fiats: [FiatCurrency: PairExchangeServiceAPI],
+        cryptos: [CryptoCurrency: PairExchangeServiceAPI]
+    ) {
         for (currency, service) in fiats {
             services[.fiat(currency)] = service
         }

@@ -62,7 +62,7 @@ extension AnalyticsEvents {
             }
         }
 
-        public var params: [String : String]? {
+        public var params: [String: String]? {
             switch self {
             case .swapConfirmPair(let asset, let target):
                 return ["asset": asset.name, "target": target]

@@ -17,7 +17,6 @@ final class BrowserIdentityService {
                 return "BrowserIdentityService: Unable to save browser identity."
             case .unknownPubKeyHash:
                 return "BrowserIdentityService: Browser not recognized."
-
             }
         }
     }
@@ -29,8 +28,10 @@ final class BrowserIdentityService {
 
     // MARK: Init
 
-    init(appSettingsSecureChannel: AppSettingsSecureChannel = resolve(),
-         cryptoService: WalletCryptoServiceAPI = resolve()) {
+    init(
+        appSettingsSecureChannel: AppSettingsSecureChannel = resolve(),
+        cryptoService: WalletCryptoServiceAPI = resolve()
+    ) {
         self.appSettingsSecureChannel = appSettingsSecureChannel
         self.cryptoService = cryptoService
     }

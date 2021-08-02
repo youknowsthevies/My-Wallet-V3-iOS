@@ -20,16 +20,16 @@ enum CoinSelectionError: Error {
 }
 
 protocol CoinSelector {
-   func select(inputs: CoinSelectionInputs) -> Result<SpendableUnspentOutputs, CoinSelectionError>
-   func select(all coins: [UnspentOutput], fee: Fee, sortingStrategy: CoinSortingStrategy?) -> Result<SpendableUnspentOutputs, CoinSelectionError>
+    func select(inputs: CoinSelectionInputs) -> Result<SpendableUnspentOutputs, CoinSelectionError>
+    func select(all coins: [UnspentOutput], fee: Fee, sortingStrategy: CoinSortingStrategy?) -> Result<SpendableUnspentOutputs, CoinSelectionError>
 }
 
 class CoinSelection: CoinSelector {
 
-    struct Constants {
-        static let costBase: BigUInt = BigUInt(10)
-        static let costPerInput: BigUInt = BigUInt(149)
-        static let costPerOutput: BigUInt = BigUInt(34)
+    enum Constants {
+        static let costBase = BigUInt(10)
+        static let costPerInput = BigUInt(149)
+        static let costPerOutput = BigUInt(34)
     }
 
     private let calculator: TransactionSizeCalculating
@@ -57,11 +57,11 @@ class CoinSelection: CoinSelector {
         var accumulatedFee = BigUInt.zero
 
         for coin in effectiveCoins {
-            if !coin.isForceInclude && accumulatedValue >= outputAmount + accumulatedFee {
+            if !coin.isForceInclude, accumulatedValue >= outputAmount + accumulatedFee {
                 continue
             }
 
-            selected += [ coin ]
+            selected += [coin]
             accumulatedValue = selected.sum()
             accumulatedFee = calculator.transactionBytes(inputs: selected.count, outputs: 1) * feePerByte
         }
@@ -100,9 +100,11 @@ class CoinSelection: CoinSelector {
         return .success(outputs)
     }
 
-    func select(all coins: [UnspentOutput],
-                fee: Fee,
-                sortingStrategy: CoinSortingStrategy? = nil) -> Result<SpendableUnspentOutputs, CoinSelectionError> {
+    func select(
+        all coins: [UnspentOutput],
+        fee: Fee,
+        sortingStrategy: CoinSortingStrategy? = nil
+    ) -> Result<SpendableUnspentOutputs, CoinSelectionError> {
         let effectiveCoins = (sortingStrategy?.sort(coins: coins) ?? coins)
             .effective(for: fee)
         let effectiveValue = effectiveCoins.sum()

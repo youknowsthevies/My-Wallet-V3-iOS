@@ -52,7 +52,7 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
         presenter.viewWillAppear()
         switch presenter.authorizationState {
         case .required(let urls):
-            self.exitUrl = urls.exitLink
+            exitUrl = urls.exitLink
             view.addSubview(webView)
             webView.fillSuperview()
             webView.navigationDelegate = self
@@ -86,9 +86,11 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
 // MARK: WKNavigationDelegate
 
 extension CardAuthorizationScreenViewController: WKNavigationDelegate {
-    func webView(_ webView: WKWebView,
-                 decidePolicyFor navigationAction: WKNavigationAction,
-                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void
+    ) {
         if navigationAction.request.url?.host == exitUrl.host {
             presenter.redirect()
         }

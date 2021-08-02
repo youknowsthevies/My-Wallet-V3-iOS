@@ -38,6 +38,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     var target: CryptoReceiveAddress {
         transactionTarget as! CryptoReceiveAddress
     }
+
     var targetAsset: CryptoCurrency { target.asset }
 
     // MARK: - Private Properties
@@ -47,10 +48,12 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
 
     // MARK: - Init
 
-    init(isNoteSupported: Bool = false,
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         transferRepository: CustodialTransferRepositoryAPI = resolve()) {
+    init(
+        isNoteSupported: Bool = false,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        transferRepository: CustodialTransferRepositoryAPI = resolve()
+    ) {
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
         self.isNoteSupported = isNoteSupported
@@ -90,19 +93,19 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         }
         return
             Single
-            .zip(feeCache.valueSingle, sourceTradingAccount.withdrawableBalance)
-            .map { (fees, withdrawableBalance) -> PendingTransaction in
-                let fee = fees[fee: amount.currencyType]
-                let available = try withdrawableBalance - fee
-                var pendingTransaction = pendingTransaction.update(
-                    amount: amount,
-                    available: available.isNegative ? .zero(currency: available.currency) : available,
-                    fee: fee,
-                    feeForFullAvailable: fee
-                )
-                pendingTransaction.minimumLimit = fees[minimumAmount: amount.currencyType]
-                return pendingTransaction
-            }
+                .zip(feeCache.valueSingle, sourceTradingAccount.withdrawableBalance)
+                .map { fees, withdrawableBalance -> PendingTransaction in
+                    let fee = fees[fee: amount.currencyType]
+                    let available = try withdrawableBalance - fee
+                    var pendingTransaction = pendingTransaction.update(
+                        amount: amount,
+                        available: available.isNegative ? .zero(currency: available.currency) : available,
+                        fee: fee,
+                        feeForFullAvailable: fee
+                    )
+                    pendingTransaction.minimumLimit = fees[minimumAmount: amount.currencyType]
+                    return pendingTransaction
+                }
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -111,9 +114,11 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 var confirmations: [TransactionConfirmation] = [
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
-                    .networkFee(.init(fee: fiatAmountAndFees.fees.moneyValue,
-                                      feeType: .withdrawalFee,
-                                      asset: self.sourceAsset)),
+                    .networkFee(.init(
+                        fee: fiatAmountAndFees.fees.moneyValue,
+                        feeType: .withdrawalFee,
+                        asset: self.sourceAsset
+                    )),
                     .total(.init(total: fiatAmountAndFees.amount.moneyValue))
                 ]
                 if self.isNoteSupported {
@@ -152,9 +157,11 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         target.onTxCompleted(transactionResult)
     }
 
-    func doUpdateFeeLevel(pendingTransaction: PendingTransaction,
-                          level: FeeLevel,
-                          customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+    func doUpdateFeeLevel(
+        pendingTransaction: PendingTransaction,
+        level: FeeLevel,
+        customFeeAmount: MoneyValue
+    ) -> Single<PendingTransaction> {
         precondition(pendingTransaction.availableFeeLevels.contains(level))
         /// `TradingToOnChainTransactionEngine` only supports a
         /// `FeeLevel` of `.none`
@@ -187,8 +194,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: sourceCryptoCurrency)),
             .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: sourceCryptoCurrency))
         )
-        .map({ (quote: ($0.0.quote.fiatValue ?? .zero(currency: .USD)), amount: $0.1, fees: $0.2) })
-        .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
+        .map { (quote: $0.0.quote.fiatValue ?? .zero(currency: .USD), amount: $0.1, fees: $0.2) }
+        .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
             let fiatAmount = amount.convertToFiatValue(exchangeRate: quote)
             let fiatFees = fees.convertToFiatValue(exchangeRate: quote)
             return (fiatAmount, fiatFees)

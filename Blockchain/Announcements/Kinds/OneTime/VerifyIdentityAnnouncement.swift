@@ -57,7 +57,7 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnounce
     }
 
     let type = AnnouncementType.verifyIdentity
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -68,16 +68,19 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnounce
     private let isCompletingKyc: Bool
 
     private let disposeBag = DisposeBag()
+
     // MARK: - Setup
 
-    init(user: NabuUserSunriverAirdropRegistering,
-         isCompletingKyc: Bool,
-         cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
-        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+    init(
+        user: NabuUserSunriverAirdropRegistering,
+        isCompletingKyc: Bool,
+        cacheSuite: CacheSuite = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
+        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

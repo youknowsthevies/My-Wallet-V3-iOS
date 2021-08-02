@@ -4,15 +4,13 @@ import ComposableArchitecture
 import SwiftUI
 import UIComponentsKit
 
-struct EmailVerifiedState: Equatable {
-}
+struct EmailVerifiedState: Equatable {}
 
 enum EmailVerifiedAction: Equatable {
     case acknowledgeEmailVerification
 }
 
-struct EmailVerifiedEnvironment: Equatable {
-}
+struct EmailVerifiedEnvironment: Equatable {}
 
 typealias EmailVerifiedReducer = Reducer<EmailVerifiedState, EmailVerifiedAction, EmailVerifiedEnvironment>
 

@@ -161,10 +161,12 @@ final class DashboardDetailsScreenPresenter {
 
     // MARK: - Setup
 
-    init(using interactor: DashboardDetailsScreenInteractor,
-         with currency: CryptoCurrency,
-         fiatCurrency: FiatCurrency,
-         router: DashboardRouter) {
+    init(
+        using interactor: DashboardDetailsScreenInteractor,
+        with currency: CryptoCurrency,
+        fiatCurrency: FiatCurrency,
+        router: DashboardRouter
+    ) {
         self.router = router
         self.currency = currency
         self.interactor = interactor

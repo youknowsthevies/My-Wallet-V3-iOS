@@ -69,13 +69,15 @@ final class RecoverFundsScreenPresenter {
     private let mnemonicEntryRelay: BehaviorRelay<String> = BehaviorRelay(value: "")
     private let stateRelay = BehaviorRelay<State>(value: .invalid(.emptyTextView))
     private let disposeBag = DisposeBag()
-    private let feedback: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
+    private let feedback = UINotificationFeedbackGenerator()
 
     // MARK: - Setup
 
-    init(navBarStyle: Screen.Style.Bar = .lightContent(),
-         leadingButton: Screen.Style.LeadingButton = .back,
-         trailingButton: Screen.Style.TrailingButton = .none) {
+    init(
+        navBarStyle: Screen.Style.Bar = .lightContent(),
+        leadingButton: Screen.Style.LeadingButton = .back,
+        trailingButton: Screen.Style.TrailingButton = .none
+    ) {
         self.navBarStyle = navBarStyle
         self.leadingButton = leadingButton
         self.trailingButton = trailingButton
@@ -98,12 +100,12 @@ final class RecoverFundsScreenPresenter {
             .disposed(by: disposeBag)
 
         stateObservable
-            .map { $0.isValid }
+            .map(\.isValid)
             .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         stateRelay.compactMap { [weak self] state -> String? in
-            guard case let .valid(values) = state else { return nil }
+            guard case .valid(let values) = state else { return nil }
             self?.feedback.prepare()
             self?.feedback.notificationOccurred(.success)
             return values.mneumonic

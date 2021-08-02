@@ -9,6 +9,7 @@ final class HorizonProxyMock: HorizonProxyAPI {
     /// Add an entry for each account you want to mock:
     /// e.g. "<id>":  AccountResponse.JSON.valid(accountID: "1", balance: "10000")
     var underlyingAccountResponseJSONMap: [String: String] = [:]
+
     func accountResponse(for accountID: String) -> Single<AccountResponse> {
         guard let json = underlyingAccountResponseJSONMap[accountID] else {
             return .error(StellarAccountError.noDefaultAccount)
@@ -23,7 +24,8 @@ final class HorizonProxyMock: HorizonProxyAPI {
         }
     }
 
-    var underlyingMinimumBalance: CryptoValue = .init(amount: 1, currency: .stellar)
+    var underlyingMinimumBalance: CryptoValue = .init(amount: 1, currency: .coin(.stellar))
+
     func minimumBalance(subentryCount: UInt) -> CryptoValue {
         underlyingMinimumBalance
     }
@@ -38,40 +40,40 @@ final class HorizonProxyMock: HorizonProxyAPI {
 }
 
 extension AccountResponse {
-    enum JSON { }
+    enum JSON {}
 }
 
 extension AccountResponse.JSON {
     static func valid(accountID: String, balance: String) -> String {
-"""
-{
-"_links": {},
-"id": "\(accountID)",
-"paging_token": "",
-"account_id": "\(accountID)",
-"sequence": "0",
-"subentry_count": 0,
-"thresholds": {
-  "low_threshold": 0,
-  "med_threshold": 0,
-  "high_threshold": 0
-},
-"flags": {
-  "auth_required": false,
-  "auth_revocable": false,
-  "auth_immutable": false
-},
-"balances": [
-  {
-    "balance": "\(balance)",
-    "buying_liabilities": "0.0000000",
-    "selling_liabilities": "0.0000000",
-    "asset_type": "native"
-  }
-],
-"signers": [],
-"data": {}
-}
-"""
+        """
+        {
+        "_links": {},
+        "id": "\(accountID)",
+        "paging_token": "",
+        "account_id": "\(accountID)",
+        "sequence": "0",
+        "subentry_count": 0,
+        "thresholds": {
+          "low_threshold": 0,
+          "med_threshold": 0,
+          "high_threshold": 0
+        },
+        "flags": {
+          "auth_required": false,
+          "auth_revocable": false,
+          "auth_immutable": false
+        },
+        "balances": [
+          {
+            "balance": "\(balance)",
+            "buying_liabilities": "0.0000000",
+            "selling_liabilities": "0.0000000",
+            "asset_type": "native"
+          }
+        ],
+        "signers": [],
+        "data": {}
+        }
+        """
     }
 }

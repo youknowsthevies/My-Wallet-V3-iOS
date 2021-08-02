@@ -38,7 +38,7 @@ final class LoadingContainerView: UIView {
         isUserInteractionEnabled = true
 
         for view in [loadingBackgroundView, loadingView] {
-            self.addSubview(view)
+            addSubview(view)
             view.layoutToSuperviewCenter()
             view.layout(size: CGSize(width: frame.min(max).width, height: frame.min(max).height))
         }
@@ -49,6 +49,7 @@ final class LoadingContainerView: UIView {
         loadingView.transform = scale
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

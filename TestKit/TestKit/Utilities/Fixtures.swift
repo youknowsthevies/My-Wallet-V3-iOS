@@ -2,7 +2,7 @@
 
 import Foundation
 
-public class Fixtures {
+public enum Fixtures {
 
     public static func load<T: Decodable>(name: String, in bundle: Bundle) -> T? {
         guard let data = loadJSONData(filename: name, in: bundle) else {
@@ -26,8 +26,8 @@ public class Fixtures {
         return String(data: data, encoding: .utf8)
     }
 
-    public static func loadJSONDictionary(name: String, in bundle: Bundle) -> [String:Any]? {
-         loadJSON(name: name, in: bundle) as? [String: Any]
+    public static func loadJSONDictionary(name: String, in bundle: Bundle) -> [String: Any]? {
+        loadJSON(name: name, in: bundle) as? [String: Any]
     }
 
     public static func loadJSONArray(name: String, in bundle: Bundle) -> [Any]? {

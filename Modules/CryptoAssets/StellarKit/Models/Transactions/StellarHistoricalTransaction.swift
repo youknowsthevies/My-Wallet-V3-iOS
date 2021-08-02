@@ -3,22 +3,20 @@
 import BigInt
 import PlatformKit
 
-enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
+enum StellarHistoricalTransaction {
 
-    public typealias Address = StellarAssetAddress
-
-    public var fee: CryptoValue? {
+    var fee: CryptoValue? {
         switch self {
         case .accountCreated(let value):
             guard let fee = value.fee else { return nil }
-            return CryptoValue(amount: BigInt(fee), currency: .stellar)
+            return CryptoValue(amount: BigInt(fee), currency: .coin(.stellar))
         case .payment(let value):
             guard let fee = value.fee else { return nil }
-            return CryptoValue(amount: BigInt(fee), currency: .stellar)
+            return CryptoValue(amount: BigInt(fee), currency: .coin(.stellar))
         }
     }
 
-    public var memo: String? {
+    var memo: String? {
         switch self {
         case .accountCreated(let value):
             return value.memo
@@ -34,7 +32,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         For Stellar, this is different than `transactionHash`.
         See [Stellar Operation Object](https://developers.stellar.org/api/resources/operations/object/) for more info.
      */
-    public var identifier: String {
+    var identifier: String {
         switch self {
         case .accountCreated(let value):
             return value.identifier
@@ -43,16 +41,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         }
     }
 
-    public var token: String {
-        switch self {
-        case .accountCreated(let value):
-            return value.identifier
-        case .payment(let value):
-            return value.identifier
-        }
-    }
-
-    public var fromAddress: Address {
+    var fromAddress: StellarAssetAddress {
         switch self {
         case .accountCreated(let value):
             return StellarAssetAddress(publicKey: value.funder)
@@ -61,7 +50,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         }
     }
 
-    public var toAddress: Address {
+    var toAddress: StellarAssetAddress {
         switch self {
         case .accountCreated(let value):
             return StellarAssetAddress(publicKey: value.account)
@@ -70,7 +59,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         }
     }
 
-    public var direction: Direction {
+    var direction: Direction {
         switch self {
         case .accountCreated(let value):
             return value.direction
@@ -79,8 +68,8 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         }
     }
 
-    public var amount: CryptoValue {
-        CryptoValue.create(majorDisplay: amountString, currency: .stellar) ?? .zero(currency: .stellar)
+    var amount: CryptoValue {
+        CryptoValue.create(majorDisplay: amountString, currency: .coin(.stellar)) ?? .zero(currency: .coin(.stellar))
     }
 
     private var amountString: String {
@@ -93,7 +82,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
     }
 
     /// The transaction hash, used in Explorer URLs.
-    public var transactionHash: String {
+    var transactionHash: String {
         switch self {
         case .accountCreated(let value):
             return value.transactionHash
@@ -102,7 +91,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         }
     }
 
-    public var createdAt: Date {
+    var createdAt: Date {
         switch self {
         case .accountCreated(let value):
             return value.createdAt
@@ -118,7 +107,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
      Historical transaction representing the creation of an account.
      See [Stellar Create Account Object](https://developers.stellar.org/api/resources/operations/object/create-account/) for more info.
      */
-    public struct AccountCreated {
+    struct AccountCreated {
 
         /// The transaction identifier, used for equality checking and backend calls.
         let identifier: String
@@ -144,7 +133,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
      Historical transaction representing a payment.
      See [Stellar Payment Object](https://developers.stellar.org/api/resources/operations/object/payment/) for more info.
      */
-    public struct Payment {
+    struct Payment {
 
         /// The transaction identifier, used for equality checking and backend calls.
         let identifier: String

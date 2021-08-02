@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import AuthenticationKit
 import DIKit
 import PlatformKit
 import RxCocoa
@@ -27,10 +28,10 @@ final class ManualPairingInteractor {
         case authorizeLoginWithEmail
 
         /// Authorize login by inserting an OTP code
-        case authorizeLoginWith2FA(AuthenticatorType)
+        case authorizeLoginWith2FA(WalletAuthenticatorType)
 
         /// Wrong OTP code
-        case wrongOtpCode(type: AuthenticatorType, attemptsLeft: Int)
+        case wrongOtpCode(type: WalletAuthenticatorType, attemptsLeft: Int)
 
         /// Account is locked
         case lockedAccount
@@ -58,10 +59,9 @@ final class ManualPairingInteractor {
         authenticationActionRelay.asObservable()
     }
 
-    // MARK: - Properties
-
     let dependencies: Dependencies
 
+    private var authenticator = Atomic<WalletAuthenticatorType>(.standard)
     private let authenticationActionRelay = PublishRelay<AuthenticationAction>()
     private let disposeBag = DisposeBag()
 
@@ -69,12 +69,31 @@ final class ManualPairingInteractor {
 
     init(dependencies: Dependencies = Dependencies()) {
         self.dependencies = dependencies
+
+        dependencies
+            .loginService
+            .authenticator
+            .distinctUntilChanged()
+            .observeOn(MainScheduler.instance)
+            .subscribe { [authenticator] authenticatorType in
+                authenticator.mutate { authenticator in
+                    authenticator = authenticatorType
+                }
+            }
+            .disposed(by: disposeBag)
     }
 
     // MARK: - API
 
+    typealias Event = AnalyticsEvents.New.Security
+
     func pair(using action: AuthenticationType = .standard) throws {
         dependencies.analyticsRecorder.record(event: AnalyticsEvents.Onboarding.walletManualLogin)
+        if case .twoFA = action {
+            dependencies.analyticsRecorder.record(
+                event: Event.verificationCodeSubmitted(twoStepOption: .mobileNumber)
+            )
+        }
 
         /// We have to call `loadJS` before starting the pairing process
         /// `true` is being sent because we only need to load the JS.
@@ -123,7 +142,7 @@ final class ManualPairingInteractor {
             .subscribe(
                 onCompleted: { [weak self] in
                     guard let self = self else { return }
-                    /// TODO: Continue refactoring wallet fetching logic
+                    // TODO: Continue refactoring wallet fetching logic
                     /// by removing `walletFetcher` reference in favor of a dedicated
                     /// Rx based service.
                     self.dependencies.walletFetcher.authenticate(
@@ -140,18 +159,19 @@ final class ManualPairingInteractor {
     /// Handles any authentication error by streaming it to the relay
     private func handleAuthentication(error: Error) {
         switch error {
-        case LoginService.ServiceError.twoFactorOTPRequired(let type):
+        case LoginServiceError.twoFactorOTPRequired(let type):
             switch type {
             case .email:
                 authenticationActionRelay.accept(.authorizeLoginWithEmail)
             default:
                 authenticationActionRelay.accept(.authorizeLoginWith2FA(type))
             }
-        case LoginService.ServiceError.wrongCode(type: let type, attemptsLeft: let attempts):
-            authenticationActionRelay.accept(.wrongOtpCode(type: type, attemptsLeft: attempts))
-        case LoginService.ServiceError.accountLocked:
+        case LoginServiceError.twoFAWalletServiceError(.wrongCode(attemptsLeft: let attempts)):
+            authenticationActionRelay.accept(.wrongOtpCode(type: authenticator.value, attemptsLeft: attempts))
+        case LoginServiceError.twoFAWalletServiceError(.accountLocked),
+             LoginServiceError.walletPayloadServiceError(.accountLocked):
             authenticationActionRelay.accept(.lockedAccount)
-        case LoginService.ServiceError.message(let message):
+        case LoginServiceError.walletPayloadServiceError(.message(let message)):
             authenticationActionRelay.accept(.message(message))
         default:
             authenticationActionRelay.accept(.error(error))
@@ -167,62 +187,38 @@ extension ManualPairingInteractor {
 
         // MARK: - Pairing dependencies
 
-        let emailAuthorizationService: EmailAuthorizationService
+        let emailAuthorizationService: EmailAuthorizationServiceAPI
         fileprivate let sessionTokenService: SessionTokenServiceAPI
         fileprivate let smsService: SMSServiceAPI
         fileprivate let loginService: LoginServiceAPI
-        fileprivate let walletFetcher: PairingWalletFetching
+        fileprivate let walletFetcher: WalletPairingFetcherAPI
 
-        /// TODO: Remove from dependencies
+        // TODO: Remove from dependencies
         fileprivate let wallet: Wallet
 
         // MARK: - General dependencies
 
-        fileprivate let analyticsRecorder: AnalyticsEventRecording
+        fileprivate let analyticsRecorder: AnalyticsEventRecorderAPI
         fileprivate let errorRecorder: ErrorRecording
 
-        init(analyticsRecorder: AnalyticsEventRecording = resolve(),
-             errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-             walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
-             twoFAWalletClient: TwoFAWalletClientAPI = TwoFAWalletClient(),
-             guidClient: GuidClientAPI = GuidClient(),
-             smsClient: SMSClientAPI = SMSClient(),
-             sessionTokenClient: SessionTokenClientAPI = SessionTokenClient(),
-             walletRepository: WalletRepositoryAPI = resolve(),
-             wallet: Wallet = WalletManager.shared.wallet,
-             walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared) {
+        init(
+            analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+            errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+            sessionTokenService: SessionTokenServiceAPI = resolve(),
+            smsService: SMSServiceAPI = resolve(),
+            emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
+            loginService: LoginServiceAPI = resolve(),
+            wallet: Wallet = WalletManager.shared.wallet,
+            walletFetcher: WalletPairingFetcherAPI = resolve()
+        ) {
             self.wallet = wallet
             self.walletFetcher = walletFetcher
             self.analyticsRecorder = analyticsRecorder
             self.errorRecorder = errorRecorder
-            sessionTokenService = SessionTokenService(
-                client: sessionTokenClient,
-                repository: walletRepository
-            )
-            smsService = SMSService(
-                client: smsClient,
-                repository: walletRepository
-            )
-            let guidService = GuidService(
-                sessionTokenRepository: walletRepository,
-                client: guidClient
-            )
-            emailAuthorizationService = EmailAuthorizationService(guidService: guidService)
-
-            let payloadService = WalletPayloadService(
-                client: walletPayloadClient,
-                repository: walletRepository
-            )
-
-            let twoFAPayloadService = TwoFAWalletService(
-                client: twoFAWalletClient,
-                repository: walletRepository
-            )
-            loginService = LoginService(
-                payloadService: payloadService,
-                twoFAPayloadService: twoFAPayloadService,
-                walletRepository: walletRepository
-            )
+            self.sessionTokenService = sessionTokenService
+            self.smsService = smsService
+            self.emailAuthorizationService = emailAuthorizationService
+            self.loginService = loginService
         }
     }
 }

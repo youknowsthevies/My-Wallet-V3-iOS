@@ -52,7 +52,6 @@ final class SecureChannelDetailsPresenter: DetailsScreenPresenterAPI {
                 }
             )
             .disposed(by: disposeBag)
-
     }
 
     func header(for section: Int) -> HeaderBuilder? {

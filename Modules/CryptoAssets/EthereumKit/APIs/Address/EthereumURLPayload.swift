@@ -11,7 +11,7 @@ public struct EthereumURLPayload: EIP67URI {
 
     private static let scheme: String = "ethereum"
 
-    public let cryptoCurrency: CryptoCurrency = .ethereum
+    public let cryptoCurrency: CryptoCurrency = .coin(.ethereum)
     public let address: String
     public private(set) var amount: String?
     public private(set) var gas: String?
@@ -43,7 +43,7 @@ public struct EthereumURLPayload: EIP67URI {
     }
 
     public init?(urlString: String) {
-        guard let components: URLComponents = URLComponents(string: urlString) else {
+        guard let components = URLComponents(string: urlString) else {
             return nil
         }
 
@@ -52,16 +52,16 @@ public struct EthereumURLPayload: EIP67URI {
         }
 
         self.components = components
-        self.address = components.path
+        address = components.path
 
         if let queryItems = components.queryItems {
             for item in queryItems {
                 if let key = QueryItemKeys(rawValue: item.name) {
                     switch key {
                     case .value:
-                        self.amount = item.value
+                        amount = item.value
                     case .gas:
-                        self.gas = item.value
+                        gas = item.value
                     }
                 }
             }

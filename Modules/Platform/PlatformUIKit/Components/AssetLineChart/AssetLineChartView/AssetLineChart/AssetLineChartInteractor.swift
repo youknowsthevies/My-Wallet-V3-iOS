@@ -31,7 +31,7 @@ public final class AssetLineChartInteractor: AssetLineChartInteracting {
             guard let self = self else { return }
             self.loadHistoricalPrices(within: priceWindow)
         })
-        .disposed(by: disposeBag)
+            .disposed(by: disposeBag)
     }()
 
     private let stateRelay = BehaviorRelay<AssetLineChart.State.Interaction>(value: .loading)
@@ -42,9 +42,11 @@ public final class AssetLineChartInteractor: AssetLineChartInteracting {
 
     // MARK: - Setup
 
-    public init(cryptoCurrency: CryptoCurrency,
-                fiatCurrency: FiatCurrency,
-                priceService: PriceServiceAPI = resolve()) {
+    public init(
+        cryptoCurrency: CryptoCurrency,
+        fiatCurrency: FiatCurrency,
+        priceService: PriceServiceAPI = resolve()
+    ) {
         self.fiatCurrency = fiatCurrency
         self.priceService = priceService
         self.cryptoCurrency = cryptoCurrency

@@ -45,11 +45,11 @@ public struct RichText: View {
 
 extension String {
 
-    struct Markup {
+    enum Markup {
         static let marks: Set<Character> = ["*", "_"]
     }
 
-    fileprivate func parseStyle(
+    private func parseStyle(
         from fromIndex: String.Index,
         to toIndex: String.Index,
         stylesQueue: [RichText.Element.Style]
@@ -74,7 +74,7 @@ extension String {
             } else {
                 style = stylesQueue.last ?? .plain
             }
-            let substring = String(self[substringStart ..< current])
+            let substring = String(self[substringStart..<current])
             results.append(.init(content: substring, style: style))
         }
 

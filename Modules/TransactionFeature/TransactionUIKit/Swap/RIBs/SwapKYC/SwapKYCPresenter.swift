@@ -49,18 +49,24 @@ final class SwapKYCPresenter: DetailsScreenPresenterAPI {
         headers = [
             0: AccountPickerHeaderBuilder(headerType: .default(model))
         ]
-        let one = BadgeNumberedItemViewModel(number: 1,
-                                             title: LocalizedString.KYC.card1Title,
-                                             description: LocalizedString.KYC.card1Subtitle,
-                                             descriptors: .dashboard(badgeAccessibilitySuffix: "swap."))
-        let two = BadgeNumberedItemViewModel(number: 2,
-                                             title: LocalizedString.KYC.card2Title,
-                                             description: LocalizedString.KYC.card2Subtitle,
-                                             descriptors: .dashboard(badgeAccessibilitySuffix: "swap."))
-        let three = BadgeNumberedItemViewModel(number: 3,
-                                               title: LocalizedString.KYC.card3Title,
-                                               description: LocalizedString.KYC.card3Subtitle,
-                                               descriptors: .dashboard(badgeAccessibilitySuffix: "swap."))
+        let one = BadgeNumberedItemViewModel(
+            number: 1,
+            title: LocalizedString.KYC.card1Title,
+            description: LocalizedString.KYC.card1Subtitle,
+            descriptors: .dashboard(badgeAccessibilitySuffix: "swap.")
+        )
+        let two = BadgeNumberedItemViewModel(
+            number: 2,
+            title: LocalizedString.KYC.card2Title,
+            description: LocalizedString.KYC.card2Subtitle,
+            descriptors: .dashboard(badgeAccessibilitySuffix: "swap.")
+        )
+        let three = BadgeNumberedItemViewModel(
+            number: 3,
+            title: LocalizedString.KYC.card3Title,
+            description: LocalizedString.KYC.card3Subtitle,
+            descriptors: .dashboard(badgeAccessibilitySuffix: "swap.")
+        )
         cells = [
             .numbered(one),
             .numbered(two),
@@ -73,9 +79,9 @@ final class SwapKYCPresenter: DetailsScreenPresenterAPI {
         ]
         verifyNowButton
             .tap
-            .emit { (_) in
+            .emit { _ in
                 let kycRouter: KYCRouterAPI = resolve()
-                kycRouter.start()
+                kycRouter.start(parentFlow: .swap)
             }
             .disposed(by: disposeBag)
     }

@@ -40,22 +40,22 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
     // MARK: Private Properties
 
     fileprivate var detailsCoordinator: PersonalDetailsCoordinator!
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
     private var user: NabuUser?
 
     // MARK: Overrides
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCPersonalDetailsController {
+    override class func make(with coordinator: KYCRouter) -> KYCPersonalDetailsController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.user = coordinator.user
         controller.pageType = .profile
         return controller
     }
 
     override func apply(model: KYCPageModel) {
-        guard case let .personalDetails(user) = model else { return }
+        guard case .personalDetails(let user) = model else { return }
 
         self.user = user
 
@@ -90,7 +90,7 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
             this.primaryButtonTapped()
         }
 
-        validationFields.enumerated().forEach { (index, field) in
+        validationFields.enumerated().forEach { index, field in
             field.returnTappedBlock = { [weak self] in
                 guard let this = self else { return }
                 this.updateProgress(this.progression())
@@ -111,7 +111,7 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
         let bar = UIToolbar()
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissKeyboard))
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
-        bar.items = [ flexibleSpace, doneButton ]
+        bar.items = [flexibleSpace, doneButton]
         bar.sizeToFit()
 
         validationFields.forEach { $0.accessoryView = bar }
@@ -153,16 +153,16 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
     }
 
     fileprivate func progression() -> Float {
-        let newProgression: Float = validationFields.map({
+        let newProgression: Float = validationFields.map {
             $0.validate() == .valid ? 0.14 : 0.0
-        })
+        }
         .reduce(startingValue, +)
         return max(newProgression, startingValue)
     }
 
     fileprivate func primaryButtonTapped() {
         guard checkFieldsValidity() else { return }
-        validationFields.forEach({ $0.resignFocus() })
+        validationFields.forEach { $0.resignFocus() }
 
         let details = KYCUpdatePersonalDetailsRequest(
             firstName: firstNameField.text,
@@ -176,7 +176,7 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
 
         delegate?.onSubmission(details, completion: { [weak self] in
             guard let this = self else { return }
-            this.coordinator.handle(event: .nextPageFromPageType(this.pageType, nil))
+            this.router.handle(event: .nextPageFromPageType(this.pageType, nil))
         })
     }
 }
@@ -201,8 +201,7 @@ extension KYCPersonalDetailsController: PersonalDetailsInterface {
 }
 
 extension KYCPersonalDetailsController: UIScrollViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-    }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {}
 }
 
 extension NabuUser {

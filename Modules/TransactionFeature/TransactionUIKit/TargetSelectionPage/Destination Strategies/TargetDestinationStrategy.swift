@@ -6,8 +6,10 @@ import ToolKit
 
 /// Types adopting the `TargetDestinationsStrategyAPI` should provide a way to output an array of `TargetSelectionPageSectionModel` items
 protocol TargetDestinationsStrategyAPI {
-    func sections(interactors: [TargetSelectionPageCellItem.Interactor],
-                  action: AssetAction) -> [TargetSelectionPageSectionModel]
+    func sections(
+        interactors: [TargetSelectionPageCellItem.Interactor],
+        action: AssetAction
+    ) -> [TargetSelectionPageSectionModel]
 }
 
 // MARK: - Main Concrete Class
@@ -22,8 +24,10 @@ struct TargetDestinationSections: TargetDestinationsStrategyAPI {
         self.strategy = strategy
     }
 
-    func sections(interactors: [TargetSelectionPageCellItem.Interactor],
-                  action: AssetAction) -> [TargetSelectionPageSectionModel] {
+    func sections(
+        interactors: [TargetSelectionPageCellItem.Interactor],
+        action: AssetAction
+    ) -> [TargetSelectionPageSectionModel] {
         strategy.sections(interactors: interactors, action: action)
     }
 }
@@ -47,45 +51,9 @@ private enum TargetDestinationTitle {
     }
 }
 
-// MARK: - Trading Source DestinationStrategy
-
-struct TradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
-
-    private typealias LocalizationIds = LocalizationConstants.Transaction.TargetSource
-
-    private let sourceAccount: SingleAccount
-
-    init(sourceAccount: SingleAccount) {
-        self.sourceAccount = sourceAccount
-    }
-
-    func sections(interactors: [TargetSelectionPageCellItem.Interactor],
-                  action: AssetAction) -> [TargetSelectionPageSectionModel] {
-        guard action == .send else {
-            fatalError("given action: \(action) is not supported")
-        }
-        let items = interactors.map { interactor in
-            TargetSelectionPageCellItem(interactor: interactor, assetAction: action)
-        }
-        let currency = sourceAccount.currencyType.name
-        let code = sourceAccount.currencyType.displayCode
-        let title = LocalizationIds.Card.internalSendOnly
-        let description = String(
-            format: LocalizationIds.Card.description, currency, code, code, currency
-        )
-        let cardItem = TargetSelectionPageCellItem(
-            cardView: .transactionViewModel(
-                with: title,
-                description: description
-            )
-        )
-        return [.destination(header: provideSectionHeader(action: action, title: .to), items: [cardItem] + items)]
-    }
-}
-
 // MARK: - Non Trading Source DestinationStrategy
 
-struct NonTradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
+struct AnySourceDestinationStrategy: TargetDestinationsStrategyAPI {
 
     private let sourceAccount: SingleAccount
 
@@ -93,8 +61,10 @@ struct NonTradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
         self.sourceAccount = sourceAccount
     }
 
-    func sections(interactors: [TargetSelectionPageCellItem.Interactor],
-                  action: AssetAction) -> [TargetSelectionPageSectionModel] {
+    func sections(
+        interactors: [TargetSelectionPageCellItem.Interactor],
+        action: AssetAction
+    ) -> [TargetSelectionPageSectionModel] {
 
         let additionalWallets = interactors.compactMap { interactor -> TargetSelectionPageCellItem? in
             if !interactor.isWalletInputField {

@@ -32,7 +32,7 @@ public final class InterestAccountDetailsScreenPresenter {
         interactor
             .interactors
             .map { interactors -> [DetailCellPresenter] in
-                interactors.enumerated().map { [unowned self] (index, interactor) in
+                interactors.enumerated().map { [unowned self] index, interactor in
                     switch interactor {
                     case .balance(let balanceCellInteractor):
                         let presenter: CurrentBalanceCellPresenter = .init(
@@ -74,9 +74,9 @@ public final class InterestAccountDetailsScreenPresenter {
 
     public init(interactor: InterestAccountDetailsScreenInteractor) {
         self.interactor = interactor
-        self.footerPresenter = .init(
+        footerPresenter = .init(
             text: String(
-                format:  LocalizationId.Cell.Footer.title,
+                format: LocalizationId.Cell.Footer.title,
                 interactor.cryptoCurrency.code
             ),
             accessibility: .id(AccessibilityId.footerCellTitle)

@@ -7,8 +7,8 @@ public struct KYCUpdatePersonalDetailsRequest: Codable {
     public let birthday: Date?
 
     private enum CodingKeys: String, CodingKey {
-        case firstName = "firstName"
-        case lastName = "lastName"
+        case firstName
+        case lastName
         case birthday = "dob"
     }
 

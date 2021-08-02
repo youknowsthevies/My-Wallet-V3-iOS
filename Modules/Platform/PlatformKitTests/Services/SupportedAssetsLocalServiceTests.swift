@@ -76,8 +76,10 @@ class SupportedAssetsLocalServiceTests: XCTestCase {
         let dirPath = NSTemporaryDirectory()
         let uuid = UUID().uuidString
         let filePath = "\(dirPath)/\(uuid).json"
-        FileManager.default.createFile(atPath: filePath,
-                                       contents: "{\"currencies\":[]}".data(using: .utf8))
+        FileManager.default.createFile(
+            atPath: filePath,
+            contents: "{\"currencies\":[]}".data(using: .utf8)
+        )
         return filePath
     }
 
@@ -85,8 +87,10 @@ class SupportedAssetsLocalServiceTests: XCTestCase {
         let dirPath = NSTemporaryDirectory()
         let uuid = UUID().uuidString
         let filePath = "\(dirPath)/\(uuid).json"
-        FileManager.default.createFile(atPath: filePath,
-                                       contents: "".data(using: .utf8))
+        FileManager.default.createFile(
+            atPath: filePath,
+            contents: "".data(using: .utf8)
+        )
         return filePath
     }
 }

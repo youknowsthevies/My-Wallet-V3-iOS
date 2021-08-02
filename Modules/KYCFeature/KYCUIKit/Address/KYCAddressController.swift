@@ -26,6 +26,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     @IBOutlet fileprivate var requiredLabel: UILabel!
 
     // MARK: Private IBOutlets (ValidationTextField)
+
     @IBOutlet fileprivate var addressTextField: ValidationTextField!
     @IBOutlet fileprivate var apartmentTextField: ValidationTextField!
     @IBOutlet fileprivate var cityTextField: ValidationTextField!
@@ -35,7 +36,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     @IBOutlet fileprivate var primaryButtonContainer: PrimaryButtonContainer!
 
     private let webViewService: WebViewServiceAPI = resolve()
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
     // MARK: - Public IBOutlets
 
@@ -43,9 +44,9 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCAddressController {
+    override class func make(with coordinator: KYCRouter) -> KYCAddressController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .address
         return controller
     }
@@ -78,16 +79,16 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     private var country: CountryData?
     private var states: [KYCState] = []
 
-    // MARK: KYCCoordinatorDelegate
+    // MARK: KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
-        guard case let .address(user, country, states) = model else { return }
+        guard case .address(let user, let country, let states) = model else { return }
         self.user = user
         self.country = country
         self.states = states
         if let country = self.country {
             stateTextField.options = states
-                .map({ ValidationPickerField.PickerItem($0) })
+                .map { ValidationPickerField.PickerItem($0) }
                 .sorted(by: { $0.title < $1.title })
             updateStateAndRegionFieldsVisibility()
             validationFieldsPlaceholderSetup(country.code)
@@ -145,7 +146,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
         let bar = UIToolbar()
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissKeyboard))
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
-        bar.items = [ flexibleSpace, doneButton ]
+        bar.items = [flexibleSpace, doneButton]
         bar.sizeToFit()
 
         validationFields.forEach { $0.accessoryView = bar }
@@ -162,11 +163,13 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
             return
         }
         if let tosRange = text.range(of: LocalizationConstants.tos),
-            sender.didTapAttributedText(in: labelFooter, range: NSRange(tosRange, in: text)) {
+           sender.didTapAttributedText(in: labelFooter, range: NSRange(tosRange, in: text))
+        {
             webViewService.openSafari(url: Constants.Url.termsOfService, from: self)
         }
         if let privacyPolicyRange = text.range(of: LocalizationConstants.privacyPolicy),
-            sender.didTapAttributedText(in: labelFooter, range: NSRange(privacyPolicyRange, in: text)) {
+           sender.didTapAttributedText(in: labelFooter, range: NSRange(privacyPolicyRange, in: text))
+        {
             webViewService.openSafari(url: Constants.Url.privacyPolicy, from: self)
         }
     }
@@ -218,7 +221,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
         postalCodeTextField.returnKeyType = .done
         postalCodeTextField.contentType = .postalCode
 
-        validationFields.enumerated().forEach { (index, field) in
+        validationFields.enumerated().forEach { index, field in
             field.returnTappedBlock = { [weak self] in
                 guard let this = self else { return }
                 guard this.validationFields.count > index + 1 else {
@@ -287,7 +290,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
         analyticsRecorder.record(event: AnalyticsEvents.KYC.kycAddressDetailSet)
 
-        validationFields.forEach({ $0.resignFocus() })
+        validationFields.forEach { $0.resignFocus() }
 
         let address = UserAddress(
             lineOne: addressTextField.text ?? "",
@@ -299,7 +302,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
         )
         searchDelegate?.onSubmission(address, completion: { [weak self] in
             guard let this = self else { return }
-            this.coordinator.handle(event: .nextPageFromPageType(this.pageType, nil))
+            this.router.handle(event: .nextPageFromPageType(this.pageType, nil))
         })
     }
 }
@@ -462,6 +465,6 @@ extension KYCAddressController: UISearchBarDelegate {
 
 extension KYCAddressController: UIScrollViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        validationFields.forEach({ $0.resignFocus() })
+        validationFields.forEach { $0.resignFocus() }
     }
 }

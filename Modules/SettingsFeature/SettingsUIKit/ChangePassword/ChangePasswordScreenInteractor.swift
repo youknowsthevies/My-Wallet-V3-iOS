@@ -1,5 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
+import AuthenticationKit
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -50,12 +53,17 @@ final class ChangePasswordScreenInteractor {
     private let stateRelay = BehaviorRelay<State>(value: .unknown)
     private let currentPasswordRelay = BehaviorRelay<String>(value: "")
     private let passwordRepository: PasswordRepositoryAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
-    init(passwordAPI: PasswordRepositoryAPI) {
-        self.passwordRepository = passwordAPI
+    init(
+        passwordAPI: PasswordRepositoryAPI,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
+        passwordRepository = passwordAPI
+        self.analyticsRecorder = analyticsRecorder
 
         passwordRepository.hasPassword
             .observeOn(MainScheduler.instance)
@@ -95,15 +103,17 @@ final class ChangePasswordScreenInteractor {
             .subscribe(
                 onCompleted: { [weak self] in
                     self?.stateRelay.accept(.complete)
+                    self?.analyticsRecorder.record(event: AnalyticsEvents.New.Security.accountPasswordChanged)
                 },
-                onError: { [weak self] (_) in
+                onError: { [weak self] _ in
                     self?.stateRelay.accept(.failed)
-                })
+                }
+            )
             .disposed(by: disposeBag)
     }
 
     private func update(state: State) -> Completable {
-        Completable.create { [weak self] (observer) -> Disposable in
+        Completable.create { [weak self] observer -> Disposable in
             self?.stateRelay.accept(state)
             observer(.completed)
             return Disposables.create()

@@ -31,16 +31,18 @@ public final class KYCTiersViewController: UIViewController {
     fileprivate var layoutAttributes: LayoutAttributes = .tiersOverview
     fileprivate var coordinator: KYCTiersCoordinator!
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     fileprivate var disposable: Disposable?
 
     // MARK: Public Properties
 
     private var pageModel: KYCTiersPageModel
     public var selectedTier: ((KYC.Tier) -> Void)?
+    public let parentFlow: KYCParentFlow
 
-    public init(pageModel: KYCTiersPageModel, title: String = LocalizationConstants.KYC.accountLimits) {
+    public init(pageModel: KYCTiersPageModel, parentFlow: KYCParentFlow, title: String = LocalizationConstants.KYC.accountLimits) {
         self.pageModel = pageModel
+        self.parentFlow = parentFlow
         super.init(nibName: nil, bundle: nil)
         self.title = title
     }
@@ -58,7 +60,7 @@ public final class KYCTiersViewController: UIViewController {
         disposable = nil
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         layout = UICollectionViewFlowLayout()
         collectionView = UICollectionView(frame: view.frame, collectionViewLayout: layout)
@@ -155,8 +157,9 @@ extension KYCTiersViewController: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let item = pageModel.cells[indexPath.row]
         guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: KYCTierCell.identifier,
-                for: indexPath) as? KYCTierCell else {
+            withReuseIdentifier: KYCTierCell.identifier,
+            for: indexPath
+        ) as? KYCTierCell else {
             return UICollectionViewCell()
         }
         cell.delegate = self
@@ -191,7 +194,8 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
     public func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
         let model = pageModel.cells[indexPath.row]
         let width = collectionView.bounds.size.width - layoutAttributes.sectionInsets.left - layoutAttributes.sectionInsets.right
         let height = KYCTierCell.heightForProposedWidth(width, model: model)
@@ -200,8 +204,8 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
 
     public func collectionView(
         _ collectionView: UICollectionView,
-        viewForSupplementaryElementOfKind
-            kind: String,
+        viewForSupplementaryElementOfKind kind: String,
+
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
         switch kind {
@@ -243,7 +247,11 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
             for: collectionView.bounds.width,
             model: pageModel.header
         )
-        let width = collectionView.bounds.size.width - layoutAttributes.sectionInsets.left - layoutAttributes.sectionInsets.right
+        let width =
+            collectionView.bounds.size.width
+                - layoutAttributes.sectionInsets.left
+                - layoutAttributes.sectionInsets.right
+
         return CGSize(width: width, height: height)
     }
 
@@ -257,22 +265,26 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
             for: disclaimer,
             width: collectionView.bounds.width
         )
-        let width = collectionView.bounds.size.width - layoutAttributes.sectionInsets.left - layoutAttributes.sectionInsets.right
+        let width =
+            collectionView.bounds.size.width
+                - layoutAttributes.sectionInsets.left
+                - layoutAttributes.sectionInsets.right
+
         return CGSize(width: width, height: height)
     }
 }
 
 extension KYCTiersViewController: KYCTierCellDelegate {
     func tierCell(_ cell: KYCTierCell, selectedTier: KYC.Tier) {
-        /// When a user is selecting a tier from `Swap` (which only happens
-        /// when the user isn't KYC approved) we want to present KYC from the applications
-        /// rootViewController rather than from `self`.
+        // When a user is selecting a tier from `Swap` (which only happens
+        // when the user isn't KYC approved) we want to present KYC from the applications
+        // rootViewController rather than from `self`.
         if let block = self.selectedTier {
             block(selectedTier)
         } else {
             let kycRouter: KYCRouterAPI = resolve()
             guard let viewController = UIApplication.shared.keyWindow?.rootViewController?.topMostViewController else { return }
-            kycRouter.start(from: viewController, tier: selectedTier, parentFlow: .none)
+            kycRouter.start(tier: selectedTier, parentFlow: parentFlow, from: viewController)
         }
     }
 }
@@ -314,7 +326,7 @@ extension KYCTiersViewController {
 
                 return Single.zip(tradeLimits, tiersService.tiers, .just(fiatCurrency))
             }
-            .map { (tradeLimits, tiers, fiatCurrency) -> (FiatValue, KYC.UserTiers) in
+            .map { tradeLimits, tiers, fiatCurrency -> (FiatValue, KYC.UserTiers) in
                 guard tiers.tierAccountStatus(for: .tier1).isApproved else {
                     return (FiatValue.zero(currency: fiatCurrency), tiers)
                 }
@@ -324,7 +336,7 @@ extension KYCTiersViewController {
                 )
                 return (maxTradableToday, tiers)
             }
-            .map { (maxTradableToday, tiers) -> KYCTiersPageModel in
+            .map { maxTradableToday, tiers -> KYCTiersPageModel in
                 KYCTiersPageModel.make(tiers: tiers, maxTradableToday: maxTradableToday, suppressCTA: true)
             }
     }
@@ -335,7 +347,7 @@ extension KYCTiersViewController {
         tiersPageModel()
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { model in
-                let controller = KYCTiersViewController(pageModel: model)
+                let controller = KYCTiersViewController(pageModel: model, parentFlow: .settings)
                 if let from = fromViewController as? UINavigationController {
                     from.pushViewController(controller, animated: true)
                     return

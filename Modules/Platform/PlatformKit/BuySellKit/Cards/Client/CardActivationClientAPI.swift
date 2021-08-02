@@ -3,6 +3,8 @@
 import RxSwift
 
 public protocol CardActivationClientAPI: AnyObject {
-    func activateCard(by id: String,
-                      url: String) -> Single<ActivateCardResponse.Partner>
+    func activateCard(
+        by id: String,
+        url: String
+    ) -> Single<ActivateCardResponse.Partner>
 }

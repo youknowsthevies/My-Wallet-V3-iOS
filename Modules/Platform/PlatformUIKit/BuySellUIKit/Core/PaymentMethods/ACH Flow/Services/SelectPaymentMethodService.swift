@@ -23,8 +23,10 @@ public final class SelectPaymentMethodService {
             .map { payload in
                 let (isUserEligibleForFunds, methods, fiatCurrency) = payload
                 return methods
-                    .filterValidForBuy(currentWalletCurrency: fiatCurrency,
-                                       accountForEligibility: isUserEligibleForFunds)
+                    .filterValidForBuy(
+                        currentWalletCurrency: fiatCurrency,
+                        accountForEligibility: isUserEligibleForFunds
+                    )
             }
     }
 
@@ -56,9 +58,11 @@ public final class SelectPaymentMethodService {
 
     // MARK: - Setup
 
-    public init(paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
-                fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-                kycTiers: KYCTiersServiceAPI = resolve()) {
+    public init(
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        kycTiers: KYCTiersServiceAPI = resolve()
+    ) {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiers = kycTiers

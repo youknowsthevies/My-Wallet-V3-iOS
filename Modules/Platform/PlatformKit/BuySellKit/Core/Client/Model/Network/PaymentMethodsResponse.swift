@@ -19,7 +19,7 @@ struct PaymentMethodsResponse: Decodable {
 
             // MARK: - Init
 
-            public init(from decoder: Decoder) throws {
+            init(from decoder: Decoder) throws {
                 let values = try decoder.container(keyedBy: CodingKeys.self)
                 let availableValue = try values.decode(Int.self, forKey: .available)
                 let limitValue = try values.decode(Int.self, forKey: .limit)
@@ -52,11 +52,13 @@ struct PaymentMethodsResponse: Decodable {
 
             // MARK: - Init
 
-            public init(min: String,
-                        max: String,
-                        annual: Limits? = nil,
-                        daily: Limits? = nil,
-                        weekly: Limits? = nil) {
+            init(
+                min: String,
+                max: String,
+                annual: Limits? = nil,
+                daily: Limits? = nil,
+                weekly: Limits? = nil
+            ) {
                 self.min = min
                 self.max = max
                 self.annual = annual
@@ -64,7 +66,7 @@ struct PaymentMethodsResponse: Decodable {
                 self.weekly = weekly
             }
 
-            public init(from decoder: Decoder) throws {
+            init(from decoder: Decoder) throws {
                 let values = try decoder.container(keyedBy: CodingKeys.self)
                 min = try values.decode(String.self, forKey: .min)
                 max = try values.decode(String.self, forKey: .max)

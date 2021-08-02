@@ -10,9 +10,10 @@ import RxSwift
 import ToolKit
 
 protocol WithdrawRootInteractable: Interactable,
-                                   TransactionFlowListener,
-                                   AddNewBankAccountListener,
-                                   PaymentMethodListener {
+    TransactionFlowListener,
+    AddNewBankAccountListener,
+    PaymentMethodListener
+{
     var router: WithdrawRootRouting? { get set }
     var listener: WithdrawRootListener? { get set }
 
@@ -33,9 +34,11 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawRootInteractable>, WithdrawR
 
     // MARK: - Init
 
-    init(interactor: WithdrawRootInteractable,
-         topMostViewControllerProviding: TopMostViewControllerProviding = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        interactor: WithdrawRootInteractable,
+        topMostViewControllerProviding: TopMostViewControllerProviding = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.topMostViewControllerProviding = topMostViewControllerProviding
         self.analyticsRecorder = analyticsRecorder
         super.init(interactor: interactor)
@@ -44,7 +47,7 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawRootInteractable>, WithdrawR
 
     // MARK: - Overrides
 
-    public override func didLoad() {
+    override func didLoad() {
         super.didLoad()
         interactor.activate()
     }

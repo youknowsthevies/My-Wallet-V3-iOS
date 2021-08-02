@@ -45,9 +45,9 @@ class KYCConfirmEmailController: KYCBaseViewController, BottomButtonContainerVie
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCConfirmEmailController {
+    override class func make(with coordinator: KYCRouter) -> KYCConfirmEmailController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .confirmEmail
         return controller
     }
@@ -139,6 +139,6 @@ extension KYCConfirmEmailController: EmailConfirmationInterface {
 
     func emailVerifiedSuccess() {
         Logger.shared.info("Email is verified.")
-        coordinator.handle(event: .nextPageFromPageType(pageType, nil))
+        router.handle(event: .nextPageFromPageType(pageType, nil))
     }
 }

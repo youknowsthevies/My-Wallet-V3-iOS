@@ -9,7 +9,7 @@ import RIBs
 import RxSwift
 import ToolKit
 
-protocol SwapRootListener: ViewListener { }
+protocol SwapRootListener: ViewListener {}
 
 final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListener, SwapLandingListener, TransactionFlowListener {
 
@@ -19,8 +19,10 @@ final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListe
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     weak var router: SwapRootRouting?
 
-    init(kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.kycTiersPageModelFactory = kycTiersPageModelFactory
         self.analyticsRecorder = analyticsRecorder
         super.init()

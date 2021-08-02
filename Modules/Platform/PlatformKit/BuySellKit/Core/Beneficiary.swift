@@ -5,6 +5,7 @@ public struct Beneficiary {
         case funds
         case linkedBank
     }
+
     public let type: AccountType
     public let currency: FiatCurrency
     public let name: String
@@ -13,12 +14,12 @@ public struct Beneficiary {
     public let limit: FiatValue?
 
     init?(response: BeneficiaryResponse, limit: FiatValue?) {
-        self.type = .funds
-        self.identifier = response.id
-        self.name = response.name
+        type = .funds
+        identifier = response.id
+        name = response.name
         var address = response.address
         address.removeAll { $0 == "*" }
-        self.account = address
+        account = address
         self.limit = limit
         guard let currency = FiatCurrency(code: response.currency) else {
             return nil
@@ -27,15 +28,15 @@ public struct Beneficiary {
     }
 
     init(linkedBankData: LinkedBankData) {
-        self.identifier = linkedBankData.identifier
-        self.currency = linkedBankData.currency
-        self.type = .linkedBank
+        identifier = linkedBankData.identifier
+        currency = linkedBankData.currency
+        type = .linkedBank
         let bankName = linkedBankData.account?.bankName ?? ""
         let accountType = linkedBankData.account?.type.title ?? ""
         let accountNumber = linkedBankData.account?.number ?? ""
-        self.name = "\(bankName)"
-        self.account = "\(accountType) \(accountNumber)"
-        self.limit = nil
+        name = "\(bankName)"
+        account = "\(accountType) \(accountNumber)"
+        limit = nil
     }
 }
 

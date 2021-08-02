@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
+import DIKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
@@ -20,15 +22,21 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
     fileprivate var badgeShimmeringView: ShimmeringView!
     private var keyboardInteractionController: KeyboardInteractionController!
     private let presenter: UpdateMobileScreenPresenter
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
-    init(presenter: UpdateMobileScreenPresenter) {
+    init(
+        presenter: UpdateMobileScreenPresenter,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.presenter = presenter
+        self.analyticsRecorder = analyticsRecorder
         super.init(nibName: UpdateMobileScreenViewController.objectName, bundle: Bundle(for: Self.self))
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -36,32 +44,38 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         shimmer()
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: .none)
+            trailingButtonStyle: .none
+        )
         titleViewStyle = presenter.titleView
         keyboardInteractionController = KeyboardInteractionController(in: self)
         descriptionLabel.content = presenter.descriptionLabel
         mobileNumberTextFieldView.setup(
-            viewModel: presenter.textField,
+            viewModel: presenter.textFieldViewModel,
             keyboardInteractionController: keyboardInteractionController
         )
         continueButtonView.viewModel = presenter.continueButtonViewModel
         updateButtonView.viewModel = presenter.updateButtonViewModel
         disable2FALabel.content = presenter.disable2FALabel
 
+        mobileNumberTextFieldView.isEmpty
+            ? analyticsRecorder.record(event: AnalyticsEvents.New.Settings.addMobileNumberClicked)
+            : analyticsRecorder.record(event: AnalyticsEvents.New.Settings.changeMobileNumberClicked)
+
         presenter.disable2FASMSVisibility
-            .map { $0.isHidden }
+            .map(\.isHidden)
             .drive(disable2FALabel.rx.isHidden)
             .disposed(by: disposeBag)
 
         presenter.continueVisibility
-            .map { $0.isHidden }
+            .map(\.isHidden)
             .drive(continueButtonView.rx.isHidden)
             .disposed(by: disposeBag)
 
         presenter.updateVisibility
-            .map { $0.isHidden }
+            .map(\.isHidden)
             .drive(updateButtonView.rx.isHidden)
             .disposed(by: disposeBag)
 
@@ -73,7 +87,7 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
     /// Should be called once when the parent view loads
     private func shimmer() {
         badgeShimmeringView = ShimmeringView(
-            in: self.view,
+            in: view,
             anchorView: badgeView,
             size: .init(width: 75, height: 24)
         )

@@ -53,5 +53,4 @@ class PaymentAccountEURTests: XCTestCase {
         XCTAssertEqual(account!.bankCode, mock.agent.code, "its bankCode comes from response.agent")
         XCTAssertEqual(account!.recipientName, mock.agent.recipient, "its recipientName comes from response.agent")
     }
-
 }

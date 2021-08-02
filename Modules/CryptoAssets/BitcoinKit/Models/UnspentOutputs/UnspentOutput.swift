@@ -31,14 +31,16 @@ struct UnspentOutput: Equatable {
 
     let isForceInclude: Bool
 
-    init(hash: String,
-         script: String,
-         value: BitcoinValue,
-         confirmations: UInt,
-         transactionIndex: Int,
-         xpub: XPub,
-         isReplayable: Bool,
-         isForceInclude: Bool = false) {
+    init(
+        hash: String,
+        script: String,
+        value: BitcoinValue,
+        confirmations: UInt,
+        transactionIndex: Int,
+        xpub: XPub,
+        isReplayable: Bool,
+        isForceInclude: Bool = false
+    ) {
         self.hash = hash
         self.script = script
         self.value = value
@@ -59,21 +61,21 @@ extension UnspentOutput {
             throw UnspentOutputError.invalidValue
         }
         let value = try BitcoinValue(satoshis: satoshis)
-        self.hash = response.tx_hash
-        self.script = response.script
+        hash = response.tx_hash
+        script = response.script
         self.value = value
-        self.confirmations = response.confirmations
-        self.transactionIndex = response.tx_index
-        self.xpub = XPub(responseXPub: response.xpub)
-        self.isReplayable = response.replayable ?? false
-        self.isForceInclude = false
+        confirmations = response.confirmations
+        transactionIndex = response.tx_index
+        xpub = XPub(responseXPub: response.xpub)
+        isReplayable = response.replayable ?? false
+        isForceInclude = false
     }
 }
 
 extension UnspentOutput.XPub {
     init(responseXPub: UnspentOutputResponse.XPub) {
-        self.m = responseXPub.m
-        self.path = responseXPub.path
+        m = responseXPub.m
+        path = responseXPub.path
     }
 }
 
@@ -93,8 +95,8 @@ extension Array where Element == UnspentOutput {
         guard !isEmpty else {
             return BigUInt.zero
         }
-        return map { $0.magnitude }
-            .reduce(BigUInt.zero) { (value, acc) -> BigUInt in
+        return map(\.magnitude)
+            .reduce(BigUInt.zero) { value, acc -> BigUInt in
                 value + acc
             }
     }

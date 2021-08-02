@@ -10,15 +10,23 @@ enum TransactionAction: MviAction {
 
     case initialiseWithNoSourceOrTargetAccount(action: AssetAction, passwordRequired: Bool)
     case initialiseWithSourceAccount(action: AssetAction, sourceAccount: BlockchainAccount, passwordRequired: Bool)
-    case initialiseWithSourceAndPreferredTarget(action: AssetAction,
-                                                sourceAccount: BlockchainAccount,
-                                                target: TransactionTarget,
-                                                passwordRequired: Bool)
-    case initialiseWithSourceAndTargetAccount(action: AssetAction,
-                                              sourceAccount: BlockchainAccount,
-                                              target: TransactionTarget,
-                                              passwordRequired: Bool)
+    case initialiseWithSourceAndPreferredTarget(
+        action: AssetAction,
+        sourceAccount: BlockchainAccount,
+        target: TransactionTarget,
+        passwordRequired: Bool
+    )
+    case initialiseWithSourceAndTargetAccount(
+        action: AssetAction,
+        sourceAccount: BlockchainAccount,
+        target: TransactionTarget,
+        passwordRequired: Bool
+    )
     case initialiseWithTargetAndNoSource(action: AssetAction, target: TransactionTarget, passwordRequired: Bool)
+    case bankLinkingFlowDismissed(AssetAction)
+    case showBankLinkingFlow
+    case bankAccountLinkedFromSource(BlockchainAccount, AssetAction)
+    case bankAccountLinked(AssetAction)
     case sourceAccountSelected(BlockchainAccount)
     case targetAccountSelected(TransactionTarget)
     case availableSourceAccountsListUpdated([BlockchainAccount])
@@ -36,12 +44,15 @@ enum TransactionAction: MviAction {
     case fatalTransactionError(Error)
     case validateTransaction
     case resetFlow
+    case showSourceSelection
     case showTargetSelection
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
     case modifyTransactionConfirmation(TransactionConfirmation)
     case invalidateTransaction
 
+    // TODO: Clean up this function
+    // swiftlint:disable function_body_length
     func reduce(oldState: TransactionState) -> TransactionState {
         switch self {
         case .pendingTransactionStarted(let allowFiatInput):
@@ -52,7 +63,30 @@ enum TransactionAction: MviAction {
             return newState.withUpdatedBackstack(oldState: oldState)
         case .updateFeeLevelAndAmount:
             return oldState
-        case let .initialiseWithSourceAndTargetAccount(action, sourceAccount, target, passwordRequired):
+        case .showBankLinkingFlow:
+            var newState = oldState
+            newState.step = .linkABank
+            return newState.withUpdatedBackstack(oldState: oldState)
+        case .bankAccountLinkedFromSource:
+            var newState = oldState
+            newState.step = .selectTarget
+            return newState.withUpdatedBackstack(oldState: oldState)
+        case .bankAccountLinked:
+            var newState = oldState
+            newState.step = .selectTarget
+            return newState.withUpdatedBackstack(oldState: oldState)
+        case .bankLinkingFlowDismissed(let action):
+            var newState = oldState
+            switch action {
+            case .withdraw:
+                newState.step = .selectTarget
+            case .deposit:
+                newState.step = .selectSource
+            default:
+                unimplemented()
+            }
+            return newState
+        case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, let passwordRequired):
             /// If the user scans a BitPay QR code, the account will be a
             /// BitPayInvoiceTarget. This means we do not proceed to the enter amount
             /// screen but rather the confirmation detail screen.
@@ -66,7 +100,7 @@ enum TransactionAction: MviAction {
                 source: sourceAccount,
                 step: step
             ).withUpdatedBackstack(oldState: oldState)
-        case let .initialiseWithSourceAndPreferredTarget(action, sourceAccount, target, passwordRequired):
+        case .initialiseWithSourceAndPreferredTarget(let action, let sourceAccount, let target, let passwordRequired):
             return TransactionState(
                 action: action,
                 destination: target,
@@ -75,7 +109,7 @@ enum TransactionAction: MviAction {
                 source: sourceAccount,
                 step: .enterAmount
             ).withUpdatedBackstack(oldState: oldState)
-        case let .initialiseWithTargetAndNoSource(action, target, passwordRequired):
+        case .initialiseWithTargetAndNoSource(let action, let target, let passwordRequired):
             return TransactionState(
                 action: action,
                 destination: target,
@@ -84,14 +118,14 @@ enum TransactionAction: MviAction {
                 source: nil,
                 step: .selectSource
             ).withUpdatedBackstack(oldState: oldState)
-        case let .initialiseWithNoSourceOrTargetAccount(action, passwordRequired):
+        case .initialiseWithNoSourceOrTargetAccount(let action, let passwordRequired):
             return TransactionState(
                 action: action,
                 errorState: .none,
                 passwordRequired: passwordRequired,
                 step: .selectSource
             ).withUpdatedBackstack(oldState: oldState)
-        case let .initialiseWithSourceAccount(action, sourceAccount, passwordRequired):
+        case .initialiseWithSourceAccount(let action, let sourceAccount, let passwordRequired):
             return TransactionState(
                 action: action,
                 errorState: .none,
@@ -155,6 +189,10 @@ enum TransactionAction: MviAction {
             newState.nextEnabled = pendingTransaction.validationState == .canExecute
             newState.errorState = pendingTransaction.validationState.mapToTransactionErrorState
             return newState.withUpdatedBackstack(oldState: oldState)
+        case .showSourceSelection:
+            return oldState
+                .update(keyPath: \.step, value: .selectSource)
+                .update(keyPath: \.isGoingBack, value: true)
         case .showTargetSelection:
             // TODO: If the user is going through `Buy`, the user
             // is not going back. The target selection screen should be presented modally.

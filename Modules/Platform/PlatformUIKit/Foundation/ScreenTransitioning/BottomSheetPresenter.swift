@@ -35,7 +35,8 @@ public class BottomSheetPresenter: UIPresentationController {
     public init(
         presentedViewController: UIViewController,
         presenting presentingViewController: UIViewController?,
-        ignoresBackroundTouches: Bool = false) {
+        ignoresBackroundTouches: Bool = false
+    ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
         tapGesture.isEnabled = !ignoresBackroundTouches
         dimmingView.addGestureRecognizer(tapGesture)
@@ -43,21 +44,21 @@ public class BottomSheetPresenter: UIPresentationController {
 
     // MARK: Overrides
 
-    public override func containerViewWillLayoutSubviews() {
+    override public func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
         installPresentedViewInCustomViews()
     }
 
-    public override func containerViewDidLayoutSubviews() {
+    override public func containerViewDidLayoutSubviews() {
         super.containerViewDidLayoutSubviews()
         roundingView.applyRadius(16.0, to: [.topLeft, .topRight])
     }
 
-    public override var presentedView: UIView? {
+    override public var presentedView: UIView? {
         roundingView
     }
 
-    public override func presentationTransitionWillBegin() {
+    override public func presentationTransitionWillBegin() {
         super.presentationTransitionWillBegin()
 
         installCustomViews()
@@ -65,18 +66,18 @@ public class BottomSheetPresenter: UIPresentationController {
         animateDimmingViewIn()
     }
 
-    public override func presentationTransitionDidEnd(_ completed: Bool) {
+    override public func presentationTransitionDidEnd(_ completed: Bool) {
         super.presentationTransitionDidEnd(completed)
         guard completed == false else { return }
         removeCustomViews()
     }
 
-    public override func dismissalTransitionWillBegin() {
+    override public func dismissalTransitionWillBegin() {
         super.dismissalTransitionWillBegin()
         animateDimmingViewOut()
     }
 
-    public override func dismissalTransitionDidEnd(_ completed: Bool) {
+    override public func dismissalTransitionDidEnd(_ completed: Bool) {
         super.dismissalTransitionDidEnd(completed)
         guard completed == false else { return }
         removeCustomViews()
@@ -110,7 +111,7 @@ public class BottomSheetPresenter: UIPresentationController {
                 minimizingHeight.priority = .fittingSizeLevel
                 return minimizingHeight
             }()
-            ]
+        ]
         )
     }
 
@@ -125,11 +126,11 @@ public class BottomSheetPresenter: UIPresentationController {
             presentedViewController.view.leadingAnchor.constraint(equalTo: roundingView.leadingAnchor),
             roundingView.bottomAnchor.constraint(equalTo: presentedViewController.view.bottomAnchor),
             roundingView.trailingAnchor.constraint(equalTo: presentedViewController.view.trailingAnchor)
-            ])
+        ])
     }
 
     private func animateDimmingViewIn() {
-        presentingViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
+        presentingViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.dimmingView.alpha = 1
         }, completion: nil)
     }
@@ -150,7 +151,7 @@ public class BottomSheetPresenting: NSObject, UIViewControllerTransitioningDeleg
 
     private var ignoresBackroundTouches = false
 
-    @objc public override init() {
+    @objc override public init() {
         super.init()
     }
 
@@ -162,7 +163,8 @@ public class BottomSheetPresenting: NSObject, UIViewControllerTransitioningDeleg
     public func presentationController(
         forPresented presented: UIViewController,
         presenting: UIViewController?,
-        source: UIViewController) -> UIPresentationController? {
+        source: UIViewController
+    ) -> UIPresentationController? {
         BottomSheetPresenter(
             presentedViewController: presented,
             presenting: presenting,

@@ -4,9 +4,9 @@ import DIKit
 import PlatformUIKit
 import ToolKit
 
-public extension DependencyContainer {
+extension DependencyContainer {
 
-    static var settingsUIKit = module {
+    public static var settingsUIKit = module {
 
         factory { SettingsRouter() as SettingsRouterAPI }
     }

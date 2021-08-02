@@ -21,11 +21,13 @@ protocol WithdrawAmountPageListener: AnyObject {
 
 protocol WithdrawAmountPagePresentable: Presentable {
     var continueButtonTapped: Signal<Void> { get }
+
     func connect(state: Driver<WithdrawAmountPageInteractor.State>) -> Driver<WithdrawAmountPageInteractor.Effects>
 }
 
 final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPagePresentable>,
-                                          WithdrawAmountPageInteractable {
+    WithdrawAmountPageInteractable
+{
 
     private typealias AnalyticsEvent = AnalyticsEvents.FiatWithdrawal
     private typealias LocalizatedStrings = LocalizationConstants.FiatWithdrawal.EnterAmountScreen
@@ -48,19 +50,21 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
     private let fiatCurrency: FiatCurrency
     private let beneficiary: Beneficiary
 
-    init(presenter: WithdrawAmountPagePresentable,
-         fiatCurrency: FiatCurrency,
-         beneficiary: Beneficiary,
-         amountInteractor: SingleAmountInteractor,
-         withdrawalFeeService: WithdrawalFeeService,
-         validationService: WithdrawAmountValidationService,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         alertViewPresenter: AlertViewPresenterAPI = resolve()) {
+    init(
+        presenter: WithdrawAmountPagePresentable,
+        fiatCurrency: FiatCurrency,
+        beneficiary: Beneficiary,
+        amountInteractor: SingleAmountInteractor,
+        withdrawalFeeService: WithdrawalFeeService,
+        validationService: WithdrawAmountValidationService,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        alertViewPresenter: AlertViewPresenterAPI = resolve()
+    ) {
         self.fiatCurrency = fiatCurrency
         self.beneficiary = beneficiary
         self.amountInteractor = amountInteractor
-        self.auxiliaryViewInteractor = SendAuxiliaryViewInteractor(currencyType: fiatCurrency.currency)
+        auxiliaryViewInteractor = SendAuxiliaryViewInteractor(currencyType: fiatCurrency.currency)
         self.withdrawalFeeService = withdrawalFeeService
         self.analyticsRecorder = analyticsRecorder
         self.validationService = validationService
@@ -78,7 +82,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
         let resetToMaxInput = auxiliaryViewInteractor.resetToMaxAmount
             .flatMap(weak: self) { (self, _) -> Observable<WithdrawAmountValidationService.Input> in
                 self.validationService.balance
-                    .do(onSuccess: { (moneyValue) in
+                    .do(onSuccess: { moneyValue in
                         self.amountInteractor.set(amount: moneyValue)
                     })
                     .map { _ in .withdrawMax }
@@ -103,7 +107,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
             .disposeOnDeactivate(interactor: self)
 
         let interactorState = validationState
-            .scan(initialState(descriptorViewModel: viewModel)) { (state, updater) -> State in
+            .scan(initialState(descriptorViewModel: viewModel)) { state, updater -> State in
                 var state = state
                 return state.update(\.canContinue, value: updater.isValid)
             }
@@ -124,10 +128,12 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
                     }
             }
             .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onNext: { [weak self] (checkoutData) in
+            .subscribe(onNext: { [weak self] checkoutData in
                 self?.loadingViewPresenter.hide()
-                let event = AnalyticsEvent.confirm(currencyCode: checkoutData.currency.code,
-                                                   amount: checkoutData.amount.displayString)
+                let event = AnalyticsEvent.confirm(
+                    currencyCode: checkoutData.currency.code,
+                    amount: checkoutData.amount.displayString
+                )
                 self?.analyticsRecorder.record(event: event)
                 self?.listener?.showCheckoutScreen(checkoutData: checkoutData)
             })
@@ -152,11 +158,15 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
     }
 
     private func initialState(descriptorViewModel: TransactionDescriptorViewModel) -> State {
-        let topSelectionTitle = String(format: LocalizatedStrings.from,
-                                       fiatCurrency.code)
-        let bottomSelectionTitle = String(format: LocalizatedStrings.to,
-                                          beneficiary.name,
-                                          beneficiary.account)
+        let topSelectionTitle = String(
+            format: LocalizatedStrings.from,
+            fiatCurrency.code
+        )
+        let bottomSelectionTitle = String(
+            format: LocalizatedStrings.to,
+            beneficiary.name,
+            beneficiary.account
+        )
         let topSelectionState = TopSelectionState(
             title: topSelectionTitle,
             subtitle: bottomSelectionTitle,

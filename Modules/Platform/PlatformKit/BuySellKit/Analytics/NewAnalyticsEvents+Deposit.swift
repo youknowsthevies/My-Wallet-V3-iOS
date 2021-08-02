@@ -6,17 +6,19 @@ import Foundation
 extension AnalyticsEvents.New {
     public enum Deposit: AnalyticsEvent {
 
-        public var type: AnalyticsEventType {
-            .new
-        }
+        public var type: AnalyticsEventType { .nabu }
 
         case depositClicked(origin: Origin = .currencyPage)
         case depositViewed
-        case depositAmountEntered(amount: Double,
-                                  currency: String,
-                                  depositMethod: Method)
-        case depositMethodSelected(currency: String,
-                                   depositMethod: Method)
+        case depositAmountEntered(
+            amount: Double,
+            currency: String,
+            depositMethod: Method
+        )
+        case depositMethodSelected(
+            currency: String,
+            depositMethod: Method
+        )
 
         public enum Method: String, StringRawRepresentable {
             case bankTransfer = "BANK_TRANSFER"

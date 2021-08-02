@@ -8,10 +8,10 @@ import PlatformUIKit
 /// CTAs like `Learn More` or `Contact Support`, or you want to show the
 /// "standard" header that only has a `title` and `subtitle` and no information
 /// regarding their available funds for their current tier. In fact you shouldn't
-/// use or see this header if the user is actively enrolled in either of the tiers. 
+/// use or see this header if the user is actively enrolled in either of the tiers.
 class KYCCTAHeaderView: KYCTiersHeaderView {
 
-    static let identifier: String = String(describing: KYCCTAHeaderView.self)
+    static let identifier = String(describing: KYCCTAHeaderView.self)
 
     // MARK: Private Static Properties
 
@@ -52,7 +52,7 @@ class KYCCTAHeaderView: KYCTiersHeaderView {
             learnMoreButton.isHidden = actions.contains(.learnMore) == false
             contactSupportButton.isHidden = actions.contains(.contactSupport) == false
         } else {
-            CTAs.forEach({ $0.isHidden = true })
+            CTAs.forEach { $0.isHidden = true }
         }
 
         CTAs.forEach { button in
@@ -78,7 +78,7 @@ class KYCCTAHeaderView: KYCTiersHeaderView {
 
     override class func estimatedHeight(for width: CGFloat, model: KYCTiersHeaderViewModel) -> CGFloat {
         let interitemCTAVerticalPadding = model.actions == nil ? 0.0 : CTAInteritemPadding
-        let totalCTAHeight: CGFloat = CGFloat((model.actions?.count ?? Int(0.0))) * CTAHeight
+        let totalCTAHeight = CGFloat(model.actions?.count ?? Int(0.0)) * CTAHeight
 
         var titleHeight: CGFloat = 0.0
         var subtitleHeight: CGFloat = 0.0
@@ -87,13 +87,15 @@ class KYCCTAHeaderView: KYCTiersHeaderView {
         if let title = model.title {
             titleHeight = NSAttributedString(
                 string: title,
-                attributes: [.font: titleFont()]).heightForWidth(width: adjustedWidth)
+                attributes: [.font: titleFont()]
+            ).heightForWidth(width: adjustedWidth)
         }
 
         if let subtitle = model.subtitle {
             subtitleHeight = NSAttributedString(
                 string: subtitle,
-                attributes: [.font: subtitleFont()]).heightForWidth(width: adjustedWidth)
+                attributes: [.font: subtitleFont()]
+            ).heightForWidth(width: adjustedWidth)
         }
 
         let titleHeights = titleHeight + subtitleHeight

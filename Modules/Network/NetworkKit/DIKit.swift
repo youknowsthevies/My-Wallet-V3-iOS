@@ -88,7 +88,7 @@ extension DependencyContainer {
 extension NetworkCommunicator {
 
     fileprivate static func defaultCommunicator(
-        eventRecorder: AnalyticsEventRecording = resolve()
+        eventRecorder: AnalyticsEventRecorderAPI = resolve()
     ) -> NetworkCommunicator {
         NetworkCommunicator(eventRecorder: eventRecorder)
     }

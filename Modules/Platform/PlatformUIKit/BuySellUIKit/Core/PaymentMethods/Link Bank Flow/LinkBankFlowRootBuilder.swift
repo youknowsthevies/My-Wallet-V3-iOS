@@ -12,17 +12,18 @@ public protocol LinkBankFlowRootBuildable {
 
 public final class LinkBankFlowRootBuilder: LinkBankFlowRootBuildable {
 
-    public init() {
-    }
+    public init() {}
 
     public func build() -> LinkBankFlowStarter {
         let splashScreenBuilder = LinkBankSplashScreenBuilder()
         let yodleeScreenBuilder = YodleeScreenBuilder()
         let failureScreenBuilder = LinkBankFailureScreenBuilder()
         let interactor = LinkBankFlowRootInteractor()
-        return LinkBankFlowRootRouter(interactor: interactor,
-                                      splashScreenBuilder: splashScreenBuilder,
-                                      yodleeScreenBuilder: yodleeScreenBuilder,
-                                      failureScreenBuilder: failureScreenBuilder)
+        return LinkBankFlowRootRouter(
+            interactor: interactor,
+            splashScreenBuilder: splashScreenBuilder,
+            yodleeScreenBuilder: yodleeScreenBuilder,
+            failureScreenBuilder: failureScreenBuilder
+        )
     }
 }

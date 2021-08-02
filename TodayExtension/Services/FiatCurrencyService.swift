@@ -19,7 +19,8 @@ final class FiatCurrencyService: FiatCurrencyServiceAPI {
 
     private var localeCurrency: FiatCurrency {
         guard let code = Locale.current.currencyCode,
-              let fiatCurrency = FiatCurrency(code: code) else {
+              let fiatCurrency = FiatCurrency(code: code)
+        else {
             return .USD
         }
         return fiatCurrency

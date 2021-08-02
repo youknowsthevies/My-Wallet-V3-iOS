@@ -9,8 +9,10 @@ import ToolKit
 
 protocol ExchangeAccountAuthenticatorAPI {
     typealias LinkID = String
+
     var exchangeLinkID: Single<LinkID> { get }
     var exchangeURL: Single<URL> { get }
+
     func linkToExistingExchangeUser(linkID: LinkID) -> Completable
 }
 
@@ -20,22 +22,24 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     private let client: ExchangeClientAPI
     private let campaignComposer: CampaignComposer
 
-    init(blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-         campaignComposer: CampaignComposer = CampaignComposer(),
-         client: ExchangeClientAPI = resolve()) {
+    init(
+        blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
+        campaignComposer: CampaignComposer = CampaignComposer(),
+        client: ExchangeClientAPI = resolve()
+    ) {
         self.blockchainRepository = blockchainRepository
         self.campaignComposer = campaignComposer
         self.client = client
     }
 
     var exchangeLinkID: Single<LinkID> {
-        self.client.linkID
+        client.linkID
     }
 
     var exchangeURL: Single<URL> {
         Single
             .zip(blockchainRepository.nabuUserSingle, exchangeLinkID)
-            .flatMap(weak: self, { (self, payload) -> Single<URL> in
+            .flatMap(weak: self) { (self, payload) -> Single<URL> in
                 let user = payload.0
                 let linkID = payload.1
 
@@ -56,11 +60,11 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
                 }
 
                 return Single.just(endpoint)
-            })
+            }
     }
 
     func linkToExistingExchangeUser(linkID: LinkID) -> Completable {
-        self.client.linkToExistingExchangeUser(linkID: linkID)
+        client.linkToExistingExchangeUser(linkID: linkID)
     }
 
     private func percentEscapeString(_ stringToEscape: String) -> String {

@@ -8,10 +8,10 @@ import Foundation
 
 extension LocalizationConstants {
     public enum Activity {
-        public enum Message { }
-        public enum Details { }
-        public enum MainScreen { }
-        public enum Pax { }
+        public enum Message {}
+        public enum Details {}
+        public enum MainScreen {}
+        public enum Pax {}
     }
 }
 
@@ -22,14 +22,16 @@ extension LocalizationConstants.Activity.MainScreen {
         "Activity",
         comment: "Activity Screen: title"
     )
-    public struct MessageView {
+    public enum MessageView {
         public static let sharedWithBlockchain = NSLocalizedString("Shared With Blockchain", comment: "Shared With Blockchain")
     }
-    public struct Empty {
+
+    public enum Empty {
         public static let title = NSLocalizedString("You Have No Activity", comment: "You Have No Activity")
         public static let subtitle = NSLocalizedString("All your transactions will show up here.", comment: "All your transactions will show up here.")
     }
-    public struct Item {
+
+    public enum Item {
         public static let allWallets = NSLocalizedString("All Wallets", comment: "All Wallets")
         public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
         public static let trade = NSLocalizedString("Trade", comment: "Trade")
@@ -51,15 +53,6 @@ extension LocalizationConstants.Activity.MainScreen {
 
 extension LocalizationConstants.Activity.Message {
     public static let name = NSLocalizedString("My Transaction", comment: "My Transaction")
-}
-
-// MARK: Pax
-
-extension LocalizationConstants.Activity.Pax {
-    public static let emptyStateTitle = NSLocalizedString("USD Digital", comment: "")
-    public static let emptyStateMessage = NSLocalizedString("Your USD Digital transactions will show up here once you make your first transaction.", comment: "")
-    public static let emptyStateLinkText = NSLocalizedString("Learn more about USD Digital", comment: "")
-    public static let emptyStateCTATitle = NSLocalizedString("Swap for USD Digital Now", comment: "")
 }
 
 // MARK: Details
@@ -86,12 +79,17 @@ extension LocalizationConstants.Activity.Details {
         public static let send = NSLocalizedString("Send", comment: "'Send' title")
         public static let swap = NSLocalizedString("Swap", comment: "'Swap' title")
         public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+        public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
     }
 
     public enum Button {
-        public static let viewOnExplorer = NSLocalizedString("View on Blockchain Explorer",
-                                                             comment: "Button title, button takes user to explorer webpage")
-        public static let viewOnStellarChainIO = NSLocalizedString("View on StellarChain.io",
-                                                                   comment: "Button title, button takes user to StellarChain webpage")
+        public static let viewOnExplorer = NSLocalizedString(
+            "View on Blockchain Explorer",
+            comment: "Button title, button takes user to explorer webpage"
+        )
+        public static let viewOnStellarChainIO = NSLocalizedString(
+            "View on StellarChain.io",
+            comment: "Button title, button takes user to StellarChain webpage"
+        )
     }
 }

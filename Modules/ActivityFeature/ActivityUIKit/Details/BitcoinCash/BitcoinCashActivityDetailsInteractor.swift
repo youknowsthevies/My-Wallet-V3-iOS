@@ -15,9 +15,11 @@ final class BitcoinCashActivityDetailsInteractor {
 
     // MARK: - Init
 
-    init(fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> = resolve()) {
+    init(
+        fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> = resolve()
+    ) {
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
@@ -53,7 +55,7 @@ final class BitcoinCashActivityDetailsInteractor {
 
     private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            for: CurrencyType.crypto(.bitcoinCash),
+            for: CurrencyType.crypto(.coin(.bitcoinCash)),
             in: fiatCurrency,
             at: date
         )

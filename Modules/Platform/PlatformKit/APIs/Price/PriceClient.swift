@@ -72,9 +72,12 @@ final class PriceClient: PriceClientAPI {
                 ]
             )
         }
-        static func price(at timestamp: UInt64?,
-                          baseCurrencyCode: String,
-                          quoteCurrencyCode: String) -> (path: [String], query: [URLQueryItem]) {
+
+        static func price(
+            at timestamp: UInt64?,
+            baseCurrencyCode: String,
+            quoteCurrencyCode: String
+        ) -> (path: [String], query: [URLQueryItem]) {
             var items = [
                 URLQueryItem(name: "base", value: baseCurrencyCode),
                 URLQueryItem(name: "quote", value: quoteCurrencyCode)
@@ -103,8 +106,8 @@ final class PriceClient: PriceClientAPI {
     ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
-        self.singlePriceQuoteCache = Cache(entryLifetime: cacheEntriesLifetime)
-        self.singlePriceInFlightRequestsCache = Cache()
+        singlePriceQuoteCache = Cache(entryLifetime: cacheEntriesLifetime)
+        singlePriceInFlightRequestsCache = Cache()
     }
 
     // MARK: - APIClientAPI

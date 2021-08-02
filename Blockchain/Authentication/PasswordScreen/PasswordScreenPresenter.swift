@@ -39,7 +39,7 @@ final class PasswordScreenPresenter {
     // TODO: Remove dependency
     private let authenticationCoordinator: AuthenticationCoordinator
     private let interactor: PasswordScreenInteracting
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
     private let confirmHandler: ConfirmHandler
     private let dismissHandler: DismissHandler
@@ -52,12 +52,14 @@ final class PasswordScreenPresenter {
 
     // MARK: - Setup
 
-    init(authenticationCoordinator: AuthenticationCoordinator = .shared,
-         alertPresenter: AlertViewPresenter = .shared,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         interactor: PasswordScreenInteracting,
-         confirmHandler: @escaping ConfirmHandler,
-         dismissHandler: @escaping DismissHandler) {
+    init(
+        authenticationCoordinator: AuthenticationCoordinator = .shared,
+        alertPresenter: AlertViewPresenter = .shared,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        interactor: PasswordScreenInteracting,
+        confirmHandler: @escaping ConfirmHandler,
+        dismissHandler: @escaping DismissHandler
+    ) {
         self.authenticationCoordinator = authenticationCoordinator
         self.alertPresenter = alertPresenter
         self.analyticsRecorder = analyticsRecorder
@@ -100,12 +102,12 @@ final class PasswordScreenPresenter {
             .disposed(by: disposeBag)
 
         stateObservable
-            .map { $0.isValid }
+            .map(\.isValid)
             .bindAndCatch(to: buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         textFieldViewModel.state
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .bindAndCatch(to: interactor.passwordRelay)
             .disposed(by: disposeBag)
 

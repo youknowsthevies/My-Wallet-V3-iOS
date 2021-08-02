@@ -21,8 +21,8 @@ final class AccountsRouter: AccountsRouting {
         routing: CurrencyRouting & TabSwapping,
         backupRouter: DashboardUIKit.BackupRouterAPI = resolve()
     ) {
-        self.nonCustodialActionRouterAPI = NonCustodialActionRouter(routing: routing)
-        self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouter, tabSwapping: routing)
+        nonCustodialActionRouterAPI = NonCustodialActionRouter(routing: routing)
+        custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouter, tabSwapping: routing)
     }
 
     private func routeToInterestAccount(for account: BlockchainAccount) {

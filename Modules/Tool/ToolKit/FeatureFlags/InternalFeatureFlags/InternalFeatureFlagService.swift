@@ -14,7 +14,7 @@ final class InternalFeatureFlagService: InternalFeatureFlagServiceAPI {
     private let defaults: UserDefaults
 
     init(defaultsProvider: () -> UserDefaults) {
-        self.defaults = defaultsProvider()
+        defaults = defaultsProvider()
     }
 
     func enable(_ feature: InternalFeature) {

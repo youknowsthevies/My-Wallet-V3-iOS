@@ -13,8 +13,9 @@ enum LinkedBanksSelectionEffects {
 }
 
 class LinkedBanksSelectionViewController: BaseScreenViewController,
-                                          LinkedBanksSelectionViewControllable,
-                                          LinkedBanksSelectionPresentable {
+    LinkedBanksSelectionViewControllable,
+    LinkedBanksSelectionPresentable
+{
 
     private typealias RxDataSource = RxTableViewSectionedReloadDataSource<LinkedBanksSectionModel>
 
@@ -44,7 +45,7 @@ class LinkedBanksSelectionViewController: BaseScreenViewController,
             }
 
         let dataSource = RxDataSource(
-            configureCell: { [weak self] (_, _, indexPath, item) -> UITableViewCell in
+            configureCell: { [weak self] _, _, indexPath, item -> UITableViewCell in
                 guard let self = self else { return UITableViewCell() }
                 switch item {
                 case .linkedBank(let viewModel):
@@ -85,9 +86,11 @@ class LinkedBanksSelectionViewController: BaseScreenViewController,
     }
 
     private func setupNavigationBar() {
-        set(barStyle: .darkContent(),
+        set(
+            barStyle: .darkContent(),
             leadingButtonStyle: .none,
-            trailingButtonStyle: .close)
+            trailingButtonStyle: .close
+        )
         titleViewStyle = .text(value: LocalizationConstants.FiatWithdrawal.LinkedBanks.Navigation.title)
     }
 

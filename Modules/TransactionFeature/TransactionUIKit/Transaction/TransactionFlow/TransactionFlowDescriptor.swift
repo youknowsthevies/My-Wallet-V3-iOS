@@ -4,12 +4,13 @@ import Localization
 import PlatformKit
 import ToolKit
 
-final class TransactionFlowDescriptor {
+enum TransactionFlowDescriptor {
 
     private typealias LocalizedString = LocalizationConstants.Transaction
 
     enum EnterAmountScreen {
         private static let cryptoFormatterProvider = CryptoFormatterProvider()
+
         private static func formatForHeader(moneyValue: MoneyValue) -> String {
             if let cryptoValue = moneyValue.cryptoValue {
                 let formatter = cryptoFormatterProvider.formatter(
@@ -17,9 +18,11 @@ final class TransactionFlowDescriptor {
                     cryptoCurrency: cryptoValue.currencyType,
                     minFractionDigits: 2
                 )
-                return formatter.format(value: cryptoValue,
-                                        withPrecision: .short,
-                                        includeSymbol: true)
+                return formatter.format(
+                    value: cryptoValue,
+                    withPrecision: .short,
+                    includeSymbol: true
+                )
             }
             return moneyValue.displayString
         }

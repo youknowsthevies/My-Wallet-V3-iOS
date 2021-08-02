@@ -9,8 +9,7 @@ import RIBs
 import RxCocoa
 import RxSwift
 
-protocol SwapLandingRouting: ViewableRouting {
-}
+protocol SwapLandingRouting: ViewableRouting {}
 
 enum SwapLandingSelectionEffects {
     case swap(SwapTrendingPair)
@@ -29,6 +28,7 @@ struct SwapLandingScreenState {
 
 protocol SwapLandingPresentable: Presentable {
     var listener: SwapLandingPresentableListener? { get set }
+
     func connect(state: Driver<SwapLandingScreenState>) -> Driver<SwapLandingSelectionEffects>
 }
 
@@ -69,18 +69,18 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
             .catchError { _ in nonCustodialAccounts }
             .map { [pax] accounts -> [SwapTrendingPairViewModel] in
                 var pairs: [(CryptoCurrency, CryptoCurrency)] = [
-                    (.bitcoin, .ethereum),
-                    (.bitcoin, pax),
-                    (.bitcoin, .stellar)
+                    (.coin(.bitcoin), .coin(.ethereum)),
+                    (.coin(.bitcoin), pax),
+                    (.coin(.bitcoin), .coin(.stellar))
                 ]
                 switch DevicePresenter.type {
                 case .superCompact, .compact:
                     break
                 case .regular:
-                    pairs.append((.bitcoin, .bitcoinCash))
+                    pairs.append((.coin(.bitcoin), .coin(.bitcoinCash)))
                 case .max:
-                    pairs.append((.bitcoin, .bitcoinCash))
-                    pairs.append((.ethereum, pax))
+                    pairs.append((.coin(.bitcoin), .coin(.bitcoinCash)))
+                    pairs.append((.coin(.ethereum), pax))
                 }
                 return pairs
                     .compactMap { pair -> SwapTrendingPair? in
@@ -164,11 +164,13 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
         case .swap(let pair):
             analyticsRecorder.record(events: [
                 AnalyticsEvent.trendingPairClicked,
-                NewSwapAnalyticsEvent.swapAccountsSelected(inputCurrency: pair.sourceAccount.currencyType.code,
-                                                           inputType: .init(pair.sourceAccount),
-                                                           outputCurrency: pair.destinationAccount.currencyType.code,
-                                                           outputType: .init(pair.destinationAccount),
-                                                           wasSuggested: true)
+                NewSwapAnalyticsEvent.swapAccountsSelected(
+                    inputCurrency: pair.sourceAccount.currencyType.code,
+                    inputType: .init(pair.sourceAccount),
+                    outputCurrency: pair.destinationAccount.currencyType.code,
+                    outputType: .init(pair.destinationAccount),
+                    wasSuggested: true
+                )
             ])
             listener?.routeToSwap(with: pair)
         case .newSwap:
@@ -197,8 +199,10 @@ extension SwapLandingInteractor {
 }
 
 extension Array where Element == CryptoAccount {
-    func trendingPair(source sourceCurrency: CryptoCurrency,
-                      destination destinationCurrency: CryptoCurrency) -> SwapTrendingPair? {
+    func trendingPair(
+        source sourceCurrency: CryptoCurrency,
+        destination destinationCurrency: CryptoCurrency
+    ) -> SwapTrendingPair? {
         guard let source = first(where: { $0.currencyType == sourceCurrency }) else {
             return nil
         }

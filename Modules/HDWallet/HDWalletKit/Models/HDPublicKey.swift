@@ -9,5 +9,4 @@ struct HDPublicKey: HexRepresentable {
     init(data: Data) {
         self.data = data
     }
-
 }

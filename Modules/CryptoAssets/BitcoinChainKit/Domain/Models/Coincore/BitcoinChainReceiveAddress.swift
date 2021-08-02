@@ -24,10 +24,12 @@ public struct BitcoinChainReceiveAddress<Token: BitcoinChainToken>: CryptoReceiv
         }
     }
 
-    public init(address: String,
-                label: String,
-                onTxCompleted: @escaping TxCompleted,
-                index: Int32 = 0) {
+    public init(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping TxCompleted,
+        index: Int32 = 0
+    ) {
         self.index = index
         self.address = address
         self.label = label

@@ -35,7 +35,7 @@ public final class PendingStateViewController: BaseScreenViewController {
 
     // MARK: - Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         presenter.viewDidLoad()
         setupNavigationBar()

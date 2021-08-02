@@ -12,11 +12,12 @@ enum KYCTiersHeaderViewModel {
         case learnMore
         case contactSupport
     }
+
     typealias Amount = String
 
     /// `AmountDescription` is either a value that describes what `Swap` is
     /// or it can be informing the user that their currently being reviewed for
-    /// `Tier Two`. These are the two states outlined in the comps. 
+    /// `Tier Two`. These are the two states outlined in the comps.
     typealias AmountDescription = String
 
     case available(Amount, AmountDescription, suppressDismissCTA: Bool)
@@ -62,7 +63,7 @@ extension KYCTiersHeaderViewModel {
     var headerType: KYCTiersHeaderView.Type {
         switch self {
         case .unavailable,
-            .empty:
+             .empty:
             return KYCCTAHeaderView.self
         case .available,
              .availableToday:
@@ -83,7 +84,7 @@ extension KYCTiersHeaderViewModel: Equatable {
         switch (lhs, rhs) {
         case (.available(let lhsAmount, let lhsDescription, _), .available(let rhsAmount, let rhsDescription, _)):
             return lhsAmount == rhsAmount &&
-            lhsDescription == rhsDescription
+                lhsDescription == rhsDescription
         case (.availableToday(let lhsAmount, let lhsDescription, _), .availableToday(let rhsAmount, let rhsDescription, _)):
             return lhsAmount == rhsAmount &&
                 lhsDescription == rhsDescription
@@ -180,7 +181,6 @@ extension KYCTiersHeaderViewModel {
             return LocalizationConstants.KYC.swapTagline
         }
     }
-
 }
 
 extension KYCTiersHeaderViewModel {
@@ -190,7 +190,7 @@ extension KYCTiersHeaderViewModel {
         availableFunds: String? = nil,
         suppressDismissCTA: Bool = false
     ) -> KYCTiersHeaderViewModel {
-        let tiers = tierResponse.tiers.filter({ $0.tier != .tier0 })
+        let tiers = tierResponse.tiers.filter { $0.tier != .tier0 }
 
         guard let tier1 = tiers.filter({ $0.tier == .tier1 }).first else {
             /// This should never occur
@@ -211,9 +211,9 @@ extension KYCTiersHeaderViewModel {
         case (.rejected, .none),
              (.rejected, .pending):
             return .unavailable(suppressDismissCTA: suppressDismissCTA)
-            /// In the case that `Tier1` and `Tier2` is rejected
-            /// or if `Tier2` is rejected, we want to show the CTAs
-            /// that prompt the user to contact support.
+        /// In the case that `Tier1` and `Tier2` is rejected
+        /// or if `Tier2` is rejected, we want to show the CTAs
+        /// that prompt the user to contact support.
         case (.rejected, .rejected),
              (_, .rejected):
             return .unavailable(

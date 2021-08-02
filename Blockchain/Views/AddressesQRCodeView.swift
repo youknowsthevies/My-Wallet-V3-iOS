@@ -66,7 +66,7 @@ import PlatformUIKit
             accessibility: .none
         )
         self.qrCode.image = qrCode?.image
-        self.footer.content = .init(
+        footer.content = .init(
             text: copyButton,
             font: .main(.regular, 18),
             color: .textFieldText,

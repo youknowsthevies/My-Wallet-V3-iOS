@@ -26,13 +26,15 @@ public final class WebViewRouter: WebViewRouterAPI {
 
     // MARK: - Setup
 
-    public init(topMostViewControllerProvider: TopMostViewControllerProviding,
-                webViewServiceAPI: WebViewServiceAPI = resolve()) {
+    public init(
+        topMostViewControllerProvider: TopMostViewControllerProviding,
+        webViewServiceAPI: WebViewServiceAPI = resolve()
+    ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.webViewServiceAPI = webViewServiceAPI
 
         launch
-            .map { $0.url }
+            .map(\.url)
             .emit(onNext: { [weak self] url in
                 guard let self = self else { return }
                 guard let topViewController = self.topMostViewControllerProvider.topMostViewController else {

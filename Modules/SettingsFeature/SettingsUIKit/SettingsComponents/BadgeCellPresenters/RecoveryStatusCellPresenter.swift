@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
+import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
@@ -36,7 +37,7 @@ final class RecoveryStatusCellPresenter: BadgeCellPresenting {
         )
 
         badgeAssetPresenting.state
-            .map { $0.isLoading }
+            .map(\.isLoading)
             .bindAndCatch(to: isLoadingRelay)
             .disposed(by: disposeBag)
     }

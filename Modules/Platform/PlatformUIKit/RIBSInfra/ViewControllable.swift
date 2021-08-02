@@ -2,4 +2,4 @@
 
 import RIBs
 
-extension UIViewController: ViewControllable { }
+extension UIViewController: ViewControllable {}

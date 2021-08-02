@@ -36,9 +36,11 @@ public final class CardOrderCheckoutInteractor {
     private let orderQuoteService: OrderQuoteServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
 
-    public init(cardListService: CardListServiceAPI = resolve(),
-                orderQuoteService: OrderQuoteServiceAPI = resolve(),
-                orderCreationService: OrderCreationServiceAPI = resolve()) {
+    public init(
+        cardListService: CardListServiceAPI = resolve(),
+        orderQuoteService: OrderQuoteServiceAPI = resolve(),
+        orderCreationService: OrderCreationServiceAPI = resolve()
+    ) {
         self.cardListService = cardListService
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
@@ -56,11 +58,11 @@ public final class CardOrderCheckoutInteractor {
         guard let fiat = checkoutData.order.inputValue.fiatValue else {
             return Single.error(InteractionError.inputMustBeFiat(checkoutData.order.inputValue))
         }
-       return orderQuoteService
+        return orderQuoteService
             .getQuote(
-               for: .buy,
-               cryptoCurrency: crypto.currencyType,
-               fiatValue: fiat
+                for: .buy,
+                cryptoCurrency: crypto.currencyType,
+                fiatValue: fiat
             )
             .flatMap(weak: self) { (self, quote) in
                 self.cardListService

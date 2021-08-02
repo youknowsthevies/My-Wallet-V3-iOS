@@ -7,9 +7,11 @@ public struct SwapOrder {
     let state: SwapActivityItemEvent.EventStatus
     let depositAddress: String?
 
-    public init(identifier: String,
-                state: SwapActivityItemEvent.EventStatus,
-                depositAddress: String? = nil) {
+    public init(
+        identifier: String,
+        state: SwapActivityItemEvent.EventStatus,
+        depositAddress: String? = nil
+    ) {
         self.identifier = identifier
         self.state = state
         self.depositAddress = depositAddress

@@ -39,15 +39,14 @@ public final class BlockchainSettings: NSObject {
 
     @objc(BlockchainSettingsApp)
     public class App: NSObject,
-                      AppSettingsAPI,
-                      AppSettingsAuthenticating,
-                      AppSettingsSecureChannel,
-                      CloudBackupConfiguring,
-                      PermissionSettingsAPI {
+        AppSettingsAPI,
+        AppSettingsAuthenticating,
+        AppSettingsSecureChannel,
+        CloudBackupConfiguring,
+        PermissionSettingsAPI
+    {
 
-        @Inject
-        @objc
-        public static var shared: App
+        @Inject @objc public static var shared: App
 
         @LazyInject private var defaults: CacheSuite
 
@@ -109,7 +108,7 @@ public final class BlockchainSettings: NSObject {
         }
 
         @objc
-        public  var hasEndedFirstSession: Bool {
+        public var hasEndedFirstSession: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
             }
@@ -354,9 +353,11 @@ public final class BlockchainSettings: NSObject {
         private let legacyPasswordProvider: LegacyPasswordProviding
         private let keychainItemWrapper: KeychainItemWrapping
 
-        public init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-                    keychainItemWrapper: KeychainItemWrapping = resolve(),
-                    legacyPasswordProvider: LegacyPasswordProviding = resolve()) {
+        public init(
+            enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+            keychainItemWrapper: KeychainItemWrapping = resolve(),
+            legacyPasswordProvider: LegacyPasswordProviding = resolve()
+        ) {
             self.enabledCurrenciesService = enabledCurrenciesService
             self.legacyPasswordProvider = legacyPasswordProvider
             self.keychainItemWrapper = keychainItemWrapper
@@ -412,9 +413,10 @@ public final class BlockchainSettings: NSObject {
         /// Migrates pin and password from NSUserDefaults to the Keychain
         public func migratePasswordAndPinIfNeeded() {
             guard let password = defaults.string(forKey: UserDefaults.Keys.password.rawValue),
-                let pinStr = defaults.string(forKey: UserDefaults.Keys.pin.rawValue),
-                let pinUInt = UInt(pinStr) else {
-                    return
+                  let pinStr = defaults.string(forKey: UserDefaults.Keys.pin.rawValue),
+                  let pinUInt = UInt(pinStr)
+            else {
+                return
             }
 
             legacyPasswordProvider.setLegacyPassword(password)

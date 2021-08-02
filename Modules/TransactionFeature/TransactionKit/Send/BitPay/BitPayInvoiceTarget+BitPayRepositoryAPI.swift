@@ -23,7 +23,6 @@ extension BitPayInvoiceTarget {
         static let bitcoinCash = "bitcoincash:?r="
     }
 
-
     private static let bitpayRepository: BitPayRepositoryAPI = resolve()
 
     // MARK: - Public Factory
@@ -60,8 +59,10 @@ extension BitPayInvoiceTarget {
         }
     }
 
-    public static func make(from data: String,
-                            asset: CryptoCurrency) -> Single<BitPayInvoiceTarget> {
+    public static func make(
+        from data: String,
+        asset: CryptoCurrency
+    ) -> Single<BitPayInvoiceTarget> {
         isBitPay(data)
             .andThen(invoiceId(from: data))
             .flatMap { invoiceId in

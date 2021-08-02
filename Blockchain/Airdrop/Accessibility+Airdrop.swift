@@ -3,9 +3,10 @@
 import PlatformUIKit
 
 extension Accessibility.Identifier {
-    struct AirdropCenterScreen {
+    enum AirdropCenterScreen {
         static let prefix = "AirdropCenterScreen."
-        struct Cell {
+
+        enum Cell {
             static let prefix = "\(AirdropCenterScreen.prefix)Cell."
             static let image = "\(prefix)image-"
             static let title = "\(prefix)title-"
@@ -13,26 +14,29 @@ extension Accessibility.Identifier {
         }
     }
 
-    struct AirdropStatusScreen {
+    enum AirdropStatusScreen {
         private static let prefix = "AirdropStatusScreen."
         static let backgroundImageView = "\(prefix)backgroundImageView"
         static let thumbImageView = "\(prefix)thumbImageView"
         static let titleLabel = "\(prefix)titleLabel"
         static let descriptionLabel = "\(prefix)descriptionLabel"
 
-        struct Cell {
+        enum Cell {
             private static let prefix = "\(AirdropStatusScreen.prefix)Cell."
-            struct Status {
+
+            enum Status {
                 private static let prefix = "\(Cell.prefix)Status."
                 static let title = "\(prefix)title"
                 static let value = "\(prefix)value"
             }
-            struct Amount {
+
+            enum Amount {
                 private static let prefix = "\(Cell.prefix)Amount."
                 static let title = "\(prefix)title"
                 static let value = "\(prefix)value"
             }
-            struct Date {
+
+            enum Date {
                 private static let prefix = "\(Cell.prefix)Date."
                 static let title = "\(prefix)title"
                 static let value = "\(prefix)value"

@@ -7,6 +7,7 @@ public protocol KeyPairProviderAPI {
     associatedtype Pair: KeyPair
 
     var keyPair: Single<Pair> { get }
+
     func keyPair(with secondPassword: String?) -> Single<Pair>
 }
 
@@ -34,7 +35,7 @@ public final class AnyKeyPairProvider<Pair: KeyPair>: KeyPairProviderAPI {
 
     public init<P: KeyPairProviderAPI>(provider: P) where P.Pair == Pair {
         self.provider = provider
-        self.keyPairProvider = provider.keyPair
-        self.keyPairWithSecondPasswordProvider = provider.keyPair
+        keyPairProvider = provider.keyPair
+        keyPairWithSecondPasswordProvider = provider.keyPair
     }
 }

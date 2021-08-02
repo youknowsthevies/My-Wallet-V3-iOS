@@ -27,7 +27,7 @@ final class DebugCoordinator: NSObject, DebugCoordinating {
 
     private var isDisplayed = PublishRelay<Bool>()
 
-    public func enableDebugMenu(for window: UIWindow?) {
+    func enableDebugMenu(for window: UIWindow?) {
         guard let window = window else { return }
 
         let motionEnded = window.rx.motionEnded
@@ -51,7 +51,7 @@ final class DebugCoordinator: NSObject, DebugCoordinating {
             .disposed(by: disposeBag)
     }
 
-    public func disableDebugMenu() {
+    func disableDebugMenu() {
         disposeBag = DisposeBag()
     }
 
@@ -109,11 +109,11 @@ extension DebugCoordinator: UIAdaptivePresentationControllerDelegate {
 /// Needed as we're capturing the shake motion on a window level
 // swiftlint:disable all
 extension UIWindow {
-    open override var canBecomeFirstResponder: Bool {
+    override open var canBecomeFirstResponder: Bool {
         true
     }
 
-    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+    override open func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         super.motionEnded(motion, with: event)
     }
 }

@@ -94,15 +94,19 @@ class BioAuthenticationSwitchCellPresenter: SwitchCellPresenting {
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
 
-    init(biometryProviding: BiometryProviding,
-         appSettingsAuthenticating: AppSettingsAuthenticating,
-         authenticationCoordinator: AuthenticationCoordinating) {
+    init(
+        biometryProviding: BiometryProviding,
+        appSettingsAuthenticating: AppSettingsAuthenticating,
+        authenticationCoordinator: AuthenticationCoordinating
+    ) {
         labelContentPresenting = BiometryLabelContentPresenter(
             provider: biometryProviding,
             descriptors: .settings
         )
-        switchViewPresenting = BiometrySwitchViewPresenter(provider: biometryProviding,
-                                                           settingsAuthenticating: appSettingsAuthenticating,
-                                                           authenticationCoordinator: authenticationCoordinator)
+        switchViewPresenting = BiometrySwitchViewPresenter(
+            provider: biometryProviding,
+            settingsAuthenticating: appSettingsAuthenticating,
+            authenticationCoordinator: authenticationCoordinator
+        )
     }
 }

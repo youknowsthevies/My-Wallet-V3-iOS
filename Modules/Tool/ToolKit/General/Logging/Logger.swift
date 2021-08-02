@@ -63,7 +63,7 @@
         log(String(describing: error), level: .error)
     }
 
-    public func log (
+    public func log(
         _ message: String,
         level: LogLevel,
         file: String = #file,

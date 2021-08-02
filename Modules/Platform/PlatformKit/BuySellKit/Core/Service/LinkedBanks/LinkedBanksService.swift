@@ -36,14 +36,18 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
     let bankLinkageStartup: Single<Result<BankLinkageData?, BankLinkageError>>
 
     // MARK: - Private
+
     private let cachedValue: CachedValue<[LinkedBankData]>
 
     // MARK: - Injected
+
     private let client: LinkedBanksClientAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
 
-    init(client: LinkedBanksClientAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+    init(
+        client: LinkedBanksClientAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
         self.client = client
         self.fiatCurrencyService = fiatCurrencyService
 
@@ -56,7 +60,6 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
                     // we currently only need to display the linked banks as for beneficiaries we use older APIs.
                     // So the filtering is a patch until we remove the older backend APIs
                     response.compactMap(LinkedBankData.init(response:))
-                        .filter { $0.paymentMethodType == .bankTransfer && $0.partner == .yodlee }
                 }
         }
 
@@ -64,8 +67,10 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
             .flatMap { currency -> Single<CreateBankLinkageResponse> in
                 client.createBankLinkage(for: currency)
             }
-            .mapToResult(successMap: { BankLinkageData(from: $0) } ,
-                         errorMap: { BankLinkageError.server($0) })
+            .mapToResult(
+                successMap: { BankLinkageData(from: $0) },
+                errorMap: { BankLinkageError.server($0) }
+            )
     }
 
     // MARK: Methods

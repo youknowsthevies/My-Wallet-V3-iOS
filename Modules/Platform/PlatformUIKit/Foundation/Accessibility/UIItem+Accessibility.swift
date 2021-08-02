@@ -5,11 +5,13 @@ import Foundation
 extension UITabBarItem {
     public var accessibility: Accessibility {
         get {
-            Accessibility(id: accessibilityIdentifier,
-                          label: accessibilityLabel,
-                          hint: accessibilityHint,
-                          traits: accessibilityTraits,
-                          isAccessible: isAccessibilityElement)
+            Accessibility(
+                id: accessibilityIdentifier,
+                label: accessibilityLabel,
+                hint: accessibilityHint,
+                traits: accessibilityTraits,
+                isAccessible: isAccessibilityElement
+            )
         }
         set {
             accessibilityIdentifier = newValue.id
@@ -24,11 +26,13 @@ extension UITabBarItem {
 extension UIBarButtonItem {
     public var accessibility: Accessibility {
         get {
-            Accessibility(id: accessibilityIdentifier,
-                          label: accessibilityLabel,
-                          hint: accessibilityHint,
-                          traits: accessibilityTraits,
-                          isAccessible: isAccessibilityElement)
+            Accessibility(
+                id: accessibilityIdentifier,
+                label: accessibilityLabel,
+                hint: accessibilityHint,
+                traits: accessibilityTraits,
+                isAccessible: isAccessibilityElement
+            )
         }
         set {
             accessibilityIdentifier = newValue.id

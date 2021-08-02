@@ -8,10 +8,12 @@ public struct ScreenNavigationModel {
     public let barStyle: Screen.Style.Bar
     public let titleViewStyle: Screen.Style.TitleView
 
-    public init(leadingButton: Screen.Style.LeadingButton,
-                trailingButton: Screen.Style.TrailingButton,
-                titleViewStyle: Screen.Style.TitleView,
-                barStyle: Screen.Style.Bar) {
+    public init(
+        leadingButton: Screen.Style.LeadingButton,
+        trailingButton: Screen.Style.TrailingButton,
+        titleViewStyle: Screen.Style.TitleView,
+        barStyle: Screen.Style.Bar
+    ) {
         self.leadingButton = leadingButton
         self.trailingButton = trailingButton
         self.titleViewStyle = titleViewStyle

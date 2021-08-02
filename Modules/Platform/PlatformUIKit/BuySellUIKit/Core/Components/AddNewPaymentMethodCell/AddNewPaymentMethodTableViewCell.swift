@@ -18,6 +18,7 @@ class AddNewPaymentMethodTableViewCell: UITableViewCell {
     }
 
     // MARK: - Private
+
     private func setupUI() {
         buttonView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -32,5 +33,4 @@ class AddNewPaymentMethodTableViewCell: UITableViewCell {
     func configure(viewModel: AddNewPaymentMethodCellModel) {
         buttonView.viewModel = viewModel.buttonModel
     }
-
 }

@@ -4,7 +4,7 @@ import Localization
 import PlatformKit
 
 extension TransactionConfirmation {
-    public enum Model { }
+    public enum Model {}
 }
 
 extension TransactionConfirmation.Model {
@@ -16,8 +16,10 @@ extension TransactionConfirmation.Model {
         public let type: TransactionConfirmation.Kind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
-            (String(format: LocalizedString.price, currency.displayCode),
-             money.displayString)
+            (
+                String(format: LocalizedString.price, currency.displayCode),
+                money.displayString
+            )
         }
     }
 
@@ -31,6 +33,7 @@ extension TransactionConfirmation.Model {
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.total, amountString)
         }
+
         public init(
             amount: MoneyValue,
             amountInFiat: MoneyValue,
@@ -79,7 +82,8 @@ extension TransactionConfirmation.Model {
         public var formatted: (title: String, subtitle: String)? {
             var value: String = total.displayString
             if let exchange = exchange,
-               let converted = try? total.convert(using: exchange) {
+               let converted = try? total.convert(using: exchange)
+            {
                 value = converted.displayString
             }
             return (LocalizedString.total, value)
@@ -136,6 +140,7 @@ extension TransactionConfirmation.Model {
         public let type: TransactionConfirmation.Kind = .invoiceCountdown
 
         private let countdownFormatter: DateComponentsFormatter
+
         init(secondsRemaining: TimeInterval, countdownFormatter: DateComponentsFormatter = .countdownFormatter) {
             self.secondsRemaining = secondsRemaining
             self.countdownFormatter = countdownFormatter
@@ -227,11 +232,11 @@ extension TransactionConfirmation.Model {
             case text(String)
             case identifier(Int)
 
-            public static func ==(lhs: Value, rhs: Value) -> Bool {
+            public static func == (lhs: Value, rhs: Value) -> Bool {
                 switch (lhs, rhs) {
-                case let (.text(lhs), .text(rhs)):
+                case (.text(let lhs), .text(let rhs)):
                     return lhs == rhs
-                case let (.identifier(lhs), .identifier(rhs)):
+                case (.identifier(let lhs), .identifier(let rhs)):
                     return lhs == rhs
                 default:
                     return false
@@ -247,6 +252,7 @@ extension TransactionConfirmation.Model {
                 }
             }
         }
+
         public let value: Value?
         public let required: Bool
         public let type: TransactionConfirmation.Kind = .memo
@@ -256,7 +262,7 @@ extension TransactionConfirmation.Model {
         }
 
         public init(textMemo: String?, required: Bool) {
-            self.value = textMemo.flatMap { Value.text($0) }
+            value = textMemo.flatMap { Value.text($0) }
             self.required = required
         }
     }
@@ -310,7 +316,7 @@ extension TransactionConfirmation.Model {
         public let date: Date
         public let type: TransactionConfirmation.Kind = .readOnly
 
-        public init(date: Date = (Calendar.current.date(byAdding: .day, value: 5, to: Date())) ?? Date()) {
+        public init(date: Date = Calendar.current.date(byAdding: .day, value: 5, to: Date()) ?? Date()) {
             self.date = date
         }
 
@@ -324,8 +330,10 @@ extension TransactionConfirmation.Model {
         public let type: TransactionConfirmation.Kind = .readOnly
 
         public var formatted: (title: String, subtitle: String)? {
-            (String(format: LocalizedString.transactionFee, fee.displayCode),
-             fee.displayString)
+            (
+                String(format: LocalizedString.transactionFee, fee.displayCode),
+                fee.displayString
+            )
         }
     }
 
@@ -334,14 +342,17 @@ extension TransactionConfirmation.Model {
             case depositFee
             case withdrawalFee
         }
+
         public let fee: MoneyValue
         public let feeType: FeeType
         public let asset: CurrencyType
         public let type: TransactionConfirmation.Kind = .networkFee
 
         public var formatted: (title: String, subtitle: String)? {
-            (String(format: LocalizedString.networkFee, asset.displayCode),
-             fee.displayString)
+            (
+                String(format: LocalizedString.networkFee, asset.displayCode),
+                fee.displayString
+            )
         }
     }
 

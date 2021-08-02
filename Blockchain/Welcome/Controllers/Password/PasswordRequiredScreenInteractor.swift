@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import DIKit
 import PlatformKit
 import RxRelay
@@ -19,12 +20,12 @@ final class PasswordRequiredScreenInteractor {
     let passwordRelay = BehaviorRelay<String>(value: "")
 
     private let walletPayloadService: WalletPayloadServiceAPI
-    private let walletFetcher: ((_ password: String) -> Void)
+    private let walletFetcher: (_ password: String) -> Void
     private let appSettings: BlockchainSettings.App
     private let walletManager: WalletManager
     private let credentialsStore: CredentialsStoreAPI
 
-    /// TODO: Consider the various of error types from the service layer,
+    // TODO: Consider the various of error types from the service layer,
     /// translate them into a interaction layer errors
     private let errorRelay = PublishRelay<Error>()
 
@@ -32,11 +33,13 @@ final class PasswordRequiredScreenInteractor {
 
     // MARK: - Setup
 
-    init(walletPayloadService: WalletPayloadServiceAPI = WalletPayloadService(repository: resolve()),
-         walletManager: WalletManager = resolve(),
-         appSettings: BlockchainSettings.App = resolve(),
-         credentialsStore: CredentialsStoreAPI = resolve(),
-         walletFetcher: @escaping ((_ password: String) -> Void)) {
+    init(
+        walletPayloadService: WalletPayloadServiceAPI = resolve(),
+        walletManager: WalletManager = resolve(),
+        appSettings: BlockchainSettings.App = resolve(),
+        credentialsStore: CredentialsStoreAPI = resolve(),
+        walletFetcher: @escaping ((_ password: String) -> Void)
+    ) {
         self.walletPayloadService = walletPayloadService
         self.walletManager = walletManager
         self.walletFetcher = walletFetcher

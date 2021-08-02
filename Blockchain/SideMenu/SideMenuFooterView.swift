@@ -18,6 +18,7 @@ class SideMenuFooterView: NibBasedView {
     var itemTapped: Signal<SideMenuItem> {
         itemRelay.asSignal()
     }
+
     var model: SideMenuFooterViewModel! {
         didSet {
             topButton.setTitle(model.top.title, for: .normal)

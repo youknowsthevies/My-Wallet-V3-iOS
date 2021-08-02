@@ -12,8 +12,6 @@ import Foundation
 
     @objc public class func privateKeyNeeded() -> String { LocalizationConstants.Authentication.ImportKeyPasswordScreen.title }
 
-    @objc public class func paxFee() -> String { LocalizationConstants.Transactions.paxfee }
-
     @objc public class func copiedToClipboard() -> String { LocalizationConstants.Receive.Text.copiedToClipboard }
 
     @objc public class func createWalletLegalAgreementPrefix() -> String {
@@ -22,7 +20,7 @@ import Foundation
 
     @objc public class func termsOfService() -> String { LocalizationConstants.tos }
 
-    @objc public class func privacyPolicy() -> String { LocalizationConstants.privacyPolicy     }
+    @objc public class func privacyPolicy() -> String { LocalizationConstants.privacyPolicy }
 
     @objc public class func twoFactorExchangeDisabled() -> String { LocalizationConstants.Exchange.twoFactorNotEnabled }
 
@@ -66,19 +64,9 @@ import Foundation
 
     @objc public class func cookiePolicy() -> String { LocalizationConstants.Settings.cookiePolicy }
 
-    @objc public class func gettingQuote() -> String { LocalizationConstants.Swap.gettingQuote }
-
-    @objc public class func confirming() -> String { LocalizationConstants.Swap.confirming }
-
-    @objc public class func loadingTransactions() -> String { LocalizationConstants.Swap.loadingTransactions }
-
-    @objc public class func invalidXAddressY() -> String { LocalizationConstants.SendAsset.invalidXAddressY }
-
     @objc public class func nonSpendable() -> String { LocalizationConstants.AddressAndKeyImport.nonSpendable }
 
     @objc public class func dontShowAgain() -> String { LocalizationConstants.dontShowAgain }
-
-    @objc public class func loadingExchange() -> String { LocalizationConstants.Swap.loading }
 
     @objc public class func notEnoughXForFees() -> String { LocalizationConstants.Errors.notEnoughXForFees }
 
@@ -111,7 +99,7 @@ import Foundation
     @objc public class func myBitcoinWallet() -> String { LocalizationConstants.Account.myWallet }
 
     @objc public class func myEtherWallet() -> String { LocalizationConstants.Account.myWallet }
-    
+
     @objc public class func errorDecryptingWallet() -> String {
         LocalizationConstants.WalletPayloadKit.Error.decryptionFailed
     }

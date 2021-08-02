@@ -7,7 +7,7 @@ import RxSwift
 public final class CountrySelectionService: SelectionServiceAPI {
 
     public var dataSource: Observable<[SelectionItemViewModel]> {
-        .just(Country.all.map { $0.selectionItem }.sorted() )
+        .just(Country.all.map(\.selectionItem).sorted())
     }
 
     public let selectedDataRelay: BehaviorRelay<SelectionItemViewModel>
@@ -17,7 +17,7 @@ public final class CountrySelectionService: SelectionServiceAPI {
     }
 
     public init(defaultSelectedData: Country) {
-        self.selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
+        selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
     }
 
     public func set(country: Country) {
@@ -25,8 +25,8 @@ public final class CountrySelectionService: SelectionServiceAPI {
     }
 }
 
-private extension Country {
-    var selectionItem: SelectionItemViewModel {
+extension Country {
+    fileprivate var selectionItem: SelectionItemViewModel {
         SelectionItemViewModel(
             id: code,
             title: name,

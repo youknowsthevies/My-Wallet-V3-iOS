@@ -27,15 +27,15 @@ public struct SupportedPairs: Equatable {
 
     /// Array of supported unique crypto-currencies, sorted following `CryptoCurrency` default order.
     public var cryptoCurrencies: [CryptoCurrency] {
-        .init(cryptoCurrencySet)
+        .init(cryptoCurrencySet).sorted()
     }
 
     var fiatCurrencySet: Set<FiatCurrency> {
-        Set(pairs.map { $0.minFiatValue.currencyType })
+        Set(pairs.map(\.minFiatValue.currencyType))
     }
 
     var cryptoCurrencySet: Set<CryptoCurrency> {
-        Set(pairs.map { $0.cryptoCurrency })
+        Set(pairs.map(\.cryptoCurrency))
     }
 
     // MARK: - Methods
@@ -85,7 +85,7 @@ extension SupportedPairs.Pair {
             return nil
         }
         self.cryptoCurrency = cryptoCurrency
-        self.minFiatValue = FiatValue.create(minor: response.buyMin, currency: fiatCurrency)!
-        self.maxFiatValue = FiatValue.create(minor: response.buyMax, currency: fiatCurrency)!
+        minFiatValue = FiatValue.create(minor: response.buyMin, currency: fiatCurrency)!
+        maxFiatValue = FiatValue.create(minor: response.buyMax, currency: fiatCurrency)!
     }
 }

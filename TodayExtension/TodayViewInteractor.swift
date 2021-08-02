@@ -54,7 +54,7 @@ final class TodayViewInteractor {
     /// Returns the supported device biometrics, regardless if currently configured in app
     private var supportsBioAuthentication: Bool {
         let context = LAContext()
-        return context.canEvaluatePolicy( .deviceOwnerAuthenticationWithBiometrics, error: nil)
+        return context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
     }
 
     /// Performs authentication
@@ -66,7 +66,10 @@ final class TodayViewInteractor {
                 localizedReason: "See your balances",
                 reply: { authenticated, error in
                     if let error = error {
-                        let biometryError = Biometry.BiometryError(with: error, type: Biometry.BiometryType(with: context.biometryType))
+                        let biometryError = Biometry.BiometryError(
+                            with: error,
+                            type: Biometry.BiometryType(with: context.biometryType)
+                        )
                         observer(.error(Biometry.EvaluationError.system(biometryError)))
                     } else if !authenticated {
                         observer(.error(Biometry.EvaluationError.notAllowed))
@@ -80,6 +83,6 @@ final class TodayViewInteractor {
     }
 
     func refresh() {
-        self.historicalProvider.refresh(window: .day(.oneHour))
+        historicalProvider.refresh(window: .day(.oneHour))
     }
 }

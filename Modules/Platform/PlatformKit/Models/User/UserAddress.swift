@@ -41,8 +41,8 @@ extension UserAddress: Codable {
         case lineOne = "line1"
         case lineTwo = "line2"
         case postalCode = "postCode"
-        case city = "city"
-        case state = "state"
+        case city
+        case state
         case countryCode = "country"
     }
 }

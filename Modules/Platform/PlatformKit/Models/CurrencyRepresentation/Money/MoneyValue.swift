@@ -106,37 +106,37 @@ public struct MoneyValue: Money, Hashable, Equatable {
     // MARK: - Setup
 
     public init(cryptoValue: CryptoValue) {
-        self._value = .crypto(cryptoValue)
+        _value = .crypto(cryptoValue)
     }
 
     public init(fiatValue: FiatValue) {
-        self._value = .fiat(fiatValue)
+        _value = .fiat(fiatValue)
     }
 
     fileprivate init(major amount: String, currency: CurrencyType) throws {
         switch currency {
         case .crypto(let cryptoCurrency):
-            self._value = try Value(major: amount, crypto: cryptoCurrency)
+            _value = try Value(major: amount, crypto: cryptoCurrency)
         case .fiat(let fiatCurrency):
-            self._value = try Value(major: amount, fiat: fiatCurrency)
+            _value = try Value(major: amount, fiat: fiatCurrency)
         }
     }
 
     fileprivate init(minor amount: String, currency: CurrencyType) throws {
         switch currency {
         case .crypto(let cryptoCurrency):
-            self._value = try Value(minor: amount, crypto: cryptoCurrency)
+            _value = try Value(minor: amount, crypto: cryptoCurrency)
         case .fiat(let fiatCurrency):
-            self._value = try Value(minor: amount, fiat: fiatCurrency)
+            _value = try Value(minor: amount, fiat: fiatCurrency)
         }
     }
 
     public init(amount: BigInt, currency: CurrencyType) {
         switch currency {
         case .crypto(let cryptoCurrency):
-            self._value = .crypto(CryptoValue(amount: amount, currency: cryptoCurrency))
+            _value = .crypto(CryptoValue(amount: amount, currency: cryptoCurrency))
         case .fiat(let fiatCurrency):
-            self._value = .fiat(FiatValue(amount: amount, currency: fiatCurrency))
+            _value = .fiat(FiatValue(amount: amount, currency: fiatCurrency))
         }
     }
 

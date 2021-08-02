@@ -15,7 +15,7 @@ final class StellarConfigurationService: StellarConfigurationAPI {
 
     private static let refreshInterval: TimeInterval = 60.0 * 60.0 // 1h
 
-     var configuration: Single<StellarConfiguration> {
+    var configuration: Single<StellarConfiguration> {
         Single.deferred { [unowned self] in
             guard let cachedValue = self.cachedConfiguration.value, !self.shouldRefresh else {
                 return self.fetchConfiguration
@@ -50,11 +50,11 @@ final class StellarConfigurationService: StellarConfigurationAPI {
         return lastRefresh.compare(lastRefreshInterval) == .orderedAscending
     }
 
-    private var lastRefresh: Date = Date(timeIntervalSinceNow: -StellarConfigurationService.refreshInterval)
+    private var lastRefresh = Date(timeIntervalSinceNow: -StellarConfigurationService.refreshInterval)
 
     private let bridgeAPI: StellarWalletOptionsBridgeAPI
 
     init(bridge: StellarWalletOptionsBridgeAPI = resolve()) {
-        self.bridgeAPI = bridge
+        bridgeAPI = bridge
     }
 }

@@ -28,6 +28,7 @@ struct PairingIntroScreenPresenter {
             InstructionCellViewModel(number: $0.offset + 1, inputs: $0.element)
         }
     }()
+
     let primaryButtonViewModel = ButtonViewModel.primary(
         with: LocalizedString.primaryButton
     )

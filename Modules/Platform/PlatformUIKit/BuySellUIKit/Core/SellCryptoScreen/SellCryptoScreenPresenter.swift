@@ -30,7 +30,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
     ) {
         self.routerInteractor = routerInteractor
         self.interactor = interactor
-        self.auxiliaryViewPresenter = SendAuxiliaryViewPresenter(
+        auxiliaryViewPresenter = SendAuxiliaryViewPresenter(
             interactor: interactor.auxiliaryViewInteractor,
             initialState: SendAuxiliaryViewPresenter.State(
                 maxButtonVisibility: .visible,
@@ -52,9 +52,11 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
         super.viewDidLoad()
         interactor.amountTranslationInteractor.minAmountSelectedRelay
             .map { [interactor] _ in
-                AnalyticsEvents.New.Sell.sellAmountMinClicked(fromAccountType: .init(interactor.data.source),
-                                                              inputCurrency: interactor.data.source.currencyType.code,
-                                                              outputCurrency: interactor.data.destination.currencyType.code)
+                AnalyticsEvents.New.Sell.sellAmountMinClicked(
+                    fromAccountType: .init(interactor.data.source),
+                    inputCurrency: interactor.data.source.currencyType.code,
+                    outputCurrency: interactor.data.destination.currencyType.code
+                )
             }
             .subscribe(onNext: analyticsRecorder.record(event:))
             .disposed(by: disposeBag)
@@ -80,12 +82,12 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             .withLatestFrom(interactor.candidateOrderDetails)
             .compactMap { $0 }
             .show(loader: loader, style: .circle)
-            .flatMap(weak: interactor) { (interactor, candidateOrderDetails) -> Observable<Result<CTAData, Error>> in
+            .flatMap { [analyticsRecorder, interactor] candidateOrderDetails -> Observable<Result<CTAData, Error>> in
                 Observable.zip(
                     interactor.currentKycState.asObservable(),
                     interactor.currentEligibilityState
                 )
-                .map { [weak self] (currentKycState, currentEligibilityState) -> Result<CTAData, Error> in
+                .map { currentKycState, currentEligibilityState -> Result<CTAData, Error> in
                     switch (currentKycState, currentEligibilityState) {
                     case (.success(let kycState), .success(let isSimpleBuyEligible)):
                         let ctaData = CTAData(
@@ -93,11 +95,13 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                             isSimpleBuyEligible: isSimpleBuyEligible,
                             candidateOrderDetails: candidateOrderDetails
                         )
-                        self?.analyticsRecorder.record(event:
-                            AnalyticsEvents.New.Sell.sellAmountEntered(fromAccountType: .init(interactor.data.source),
-                                                                       inputAmount: candidateOrderDetails.cryptoValue.displayMajorValue.doubleValue,
-                                                                       inputCurrency: candidateOrderDetails.cryptoCurrency.code,
-                                                                       outputCurrency: candidateOrderDetails.fiatCurrency.code)
+                        analyticsRecorder.record(event:
+                            AnalyticsEvents.New.Sell.sellAmountEntered(
+                                fromAccountType: .init(interactor.data.source),
+                                inputAmount: candidateOrderDetails.cryptoValue.displayMajorValue.doubleValue,
+                                inputCurrency: candidateOrderDetails.cryptoCurrency.code,
+                                outputCurrency: candidateOrderDetails.fiatCurrency.code
+                            )
                         )
                         return .success(ctaData)
                     case (.failure(let error), .success):
@@ -113,21 +117,21 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
 
         ctaObservable
             .observeOn(MainScheduler.instance)
-            .bindAndCatch(weak: self) { (self, result) in
+            .bindAndCatch(weak: self) { [loader, routerInteractor] (self, result) in
                 switch result {
                 case .success(let data):
                     switch (data.kycState, data.isSimpleBuyEligible) {
                     case (.completed, false):
-                        self.loader.hide()
-                        // TODO: inelligible
+                        loader.hide()
+                    // TODO: inelligible
                     case (.completed, true):
-                        self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
-                            self?.loader.hide()
-                            self?.routerInteractor.nextFromSellCrypto(checkoutData: checkoutData)
+                        self.createOrder(from: data.candidateOrderDetails) { checkoutData in
+                            loader.hide()
+                            routerInteractor.nextFromSellCrypto(checkoutData: checkoutData)
                         }
                     case (.shouldComplete, _):
-                        self.createOrder(from: data.candidateOrderDetails) { [weak self] _ in
-                            self?.loader.hide()
+                        self.createOrder(from: data.candidateOrderDetails) { _ in
+                            loader.hide()
                             // TODO: KYC with checkout data
                         }
                     }
@@ -140,8 +144,10 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
 
     // MARK: - Private methods
 
-    private func createOrder(from candidateOrderDetails: CandidateOrderDetails,
-                             with completion: @escaping (CheckoutData) -> Void) {
+    private func createOrder(
+        from candidateOrderDetails: CandidateOrderDetails,
+        with completion: @escaping (CheckoutData) -> Void
+    ) {
 
         interactor.createOrder(from: candidateOrderDetails)
             .observeOn(MainScheduler.instance)

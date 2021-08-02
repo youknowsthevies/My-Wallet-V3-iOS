@@ -19,8 +19,10 @@ public final class AddNewPaymentMethodBuilder: AddNewPaymentMethodBuildable {
     public func build(listener: AddNewPaymentMethodListener) -> AddNewPaymentMethodRouting {
         let viewController = AddNewPaymentMethodViewController()
         viewController.isModalInPresentation = true
-        let interactor = AddNewPaymentMethodInteractor(presenter: viewController,
-                                                       paymentMethodService: paymentMethodService)
+        let interactor = AddNewPaymentMethodInteractor(
+            presenter: viewController,
+            paymentMethodService: paymentMethodService
+        )
         interactor.listener = listener
         return AddNewPaymentMethodRouter(interactor: interactor, viewController: viewController)
     }

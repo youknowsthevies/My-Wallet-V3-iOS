@@ -4,7 +4,7 @@ import Foundation
 
 class AccessibilityIdentifiers: NSObject {
 
-    struct PinScreen {
+    enum PinScreen {
         static let prefix = "PinScreen."
 
         static let pinSecureViewTitle = "\(prefix)titleLabel"
@@ -17,7 +17,7 @@ class AccessibilityIdentifiers: NSObject {
         static let swipeLabel = "\(prefix)swipeLabel"
     }
 
-    struct Address {
+    enum Address {
         static let prefix = "AddressScreen."
         static let pageControl = "\(prefix)pageControl"
     }
@@ -50,7 +50,7 @@ class AccessibilityIdentifiers: NSObject {
 
     // MARK: - Asset Selection
 
-    struct AssetSelection {
+    enum AssetSelection {
         private static let prefix = "AssetSelection."
 
         static let toggleButton = "\(prefix)toggleButton"

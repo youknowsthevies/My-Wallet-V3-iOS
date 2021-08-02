@@ -13,7 +13,7 @@ extension DependencyContainer {
 
     static var today = module {
 
-        factory { AnalyticsServiceMock() as AnalyticsEventRecording }
+        factory { AnalyticsServiceMock() as AnalyticsEventRecorderAPI }
 
         factory { UIDevice.current as DeviceInfo }
 

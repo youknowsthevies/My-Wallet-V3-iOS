@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import PlatformKit
 import RxSwift
 import RxTest
 @testable import TransactionKit
@@ -13,6 +14,7 @@ final class SwapQuotesEngineMock {
         amount
             .asObservable()
     }
+
     init(service: OrderQuoteRepositoryMock = OrderQuoteRepositoryMock()) {
         self.service = service
     }
@@ -24,7 +26,7 @@ final class SwapQuotesEngineMock {
                 .asObservable(),
             amountObservable
         )
-        .map { (quote, amount) -> BigInt in
+        .map { quote, amount -> BigInt in
             PricesInterpolator(prices: quote.quote.priceTiers).rate(amount: amount)
         }
     }

@@ -10,8 +10,10 @@ final class CashIdentityVerificationRouter {
     private weak var topMostViewControllerProvider: TopMostViewControllerProviding!
     private let kycRouter: KYCRouterAPI
 
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
-         kycRouter: KYCRouterAPI = resolve()) {
+    init(
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+        kycRouter: KYCRouterAPI = resolve()
+    ) {
         self.kycRouter = kycRouter
         self.topMostViewControllerProvider = topMostViewControllerProvider
     }
@@ -20,7 +22,7 @@ final class CashIdentityVerificationRouter {
         let kycRouter = self.kycRouter
         topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
             guard startKYC else { return }
-            kycRouter.start()
+            kycRouter.start(parentFlow: .cash)
         })
     }
 }

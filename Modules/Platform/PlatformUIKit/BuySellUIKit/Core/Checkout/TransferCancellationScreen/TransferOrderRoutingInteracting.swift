@@ -3,5 +3,5 @@
 import AnalyticsKit
 
 public protocol TransferOrderRoutingInteracting: RoutingNextStateEmitterAPI, RoutingPreviousStateEmitterAPI {
-    var analyticsRecorder: AnalyticsEventRecording { get }
+    var analyticsRecorder: AnalyticsEventRecorderAPI { get }
 }

@@ -24,7 +24,7 @@ final class RecoverWalletScreenInteractor {
     // MARK: - Injected
 
     private let reachability: InternetReachabilityAPI
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let wallet: Wallet
     private let walletManager: WalletManager
 
@@ -37,12 +37,14 @@ final class RecoverWalletScreenInteractor {
 
     // MARK: - Setup
 
-    init(authenticationCoordinator: AuthenticationCoordinator = .shared,
-         passphrase: String,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         reachability: InternetReachabilityAPI = InternetReachability(),
-         walletManager: WalletManager = .shared,
-         wallet: Wallet = WalletManager.shared.wallet) {
+    init(
+        authenticationCoordinator: AuthenticationCoordinator = .shared,
+        passphrase: String,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        reachability: InternetReachabilityAPI = InternetReachability(),
+        walletManager: WalletManager = .shared,
+        wallet: Wallet = WalletManager.shared.wallet
+    ) {
         self.passphrase = passphrase
         self.analyticsRecorder = analyticsRecorder
         self.reachability = reachability

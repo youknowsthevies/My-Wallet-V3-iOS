@@ -15,7 +15,7 @@ extension Data {
         let len = hex.count / 2
         var data = Data(capacity: len)
         for i in 0..<len {
-            let j = hex.index(hex.startIndex, offsetBy: i*2)
+            let j = hex.index(hex.startIndex, offsetBy: i * 2)
             let k = hex.index(j, offsetBy: 2)
             let bytes = hex[j..<k]
             if var num = UInt8(bytes, radix: 16) {
@@ -28,7 +28,7 @@ extension Data {
         self = data
     }
 
-    public var bytes: Array<UInt8> {
+    public var bytes: [UInt8] {
         Array(self)
     }
 }

@@ -56,7 +56,7 @@ private struct BackgroundHeaderView: View {
 
 private struct UnlockTradingViewHelper: View {
 
-    private struct UIConstants {
+    private enum UIConstants {
         static let textSpacing: CGFloat = 0
         static let largeIconSize: CGFloat = 32
     }
@@ -101,7 +101,7 @@ private struct UnlockTradingViewHelper: View {
 
 private struct UnlockTradingBenefitView: View {
 
-    private struct UIConstants {
+    private enum UIConstants {
         static let groupsSpacing: CGFloat = 10
         static let textSpacing: CGFloat = 0
         static let iconSize: CGFloat = 24
@@ -137,7 +137,7 @@ struct UnlockTradingView_Previews: PreviewProvider {
                 initialState: UnlockTradingState(
                     viewModel: .unlockGoldTier
                 ),
-                reducer: unloackTradingReducer,
+                reducer: unlockTradingReducer,
                 environment: UnlockTradingEnvironment(
                     dismiss: {},
                     unlock: {}

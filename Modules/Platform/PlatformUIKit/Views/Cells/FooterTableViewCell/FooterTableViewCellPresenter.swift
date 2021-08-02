@@ -8,8 +8,10 @@ public final class FooterTableViewCellPresenter {
 
     public let content: LabelContent
 
-    public init(text: String,
-                accessibility: Accessibility) {
+    public init(
+        text: String,
+        accessibility: Accessibility
+    ) {
         content = .init(
             text: text,
             font: .main(.medium, 14.0),

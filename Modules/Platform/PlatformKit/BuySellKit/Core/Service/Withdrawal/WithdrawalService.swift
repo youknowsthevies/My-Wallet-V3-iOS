@@ -5,10 +5,10 @@ import DIKit
 import RxSwift
 
 public protocol WithdrawalServiceAPI {
-    func withdrawFeeAndLimit(for currency: FiatCurrency) -> Single<WithdrawalFeeAndLimit>
+    func withdrawFeeAndLimit(for currency: FiatCurrency, paymentMethodType: PaymentMethodPayloadType) -> Single<WithdrawalFeeAndLimit>
     func withdrawal(for checkout: WithdrawalCheckoutData) -> Single<Result<FiatValue, Error>>
-    func withdrawalFee(for currency: FiatCurrency) -> Single<FiatValue>
-    func withdrawalMinAmount(for currency: FiatCurrency) -> Single<FiatValue>
+    func withdrawalFee(for currency: FiatCurrency, paymentMethodType: PaymentMethodPayloadType) -> Single<FiatValue>
+    func withdrawalMinAmount(for currency: FiatCurrency, paymentMethodType: PaymentMethodPayloadType) -> Single<FiatValue>
 }
 
 final class WithdrawalService: WithdrawalServiceAPI {
@@ -19,8 +19,11 @@ final class WithdrawalService: WithdrawalServiceAPI {
         self.client = client
     }
 
-    func withdrawFeeAndLimit(for currency: FiatCurrency) -> Single<WithdrawalFeeAndLimit> {
-        client.withdrawFee(currency: currency)
+    func withdrawFeeAndLimit(
+        for currency: FiatCurrency,
+        paymentMethodType: PaymentMethodPayloadType
+    ) -> Single<WithdrawalFeeAndLimit> {
+        client.withdrawFee(currency: currency, paymentMethodType: paymentMethodType)
             .map { response -> (CurrencyFeeResponse, CurrencyFeeResponse) in
                 guard let fees = response.fees.first(where: { $0.symbol == currency.code }) else {
                     fatalError("Expected fees for currency: \(currency)")
@@ -39,28 +42,36 @@ final class WithdrawalService: WithdrawalServiceAPI {
             }
     }
 
-    func withdrawalFee(for currency: FiatCurrency) -> Single<FiatValue> {
-        client.withdrawFee(currency: currency)
+    func withdrawalFee(
+        for currency: FiatCurrency,
+        paymentMethodType: PaymentMethodPayloadType
+    ) -> Single<FiatValue> {
+        client.withdrawFee(currency: currency, paymentMethodType: paymentMethodType)
             .map { response -> CurrencyFeeResponse? in
                 response.fees.first(where: { $0.symbol == currency.code })
             }
             .map { feeResponse -> FiatValue in
                 guard let feeResponse = feeResponse,
-                      let minorValue = BigInt(feeResponse.minorValue) else {
+                      let minorValue = BigInt(feeResponse.minorValue)
+                else {
                     return .zero(currency: currency)
                 }
                 return FiatValue(amount: minorValue, currency: currency)
             }
     }
 
-    func withdrawalMinAmount(for currency: FiatCurrency) -> Single<FiatValue> {
-        client.withdrawFee(currency: currency)
+    func withdrawalMinAmount(
+        for currency: FiatCurrency,
+        paymentMethodType: PaymentMethodPayloadType
+    ) -> Single<FiatValue> {
+        client.withdrawFee(currency: currency, paymentMethodType: paymentMethodType)
             .map { response -> CurrencyFeeResponse? in
                 response.minAmounts.first(where: { $0.symbol == currency.code })
             }
             .map { feeResponse -> FiatValue in
                 guard let feeResponse = feeResponse,
-                      let minorValue = BigInt(feeResponse.minorValue) else {
+                      let minorValue = BigInt(feeResponse.minorValue)
+                else {
                     return .zero(currency: currency)
                 }
                 return FiatValue(amount: minorValue, currency: currency)
@@ -69,7 +80,7 @@ final class WithdrawalService: WithdrawalServiceAPI {
 
     func withdrawal(for checkout: WithdrawalCheckoutData) -> Single<Result<FiatValue, Error>> {
         client.withdraw(data: checkout)
-            .mapToResult { (response) -> FiatValue in
+            .mapToResult { response -> FiatValue in
                 guard let amount = FiatValue.create(major: response.amount.value, currency: checkout.currency) else {
                     fatalError("Couldn't create FiatValue from withdrawal response: \(response)")
                 }

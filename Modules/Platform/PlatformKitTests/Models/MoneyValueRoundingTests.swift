@@ -8,7 +8,7 @@ class MoneyValueRoundingTests: XCTestCase {
 
     func testDisplayableRounding() throws {
         // 0.121414197936925024 ETH
-        let sut = CryptoValue.create(minor: 121414197936925024, currency: .ethereum).moneyValue
+        let sut = CryptoValue.create(minor: 121414197936925024, currency: .coin(.ethereum)).moneyValue
         let up = sut.displayableRounding(roundingMode: .up)
         // 0.1214142 ETH
         XCTAssertEqual(up.amount, 121414200000000000)

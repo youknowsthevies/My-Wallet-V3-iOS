@@ -25,13 +25,15 @@ public struct ButtonContent: Equatable {
     let cornerRadius: CGFloat
     let accessibility: Accessibility
 
-    public init(text: String = "",
-                font: UIFont = ButtonContent.defaultFont,
-                color: UIColor = ButtonContent.defaultColor,
-                backgroundColor: UIColor? = nil,
-                border: Border = .no,
-                cornerRadius: CGFloat = 0,
-                accessibility: Accessibility = .none) {
+    public init(
+        text: String = "",
+        font: UIFont = ButtonContent.defaultFont,
+        color: UIColor = ButtonContent.defaultColor,
+        backgroundColor: UIColor? = nil,
+        border: Border = .no,
+        cornerRadius: CGFloat = 0,
+        accessibility: Accessibility = .none
+    ) {
         self.text = text
         self.font = font
         self.color = color
@@ -55,7 +57,8 @@ extension UIButton {
         get {
             var border: ButtonContent.Border = .no
             if layer.borderWidth != 0,
-                let cgColor = layer.borderColor {
+               let cgColor = layer.borderColor
+            {
                 border = .yes(width: layer.borderWidth, color: UIColor(cgColor: cgColor))
             }
             return ButtonContent(

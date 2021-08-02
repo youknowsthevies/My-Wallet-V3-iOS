@@ -299,7 +299,7 @@ extension NetworkAdapterAPI {
 
     func perform(request: NetworkRequest) -> AnyPublisher<Void, NetworkError> {
         perform(request: request)
-            .map { (response: EmptyNetworkResponse) -> Void in
+            .map { (_: EmptyNetworkResponse) -> Void in
                 ()
             }
             .eraseToAnyPublisher()
@@ -309,7 +309,7 @@ extension NetworkAdapterAPI {
         request: NetworkRequest
     ) -> AnyPublisher<Void, ErrorResponseType> {
         perform(request: request)
-            .map { (response: EmptyNetworkResponse) -> Void in
+            .map { (_: EmptyNetworkResponse) -> Void in
                 ()
             }
             .eraseToAnyPublisher()
@@ -360,9 +360,9 @@ extension NetworkAdapterAPI {
     }
 }
 
-private extension PrimitiveSequence {
+extension PrimitiveSequence {
 
-    func probabilisticallyCrashOnRxError() -> PrimitiveSequence {
+    fileprivate func probabilisticallyCrashOnRxError() -> PrimitiveSequence {
         catchError { error in
             func crashOnError(_ error: Error) {
                 switch error as? RxError {

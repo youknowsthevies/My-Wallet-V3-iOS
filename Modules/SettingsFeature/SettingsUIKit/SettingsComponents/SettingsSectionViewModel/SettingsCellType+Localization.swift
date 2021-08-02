@@ -27,7 +27,7 @@ extension SettingsSectionType.CellType.PlainCellType {
     }
 
     var accessibilityID: String {
-        self.rawValue
+        rawValue
     }
 
     var viewModel: PlainCellViewModel {
@@ -51,7 +51,7 @@ extension SettingsSectionType.CellType.ClipboardCellType {
     }
 
     var accessibilityID: String {
-        self.rawValue
+        rawValue
     }
 
     var viewModel: ClipboardCellViewModel {

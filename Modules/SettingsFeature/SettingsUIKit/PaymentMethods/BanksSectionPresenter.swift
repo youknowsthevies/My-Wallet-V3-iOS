@@ -27,7 +27,7 @@ final class BanksSectionPresenter: SettingsSectionPresenting {
 
         let sectionType = self.sectionType
         state = interactor.state
-            .flatMap { (state) -> Observable<SettingsSectionLoadingState> in
+            .flatMap { state -> Observable<SettingsSectionLoadingState> in
                 switch state {
                 case .invalid:
                     return .just(.loaded(next: .empty))
@@ -35,16 +35,16 @@ final class BanksSectionPresenter: SettingsSectionPresenting {
                     let cells = [SettingsCellViewModel(cellType: .banks(.skeleton(0)))]
                     return .just(.loaded(next: .some(.init(sectionType: sectionType, items: cells))))
                 case .value(let data):
-                    let isAbleToAddNew = addPaymentMethodCellPresenters.map { $0.isAbleToAddNew }
+                    let isAbleToAddNew = addPaymentMethodCellPresenters.map(\.isAbleToAddNew)
                     return Observable
                         .zip(isAbleToAddNew)
                         .take(1)
                         .map { isAbleToAddNew -> [SettingsCellViewModel] in
                             let presenters = zip(isAbleToAddNew, addPaymentMethodCellPresenters)
-                                .filter { $0.0 }
-                                .map { $0.1 }
+                                .filter(\.0)
+                                .map(\.1)
 
-                            return Array.init(data) + Array.init(presenters)
+                            return Array(data) + Array(presenters)
                         }
                         .map { viewModels in
                             guard !viewModels.isEmpty else {
@@ -62,20 +62,20 @@ final class BanksSectionPresenter: SettingsSectionPresenting {
     }
 }
 
-private extension Array where Element == SettingsCellViewModel {
-    init(_ presenters: [AddPaymentMethodCellPresenter]) {
+extension Array where Element == SettingsCellViewModel {
+    fileprivate init(_ presenters: [AddPaymentMethodCellPresenter]) {
         self = presenters
             .map { SettingsCellViewModel(cellType: .banks(.add($0))) }
     }
 
-    init(_ viewModels: [BeneficiaryLinkedBankViewModel]) {
+    fileprivate init(_ viewModels: [BeneficiaryLinkedBankViewModel]) {
         self = viewModels
             .map {
                 SettingsCellViewModel(cellType: .banks(.linked($0)))
             }
     }
 
-    init(_ beneficiaries: [Beneficiary]) {
+    fileprivate init(_ beneficiaries: [Beneficiary]) {
         self = beneficiaries
             .map {
                 SettingsCellViewModel(cellType: .banks(.linked(BeneficiaryLinkedBankViewModel(data: $0))))

@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import AuthenticationDataKit
+import AuthenticationKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
@@ -11,7 +13,7 @@ import ERC20Kit
 import EthereumKit
 import KYCKit
 import KYCUIKit
-import NabuAnalyticsKit
+import NetworkKit
 import OnboardingKit
 import OnboardingUIKit
 import PlatformKit
@@ -27,15 +29,15 @@ import WalletPayloadKit
 
 // MARK: - Settings Dependencies
 
-extension AuthenticationCoordinator: SettingsUIKit.AuthenticationCoordinating { }
+extension AuthenticationCoordinator: SettingsUIKit.AuthenticationCoordinating {}
 
-extension AppCoordinator: SettingsUIKit.AppCoordinating { }
+extension AppCoordinator: SettingsUIKit.AppCoordinating {}
 
-extension ExchangeCoordinator: SettingsUIKit.ExchangeCoordinating { }
+extension ExchangeCoordinator: SettingsUIKit.ExchangeCoordinating {}
 
-extension UIApplication: SettingsUIKit.AppStoreOpening { }
+extension UIApplication: SettingsUIKit.AppStoreOpening {}
 
-extension Wallet: WalletRecoveryVerifing { }
+extension Wallet: WalletRecoveryVerifing {}
 
 // MARK: - Dashboard Dependencies
 
@@ -47,10 +49,21 @@ extension AnnouncementPresenter: DashboardUIKit.AnnouncementPresenting {}
 
 extension SettingsUIKit.BackupFundsRouter: DashboardUIKit.BackupRouterAPI {}
 
+// MARK: - AuthenticationFeature Dependencies
+
+extension Wallet: WalletAuthenticationKitWrapper {}
+
+// MARK: - AnalyticsKit Dependencies
+
+extension BlockchainSettings.App: AnalyticsKit.GuidRepositoryAPI {}
+
+extension NabuTokenStore: AnalyticsKit.TokenRepositoryAPI {}
+
 // MARK: - Blockchain Module
 
 extension DependencyContainer {
 
+    // swiftlint:disable closure_body_length
     static var blockchain = module {
 
         factory { NavigationRouter() as NavigationRouterAPI }
@@ -90,8 +103,6 @@ extension DependencyContainer {
 
         factory { UIDevice.current as DeviceInfo }
 
-        single { [FirebaseAnalyticsService(), AnalyticsProvider()] as [AnalyticsServiceProviding] }
-
         factory { CrashlyticsRecorder() as MessageRecording }
 
         factory { CrashlyticsRecorder() as ErrorRecording }
@@ -116,8 +127,10 @@ extension DependencyContainer {
             let appSettings: BlockchainSettings.App = DIKit.resolve()
             let isPinSet: () -> Bool = { appSettings.isPinSet }
             let deeplinkHandler = CoreDeeplinkHandler(isPinSet: isPinSet)
-            let blockchainHandler = BlockchainLinksHandler(validHosts: BlockchainLinks.validLinks,
-                                                           validRoutes: BlockchainLinks.validRoutes)
+            let blockchainHandler = BlockchainLinksHandler(
+                validHosts: BlockchainLinks.validLinks,
+                validRoutes: BlockchainLinks.validRoutes
+            )
             return AppDeeplinkHandler(
                 deeplinkHandler: deeplinkHandler,
                 blockchainHandler: blockchainHandler,
@@ -138,8 +151,10 @@ extension DependencyContainer {
 
         single { AuthenticationCoordinator() }
 
+        factory { AuthenticationCoordinator.shared as WalletPairingFetcherAPI }
+
         factory { () -> AuthenticationCoordinating in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 let coordinator: AuthenticationCoordinator = DIKit.resolve()
                 return coordinator as AuthenticationCoordinating
             }
@@ -170,7 +185,9 @@ extension DependencyContainer {
 
         factory { FiatBalanceCollectionViewInteractor() as FiatBalancesInteracting }
 
-        factory { FiatBalanceCollectionViewPresenter(interactor: FiatBalanceCollectionViewInteractor()) as FiatBalanceCollectionViewPresenting }
+        factory { FiatBalanceCollectionViewPresenter(interactor: FiatBalanceCollectionViewInteractor())
+            as FiatBalanceCollectionViewPresenting
+        }
 
         factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
 
@@ -183,7 +200,7 @@ extension DependencyContainer {
         single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
 
         factory { () -> CurrencyRouting & TabSwapping in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 return AppCoordinator.shared as CurrencyRouting & TabSwapping
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -191,7 +208,7 @@ extension DependencyContainer {
         }
 
         factory { () -> CurrencyRouting in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 return AppCoordinator.shared as CurrencyRouting
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -199,7 +216,7 @@ extension DependencyContainer {
         }
 
         factory { () -> TabSwapping in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 return AppCoordinator.shared as TabSwapping
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -207,7 +224,7 @@ extension DependencyContainer {
         }
 
         factory { () -> AppCoordinating in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 return AppCoordinator.shared as AppCoordinating
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -215,7 +232,7 @@ extension DependencyContainer {
         }
 
         factory { () -> DashboardUIKit.WalletOperationsRouting in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 return AppCoordinator.shared as DashboardUIKit.WalletOperationsRouting
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -223,7 +240,7 @@ extension DependencyContainer {
         }
 
         factory { () -> BackupFlowStarterAPI in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 return AppCoordinator.shared as BackupFlowStarterAPI
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -231,23 +248,25 @@ extension DependencyContainer {
         }
 
         factory { () -> CashIdentityVerificationAnnouncementRouting in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 return AppCoordinator.shared as CashIdentityVerificationAnnouncementRouting
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveCashIdentityVerificationAnnouncementRouting() as CashIdentityVerificationAnnouncementRouting
+            return bridge.resolveCashIdentityVerificationAnnouncementRouting()
+                as CashIdentityVerificationAnnouncementRouting
         }
 
         factory { () -> InterestIdentityVerificationAnnouncementRouting in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 return AppCoordinator.shared as InterestIdentityVerificationAnnouncementRouting
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveInterestIdentityVerificationAnnouncementRouting() as InterestIdentityVerificationAnnouncementRouting
+            return bridge.resolveInterestIdentityVerificationAnnouncementRouting()
+                as InterestIdentityVerificationAnnouncementRouting
         }
 
         factory { () -> SettingsStarterAPI in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 return AppCoordinator.shared as SettingsStarterAPI
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -255,7 +274,7 @@ extension DependencyContainer {
         }
 
         factory { () -> TabControllerManagerProvider in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 let app: AppCoordinator = DIKit.resolve()
                 return app as TabControllerManagerProvider
             }
@@ -264,7 +283,7 @@ extension DependencyContainer {
         }
 
         factory { () -> DrawerRouting in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 let app: AppCoordinator = DIKit.resolve()
                 return app as DrawerRouting
             }
@@ -273,7 +292,7 @@ extension DependencyContainer {
         }
 
         factory { () -> LoggedInReloadAPI in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 let app: AppCoordinator = DIKit.resolve()
                 return app as LoggedInReloadAPI
             }
@@ -282,7 +301,7 @@ extension DependencyContainer {
         }
 
         factory { () -> ClearOnLogoutAPI in
-            guard useNewOnboarding() else {
+            guard !newWelcomeScreenIsDisabled() else {
                 let app: AppCoordinator = DIKit.resolve()
                 return app as ClearOnLogoutAPI
             }
@@ -323,9 +342,9 @@ extension DependencyContainer {
             return walletManager.repository as SharedKeyRepositoryAPI
         }
 
-        factory { () -> GuidRepositoryAPI in
+        factory { () -> AuthenticationKit.GuidRepositoryAPI in
             let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as GuidRepositoryAPI
+            return walletManager.repository as AuthenticationKit.GuidRepositoryAPI
         }
 
         factory { () -> PasswordRepositoryAPI in
@@ -387,11 +406,6 @@ extension DependencyContainer {
             return featureFetching
         }
 
-        factory { () -> FeatureFetchingConfiguring in
-            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
-            return featureFetching
-        }
-
         factory { () -> FeatureVariantFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
@@ -449,12 +463,12 @@ extension DependencyContainer {
             return ethereum
         }
 
-        factory(tag: CryptoCurrency.ethereum) { () -> MnemonicAccessAPI in
+        factory(tag: CryptoCurrency.coin(.ethereum)) { () -> MnemonicAccessAPI in
             let ethereum: EthereumWallet = DIKit.resolve()
             return ethereum
         }
 
-        factory(tag: CryptoCurrency.ethereum) { () -> PasswordAccessAPI in
+        factory(tag: CryptoCurrency.coin(.ethereum)) { () -> PasswordAccessAPI in
             let ethereum: EthereumWallet = DIKit.resolve()
             return ethereum
         }
@@ -510,6 +524,7 @@ extension DependencyContainer {
             let emailVerificationService: KYCKit.EmailVerificationServiceAPI = DIKit.resolve()
             let externalAppOpener: ExternalAppOpener = DIKit.resolve()
             return KYCUIKit.Router(
+                analyticsRecorder: DIKit.resolve(),
                 emailVerificationService: emailVerificationService,
                 openMailApp: externalAppOpener.openMailApp
             )
@@ -544,12 +559,101 @@ extension DependencyContainer {
             TransactionsAdapter()
         }
 
-        factory { () -> PlatformUIKit.KYCRouting  in
+        factory { () -> PlatformUIKit.KYCRouting in
             KYCAdapter()
         }
 
         factory { () -> TransactionUIKit.KYCSDDServiceAPI in
             TransactionsKYCAdapter()
+        }
+
+        // MARK: AuthenticationFeature Module
+
+        factory { () -> AutoWalletPairingServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return AutoWalletPairingService(repository: manager.repository) as AutoWalletPairingServiceAPI
+        }
+
+        factory { () -> GuidServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return GuidService(sessionTokenRepository: manager.repository, client: DIKit.resolve())
+        }
+
+        factory { () -> SessionTokenServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return SessionTokenService(client: DIKit.resolve(), repository: manager.repository)
+        }
+
+        factory { () -> SMSServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return SMSService(client: DIKit.resolve(), repository: manager.repository)
+        }
+
+        factory { () -> TwoFAWalletServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return TwoFAWalletService(client: DIKit.resolve(), repository: manager.repository)
+        }
+
+        factory { () -> WalletPayloadServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return WalletPayloadService(client: DIKit.resolve(), repository: manager.repository)
+        }
+
+        factory { () -> LoginServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return LoginService(
+                payloadService: DIKit.resolve(),
+                twoFAPayloadService: DIKit.resolve(),
+                repository: manager.repository
+            )
+        }
+
+        factory { () -> EmailAuthorizationServiceAPI in
+            EmailAuthorizationService(guidService: DIKit.resolve()) as EmailAuthorizationServiceAPI
+        }
+
+        factory { () -> DeviceVerificationServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return DeviceVerificationService(
+                sessionTokenRepository: manager.repository
+            ) as DeviceVerificationServiceAPI
+        }
+
+        factory { RecaptchaClient(siteKey: AuthenticationKeys.googleRecaptchaSiteKey) }
+
+        factory { GoogleRecaptchaService() as GoogleRecaptchaServiceAPI }
+
+        factory { () -> WalletAuthenticationKitWrapper in
+            let manager: WalletManager = DIKit.resolve()
+            return manager.wallet as WalletAuthenticationKitWrapper
+        }
+
+        // MARK: Analytics
+
+        single { () -> AnalyticsKit.TokenRepositoryAPI in
+            let tokenRepository: NabuTokenStore = DIKit.resolve()
+            return tokenRepository as AnalyticsKit.TokenRepositoryAPI
+        }
+
+        single { () -> AnalyticsKit.GuidRepositoryAPI in
+            let guidRepository: BlockchainSettings.App = DIKit.resolve()
+            return guidRepository as AnalyticsKit.GuidRepositoryAPI
+        }
+
+        single { () -> AnalyticsEventRecorderAPI in
+            let firebaseAnalyticsServiceProvider = FirebaseAnalyticsServiceProvider()
+            let userAgent = UserAgentProvider().userAgent ?? ""
+            let nabuAnalyticsServiceProvider = NabuAnalyticsProvider(
+                platform: .wallet,
+                basePath: BlockchainAPI.shared.apiUrl,
+                userAgent: userAgent,
+                tokenRepository: DIKit.resolve(),
+                guidProvider: DIKit.resolve()
+            )
+            return AnalyticsEventRecorder(analyticsServiceProviders: [
+                firebaseAnalyticsServiceProvider,
+                nabuAnalyticsServiceProvider
+            ])
         }
     }
 }

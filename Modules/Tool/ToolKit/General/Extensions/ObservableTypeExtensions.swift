@@ -28,7 +28,9 @@ extension ObservableType where Element: OptionalType {
 extension ObservableType {
     public func map<A: AnyObject, R>(weak object: A, _ selector: @escaping (A, Element) throws -> R) -> Observable<R> {
         map { [weak object] element -> R in
-            guard let object = object else { throw ToolKitError.nullReference(A.self) }
+            guard let object = object else {
+                throw ToolKitError.nullReference(A.self)
+            }
             return try selector(object, element)
         }
     }
@@ -36,27 +38,27 @@ extension ObservableType {
 
 extension ObservableType {
     public func flatMap<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
-        flatMap { [weak object] (value) -> Observable<R> in
+        flatMap { [weak object] value -> Observable<R> in
             guard let object = object else {
-                return Observable.error(ToolKitError.nullReference(A.self))
+                throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, value)
         }
     }
 
     public func flatMapLatest<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
-        flatMapLatest { [weak object] (value) -> Observable<R> in
+        flatMapLatest { [weak object] value -> Observable<R> in
             guard let object = object else {
-                return Observable.error(ToolKitError.nullReference(A.self))
+                throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, value)
         }
     }
 
     public func flatMapFirst<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
-        flatMapFirst { [weak object] (value) -> Observable<R> in
+        flatMapFirst { [weak object] value -> Observable<R> in
             guard let object = object else {
-                return Observable.error(ToolKitError.nullReference(A.self))
+                throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, value)
         }
@@ -66,7 +68,7 @@ extension ObservableType {
 // MARK: - Creation (weak: self)
 
 extension ObservableType {
-    public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, (AnyObserver<Element>)) -> Disposable) -> Observable<Element> {
+    public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, AnyObserver<Element>) -> Disposable) -> Observable<Element> {
         Observable<Element>.create { [weak object] observer -> Disposable in
             guard let object = object else {
                 observer.on(.error(ToolKitError.nullReference(A.self)))
@@ -80,10 +82,14 @@ extension ObservableType {
 // MARK: - Catch Error Op
 
 extension ObservableType {
-    public func catchError<A: AnyObject>(weak object: A,
-                                         _ selector: @escaping (A, Swift.Error) throws -> Observable<Element>) -> Observable<Element> {
+    public func catchError<A: AnyObject>(
+        weak object: A,
+        _ selector: @escaping (A, Swift.Error) throws -> Observable<Element>
+    ) -> Observable<Element> {
         catchError { [weak object] error -> Observable<Element> in
-            guard let object = object else { throw ToolKitError.nullReference(A.self) }
+            guard let object = object else {
+                throw ToolKitError.nullReference(A.self)
+            }
             return try selector(object, error)
         }
     }
@@ -95,7 +101,7 @@ extension ObservableType {
 
     /// Directly maps to `Result<Element, Error>` type.
     public func mapToResult() -> Observable<Result<Element, Error>> {
-        self.map { .success($0) }
+        map { .success($0) }
             .catchError { .just(.failure($0)) }
     }
 
@@ -103,15 +109,17 @@ extension ObservableType {
     /// This is useful in case we would like to have a custom error type.
     public func mapToResult<ResultElement, OutputError: Error>(
         successMap: @escaping (Element) -> ResultElement,
-        errorMap: @escaping (Error) -> OutputError) -> Observable<Result<ResultElement, OutputError>> {
-        self.map { .success(successMap($0)) }
+        errorMap: @escaping (Error) -> OutputError
+    ) -> Observable<Result<ResultElement, OutputError>> {
+        map { .success(successMap($0)) }
             .catchError { .just(.failure(errorMap($0))) }
     }
 
     /// Map with success mapper only.
     public func mapToResult<ResultElement>(
-        successMap: @escaping (Element) -> ResultElement) -> Observable<Result<ResultElement, Error>> {
-        self.map { .success(successMap($0)) }
+        successMap: @escaping (Element) -> ResultElement) -> Observable<Result<ResultElement, Error>>
+    {
+        map { .success(successMap($0)) }
             .catchError { .just(.failure($0)) }
     }
 }
@@ -138,18 +146,18 @@ extension ObservableType {
         self.do(onError: { error in
             fatalError("Binding error to publish relay. file: \(file), line: \(line), function: \(function), error: \(error).")
         })
-        .subscribe { event in
-            switch event {
-            case let .next(element):
-                relays.forEach {
-                    $0.accept(element)
+            .subscribe { event in
+                switch event {
+                case .next(let element):
+                    relays.forEach {
+                        $0.accept(element)
+                    }
+                case .error:
+                    break
+                case .completed:
+                    break
                 }
-            case .error:
-                break
-            case .completed:
-                break
             }
-        }
     }
 
     public func bindAndCatch(
@@ -170,18 +178,18 @@ extension ObservableType {
         self.do(onError: { error in
             fatalError("Binding error to behavior relay. file: \(file), line: \(line), function: \(function), error: \(error).")
         })
-        .subscribe { event in
-            switch event {
-            case let .next(element):
-                relays.forEach {
-                    $0.accept(element)
+            .subscribe { event in
+                switch event {
+                case .next(let element):
+                    relays.forEach {
+                        $0.accept(element)
+                    }
+                case .error:
+                    break
+                case .completed:
+                    break
                 }
-            case .error:
-                break
-            case .completed:
-                break
             }
-        }
     }
 
     public func bindAndCatch(
@@ -220,9 +228,9 @@ extension ObservableType {
         self.do(onError: { error in
             fatalError("Binding error to observers. file: \(file), line: \(line), function: \(function), error: \(error).")
         })
-        .subscribe { event in
-            observers.forEach { $0.on(event) }
-        }
+            .subscribe { event in
+                observers.forEach { $0.on(event) }
+            }
     }
 
     public func bindAndCatch<Result>(to binder: (Self) -> Result) -> Result {

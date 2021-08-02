@@ -5,10 +5,12 @@ import RxSwift
 public final class RadioAccountCellInteractor: Equatable {
 
     // MARK: - Public
+
     public let isSelected: Driver<Bool>
     public let account: SingleAccount
 
     // MARK: - Private
+
     private let radioSelectionHandler: RadioSelectionHandling
 
     public init(account: SingleAccount, radioSelectionHandler: RadioSelectionHandling) {

@@ -56,11 +56,13 @@ final class PasswordRequiredScreenPresenter {
 
     // MARK: - Setup
 
-    init(interactor: PasswordRequiredScreenInteractor,
-         forgetWalletRouting: (() -> Void)?,
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter(),
-         alertPresenter: AlertViewPresenter = .shared) {
+    init(
+        interactor: PasswordRequiredScreenInteractor,
+        forgetWalletRouting: (() -> Void)?,
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter(),
+        alertPresenter: AlertViewPresenter = .shared
+    ) {
         self.loadingViewPresenter = loadingViewPresenter
         self.launchAnnouncementPresenter = launchAnnouncementPresenter
         self.alertPresenter = alertPresenter
@@ -80,12 +82,12 @@ final class PasswordRequiredScreenPresenter {
             .disposed(by: disposeBag)
 
         stateObservable
-            .map { $0.isValid }
+            .map(\.isValid)
             .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         passwordTextFieldViewModel.state
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .bindAndCatch(to: interactor.passwordRelay)
             .disposed(by: disposeBag)
 
@@ -119,7 +121,7 @@ final class PasswordRequiredScreenPresenter {
         launchAnnouncementPresenter.execute()
     }
 
-    /// TODO: Refactor when the interaction layer and `AuthenticationCoordinator` are refactored.
+    // TODO: Refactor when the interaction layer and `AuthenticationCoordinator` are refactored.
     /// Handles any interaction error
     private func handle(error: Error) {
         alertPresenter.showKeychainReadError()

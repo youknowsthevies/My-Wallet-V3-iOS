@@ -32,15 +32,19 @@ public struct MoneyValueBalancePairs: Equatable {
     ///   - wallet: Wallet balance
     ///   - trading: Trading balance
     ///   - savings: Savings balance
-    public init(wallet: MoneyValuePair,
-                trading: MoneyValuePair,
-                savings: MoneyValuePair) {
+    public init(
+        wallet: MoneyValuePair,
+        trading: MoneyValuePair,
+        savings: MoneyValuePair
+    ) {
         guard wallet.base.currencyType == trading.base.currencyType,
-            trading.base.currencyType == savings.base.currencyType else {
+              trading.base.currencyType == savings.base.currencyType
+        else {
             fatalError("Mismatch in wallet/trading/savings base currency")
         }
         guard wallet.quote.currencyType == trading.quote.currencyType,
-            trading.quote.currencyType == savings.quote.currencyType else {
+              trading.quote.currencyType == savings.quote.currencyType
+        else {
             fatalError("Mismatch in wallet/trading/savings quote currency")
         }
 
@@ -71,28 +75,28 @@ public struct MoneyValueBalancePairs: Equatable {
     }
 }
 
-public extension MoneyValueBalancePairs {
+extension MoneyValueBalancePairs {
 
     /// The `MoneyValuePair` representing the total sum of bases and quotes
     /// across all `BalanceTypes`
-    var total: MoneyValuePair {
+    public var total: MoneyValuePair {
         .init(base: base, quote: quote)
     }
 
     /// The total value for the base currency
-    var base: MoneyValue {
-        let total = moneyPairs.values.map { $0.base.amount }.reduce(0, +)
+    public var base: MoneyValue {
+        let total = moneyPairs.values.map(\.base.amount).reduce(0, +)
         return MoneyValue.create(minor: total, currency: baseCurrency.currency)
     }
 
     /// The total value for the quote currency
-    var quote: MoneyValue {
-        let total = moneyPairs.values.map { $0.quote.amount }.reduce(0, +)
+    public var quote: MoneyValue {
+        let total = moneyPairs.values.map(\.quote.amount).reduce(0, +)
         return MoneyValue.create(minor: total, currency: quoteCurrency.currency)
     }
 
     /// `true` if `self` is zero.
-    var isZero: Bool {
+    public var isZero: Bool {
         base.isZero || quote.isZero
     }
 }

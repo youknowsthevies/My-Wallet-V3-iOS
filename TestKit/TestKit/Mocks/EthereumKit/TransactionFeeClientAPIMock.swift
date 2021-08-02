@@ -14,6 +14,7 @@ class TransactionFeeClientAPIMock: TransactionFeeClientAPI {
             priority: 10
         )
     )
+
     func fees(cryptoCurrency: CryptoCurrency) -> Single<TransactionFeeResponse> {
         underlyingFees
     }

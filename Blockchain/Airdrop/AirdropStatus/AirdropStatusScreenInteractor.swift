@@ -26,8 +26,10 @@ final class AirdropStatusScreenInteractor {
 
     // MARK: - Setup
 
-    init(service: AirdropCenterServiceAPI = resolve(),
-         campaignName: AirdropCampaigns.Campaign.Name) {
+    init(
+        service: AirdropCenterServiceAPI = resolve(),
+        campaignName: AirdropCampaigns.Campaign.Name
+    ) {
         self.service = service
         service.fetchCampaignCalculationState(campaignName: campaignName, useCache: true)
             .bindAndCatch(to: calculationStateRelay)

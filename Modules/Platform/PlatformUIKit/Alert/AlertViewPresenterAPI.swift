@@ -5,8 +5,8 @@ public protocol AlertViewPresenterAPI: AnyObject {
     func error(in viewController: UIViewController?, message: String?, action: (() -> Void)?)
 }
 
-public extension AlertViewPresenterAPI {
-    func error(in viewController: UIViewController?, action: (() -> Void)?) {
+extension AlertViewPresenterAPI {
+    public func error(in viewController: UIViewController?, action: (() -> Void)?) {
         error(in: viewController, message: nil, action: action)
     }
 }

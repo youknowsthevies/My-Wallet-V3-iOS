@@ -23,19 +23,19 @@ class CurrencySymbol: NSObject {
         guard let last: Double = dict["last"] as? Double, last > 0 else {
             return nil
         }
-        let satoshi: NSDecimalNumber = NSDecimalNumber(value: Constants.Conversions.satoshi)
-        let lastDecimal: NSDecimalNumber = NSDecimalNumber(value: last)
+        let satoshi = NSDecimalNumber(value: Constants.Conversions.satoshi)
+        let lastDecimal = NSDecimalNumber(value: last)
         let conversion = satoshi.dividing(by: lastDecimal)
         self.conversion = conversion.doubleValue
         self.code = code
         self.symbol = symbol
-        self.name = fiatCurrency.name
+        name = fiatCurrency.name
         super.init()
     }
 
     /// Supported FiatCurrency map of 'currency code' : 'currency localised name'
     @objc static let currencyNames: [String: String] = {
-        FiatCurrency.supported.reduce(into: [String: String]()) { (result, fiat) in
+        FiatCurrency.supported.reduce(into: [String: String]()) { result, fiat in
             result[fiat.code] = fiat.name
         }
     }()

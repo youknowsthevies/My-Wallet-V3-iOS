@@ -22,6 +22,7 @@ class QRCodeScannerViewModelTests: XCTestCase {
             }
         })
     }
+
     override func setUp() {
         parser = MockQRCodeScannerParser()
         textViewModel = MockScannerTextViewModel()

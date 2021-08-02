@@ -3,7 +3,7 @@
 import PlatformUIKit
 
 extension Accessibility.Identifier {
-    struct TabItem {
+    enum TabItem {
         static let prefixFormat = "TabItem."
         static let home = "\(prefixFormat)home"
         static let activity = "\(prefixFormat)activity"

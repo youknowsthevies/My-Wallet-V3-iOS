@@ -20,8 +20,10 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
 
     // MARK: - Init
 
-    init(client: ExchangeAccountsClientAPI = resolve(),
-         statusService: ExchangeAccountStatusServiceAPI = resolve()) {
+    init(
+        client: ExchangeAccountsClientAPI = resolve(),
+        statusService: ExchangeAccountStatusServiceAPI = resolve()
+    ) {
         self.statusService = statusService
         self.client = client
         NotificationCenter.when(.login) { [weak self] _ in

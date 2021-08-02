@@ -14,9 +14,11 @@ enum Constants {
     enum AppStore {
         static let AppID = "id493253309"
     }
+
     enum Animation {
         static let duration = 0.2
     }
+
     enum Navigation {
         static let tabTransactions = 0
         static let tabSwap = 1
@@ -24,28 +26,34 @@ enum Constants {
         static let tabSend = 3
         static let tabReceive = 4
     }
+
     enum Measurements {
         static let DefaultHeaderHeight: CGFloat = 65
         static let DefaultNavigationBarHeight: CGFloat = 44.0
         static let AssetSelectorHeight: CGFloat = 44.0
         static let ScreenHeightIphone5S: CGFloat = 568.0
     }
+
     enum FontSizes {
         static let ExtraExtraExtraSmall: CGFloat = Booleans.IsUsingScreenSizeLargerThan5s ? 13.0 : 11.0
         static let Small: CGFloat = Booleans.IsUsingScreenSizeLargerThan5s ? 16.0 : 13.0
     }
+
     enum FontNames {
         static let montserratRegular = "Montserrat-Regular"
         static let montserratSemiBold = "Montserrat-SemiBold"
     }
+
     enum Booleans {
         static let isUsingScreenSizeEqualIphone5S = UIScreen.main.bounds.size.height == Measurements.ScreenHeightIphone5S
         static let IsUsingScreenSizeLargerThan5s = UIScreen.main.bounds.size.height > Measurements.ScreenHeightIphone5S
     }
+
     enum NotificationKeys {
         static let backupSuccess = NSNotification.Name("backupSuccess")
         static let kycStopped = NSNotification.Name("kycStopped")
     }
+
     enum Url {
         static let blockchainHome = "https://www.blockchain.com"
         static let privacyPolicy = blockchainHome + "/privacy"

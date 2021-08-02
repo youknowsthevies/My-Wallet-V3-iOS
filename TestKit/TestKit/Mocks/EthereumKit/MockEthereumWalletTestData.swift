@@ -4,7 +4,7 @@ import BigInt
 @testable import EthereumKit
 import PlatformKit
 
-struct MockEthereumWalletTestData {
+enum MockEthereumWalletTestData {
     static let walletId = MockWalletTestData.walletId
     static let email = MockWalletTestData.email
 
@@ -24,13 +24,13 @@ struct MockEthereumWalletTestData {
         privateKey: MockEthereumWalletTestData.privateKey
     )
 
-    struct Transaction {
+    enum Transaction {
         static let to = "0x3535353535353535353535353535353535353535"
         static let value: BigUInt = 1
         static let nonce: BigUInt = 9
-        static let gasPrice: BigUInt = 11_000_000_000
-        static let gasLimit: BigUInt = 21_000
-        static let gasLimitContract: BigUInt = 65_000
+        static let gasPrice: BigUInt = 11000000000
+        static let gasLimit: BigUInt = 21000
+        static let gasLimitContract: BigUInt = 65000
         static let data: Data? = Data()
     }
 }
@@ -52,7 +52,7 @@ extension EthereumAssetAccountDetails {
     static var defaultMock: EthereumAssetAccountDetails {
         .init(
             account: .defaultMock,
-            balance: .zero(currency: .ethereum),
+            balance: .zero(currency: .coin(.ethereum)),
             nonce: UInt64(MockEthereumWalletTestData.Transaction.nonce)
         )
     }

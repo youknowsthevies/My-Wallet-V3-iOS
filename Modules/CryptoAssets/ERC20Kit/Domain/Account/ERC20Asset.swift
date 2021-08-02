@@ -12,7 +12,7 @@ final class ERC20Asset: CryptoAsset {
 
     var defaultAccount: Single<SingleAccount> {
         walletAccountBridge.wallets
-            .map { $0.first }
+            .map(\.first)
             .map { wallet -> EthereumWalletAccount in
                 guard let wallet = wallet else {
                     throw CryptoAssetError.noDefaultAccount
@@ -39,7 +39,7 @@ final class ERC20Asset: CryptoAsset {
         kycTiersService: KYCTiersServiceAPI = resolve(),
         addressFactory: ERC20ExternalAssetAddressFactory = .init()
     ) {
-        self.asset = erc20Token.cryptoCurrency
+        asset = erc20Token.cryptoCurrency
         self.addressFactory = addressFactory
         self.erc20Token = erc20Token
         self.walletAccountBridge = walletAccountBridge
@@ -58,6 +58,8 @@ final class ERC20Asset: CryptoAsset {
             return interestGroup
         case .nonCustodial:
             return nonCustodialGroup
+        case .exchange:
+            return exchangeGroup
         }
     }
 
@@ -67,7 +69,7 @@ final class ERC20Asset: CryptoAsset {
                 asset: asset,
                 address: address,
                 label: address,
-                onTxCompleted: { _ in .empty() }
+                onTxCompleted: { _ in Completable.empty() }
             )
             .get()
         return .just(receiveAddress)
@@ -87,58 +89,22 @@ final class ERC20Asset: CryptoAsset {
     }
 
     private var custodialGroup: Single<AccountGroup> {
-        guard isCustodialSupported else {
-            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
-        }
-        return .just(
-            CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)])
+        .just(
+            CryptoAccountCustodialGroup(asset: asset, account: CryptoTradingAccount(asset: asset))
         )
     }
 
     private var interestGroup: Single<AccountGroup> {
-        guard isCustodialSupported else {
-            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
-        }
-        return .just(
-            CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoInterestAccount(asset: asset)])
-        )
+        .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset)))
     }
 
-    /// Helper to decided if we should support custodial Accounts.
-    /// In the future this should use the `AssetModel.products` field to make this decision.
-    private lazy var isCustodialSupported: Bool = {
-        LegacyERC20Code.allCases.map(\.rawValue).contains(asset.code)
-    }()
-
     private var exchangeGroup: Single<AccountGroup> {
-        guard isCustodialSupported else {
-            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
-        }
-        return exchangeAccountProvider
+        exchangeAccountProvider
             .account(for: asset)
-            .optional()
-            .catchError { error in
-                /// TODO: This shouldn't prevent users from seeing all accounts.
-                /// Potentially return nil should this fail.
-                guard let serviceError = error as? ExchangeAccountsNetworkError else {
-                    #if INTERNAL_BUILD
-                    Logger.shared.error(error)
-                    throw error
-                    #else
-                    return Single.just(nil)
-                    #endif
-                }
-                switch serviceError {
-                case .missingAccount:
-                    return Single.just(nil)
-                }
-            }
             .map { [asset] account in
-                guard let account = account else {
-                    return CryptoAccountCustodialGroup(asset: asset, accounts: [])
-                }
-                return CryptoAccountCustodialGroup(asset: asset, accounts: [account])
+                CryptoAccountCustodialGroup(asset: asset, account: account)
             }
+            .catchErrorJustReturn(CryptoAccountCustodialGroup(asset: asset))
     }
 
     private var nonCustodialGroup: Single<AccountGroup> {

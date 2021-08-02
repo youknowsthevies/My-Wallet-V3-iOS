@@ -26,10 +26,12 @@ final class CheckoutScreenInteractor {
 
     // MARK: - Setup
 
-    init(confirmationService: OrderConfirmationServiceAPI = resolve(),
-         cancellationService: OrderCancellationServiceAPI = resolve(),
-         orderCheckoutInterator: OrderCheckoutInteracting = resolve(),
-         checkoutData: CheckoutData) {
+    init(
+        confirmationService: OrderConfirmationServiceAPI = resolve(),
+        cancellationService: OrderCancellationServiceAPI = resolve(),
+        orderCheckoutInterator: OrderCheckoutInteracting = resolve(),
+        checkoutData: CheckoutData
+    ) {
         self.orderCheckoutInterator = orderCheckoutInterator
         self.confirmationService = confirmationService
         self.cancellationService = cancellationService
@@ -41,7 +43,7 @@ final class CheckoutScreenInteractor {
         if checkoutData.order.is3DSConfirmedCardOrder || checkoutData.order.isPending3DSCardOrder {
             return orderCheckoutInterator.prepare(using: checkoutData.order)
         } else {
-            return orderCheckoutInterator.prepare(using: self.checkoutData)
+            return orderCheckoutInterator.prepare(using: checkoutData)
                 .flatMap(weak: self) { (self, payload) in
                     self.set(data: payload.checkoutData)
                         .map { _ in

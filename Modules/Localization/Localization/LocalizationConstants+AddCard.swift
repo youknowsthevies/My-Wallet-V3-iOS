@@ -3,7 +3,7 @@
 // swiftlint:disable all
 
 extension LocalizationConstants {
-    public struct CardDetailsScreen {
+    public enum CardDetailsScreen {
         public static let title = NSLocalizedString(
             "Add a Card",
             comment: "Add Card Screen: screen title"
@@ -16,7 +16,7 @@ extension LocalizationConstants {
             "Next",
             comment: "Add Card Screen: add card button label"
         )
-        public struct Alert {
+        public enum Alert {
             public static let title = NSLocalizedString(
                 "Error",
                 comment: "Add Card Screen: Error alert title"
@@ -27,7 +27,8 @@ extension LocalizationConstants {
             )
         }
     }
-    public struct BillingAddressScreen {
+
+    public enum BillingAddressScreen {
         public static let title = NSLocalizedString(
             "Billing Address",
             comment: "Billing Address Screen: screen title"
@@ -41,13 +42,15 @@ extension LocalizationConstants {
             comment: "Billing Address Screen: loader"
         )
     }
-    public struct AuthorizeCardScreen {
+
+    public enum AuthorizeCardScreen {
         public static let title = NSLocalizedString(
             "Authorize Card",
             comment: "Card Authorization Screen: screen title"
         )
     }
-    public struct CountrySelectionScreen {
+
+    public enum CountrySelectionScreen {
         public static let title = NSLocalizedString(
             "Select Country",
             comment: "Country Selection Screen: title"
@@ -57,6 +60,7 @@ extension LocalizationConstants {
             comment: "Country Selection Screen: search bar placeholder"
         )
     }
+
     public enum PendingCardStatusScreen {
         public enum LoadingScreen {
             public static let title = NSLocalizedString(
@@ -69,5 +73,4 @@ extension LocalizationConstants {
             )
         }
     }
-    
 }

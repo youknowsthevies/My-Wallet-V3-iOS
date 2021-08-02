@@ -16,7 +16,7 @@ final class PricesInterpolator {
     func rate(amount: BigInt) -> BigInt {
         prices
             .enumerated()
-            .compactMap { (index, priceTier) -> BigInt? in
+            .compactMap { index, priceTier -> BigInt? in
                 guard index != prices.count - 1 else {
                     return BigInt(stringLiteral: priceTier.price)
                 }
@@ -27,7 +27,7 @@ final class PricesInterpolator {
                 let nextVolume = BigInt(stringLiteral: next.volume)
                 let nextPrice = BigInt(stringLiteral: next.price)
 
-                if volume < amount && amount <= nextVolume {
+                if volume < amount, amount <= nextVolume {
                     return LinearInterpolator
                         .interpolate(
                             x: [volume, nextVolume],

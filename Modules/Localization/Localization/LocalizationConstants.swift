@@ -11,21 +11,22 @@ public enum LocalizationConstants {
     public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
     public static let verified = NSLocalizedString("Verified", comment: "")
     public static let unverified = NSLocalizedString("Unverified", comment: "")
-    public static let verify = NSLocalizedString ("Verify", comment: "")
+    public static let verify = NSLocalizedString("Verify", comment: "")
     public static let beginNow = NSLocalizedString("Begin Now", comment: "")
-    public static let enterCode = NSLocalizedString ("Enter Verification Code", comment: "")
-    public static let tos = NSLocalizedString ("Terms of Service", comment: "")
-    public static let touchId = NSLocalizedString ("Touch ID", comment: "")
-    public static let faceId = NSLocalizedString ("Face ID", comment: "")
-    public static let disable = NSLocalizedString ("Disable", comment: "")
-    public static let disabled = NSLocalizedString ("Disabled", comment: "")
-    public static let unknown = NSLocalizedString ("Unknown", comment: "")
+    public static let enterCode = NSLocalizedString("Enter Verification Code", comment: "")
+    public static let tos = NSLocalizedString("Terms of Service", comment: "")
+    public static let touchId = NSLocalizedString("Touch ID", comment: "")
+    public static let faceId = NSLocalizedString("Face ID", comment: "")
+    public static let disable = NSLocalizedString("Disable", comment: "")
+    public static let disabled = NSLocalizedString("Disabled", comment: "")
+    public static let unknown = NSLocalizedString("Unknown", comment: "")
     public static let unconfirmed = NSLocalizedString("Unconfirmed", comment: "")
-    public static let enable = NSLocalizedString ("Enable", comment: "")
-    public static let changeEmail = NSLocalizedString ("Change Email", comment: "")
-    public static let addEmail = NSLocalizedString ("Add Email", comment: "")
-    public static let newEmail = NSLocalizedString ("New Email Address", comment: "")
-    public static let settings = NSLocalizedString ("Settings", comment: "")
+    public static let enable = NSLocalizedString("Enable", comment: "")
+    public static let changeEmail = NSLocalizedString("Change Email", comment: "")
+    public static let addEmail = NSLocalizedString("Add Email", comment: "")
+    public static let newEmail = NSLocalizedString("New Email Address", comment: "")
+    public static let settings = NSLocalizedString("Settings", comment: "")
+    public static let addNew = NSLocalizedString("+Add New", comment: "+Add New")
     public static let balances = NSLocalizedString(
         "Balances",
         comment: "Generic translation, may be used in multiple places."
@@ -43,7 +44,7 @@ public enum LocalizationConstants {
     public static let success = NSLocalizedString("Success", comment: "")
     public static let syncingWallet = NSLocalizedString("Syncing Wallet", comment: "")
     public static let tryAgain = NSLocalizedString("Try again", comment: "")
-    public static let verifying = NSLocalizedString ("Verifying", comment: "")
+    public static let verifying = NSLocalizedString("Verifying", comment: "")
     public static let openArg = NSLocalizedString("Open %@", comment: "")
     public static let youWillBeLeavingTheApp = NSLocalizedString("You will be leaving the app.", comment: "")
     public static let openMailApp = NSLocalizedString("Open Email App", comment: "")
@@ -58,7 +59,7 @@ public enum LocalizationConstants {
     public static let scanPairingCode = NSLocalizedString("Scan Pairing Code", comment: " ")
     public static let parsingPairingCode = NSLocalizedString("Parsing Pairing Code", comment: " ")
     public static let invalidPairingCode = NSLocalizedString("Invalid Pairing Code", comment: " ")
-    
+
     public static let dontShowAgain = NSLocalizedString(
         "Don’t show again",
         comment: "Text displayed to the user when an action has the option to not be asked again."
@@ -72,7 +73,7 @@ public enum LocalizationConstants {
         comment: "Learn more button"
     )
 
-    public struct Errors {
+    public enum Errors {
         public static let genericError = NSLocalizedString(
             "An error occured. Please try again.",
             comment: "Generic error message displayed when an error occurs."
@@ -107,12 +108,13 @@ public enum LocalizationConstants {
         public static let failedToValidateCertificateMessage = NSLocalizedString(
             """
             A connection cannot be established because the server certificate could not be validated. Please check your network settings and ensure that you are using a secure connection.
-            """, comment: "Message shown when the app has detected a possible man-in-the-middle attack.")
+            """, comment: "Message shown when the app has detected a possible man-in-the-middle attack."
+        )
         public static let notEnoughXForFees = NSLocalizedString("Not enough %@ for fees", comment: "Message shown when the user has attempted to send more funds than the user can spend (input amount plus fees)")
         public static let balancesGeneric = NSLocalizedString("We are experiencing a service issue that may affect displayed balances. Don't worry, your funds are safe.", comment: "Message shown when an error occurs while fetching balance or transaction history")
     }
 
-    public struct ServerStatus {
+    public enum ServerStatus {
         public static let mainTitle = NSLocalizedString(
             "Service Unavailable",
             comment: "Service Unavailable"
@@ -128,8 +130,8 @@ public enum LocalizationConstants {
         )
     }
 
-    public struct Authentication {
-        public struct DefaultPasswordScreen {
+    public enum Authentication {
+        public enum DefaultPasswordScreen {
             public static let title = NSLocalizedString(
                 "Second Password Required",
                 comment: "Password screen: title for general action"
@@ -143,7 +145,8 @@ public enum LocalizationConstants {
                 comment: "Password screen: continue button"
             )
         }
-        public struct ImportKeyPasswordScreen {
+
+        public enum ImportKeyPasswordScreen {
             public static let title = NSLocalizedString(
                 "Private Key Needed",
                 comment: "Password screen: title for general action"
@@ -157,7 +160,8 @@ public enum LocalizationConstants {
                 comment: "Password screen: continue button"
             )
         }
-        public struct EtherPasswordScreen {
+
+        public enum EtherPasswordScreen {
             public static let title = NSLocalizedString(
                 "Second Password Required",
                 comment: "Password screen: title for general action"
@@ -183,7 +187,8 @@ public enum LocalizationConstants {
         public static let enableTwoStep = NSLocalizedString(
             """
             You can enable 2-step Verification via SMS on your mobile phone. In order to use other authentication methods instead, please login to our web wallet.
-            """, comment: "")
+            """, comment: ""
+        )
         public static let verifyEmail = NSLocalizedString("Please verify your email address first.", comment: "")
         public static let resendVerificationEmail = NSLocalizedString("Resend verification email", comment: "")
 
@@ -206,30 +211,30 @@ public enum LocalizationConstants {
         public static let invalidTwoFactorAuthenticationType = NSLocalizedString("Invalid two-factor authentication type", comment: "")
     }
 
-    public struct Pin {
-        public struct Accessibility {
+    public enum Pin {
+        public enum Accessibility {
             public static let faceId = NSLocalizedString(
                 "Face id authentication",
                 comment: "Accessiblity label for face id biometrics authentication"
             )
-            
+
             public static let touchId = NSLocalizedString(
                 "Touch id authentication",
                 comment: "Accessiblity label for touch id biometrics authentication"
             )
-            
+
             public static let backspace = NSLocalizedString(
                 "Backspace button",
                 comment: "Accessiblity label for backspace button"
             )
         }
-        
-        public struct LogoutAlert {
+
+        public enum LogoutAlert {
             public static let title = NSLocalizedString(
                 "Log Out",
                 comment: "Log out alert title"
             )
-            
+
             public static let message = NSLocalizedString(
                 "Do you really want to log out?",
                 comment: "Log out alert message"
@@ -240,52 +245,52 @@ public enum LocalizationConstants {
             "Enable Face ID",
             comment: "Title for alert letting the user to enable face id"
         )
-        
+
         public static let enableTouchIdTitle = NSLocalizedString(
             "Enable Touch ID",
             comment: "Title for alert letting the user to enable touch id"
         )
-        
+
         public static let enableBiometricsMessage = NSLocalizedString(
             "Quickly sign into your wallet instead of using your PIN.",
             comment: "Title for alert letting the user to enable biometrics authenticators"
         )
-        
+
         public static let enableBiometricsNotNowButton = NSLocalizedString(
             "Not now",
             comment: "Cancel button for alert letting the user to enable biometrics authenticators"
         )
-        
+
         public static let logoutButton = NSLocalizedString(
             "Log Out",
             comment: "Button for opting out in the PIN screen"
         )
-        
+
         public static let changePinTitle = NSLocalizedString(
             "Change PIN",
             comment: "Title for changing PIN flow"
         )
-        
+
         public static let pinSuccessfullySet = NSLocalizedString(
             "Your New PIN is Ready",
             comment: "PIN was set successfully message label"
         )
-        
+
         public static let createYourPinLabel = NSLocalizedString(
             "Create Your PIN",
             comment: "Create PIN code title label"
         )
-        
+
         public static let confirmYourPinLabel = NSLocalizedString(
             "Confirm Your PIN",
             comment: "Confirm PIN code title label"
         )
-        
+
         public static let enterYourPinLabel = NSLocalizedString(
             "Enter Your PIN",
             comment: "Enter PIN code title label"
         )
-        
+
         public static let tooManyAttemptsTitle = NSLocalizedString(
             "Too Many PIN Attempts",
             comment: "Title for alert that tells the user he had too many PIN attempts"
@@ -305,7 +310,7 @@ public enum LocalizationConstants {
             "For your security, we've disabled PIN log in for the next 24 hours. To access your wallet now, log in with your Wallet ID & Password",
             comment: "Alert message that instructs users what to do if they may have forgot their PIN"
         )
-        
+
         public static let tooManyAttemptsLogoutMessage = NSLocalizedString(
             "Please log in with your Wallet ID and password.",
             comment: "Message for alert that tells the user he had too many PIN attempts, and his account is now logged out"
@@ -373,12 +378,12 @@ public enum LocalizationConstants {
             comment: "Title of the error message displayed to the user when their PIN cannot be validated if it is correct."
         )
         public static let validationErrorMessage = NSLocalizedString(
-        """
-        An error occurred validating your PIN code with the remote server. You may be offline or Blockchain may be experiencing difficulties. Would you like retry validation or instead enter your password manually?
-        """, comment: "Error message displayed to the user when their PIN cannot be validated if it is correct."
+            """
+            An error occurred validating your PIN code with the remote server. You may be offline or Blockchain may be experiencing difficulties. Would you like retry validation or instead enter your password manually?
+            """, comment: "Error message displayed to the user when their PIN cannot be validated if it is correct."
         )
 
-        public struct Button {
+        public enum Button {
             public static let notNowButton = NSLocalizedString(
                 "Not Now",
                 comment: "A CTA button for not now action"
@@ -390,7 +395,7 @@ public enum LocalizationConstants {
         }
     }
 
-    public struct DeepLink {
+    public enum DeepLink {
         public static let deepLinkUpdateTitle = NSLocalizedString(
             "Link requires app update",
             comment: "Title of alert shown if the deep link requires a newer version of the app."
@@ -404,9 +409,9 @@ public enum LocalizationConstants {
             comment: "Action of alert shown if the deep link requires a newer version of the app."
         )
     }
-    
-    public struct Dashboard {
-        public struct Balance {
+
+    public enum Dashboard {
+        public enum Balance {
             public static let totalBalance = NSLocalizedString(
                 "Total Balance",
                 comment: "Dashboard: total balance component - title"
@@ -420,7 +425,7 @@ public enum LocalizationConstants {
                 comment: "Dashboard: lockbox notice"
             )
         }
-    
+
         public static let chartsError = NSLocalizedString(
             "An error occurred while retrieving the latest chart data. Please try again later.",
             comment: "The error message for when the method fetchChartDataForAsset fails."
@@ -450,29 +455,29 @@ public enum LocalizationConstants {
         public static let request = NSLocalizedString("Request", comment: "request tab item")
     }
 
-    public struct VersionUpdate {
+    public enum VersionUpdate {
         public static let versionPrefix = NSLocalizedString(
             "v",
             comment: "Version top note for a `recommended` update alert"
         )
-        
+
         public static let title = NSLocalizedString(
             "Update Available",
             comment: "Title for a `recommended` update alert"
         )
-        
+
         public static let description = NSLocalizedString(
             "Ready for the the best Blockchain App yet? Download our latest build and get more out of your Crypto.",
             comment: "Description for a `recommended` update alert"
         )
-        
+
         public static let updateNowButton = NSLocalizedString(
             "Update Now",
             comment: "`Update` button for an alert that notifies the user that a new app version is available on the store"
         )
     }
-    
-    public struct TabItems {
+
+    public enum TabItems {
         public static let home = NSLocalizedString(
             "Home",
             comment: "Tab item: home"
@@ -517,12 +522,14 @@ public enum LocalizationConstants {
                 comment: "Your Buy Order Has Started."
             )
         }
+
         public enum Sell {
             public static let title = NSLocalizedString(
                 "Your Sell Order Has Started.",
                 comment: "Your Sell Order Has Started."
             )
         }
+
         public static let subtitle = NSLocalizedString(
             "We’re completing your transaction now. We’ll contact you when it has finished.",
             comment: "We’re completing your transaction now. We’ll contact you when it has finished."
@@ -537,19 +544,19 @@ public enum LocalizationConstants {
         )
     }
 
-    public struct DashboardScreen {
+    public enum DashboardScreen {
         public static let title = NSLocalizedString(
             "Home",
             comment: "Dashboard screen: title label"
         )
     }
-    
-    public struct CustodyWalletInformation {
+
+    public enum CustodyWalletInformation {
         public static let title = NSLocalizedString(
             "Trading Wallet",
             comment: "Trading Wallet"
         )
-        public struct Description {
+        public enum Description {
             public static let partOne = NSLocalizedString(
                 "When you buy crypto, we store your funds securely for you in a Crypto Trading Wallet. These funds are stored by us on your behalf. You can keep them safe with us or transfer them to your non-custodial Wallet to own and store yourself.",
                 comment: "When you buy crypto, we store your funds securely for you in a Crypto Trading Wallet. These funds are stored by us on your behalf. You can keep them safe with us or transfer them to your non-custodial Wallet to own and store yourself."
@@ -560,13 +567,13 @@ public enum LocalizationConstants {
             )
         }
     }
-    
-    public struct Exchange {
+
+    public enum Exchange {
         public static let title = NSLocalizedString("Exchange", comment: "Title for the Exchange")
         public static let connect = NSLocalizedString("Connect", comment: "Connect")
         public static let connected = NSLocalizedString("Connected", comment: "Connected")
         public static let twoFactorNotEnabled = NSLocalizedString("Please enable 2FA on your Exchange account to complete deposit.", comment: "User must have 2FA enabled to deposit from send.")
-        public struct Alerts {
+        public enum Alerts {
             public static let connectingYou = NSLocalizedString("Taking You To the Exchange", comment: "Taking You To the Exchange")
             public static let newWindow = NSLocalizedString("A new window should open within 10 seconds.", comment: "A new window should open within 10 seconds.")
             public static let success = NSLocalizedString("Success!", comment: "Success!")
@@ -574,7 +581,8 @@ public enum LocalizationConstants {
             public static let error = NSLocalizedString("Connection Error", comment: "Connection Error")
             public static let errorDescription = NSLocalizedString("We could not connect your Wallet to the Exchange. Please go back to the Exchange and try again.", comment: "We could not connect your Wallet to the Exchange. Please go back to the Exchange and try again.")
         }
-        public struct EmailVerification {
+
+        public enum EmailVerification {
             public static let title = NSLocalizedString("Verify Your Email", comment: "")
             public static let description = NSLocalizedString(
                 "We just sent you a verification email. Your email address needs to be verified before you can connect to The Exchange.",
@@ -590,44 +598,46 @@ public enum LocalizationConstants {
                 comment: ""
             )
         }
-        public struct Launch {
+
+        public enum Launch {
             public static let launchExchange = NSLocalizedString("Launch the Exchange", comment: "")
             public static let contactSupport = NSLocalizedString("Contact Support", comment: "")
         }
-        public struct ConnectionPage {
-            public struct Descriptors {
+
+        public enum ConnectionPage {
+            public enum Descriptors {
                 public static let description = NSLocalizedString("There's a new way to trade. Link your Wallet for instant access.", comment: "Description of the exchange.")
                 public static let lightningFast = NSLocalizedString("Trade Lightning Fast", comment: "")
                 public static let withdrawDollars = NSLocalizedString("Deposit & Withdraw Euros/Dollars", comment: "")
                 public static let accessCryptos = NSLocalizedString("Access More Cryptos", comment: "")
                 public static let builtByBlockchain = NSLocalizedString("Built by Blockchain.com", comment: "")
             }
-            
-            public struct Features {
+
+            public enum Features {
                 public static let exchangeWillBeAbleTo = NSLocalizedString("Our Exchange will be able to:", comment: "")
                 public static let shareStatus = NSLocalizedString("Share your Gold or Silver Level status for unlimited trading", comment: "")
                 public static let shareAddresses = NSLocalizedString("Sync addresses with your Wallet so you can securely sweep crypto between accounts", comment: "")
                 public static let lowFees = NSLocalizedString("Low Fees", comment: "")
                 public static let builtByBlockchain = NSLocalizedString("Built by Blockchain.com", comment: "")
-                
+
                 public static let exchangeWillNotBeAbleTo = NSLocalizedString("Will Not:", comment: "")
                 public static let viewYourPassword = NSLocalizedString("Access the crypto in your wallet, access your keys, or view your password.", comment: "")
             }
-            
-            public struct Actions {
+
+            public enum Actions {
                 public static let learnMore = NSLocalizedString("Learn More", comment: "")
                 public static let connectNow = NSLocalizedString("Connect Now", comment: "")
             }
-            
-            public struct Send {
+
+            public enum Send {
                 public static let destination = NSLocalizedString(
                     "Exchange %@ Wallet",
                     comment: "Exchange address as per asset type"
                 )
             }
         }
-        
-        public struct Send {
+
+        public enum Send {
             public static let destination = NSLocalizedString(
                 "Exchange %@ Wallet",
                 comment: "Exchange address for a wallet"
@@ -635,7 +645,7 @@ public enum LocalizationConstants {
         }
     }
 
-    public struct SideMenu {
+    public enum SideMenu {
         public static let loginToWebWallet = NSLocalizedString("Pair Web Wallet", comment: "")
         public static let logout = NSLocalizedString("Logout", comment: "")
         public static let debug = NSLocalizedString("Debug", comment: "")
@@ -652,6 +662,7 @@ public enum LocalizationConstants {
             "Sell Crypto",
             comment: "Item displayed on the side menu of the app for when the user wants to sell crypto."
         )
+        public static let earnInterest = NSLocalizedString("Earn Interest", comment: "Earn Interest")
         public static let addresses = NSLocalizedString(
             "Addresses",
             comment: "Item displayed on the side menu of the app for when the user wants to view their crypto addresses."
@@ -694,7 +705,7 @@ public enum LocalizationConstants {
         )
     }
 
-    public struct BuySell {
+    public enum BuySell {
         public static let tradeCompleted = NSLocalizedString("Trade Completed", comment: "")
         public static let tradeCompletedDetailArg = NSLocalizedString("The trade you created on %@ has been completed!", comment: "")
         public static let viewDetails = NSLocalizedString("View details", comment: "")
@@ -703,13 +714,13 @@ public enum LocalizationConstants {
             "By tapping Begin Now, you agree to Coinify's Terms of Service & Privacy Policy",
             comment: "Disclaimer shown when starting KYC from Buy-Sell"
         )
-        
-        public struct DeprecationError {
+
+        public enum DeprecationError {
             public static let message = NSLocalizedString("This feature is currently unavailable on iOS. Please visit our web wallet at Blockchain.com to proceed.", comment: "")
         }
     }
 
-    public struct AddressAndKeyImport {
+    public enum AddressAndKeyImport {
         public static let copyWalletId = NSLocalizedString("Copy Wallet ID", comment: "")
         public static let copyCTA = NSLocalizedString("Copy to clipboard", comment: "")
         public static let copyWarning = NSLocalizedString(
@@ -722,49 +733,12 @@ public enum LocalizationConstants {
         )
     }
 
-    public struct SendAsset {
-        public static let useTotalSpendableBalance = NSLocalizedString(
-            "Use total spendable balance: ",
-            comment: "String displayed to the user when they want to send their full balance to an address."
-        )
-        public static let invalidXAddressY = NSLocalizedString(
-            "Invalid %@ address: %@",
-            comment: "String presented to the user when they try to scan a QR code with an invalid address."
-        )
-        public static let send = NSLocalizedString(
-            "Send",
-            comment: "Text displayed on the button for when a user wishes to send crypto."
-        )
-        public static let confirmPayment = NSLocalizedString(
-            "Confirm Payment",
-            comment: "Header displayed asking the user to confirm their payment."
-        )
-        public static let paymentSent = NSLocalizedString(
-            "Payment sent",
-            comment: "Alert message shown when crypto is successfully sent to a recipient."
-        )
-        public static let transferAllFunds = NSLocalizedString(
-            "Confirm Transfer",
-            comment: "Title shown to use when transferring funds from legacy addresses to their new wallet"
-        )
-        
-        public static let paxComingSoonTitle = NSLocalizedString("USD Digital Coming Soon!", comment: "")
-        public static let paxComingSoonMessage = NSLocalizedString("We’re bringing USD Digital to iOS. While you wait, Send, Receive & Exchange USD Digital on the web.", comment: "")
-        public static let paxComingSoonLinkText = NSLocalizedString("What is USD Digital?", comment: "")
-        public static let notEnoughEth = NSLocalizedString("Not Enough ETH", comment: "")
-        public static let notEnoughEthDescription = NSLocalizedString("You'll need ETH to send your ERC20 Token", comment: "")
-        public static let invalidDestinationAddress = NSLocalizedString("Invalid ETH Address", comment: "")
-        public static let invalidDestinationDescription = NSLocalizedString("You must enter a valid ETH address to send your ERC20 Token", comment: "")
-        public static let notEnough = NSLocalizedString("Not Enough", comment: "")
-        public static let myPaxWallet = NSLocalizedString("My USD Digital Wallet", comment: "")
-    }
-
-    public struct WalletPicker {
+    public enum WalletPicker {
         public static let title = selectAWallet
         public static let selectAWallet = NSLocalizedString("Select a Wallet", comment: "Select a Wallet")
     }
-    
-    public struct ErrorAlert {
+
+    public enum ErrorAlert {
         public static let title = NSLocalizedString(
             "Oops!",
             comment: "Generic error bottom sheet title"
@@ -779,43 +753,53 @@ public enum LocalizationConstants {
         )
     }
 
-    public struct Address {
-        public struct Accessibility {
+    public enum Address {
+        public enum Accessibility {
             public static let addressLabel = NSLocalizedString(
                 "This is your address",
-                comment: "Accessibility hint for the user's wallet address")
+                comment: "Accessibility hint for the user's wallet address"
+            )
             public static let addressImageView = NSLocalizedString(
                 "This is your address QR code",
-                comment: "Accessibility hint for the user's wallet address qr code image")
+                comment: "Accessibility hint for the user's wallet address qr code image"
+            )
             public static let copyButton = NSLocalizedString(
                 "Copy",
-                comment: "Accessibility hint for the user's wallet address copy button")
+                comment: "Accessibility hint for the user's wallet address copy button"
+            )
             public static let shareButton = NSLocalizedString(
                 "Share",
-                comment: "Accessibility hint for the user's wallet address copy button")
+                comment: "Accessibility hint for the user's wallet address copy button"
+            )
         }
+
         public static let copyButton = NSLocalizedString(
             "Copy",
-            comment: "copy address button title before copy was made")
+            comment: "copy address button title before copy was made"
+        )
         public static let copiedButton = NSLocalizedString(
             "Copied!",
-            comment: "copy address button title after copy was made")
+            comment: "copy address button title after copy was made"
+        )
         public static let shareButton = NSLocalizedString(
             "Share",
-            comment: "share address button title")
+            comment: "share address button title"
+        )
         public static let titleFormat = NSLocalizedString(
             "%@ Wallet Address",
-            comment: "format for wallet address title on address screen")
+            comment: "format for wallet address title on address screen"
+        )
         public static let creatingStatusLabel = NSLocalizedString(
             "Creating a new address",
-            comment: "Creating a new address status label")
+            comment: "Creating a new address status label"
+        )
         public static let loginToRefreshAddress = NSLocalizedString(
             "Log in to refresh addresses",
-            comment: "Message that let the user know he has to login to refresh his wallet addresses")
+            comment: "Message that let the user know he has to login to refresh his wallet addresses"
+        )
     }
 
-    public struct Transactions {
-        public static let paxfee = NSLocalizedString("USD-D Fee", comment: "String displayed to indicate that a transaction is due to a fee associated to sending USD-D.")
+    public enum Transactions {
         public static let allWallets = NSLocalizedString("All Wallets", comment: "Label of selectable item that allows user to show all transactions of a certain asset")
         public static let noTransactions = NSLocalizedString("No Transactions", comment: "Text displayed when no recent transactions are being shown")
         public static let noTransactionsAssetArgument = NSLocalizedString("Transactions occur when you send and receive %@.", comment: "Helper text displayed when no recent transactions are being shown")
@@ -830,7 +814,7 @@ public enum LocalizationConstants {
         public static let yesterday = NSLocalizedString("Yesterday", comment: "text shown when a transaction has completed yesterday")
     }
 
-    public struct Lockbox {
+    public enum Lockbox {
         public static let getYourLockbox = NSLocalizedString(
             "Get Your Lockbox",
             comment: "Title prompting the user to buy a lockbox."
@@ -869,7 +853,7 @@ public enum LocalizationConstants {
         )
     }
 
-    public struct Stellar {
+    public enum Stellar {
         public static let required = NSLocalizedString("Required", comment: "Required")
         public static let memoPlaceholder = NSLocalizedString("Used to identify transactions", comment: "Used to identify transactions")
         public static let sendingToExchange = NSLocalizedString("Sending to an Exchange?", comment: "Sending to an Exchange?")
@@ -919,7 +903,8 @@ public enum LocalizationConstants {
         )
         public static let viewOnArgument = NSLocalizedString(
             "View on %@",
-            comment: "Button title for viewing a transaction on the explorer")
+            comment: "Button title for viewing a transaction on the explorer"
+        )
         public static let cannotSendXLMAtThisTime = NSLocalizedString(
             "Cannot send XLM at this time. Please try again.",
             comment: "Error displayed when XLM cannot be sent due to an error."
@@ -961,79 +946,89 @@ public enum LocalizationConstants {
             comment: "Error title shown when deep linking from a claim your XLM link."
         )
     }
-    
-    public struct TodayExtension {
-        public struct Headers {
+
+    public enum TodayExtension {
+        public enum Headers {
             public static let prices = NSLocalizedString("Prices", comment: "Prices")
             public static let balance = NSLocalizedString("Wallet Balance", comment: "Wallet Balance")
         }
     }
-    
-    public struct WalletAction {
-        public struct Default {
-            public struct Deposit {
+
+    public enum WalletAction {
+        public enum Default {
+            public enum Deposit {
                 public static let title = NSLocalizedString("Deposit", comment: "Deposit")
-                public struct Crypto {
+                public enum Crypto {
                     public static let description = NSLocalizedString("Add %@ to your Interest Account", comment: "Add %@ to your Interest Account")
                 }
-                public struct Fiat {
+
+                public enum Fiat {
                     public static let description = NSLocalizedString("Add Cash from Your Bank", comment: "Add Cash from Your Bank")
                 }
             }
-            public struct Withdraw {
+
+            public enum Withdraw {
                 public static let title = NSLocalizedString("Withdraw", comment: "Withdraw")
                 public static let description = NSLocalizedString("Cashout to Your Bank", comment: "Cashout to Your Bank")
             }
-            public struct Transfer {
+
+            public enum Transfer {
                 public static let title = NSLocalizedString("Send", comment: "Send")
                 public static let description = NSLocalizedString("Transfer %@ to Any Wallet", comment: "Transfer %@ to Any Wallet")
             }
-            public struct Interest {
+
+            public enum Interest {
                 public static let title = NSLocalizedString("Interest Summary", comment: "Interest Summary")
                 public static let description = NSLocalizedString("View your accrued %@ Interest", comment: "View your accrued %@ Interest")
             }
-            public struct Activity {
+
+            public enum Activity {
                 public static let title = NSLocalizedString("Activity", comment: "Activity")
                 public static let description = NSLocalizedString("View All Transactions", comment: "View All Transactions")
             }
-            public struct Send {
+
+            public enum Send {
                 public static let title = NSLocalizedString("Send", comment: "Send")
                 public static let description = NSLocalizedString("Transfer %@ to Any Wallet", comment: "Transfer %@ to Any Wallet")
             }
-            public struct Receive {
+
+            public enum Receive {
                 public static let title = NSLocalizedString("Receive", comment: "Receive")
                 public static let description = NSLocalizedString("Accept or Share Your %@ Address", comment: "Accept or Share Your %@ Address")
             }
-            public struct Swap {
+
+            public enum Swap {
                 public static let title = NSLocalizedString("Swap", comment: "Swap")
                 public static let description = NSLocalizedString("Exchange %@ for Another Crypto", comment: "Exchange %@ for Another Crypto")
             }
-            public struct Buy {
+
+            public enum Buy {
                 public static let title = NSLocalizedString("Buy", comment: "Buy")
                 public static let description = NSLocalizedString("Use your Card or Cash", comment: "Use your Card or Cash")
             }
-            public struct Sell {
+
+            public enum Sell {
                 public static let title = NSLocalizedString("Sell", comment: "Sell")
                 public static let description = NSLocalizedString("Convert Your Crypto to Cash", comment: "Convert Your Crypto to Cash")
             }
         }
     }
 
-    public struct GeneralError {
+    public enum GeneralError {
         public static let loadingData = NSLocalizedString(
             "An error occurred while loading the data. Please try again.",
             comment: "A general data loading error display in an alert controller"
         )
     }
-    
-    public struct Airdrop {
-        
-        public struct CenterScreen {
+
+    public enum Airdrop {
+
+        public enum CenterScreen {
             public static let title = NSLocalizedString(
                 "Airdrops",
                 comment: "Airdrop center screen: title"
             )
-            public struct Cell {
+            public enum Cell {
                 public static let fiatMiddle = NSLocalizedString(
                     "of",
                     comment: "Airdrop center screen: cell title"
@@ -1047,8 +1042,8 @@ public enum LocalizationConstants {
                     comment: "Airdrop center screen: ended cell description"
                 )
             }
-            
-            public struct Header {
+
+            public enum Header {
                 public static let startedTitle = NSLocalizedString(
                     "Available",
                     comment: "Airdrop center screen: available header title"
@@ -1059,13 +1054,13 @@ public enum LocalizationConstants {
                 )
             }
         }
-        
-        public struct StatusScreen {
+
+        public enum StatusScreen {
             public static let title = NSLocalizedString(
                 "Airdrop",
                 comment: "Airdrop status screen: title"
             )
-            public struct Blockstack {
+            public enum Blockstack {
                 public static let title = NSLocalizedString(
                     "Blockstack (STX)",
                     comment: "Airdrop status screen: blockstack, title"
@@ -1075,7 +1070,8 @@ public enum LocalizationConstants {
                     comment: "Airdrop status screen: blockstack, description"
                 )
             }
-            public struct Stellar {
+
+            public enum Stellar {
                 public static let title = NSLocalizedString(
                     "Stellar (XLM)",
                     comment: "Airdrop status screen: stellar, title"
@@ -1085,8 +1081,9 @@ public enum LocalizationConstants {
                     comment: "Airdrop status screen: stellar, description"
                 )
             }
-            public struct Cell {
-                public struct Status {
+
+            public enum Cell {
+                public enum Status {
                     public static let label = NSLocalizedString(
                         "Status",
                         comment: "Airdrop status screen: blockstack, status"
@@ -1116,7 +1113,8 @@ public enum LocalizationConstants {
                         comment: "Airdrop status screen: not registered status"
                     )
                 }
-                public struct Amount {
+
+                public enum Amount {
                     public static let label = NSLocalizedString(
                         "Amount",
                         comment: "Airdrop status screen: amount label"
@@ -1130,6 +1128,7 @@ public enum LocalizationConstants {
                         comment: "Airdrop status screen: amount value format"
                     )
                 }
+
                 public static let date = NSLocalizedString(
                     "Date",
                     comment: "Airdrop status screen: date"
@@ -1145,8 +1144,8 @@ public enum LocalizationConstants {
                 )
             }
         }
-        
-        public struct IntroScreen {
+
+        public enum IntroScreen {
             public static let title = NSLocalizedString(
                 "Get Free Crypto.",
                 comment: "Airdrop intro screen: title"
@@ -1167,8 +1166,8 @@ public enum LocalizationConstants {
                 "Upgrade to Gold. Get $10",
                 comment: "Airdrop intro screen: CTA button"
             )
-            public struct InfoCell {
-                public struct Number {
+            public enum InfoCell {
+                public enum Number {
                     public static let title = NSLocalizedString(
                         "Current Airdrop",
                         comment: "Airdrop intro screen number of airdrop cell: title"
@@ -1178,7 +1177,8 @@ public enum LocalizationConstants {
                         comment: "Airdrop intro screen number of airdrop cell: value"
                     )
                 }
-                public struct Currency {
+
+                public enum Currency {
                     public static let title = NSLocalizedString(
                         "Currency",
                         comment: "Airdrop intro screen currency of airdrop cell: title"
@@ -1190,7 +1190,7 @@ public enum LocalizationConstants {
                 }
             }
         }
-        
+
         public static let invalidCampaignUser = NSLocalizedString(
             "We're sorry, the airdrop program is currently not available where you are.",
             comment: "Error message displayed when the user that is trying to register for the campaign cannot register."
@@ -1208,8 +1208,8 @@ public enum LocalizationConstants {
             comment: "Generic airdrop error."
         )
     }
-    
-    public struct AuthType {
+
+    public enum AuthType {
         public static let google = NSLocalizedString(
             "Google",
             comment: "2FA alert: google type"

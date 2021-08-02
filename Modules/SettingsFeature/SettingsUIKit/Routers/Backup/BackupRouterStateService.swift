@@ -45,7 +45,7 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
 
     // MARK: - Types
 
-    public enum State {
+    enum State {
         case start
 
         /// The CTA for funds backup
@@ -84,7 +84,7 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
     }
 
     var currentState: Observable<BackupRouterStateService.State> {
-        states.map { $0.current }
+        states.map(\.current)
     }
 
     var action: Observable<Action> {

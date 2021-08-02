@@ -20,17 +20,18 @@ open class BaseTableViewController: BaseScreenViewController {
 
     // MARK: - Public UI Constraints
 
-    private(set) public var contentBottomConstraint: NSLayoutConstraint!
+    public private(set) var contentBottomConstraint: NSLayoutConstraint!
 
     public init() {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    open override func loadView() {
+    override open func loadView() {
         // Setup view
 
         view = UIView()
@@ -85,7 +86,7 @@ open class BaseTableViewController: BaseScreenViewController {
         buttonStackView.layoutToSuperview(.bottom, offset: -16)
     }
 
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
     }
 
@@ -96,7 +97,7 @@ open class BaseTableViewController: BaseScreenViewController {
         buttonView.layout(dimension: .height, to: 48)
     }
 
-    open override func viewDidLayoutSubviews() {
+    override open func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         tableView.availableHeight = scrollView.frame.height
         tableView.unavailableHeight = bottomContainerView.frame.height

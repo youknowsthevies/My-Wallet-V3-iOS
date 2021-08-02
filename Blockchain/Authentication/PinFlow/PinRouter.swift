@@ -35,10 +35,12 @@ final class PinRouter: NSObject {
 
     // MARK: - Setup
 
-    init(flow: PinRouting.Flow,
-         recorder: Recording = CrashlyticsRecorder(),
-         completion: PinRouting.RoutingType.Forward? = nil,
-         webViewService: WebViewServiceAPI = resolve()) {
+    init(
+        flow: PinRouting.Flow,
+        recorder: Recording = CrashlyticsRecorder(),
+        completion: PinRouting.RoutingType.Forward? = nil,
+        webViewService: WebViewServiceAPI = resolve()
+    ) {
         self.flow = flow
         self.recorder = recorder
         self.completion = completion
@@ -50,20 +52,20 @@ final class PinRouter: NSObject {
 
     /// Executes the pin flow according to the `flow` value provided during initialization
     func execute() {
-        guard !self.isBeingDisplayed else { return }
+        guard !isBeingDisplayed else { return }
 
-        self.isBeingDisplayed = true
-        switch self.flow {
+        isBeingDisplayed = true
+        switch flow {
         case .create:
-            self.create()
+            create()
         case .createPin:
-            self.create()
+            create()
         case .change:
-            self.change()
+            change()
         case .authenticate(from: let origin, logoutRouting: _):
-            self.authenticate(from: origin)
+            authenticate(from: origin)
         case .enableBiometrics: // Here the origin is `.foreground`
-            self.authenticate(from: self.flow.origin)
+            authenticate(from: flow.origin)
         }
     }
 
@@ -111,10 +113,12 @@ extension PinRouter {
         let effectHandling: PinRouting.RoutingType.Effect = { [weak self] effect in
             self?.effectHandling(effect)
         }
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           forwardRouting: forwardRouting,
-                                           performEffect: effectHandling)
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            forwardRouting: forwardRouting,
+            performEffect: effectHandling
+        )
         let pinViewController = PinScreenViewController(using: presenter)
         if useCase.isAuthenticateOnLogin {
             authenticateOnLogin(using: pinViewController)
@@ -148,11 +152,13 @@ extension PinRouter {
         let effectHandling: PinRouting.RoutingType.Effect = { [weak self] effect in
             self?.effectHandling(effect)
         }
-        let presenter = PinScreenPresenter(useCase: .authenticateBeforeChanging,
-                                           flow: flow,
-                                           backwardRouting: backwardRouting,
-                                           forwardRouting: forwardRouting,
-                                           performEffect: effectHandling)
+        let presenter = PinScreenPresenter(
+            useCase: .authenticateBeforeChanging,
+            flow: flow,
+            backwardRouting: backwardRouting,
+            forwardRouting: forwardRouting,
+            performEffect: effectHandling
+        )
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
     }
@@ -174,11 +180,13 @@ extension PinRouter {
         let effectHandling: PinRouting.RoutingType.Effect = { [weak self] effect in
             self?.effectHandling(effect)
         }
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           backwardRouting: backwardRouting,
-                                           forwardRouting: forwardRouting,
-                                           performEffect: effectHandling)
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            backwardRouting: backwardRouting,
+            forwardRouting: forwardRouting,
+            performEffect: effectHandling
+        )
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
     }
@@ -195,11 +203,13 @@ extension PinRouter {
         let effectHandling: PinRouting.RoutingType.Effect = { [weak self] effect in
             self?.effectHandling(effect)
         }
-        let presenter = PinScreenPresenter(useCase: useCase,
-                                           flow: flow,
-                                           backwardRouting: backwardRouting,
-                                           forwardRouting: forwardRouting,
-                                           performEffect: effectHandling)
+        let presenter = PinScreenPresenter(
+            useCase: useCase,
+            flow: flow,
+            backwardRouting: backwardRouting,
+            forwardRouting: forwardRouting,
+            performEffect: effectHandling
+        )
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
     }
@@ -233,16 +243,18 @@ extension PinRouter {
     }
 
     /// Cleanup the flow and calls completion handler
-    private func finish(animated: Bool = true,
-                        performsCompletionAfterDismissal: Bool = true,
-                        completedSuccessfully: Bool = true,
-                        completionInput: PinRouting.RoutingType.Input = .none) {
+    private func finish(
+        animated: Bool = true,
+        performsCompletionAfterDismissal: Bool = true,
+        completedSuccessfully: Bool = true,
+        completionInput: PinRouting.RoutingType.Input = .none
+    ) {
         // Concentrate any cleanup logic here
         let cleanup = { [weak self] in
             guard let self = self else { return }
             self.navigationController = nil
             self.isBeingDisplayed = false
-            if completedSuccessfully && performsCompletionAfterDismissal {
+            if completedSuccessfully, performsCompletionAfterDismissal {
                 self.completion?(completionInput)
             }
         }
@@ -255,7 +267,7 @@ extension PinRouter {
                 recorder.error(PinRouting.FlowError.navigationControllerIsNotInitialized)
                 return
             }
-            if completedSuccessfully && !performsCompletionAfterDismissal {
+            if completedSuccessfully, !performsCompletionAfterDismissal {
                 completion?(completionInput)
             }
             controller.dismiss(animated: animated, completion: cleanup)
@@ -270,10 +282,12 @@ extension PinRouter {
 // MARK: - UINavigationControllerDelegate (Screen routing animation)
 
 extension PinRouter: UINavigationControllerDelegate {
-    func navigationController(_ navigationController: UINavigationController,
-                              animationControllerFor operation: UINavigationController.Operation,
-                              from fromVC: UIViewController,
-                              to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func navigationController(
+        _ navigationController: UINavigationController,
+        animationControllerFor operation: UINavigationController.Operation,
+        from fromVC: UIViewController,
+        to toVC: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
         let transition = ScreenTransitioningAnimator.TransitionType.translate(from: operation, duration: 0.4)
         return ScreenTransitioningAnimator(transition: transition)
     }

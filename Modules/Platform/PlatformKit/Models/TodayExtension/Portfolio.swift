@@ -11,7 +11,8 @@ public struct Portfolio: Codable {
             CryptoValue.create(minor: balance, currency: currency) ?? CryptoValue.zero(currency: currency)
         }
     }
-   public struct BalanceChange: Codable {
+
+    public struct BalanceChange: Codable {
         let balance: Decimal
         public let changePercentage: Double
         let change: Decimal
@@ -34,7 +35,7 @@ public struct Portfolio: Codable {
         )
     }
 
-   public var changeFiatValue: FiatValue {
+    public var changeFiatValue: FiatValue {
         FiatValue.create(
             major: balanceChange.change,
             currency: fiatCurrency
@@ -52,7 +53,7 @@ public struct Portfolio: Codable {
     // MARK: - Init
 
     init(
-        accounts: [CryptoCurrency : Portfolio.Account],
+        accounts: [CryptoCurrency: Portfolio.Account],
         balanceChange: BalanceChange,
         fiatCurrency: FiatCurrency
     ) {

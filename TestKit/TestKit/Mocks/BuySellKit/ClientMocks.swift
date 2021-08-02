@@ -74,9 +74,11 @@ extension APIClient {
         ]
     }
 
-    static func mockQuote(for action: Order.Action,
-                          to cryptoCurrency: CryptoCurrency,
-                          amount: FiatValue) -> QuoteResponse {
+    static func mockQuote(
+        for action: Order.Action,
+        to cryptoCurrency: CryptoCurrency,
+        amount: FiatValue
+    ) -> QuoteResponse {
         QuoteResponse(
             time: "2020-01-15T22:09:45.600Z",
             rate: "1000000",
@@ -109,9 +111,9 @@ extension APIClient {
             OrderPayload.Response(
                 state: OrderDetails.State.pendingDeposit.rawValue,
                 id: "111111-aaaaaaaa-111111",
-                inputCurrency: FiatCurrency.GBP.code,
+                inputCurrency: "GBP",
                 inputQuantity: "10000",
-                outputCurrency: CryptoCurrency.ethereum.code,
+                outputCurrency: "ETH",
                 outputQuantity: "100000",
                 updatedAt: "2020-01-01T12:20:42.849Z",
                 expiresAt: "2020-01-01T12:20:42.849Z",

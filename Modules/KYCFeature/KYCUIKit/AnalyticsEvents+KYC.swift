@@ -121,8 +121,8 @@ extension AnalyticsEvents {
 
         var params: [String: String]? {
             switch self {
-            case let .kycInformationControllerViewModelNilError(vc):
-                return ["presenting_view_controller" : vc]
+            case .kycInformationControllerViewModelNilError(let vc):
+                return ["presenting_view_controller": vc]
             default:
                 return nil
             }

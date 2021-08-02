@@ -5,6 +5,7 @@ import RemoteNotificationsKit
 
 protocol FirebaseCloudMessagingServiceAPI: RemoteNotificationTokenFetching {
     var apnsToken: Data? { get set }
+
     @discardableResult
     func appDidReceiveMessage(_ message: [AnyHashable: Any]) -> MessagingMessageInfo
     func subscribe(toTopic topic: String, completion: FIRMessagingTopicOperationCompletion?)
@@ -13,7 +14,7 @@ protocol FirebaseCloudMessagingServiceAPI: RemoteNotificationTokenFetching {
 extension Messaging: FirebaseCloudMessagingServiceAPI {
 
     public func token(handler: @escaping (RemoteNotificationTokenFetchResult) -> Void) {
-        token { (token, error) in
+        token { token, error in
             if let error = error {
                 handler(.failure(.external(error)))
             } else if let token = token {

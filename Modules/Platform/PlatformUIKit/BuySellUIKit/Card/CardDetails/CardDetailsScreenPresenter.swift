@@ -89,16 +89,18 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
     private let disposeBag = DisposeBag()
 
     private let interactor: CardDetailsScreenInteractor
-    private let eventRecorder: AnalyticsEventRecording
+    private let eventRecorder: AnalyticsEventRecorderAPI
     private let cardNumberValidator: CardNumberValidator
     private let loadingViewPresenter: LoadingViewPresenting
 
     // MARK: - Setup
 
-    init(interactor: CardDetailsScreenInteractor,
-         eventRecorder: AnalyticsEventRecording = resolve(),
-         messageRecorder: MessageRecording = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+    init(
+        interactor: CardDetailsScreenInteractor,
+        eventRecorder: AnalyticsEventRecorderAPI = resolve(),
+        messageRecorder: MessageRecording = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve()
+    ) {
         self.interactor = interactor
         self.eventRecorder = eventRecorder
         self.loadingViewPresenter = loadingViewPresenter
@@ -187,12 +189,12 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             .share(replay: 1)
 
         latestStatesObservable
-            .map(weak: stateReducer) { (reducer, states) in
+            .map(weak: stateReducer) { reducer, states in
                 try reducer.reduce(
                     states: [states.name, states.number, states.expiry, states.cvv]
                 )
             }
-            .map { $0.isValid }
+            .map(\.isValid)
             .bindAndCatch(to: isValidRelay)
             .disposed(by: disposeBag)
 
@@ -231,14 +233,14 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             .share(replay: 1)
 
         buttonTapped
-            .filter { $0.isFailure }
+            .filter(\.isFailure)
             .mapToVoid()
             .map { .generic }
             .bindAndCatch(to: errorRelay)
             .disposed(by: disposeBag)
 
         buttonTapped
-            .compactMap { $0.successData }
+            .compactMap(\.successData)
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, payload) in
                 if payload.isExist {

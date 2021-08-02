@@ -10,8 +10,10 @@ public final class DefaultLineItemCellInteractor: LineItemCellInteracting {
     public let title: LabelContentInteracting
     public let description: LabelContentInteracting
 
-    public init(title: LabelContentInteracting = DefaultLabelContentInteractor(),
-                description: LabelContentInteracting = DefaultLabelContentInteractor()) {
+    public init(
+        title: LabelContentInteracting = DefaultLabelContentInteractor(),
+        description: LabelContentInteracting = DefaultLabelContentInteractor()
+    ) {
         self.title = title
         self.description = description
     }
@@ -56,9 +58,11 @@ public final class DefaultLineItemCellPresenter: LineItemCellPresenting {
 
     // MARK: - Init
 
-    public init(interactor: DefaultLineItemCellInteractor,
-                accessibilityIdPrefix: String,
-                identifier: String = "") {
+    public init(
+        interactor: DefaultLineItemCellInteractor,
+        accessibilityIdPrefix: String,
+        identifier: String = ""
+    ) {
         self.identifier = identifier
         self.interactor = interactor
         titleLabelContentPresenter = DefaultLabelContentPresenter(

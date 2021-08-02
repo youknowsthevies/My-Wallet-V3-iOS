@@ -15,14 +15,17 @@ protocol CheckoutPageInteractable: Interactable, WithdrawalConfirmationRouting {
 }
 
 final class CheckoutPageRouter: ViewableRouter<CheckoutPageInteractable, ContentPageControllable>,
-                                CheckoutPageRouting {
+    CheckoutPageRouting
+{
 
     private let confirmationPageBuilder: ConfirmationPageBuilder
 
-    init(interactor: CheckoutPageInteractable,
-         contentControllable: ContentPageControllable,
-         confirmationBuilder: ConfirmationPageBuilder) {
-        self.confirmationPageBuilder = confirmationBuilder
+    init(
+        interactor: CheckoutPageInteractable,
+        contentControllable: ContentPageControllable,
+        confirmationBuilder: ConfirmationPageBuilder
+    ) {
+        confirmationPageBuilder = confirmationBuilder
         super.init(interactor: interactor, viewController: contentControllable)
         interactor.router = self
     }
@@ -38,7 +41,7 @@ final class CheckoutPageRouter: ViewableRouter<CheckoutPageInteractable, Content
             return confirmationPageBuilder.build(for: .loading(amount), routing: interactor)
         case .confirmation(let data):
             return confirmationPageBuilder.build(for: .success(data), routing: interactor)
-        case let .failure(currencyType, error):
+        case .failure(let currencyType, let error):
             return confirmationPageBuilder.build(for: .failure(currencyType, error), routing: interactor)
         }
     }

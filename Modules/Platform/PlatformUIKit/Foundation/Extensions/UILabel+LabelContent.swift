@@ -3,8 +3,8 @@
 import RxCocoa
 import RxSwift
 
-public extension UILabel {
-    var content: LabelContent {
+extension UILabel {
+    public var content: LabelContent {
         get {
             LabelContent(
                 text: text ?? "",
@@ -24,8 +24,8 @@ public extension UILabel {
     }
 }
 
-public extension Reactive where Base: UILabel {
-    var content: Binder<LabelContent> {
+extension Reactive where Base: UILabel {
+    public var content: Binder<LabelContent> {
         Binder(base) { $0.content = $1 }
     }
 }

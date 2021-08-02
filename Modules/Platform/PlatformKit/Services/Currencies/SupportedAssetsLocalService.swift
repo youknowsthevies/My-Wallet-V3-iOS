@@ -7,6 +7,7 @@ import ToolKit
 protocol SupportedAssetsLocalServiceAPI {
     var erc20Asset: Result<SupportedAssetsResponse, SupportedAssetsLocalError> { get }
 }
+
 enum SupportedAssetsLocalError: Error {
     case unimplemented
     case missingLocalFile

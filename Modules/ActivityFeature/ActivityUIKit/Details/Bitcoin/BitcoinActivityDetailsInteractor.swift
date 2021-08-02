@@ -12,10 +12,12 @@ final class BitcoinActivityDetailsInteractor {
     private let detailsService: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails>
     private let wallet: BitcoinWalletBridgeAPI
 
-    init(wallet: BitcoinWalletBridgeAPI = resolve(),
-         fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         detailsService: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails> = resolve()) {
+    init(
+        wallet: BitcoinWalletBridgeAPI = resolve(),
+        fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        detailsService: AnyActivityItemEventDetailsFetcher<BitcoinActivityItemEventDetails> = resolve()
+    ) {
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
@@ -40,7 +42,7 @@ final class BitcoinActivityDetailsInteractor {
 
     private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            for: CurrencyType.crypto(CryptoCurrency.bitcoin),
+            for: CurrencyType.crypto(.coin(.bitcoin)),
             in: fiatCurrency,
             at: date
         )

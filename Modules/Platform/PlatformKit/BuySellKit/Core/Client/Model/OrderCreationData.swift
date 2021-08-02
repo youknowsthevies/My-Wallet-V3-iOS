@@ -1,22 +1,22 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public struct Order {
+public enum Order {
     public enum Action: String, Codable {
         case buy = "BUY"
         case sell = "SELL"
     }
 }
 
-struct OrderPayload {
+enum OrderPayload {
 
-    public enum CreateActionType: String, Encodable {
+    enum CreateActionType: String, Encodable {
         case confirm
         case pending
     }
 
-    public struct ConfirmOrder: Encodable {
+    struct ConfirmOrder: Encodable {
 
-        public enum Partner {
+        enum Partner {
             case everyPay(customerUrl: String)
             case bank
             case funds
@@ -26,6 +26,7 @@ struct OrderPayload {
             struct EveryPay: Encodable {
                 let customerUrl: String
             }
+
             let everypay: EveryPay?
         }
 
@@ -45,7 +46,7 @@ struct OrderPayload {
         }
     }
 
-    public struct Request: Encodable {
+    struct Request: Encodable {
         struct Input: Encodable {
             let symbol: String
             let amount: String
@@ -62,12 +63,14 @@ struct OrderPayload {
         let paymentType: PaymentMethodPayloadType?
         let paymentMethodId: String?
 
-        init(action: Order.Action,
-             fiatValue: FiatValue,
-             fiatCurrency: FiatCurrency,
-             cryptoValue: CryptoValue,
-             paymentType: PaymentMethod.MethodType? = nil,
-             paymentMethodId: String? = nil) {
+        init(
+            action: Order.Action,
+            fiatValue: FiatValue,
+            fiatCurrency: FiatCurrency,
+            cryptoValue: CryptoValue,
+            paymentType: PaymentMethod.MethodType? = nil,
+            paymentMethodId: String? = nil
+        ) {
             self.action = action
             self.paymentMethodId = paymentMethodId
             self.paymentType = paymentType?.rawType
@@ -90,11 +93,12 @@ struct OrderPayload {
         }
     }
 
-    public struct Response: Decodable {
+    struct Response: Decodable {
         enum Side: String, Decodable {
             case buy = "BUY"
             case sell = "SELL"
         }
+
         struct Attributes: Decodable {
             struct EveryPay: Decodable {
                 enum PaymentState: String, Decodable {

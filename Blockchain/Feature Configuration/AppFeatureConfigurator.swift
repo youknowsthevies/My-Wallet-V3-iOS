@@ -6,36 +6,12 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-@objc class AppFeatureConfigurator: NSObject, FeatureConfiguratorAPI {
-
-    enum ConfigurationError: Error {
-        case missingKeyRawValue
-        case missingValue
-    }
-
-    @Inject @objc static var shared: AppFeatureConfigurator
+final class AppFeatureConfigurator {
 
     private let remoteConfig: RemoteConfig
 
-    override init() {
-        remoteConfig = RemoteConfig.remoteConfig()
-        super.init()
-    }
-
-    /// Returns an `AppFeatureConfiguration` object for the provided feature.
-    ///
-    /// - Parameter feature: the feature
-    /// - Returns: the configuration for the feature requested
-    @objc func configuration(for feature: AppFeature) -> AppFeatureConfiguration {
-
-        // If there is no remote key defined for the feature (i.e. if it is not controlled via Firebase),
-        // it is enabled by default
-        guard let remoteEnabledKey = feature.remoteEnabledKey else {
-            return AppFeatureConfiguration(isEnabled: true)
-        }
-
-        let isEnabled = remoteConfig.configValue(forKey: remoteEnabledKey).boolValue
-        return AppFeatureConfiguration(isEnabled: isEnabled)
+    init(remoteConfig: RemoteConfig = RemoteConfig.remoteConfig()) {
+        self.remoteConfig = remoteConfig
     }
 
     func initialize() {
@@ -47,13 +23,43 @@ import ToolKit
         #if DEBUG
         expiration = TimeInterval(60) // 1 min
         #endif
-        remoteConfig.fetch(withExpirationDuration: expiration) { [weak self] (status, error) in
-            guard status == .success && error == nil else {
+        remoteConfig.fetch(withExpirationDuration: expiration) { [weak self] status, error in
+            guard status == .success, error == nil else {
                 print("config fetch error")
                 return
             }
             self?.remoteConfig.activate(completion: nil)
         }
+    }
+}
+
+extension AppFeatureConfigurator: FeatureConfiguratorAPI {
+    func configuration<Feature: Decodable>(for feature: AppFeature) -> Result<Feature, FeatureConfigurationError> {
+        guard let remoteEnabledKey = feature.remoteEnabledKey else {
+            return .failure(.missingKeyRawValue)
+        }
+        let data = remoteConfig.configValue(forKey: remoteEnabledKey).dataValue
+        do {
+            return .success(try data.decode(to: Feature.self))
+        } catch {
+            return .failure(.decodingError)
+        }
+    }
+
+    /// Returns an `AppFeatureConfiguration` object for the provided feature.
+    ///
+    /// - Parameter feature: the feature
+    /// - Returns: the configuration for the feature requested
+    func configuration(for feature: AppFeature) -> AppFeatureConfiguration {
+
+        // If there is no remote key defined for the feature (i.e. if it is not controlled via Firebase),
+        // it is enabled by default
+        guard let remoteEnabledKey = feature.remoteEnabledKey else {
+            return AppFeatureConfiguration(isEnabled: true)
+        }
+
+        let isEnabled = remoteConfig.configValue(forKey: remoteEnabledKey).boolValue
+        return AppFeatureConfiguration(isEnabled: isEnabled)
     }
 }
 
@@ -86,7 +92,7 @@ extension AppFeatureConfigurator: FeatureFetching {
             .map(\.stringValue)
             .map { stringValue -> String in
                 guard let stringValue = stringValue else {
-                    throw ConfigurationError.missingValue
+                    throw FeatureConfigurationError.missingValue
                 }
                 return stringValue
             }
@@ -120,7 +126,7 @@ extension AppFeatureConfigurator: FeatureFetching {
     /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value is missing.
     private func fetchConfigValue(for key: AppFeature) -> Single<RemoteConfigValue> {
         guard let keyRawValue = key.remoteEnabledKey else {
-            return .error(ConfigurationError.missingKeyRawValue)
+            return .error(FeatureConfigurationError.missingKeyRawValue)
         }
         return .just(remoteConfig.configValue(forKey: keyRawValue))
     }

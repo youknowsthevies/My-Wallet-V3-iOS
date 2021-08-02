@@ -20,6 +20,7 @@ protocol NetworkFeeSelectionRouting: ViewableRouting {
 
 protocol NetworkFeeSelectionPresentable: Presentable {
     var listener: NetworkFeeSelectionPresentableListener? { get set }
+
     func connect(state: Driver<NetworkFeeSelectionInteractor.State>) -> Driver<NetworkFeeSelectionEffects>
 }
 
@@ -28,16 +29,19 @@ protocol NetworkFeeSelectionListener: AnyObject {
 }
 
 final class NetworkFeeSelectionInteractor: PresentableInteractor<NetworkFeeSelectionPresentable>,
-                                           NetworkFeeSelectionInteractable,
-                                           NetworkFeeSelectionPresentableListener {
+    NetworkFeeSelectionInteractable,
+    NetworkFeeSelectionPresentableListener
+{
 
     weak var router: NetworkFeeSelectionRouting?
     weak var listener: NetworkFeeSelectionListener?
 
     private let transactionModel: TransactionModel
 
-    init(presenter: NetworkFeeSelectionPresentable,
-         transactionModel: TransactionModel) {
+    init(
+        presenter: NetworkFeeSelectionPresentable,
+        transactionModel: TransactionModel
+    ) {
         self.transactionModel = transactionModel
         super.init(presenter: presenter)
         presenter.listener = self
@@ -50,21 +54,21 @@ final class NetworkFeeSelectionInteractor: PresentableInteractor<NetworkFeeSelec
             .state
             .share(replay: 1, scope: .whileConnected)
 
-        /// Depending on the `FeeState` we may need to show an error
-        /// in the custom fee entry cell.
+        // Depending on the `FeeState` we may need to show an error
+        // in the custom fee entry cell.
         //  let feeState = transactionState
         //      .map(\.feeSelection)
         //      .compactMap(\.feeState)
 
         let state = transactionState
-            .scan(.initial) { [weak self] (state, updater) -> State in
+            .scan(.initial) { [weak self] state, updater -> State in
                 guard let self = self else { return state }
                 return self.calculateNextState(with: state, updater: updater)
             }
             .asDriverCatchError()
 
         presenter.connect(state: state)
-            .drive(onNext: handle(effect: ))
+            .drive(onNext: handle(effect:))
             .disposeOnDeactivate(interactor: self)
     }
 

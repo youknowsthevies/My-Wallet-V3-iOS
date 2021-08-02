@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import PlatformKit
 import RxSwift
 import RxTest
 @testable import TransactionKit

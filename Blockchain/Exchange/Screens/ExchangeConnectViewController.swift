@@ -18,8 +18,8 @@ class ExchangeConnectViewController: UIViewController, NavigatableView {
 
     // MARK: Private Properties
 
-    private let bag: DisposeBag = DisposeBag()
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let bag = DisposeBag()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
     // MARK: Private IBOutlets
 
@@ -78,15 +78,15 @@ class ExchangeConnectViewController: UIViewController, NavigatableView {
 
         shareYourStatus.attributedText = NSAttributedString(
             string: LocalizationConstants.Exchange.ConnectionPage.Features.shareStatus,
-            attributes: [ .font: copyFont]
+            attributes: [.font: copyFont]
         ).asBulletPoint()
         exchangeAddresses.attributedText = NSAttributedString(
             string: LocalizationConstants.Exchange.ConnectionPage.Features.shareAddresses,
-            attributes: [ .font: copyFont ]
+            attributes: [.font: copyFont]
         ).asBulletPoint()
         viewWalletPassword.attributedText = NSAttributedString(
             string: LocalizationConstants.Exchange.ConnectionPage.Features.viewYourPassword,
-            attributes: [ .font: copyFont ]
+            attributes: [.font: copyFont]
         ).asBulletPoint()
 
         learnMoreButton.setTitle(LocalizationConstants.Exchange.ConnectionPage.Actions.learnMore, for: .normal)

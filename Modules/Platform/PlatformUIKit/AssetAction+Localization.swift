@@ -3,11 +3,11 @@
 import Localization
 import PlatformKit
 
-public extension AssetAction {
+extension AssetAction {
 
     private typealias LocalizationIds = LocalizationConstants.Transaction
 
-    var name: String {
+    public var name: String {
         switch self {
         case .buy:
             return LocalizationIds.buy

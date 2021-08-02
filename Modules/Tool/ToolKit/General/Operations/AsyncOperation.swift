@@ -36,7 +36,7 @@ public class AsyncOperation: Operation {
 
     // MARK: Overrides
 
-    public override func start() {
+    override public func start() {
         guard isCancelled == false else { return }
         executionState = .executing
         begin { [weak self] in
@@ -46,26 +46,26 @@ public class AsyncOperation: Operation {
                 this.lock.lock()
                 let blocks = this.completionBlocks
                 this.lock.unlock()
-                blocks.forEach({ $0() })
+                blocks.forEach { $0() }
                 this.executionState = .finished
             }
         }
     }
 
-    public override var isAsynchronous: Bool {
+    override public var isAsynchronous: Bool {
         true
     }
 
-    public override var isFinished: Bool {
+    override public var isFinished: Bool {
         executionState == .finished
     }
 
-    public override var isExecuting: Bool {
+    override public var isExecuting: Bool {
         executionState == .executing
     }
 
-    public override var isReady: Bool {
-        executionState == .ready && dependencies.filter({ $0.isFinished == true }).count == dependencies.count
+    override public var isReady: Bool {
+        executionState == .ready && dependencies.filter { $0.isFinished == true }.count == dependencies.count
     }
 
     /// For custom operations, you should override this function. When your operation
@@ -80,7 +80,7 @@ public class AsyncOperation: Operation {
     /// be called on the main thread. In fact is typically called on a
     /// secondary thread.
     public func addCompletionBlock(_ block: @escaping () -> Void) {
-        guard isCancelled == false && executionState != .finished else { return }
+        guard isCancelled == false, executionState != .finished else { return }
         lock.lock()
         completionBlocks.append(block)
         lock.unlock()

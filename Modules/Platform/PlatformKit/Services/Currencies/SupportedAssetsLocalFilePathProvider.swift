@@ -12,6 +12,7 @@ final class SupportedAssetsLocalFilePathProvider: SupportedAssetsLocalFilePathPr
     var remoteERC20Assets: String? {
         Bundle(for: Self.self).path(forResource: "remote-currencies-erc20", ofType: "json")
     }
+
     var localERC20Assets: String? {
         Bundle(for: Self.self).path(forResource: "local-currencies-erc20", ofType: "json")
     }

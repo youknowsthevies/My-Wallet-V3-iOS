@@ -7,13 +7,13 @@ import PlatformKit
 extension WalletManager: WalletManagerReactiveAPI {
 
     var didCreateNewAccount: AnyPublisher<Result<WalletCreation, WalletCreationError>, Never> {
-        self.rx.didCreateNewAccount
+        rx.didCreateNewAccount
             .asPublisher()
             .ignoreFailure()
     }
 
     var walletJSisReady: AnyPublisher<Void, Error> {
-        self.rx.walletJSReady
+        rx.walletJSReady
             .asPublisher()
             .mapToVoid()
     }
@@ -23,7 +23,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `walletDidDecrypt(withSharedKey:guid:)`
     /// - Note: Returns a `WalletDecryption` instance containing info as received from the delegate method
     var didDecryptWallet: AnyPublisher<WalletDecryption, Error> {
-        self.rx.didDecryptWallet
+        rx.didDecryptWallet
             .asPublisher()
     }
 
@@ -33,7 +33,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// - `walletFailedToLoad`
     /// - `walletFailedToDecrypt`
     var didCompleteAuthentication: AnyPublisher<Result<Bool, AuthenticationError>, Never> {
-        self.rx.didCompleteAuthentication
+        rx.didCompleteAuthentication
             .asPublisher()
             .ignoreFailure()
     }
@@ -43,7 +43,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `walletDidGetAccountInfo`
     /// - Note: Invoked when the account info has been retrieved
     var didGetAccountInfo: AnyPublisher<Void, Error> {
-        self.rx.didGetAccountInfo
+        rx.didGetAccountInfo
             .asPublisher()
             .mapToVoid()
     }
@@ -53,7 +53,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `returnToAddressesScreen`
     /// - Note: Method invoked when finding a null account or address when checking if archived
     var shouldReturnToAddressesScreen: AnyPublisher<Void, Error> {
-        self.rx.returnToAddressesScreen
+        rx.returnToAddressesScreen
             .asPublisher()
             .mapToVoid()
     }
@@ -63,7 +63,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `didRecoverWallet`
     /// - Note:  Method invoked when the recovery sequence is completed
     var walletRecovered: AnyPublisher<Void, Error> {
-        self.rx.didRecoverWallet
+        rx.didRecoverWallet
             .asPublisher()
             .mapToVoid()
     }
@@ -71,7 +71,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `didFailRecovery`
     /// - Note:  Method invoked when the recovery sequence fails to complete
     var walletRecoveryFailed: AnyPublisher<Void, Error> {
-        self.rx.didFailRecovery
+        rx.didFailRecovery
             .asPublisher()
             .mapToVoid()
     }
@@ -81,7 +81,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `didFailGetHistory`
     /// - Note:  Method invoked when the recovery sequence fails to complete
     var walletFailedToGetHistory: AnyPublisher<String?, Error> {
-        self.rx.didFailGetHistory
+        rx.didFailGetHistory
             .asPublisher()
     }
 
@@ -90,7 +90,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `walletDidGetAccountInfoAndExchangeRates`
     /// - Note: Method invoked after getting account info and exchange rates on startup
     var walletDidGetAccountInfoAndExchangeRates: AnyPublisher<Void, Error> {
-        self.rx.didGetAccountInfoAndExchangeRates
+        rx.didGetAccountInfoAndExchangeRates
             .asPublisher()
             .mapToVoid()
     }
@@ -100,7 +100,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `didBackupWallet`
     /// - Note: Method invoked when backup sequence is completed
     var walletBackupSuccess: AnyPublisher<Void, Error> {
-        self.rx.didBackupWallet
+        rx.didBackupWallet
             .asPublisher()
             .mapToVoid()
     }
@@ -108,7 +108,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `didFailBackupWallet`
     /// - Note: Method invoked when backup sequence is completed
     var walletBackupFailed: AnyPublisher<Void, Error> {
-        self.rx.didFailBackupWallet
+        rx.didFailBackupWallet
             .asPublisher()
             .mapToVoid()
     }
@@ -118,12 +118,12 @@ extension WalletManager: WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `getSecondPassword`
     /// - Note: Method invoked when second password is required for JS function to complete.
     var getSecondPassword: AnyPublisher<(success: WalletSuccessCallback, dismiss: WalletDismissCallback?), Error> {
-        self.rx.getSecondPassword
+        rx.getSecondPassword
             .asPublisher()
     }
 
     var getPrivateKeyPassword: AnyPublisher<WalletSuccessCallback, Error> {
-        self.rx.getPrivateKeyPassword
+        rx.getPrivateKeyPassword
             .asPublisher()
     }
 }

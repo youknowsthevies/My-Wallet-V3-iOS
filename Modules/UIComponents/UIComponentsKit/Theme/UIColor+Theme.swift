@@ -5,37 +5,28 @@ import UIKit
 // LEGACY, for UIKit support
 extension UIColor {
 
-    // MARK: Crypto
-    static let _aave = UIColor(paletteColor: .aave)
-    static let _algo = UIColor(paletteColor: .algo)
-    static let _bch = UIColor(paletteColor: .bch)
-    static let _btc = UIColor(paletteColor: .btc)
-    static let _dot = UIColor(paletteColor: .dot)
-    static let _eth = UIColor(paletteColor: .eth)
-    static let _pax = UIColor(paletteColor: .pax)
-    static let _usdt = UIColor(paletteColor: .usdt)
-    static let _wDGLD = UIColor(paletteColor: .wDGLD)
-    static let _xlm = UIColor(paletteColor: .xlm)
-    static let _yfi = UIColor(paletteColor: .yfi)
-
     // MARK: Tiers
+
     static let tiersSilver = UIColor(paletteColor: .tierSilver)
     static let tiersGold = UIColor(paletteColor: .tierGold)
     static let tiersDiamond = UIColor(paletteColor: .tierDiamond)
 
     // MARK: Grey Fade
+
     static let greyFade100 = UIColor(paletteColor: .greyFade100)
     static let greyFade400 = UIColor(paletteColor: .greyFade400)
     static let greyFade600 = UIColor(paletteColor: .greyFade600)
     static let greyFade800 = UIColor(paletteColor: .greyFade800)
 
     // MARK: White Fade
+
     static let whiteFade100 = UIColor(paletteColor: .whiteFade100)
     static let whiteFade400 = UIColor(paletteColor: .whiteFade400)
     static let whiteFade600 = UIColor(paletteColor: .whiteFade600)
     static let whiteFade800 = UIColor(paletteColor: .whiteFade800)
 
     // MARK: Grey
+
     static let grey000 = UIColor(paletteColor: .grey000)
     static let grey050 = UIColor(paletteColor: .grey050)
     static let grey100 = UIColor(paletteColor: .grey100)
@@ -49,6 +40,7 @@ extension UIColor {
     static let grey900 = UIColor(paletteColor: .grey900)
 
     // MARK: Blue
+
     static let blue000 = UIColor(paletteColor: .blue000)
     static let blue100 = UIColor(paletteColor: .blue100)
     static let blue200 = UIColor(paletteColor: .blue200)
@@ -61,6 +53,7 @@ extension UIColor {
     static let blue900 = UIColor(paletteColor: .blue900)
 
     // MARK: Green
+
     static let green000 = UIColor(paletteColor: .green000)
     static let green100 = UIColor(paletteColor: .green100)
     static let green200 = UIColor(paletteColor: .green200)
@@ -73,6 +66,7 @@ extension UIColor {
     static let green900 = UIColor(paletteColor: .green900)
 
     // MARK: Red
+
     static let red000 = UIColor(paletteColor: .red000)
     static let red100 = UIColor(paletteColor: .red100)
     static let red200 = UIColor(paletteColor: .red200)
@@ -85,6 +79,7 @@ extension UIColor {
     static let red900 = UIColor(paletteColor: .red900)
 
     // MARK: Orange
+
     static let orange000 = UIColor(paletteColor: .orange000)
     static let orange100 = UIColor(paletteColor: .orange100)
     static let orange200 = UIColor(paletteColor: .orange200)
@@ -97,6 +92,7 @@ extension UIColor {
     static let orange900 = UIColor(paletteColor: .orange900)
 
     // MARK: Purple
+
     static let purple000 = UIColor(paletteColor: .purple000)
     static let purple100 = UIColor(paletteColor: .purple100)
     static let purple200 = UIColor(paletteColor: .purple200)
@@ -109,6 +105,7 @@ extension UIColor {
     static let purple900 = UIColor(paletteColor: .purple900)
 
     // MARK: Teal
+
     static let teal000 = UIColor(paletteColor: .teal000)
     static let teal100 = UIColor(paletteColor: .teal100)
     static let teal200 = UIColor(paletteColor: .teal200)
@@ -126,11 +123,30 @@ extension UIColor {
 extension UIColor {
 
     // MARK: Primary
+
     public static let primary = blue900
     public static let secondary = blue600
     public static let tertiary = blue400
 
+    public convenience init?(hex: String) {
+        let clean = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        guard clean.count == 6 else {
+            return nil
+        }
+        var rgbValue: UInt64 = 0
+        guard Scanner(string: clean).scanHexInt64(&rgbValue) else {
+            return nil
+        }
+        self.init(
+            red: CGFloat(rgbValue >> 16) / 255,
+            green: CGFloat(rgbValue >> 8 & 0xff) / 255,
+            blue: CGFloat(rgbValue & 0xff) / 255,
+            alpha: 1
+        )
+    }
+
     // MARK: Navigation
+
     public enum NavigationBar {
 
         public enum DarkContent {
@@ -149,11 +165,13 @@ extension UIColor {
     }
 
     // MARK: Today Extension
+
     public enum TodayExtension {
         public static let background = grey900
     }
 
     // MARK: Backgrounds & Borders
+
     public static let background = grey000
     public static let mediumBackground = grey100
     public static let hightlightedBackground = grey050
@@ -176,11 +194,13 @@ extension UIColor {
     public static let darkShimmering = grey200
 
     // MARK: Indications
+
     public static let securePinGrey = greyFade400
     public static let addressPageIndicator = blue100
     public static let disclosureIndicator = grey800
 
     // MARK: Texts
+
     public static let defaultBadge = blue600
     public static let warningBadge = orange600
     public static let affirmativeBadgeText = green500
@@ -203,6 +223,7 @@ extension UIColor {
     public static let positivePrice = green500
 
     // MARK: Buttons
+
     public static let airdropCTAButton = green600
 
     public static let destructiveButton = red600
@@ -219,24 +240,16 @@ extension UIColor {
     public static let iconWarning = orange600
 
     // MARK: Currency
-    public static let aave = _aave
-    public static let algorand = _algo
-    public static let bitcoin = _btc
-    public static let bitcoinCash = _bch
-    public static let ethereum = _eth
-    public static let polkadot = _dot
-    public static let stellar = _xlm
-    public static let tether = _usdt
-    public static let usdd = _pax
-    public static let wdgld = _wDGLD
-    public static let yearnFinance = _yfi
+
     public static let fiat = green500
 
     // MARK: Tiers
+
     public static let silverTier = tiersSilver
     public static let goldTier = tiersGold
     public static let diamondTier = tiersDiamond
 
     // MARK: Feature Themes
+
     public static let exchangeAnnouncementButton = grey800
 }

@@ -140,7 +140,7 @@ public final class StateService: StateServiceAPI {
     }
 
     var currentState: Observable<StateService.State> {
-        states.map { $0.current }
+        states.map(\.current)
     }
 
     public var action: Observable<Action> {
@@ -168,15 +168,17 @@ public final class StateService: StateServiceAPI {
 
     // MARK: - Setup
 
-    public init(supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
-                paymentAccountService: PaymentAccountServiceAPI = resolve(),
-                pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
-                kycTiersService: KYCTiersServiceAPI = resolve(),
-                cache: EventCache = resolve(),
-                loader: LoadingViewPresenting = resolve(),
-                alert: AlertViewPresenterAPI = resolve(),
-                tierUpgradeRouter: TierUpgradeRouterAPI = resolve(),
-                messageRecorder: MessageRecording = resolve()) {
+    public init(
+        supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
+        paymentAccountService: PaymentAccountServiceAPI = resolve(),
+        pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        cache: EventCache = resolve(),
+        loader: LoadingViewPresenting = resolve(),
+        alert: AlertViewPresenterAPI = resolve(),
+        tierUpgradeRouter: TierUpgradeRouterAPI = resolve(),
+        messageRecorder: MessageRecording = resolve()
+    ) {
         self.supportedPairsInteractor = supportedPairsInteractor
         self.paymentAccountService = paymentAccountService
         self.pendingOrderDetailsService = pendingOrderDetailsService
@@ -290,7 +292,7 @@ public final class StateService: StateServiceAPI {
 
         let isTier2Approved = kycTiersService
             .fetchTiers()
-            .map { $0.isTier2Approved }
+            .map(\.isTier2Approved)
 
         Single
             .zip(
@@ -372,7 +374,7 @@ public final class StateService: StateServiceAPI {
                         states: self.states(byAppending: state)
                     )
                 },
-                onError: { [weak alert] error in
+                onError: { [weak alert] _ in
                     alert?.error(in: nil, action: nil)
                 }
             )
@@ -432,7 +434,7 @@ public final class StateService: StateServiceAPI {
         let state: State = .pendingKycApproval(data)
         apply(
             action: .next(to: state),
-            states: self.states(byAppending: state)
+            states: states(byAppending: state)
         )
     }
 
@@ -455,7 +457,7 @@ public final class StateService: StateServiceAPI {
         }
         apply(
             action: .next(to: state),
-            states: self.states(byAppending: state)
+            states: states(byAppending: state)
         )
     }
 }
@@ -673,7 +675,7 @@ extension StateService {
         ensureIsOnMainQueue()
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            let states = self.states(byAppending:.transferCancellation(checkoutData))
+            let states = self.states(byAppending: .transferCancellation(checkoutData))
             self.apply(action: .next(to: states.current), states: states)
         }
     }

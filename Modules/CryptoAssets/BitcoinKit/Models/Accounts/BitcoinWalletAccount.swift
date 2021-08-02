@@ -22,19 +22,19 @@ public struct BitcoinWalletAccount {
 
     public init(index: Int, account: PayloadBitcoinWalletAccountV4) {
         self.index = index
-        self.archived = account.archived
-        self.label = account.label
+        archived = account.archived
+        label = account.label
         let xpubs = account.derivations
             .map { derivation in
                 XPub(address: derivation.xpub, derivationType: derivation.type)
             }
-        self.publicKeys = XPubs(xpubs: xpubs)
+        publicKeys = XPubs(xpubs: xpubs)
     }
 
     public init(index: Int, account: PayloadBitcoinWalletAccountV3) {
         self.index = index
-        self.archived = account.archived
-        self.label = account.label
-        self.publicKeys = XPubs(xpubs: [.init(address: account.xpub, derivationType: .legacy)])
+        archived = account.archived
+        label = account.label
+        publicKeys = XPubs(xpubs: [.init(address: account.xpub, derivationType: .legacy)])
     }
 }

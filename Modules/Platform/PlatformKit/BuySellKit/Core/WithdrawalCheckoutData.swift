@@ -6,10 +6,12 @@ public struct WithdrawalCheckoutData: Equatable {
     public let amount: FiatValue
     public let fee: FiatValue
 
-    public init(currency: FiatCurrency,
-                beneficiary: Beneficiary,
-                amount: FiatValue,
-                fee: FiatValue) {
+    public init(
+        currency: FiatCurrency,
+        beneficiary: Beneficiary,
+        amount: FiatValue,
+        fee: FiatValue
+    ) {
         self.currency = currency
         self.beneficiary = beneficiary
         self.amount = amount

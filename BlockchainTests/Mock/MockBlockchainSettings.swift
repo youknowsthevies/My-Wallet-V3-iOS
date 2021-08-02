@@ -15,9 +15,11 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
     var mockEncryptedPinPassword: String?
     var mockPinKey: String?
 
-    override init(enabledCurrenciesService: EnabledCurrenciesServiceAPI,
-                  keychainItemWrapper: KeychainItemWrapping,
-                  legacyPasswordProvider: LegacyPasswordProviding) {
+    override init(
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI,
+        keychainItemWrapper: KeychainItemWrapping,
+        legacyPasswordProvider: LegacyPasswordProviding
+    ) {
         super.init()
     }
 
@@ -88,12 +90,31 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
         }
     }
 
+    var mockSymbolLocal: Bool = false
+
+    override public var symbolLocal: Bool {
+        get {
+            mockSymbolLocal
+        }
+        set {
+            let oldValue = mockSymbolLocal
+
+            mockSymbolLocal = newValue
+
+            if oldValue != newValue {
+                onSymbolLocalChanged?(newValue)
+            }
+        }
+    }
+
     var clearPinCalled = false
+
     override func clearPin() {
         clearPinCalled = true
     }
 
     var resetCalled = false
+
     override func reset() {
         resetCalled = true
     }

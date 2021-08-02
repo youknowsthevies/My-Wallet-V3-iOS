@@ -17,7 +17,11 @@ final class RouterTests: XCTestCase {
         try super.setUpWithError()
         mockExternalAppOpener = MockExternalAppOpener()
         mockEmailVerificationService = MockEmailVerificationService()
-        router = .init(emailVerificationService: mockEmailVerificationService, openMailApp: mockExternalAppOpener.openMailApp)
+        router = .init(
+            analyticsRecorder: MockAnalyticsRecorder(),
+            emailVerificationService: mockEmailVerificationService,
+            openMailApp: mockExternalAppOpener.openMailApp
+        )
     }
 
     override func tearDownWithError() throws {
@@ -71,7 +75,7 @@ final class RouterTests: XCTestCase {
         let publisher: AnyPublisher<FlowResult, KYCUIKit.RouterError> = router.presentEmailVerificationIfNeeded(from: mockViewController)
         let cancellable = publisher.sink(
             receiveCompletion: { completion in
-                if case let .failure(theError) = completion {
+                if case .failure(let theError) = completion {
                     error = theError
                 }
                 e.fulfill()

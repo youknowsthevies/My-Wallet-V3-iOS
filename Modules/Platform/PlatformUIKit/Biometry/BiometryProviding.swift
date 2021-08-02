@@ -8,5 +8,6 @@ public protocol BiometryProviding: AnyObject {
     var configuredType: Biometry.BiometryType { get }
     var configurationStatus: Biometry.Status { get }
     var supportedBiometricsType: Biometry.BiometryType { get }
+
     func authenticate(reason: Biometry.Reason) -> Single<Void>
 }

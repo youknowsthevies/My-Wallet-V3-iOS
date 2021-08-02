@@ -4,13 +4,20 @@ import AuthenticationKit
 import ComposableArchitecture
 import Localization
 import SwiftUI
+import ToolKit
 import UIComponentsKit
 
 typealias WelcomeViewString = LocalizationConstants.AuthenticationKit.Welcome
 
 public struct WelcomeView: View {
-    let store: Store<AuthenticationState, AuthenticationAction>
-    @ObservedObject var viewStore: ViewStore<WelcomeViewState, AuthenticationAction>
+
+    private let store: Store<WelcomeState, WelcomeAction>
+    @ObservedObject private var viewStore: ViewStore<WelcomeState, WelcomeAction>
+
+    public init(store: Store<WelcomeState, WelcomeAction>) {
+        self.store = store
+        viewStore = ViewStore(store)
+    }
 
     public var body: some View {
         VStack {
@@ -20,28 +27,28 @@ public struct WelcomeView: View {
             WelcomeActionSection(store: store, viewStore: viewStore)
                 .padding(.bottom, 58)
         }
-        .sheet(isPresented: viewStore.binding(
-            get: \.isLoginVisible,
-            send: AuthenticationAction.setLoginVisible(_:))
-        ) {
-            LoginView(store: store)
+        .sheet(isPresented: .constant(viewStore.screenFlow == .emailLoginScreen)) {
+            IfLetStore(
+                store.scope(
+                    state: \.emailLoginState,
+                    action: WelcomeAction.emailLogin
+                ),
+                then: EmailLoginView.init(store:)
+            )
+        }
+        .sheet(isPresented: .constant(viewStore.screenFlow == .guidLoginScreen)) {
+            IfLetStore(
+                store.scope(
+                    state: \.manualPairingState,
+                    action: WelcomeAction.manualPairing
+                ),
+                then: ManualPairingView.init(store:)
+            )
         }
     }
-
-    public init(store: Store<AuthenticationState, AuthenticationAction>) {
-        self.store = store
-        self.viewStore = ViewStore(self.store.scope(state: WelcomeViewState.init))
-    }
 }
 
-struct WelcomeViewState: Equatable {
-    var isLoginVisible: Bool
-    init(state: AuthenticationState) {
-        isLoginVisible = state.isLoginVisible
-    }
-}
-
-struct WelcomeMessageSection: View {
+private struct WelcomeMessageSection: View {
     var body: some View {
         VStack {
             Image.Logo.blockchain
@@ -59,7 +66,7 @@ struct WelcomeMessageSection: View {
     }
 }
 
-struct WelcomeMessageDescription: View {
+private struct WelcomeMessageDescription: View {
     let prefix = Text(WelcomeViewString.Description.prefix)
         .foregroundColor(.textMuted)
     let comma = Text(WelcomeViewString.Description.comma)
@@ -82,31 +89,37 @@ struct WelcomeMessageDescription: View {
     }
 }
 
-struct WelcomeActionSection: View {
-    let store: Store<AuthenticationState, AuthenticationAction>
-    @ObservedObject var viewStore: ViewStore<WelcomeViewState, AuthenticationAction>
+private struct WelcomeActionSection: View {
+
+    let store: Store<WelcomeState, WelcomeAction>
+    @ObservedObject var viewStore: ViewStore<WelcomeState, WelcomeAction>
 
     var body: some View {
         VStack {
-            PrimaryButton(title: WelcomeViewString.Button.createAccount) {
-                viewStore.send(.createAccount)
-            }
-            .padding(.bottom, 10)
+            VStack(spacing: 10) {
+                PrimaryButton(title: WelcomeViewString.Button.createWallet) {
+                    viewStore.send(.presentScreenFlow(.createWalletScreen))
+                }
 
-            SecondaryButton(title: WelcomeViewString.Button.login) {
-                viewStore.send(.setLoginVisible(true))
+                SecondaryButton(title: WelcomeViewString.Button.login) {
+                    viewStore.send(.presentScreenFlow(.emailLoginScreen))
+                }
+
+                if viewStore.manualPairingEnabled {
+                    Divider()
+                    manualPairingButton()
+                }
             }
             .padding(.bottom, 20)
 
             HStack {
                 Button(WelcomeViewString.Button.restoreWallet) {
-                    viewStore.send(.recoverFunds)
+                    viewStore.send(.presentScreenFlow(.recoverWalletScreen))
                 }
                 .font(Font(weight: .semibold, size: 12))
                 .foregroundColor(.buttonLinkText)
                 Spacer()
-                // Replace test version with actual number later
-                Text("Test Version")
+                Text(viewStore.buildVersion)
                     .font(Font(weight: .medium, size: 12))
                     .foregroundColor(.textMuted)
             }
@@ -114,17 +127,41 @@ struct WelcomeActionSection: View {
         .padding(.leading, 24)
         .padding(.trailing, 24)
     }
+
+    // MARK: - Private
+
+    private func manualPairingButton() -> some View {
+        Button("Manual Login") {
+            viewStore.send(.presentScreenFlow(.guidLoginScreen))
+        }
+        .font(Font(weight: .semibold, size: 16))
+        .frame(maxWidth: .infinity, minHeight: LayoutConstants.buttonMinHeight)
+        .padding(.horizontal)
+        .foregroundColor(Color.textSubheading)
+        .background(
+            RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
+                .fill(Color.buttonSecondaryBackground)
+        )
+        .background(
+            RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
+                .stroke(Color.borderPrimary)
+        )
+    }
 }
 
 #if DEBUG
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
         WelcomeView(
-            store:Store(initialState: AuthenticationState(),
-                        reducer: authenticationReducer,
-                        environment: .init(
-                            mainQueue: .main
-                        )
+            store: Store(
+                initialState: .init(),
+                reducer: welcomeReducer,
+                environment: .init(
+                    mainQueue: .main,
+                    deviceVerificationService: NoOpDeviceVerificationService(),
+                    featureFlags: NoOpInternalFeatureFlagService(),
+                    buildVersionProvider: { "Test version" }
+                )
             )
         )
     }

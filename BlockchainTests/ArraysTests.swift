@@ -36,7 +36,7 @@ class ArraysTests: XCTestCase {
 
     func testFailedCast_invalidJson() {
         let array: [Any] = [
-        "{\"prop1\": \"something\", \"prop2\": 123"
+            "{\"prop1\": \"something\", \"prop2\": 123"
         ]
         let value = array.castJsonObjects(type: TestCodableClass.self)
         XCTAssertEqual(0, value.count)

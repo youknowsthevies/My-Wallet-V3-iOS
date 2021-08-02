@@ -11,11 +11,11 @@ final class PortfolioCellInteractor {
 
     init(portfolio: Portfolio) {
         let balanceChange = portfolio.balanceChange
-        self.isPositive = balanceChange.changePercentage >= .zero
-        self.balanceFiatValue = portfolio.balanceFiatValue
-        self.changeFiatValue = portfolio.changeFiatValue
+        isPositive = balanceChange.changePercentage >= .zero
+        balanceFiatValue = portfolio.balanceFiatValue
+        changeFiatValue = portfolio.changeFiatValue
         let percentage = balanceChange.changePercentage * 100
         let percentageString = percentage.string(with: 2)
-        self.delta = "(\(percentageString)%)"
+        delta = "(\(percentageString)%)"
     }
 }

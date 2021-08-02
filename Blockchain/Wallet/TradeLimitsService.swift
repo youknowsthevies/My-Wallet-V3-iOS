@@ -18,11 +18,14 @@ final class TradeLimitsService: TradeLimitsAPI {
 
     init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)) {
         self.networkAdapter = networkAdapter
-        self.cachedLimitsTimer = Timer.scheduledTimer(withTimeInterval: clearCachedLimitsInterval, repeats: true) { [weak self] _ in
+        cachedLimitsTimer = Timer.scheduledTimer(
+            withTimeInterval: clearCachedLimitsInterval,
+            repeats: true
+        ) { [weak self] _ in
             self?.clearCachedLimits()
         }
-        self.cachedLimitsTimer?.tolerance = clearCachedLimitsInterval/10
-        self.cachedLimitsTimer?.fire()
+        cachedLimitsTimer?.tolerance = clearCachedLimitsInterval / 10
+        cachedLimitsTimer?.fire()
     }
 
     deinit {
@@ -49,11 +52,14 @@ final class TradeLimitsService: TradeLimitsAPI {
         _ = disposables.insert(disposable)
     }
 
-    func getTradeLimits(withFiatCurrency currency: String, withCompletion: @escaping ((Result<TradeLimits, Error>) -> Void)) {
+    func getTradeLimits(
+        withFiatCurrency currency: String,
+        withCompletion: @escaping ((Result<TradeLimits, Error>) -> Void)
+    ) {
         let disposable = getTradeLimits(withFiatCurrency: currency, ignoringCache: false)
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
-            .subscribe(onSuccess: { (payload) in
+            .subscribe(onSuccess: { payload in
                 withCompletion(.success(payload))
             }, onError: { error in
                 withCompletion(.failure(error))
@@ -64,8 +70,9 @@ final class TradeLimitsService: TradeLimitsAPI {
     func getTradeLimits(withFiatCurrency currency: String, ignoringCache: Bool) -> Single<TradeLimits> {
         Single.deferred { [unowned self] in
             guard let cachedLimits = self.cachedLimits.value,
-                cachedLimits.currency == currency,
-                ignoringCache == false else {
+                  cachedLimits.currency == currency,
+                  ignoringCache == false
+            else {
                 return self.getTradeLimitsNetwork(withFiatCurrency: currency)
             }
             return Single.just(cachedLimits)

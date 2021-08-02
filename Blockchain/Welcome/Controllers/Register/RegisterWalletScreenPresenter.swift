@@ -39,11 +39,15 @@ final class RegisterWalletScreenPresenter {
         return InteractableTextViewModel(
             inputs: [
                 .text(string: LocalizedString.TermsOfUse.prefix),
-                .url(string: LocalizedString.TermsOfUse.termsOfServiceLink,
-                     url: Constants.Url.termsOfService),
+                .url(
+                    string: LocalizedString.TermsOfUse.termsOfServiceLink,
+                    url: Constants.Url.termsOfService
+                ),
                 .text(string: LocalizedString.TermsOfUse.linkDelimiter),
-                .url(string: LocalizedString.TermsOfUse.privacyPolicyLink,
-                     url: Constants.Url.privacyPolicy)
+                .url(
+                    string: LocalizedString.TermsOfUse.privacyPolicyLink,
+                    url: Constants.Url.privacyPolicy
+                )
             ],
             textStyle: .init(color: .descriptionText, font: font),
             linkStyle: .init(color: .linkableText, font: font)
@@ -72,13 +76,15 @@ final class RegisterWalletScreenPresenter {
 
     // MARK: - Setup
 
-    init(alertPresenter: AlertViewPresenter = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         interactor: RegisterWalletScreenInteracting,
-         type: RegistrationType = .default,
-         navBarStyle: Screen.Style.Bar = .lightContent(),
-         leadingButton: Screen.Style.LeadingButton = .back,
-         trailingButton: Screen.Style.TrailingButton = .none) {
+    init(
+        alertPresenter: AlertViewPresenter = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        interactor: RegisterWalletScreenInteracting,
+        type: RegistrationType = .default,
+        navBarStyle: Screen.Style.Bar = .lightContent(),
+        leadingButton: Screen.Style.LeadingButton = .back,
+        trailingButton: Screen.Style.TrailingButton = .none
+    ) {
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter
         self.interactor = interactor
@@ -136,13 +142,13 @@ final class RegisterWalletScreenPresenter {
 
         // Bind state to button state to decide if it's enabled
         stateObservable
-            .map { $0.isValid }
+            .map(\.isValid)
             .bindAndCatch(to: buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         // Extract the latest valid values to the interaction layer
         latestStatesObservable
-            .compactMap { (emailState, passwordState, _) -> WalletRegistrationContent? in
+            .compactMap { emailState, passwordState, _ -> WalletRegistrationContent? in
                 guard let email = emailState.value, let password = passwordState.value else { return nil }
                 return .init(email: email, password: password)
             }
@@ -151,7 +157,7 @@ final class RegisterWalletScreenPresenter {
 
         // Bind taps to the web view
         termsOfUseTextViewModel.tap
-            .map { $0.url }
+            .map(\.url)
             .bindAndCatch(to: webViewLaunchRelay)
             .disposed(by: disposeBag)
 

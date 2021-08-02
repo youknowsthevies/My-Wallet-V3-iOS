@@ -7,7 +7,7 @@ import Foundation
 extension LocalizationConstants {
     /// Redefine strings from `Blockchain/LocalizationConstants.h` so they can be captured by any tool used for requesting translations.
     /// This should not be used by non-objc code.
-    public enum ObjCStrings { }
+    public enum ObjCStrings {}
 }
 
 extension LocalizationConstants.ObjCStrings {

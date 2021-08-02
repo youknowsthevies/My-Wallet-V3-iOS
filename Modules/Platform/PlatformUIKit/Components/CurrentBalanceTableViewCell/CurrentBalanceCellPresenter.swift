@@ -31,7 +31,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     }
 
     public var pending: Driver<String> {
-       .just(LocalizedString.pending)
+        .just(LocalizedString.pending)
     }
 
     public var pendingLabelVisibility: Driver<Visibility> {
@@ -56,6 +56,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     public var accountType: SingleAccountType {
         interactor.accountType
     }
+
     public let assetBalanceViewPresenter: AssetBalanceViewPresenter
 
     // MARK: - Private Properties
@@ -69,7 +70,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         interactor
             .assetBalanceViewInteractor
             .state
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .map { $0.pendingValue.isZero ? .hidden : .visible }
             .catchErrorJustReturn(.hidden)
             .bindAndCatch(to: pendingLabelVisibilityRelay)
@@ -87,20 +88,22 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
 
     private let disposeBag = DisposeBag()
 
-    public init(interactor: CurrentBalanceCellInteracting,
-                descriptionValue: @escaping DescriptionValue,
-                currency: CurrencyType,
-                separatorVisibility: Visibility = .hidden,
-                titleAccessibilitySuffix: String,
-                descriptionAccessibilitySuffix: String,
-                pendingAccessibilitySuffix: String,
-                descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors) {
+    public init(
+        interactor: CurrentBalanceCellInteracting,
+        descriptionValue: @escaping DescriptionValue,
+        currency: CurrencyType,
+        separatorVisibility: Visibility = .hidden,
+        titleAccessibilitySuffix: String,
+        descriptionAccessibilitySuffix: String,
+        pendingAccessibilitySuffix: String,
+        descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors
+    ) {
         self.titleAccessibilitySuffix = titleAccessibilitySuffix
         self.descriptionAccessibilitySuffix = descriptionAccessibilitySuffix
         self.pendingAccessibilitySuffix = pendingAccessibilitySuffix
         separatorVisibilityRelay.accept(separatorVisibility)
         self.interactor = interactor
-        self.assetBalanceViewPresenter = AssetBalanceViewPresenter(
+        assetBalanceViewPresenter = AssetBalanceViewPresenter(
             alignment: .trailing,
             interactor: interactor.assetBalanceViewInteractor,
             descriptors: descriptors

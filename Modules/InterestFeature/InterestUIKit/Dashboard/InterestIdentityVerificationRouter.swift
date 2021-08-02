@@ -10,19 +10,21 @@ public final class InterestDashboardAnnouncementRouter: InterestDashboardAnnounc
     private let router: KYCRouterAPI
     private let navigationRouterAPI: NavigationRouterAPI
 
-    public init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
-                routerAPI: KYCRouterAPI = resolve(),
-                navigationRouter: NavigationRouterAPI) {
+    public init(
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+        routerAPI: KYCRouterAPI = resolve(),
+        navigationRouter: NavigationRouterAPI
+    ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
-        self.router = routerAPI
-        self.navigationRouterAPI = navigationRouter
+        router = routerAPI
+        navigationRouterAPI = navigationRouter
     }
 
     public func dismiss(startKYC: Bool) {
         topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
             guard let self = self else { return }
             guard startKYC else { return }
-            self.router.start()
+            self.router.start(parentFlow: .announcement)
         })
     }
 

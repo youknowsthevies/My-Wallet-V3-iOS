@@ -64,15 +64,15 @@ public struct SparklineCalculator {
     }
 }
 
-fileprivate extension Array where Element == Decimal {
+extension Array where Element == Decimal {
 
     /// The largest value in the dataset.
-    var max: CGFloat {
+    fileprivate var max: CGFloat {
         CGFloat(self.max()?.doubleValue ?? 0)
     }
 
     /// The smallest value in the dataset.
-    var min: CGFloat {
+    fileprivate var min: CGFloat {
         CGFloat(self.min()?.doubleValue ?? 0)
     }
 }

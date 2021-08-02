@@ -78,12 +78,12 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
                 .disposed(by: disposeBag)
 
             presenter.pendingLabelVisibility
-                .map { $0.isHidden }
+                .map(\.isHidden)
                 .drive(labelStackView.bottomLabel.rx.isHidden)
                 .disposed(by: disposeBag)
 
             presenter.separatorVisibility
-                .map { $0.defaultAlpha }
+                .map(\.defaultAlpha)
                 .drive(separatorView.rx.alpha)
                 .disposed(by: disposeBag)
 
@@ -110,7 +110,7 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
     }
@@ -120,7 +120,7 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
         setup()
     }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }
@@ -159,12 +159,14 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
         assetBalanceView.layout(to: .centerY, of: labelStackView)
 
         multiBadgeView.layoutToSuperview(.leading, .trailing, .bottom)
-        labelStackViewBottomMultiBadgeView = labelStackView.layout(edge: .bottom,
-                                                                   to: .top,
-                                                                   of: multiBadgeView,
-                                                                   offset: 0,
-                                                                   priority: .penultimateHigh,
-                                                                   activate: false)
+        labelStackViewBottomMultiBadgeView = labelStackView.layout(
+            edge: .bottom,
+            to: .top,
+            of: multiBadgeView,
+            offset: 0,
+            priority: .penultimateHigh,
+            activate: false
+        )
         separatorView.backgroundColor = .lightBorder
         layoutIfNeeded()
         assetBalanceView.shimmer(

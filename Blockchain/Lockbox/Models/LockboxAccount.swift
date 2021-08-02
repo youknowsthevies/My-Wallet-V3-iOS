@@ -11,7 +11,7 @@ protocol LockboxAccount: Codable {
 /// Model for an account in a LockboxHDAsset
 struct LockboxHDAccount: LockboxAccount {
     enum CodingKeys: String, CodingKey {
-        case label = "label"
+        case label
         case isArchived = "archived"
         case xpubAddress = "xpub"
     }
@@ -24,7 +24,7 @@ struct LockboxHDAccount: LockboxAccount {
 /// Model for an account in a LockboxSimpleAsset
 struct LockboxSimpleAccount: LockboxAccount {
     enum CodingKeys: String, CodingKey {
-        case label = "label"
+        case label
         case isArchived = "archived"
         case address = "addr"
     }

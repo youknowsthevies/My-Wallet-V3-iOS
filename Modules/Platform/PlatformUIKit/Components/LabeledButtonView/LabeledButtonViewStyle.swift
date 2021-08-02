@@ -6,11 +6,14 @@ public struct LabeledButtonViewStyle {
     let textColor: Color
     let cornerRadius: CGFloat
     let border: ButtonContent.Border
-    init(backgroundColor: Color,
-         font: UIFont,
-         textColor: Color,
-         cornerRadius: CGFloat = 8,
-         border: ButtonContent.Border = .no) {
+
+    init(
+        backgroundColor: Color,
+        font: UIFont,
+        textColor: Color,
+        cornerRadius: CGFloat = 8,
+        border: ButtonContent.Border = .no
+    ) {
         self.backgroundColor = backgroundColor
         self.font = font
         self.textColor = textColor
@@ -27,6 +30,7 @@ extension LabeledButtonViewStyle {
             textColor: .secondary
         )
     }
+
     public static var currencyOutOfBounds: LabeledButtonViewStyle {
         .init(
             backgroundColor: .lightRedBackground,

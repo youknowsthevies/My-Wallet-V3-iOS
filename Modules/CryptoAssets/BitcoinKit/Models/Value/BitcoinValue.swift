@@ -10,16 +10,15 @@ public enum BitcoinValueError: Error {
 
 public struct BitcoinValue: CryptoMoney {
 
-    public let currency: CurrencyType = .crypto(.bitcoin)
+    public let currency: CurrencyType = .crypto(.coin(.bitcoin))
 
-    public let currencyType: CryptoCurrency = .bitcoin
+    public let currencyType: CryptoCurrency = .coin(.bitcoin)
 
     public var amount: BigInt {
         crypto.amount
     }
 
-    // swiftlint:disable:next force_try
-    public static let zero = try! BitcoinValue(crypto: CryptoValue.bitcoinZero)
+    public static let zero = BitcoinValue(satoshis: 0)
 
     public var value: CryptoValue {
         crypto.value
@@ -28,14 +27,14 @@ public struct BitcoinValue: CryptoMoney {
     private let crypto: CryptoMoney
 
     public init(crypto: CryptoMoney) throws {
-        guard crypto.currencyType == .bitcoin else {
+        guard crypto.currencyType == .coin(.bitcoin) else {
             throw BitcoinValueError.invalidCryptoValue
         }
         self.crypto = crypto
     }
 
-    public init(satoshis: BigInt) throws {
-        self.crypto = CryptoValue(amount: satoshis, currency: .bitcoin)
+    public init(satoshis: BigInt) {
+        crypto = CryptoValue(amount: satoshis, currency: .coin(.bitcoin))
     }
 }
 

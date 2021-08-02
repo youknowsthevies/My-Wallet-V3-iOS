@@ -12,9 +12,11 @@ final class OrderQuoteRepositoryMock: TransactionKit.OrderQuoteRepositoryAPI {
         .just(OrderQuotePayload.btc_eth_quote_response)
     }
 
-    func fetchQuote(direction: OrderDirection,
-                    sourceCurrencyType: CurrencyType,
-                    destinationCurrencyType: CurrencyType) -> Single<OrderQuotePayload> {
+    func fetchQuote(
+        direction: OrderDirection,
+        sourceCurrencyType: CurrencyType,
+        destinationCurrencyType: CurrencyType
+    ) -> Single<OrderQuotePayload> {
         latestQuote
     }
 
@@ -53,8 +55,8 @@ extension OrderQuotePayload {
         identifier: "",
         pair: OrderPair.btc_eth,
         quote: .btc_eth_quote,
-        networkFee: .zero(currency: .crypto(.bitcoin)),
-        staticFee: .zero(currency: .crypto(.bitcoin)),
+        networkFee: .zero(currency: .crypto(.coin(.bitcoin))),
+        staticFee: .zero(currency: .crypto(.coin(.bitcoin))),
         sampleDepositAddress: "",
         expiresAt: Date(),
         createdAt: Date(),
@@ -64,17 +66,18 @@ extension OrderQuotePayload {
 
 extension OrderPair {
     static let btc_eth = OrderPair(
-        sourceCurrencyType: .crypto(.bitcoin),
-        destinationCurrencyType: .crypto(.ethereum)
+        sourceCurrencyType: .crypto(.coin(.bitcoin)),
+        destinationCurrencyType: .crypto(.coin(.ethereum))
     )
 }
 
 extension OrderQuote {
     static let btc_eth_quote: OrderQuote = .init(
-        pair: .init(sourceCurrencyType: .crypto(.bitcoin), destinationCurrencyType: .crypto(.ethereum)),
+        pair: .init(sourceCurrencyType: .crypto(.coin(.bitcoin)), destinationCurrencyType: .crypto(.coin(.bitcoin))),
         priceTiers: [
             .init(volume: "286", price: "34936084430000000000", marginPrice: "34936084430000000000"),
             .init(volume: "2862782", price: "34931056570000000000", marginPrice: "34931056570000000000")
-        ])
+        ]
+    )
     static let btc_eth_quote_empty: OrderQuote = .init(pair: .btc_eth, priceTiers: [])
 }

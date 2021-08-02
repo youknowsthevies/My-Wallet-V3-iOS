@@ -43,7 +43,7 @@ final class WalletIntroductionPresenter: NSObject {
     private var introductionSequence = WalletIntroductionSequence()
 
     private let interactor: WalletIntroductionInteractor
-    private let recorder: AnalyticsEventRecording
+    private let recorder: AnalyticsEventRecorderAPI
     private let screen: WalletIntroductionLocation.Screen
     private let onboardingSettings: OnboardingSettings
     private let tabControllerProvider: TabControllerManagerProvider
@@ -51,14 +51,16 @@ final class WalletIntroductionPresenter: NSObject {
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
     private let disposeBag = DisposeBag()
 
-    init(onboardingSettings: OnboardingSettings = resolve(),
-         screen: WalletIntroductionLocation.Screen,
-         recorder: AnalyticsEventRecording = resolve(),
-         tabControllerProvider: TabControllerManagerProvider = resolve(),
-         drawerRouter: DrawerRouting = resolve()) {
+    init(
+        onboardingSettings: OnboardingSettings = resolve(),
+        screen: WalletIntroductionLocation.Screen,
+        recorder: AnalyticsEventRecorderAPI = resolve(),
+        tabControllerProvider: TabControllerManagerProvider = resolve(),
+        drawerRouter: DrawerRouting = resolve()
+    ) {
         self.onboardingSettings = onboardingSettings
         self.screen = screen
-        self.interactor = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: screen)
+        interactor = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: screen)
         self.recorder = recorder
         self.tabControllerProvider = tabControllerProvider
         self.drawerRouter = drawerRouter

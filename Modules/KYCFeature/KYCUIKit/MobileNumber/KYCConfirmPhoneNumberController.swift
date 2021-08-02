@@ -44,9 +44,9 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCConfirmPhoneNumberController {
+    override class func make(with coordinator: KYCRouter) -> KYCConfirmPhoneNumberController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .confirmPhone
         return controller
     }
@@ -73,16 +73,17 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
         validationTextFieldConfirmationCode.becomeFocused()
     }
 
-    // MARK: - KYCCoordinatorDelegate
+    // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
-        guard case let .phone(user) = model else { return }
+        guard case .phone(let user) = model else { return }
 
         guard let mobile = user.mobile, phoneNumber.count == 0 else { return }
         phoneNumber = mobile.phone
     }
 
     // MARK: Actions
+
     @IBAction func onResendCodeTapped(_ sender: Any) {
         presenter.startVerification(number: phoneNumber)
     }
@@ -103,7 +104,7 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
 
 extension KYCConfirmPhoneNumberController: KYCConfirmPhoneNumberView {
     func confirmCodeSuccess() {
-        coordinator.handle(event: .nextPageFromPageType(pageType, nil))
+        router.handle(event: .nextPageFromPageType(pageType, nil))
     }
 
     func startVerificationSuccess() {

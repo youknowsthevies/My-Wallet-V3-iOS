@@ -24,14 +24,14 @@ public final class AssetBalanceViewPresenter {
     // MARK: - Injected
 
     private lazy var setup: Void = {
-        /// Map interaction state into presentation state
-        ///  and bind it to `stateRelay`.
+        // Map interaction state into presentation state
+        //  and bind it to `stateRelay`.
         Observable
             .combineLatest(
                 interactor.state.catchErrorJustReturn(.loading),
                 alignmentRelay.asObservable()
             )
-            .map { [descriptors] (state, alignment) in
+            .map { [descriptors] state, alignment in
                 .init(
                     with: state,
                     alignment: alignment,
@@ -53,11 +53,13 @@ public final class AssetBalanceViewPresenter {
 
     // MARK: - Setup
 
-    public init(alignment: UIStackView.Alignment = .fill,
-                interactor: AssetBalanceViewInteracting,
-                descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors) {
+    public init(
+        alignment: UIStackView.Alignment = .fill,
+        interactor: AssetBalanceViewInteracting,
+        descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors
+    ) {
         self.interactor = interactor
         self.descriptors = descriptors
-        self.alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
+        alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
     }
 }

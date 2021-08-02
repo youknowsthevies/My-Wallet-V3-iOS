@@ -24,7 +24,7 @@ public final class SelectionButtonTableViewCell: UITableViewCell {
 
     // MARK: - Setup
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         contentView.addSubview(selectionButtonView)
@@ -36,7 +36,7 @@ public final class SelectionButtonTableViewCell: UITableViewCell {
     @available(*, unavailable)
     public required init?(coder: NSCoder) { nil }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         viewModel = nil
     }

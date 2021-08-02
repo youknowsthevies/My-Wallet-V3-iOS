@@ -15,13 +15,13 @@ final class BitcoinChainExternalAssetAddressFactory: CryptoReceiveAddressFactory
         onTxCompleted: @escaping TxCompleted
     ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
         switch asset {
-        case .bitcoin:
+        case .coin(.bitcoin):
             let address = address.removing(prefix: "\(BitcoinURLPayload.scheme):")
             guard WalletCore.CoinType.bitcoin.validate(address: address) else {
                 return .failure(.invalidAddress)
             }
             return .success(BitcoinChainReceiveAddress<BitcoinToken>(address: address, label: label, onTxCompleted: onTxCompleted))
-        case .bitcoinCash:
+        case .coin(.bitcoinCash):
             let address = address.removing(prefix: "\(BitcoinCashURLPayload.scheme):")
             guard WalletCore.CoinType.bitcoinCash.validate(address: address) else {
                 return .failure(.invalidAddress)

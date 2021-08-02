@@ -12,28 +12,77 @@ final class CustodialCryptoAsset: CryptoAsset {
 
     let asset: CryptoCurrency
     let kycTiersService: KYCTiersServiceAPI
+    private let exchangeAccountProvider: ExchangeAccountsProviderAPI
+    private let addressFactory: PlainCryptoReceiveAddressFactory
 
-    init(asset: CryptoCurrency,
-         kycTiersService: KYCTiersServiceAPI = resolve()) {
+    init(
+        asset: CryptoCurrency,
+        exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        addressFactory: PlainCryptoReceiveAddressFactory = .init()
+    ) {
         self.asset = asset
         self.kycTiersService = kycTiersService
+        self.exchangeAccountProvider = exchangeAccountProvider
+        self.addressFactory = addressFactory
     }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
         switch filter {
-        case .all, .custodial:
-            return .just(CryptoAccountCustodialGroup(
-                asset: asset,
-                accounts: [CryptoTradingAccount(asset: asset)]
-            ))
+        case .all:
+            return allAccountsGroup
+        case .custodial:
+            return custodialGroup
         case .interest:
-            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+            return interestGroup
         case .nonCustodial:
-            return .just(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
+            return nonCustodialGroup
+        case .exchange:
+            return exchangeGroup
         }
     }
 
+    private var allAccountsGroup: Single<AccountGroup> {
+        Single
+            .zip([
+                custodialGroup,
+                interestGroup,
+                exchangeGroup,
+                nonCustodialGroup
+            ])
+            .flatMapAllAccountGroup()
+    }
+
+    private var exchangeGroup: Single<AccountGroup> {
+        exchangeAccountProvider
+            .account(for: asset)
+            .map { [asset] account in
+                CryptoAccountCustodialGroup(asset: asset, account: account)
+            }
+            .catchErrorJustReturn(CryptoAccountCustodialGroup(asset: asset))
+    }
+
+    private var custodialGroup: Single<AccountGroup> {
+        .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoTradingAccount(asset: asset)))
+    }
+
+    private var nonCustodialGroup: Single<AccountGroup> {
+        .just(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
+    }
+
+    private var interestGroup: Single<AccountGroup> {
+        .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset)))
+    }
+
     func parse(address: String) -> Single<ReceiveAddress?> {
-        .just(nil)
+        let result = try? addressFactory
+            .makeExternalAssetAddress(
+                asset: asset,
+                address: address,
+                label: address,
+                onTxCompleted: { _ in Completable.empty() }
+            )
+            .get()
+        return .just(result)
     }
 }

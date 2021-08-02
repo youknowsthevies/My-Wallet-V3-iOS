@@ -5,7 +5,7 @@ import PlatformKit
 
 public struct BitcoinTransactionFee: TransactionFee, Decodable {
 
-    public static var cryptoType: HasPathComponent = CryptoCurrency.bitcoin
+    public static var cryptoType: HasPathComponent = CryptoCurrency.coin(.bitcoin)
     public static let `default` = BitcoinTransactionFee(
         limits: BitcoinTransactionFee.defaultLimits,
         regular: 5,
@@ -27,14 +27,14 @@ public struct BitcoinTransactionFee: TransactionFee, Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let regularFee = try values.decode(Int.self, forKey: .regular)
         let priorityFee = try values.decode(Int.self, forKey: .priority)
-        regular = CryptoValue(amount: BigInt(regularFee), currency: .bitcoin)
-        priority = CryptoValue(amount: BigInt(priorityFee), currency: .bitcoin)
+        regular = CryptoValue(amount: BigInt(regularFee), currency: .coin(.bitcoin))
+        priority = CryptoValue(amount: BigInt(priorityFee), currency: .coin(.bitcoin))
         limits = try values.decode(TransactionFeeLimits.self, forKey: .limits)
     }
 
     init(limits: TransactionFeeLimits, regular: Int, priority: Int) {
         self.limits = limits
-        self.regular = CryptoValue(amount: BigInt(regular), currency: .bitcoin)
-        self.priority = CryptoValue(amount: BigInt(priority), currency: .bitcoin)
+        self.regular = CryptoValue(amount: BigInt(regular), currency: .coin(.bitcoin))
+        self.priority = CryptoValue(amount: BigInt(priority), currency: .coin(.bitcoin))
     }
 }

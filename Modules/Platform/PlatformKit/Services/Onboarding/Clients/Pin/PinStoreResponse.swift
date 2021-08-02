@@ -13,12 +13,12 @@ public struct PinStoreResponse: Decodable & Error {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case code = "code"
-        case error = "error"
-        case remaining = "remaining"
+        case code
+        case error
+        case remaining
         case pinDecryptionValue = "success"
-        case key = "key"
-        case value = "value"
+        case key
+        case value
     }
 
     /// This is a status code from the server

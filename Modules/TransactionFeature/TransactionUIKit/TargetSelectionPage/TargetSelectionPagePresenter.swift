@@ -19,9 +19,11 @@ final class TargetSelectionPagePresenter: Presenter<TargetSelectionPageViewContr
 
     // MARK: - Init
 
-    init(viewController: TargetSelectionPageViewControllable,
-         action: AssetAction,
-         selectionPageReducer: TargetSelectionPageReducerAPI) {
+    init(
+        viewController: TargetSelectionPageViewControllable,
+        action: AssetAction,
+        selectionPageReducer: TargetSelectionPageReducerAPI
+    ) {
         self.action = action
         self.selectionPageReducer = selectionPageReducer
         super.init(viewController: viewController)

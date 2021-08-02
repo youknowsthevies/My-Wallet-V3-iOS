@@ -30,15 +30,25 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         .just(.zero(currency: asset))
     }
 
-    // TODO: Use ERC20AssetModel.products field to dictate if swap is enabled for this currency.
-    private let legacySwapEnabledCurrencies: [String] = LegacyERC20Code.allCases.map(\.rawValue)
+    private lazy var isLegacyAsset: Bool = LegacyERC20Code.allCases.map(\.rawValue).contains(erc20Token.code)
 
     var actions: Single<AvailableActions> {
-        isFunded
-            .map { [erc20Token, legacySwapEnabledCurrencies] isFunded -> AvailableActions in
+        Single
+            .zip(isFunded, custodialSupport)
+            .map { [erc20Token, isLegacyAsset] isFunded, custodialSupport -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .receive, .send]
-                if legacySwapEnabledCurrencies.contains(erc20Token.code), isFunded {
-                    base.insert(.swap)
+                if isLegacyAsset {
+                    base.insert(.buy)
+                    if isFunded {
+                        base.insert(.swap)
+                    }
+                } else if let support = custodialSupport.data[erc20Token.code] {
+                    if support.canBuy {
+                        base.insert(.buy)
+                    }
+                    if support.canSwap, isFunded {
+                        base.insert(.swap)
+                    }
                 }
                 return base
             }
@@ -48,45 +58,100 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         .just(ERC20ReceiveAddress(asset: asset, address: publicKey, label: label, onTxCompleted: onTxCompleted))
     }
 
+    var activity: Single<[ActivityItemEvent]> {
+        Single.zip(nonCustodialActivity, swapActivity)
+            .map { nonCustodialActivity, swapActivity in
+                Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
+            }
+    }
+
+    private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
+        transactionsService
+            .transactions(erc20Asset: erc20Token, address: EthereumAddress(address: publicKey)!)
+            .map { response in
+                response
+                    .map(\.activityItemEvent)
+            }
+            .catchErrorJustReturn([])
+    }
+
+    private var swapActivity: Single<[SwapActivityItemEvent]> {
+        swapTransactionsService
+            .fetchActivity(cryptoCurrency: asset, directions: custodialDirections)
+            .catchErrorJustReturn([])
+    }
+
     private let publicKey: String
     private let erc20Token: ERC20AssetModel
     private let balanceService: ERC20BalanceServiceAPI
     private let featureFetcher: FeatureFetching
     private let fiatPriceService: FiatPriceServiceAPI
+    private let transactionsService: ERC20HistoricalTransactionServiceAPI
+    private let swapTransactionsService: SwapActivityServiceAPI
 
     init(
         publicKey: String,
         erc20Token: ERC20AssetModel,
-        balanceService: ERC20BalanceServiceAPI = resolve(),
         featureFetcher: FeatureFetching = resolve(),
-        fiatPriceService: FiatPriceServiceAPI = resolve()
+        balanceService: ERC20BalanceServiceAPI = resolve(),
+        transactionsService: ERC20HistoricalTransactionServiceAPI = resolve(),
+        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        swapTransactionsService: SwapActivityServiceAPI = resolve()
     ) {
         self.publicKey = publicKey
         self.erc20Token = erc20Token
-        self.asset = erc20Token.cryptoCurrency
-        self.label = erc20Token.cryptoCurrency.defaultWalletName
+        asset = erc20Token.cryptoCurrency
+        label = erc20Token.cryptoCurrency.defaultWalletName
         self.balanceService = balanceService
         self.featureFetcher = featureFetcher
+        self.transactionsService = transactionsService
+        self.swapTransactionsService = swapTransactionsService
         self.fiatPriceService = fiatPriceService
+    }
+
+    private var custodialSupport: Single<CryptoCustodialSupport> {
+        featureFetcher
+            .fetch(for: .custodialOnlyTokens)
+            .map { (data: [String: [String]]) in
+                CryptoCustodialSupport(data: data)
+            }
+            .catchErrorJustReturn(.empty)
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
         switch action {
         case .receive,
-             .viewActivity:
-            return .just(true)
-        case .send:
+             .viewActivity,
+             .send:
             return .just(true)
         case .deposit,
-             .buy,
              .sell,
              .withdraw:
             return .just(false)
-        case .swap:
-            guard legacySwapEnabledCurrencies.contains(erc20Token.code) else {
-                return .just(false)
+        case .buy:
+            switch isLegacyAsset {
+            case true:
+                return .just(true)
+            case false:
+                return custodialSupport
+                    .map { [asset] support in
+                        support.data[asset.code]?.canBuy ?? false
+                    }
             }
-            return isFunded
+        case .swap:
+            switch isLegacyAsset {
+            case true:
+                return isFunded
+            case false:
+                let canSwap = custodialSupport
+                    .map { [asset] support in
+                        support.data[asset.code]?.canSwap ?? false
+                    }
+                return Single.zip(canSwap, isFunded)
+                    .map { canSwap, isFunded in
+                        canSwap && isFunded
+                    }
+            }
         }
     }
 
@@ -96,7 +161,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }
@@ -107,7 +172,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }

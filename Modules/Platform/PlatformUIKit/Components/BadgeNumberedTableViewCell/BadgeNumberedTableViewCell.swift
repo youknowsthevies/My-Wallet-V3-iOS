@@ -12,7 +12,7 @@ public final class BadgeNumberedTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
     }
@@ -31,7 +31,7 @@ public final class BadgeNumberedTableViewCell: UITableViewCell {
         itemView.layout(edge: .bottom, to: .bottom, of: contentView, offset: -24.0)
     }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         viewModel = nil
     }

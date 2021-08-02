@@ -8,8 +8,8 @@ class PaletteColorTests: XCTestCase {
 
     func testAllColorsExistWithExpectedName() {
         PaletteColor.allCases.forEach { paletteColor in
-            XCTAssertNoThrow(UIColor.init(paletteColor: paletteColor))
-            XCTAssertNoThrow(Color.init(paletteColor: paletteColor))
+            XCTAssertNoThrow(UIColor(paletteColor: paletteColor))
+            XCTAssertNoThrow(Color(paletteColor: paletteColor))
         }
     }
 }

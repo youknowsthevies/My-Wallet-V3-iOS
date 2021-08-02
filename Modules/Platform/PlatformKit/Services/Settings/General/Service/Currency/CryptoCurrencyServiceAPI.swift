@@ -32,7 +32,7 @@ public class DefaultCryptoCurrencyService: CryptoCurrencyServiceAPI {
     }
 
     public var cryptoCurrency: Single<CryptoCurrency> {
-        guard case let .crypto(crypto) = value else {
+        guard case .crypto(let crypto) = value else {
             return .error(ServiceError.unexpectedCurrencyType)
         }
         return .just(crypto)
@@ -41,6 +41,6 @@ public class DefaultCryptoCurrencyService: CryptoCurrencyServiceAPI {
     private let value: CurrencyType
 
     public init(currencyType: CurrencyType) {
-        self.value = currencyType
+        value = currencyType
     }
 }

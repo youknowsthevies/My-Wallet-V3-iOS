@@ -3,9 +3,10 @@
 import PlatformUIKit
 
 extension Accessibility.Identifier {
-    struct WelcomeScreen {
+    enum WelcomeScreen {
         static let prefix = "WelcomeScreen."
-        struct Button {
+
+        enum Button {
             static let prefix = "\(WelcomeScreen.prefix)Button."
             static let createWallet = "\(prefix)createWallet"
             static let login = "\(prefix)login"

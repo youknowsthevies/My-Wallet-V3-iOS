@@ -2,8 +2,8 @@
 
 import PlatformKit
 
-public extension BlockchainAccount {
-    var logoResource: ImageResource {
+extension BlockchainAccount {
+    public var logoResource: ImageResource {
         switch self {
         case is LinkedBankAccount:
             return .local(name: "icon-bank", bundle: .platformUIKit)

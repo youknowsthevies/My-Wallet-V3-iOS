@@ -15,7 +15,7 @@ struct UnspentOutputs: Equatable {
 
 extension UnspentOutputs {
     init(networkResponse: UnspentOutputsResponse) {
-        self.outputs = networkResponse
+        outputs = networkResponse
             .unspent_outputs
             .compactMap { try? UnspentOutput(response: $0) }
     }

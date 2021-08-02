@@ -5,17 +5,19 @@ import Foundation
 
 /// To regenerate this file use:
 /** ```swift
-let locale = NSLocale(localeIdentifier: "en_US")
-var s = "public enum FiatCurrency: String, Currency, Codable, CaseIterable {"
-for currencyCode in NSLocale.isoCurrencyCodes {
-        if let description = locale.localizedString(forCurrencyCode: currencyCode) {
-            s.append("\n\n\t/// \(description)")
-        }
-    s.append("\n\tcase \(currencyCode)")
-}
-print(s + "\n}")
-```
-*/
+ let locale = NSLocale(localeIdentifier: "en_US")
+ var s = "public enum FiatCurrency: String, Currency, Codable, CaseIterable {"
+ for currencyCode in NSLocale.isoCurrencyCodes {
+         if let description = locale.localizedString(forCurrencyCode: currencyCode) {
+             s.append("\n\n\t/// \(description)")
+         }
+     s.append("\n\tcase \(currencyCode)")
+ }
+ print(s + "\n}")
+ ```
+ */
+
+// swiftlint:disable type_body_length
 
 /// An implementation of `ISO 4217` currency codes
 public enum FiatCurrency: String, Currency, Codable, CaseIterable {
@@ -942,7 +944,7 @@ extension FiatCurrency {
 extension FiatCurrency {
 
     public static let maxDisplayableDecimalPlaces: Int = {
-        Self.allCases.map { $0.maxDisplayableDecimalPlaces }.max() ?? 0
+        Self.allCases.map(\.maxDisplayableDecimalPlaces).max() ?? 0
     }()
 
     /// The code of the currency. e.g `USD`, `GBP`, `EUR`
@@ -955,8 +957,6 @@ extension FiatCurrency {
         let locale = NSLocale.current as NSLocale
         return locale.displayName(forKey: .currencySymbol, value: code) ?? ""
     }
-
-    public var displaySymbol: String { symbol }
 
     /// The name of the currency. e.g US Dollar, Euro, Great British Pound
     public var name: String {
@@ -1008,6 +1008,19 @@ extension FiatCurrency {
 }
 
 extension FiatCurrency {
+
+    static let achCurrencies: [FiatCurrency] = [.USD]
+
+    static let bankWireSupported: [FiatCurrency] = [.GBP, .EUR, .USD]
+
+    public var isACHSupportedCurrency: Bool {
+        FiatCurrency.achCurrencies.contains(self)
+    }
+
+    public var isBankWireSupportedCurrency: Bool {
+        FiatCurrency.bankWireSupported.contains(self)
+    }
+
     public static let supported: [FiatCurrency] = [
         .AUD,
         .BRL,

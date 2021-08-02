@@ -4,13 +4,14 @@ import ComposableArchitecture
 import DebugUIKit
 import DIKit
 import Firebase
-import NabuAnalyticsDataKit
 import PlatformKit
 import SettingsKit
 import ToolKit
 import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
+    @LazyInject(tag: DebugScreenContext.tag) var debugCoordinator: DebugCoordinating
+
     var window: UIWindow?
     /// The main model passed to the view store that powers the app
     private let store: Store<AppState, AppAction>
@@ -33,8 +34,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
     // MARK: - App entry point
 
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
         let window = windowProvider(screen: .main)
         self.window = window
         window.makeKeyAndVisible()
@@ -44,15 +47,22 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             window.setRootViewController(UIViewController())
             return true
         }
-        if useNewOnboarding() {
-            let hostingController = AppHostingController(
-                store: store.scope(
-                    state: \.coreState,
-                    action: AppAction.core
-                )
-            )
-            window.setRootViewController(hostingController)
+
+        #if INTERNAL_BUILD
+        debugCoordinator.enableDebugMenu(for: window)
+        #endif
+
+        guard !newWelcomeScreenIsDisabled() else {
+            viewStore.send(.appDelegate(.didFinishLaunching(window: window)))
+            return true
         }
+        let hostingController = AppHostingController(
+            store: store.scope(
+                state: \.coreState,
+                action: AppAction.core
+            )
+        )
+        window.setRootViewController(hostingController)
         viewStore.send(.appDelegate(.didFinishLaunching(window: window)))
         return true
     }
@@ -62,40 +72,36 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
 /// Registers the dependencies from each module in the `DependencyContainer` of `DIKit`
 func defineDependencies() {
-    // swiftlint:disable trailing_semicolon
     DependencyContainer.defined(by: modules {
-        DependencyContainer.toolKit;
-        DependencyContainer.networkKit;
-        DependencyContainer.walletPayloadKit;
-        DependencyContainer.platformKit;
-        DependencyContainer.interestKit;
-        DependencyContainer.platformUIKit;
-        DependencyContainer.ethereumKit;
-        DependencyContainer.erc20Kit;
-        DependencyContainer.bitcoinChainKit;
-        DependencyContainer.bitcoinKit;
-        DependencyContainer.bitcoinCashKit;
-        DependencyContainer.stellarKit;
-        DependencyContainer.transactionKit;
-        DependencyContainer.transactionDataKit;
-        DependencyContainer.transactionUIKit;
-        DependencyContainer.buySellKit;
-        DependencyContainer.activityKit;
-        DependencyContainer.activityUIKit;
-        DependencyContainer.kycKit;
-        DependencyContainer.kycUIKit;
-        DependencyContainer.blockchain;
-        DependencyContainer.settingsKit;
-        DependencyContainer.settingsUIKit;
-        DependencyContainer.analyticsKit;
-        DependencyContainer.nabuAnalyticsDataKit;
-        DependencyContainer.nabuAnalyticsKit;
-        DependencyContainer.remoteNotificationsKit;
+        DependencyContainer.toolKit
+        DependencyContainer.networkKit
+        DependencyContainer.walletPayloadKit
+        DependencyContainer.platformKit
+        DependencyContainer.interestKit
+        DependencyContainer.platformUIKit
+        DependencyContainer.ethereumKit
+        DependencyContainer.erc20Kit
+        DependencyContainer.bitcoinChainKit
+        DependencyContainer.bitcoinKit
+        DependencyContainer.bitcoinCashKit
+        DependencyContainer.stellarKit
+        DependencyContainer.transactionKit
+        DependencyContainer.transactionDataKit
+        DependencyContainer.transactionUIKit
+        DependencyContainer.buySellKit
+        DependencyContainer.activityKit
+        DependencyContainer.activityUIKit
+        DependencyContainer.kycKit
+        DependencyContainer.kycUIKit
+        DependencyContainer.blockchain
+        DependencyContainer.settingsKit
+        DependencyContainer.settingsUIKit
+        DependencyContainer.remoteNotificationsKit
+        DependencyContainer.authenticationDataKit
         #if INTERNAL_BUILD
-        DependencyContainer.debugUIKit;
+        DependencyContainer.debugUIKit
         #endif
     })
-    // swiftlint:enable trailing_semicolon
 }
 
 // MARK: - Private functions
@@ -106,11 +112,16 @@ func defineDependencies() {
 private func bootstrap() {
     FirebaseApp.configure()
     defineDependencies()
+    #if !INTERNAL_BUILD
+    // Intentionally disable the new welcome screen on prod
+    let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
+    featureFlagService.enable(.disableNewWelcomeScreen)
+    #endif
 }
 
-func useNewOnboarding() -> Bool {
+func newWelcomeScreenIsDisabled() -> Bool {
     let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
-    return featureFlagService.isEnabled(.newOnboarding)
+    return featureFlagService.isEnabled(.disableNewWelcomeScreen)
 }
 
 private func eraseWalletForUITestsIfNeeded() {
@@ -125,9 +136,9 @@ private func eraseWalletForUITestsIfNeeded() {
 
 private func shouldStopProcessOnDebugAndTestingMode() -> Bool {
     #if DEBUG
-        return ProcessInfo.processInfo.isUnitTesting
+    return ProcessInfo.processInfo.isUnitTesting
     #else
-        return false
+    return false
     #endif
 }
 
@@ -141,8 +152,8 @@ private func windowProvider(screen: UIScreen) -> UIWindow {
 /// Determines if the app has the `DEBUG` flag
 var isDebug: Bool {
     #if DEBUG
-        return true
+    return true
     #else
-        return false
+    return false
     #endif
 }

@@ -8,7 +8,7 @@ public protocol SendRootBuildable: Buildable {
 
 public final class SendRootBuilder: SendRootBuildable {
 
-    public init() { }
+    public init() {}
 
     public func build() -> SendRootRouting {
         let viewController = SendRootViewController()

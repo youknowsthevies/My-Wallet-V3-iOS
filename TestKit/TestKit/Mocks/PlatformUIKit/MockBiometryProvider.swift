@@ -11,10 +11,12 @@ final class MockBiometryProvider: BiometryProviding {
 
     private let authenticatesSuccessfully: Bool
 
-    init(authenticatesSuccessfully: Bool,
-         canAuthenticate: Result<Biometry.BiometryType, Biometry.EvaluationError>,
-         configuredType: Biometry.BiometryType,
-         configurationStatus: Biometry.Status) {
+    init(
+        authenticatesSuccessfully: Bool,
+        canAuthenticate: Result<Biometry.BiometryType, Biometry.EvaluationError>,
+        configuredType: Biometry.BiometryType,
+        configurationStatus: Biometry.Status
+    ) {
         self.authenticatesSuccessfully = authenticatesSuccessfully
         self.canAuthenticate = canAuthenticate
         self.configuredType = configuredType

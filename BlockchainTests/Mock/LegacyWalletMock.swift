@@ -8,7 +8,7 @@ import ToolKit
 class LegacyWalletMock: LegacyWalletAPI {
 
     func updateAccountLabel(
-        _ cryptoCurrency: CryptoCurrency,
+        _ cryptoCurrency: NonCustodialCoinCode,
         index: Int,
         label: String
     ) -> Completable {
@@ -17,7 +17,7 @@ class LegacyWalletMock: LegacyWalletAPI {
 
     func createOrderPayment(
         orderTransaction: OrderTransactionLegacy,
-        completion: @escaping (Result<[AnyHashable : Any], Wallet.CreateOrderError>) -> Void
+        completion: @escaping (Result<[AnyHashable: Any], Wallet.CreateOrderError>) -> Void
     ) {
         unimplemented()
     }

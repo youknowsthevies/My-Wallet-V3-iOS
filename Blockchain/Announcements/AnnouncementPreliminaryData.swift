@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import DIKit
 import PlatformKit
 
@@ -20,7 +21,7 @@ struct AnnouncementPreliminaryData {
     let country: CountryData?
 
     /// The authentication type (2FA / standard)
-    let authenticatorType: AuthenticatorType
+    let authenticatorType: WalletAuthenticatorType
 
     var hasLinkedExchangeAccount: Bool {
         user.hasLinkedExchangeAccount
@@ -48,17 +49,19 @@ struct AnnouncementPreliminaryData {
     private let isSimpleBuyAvailable: Bool
     private let simpleBuyEventCache: EventCache
 
-    init(user: NabuUser,
-         tiers: KYC.UserTiers,
-         isSDDEligible: Bool,
-         hasLinkedBanks: Bool,
-         countries: [CountryData],
-         simpleBuyEventCache: EventCache = resolve(),
-         authenticatorType: AuthenticatorType,
-         pendingOrderDetails: OrderDetails?,
-         isSimpleBuyAvailable: Bool,
-         isSimpleBuyEligible: Bool,
-         hasAnyWalletBalance: Bool) {
+    init(
+        user: NabuUser,
+        tiers: KYC.UserTiers,
+        isSDDEligible: Bool,
+        hasLinkedBanks: Bool,
+        countries: [CountryData],
+        simpleBuyEventCache: EventCache = resolve(),
+        authenticatorType: WalletAuthenticatorType,
+        pendingOrderDetails: OrderDetails?,
+        isSimpleBuyAvailable: Bool,
+        isSimpleBuyEligible: Bool,
+        hasAnyWalletBalance: Bool
+    ) {
         self.user = user
         self.tiers = tiers
         self.isSDDEligible = isSDDEligible

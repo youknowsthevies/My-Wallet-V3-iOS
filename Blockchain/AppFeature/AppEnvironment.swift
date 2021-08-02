@@ -13,8 +13,6 @@ import ToolKit
 import WalletPayloadKit
 
 public struct AppEnvironment {
-    public var debugCoordinator: DebugCoordinating
-
     var loadingViewPresenter: LoadingViewPresenting
     var onboardingSettings: OnboardingSettings
     var blurEffectHandler: BlurVisualEffectHandler
@@ -48,4 +46,5 @@ public struct AppEnvironment {
 
     var urlSession: URLSession
     var mainQueue: AnySchedulerOf<DispatchQueue>
+    var buildVersionProvider: () -> String
 }

@@ -12,7 +12,7 @@ final class BillingAddressScreenInteractor: Interactor {
 
     var selectedCountry: Observable<Country> {
         countrySelectionService.selectedData
-            .map { $0.id }
+            .map(\.id)
             .compactMap { Country(code: $0) }
     }
 
@@ -36,10 +36,12 @@ final class BillingAddressScreenInteractor: Interactor {
 
     // MARK: - Setup
 
-    init(cardData: CardData,
-         service: CardUpdateServiceAPI = resolve(),
-         userDataRepository: DataRepositoryAPI = resolve(),
-         routingInteractor: CardRouterInteractor) {
+    init(
+        cardData: CardData,
+        service: CardUpdateServiceAPI = resolve(),
+        userDataRepository: DataRepositoryAPI = resolve(),
+        routingInteractor: CardRouterInteractor
+    ) {
         self.cardData = cardData
         self.service = service
         self.userDataRepository = userDataRepository
@@ -54,7 +56,7 @@ final class BillingAddressScreenInteractor: Interactor {
         disposeBag = DisposeBag()
 
         userDataRepository.userSingle
-            .map { $0.address }
+            .map(\.address)
             .subscribe(
                 onSuccess: { [weak self] address in
                     guard let address = address else { return }

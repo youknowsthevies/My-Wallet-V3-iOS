@@ -50,7 +50,7 @@ final class AddPaymentMethodCellPresenter: AsyncPresenting {
 
     init(interactor: AddPaymentMethodInteractor) {
         self.interactor = interactor
-        self.localizedStrings = AddPaymentMethodLocalizedStrings(interactor.paymentMethod)
+        localizedStrings = AddPaymentMethodLocalizedStrings(interactor.paymentMethod)
 
         labelContentPresenter = AddPaymentMethodLabelContentPresenter(
             interactor: AddPaymentMethodLabelContentInteractor(
@@ -87,7 +87,7 @@ final class AddPaymentMethodCellPresenter: AsyncPresenting {
             .disposed(by: disposeBag)
 
         badgeImagePresenter.state
-            .map { $0.isLoading }
+            .map(\.isLoading)
             .bindAndCatch(to: isLoadingRelay)
             .disposed(by: disposeBag)
     }

@@ -16,9 +16,11 @@ final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
     private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
     private let transactionSendingService: EthereumTransactionSendingServiceAPI
 
-    init(with bridge: EthereumWalletBridgeAPI = resolve(),
-         keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
-         transactionSendingService: EthereumTransactionSendingServiceAPI = resolve()) {
+    init(
+        with bridge: EthereumWalletBridgeAPI = resolve(),
+        keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
+        transactionSendingService: EthereumTransactionSendingServiceAPI = resolve()
+    ) {
         self.bridge = bridge
         self.keyPairProvider = keyPairProvider
         self.transactionSendingService = transactionSendingService
@@ -39,10 +41,5 @@ final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
 
     private func updateAfterSending(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
         bridge.recordLast(transaction: transaction)
-            .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
-                self.bridge.fetchHistory().map { _ -> EthereumTransactionPublished in
-                    transaction
-                }
-            }
     }
 }

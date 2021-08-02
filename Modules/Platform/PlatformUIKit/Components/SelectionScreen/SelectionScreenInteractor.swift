@@ -18,7 +18,7 @@ public final class SelectionScreenInteractor {
         selectionOnDismissalRelay
             .take(1)
             .asSingle()
-            .map { $0.id }
+            .map(\.id)
     }
 
     public var dismiss: Observable<Void> {
@@ -39,17 +39,17 @@ public final class SelectionScreenInteractor {
 
     private lazy var setup: Void = {
         service.dataSource
-                .map(weak: self) { (self, items) in
-                    items
-                        .map { item in
-                            SelectionItemViewInteractor(
-                                item: item,
-                                service: self.service
-                            )
-                        }
-                }
-                .bindAndCatch(to: interactorsRelay)
-                .disposed(by: disposeBag)
+            .map(weak: self) { (self, items) in
+                items
+                    .map { item in
+                        SelectionItemViewInteractor(
+                            item: item,
+                            service: self.service
+                        )
+                    }
+            }
+            .bindAndCatch(to: interactorsRelay)
+            .disposed(by: disposeBag)
     }()
 
     // MARK: - Setup

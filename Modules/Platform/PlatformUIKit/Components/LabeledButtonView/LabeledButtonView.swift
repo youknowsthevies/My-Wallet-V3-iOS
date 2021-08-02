@@ -39,6 +39,7 @@ public final class LabeledButtonView<ViewModel: LabeledButtonViewModelAPI>: UIVi
         super.init(frame: .zero)
         setupButton()
     }
+
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 

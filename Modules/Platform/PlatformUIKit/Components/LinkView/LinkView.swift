@@ -19,7 +19,7 @@ public final class LinkView: UIView {
             textView.viewModel = viewModel.textViewModel
             viewModel.textDidChange
                 .observeOn(MainScheduler.instance)
-                .bindAndCatch(weak: textView) { (_) in
+                .bindAndCatch(weak: textView) { _ in
                     self.textDidChange()
                 }
                 .disposed(by: disposeBag)
@@ -32,7 +32,7 @@ public final class LinkView: UIView {
 
     // MARK: - Setup
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }

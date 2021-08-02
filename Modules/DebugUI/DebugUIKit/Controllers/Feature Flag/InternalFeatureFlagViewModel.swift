@@ -11,20 +11,7 @@ struct InternalFeatureItem: Equatable {
     let enabled: Bool
 
     var title: String {
-        switch type {
-        case .secureChannel:
-            return "Secure Channel"
-        case .tradingAccountReceive:
-            return "Trading Account Receive"
-        case .withdrawAndDepositACH:
-            return "Withdraw and Deposit - US ACH"
-        case .newOnboarding:
-            return "New Pin/Onboarding (experimental)"
-        case .requestConsoleLogging:
-            return "Enable Network Request Console Logs"
-        case .useTransactionsFlowToBuyCrypto:
-            return "Uses Transactions Flow to Buy Crypto"
-        }
+        type.displayTitle
     }
 }
 
@@ -47,7 +34,7 @@ final class InternalFeatureFlagViewModel {
 
         items = action
             .startWith(.load(initialItems))
-            .scan(into: [InternalFeatureItem](), accumulator: { (current, action) in
+            .scan(into: [InternalFeatureItem](), accumulator: { current, action in
                 switch action {
                 case .load(let items):
                     current = items

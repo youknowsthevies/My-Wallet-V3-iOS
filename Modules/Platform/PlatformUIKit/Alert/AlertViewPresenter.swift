@@ -20,18 +20,22 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
 
     // MARK: - Setup
 
-    init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+    init(
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve()
+    ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.loadingViewPresenter = loadingViewPresenter
         super.init()
     }
 
     @objc
-    public func standardNotify(title: String,
-                               message: String,
-                               in viewController: UIViewController? = nil,
-                               handler: AlertViewContent.Action? = nil) {
+    public func standardNotify(
+        title: String,
+        message: String,
+        in viewController: UIViewController? = nil,
+        handler: AlertViewContent.Action? = nil
+    ) {
         Execution.MainQueue.dispatch {
             let standardAction = UIAlertAction(
                 title: LocalizationConstants.okString,
@@ -49,10 +53,12 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
 
     /// Allows custom actions to be included in the standard alert presentation
     @objc
-    public func standardNotify(title: String,
-                               message: String,
-                               actions: [UIAlertAction],
-                               in viewController: UIViewController? = nil) {
+    public func standardNotify(
+        title: String,
+        message: String,
+        actions: [UIAlertAction],
+        in viewController: UIViewController? = nil
+    ) {
         Execution.MainQueue.dispatch {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             actions.forEach { alert.addAction($0) }
@@ -70,20 +76,22 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
     // MARK: - Error
 
     /// Notify the user on error that occurred
-    public func error(in viewController: UIViewController? = nil,
-                      message: String? = nil,
-                      action: (() -> Void)? = nil) {
+    public func error(
+        in viewController: UIViewController? = nil,
+        message: String? = nil,
+        action: (() -> Void)? = nil
+    ) {
         typealias AlertString = LocalizationConstants.ErrorAlert
         standardNotify(
             title: AlertString.title,
-            message: (message ?? AlertString.message),
+            message: message ?? AlertString.message,
             actions: [
                 UIAlertAction(
                     title: AlertString.button,
                     style: .default,
                     handler: { _ in
                         action?()
-                }
+                    }
                 )
             ],
             in: viewController
@@ -111,10 +119,12 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
 
     /// Displays the standard error alert
     @objc
-    public func standardError(title: String = LocalizationConstants.Errors.error,
-                              message: String,
-                              in viewController: UIViewController? = nil,
-                              handler: AlertViewContent.Action? = nil) {
+    public func standardError(
+        title: String = LocalizationConstants.Errors.error,
+        message: String,
+        in viewController: UIViewController? = nil,
+        handler: AlertViewContent.Action? = nil
+    ) {
         standardNotify(
             title: title,
             message: message,

@@ -9,9 +9,9 @@ public protocol SingleAccount: BlockchainAccount, TransactionTarget {
     var sourceState: Single<SourceState> { get }
 }
 
-public extension SingleAccount {
+extension SingleAccount {
 
-    var sourceState: Single<SourceState> {
+    public var sourceState: Single<SourceState> {
         .just(.notSupported)
     }
 }

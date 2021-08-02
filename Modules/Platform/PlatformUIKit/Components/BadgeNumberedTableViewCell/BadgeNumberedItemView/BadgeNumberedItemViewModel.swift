@@ -15,10 +15,12 @@ public struct BadgeNumberedItemViewModel {
         let badgeAccessibilitySuffix: String
     }
 
-    public init(number: Int,
-                title: String,
-                description: String,
-                descriptors: Descriptors) {
+    public init(
+        number: Int,
+        title: String,
+        description: String,
+        descriptors: Descriptors
+    ) {
         badgeViewModel = .default(
             with: "\(number)",
             font: .main(.semibold, 20.0),
@@ -42,10 +44,10 @@ public struct BadgeNumberedItemViewModel {
     }
 }
 
-public extension BadgeNumberedItemViewModel.Descriptors {
-    typealias Descriptors = BadgeNumberedItemViewModel.Descriptors
+extension BadgeNumberedItemViewModel.Descriptors {
+    public typealias Descriptors = BadgeNumberedItemViewModel.Descriptors
 
-    static func dashboard(badgeAccessibilitySuffix: String) -> Descriptors {
+    public static func dashboard(badgeAccessibilitySuffix: String) -> Descriptors {
         Descriptors(
             titleFont: .main(.semibold, 16.0),
             titleTextColor: .textFieldText,

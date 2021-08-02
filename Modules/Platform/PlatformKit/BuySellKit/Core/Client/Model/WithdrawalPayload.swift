@@ -6,8 +6,8 @@ struct WithdrawalPayload: Encodable {
     let currency: String
 
     init(data: WithdrawalCheckoutData) {
-        self.beneficiary = data.beneficiary.identifier
-        self.amount = data.amount.minorString
-        self.currency = data.currency.code
+        beneficiary = data.beneficiary.identifier
+        amount = data.amount.minorString
+        currency = data.currency.code
     }
 }

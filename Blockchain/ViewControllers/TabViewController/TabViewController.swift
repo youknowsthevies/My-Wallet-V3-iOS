@@ -26,7 +26,7 @@ import ToolKit
     @objc weak var delegate: TabViewControllerDelegate?
     private(set) var menuSwipeRecognizerView: UIView!
     private(set) var activeViewController: UIViewController?
-    private(set) lazy var sheetPresenter: BottomSheetPresenting = BottomSheetPresenting()
+    private(set) lazy var sheetPresenter = BottomSheetPresenting()
 
     // MARK: - Private IBOutlets
 
@@ -57,8 +57,9 @@ import ToolKit
             }
         }
     }
+
     private var tabBarGestureView: UIView?
-    private var introductionPresenter: WalletIntroductionPresenter! = nil
+    private var introductionPresenter: WalletIntroductionPresenter!
     private let disposeBag = DisposeBag()
 
     override func awakeFromNib() {
@@ -75,11 +76,11 @@ import ToolKit
         }
         view.addSubview(menuSwipeRecognizerView)
 
-        self.receiveTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.request)
-        self.activityTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.activity)
-        self.swapTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.swap)
-        self.homeTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.home)
-        self.sendTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.send)
+        receiveTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.request)
+        activityTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.activity)
+        swapTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.swap)
+        homeTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.home)
+        sendTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.send)
         delegate?.tabViewControllerViewDidLoad(self)
     }
 
@@ -184,15 +185,22 @@ import ToolKit
 
             switch position {
             case .home:
-                PulseViewPresenter.shared.show(viewModel: .init(container: self.homePassthroughContainer, onSelection: pulseViewModel.action))
+                PulseViewPresenter.shared.show(
+                    viewModel: .init(container: homePassthroughContainer, onSelection: pulseViewModel.action)
+                )
             case .send:
-                PulseViewPresenter.shared.show(viewModel: .init(container: self.sendPassthroughContainer, onSelection: pulseViewModel.action))
+                PulseViewPresenter.shared.show(
+                    viewModel: .init(container: sendPassthroughContainer, onSelection: pulseViewModel.action)
+                )
             case .receive:
-                PulseViewPresenter.shared.show(viewModel: .init(container: self.receivePassthroughContainer, onSelection: pulseViewModel.action))
+                PulseViewPresenter.shared.show(
+                    viewModel: .init(container: receivePassthroughContainer, onSelection: pulseViewModel.action)
+                )
             case .swap:
-                PulseViewPresenter.shared.show(viewModel: .init(container: self.swapPassthroughContainer, onSelection: pulseViewModel.action))
+                PulseViewPresenter.shared.show(
+                    viewModel: .init(container: swapPassthroughContainer, onSelection: pulseViewModel.action)
+                )
             }
         }
     }
-
 }

@@ -40,8 +40,10 @@ public final class AssetLineChartPresenter {
 
     // MARK: - Setup
 
-    public init(edge: CGFloat,
-                interactor: AssetLineChartInteracting) {
+    public init(
+        edge: CGFloat,
+        interactor: AssetLineChartInteracting
+    ) {
         self.edge = edge
         self.interactor = interactor
     }

@@ -5,11 +5,11 @@ import NetworkKit
 import RxSwift
 
 typealias CardClientAPI = CardListClientAPI &
-                          CardChargeClientAPI &
-                          CardDeletionClientAPI &
-                          CardActivationClientAPI &
-                          CardDetailClientAPI &
-                          CardAdditionClientAPI
+    CardChargeClientAPI &
+    CardDeletionClientAPI &
+    CardActivationClientAPI &
+    CardDetailClientAPI &
+    CardAdditionClientAPI
 
 final class CardClient: CardClientAPI {
 
@@ -20,9 +20,9 @@ final class CardClient: CardClientAPI {
     }
 
     private enum Path {
-        static let card = [ "payments", "cards" ]
+        static let card = ["payments", "cards"]
 
-        static func activateCard(with id: String) -> [String] { Path.card + [ id, "activate" ] }
+        static func activateCard(with id: String) -> [String] { Path.card + [id, "activate"] }
     }
 
     // MARK: - Properties
@@ -32,8 +32,10 @@ final class CardClient: CardClientAPI {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
@@ -102,9 +104,11 @@ final class CardClient: CardClientAPI {
 
     // MARK: - CardAdditionClientAPI
 
-    func add(for currency: String,
-             email: String,
-             billingAddress: CardPayload.BillingAddress) -> Single<CardPayload> {
+    func add(
+        for currency: String,
+        email: String,
+        billingAddress: CardPayload.BillingAddress
+    ) -> Single<CardPayload> {
         struct RequestPayload: Encodable {
             let currency: String
             let email: String
@@ -146,6 +150,7 @@ final class CardClient: CardClientAPI {
             struct EveryPay: Encodable {
                 let customerUrl: String
             }
+
             private let everypay: EveryPay?
 
             init(everypay: EveryPay) {

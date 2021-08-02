@@ -5,13 +5,10 @@ import ToolKit
 
 public protocol CryptoAccount: SingleAccount {
     var asset: CryptoCurrency { get }
-    var feeAsset: CryptoCurrency? { get }
 }
 
-public extension CryptoAccount {
-    var feeAsset: CryptoCurrency? { nil }
-
-    var currencyType: CurrencyType {
+extension CryptoAccount {
+    public var currencyType: CurrencyType {
         asset.currency
     }
 }

@@ -10,7 +10,7 @@ public final class IntroductionSheetViewController: UIViewController {
 
     // MARK: Private Properties
 
-    private let bag: DisposeBag = DisposeBag()
+    private let bag = DisposeBag()
     private var viewModel: IntroductionSheetViewModel!
 
     // MARK: Private IBOutlets
@@ -31,7 +31,7 @@ public final class IntroductionSheetViewController: UIViewController {
         return controller
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         button.setTitle(viewModel.buttonTitle, for: .normal)
         button.layer.cornerRadius = 4.0

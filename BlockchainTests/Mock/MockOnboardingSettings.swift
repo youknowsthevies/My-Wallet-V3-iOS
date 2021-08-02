@@ -8,9 +8,10 @@ class MockOnboardingSettings: OnboardingSettingsAPI {
     var firstRun: Bool = false
 
     var resetCalled = false
+
     func reset() {
         resetCalled = true
     }
 
-    init() { }
+    init() {}
 }

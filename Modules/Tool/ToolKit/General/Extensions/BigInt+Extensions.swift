@@ -38,9 +38,11 @@ extension BigInt {
     ///   - baseDecimalPlaces: Number of the decimal places of the represented value currency used to convert minor to major value.
     ///   - roundingDecimalPlaces: Number of the decimal places used to round value.
     /// - Returns: A major value (Decimal)
-    public func toDecimalMajor(baseDecimalPlaces: Int,
-                               roundingDecimalPlaces: Int,
-                               roundingMode: Decimal.RoundingMode = .bankers) -> Decimal {
+    public func toDecimalMajor(
+        baseDecimalPlaces: Int,
+        roundingDecimalPlaces: Int,
+        roundingMode: Decimal.RoundingMode = .bankers
+    ) -> Decimal {
         let divisor = BigInt(10).power(baseDecimalPlaces)
         let majorValue = decimalDivision(divisor: divisor)
         return majorValue.roundTo(places: roundingDecimalPlaces, roundingMode: roundingMode)

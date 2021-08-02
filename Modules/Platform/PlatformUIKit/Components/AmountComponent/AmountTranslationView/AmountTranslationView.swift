@@ -168,11 +168,13 @@ public final class AmountTranslationView: UIView, AmountViewable {
         )
 
         auxiliaryButton.layoutToSuperview(.centerX)
-        auxiliaryButton.layout(edge: .trailing,
-                               to: .leading,
-                               of: swapButton,
-                               relation: .lessThanOrEqual,
-                               offset: 0)
+        auxiliaryButton.layout(
+            edge: .trailing,
+            to: .leading,
+            of: swapButton,
+            relation: .lessThanOrEqual,
+            offset: 0
+        )
 
         swapButton.layout(size: .init(edge: 40))
         swapButton.layout(to: .trailing, of: self, offset: -16)
@@ -182,14 +184,6 @@ public final class AmountTranslationView: UIView, AmountViewable {
             .disposed(by: disposeBag)
 
         swapButton.rx.tap
-            .bindAndCatch(to: presenter.swapButtonTapRelay)
-            .disposed(by: disposeBag)
-
-        let tapGesture = UITapGestureRecognizer()
-        addGestureRecognizer(tapGesture)
-
-        tapGesture.rx.event
-            .mapToVoid()
             .bindAndCatch(to: presenter.swapButtonTapRelay)
             .disposed(by: disposeBag)
 
@@ -229,8 +223,10 @@ public final class AmountTranslationView: UIView, AmountViewable {
 
     // MARK: - Private Methods
 
-    private func performEffect(state: AmountPresenterState,
-                               activeAmountInput: ActiveAmountInput) -> AmountPresenterState {
+    private func performEffect(
+        state: AmountPresenterState,
+        activeAmountInput: ActiveAmountInput
+    ) -> AmountPresenterState {
         let limitButtonVisibility: Visibility
         switch state {
         case .warning(let viewModel):

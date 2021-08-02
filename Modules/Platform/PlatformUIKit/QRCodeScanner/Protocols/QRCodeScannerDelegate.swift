@@ -9,5 +9,5 @@ protocol QRCodeScannerDelegate: AnyObject {
 }
 
 extension QRCodeScannerDelegate {
-    func didStartScanning() { }
+    func didStartScanning() {}
 }

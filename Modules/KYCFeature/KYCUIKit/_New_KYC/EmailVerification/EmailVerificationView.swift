@@ -12,7 +12,7 @@ struct EmailVerificationView: View {
 
     init(store: Store<EmailVerificationState, EmailVerificationAction>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        viewStore = ViewStore(store)
     }
 
     var body: some View {
@@ -25,7 +25,10 @@ struct EmailVerificationView: View {
                         canShowEditAddressView: viewStore.flowStep == .editEmailAddress,
                         store: store
                     ),
-                    isActive: .constant(viewStore.flowStep == .emailVerificationHelp || viewStore.flowStep == .editEmailAddress),
+                    isActive: .constant(
+                        viewStore.flowStep == .emailVerificationHelp ||
+                            viewStore.flowStep == .editEmailAddress
+                    ),
                     label: EmptyView.init
                 )
 
@@ -115,6 +118,8 @@ struct EmailVerificationHelpRoutingView: View {
 }
 
 #if DEBUG
+import AnalyticsKit
+
 struct EmailVerificationView_Previews: PreviewProvider {
     static var previews: some View {
         EmailVerificationView(
@@ -122,6 +127,7 @@ struct EmailVerificationView_Previews: PreviewProvider {
                 initialState: .init(emailAddress: "test@example.com"),
                 reducer: emailVerificationReducer,
                 environment: EmailVerificationEnvironment(
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
                     emailVerificationService: NoOpEmailVerificationService(),
                     flowCompletionCallback: nil,
                     openMailApp: { Effect(value: true) }

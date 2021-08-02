@@ -19,8 +19,10 @@ public final class PasteboardLabelContentPresenter: LabelContentPresenting {
     public let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
 
-    init(interactor: PasteboardLabelContentInteracting,
-         descriptors: PresentationDescriptors) {
+    init(
+        interactor: PasteboardLabelContentInteracting,
+        descriptors: PresentationDescriptors
+    ) {
         self.interactor = interactor
         let successDescriptors: PresentationDescriptors = .success(
             fontSize: descriptors.fontSize,

@@ -51,14 +51,14 @@ extension CryptoAsset {
     /// Possible transaction targets this `Asset` has for a transaction initiating from the given `SingleAccount`.
     public func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]> {
         guard let crypto = account as? CryptoAccount else {
-            fatalError("Expected a CryptoAccount: \(account)")
+            fatalError("Expected a CryptoAccount: \(account).")
         }
-        precondition(crypto.asset == asset)
+        guard crypto.asset == asset else {
+            fatalError("Expected asset to be the same.")
+        }
         switch crypto {
-        case is CryptoTradingAccount:
-            return accountGroup(filter: .nonCustodial)
-                .map(\.accounts)
-        case is CryptoNonCustodialAccount:
+        case is CryptoTradingAccount,
+             is CryptoNonCustodialAccount:
             return canTransactToCustodial
                 .flatMap(weak: self) { (self, canTransactToCustodial) -> Single<AccountGroup> in
                     self.accountGroup(filter: canTransactToCustodial ? .all : .nonCustodial)
@@ -98,15 +98,15 @@ extension CryptoCurrency {
     /// To be used only during the forced wallet label update.
     fileprivate var legacyLabel: String? {
         switch self {
-        case .bitcoin:
+        case .coin(.bitcoin):
             return LocalizationConstants.Account.legacyMyBitcoinWallet
-        case .bitcoinCash:
+        case .coin(.bitcoinCash):
             // Legacy BCH label is not localized.
             return "My Bitcoin Cash Wallet"
-        case .ethereum:
+        case .coin(.ethereum):
             // Legacy ETH label is not localized.
             return "My Ether Wallet"
-        case .stellar:
+        case .coin(.stellar):
             // Legacy XLM label is not localized.
             return "My Stellar Wallet"
         default:

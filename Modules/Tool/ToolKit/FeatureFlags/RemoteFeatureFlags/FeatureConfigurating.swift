@@ -5,16 +5,22 @@ import RxSwift
 
 /// Types adopting the `FeatureConfiguratorAPI` should provide a way to initialize and configure a
 /// remote based feature flag system
-public protocol FeatureConfiguratorAPI: FeatureInitializer, FeatureConfiguring { }
+public protocol FeatureConfiguratorAPI: FeatureInitializer, FeatureConfiguring {}
+
+public enum FeatureConfigurationError: Error {
+    case missingKeyRawValue
+    case missingValue
+    case decodingError
+}
 
 public protocol FeatureInitializer: AnyObject {
     func initialize()
 }
 
 /// Any feature remote configuration protocol
-@objc
 public protocol FeatureConfiguring: AnyObject {
-    @objc func configuration(for feature: AppFeature) -> AppFeatureConfiguration
+    func configuration(for feature: AppFeature) -> AppFeatureConfiguration
+    func configuration<Feature: Decodable>(for feature: AppFeature) -> Result<Feature, FeatureConfigurationError>
 }
 
 /// - Tag: FeatureFetching
@@ -24,8 +30,6 @@ public protocol FeatureFetching: AnyObject {
     func fetchString(for key: AppFeature) -> Single<String>
     func fetchBool(for key: AppFeature) -> Single<Bool>
 }
-
-public typealias FeatureFetchingConfiguring = FeatureFetching & FeatureConfiguring
 
 /// This protocol is responsible for variant fetching
 public protocol FeatureVariantFetching: AnyObject {
@@ -39,6 +43,8 @@ public protocol FeatureVariantFetching: AnyObject {
     /// - Parameter feature: the feature key
     /// - Parameter defaultVariant: expected value to be returned if an error occurs
     /// - Returns: the `FeatureTestingVariant` value wrapped in a `RxSwift.Single`
-    func fetchTestingVariant(for key: AppFeature,
-                             onErrorReturn defaultVariant: FeatureTestingVariant) -> Single<FeatureTestingVariant>
+    func fetchTestingVariant(
+        for key: AppFeature,
+        onErrorReturn defaultVariant: FeatureTestingVariant
+    ) -> Single<FeatureTestingVariant>
 }

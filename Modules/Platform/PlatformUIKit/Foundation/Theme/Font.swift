@@ -26,6 +26,7 @@ public struct Font {
     public enum FontSize {
         case standard(StandardSize)
         case custom(Double)
+
         var value: Double {
             switch self {
             case .standard(let size):
@@ -65,7 +66,6 @@ public struct Font {
             case h5
         }
     }
-
 }
 
 extension Font.StandardSize {
@@ -129,7 +129,7 @@ extension Font {
             }
             return font
         case .system:
-             return UIFont.systemFont(ofSize: CGFloat(size.value))
+            return UIFont.systemFont(ofSize: CGFloat(size.value))
         }
     }
 }

@@ -41,8 +41,10 @@ final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInter
 
     // MARK: - Setup
 
-    init(paymentAccountService: PaymentAccountServiceAPI = resolve(),
-         fiatCurrency: FiatCurrency) {
+    init(
+        paymentAccountService: PaymentAccountServiceAPI = resolve(),
+        fiatCurrency: FiatCurrency
+    ) {
         self.paymentAccountService = paymentAccountService
         self.fiatCurrency = fiatCurrency
     }

@@ -69,17 +69,19 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let explorerButton: ButtonViewModel
 
-    init(alertViewPresenter: AlertViewPresenterAPI = resolve(),
-         event: TransactionalActivityItemEvent,
-         router: ActivityRouterAPI,
-         interactor: ERC20ActivityDetailsInteractor,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        event: TransactionalActivityItemEvent,
+        router: ActivityRouterAPI,
+        interactor: ERC20ActivityDetailsInteractor,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.alertViewPresenter = alertViewPresenter
         self.event = event
         self.interactor = interactor
         self.router = router
         explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
-        buttons = [ explorerButton ]
+        buttons = [explorerButton]
         dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
@@ -177,7 +179,7 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .compactMap { $0?.confirmation.needConfirmation }
             .distinctUntilChanged()
             .map(weak: self) { (self, needConfirmation) in
-                needConfirmation ? [ self.statusBadge, self.confirmingBadge ] : [ self.statusBadge ]
+                needConfirmation ? [self.statusBadge, self.confirmingBadge] : [self.statusBadge]
             }
             .bindAndCatch(to: badgesModel.badgesRelay)
             .disposed(by: disposeBag)

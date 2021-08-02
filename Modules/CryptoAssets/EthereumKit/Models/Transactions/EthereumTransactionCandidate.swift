@@ -7,6 +7,7 @@ public struct EthereumTransactionCandidate: Equatable {
         case transfer
         case erc20Transfer(contract: EthereumAddress)
     }
+
     let to: EthereumAddress
     let gasPrice: BigUInt
     let gasLimit: BigUInt

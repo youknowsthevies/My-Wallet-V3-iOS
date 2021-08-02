@@ -28,7 +28,7 @@ import ToolKit
     }
 
     @objc func configure(with assetType: LegacyAssetType, showChevronButton: Bool) {
-        self.legacyAssetType = assetType
+        legacyAssetType = assetType
         let cryptoCurrency = assetType.cryptoCurrency
         assetImageView.image = cryptoCurrency.whiteImageSmall
         label.text = cryptoCurrency.name
@@ -57,18 +57,19 @@ import ToolKit
 }
 
 // AssetTypeCell is a legacy component that is only used with BTC/BCH, so these are the only coins with added images.
-fileprivate extension CryptoCurrency {
+extension CryptoCurrency {
     private var whiteImageName: String? {
         switch self {
-        case .bitcoin:
+        case .coin(.bitcoin):
             return "white_btc_small"
-        case .bitcoinCash:
+        case .coin(.bitcoinCash):
             return "white_bch_small"
         default:
             return nil
         }
     }
-    var whiteImageSmall: UIImage? {
+
+    fileprivate var whiteImageSmall: UIImage? {
         guard let whiteImageName = self.whiteImageName else {
             return nil
         }

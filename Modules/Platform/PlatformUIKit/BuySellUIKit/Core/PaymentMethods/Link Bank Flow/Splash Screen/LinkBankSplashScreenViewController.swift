@@ -6,8 +6,9 @@ import RxSwift
 import UIKit
 
 final class LinkBankSplashScreenViewController: BaseScreenViewController,
-                                                LinkBankSplashScreenPresentable,
-                                                LinkBankSplashScreenViewControllable {
+    LinkBankSplashScreenPresentable,
+    LinkBankSplashScreenViewControllable
+{
 
     private let disposeBag = DisposeBag()
 
@@ -39,9 +40,11 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        set(barStyle: .darkContent(ignoresStatusBar: true, isTranslucent: true, background: .clear),
+        set(
+            barStyle: .darkContent(ignoresStatusBar: true, isTranslucent: true, background: .clear),
             leadingButtonStyle: .none,
-            trailingButtonStyle: .close)
+            trailingButtonStyle: .close
+        )
     }
 
     // MARK: - LinkBankSplashScreenPresentable
@@ -100,9 +103,11 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
     // MARK: - Private
 
     func setupUI() {
-        set(barStyle: .darkContent(ignoresStatusBar: true, isTranslucent: true, background: .clear),
+        set(
+            barStyle: .darkContent(ignoresStatusBar: true, isTranslucent: true, background: .clear),
             leadingButtonStyle: .none,
-            trailingButtonStyle: .close)
+            trailingButtonStyle: .close
+        )
         // static content
         topBackgroundImageView.image = UIImage(named: "link-bank-splash-top-bg", in: bundle, compatibleWith: nil)
         topImageView.image = UIImage(named: "splash-screen-bank-icon", in: bundle, compatibleWith: nil)
@@ -134,10 +139,12 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
         detailsStackView.translatesAutoresizingMaskIntoConstraints = false
         detailsStackView.axis = .vertical
         detailsStackView.isLayoutMarginsRelativeArrangement = true
-        detailsStackView.directionalLayoutMargins = .init(top: 0,
-                                                          leading: Spacing.inner,
-                                                          bottom: 0,
-                                                          trailing: Spacing.inner)
+        detailsStackView.directionalLayoutMargins = .init(
+            top: 0,
+            leading: Spacing.inner,
+            bottom: 0,
+            trailing: Spacing.inner
+        )
 
         let middleStackView = UIStackView(arrangedSubviews: [linkBankViaPartnerStackView, detailsStackView])
         middleStackView.axis = .vertical

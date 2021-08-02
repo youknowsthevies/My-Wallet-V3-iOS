@@ -1,15 +1,27 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import PlatformKit
 import RIBs
 import RxCocoa
 import RxSwift
 
 protocol AccountPickerPresentable: Presentable {
+
+    /// An optional button that is displayed at the bottom of the
+    /// account picker screen.
+    var button: ButtonViewModel? { get }
+
+    /// Connect the interactor to the presenter. Returns effects from the presentation layer.
+    /// - Parameter state: The state of the interactor
     func connect(state: Driver<AccountPickerInteractor.State>) -> Driver<AccountPickerInteractor.Effects>
 }
 
 final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, AccountPickerPresentable {
+
+    // MARK: - Public Properties
+
+    let button: ButtonViewModel?
 
     // MARK: - Private Properties
 
@@ -19,11 +31,15 @@ final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, Ac
 
     // MARK: - Init
 
-    init(viewController: AccountPickerViewControllable,
-         action: AssetAction,
-         navigationModel: ScreenNavigationModel,
-         headerModel: AccountPickerHeaderType) {
+    init(
+        viewController: AccountPickerViewControllable,
+        action: AssetAction,
+        navigationModel: ScreenNavigationModel,
+        headerModel: AccountPickerHeaderType,
+        buttonViewModel: ButtonViewModel? = nil
+    ) {
         self.action = action
+        button = buttonViewModel
         self.navigationModel = navigationModel
         self.headerModel = headerModel
         super.init(viewController: viewController)

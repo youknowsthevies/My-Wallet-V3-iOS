@@ -8,7 +8,11 @@ final class PriceServiceMock: PriceServiceAPI {
     var historicalPriceSeries: HistoricalPriceSeries!
     var priceQuoteAtTime: PriceQuoteAtTime!
 
-    func moneyValuePair(base fiatValue: FiatValue, cryptoCurrency: CryptoCurrency, usesFiatAsBase: Bool) -> Single<MoneyValuePair> {
+    func moneyValuePair(
+        base fiatValue: FiatValue,
+        cryptoCurrency: CryptoCurrency,
+        usesFiatAsBase: Bool
+    ) -> Single<MoneyValuePair> {
         .just(moneyValuePair)
     }
 
@@ -20,7 +24,11 @@ final class PriceServiceMock: PriceServiceAPI {
         .just(priceQuoteAtTime)
     }
 
-    func priceSeries(within window: PriceWindow, of baseCurrency: CryptoCurrency, in quoteCurrency: FiatCurrency) -> Single<HistoricalPriceSeries> {
+    func priceSeries(
+        within window: PriceWindow,
+        of baseCurrency: CryptoCurrency,
+        in quoteCurrency: FiatCurrency
+    ) -> Single<HistoricalPriceSeries> {
         .just(historicalPriceSeries)
     }
 }

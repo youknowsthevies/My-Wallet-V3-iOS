@@ -10,7 +10,7 @@ public final class EveryPayClient: EveryPayClientAPI {
     // MARK: - Types
 
     private enum Path {
-        static let cardDetails = [ "api", "v3", "mobile_payments", "card_details" ]
+        static let cardDetails = ["api", "v3", "mobile_payments", "card_details"]
     }
 
     private enum Parameter {
@@ -35,15 +35,19 @@ public final class EveryPayClient: EveryPayClientAPI {
 
     // MARK: - Setup
 
-    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.everypay),
-                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.everypay)) {
+    public init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.everypay),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.everypay)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
 
-    public func send(cardDetails: CardPartnerPayload.EveryPay.SendCardDetailsRequest.CardDetails,
-                     apiUserName: String,
-                     token: String) -> Single<CardPartnerPayload.EveryPay.CardDetailsResponse> {
+    public func send(
+        cardDetails: CardPartnerPayload.EveryPay.SendCardDetailsRequest.CardDetails,
+        apiUserName: String,
+        token: String
+    ) -> Single<CardPartnerPayload.EveryPay.CardDetailsResponse> {
         let path = Path.cardDetails
         let headers = [HttpHeaderField.authorization: "Bearer \(token)"]
         let payload = CardPartnerPayload.EveryPay.SendCardDetailsRequest(

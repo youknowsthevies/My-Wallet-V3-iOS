@@ -98,7 +98,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             destination = fiat.defaultWalletName
         }
         sendingToPresenter = TransactionalLineItem.sendingTo(destination).defaultPresenter(
-             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
         feePresenter = TransactionalLineItem.buyingFee(event.fee.displayString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
@@ -181,9 +181,9 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     }
 }
 
-fileprivate extension BuySellActivityItemEvent.EventStatus {
+extension BuySellActivityItemEvent.EventStatus {
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.OrderState
-    var localizedDescription: String {
+    fileprivate var localizedDescription: String {
         switch self {
         case .pending:
             return LocalizedString.pending

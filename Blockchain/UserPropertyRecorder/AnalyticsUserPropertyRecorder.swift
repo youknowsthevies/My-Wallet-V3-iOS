@@ -13,20 +13,22 @@ final class AnalyticsUserPropertyRecorder: UserPropertyRecording {
 
     struct UserPropertyErrorEvent: AnalyticsEvent {
         let name = "user_property_format_error"
-        let params: [String : String]?
+        let params: [String: String]?
     }
 
     // MARK: - Properties
 
     private let logger: Logger
     private let validator: AnalyticsUserPropertyValidator
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: - Setup
 
-    init(validator: AnalyticsUserPropertyValidator = AnalyticsUserPropertyValidator(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         logger: Logger = .shared) {
+    init(
+        validator: AnalyticsUserPropertyValidator = AnalyticsUserPropertyValidator(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        logger: Logger = .shared
+    ) {
         self.validator = validator
         self.analyticsRecorder = analyticsRecorder
         self.logger = logger

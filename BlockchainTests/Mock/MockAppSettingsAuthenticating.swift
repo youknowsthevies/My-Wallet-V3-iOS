@@ -17,13 +17,15 @@ class MockAppSettings: AppSettingsAuthenticating, AppSettingsAPI, CloudBackupCon
     var isPairedWithWallet: Bool = false
     var cloudBackupEnabled: Bool = true
 
-    init(pin: String? = nil,
-         pinKey: String? = nil,
-         biometryEnabled: Bool = false,
-         passwordPartHash: String? = nil,
-         encryptedPinPassword: String? = nil,
-         sharedKey: String? = nil,
-         guid: String? = nil) {
+    init(
+        pin: String? = nil,
+        pinKey: String? = nil,
+        biometryEnabled: Bool = false,
+        passwordPartHash: String? = nil,
+        encryptedPinPassword: String? = nil,
+        sharedKey: String? = nil,
+        guid: String? = nil
+    ) {
         self.pin = pin
         self.pinKey = pinKey
         self.biometryEnabled = biometryEnabled

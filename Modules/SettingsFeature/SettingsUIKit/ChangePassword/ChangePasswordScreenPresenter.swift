@@ -53,10 +53,12 @@ final class ChangePasswordScreenPresenter {
 
     // MARK: - Setup
 
-    init(alertPresenter: AlertViewPresenter = .shared,
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         previousAPI: RoutingPreviousStateEmitterAPI,
-         interactor: ChangePasswordScreenInteractor) {
+    init(
+        alertPresenter: AlertViewPresenter = .shared,
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        previousAPI: RoutingPreviousStateEmitterAPI,
+        interactor: ChangePasswordScreenInteractor
+    ) {
         self.previousAPI = previousAPI
         self.interactor = interactor
         self.alertPresenter = alertPresenter
@@ -114,12 +116,12 @@ final class ChangePasswordScreenPresenter {
             .share(replay: 1)
 
         stateObservable
-            .map { $0.isValid }
+            .map(\.isValid)
             .bindAndCatch(to: buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         latestStatesObservable
-            .compactMap { (passwordState, newPasswordState, _) -> InteractionInput? in
+            .compactMap { passwordState, newPasswordState, _ -> InteractionInput? in
                 guard let currentPassword = passwordState.value else { return nil }
                 guard let newPassword = newPasswordState.value else { return nil }
                 return .init(currentPassword: currentPassword, newPassword: newPassword)
@@ -132,7 +134,7 @@ final class ChangePasswordScreenPresenter {
             .disposed(by: disposeBag)
 
         interactor.state
-            .map { $0.isLoading }
+            .map(\.isLoading)
             .bindAndCatch(weak: self, onNext: { (self, isLoading) in
                 switch isLoading {
                 case true:
@@ -144,7 +146,7 @@ final class ChangePasswordScreenPresenter {
             .disposed(by: disposeBag)
 
         interactor.state
-            .filter { $0.isComplete }
+            .filter(\.isComplete)
             .mapToVoid()
             .bindAndCatch(to: previousAPI.previousRelay)
             .disposed(by: disposeBag)
@@ -166,5 +168,4 @@ final class ChangePasswordScreenPresenter {
             )
         )
     }
-
 }

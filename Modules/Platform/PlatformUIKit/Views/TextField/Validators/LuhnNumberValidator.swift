@@ -14,7 +14,7 @@ public final class LuhnNumberValidator {
             .reversed()
             .enumerated()
             .map { (index: $0.offset, digit: $0.element) }
-            .reduce(0) { (result, element) in
+            .reduce(0) { result, element in
                 let isOdd = element.index % 2 == 1
                 switch (isOdd, element.digit) {
                 case (true, 9):

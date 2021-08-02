@@ -6,29 +6,39 @@ import Foundation
 extension AnalyticsEvents.New {
     public enum Withdrawal: AnalyticsEvent {
 
-        public var type: AnalyticsEventType {
-            .new
-        }
+        public var type: AnalyticsEventType { .nabu }
 
         case linkBankClicked(origin: LinkBank.Origin)
-        case linkBankConditionsApproved(bankName: String,
-                                        partner: LinkBank.Partner,
-                                        provider: LinkBank.Provider)
-        case linkBankSelected(bankName: String,
-                              partner: LinkBank.Partner)
-        case withdrawalAmountEntered(currency: String,
-                                     inputAmount: Double,
-                                     outputAmount: Double,
-                                     withdrawalMethod: Withdrawal.Method)
-        case withdrawalAmountMaxClicked(amountCurrency: String?,
-                                        currency: String,
-                                        withdrawalMethod: Withdrawal.Method)
-        case withdrawalAmountMinClicked(amountCurrency: String?,
-                                        currency: String,
-                                        withdrawalMethod: Withdrawal.Method)
-        case withdrawalClicked(orign: Withdrawal.Origin)
-        case withdrawalMethodSelected(currency: String,
-                                      withdrawalMethod: Withdrawal.Method)
+        case linkBankConditionsApproved(
+            bankName: String,
+            partner: LinkBank.Partner,
+            provider: LinkBank.Provider
+        )
+        case linkBankSelected(
+            bankName: String,
+            partner: LinkBank.Partner
+        )
+        case withdrawalAmountEntered(
+            currency: String,
+            inputAmount: Double,
+            outputAmount: Double,
+            withdrawalMethod: Withdrawal.Method
+        )
+        case withdrawalAmountMaxClicked(
+            amountCurrency: String?,
+            currency: String,
+            withdrawalMethod: Withdrawal.Method
+        )
+        case withdrawalAmountMinClicked(
+            amountCurrency: String?,
+            currency: String,
+            withdrawalMethod: Withdrawal.Method
+        )
+        case withdrawalClicked(origin: Withdrawal.Origin)
+        case withdrawalMethodSelected(
+            currency: String,
+            withdrawalMethod: Withdrawal.Method
+        )
         case withdrawalViewed
 
         public enum LinkBank {

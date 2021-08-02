@@ -29,7 +29,8 @@ protocol LinkBankSplashScreenListener: AnyObject {
 }
 
 final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplashScreenPresentable>,
-                                            LinkBankSplashScreenInteractable {
+    LinkBankSplashScreenInteractable
+{
 
     weak var router: LinkBankSplashScreenRouting?
     weak var listener: LinkBankSplashScreenListener?
@@ -38,10 +39,12 @@ final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplash
     private let contentReducer: LinkBankSplashScreenContentReducer
     private let analyticsRecorder: AnalyticsEventRecorderAPI
 
-    init(presenter: LinkBankSplashScreenPresentable,
-         bankLinkageData: BankLinkageData,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         contentReducer: LinkBankSplashScreenContentReducer) {
+    init(
+        presenter: LinkBankSplashScreenPresentable,
+        bankLinkageData: BankLinkageData,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        contentReducer: LinkBankSplashScreenContentReducer
+    ) {
 
         self.bankLinkageData = bankLinkageData
         self.contentReducer = contentReducer

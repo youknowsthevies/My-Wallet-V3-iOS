@@ -9,7 +9,7 @@ public final class MockExternalAppOpener: ExternalAppOpener {
         public var open: [(url: URL, completionHandler: (Bool) -> Void)] = []
     }
 
-    private(set) public var recordedInvocations = RecordedInvocations()
+    public private(set) var recordedInvocations = RecordedInvocations()
 
     public func open(_ url: URL, completionHandler: @escaping (Bool) -> Void) {
         recordedInvocations.open.append((url, completionHandler))

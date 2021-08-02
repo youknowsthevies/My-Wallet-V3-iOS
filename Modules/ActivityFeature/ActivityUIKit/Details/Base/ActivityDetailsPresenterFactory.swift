@@ -15,25 +15,30 @@ final class ActivityDetailsPresenterFactory {
         switch event {
         case .fiat(let fiat):
             return FiatActivityDetailsPresenter(event: fiat)
+        case .crypto(let crypto):
+            return CryptoActivityDetailsPresenter(event: crypto)
         case .buySell(let buySell):
             return BuySellActivityDetailsPresenter(event: buySell)
         case .swap(let swap):
             return SwapActivityDetailsPresenter(event: swap)
         case .transactional(let transactional):
             switch transactional.currency {
-            case .bitcoin:
-                return BitcoinActivityDetailsPresenter(event: transactional, router: router)
-            case .bitcoinCash:
-                return BitcoinCashActivityDetailsPresenter(event: transactional, router: router)
+            case .coin(let model):
+                switch model.code {
+                case NonCustodialCoinCode.bitcoin.rawValue:
+                    return BitcoinActivityDetailsPresenter(event: transactional, router: router)
+                case NonCustodialCoinCode.bitcoinCash.rawValue:
+                    return BitcoinCashActivityDetailsPresenter(event: transactional, router: router)
+                case NonCustodialCoinCode.stellar.rawValue:
+                    return StellarActivityDetailsPresenter(event: transactional, router: router)
+                case NonCustodialCoinCode.ethereum.rawValue:
+                    return EthereumActivityDetailsPresenter(event: transactional, router: router)
+                default:
+                    fatalError("Transactional Activity Details not implemented for \(transactional.currency.code).")
+                }
             case .erc20:
                 let interactor = ERC20ActivityDetailsInteractor(cryptoCurrency: transactional.currency)
                 return ERC20ActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)
-            case .stellar:
-                return StellarActivityDetailsPresenter(event: transactional, router: router)
-            case .ethereum:
-                return EthereumActivityDetailsPresenter(event: transactional, router: router)
-            case .other:
-                fatalError("Transactional Activity Details not implemented for \(transactional.currency.code).")
             }
         }
     }

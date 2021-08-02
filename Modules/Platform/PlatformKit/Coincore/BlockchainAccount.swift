@@ -5,11 +5,11 @@ import ToolKit
 
 public typealias AvailableActions = Set<AssetAction>
 
-public protocol TradingAccount { }
+public protocol TradingAccount {}
 
-public protocol BankAccount { }
+public protocol BankAccount {}
 
-public protocol NonCustodialAccount { }
+public protocol NonCustodialAccount {}
 
 public protocol BlockchainAccount {
 
@@ -29,6 +29,8 @@ public protocol BlockchainAccount {
 
     /// Emits `Set` containing all actions this account can execute.
     var actions: Single<AvailableActions> { get }
+
+    var activity: Single<[ActivityItemEvent]> { get }
 
     /// Indicates if this account is funded.
     ///
@@ -66,7 +68,6 @@ public protocol BlockchainAccount {
 }
 
 extension BlockchainAccount {
-
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         balancePair(fiatCurrency: fiatCurrency).map(\.quote)
     }

@@ -34,26 +34,33 @@ final class BitPayTransactionEngine: TransactionEngine {
     private var bitpayInvoice: BitPayInvoiceTarget {
         transactionTarget as! BitPayInvoiceTarget
     }
+
     private var bitpayClientEngine: BitPayClientEngine {
         onChainEngine as! BitPayClientEngine
     }
+
     private var timeRemainingSeconds: TimeInterval {
         bitpayInvoice
             .expirationTimeInSeconds
     }
+
     private let stopCountdown = PublishSubject<Void>()
 
-    init(onChainEngine: OnChainTransactionEngine,
-         bitpayRepository: BitPayRepositoryAPI = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        onChainEngine: OnChainTransactionEngine,
+        bitpayRepository: BitPayRepositoryAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.onChainEngine = onChainEngine
         self.bitpayRepository = bitpayRepository
         self.analyticsRecorder = analyticsRecorder
     }
 
-    func start(sourceAccount: BlockchainAccount,
-               transactionTarget: TransactionTarget,
-               askForRefreshConfirmation: @escaping (Bool) -> Completable) {
+    func start(
+        sourceAccount: BlockchainAccount,
+        transactionTarget: TransactionTarget,
+        askForRefreshConfirmation: @escaping (Bool) -> Completable
+    ) {
         self.sourceAccount = sourceAccount
         self.transactionTarget = transactionTarget
         self.askForRefreshConfirmation = askForRefreshConfirmation
@@ -62,7 +69,7 @@ final class BitPayTransactionEngine: TransactionEngine {
 
     func assertInputsValid() {
         precondition(sourceAccount is CryptoNonCustodialAccount)
-        precondition(sourceCryptoCurrency == .bitcoin)
+        precondition(sourceCryptoCurrency == .coin(.bitcoin))
         precondition(transactionTarget is BitPayInvoiceTarget)
         precondition(onChainEngine is BitPayClientEngine)
         onChainEngine.assertInputsValid()
@@ -235,6 +242,7 @@ extension PendingTransaction {
     fileprivate mutating func setCountdownTimer(timer: Disposable) {
         engineState[.bitpayTimer] = timer
     }
+
     var bitpayTimer: Disposable? {
         engineState[.bitpayTimer] as? Disposable
     }

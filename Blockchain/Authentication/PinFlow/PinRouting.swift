@@ -147,7 +147,7 @@ struct PinRouting {
         }
     }
 
-    struct RoutingType {
+    enum RoutingType {
         typealias Forward = (RoutingType.Input) -> Void
         typealias Backward = () -> Void
         typealias Logout = () -> Void

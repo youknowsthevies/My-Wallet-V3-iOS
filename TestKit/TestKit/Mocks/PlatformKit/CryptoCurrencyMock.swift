@@ -16,6 +16,7 @@ extension ERC20AssetModel {
                     parentChain: "ETH",
                     erc20Address: "ETH",
                     logoPngUrl: "ETH",
+                    spotColor: nil,
                     websiteUrl: "ETH"
                 )
             ),
@@ -38,6 +39,7 @@ extension CoinAssetModel {
                     parentChain: nil,
                     erc20Address: nil,
                     logoPngUrl: nil,
+                    spotColor: nil,
                     websiteUrl: nil
                 )
             ),

@@ -36,10 +36,12 @@ public struct AccountPickerHeaderModel {
         )
     }
 
-    public init(title: String,
-                subtitle: String,
-                imageContent: ImageViewContent,
-                tableTitle: String? = LocalizedString.selectAWallet) {
+    public init(
+        title: String,
+        subtitle: String,
+        imageContent: ImageViewContent,
+        tableTitle: String? = LocalizedString.selectAWallet
+    ) {
         self.title = title
         self.subtitle = subtitle
         self.imageContent = imageContent

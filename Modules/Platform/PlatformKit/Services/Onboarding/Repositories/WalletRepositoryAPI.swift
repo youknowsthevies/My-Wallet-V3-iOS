@@ -1,17 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+import AuthenticationKit
 
 public typealias WalletRepositoryAPI = SessionTokenRepositoryAPI
-                                     & SharedKeyRepositoryAPI
-                                     & SharedKeyRepositoryCombineAPI
-                                     & PasswordRepositoryAPI
-                                     & GuidRepositoryAPI
-                                     & SyncPubKeysRepositoryAPI
-                                     & LanguageRepositoryAPI
-                                     & AuthenticatorRepositoryAPI
-                                     & PayloadRepositoryAPI
-                                     & NabuOfflineTokenRepositoryAPI
-                                     & NabuOfflineTokenRepositoryCombineAPI
-                                     & CredentialsRepositoryAPI
+    & SharedKeyRepositoryAPI
+    & PasswordRepositoryAPI
+    & GuidRepositoryAPI
+    & SyncPubKeysRepositoryAPI
+    & LanguageRepositoryAPI
+    & AuthenticatorRepositoryAPI
+    & PayloadRepositoryAPI
+    & NabuOfflineTokenRepositoryAPI
+    & CredentialsRepositoryAPI
 
 public protocol WalletRepositoryProvider {
 

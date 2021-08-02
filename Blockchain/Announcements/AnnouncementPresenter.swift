@@ -15,6 +15,7 @@ import ToolKit
 final class AnnouncementPresenter {
 
     // MARK: Services
+
     private let tabSwapping: TabSwapping
     private let walletOperating: WalletOperationsRouting
     private let backupFlowStarter: BackupFlowStarterAPI
@@ -51,23 +52,25 @@ final class AnnouncementPresenter {
 
     // MARK: - Setup
 
-    init(interactor: AnnouncementInteracting = AnnouncementInteractor(),
-         topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
-         featureFetcher: FeatureFetching = DIKit.resolve(),
-         cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = DIKit.resolve(),
-         interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting = DIKit.resolve(),
-         tabSwapping: TabSwapping = DIKit.resolve(),
-         walletOperating: WalletOperationsRouting = DIKit.resolve(),
-         backupFlowStarter: BackupFlowStarterAPI = DIKit.resolve(),
-         settingsStarter: SettingsStarterAPI = DIKit.resolve(),
-         tapControllerManagerProvider: TabControllerManagerProvider = DIKit.resolve(),
-         exchangeCoordinator: ExchangeCoordinator = .shared,
-         kycRouter: KYCRouterAPI = DIKit.resolve(),
-         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
-         kycSettings: KYCSettingsAPI = DIKit.resolve(),
-         webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
-         wallet: Wallet = WalletManager.shared.wallet,
-         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve()) {
+    init(
+        interactor: AnnouncementInteracting = AnnouncementInteractor(),
+        topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
+        featureFetcher: FeatureFetching = DIKit.resolve(),
+        cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = DIKit.resolve(),
+        interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting = DIKit.resolve(),
+        tabSwapping: TabSwapping = DIKit.resolve(),
+        walletOperating: WalletOperationsRouting = DIKit.resolve(),
+        backupFlowStarter: BackupFlowStarterAPI = DIKit.resolve(),
+        settingsStarter: SettingsStarterAPI = DIKit.resolve(),
+        tapControllerManagerProvider: TabControllerManagerProvider = DIKit.resolve(),
+        exchangeCoordinator: ExchangeCoordinator = .shared,
+        kycRouter: KYCRouterAPI = DIKit.resolve(),
+        reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
+        kycSettings: KYCSettingsAPI = DIKit.resolve(),
+        webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
+        wallet: Wallet = WalletManager.shared.wallet,
+        analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve()
+    ) {
         self.interactor = interactor
         self.webViewServiceAPI = webViewServiceAPI
         self.topMostViewControllerProvider = topMostViewControllerProvider
@@ -88,7 +91,7 @@ final class AnnouncementPresenter {
 
         announcement
             .asObservable()
-            .filter { $0.isHide }
+            .filter(\.isHide)
             .mapToVoid()
             .bindAndCatch(weak: self) { (self) in
                 self.currentAnnouncement = nil
@@ -123,8 +126,10 @@ final class AnnouncementPresenter {
     }
 
     /// Resolves the first valid announcement according by the provided types and preliminary data
-    private func resolve(metadata: AnnouncementsMetadata,
-                         preliminaryData: AnnouncementPreliminaryData) -> AnnouncementDisplayAction {
+    private func resolve(
+        metadata: AnnouncementsMetadata,
+        preliminaryData: AnnouncementPreliminaryData
+    ) -> AnnouncementDisplayAction {
         // For other users, keep the current logic in place
         for type in metadata.order {
             let announcement: Announcement
@@ -190,6 +195,8 @@ final class AnnouncementPresenter {
                 announcement = newSwap(using: preliminaryData, reappearanceTimeInterval: metadata.interval)
             case .sendToDomains:
                 announcement = sendToDomains(hasWalletBalance: preliminaryData.hasAnyWalletBalance)
+            case .paxRenaming:
+                announcement = paxRenaming
             }
             // Return the first different announcement that should show
             if announcement.shouldShow {
@@ -222,7 +229,7 @@ extension AnnouncementPresenter {
         VerifyEmailAnnouncement(
             isEmailVerified: user.email.verified,
             action: UIApplication.shared.openMailApplication
-          )
+        )
     }
 
     /// Computes Simple Buy Pending Transaction Announcement
@@ -237,8 +244,10 @@ extension AnnouncementPresenter {
     }
 
     /// Computes Simple Buy Finish Signup Announcement
-    private func simpleBuyFinishSignup(tiers: KYC.UserTiers,
-                                       hasIncompleteBuyFlow: Bool) -> Announcement {
+    private func simpleBuyFinishSignup(
+        tiers: KYC.UserTiers,
+        hasIncompleteBuyFlow: Bool
+    ) -> Announcement {
         SimpleBuyFinishSignupAnnouncement(
             canCompleteTier2: tiers.canCompleteTier2,
             hasIncompleteBuyFlow: hasIncompleteBuyFlow,
@@ -266,10 +275,12 @@ extension AnnouncementPresenter {
     }
 
     // Computes kyc airdrop announcement
-    private func kycAirdrop(user: NabuUser,
-                            tiers: KYC.UserTiers,
-                            isKycSupported: Bool,
-                            reappearanceTimeInterval: TimeInterval) -> Announcement {
+    private func kycAirdrop(
+        user: NabuUser,
+        tiers: KYC.UserTiers,
+        isKycSupported: Bool,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
         KycAirdropAnnouncement(
             canCompleteTier2: tiers.canCompleteTier2,
             isKycSupported: isKycSupported,
@@ -281,9 +292,11 @@ extension AnnouncementPresenter {
                 guard let self = self else { return }
                 guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(from: tabControllerManager.tabViewController,
-                                     tier: tier,
-                                     parentFlow: .none)
+                self.kycRouter.start(
+                    tier: tier,
+                    parentFlow: .airdrop,
+                    from: tabControllerManager.tabViewController
+                )
             }
         )
     }
@@ -316,9 +329,11 @@ extension AnnouncementPresenter {
                 guard let self = self else { return }
                 guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(from: tabControllerManager.tabViewController,
-                                     tier: tier,
-                                     parentFlow: .none)
+                self.kycRouter.start(
+                    tier: tier,
+                    parentFlow: .announcement,
+                    from: tabControllerManager.tabViewController
+                )
             }
         )
     }
@@ -345,6 +360,27 @@ extension AnnouncementPresenter {
         )
     }
 
+    /// Computes PAX Renaming card announcement
+    private var paxRenaming: Announcement {
+        PaxRenamingAnnouncement(
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                guard let topMostViewController = self.topMostViewControllerProvider.topMostViewController else {
+                    return
+                }
+                self.webViewServiceAPI.openSafari(
+                    url: "https://support.blockchain.com/hc/en-us/articles/360040777891-USD-Digital-is-now-Paxos-Standard",
+                    from: topMostViewController
+                )
+            }
+        )
+    }
+
     /// Computes Send to Domains announcement for users with any wallet balance
     private func sendToDomains(hasWalletBalance: Bool) -> Announcement {
         SendToDomainsAnnouncement(
@@ -356,7 +392,8 @@ extension AnnouncementPresenter {
                 guard let self = self else { return }
                 self.hideAnnouncement()
                 self.tabSwapping.switchToSend()
-            })
+            }
+        )
     }
 
     /// Cash Support Announcement for users who have not KYC'd
@@ -368,7 +405,8 @@ extension AnnouncementPresenter {
             },
             action: { [weak cashIdentityVerificationRouter] in
                 cashIdentityVerificationRouter?.showCashIdentityVerificationScreen()
-            })
+            }
+        )
     }
 
     /// Cash Support Announcement for users who have not KYC'd
@@ -401,7 +439,8 @@ extension AnnouncementPresenter {
             },
             action: { [weak interestIdentityVerificationRouter] in
                 interestIdentityVerificationRouter?.showInterestDashboardAnnouncementScreen(isKYCVerfied: isKYCVerified)
-            })
+            }
+        )
     }
 
     /// Cash Support Announcement for users who have KYC'd
@@ -414,7 +453,8 @@ extension AnnouncementPresenter {
             },
             action: {
                 // TODO: Route to bank linking
-            })
+            }
+        )
     }
 
     /// Computes SDD Users Buy announcement
@@ -432,7 +472,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak self] in
-                self?.handleBuyCrypto(currency: .bitcoin)
+                self?.handleBuyCrypto(currency: .coin(.bitcoin))
             }
         )
     }
@@ -446,14 +486,16 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak self] in
-                self?.handleBuyCrypto(currency: .bitcoin)
+                self?.handleBuyCrypto(currency: .coin(.bitcoin))
             }
         )
     }
 
     /// Computes Swap card announcement
-    private func newSwap(using data: AnnouncementPreliminaryData,
-                         reappearanceTimeInterval: TimeInterval) -> Announcement {
+    private func newSwap(
+        using data: AnnouncementPreliminaryData,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
         NewSwapAnnouncement(
             isEligibleForSimpleBuy: data.isSimpleBuyEligible,
             isTier1Or2Verified: data.tiers.isTier1Approved || data.tiers.isTier2Approved,
@@ -508,16 +550,18 @@ extension AnnouncementPresenter {
                 guard let self = self else { return }
                 guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(from: tabControllerManager.tabViewController,
-                                     tier: tier,
-                                     parentFlow: .none)
+                self.kycRouter.start(
+                    tier: tier,
+                    parentFlow: .announcement,
+                    from: tabControllerManager.tabViewController
+                )
             }
         )
     }
 }
 
-private extension AnnouncementPresenter {
-    func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
+extension AnnouncementPresenter {
+    private func handleBuyCrypto(currency: CryptoCurrency = .coin(.bitcoin)) {
         walletOperating.handleBuyCrypto(currency: currency)
         analyticsRecorder.record(
             event: AnalyticsEvents.New.SimpleBuy.buySellClicked(type: .buy, origin: .dashboardPromo)

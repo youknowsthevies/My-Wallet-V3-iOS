@@ -82,8 +82,8 @@ final class WalletViewViewModel {
         accountTypeBadge.marginOffsetRelay.accept(1.0)
 
         guard !(account is CryptoExchangeAccount) else {
-            /// Exchange accounts don't have a balance
-            /// that we can readily access at this time.
+            // Exchange accounts don't have a balance
+            // that we can readily access at this time.
             descriptionLabelContent = .empty()
             return
         }

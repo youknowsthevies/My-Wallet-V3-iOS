@@ -15,7 +15,7 @@ struct BitpayPaymentRequestResponse: Codable {
 
     var outputs: [Output] {
         instructions
-            .map { $0.outputs }
+            .map(\.outputs)
             .flatMap { $0 }
     }
 

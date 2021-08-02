@@ -3,8 +3,8 @@
 import Foundation
 
 final class AccountPickerSimpleHeaderView: UIView {
-    private let subtitleLabel: UILabel = UILabel()
-    private let separator: UIView = UIView()
+    private let subtitleLabel = UILabel()
+    private let separator = UIView()
 
     var model: AccountPickerSimpleHeaderModel! {
         didSet {
@@ -42,5 +42,4 @@ final class AccountPickerSimpleHeaderView: UIView {
         clipsToBounds = true
         subtitleLabel.numberOfLines = 0
     }
-
 }

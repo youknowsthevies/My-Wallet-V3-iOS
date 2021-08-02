@@ -64,6 +64,7 @@ public final class LoadingAnimatingView: LoadingCircleView {
         accessibility = .id(Accessibility.Identifier.LoadingView.loadingView)
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -73,35 +74,39 @@ public final class LoadingAnimatingView: LoadingCircleView {
 
         // Calculate the total time of the animation
         let totalTime = descriptors
-            .map { $0.startTime }
+            .map(\.startTime)
             .reduce(0, +)
 
         let fullAngle: CGFloat = 2 * .pi
 
         var time: CFTimeInterval = 0
         var summary = descriptors
-            .reduce(into: Summary()) { (result, current) in
+            .reduce(into: Summary()) { result, current in
                 time += current.startTime
                 result.times.append(time / totalTime)
                 result.angles.append(current.startAngle * fullAngle)
                 result.lengths.append(current.length)
-        }
+            }
 
         summary.times.append(summary.times[0])
         summary.angles.append(summary.angles[0])
         summary.lengths.append(summary.lengths[0])
 
         // Animate length
-        animateKeyPath(keyPath: LoadingAnimatingView.strokeEndKeyPath,
-                       duration: totalTime,
-                       times: summary.times,
-                       values: summary.lengths)
+        animateKeyPath(
+            keyPath: LoadingAnimatingView.strokeEndKeyPath,
+            duration: totalTime,
+            times: summary.times,
+            values: summary.lengths
+        )
 
         // Animate rotation
-        animateKeyPath(keyPath: LoadingAnimatingView.transformRotationKeyPath,
-                       duration: totalTime,
-                       times: summary.times,
-                       values: summary.angles)
+        animateKeyPath(
+            keyPath: LoadingAnimatingView.transformRotationKeyPath,
+            duration: totalTime,
+            times: summary.times,
+            values: summary.angles
+        )
     }
 
     public func stop() {
@@ -109,10 +114,12 @@ public final class LoadingAnimatingView: LoadingCircleView {
         layer.removeAnimation(forKey: LoadingAnimatingView.transformRotationKeyPath)
     }
 
-    private func animateKeyPath(keyPath: String,
-                                duration: CFTimeInterval,
-                                times: [CFTimeInterval],
-                                values: [CGFloat]) {
+    private func animateKeyPath(
+        keyPath: String,
+        duration: CFTimeInterval,
+        times: [CFTimeInterval],
+        values: [CGFloat]
+    ) {
         let animation = CAKeyframeAnimation(keyPath: keyPath)
         animation.keyTimes = times as [NSNumber]
         animation.values = values

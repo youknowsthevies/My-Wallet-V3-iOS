@@ -16,7 +16,7 @@ options:
   bundleIdPrefix: com.rainydayapps
   defaultConfig: Release
   deploymentTarget:
-    iOS: '13.0'
+    iOS: '14.0'
   groupSortPosition: bottom
   platform: iOS
 schemeTemplates:
@@ -33,9 +33,6 @@ schemeTemplates:
       config: ${releaseConfig}
     run:
       config: ${debugConfig}
-      environmentVariables:
-      - variable: bootstrap_work
-        value: ${bootstrapWorkValue}
     test:
       config: ${debugConfig}
       gatherCoverageData: true
@@ -88,10 +85,6 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: AnalyticsKitTests
         randomExecutionOrder: true
-      - name: NabuAnalyticsDataKitTests
-        randomExecutionOrder: true
-      - name: NabuAnalyticsKitTests
-        randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
         randomExecutionOrder: true
       - name: AuthenticationKitTests
@@ -107,35 +100,30 @@ schemes:
     templateAttributes:
       debugConfig: Debug Production
       releaseConfig: Release
-      bootstrapWorkValue: "false"
     templates:
     - BlockchainScheme
   Blockchain (Dev):
     templateAttributes:
       debugConfig: Debug Dev
       releaseConfig: Release
-      bootstrapWorkValue: "false"
     templates:
     - BlockchainScheme
   Blockchain (Internal Production):
     templateAttributes:
       debugConfig: Debug Production
       releaseConfig: Release Internal
-      bootstrapWorkValue: "false"
     templates:
     - BlockchainScheme
   Blockchain (Staging):
     templateAttributes:
       debugConfig: Debug Staging
       releaseConfig: Release Staging
-      bootstrapWorkValue: "false"
     templates:
     - BlockchainScheme
   Blockchain (Alpha):
     templateAttributes:
       debugConfig: Debug Alpha
       releaseConfig: Release Alpha
-      bootstrapWorkValue: "false"
     templates:
     - BlockchainScheme
 settingGroups:
@@ -275,13 +263,13 @@ settings:
     Debug Staging:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Debug Alpha:
-      OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
+      OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD -DALPHA_BUILD
     Release Internal:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Release Staging:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Release Alpha:
-      OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
+      OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD -DALPHA_BUILD
 targetTemplates:
   Module:
     dependencies:
@@ -321,6 +309,9 @@ packages:
   CombineExt:
     url: https://github.com/CombineCommunity/CombineExt.git
     version: 1.3.0
+  Lottie:
+    url: https://github.com/airbnb/lottie-ios.git
+    version: 3.2.1
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     version: 1.9.0
@@ -392,6 +383,8 @@ targets:
     templates:
     - ModuleTests
   AnalyticsKit:
+    dependencies:
+    - target: SharedPackagesKit
     templateAttributes:
       featureName: Analytics
     templates:
@@ -403,39 +396,16 @@ targets:
       featureName: Analytics
     templates:
     - ModuleTests
-  NabuAnalyticsKit:
+  RxAnalyticsKit:
     dependencies:
-    - target: PlatformKit
-    - target: NetworkKit
     - target: AnalyticsKit
-    - target: SettingsKit
-    - target: SharedPackagesKit
     templateAttributes:
       featureName: Analytics
     templates:
     - Module
-  NabuAnalyticsKitTests:
+  AnalyticsKitTests:
     dependencies:
-    - target: NabuAnalyticsKit
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - ModuleTests
-  NabuAnalyticsDataKit:
-    dependencies:
-    - target: NabuAnalyticsKit
-    - target: NetworkKit
-    - target: ToolKit
-    scheme:
-      testTargets:
-      - NabuAnalyticsDataKitTests
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - Module
-  NabuAnalyticsDataKitTests:
-    dependencies:
-    - target: NabuAnalyticsDataKit
+    - target: AnalyticsKit
     templateAttributes:
       featureName: Analytics
     templates:
@@ -557,7 +527,6 @@ targets:
     - framework: Carthage/Build/CryptoSwift.xcframework
     - framework: Carthage/Build/Differentiator.xcframework
     - framework: Carthage/Build/DIKit.xcframework
-    - framework: Carthage/Build/Differentiator.xcframework
     - framework: Carthage/Build/FirebaseABTesting.xcframework
       embed: false
     - framework: Carthage/Build/FirebaseAnalytics.xcframework
@@ -587,6 +556,16 @@ targets:
     - framework: Carthage/Build/PhoneNumberKit.xcframework
     - framework: Carthage/Build/PromisesObjC.xcframework
       embed: false
+    - framework: Carthage/Build/recaptcha.framework
+      embed: false
+    - framework: Carthage/Build/GoogleToolboxForMac.xcframework
+      embed: false
+    - framework: Carthage/Build/GTMSessionFetcher.xcframework
+      embed: false
+    - framework: Carthage/Build/Protobuf.xcframework
+      embed: false
+    - framework: Carthage/Build/Promises.xcframework
+      embed: false
     - framework: Carthage/Build/RIBs.xcframework
     - framework: Carthage/Build/RxCocoa.xcframework
     - framework: Carthage/Build/RxCombine.xcframework
@@ -602,8 +581,6 @@ targets:
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: AnalyticsKit
-    - target: NabuAnalyticsKit
-    - target: NabuAnalyticsDataKit
     - target: PlatformUIKit
     - target: TodayExtension
     - target: PlatformKit
@@ -641,6 +618,7 @@ targets:
     - target: AuthenticationKit
     - target: AuthenticationUIKit
     - target: AuthenticationDataKit
+    - target: RxAnalyticsKit
     platform: iOS
     postBuildScripts:
     - inputFiles:
@@ -806,7 +784,7 @@ targets:
     - package: CombineExt
     platform: iOS
     deploymentTarget:
-        iOS: '13.0'
+        iOS: '14.0'
     scheme: {}
     sources:
     - createIntermediateGroups: true
@@ -1191,12 +1169,14 @@ targets:
     dependencies:
     - framework: Carthage/Build/BigInt.xcframework
     - framework: Carthage/Build/CryptoSwift.xcframework
+    - target: AuthenticationKit
     - target: CommonCryptoKit
     - target: Localization
     - target: NetworkKit
     - target: ToolKit
     - target: WalletPayloadKit
     - target: SharedPackagesKit
+    - target: RxAnalyticsKit
     scheme:
       testTargets:
       - PlatformKitTests
@@ -1222,6 +1202,7 @@ targets:
     - ModuleTests
   PlatformUIKit:
     dependencies:
+    - package: Lottie
     - framework: Carthage/Build/BigInt.xcframework
     - framework: Carthage/Build/Charts.xcframework
     - framework: Carthage/Build/Differentiator.xcframework
@@ -1236,6 +1217,7 @@ targets:
     - target: PlatformKit
     - target: ToolKit
     - target: UIComponentsKit
+    - target: RxAnalyticsKit
     scheme:
       testTargets:
       - PlatformUIKitTests
@@ -1590,6 +1572,23 @@ targets:
     templates:
     - ModuleTests
   AuthenticationKit:
+    configFiles:
+      Debug Dev: Config/AuthenticationKitConfig/AuthenticationKit-Dev.xcconfig
+      Debug Production: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
+      Debug Staging: Config/AuthenticationKitConfig/AuthenticationKit-Staging.xcconfig
+      Release: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
+      Release Internal: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
+      Release Staging: Config/AuthenticationKitConfig/AuthenticationKit-Staging.xcconfig
+    dependencies:
+    - framework: Carthage/Build/RxSwift.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - target: NetworkKit
+    info:
+      path: Modules/AuthenticationFeature/AuthenticationKit/Info.plist
+      properties:
+        LOGIN_URL: $(LOGIN_URL)
+        GOOGLE_RECAPTCHA_SITE_KEY: $(GOOGLE_RECAPTCHA_SITE_KEY)
+    platform: iOS
     scheme:
       testTargets:
       - AuthenticationKitTests
@@ -1607,6 +1606,7 @@ targets:
   AuthenticationUIKit:
     dependencies:
     - target: AuthenticationKit
+    - target: PlatformUIKit
     - target: SharedPackagesKit
     - target: UIComponentsKit
     scheme:
@@ -1619,6 +1619,11 @@ targets:
   AuthenticationUIKitTests:
     dependencies:
     - target: AuthenticationUIKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AuthenticationKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit
     templateAttributes:
       featureName: AuthenticationFeature
     templates:
@@ -1626,6 +1631,9 @@ targets:
   AuthenticationDataKit:
     dependencies:
     - target: AuthenticationKit
+    - target: NetworkKit
+    - target: WalletPayloadKit
+    - target: CommonCryptoKit
     scheme:
       testTargets:
       - AuthenticationDataKitTests
@@ -1636,6 +1644,10 @@ targets:
   AuthenticationDataKitTests:
     dependencies:
     - target: AuthenticationDataKit
+    - target: PlatformKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
     templateAttributes:
       featureName: AuthenticationFeature
     templates:

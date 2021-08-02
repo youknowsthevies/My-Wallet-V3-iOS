@@ -54,7 +54,7 @@ final class CloudBackupAnnouncement: OneTimeAnnouncement & ActionableAnnouncemen
     }
 
     let type = AnnouncementType.cloudBackup
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -64,12 +64,14 @@ final class CloudBackupAnnouncement: OneTimeAnnouncement & ActionableAnnouncemen
 
     // MARK: - Setup
 
-    init(cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
-        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+    init(
+        cacheSuite: CacheSuite = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
+        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

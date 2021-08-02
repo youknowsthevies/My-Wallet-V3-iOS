@@ -47,7 +47,7 @@ extension TargetSelectionPageSectionModel: AnimatableSectionModelType {
 }
 
 extension TargetSelectionPageSectionModel: Equatable {
-    static func ==(lhs: TargetSelectionPageSectionModel, rhs: TargetSelectionPageSectionModel) -> Bool {
+    static func == (lhs: TargetSelectionPageSectionModel, rhs: TargetSelectionPageSectionModel) -> Bool {
         switch (lhs, rhs) {
         case (.source(header: _, items: let left), .source(header: _, items: let right)):
             return left == right

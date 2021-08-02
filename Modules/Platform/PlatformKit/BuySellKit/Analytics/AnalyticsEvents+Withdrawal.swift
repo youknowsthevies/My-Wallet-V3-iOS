@@ -42,7 +42,7 @@ extension AnalyticsEvents {
             }
         }
 
-        public var params: [String : String]? {
+        public var params: [String: String]? {
             switch self {
             case .formShown:
                 return nil

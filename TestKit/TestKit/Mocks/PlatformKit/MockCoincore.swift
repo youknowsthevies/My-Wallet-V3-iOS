@@ -15,8 +15,11 @@ class MockCoincore: CoincoreAPI {
         .just(event: .completed)
     }
 
+    var initializePublisherCalled = false
+
     func initializePublisher() -> AnyPublisher<Never, Never> {
-        initialize().asPublisher().ignoreFailure()
+        initializePublisherCalled = true
+        return initialize().asPublisher().ignoreFailure()
     }
 
     func getTransactionTargets(sourceAccount: BlockchainAccount, action: AssetAction) -> Single<[SingleAccount]> {
@@ -24,6 +27,7 @@ class MockCoincore: CoincoreAPI {
     }
 
     var requestedCryptoAsset: CryptoAsset!
+
     subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
         requestedCryptoAsset
     }

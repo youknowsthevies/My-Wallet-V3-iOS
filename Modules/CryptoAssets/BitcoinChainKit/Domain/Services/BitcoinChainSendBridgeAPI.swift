@@ -16,11 +16,13 @@ public struct BitcoinChainTransactionProposal<Token: BitcoinChainToken> {
         Token.coin
     }
 
-    public init(destination: BitcoinChainReceiveAddress<Token>,
-                amount: MoneyValue,
-                fees: MoneyValue,
-                walletIndex: Int32,
-                source: CryptoAccount) {
+    public init(
+        destination: BitcoinChainReceiveAddress<Token>,
+        amount: MoneyValue,
+        fees: MoneyValue,
+        walletIndex: Int32,
+        source: CryptoAccount
+    ) {
         self.destination = destination
         self.amount = amount
         self.fees = fees
@@ -38,9 +40,9 @@ public struct BitcoinChainTransactionCandidate<Token: BitcoinChainToken> {
     public let sweepAmount: MoneyValue
 
     public init(proposal: BitcoinChainTransactionProposal<Token>, fees: MoneyValue, sweepAmount: MoneyValue, sweepFee: MoneyValue) {
-        self.destination = proposal.destination
-        self.amount = proposal.amount
-        self.source = proposal.source
+        destination = proposal.destination
+        amount = proposal.amount
+        source = proposal.source
         self.fees = fees
         self.sweepFee = sweepFee
         self.sweepAmount = sweepAmount

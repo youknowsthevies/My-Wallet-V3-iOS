@@ -24,14 +24,13 @@ class FiatAsset: Asset {
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
         switch filter {
-        case .all:
-            return allAccountsGroup
-        case .custodial:
+        case .all,
+             .custodial:
             return custodialGroup
-        case .interest:
-            return interestGroup
-        case .nonCustodial:
-            return nonCustodialGroup
+        case .interest,
+             .nonCustodial,
+             .exchange:
+            return .just(FiatAccountGroup(accounts: []))
         }
     }
 
@@ -41,27 +40,14 @@ class FiatAsset: Asset {
 
     // MARK: - Helpers
 
-    private var allAccountsGroup: Single<AccountGroup> {
-        custodialGroup
-    }
-
     private var custodialGroup: Single<AccountGroup> {
         let accounts = enabledCurrenciesService.allEnabledFiatCurrencies
             .map { FiatCustodialAccount(fiatCurrency: $0) }
         return .just(FiatAccountGroup(accounts: accounts))
     }
 
-    private var interestGroup: Single<AccountGroup> {
-        unimplemented()
-    }
-
-    private var nonCustodialGroup: Single<AccountGroup> {
-        unimplemented()
-    }
-
     /// We cannot transfer for fiat
     func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]> {
         .just([])
     }
-
 }

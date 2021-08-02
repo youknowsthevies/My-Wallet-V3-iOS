@@ -17,7 +17,7 @@ public protocol SendRootRouting: ViewableRouting {
     func dismissTransactionFlow()
 }
 
-public protocol SendRootListener: ViewListener { }
+public protocol SendRootListener: ViewListener {}
 
 final class SendRootInteractor: Interactor, SendRootInteractable, SendRootListener {
 

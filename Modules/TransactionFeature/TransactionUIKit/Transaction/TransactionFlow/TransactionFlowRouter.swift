@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -8,11 +9,12 @@ import RxSwift
 import TransactionKit
 
 protocol TransactionFlowInteractable: Interactable,
-                                      EnterAmountPageListener,
-                                      ConfirmationPageListener,
-                                      AccountPickerListener,
-                                      PendingTransactionPageListener,
-                                      TargetSelectionPageListener {
+    EnterAmountPageListener,
+    ConfirmationPageListener,
+    AccountPickerListener,
+    PendingTransactionPageListener,
+    TargetSelectionPageListener
+{
 
     var router: TransactionFlowRouting? { get set }
     var listener: TransactionFlowListener? { get set }
@@ -33,11 +35,15 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
 
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
+    private let disposeBag = DisposeBag()
+    private var linkBankFlowRouter: LinkBankFlowStarter?
 
-    init(interactor: TransactionFlowInteractable,
-         viewController: TransactionFlowViewControllable,
-         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
-         alertViewPresenter: AlertViewPresenterAPI = resolve()) {
+    init(
+        interactor: TransactionFlowInteractable,
+        viewController: TransactionFlowViewControllable,
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+        alertViewPresenter: AlertViewPresenterAPI = resolve()
+    ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
         super.init(interactor: interactor, viewController: viewController)
@@ -112,6 +118,30 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         let viewControllable = router.viewControllable
         attachChild(router)
         viewController.replaceRoot(viewController: viewControllable, animated: false)
+    }
+
+    func presentLinkABank(transactionModel: TransactionModel) {
+        let builder = LinkBankFlowRootBuilder()
+        let router = builder.build()
+        linkBankFlowRouter = router
+        router.startFlow()
+            .withLatestFrom(transactionModel.state) { ($0, $1) }
+            .subscribe(onNext: { [topMostViewControllerProvider] effect, state in
+                switch effect {
+                case .closeFlow:
+                    topMostViewControllerProvider
+                        .topMostViewController?
+                        .dismiss(animated: true, completion: nil)
+                    transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
+                case .bankLinked:
+                    if let source = state.source {
+                        transactionModel.process(action: .bankAccountLinkedFromSource(source, state.action))
+                    } else {
+                        transactionModel.process(action: .bankAccountLinked(state.action))
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
     }
 
     func presentDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction) {
@@ -198,12 +228,14 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
             ),
             action: action
         )
+        let button: ButtonViewModel? = action == .deposit ? .secondary(with: LocalizationConstants.addNew) : nil
         return builder.build(
             listener: .listener(interactor),
             navigationModel: ScreenNavigationModel.AccountPicker.modal(
                 title: TransactionFlowDescriptor.AccountPicker.sourceTitle(action: action)
             ),
-            headerModel: action == .deposit ? .none : .simple(header)
+            headerModel: action == .deposit ? .none : .simple(header),
+            buttonViewModel: button
         )
     }
 
@@ -222,10 +254,12 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
             ),
             action: action
         )
+        let button: ButtonViewModel? = action == .withdraw ? .secondary(with: LocalizationConstants.addNew) : nil
         return builder.build(
             listener: .listener(interactor),
             navigationModel: navigationModel,
-            headerModel: action == .withdraw ? .none : .simple(header)
+            headerModel: action == .withdraw ? .none : .simple(header),
+            buttonViewModel: button
         )
     }
 }

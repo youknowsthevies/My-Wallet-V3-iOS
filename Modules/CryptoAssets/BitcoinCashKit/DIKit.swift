@@ -13,13 +13,12 @@ extension DependencyContainer {
 
         factory { BitcoinCashWalletAccountRepository() }
 
-        factory(tag: CryptoCurrency.bitcoinCash) { BitcoinCashAsset() as CryptoAsset }
+        factory(tag: CryptoCurrency.coin(.bitcoinCash)) { BitcoinCashAsset() as CryptoAsset }
 
-        factory { BitcoinCashHistoricalTransactionService() }
+        single { BitcoinCashHistoricalTransactionService() as BitcoinCashHistoricalTransactionServiceAPI }
 
-        factory { BitcoinCashActivityItemEventDetailsFetcher() }
-
-        factory { BitcoinCashTransactionalActivityItemEventsService() }
-
+        factory { () -> AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> in
+            AnyActivityItemEventDetailsFetcher(api: BitcoinCashActivityItemEventDetailsFetcher())
+        }
     }
 }

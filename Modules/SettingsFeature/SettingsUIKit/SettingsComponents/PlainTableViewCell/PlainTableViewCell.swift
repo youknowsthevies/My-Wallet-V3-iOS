@@ -7,9 +7,11 @@ struct PlainCellViewModel {
     let accessibilityID: String
     let titleAccessibilityID: String
 
-    init(title: String,
-         accessibilityID: String,
-         titleAccessibilityID: String) {
+    init(
+        title: String,
+        accessibilityID: String,
+        titleAccessibilityID: String
+    ) {
         self.title = title
         self.accessibilityID = accessibilityID
         self.titleAccessibilityID = titleAccessibilityID

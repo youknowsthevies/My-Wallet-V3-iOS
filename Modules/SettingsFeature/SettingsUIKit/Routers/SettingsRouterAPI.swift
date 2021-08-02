@@ -5,5 +5,6 @@ import RxRelay
 
 public protocol SettingsRouterAPI: RoutingPreviousStateEmitterAPI {
     var actionRelay: PublishRelay<SettingsScreenAction> { get }
+
     func presentSettings()
 }

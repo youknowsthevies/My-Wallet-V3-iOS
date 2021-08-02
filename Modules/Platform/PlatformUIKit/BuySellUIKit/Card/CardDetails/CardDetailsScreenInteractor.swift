@@ -19,9 +19,11 @@ final class CardDetailsScreenInteractor: Interactor {
 
     // MARK: - Setup
 
-    init(routingInteractor: CardRouterInteractor,
-         paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
-         cardListService: CardListServiceAPI = resolve()) {
+    init(
+        routingInteractor: CardRouterInteractor,
+        paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
+        cardListService: CardListServiceAPI = resolve()
+    ) {
         self.routingInteractor = routingInteractor
         self.paymentMethodsService = paymentMethodsService
         self.cardListService = cardListService

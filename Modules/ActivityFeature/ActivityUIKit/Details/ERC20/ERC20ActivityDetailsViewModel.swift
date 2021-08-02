@@ -26,12 +26,14 @@ struct ERC20ActivityDetailsViewModel: Equatable {
 
     struct Amounts: Equatable {
         fileprivate static let empty: Amounts = .init(fee: .empty, gasFor: nil)
+
         struct Value: Equatable {
             fileprivate static let empty: Value = .init(cryptoAmount: "", amount: "", value: "")
             let cryptoAmount: String
             let amount: String
             let value: String
         }
+
         let fee: Value
         let gasFor: Value?
     }

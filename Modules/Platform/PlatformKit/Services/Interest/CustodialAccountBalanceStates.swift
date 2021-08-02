@@ -44,24 +44,25 @@ extension CustodialAccountBalanceStates {
                     enabledCurrenciesService: enabledCurrenciesService
                 )
             }
-            .reduce(into: [CurrencyType: CustodialAccountBalanceState]()) { (result, balance) in
+            .reduce(into: [CurrencyType: CustodialAccountBalanceState]()) { result, balance in
                 result[balance.currency] = .present(balance)
             }
     }
 }
 
-fileprivate extension CustodialAccountBalance {
+extension CustodialAccountBalance {
 
     // MARK: - Init
 
-    init?(
+    fileprivate init?(
         currencyCode: String,
         balance: CustodialBalanceResponse.Balance,
         enabledCurrenciesService: EnabledCurrenciesServiceAPI
     ) {
         guard let currencyType = try? CurrencyType(
-                code: currencyCode,
-                enabledCurrenciesService: enabledCurrenciesService) else {
+            code: currencyCode,
+            enabledCurrenciesService: enabledCurrenciesService
+        ) else {
             return nil
         }
         self.init(currency: currencyType, response: balance)

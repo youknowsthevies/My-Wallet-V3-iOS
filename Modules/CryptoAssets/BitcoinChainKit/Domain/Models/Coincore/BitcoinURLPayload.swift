@@ -9,7 +9,7 @@ public struct BitcoinURLPayload: BIP21URI {
 
     public let address: String
     public let amount: String?
-    public let cryptoCurrency: CryptoCurrency = .bitcoin
+    public let cryptoCurrency: CryptoCurrency = .coin(.bitcoin)
     public let includeScheme: Bool
 
     public init(address: String, amount: String?) {

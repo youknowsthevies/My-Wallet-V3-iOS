@@ -53,7 +53,8 @@ final class HistoricalBalanceCellPresenter {
             interactor: interactor.balanceInteractor,
             descriptors: .default(
                 cryptoAccessiblitySuffix: AccessibilityId.cryptoBalanceLabelFormat,
-                fiatAccessiblitySuffix: AccessibilityId.fiatBalanceLabelFormat)
+                fiatAccessiblitySuffix: AccessibilityId.fiatBalanceLabelFormat
+            )
         )
     }
 }

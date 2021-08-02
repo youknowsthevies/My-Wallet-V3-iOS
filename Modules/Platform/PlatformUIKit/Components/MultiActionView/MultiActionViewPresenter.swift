@@ -17,7 +17,7 @@ public final class PlainActionViewPresenter: MultiActionViewPresenting {
     // MARK: - Setup
 
     public init(using items: [SegmentedViewModel.Item]) {
-        self.segmentedViewModel = .plain(items: items, isMomentary: true)
+        segmentedViewModel = .plain(items: items, isMomentary: true)
     }
 }
 

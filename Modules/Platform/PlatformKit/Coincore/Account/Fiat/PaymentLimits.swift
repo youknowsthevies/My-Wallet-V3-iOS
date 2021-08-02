@@ -11,9 +11,11 @@ public struct PaymentLimits {
         public let daily: FiatValue
         public let annual: FiatValue
 
-        public init(transactional: FiatValue,
-                    daily: FiatValue,
-                    annual: FiatValue) {
+        public init(
+            transactional: FiatValue,
+            daily: FiatValue,
+            annual: FiatValue
+        ) {
             self.transactional = transactional
             self.daily = daily
             self.annual = annual
@@ -26,8 +28,10 @@ public struct PaymentLimits {
     /// your `paymentMethod.limits.max`
     public let max: Max
 
-    public init(min: FiatValue,
-                max: Max) {
+    public init(
+        min: FiatValue,
+        max: Max
+    ) {
         self.min = min
         self.max = max
     }

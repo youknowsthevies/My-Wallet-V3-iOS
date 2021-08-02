@@ -78,8 +78,8 @@ extension LinkedBankViewModel: Equatable {
     }
 }
 
-private extension Accessibility.Identifier {
-    enum LinkedBankView {
+extension Accessibility.Identifier {
+    fileprivate enum LinkedBankView {
         private static let prefix = "LinkedBankView."
         static let image = "\(prefix)image"
         static let name = "\(prefix)name."

@@ -11,13 +11,15 @@ public struct PaymentAccount {
             let recipient: String?
             let routingNumber: String?
 
-            init(account: String?,
-                 address: String?,
-                 code: String?,
-                 country: String?,
-                 name: String?,
-                 recipient: String?,
-                 routingNumber: String?) {
+            init(
+                account: String?,
+                address: String?,
+                code: String?,
+                country: String?,
+                name: String?,
+                recipient: String?,
+                routingNumber: String?
+            ) {
                 self.account = account
                 self.address = address
                 self.code = code
@@ -27,6 +29,7 @@ public struct PaymentAccount {
                 self.routingNumber = routingNumber
             }
         }
+
         let id: String
         let address: String
         let agent: Agent
@@ -51,11 +54,13 @@ public struct PaymentAccount {
             state = try values.decode(PaymentAccountProperty.State.self, forKey: .state)
         }
 
-        init(id: String,
-             address: String,
-             agent: Agent,
-             currency: CurrencyType,
-             state: PaymentAccountProperty.State) {
+        init(
+            id: String,
+            address: String,
+            agent: Agent,
+            currency: CurrencyType,
+            state: PaymentAccountProperty.State
+        ) {
             self.id = id
             self.address = address
             self.agent = agent
@@ -78,13 +83,13 @@ public struct PaymentAccount {
         public let routingNumber: String?
 
         init(agent: Response.Agent) {
-            self.account = agent.account
-            self.address = agent.address
-            self.code = agent.code
-            self.country = agent.country
-            self.name = agent.name
-            self.recipient = agent.recipient
-            self.routingNumber = agent.routingNumber
+            account = agent.account
+            address = agent.address
+            code = agent.code
+            country = agent.country
+            name = agent.name
+            recipient = agent.recipient
+            routingNumber = agent.routingNumber
         }
     }
 
@@ -95,10 +100,10 @@ public struct PaymentAccount {
     public let state: PaymentAccountProperty.State
 
     init(response: Response) {
-        self.id = response.id
-        self.address = response.address
-        self.agent = .init(agent: response.agent)
-        self.currency = response.currency
-        self.state = response.state
+        id = response.id
+        address = response.address
+        agent = .init(agent: response.agent)
+        currency = response.currency
+        state = response.state
     }
 }

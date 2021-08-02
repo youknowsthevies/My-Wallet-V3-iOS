@@ -5,6 +5,7 @@ import Foundation
 /// A URI scheme that conforms to BIP 21 (https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
 public protocol BIP21URI: CryptoAssetQRMetadata {
     static var scheme: String { get }
+
     init(address: String, amount: String?)
 }
 
@@ -31,12 +32,12 @@ extension BIP21URI {
         let bitpayPaymentLink = "https://bitpay.com/"
         let hasBitpayPaymentUrl = urlString.contains(bitpayPaymentLink)
 
-        if urlString.contains(doubleSlash) && !hasBitpayPaymentUrl {
+        if urlString.contains(doubleSlash), !hasBitpayPaymentUrl {
             let queryArgs = url.queryArgs
 
             address = url.host ?? queryArgs["address"]
             amount = queryArgs["amount"]
-        } else if urlString.contains(colon) && hasBitpayPaymentUrl {
+        } else if urlString.contains(colon), hasBitpayPaymentUrl {
             return nil
         } else if urlString.contains(colon) {
             // Handle web format (e.g. "scheme:1Amu4uPJnYbUXX2HhDFMNq7tSneDwWYDyv")

@@ -5,17 +5,17 @@ import RxRelay
 import RxSwift
 
 public typealias CompleteSettingsServiceAPI = SettingsServiceAPI &
-                                              EmailSettingsServiceAPI &
-                                              LastTransactionSettingsUpdateServiceAPI &
-                                              EmailNotificationSettingsServiceAPI &
-                                              FiatCurrencySettingsServiceAPI &
-                                              SMSTwoFactorSettingsServiceAPI &
-                                              UpdateMobileSettingsServiceAPI &
-                                              VerifyMobileSettingsServiceAPI
+    EmailSettingsServiceAPI &
+    LastTransactionSettingsUpdateServiceAPI &
+    EmailNotificationSettingsServiceAPI &
+    FiatCurrencySettingsServiceAPI &
+    SMSTwoFactorSettingsServiceAPI &
+    UpdateMobileSettingsServiceAPI &
+    VerifyMobileSettingsServiceAPI
 
 public typealias MobileSettingsServiceAPI = UpdateMobileSettingsServiceAPI &
-                                            VerifyMobileSettingsServiceAPI &
-                                            SettingsServiceAPI
+    VerifyMobileSettingsServiceAPI &
+    SettingsServiceAPI
 
 public enum SettingsServiceError: Error {
     case timedOut
@@ -25,12 +25,14 @@ public enum SettingsServiceError: Error {
 public protocol SettingsServiceCombineAPI: AnyObject {
     var singleValuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> { get }
     var valuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> { get }
+
     func fetchPublisher(force: Bool) -> AnyPublisher<WalletSettings, SettingsServiceError>
 }
 
 public protocol SettingsServiceAPI: SettingsServiceCombineAPI {
     var valueSingle: Single<WalletSettings> { get }
     var valueObservable: Observable<WalletSettings> { get }
+
     func fetch(force: Bool) -> Single<WalletSettings>
 }
 
@@ -52,8 +54,9 @@ public protocol VerifyMobileSettingsServiceAPI {
 
 public protocol BalanceSharingSettingsServiceAPI {
     var isEnabled: Observable<Bool> { get }
-    func sync()
+
     func balanceSharing(enabled: Bool) -> Completable
+    func sync()
 }
 
 public protocol SMSTwoFactorSettingsServiceAPI: SettingsServiceAPI {

@@ -25,8 +25,10 @@ public class ScreenTransitioningAnimator: NSObject {
             }
         }
 
-        public static func translate(from navigationOperation: UINavigationController.Operation,
-                                     duration: TimeInterval) -> TransitionType {
+        public static func translate(
+            from navigationOperation: UINavigationController.Operation,
+            duration: TimeInterval
+        ) -> TransitionType {
             switch navigationOperation {
             case .push:
                 return .pushIn(duration)
@@ -74,7 +76,7 @@ extension ScreenTransitioningAnimator: UIViewControllerAnimatedTransitioning {
         let originAnimator = originTransitioning.disappearancePropertyAnimator(for: transition)
         destinationTransitioning.prepareForAppearance(for: transition)
         originAnimator.addCompletion { originPosition in
-            guard originPosition == .end && !transitionContext.transitionWasCancelled else {
+            guard originPosition == .end, !transitionContext.transitionWasCancelled else {
                 transitionContext.completeTransition(false)
                 return
             }

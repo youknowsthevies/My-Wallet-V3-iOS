@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import DIKit
 import NetworkKit
 import PlatformKit
@@ -48,7 +49,7 @@ extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
             }
             .map { response -> Void in
                 guard response.success
-                    else { throw PushNotificationError.registrationFailure }
+                else { throw PushNotificationError.registrationFailure }
                 return ()
             }
     }

@@ -14,9 +14,11 @@ protocol LedgersServiceAPI: AnyObject {
 }
 
 extension LedgersServiceAPI {
-    func ledgers(cursor: String?,
-                 order: stellarsdk.Order?,
-                 limit: Int?) -> Single<StellarLedger> {
+    func ledgers(
+        cursor: String?,
+        order: stellarsdk.Order?,
+        limit: Int?
+    ) -> Single<StellarLedger> {
         Single<StellarLedger>.create(weak: self) { (self, observer) -> Disposable in
             self.ledgers(cursor: cursor, order: order, limit: limit) { result in
                 switch result {

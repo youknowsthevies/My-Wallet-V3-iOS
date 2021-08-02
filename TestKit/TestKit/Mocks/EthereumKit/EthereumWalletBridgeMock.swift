@@ -10,7 +10,11 @@ enum EthereumWalletBridgeMockError: Error {
     case mockError
 }
 
-class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBridgeAPI, MnemonicAccessAPI, PasswordAccessAPI {
+class EthereumWalletBridgeMock: EthereumWalletBridgeAPI,
+    EthereumWalletAccountBridgeAPI,
+    MnemonicAccessAPI,
+    PasswordAccessAPI
+{
     func update(accountIndex: Int, label: String) -> Completable {
         .empty()
     }
@@ -27,11 +31,6 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         .just(nil)
     }
 
-    var isWaitingOnTransactionValue = Single.just(false)
-    var isWaitingOnTransaction: Single<Bool> {
-        isWaitingOnTransactionValue
-    }
-
     var historyValue = Single.just(())
     var history: Single<Void> {
         historyValue
@@ -41,12 +40,12 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         history
     }
 
-    var fetchBalanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .ethereum)!)
+    var fetchBalanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .coin(.ethereum))!)
     var fetchBalance: Single<CryptoValue> {
         fetchBalanceValue
     }
 
-    var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .ethereum)!)
+    var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .coin(.ethereum))!)
 
     var balanceMoneyObservable: Observable<MoneyValue> {
         balance.asObservable().moneyValue
@@ -54,7 +53,7 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
 
     let balanceFetchTriggerRelay = PublishRelay<Void>()
 
-    var nameValue: Single<String> = Single.just(CryptoCurrency.ethereum.defaultWalletName)
+    var nameValue: Single<String> = Single.just(CryptoCurrency.coin(.ethereum).defaultWalletName)
     var name: Single<String> {
         nameValue
     }
@@ -73,15 +72,16 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         EthereumAssetAccount(
             walletIndex: 0,
             accountAddress: MockEthereumWalletTestData.account,
-            name: CryptoCurrency.ethereum.defaultWalletName
+            name: CryptoCurrency.coin(.ethereum).defaultWalletName
         )
     )
     var account: Single<EthereumAssetAccount> {
         accountValue
     }
 
-    var recordLastTransactionValue: Single<EthereumTransactionPublished> = Single<EthereumTransactionPublished>.error(EthereumKitError.unknown)
+    var recordLastTransactionValue = Single<EthereumTransactionPublished>.error(EthereumKitError.unknown)
     var lastRecordedTransaction: EthereumTransactionPublished?
+
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
         lastRecordedTransaction = transaction
         return recordLastTransactionValue

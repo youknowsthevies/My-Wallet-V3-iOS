@@ -19,8 +19,8 @@ extension KYCTiersPageModel {
         return LocalizationConstants.KYC.completingTierTwoAutoEligible
     }
 
-    func trackPresentation(analyticsRecorder: AnalyticsEventRecording = resolve()) {
-        let metadata = cells.map({ ($0.tier, $0.status) })
+    func trackPresentation(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+        let metadata = cells.map { ($0.tier, $0.status) }
         guard let tier1 = metadata.filter({ $0.0 == .tier1 }).first else { return }
         guard let tier2 = metadata.filter({ $0.0 == .tier2 }).first else { return }
         let tierOneStatus = tier1.1
@@ -50,5 +50,4 @@ extension KYCTiersPageModel {
             .compactMap { $0 }
         return KYCTiersPageModel(header: header, cells: models)
     }
-
 }

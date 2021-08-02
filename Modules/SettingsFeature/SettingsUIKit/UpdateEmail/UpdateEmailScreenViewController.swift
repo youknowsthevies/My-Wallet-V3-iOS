@@ -28,6 +28,7 @@ final class UpdateEmailScreenViewController: BaseScreenViewController {
         super.init(nibName: UpdateEmailScreenViewController.objectName, bundle: Bundle(for: Self.self))
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -36,9 +37,11 @@ final class UpdateEmailScreenViewController: BaseScreenViewController {
         super.viewDidLoad()
         shimmer()
         titleViewStyle = presenter.titleView
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: .none)
+            trailingButtonStyle: .none
+        )
         keyboardInteractionController = KeyboardInteractionController(in: self)
         descriptionLabel.content = presenter.descriptionContent
         updateButtonView.viewModel = presenter.updateButtonViewModel
@@ -46,7 +49,7 @@ final class UpdateEmailScreenViewController: BaseScreenViewController {
         emailTextFieldView.setup(viewModel: presenter.textField, keyboardInteractionController: keyboardInteractionController)
 
         presenter.resendVisibility
-            .map { $0.isHidden }
+            .map(\.isHidden)
             .drive(resendButtonView.rx.isHidden)
             .disposed(by: disposeBag)
 
@@ -58,7 +61,7 @@ final class UpdateEmailScreenViewController: BaseScreenViewController {
     /// Should be called once when the parent view loads
     private func shimmer() {
         badgeShimmeringView = ShimmeringView(
-            in: self.view,
+            in: view,
             anchorView: badgeView,
             size: .init(width: 75, height: 24)
         )

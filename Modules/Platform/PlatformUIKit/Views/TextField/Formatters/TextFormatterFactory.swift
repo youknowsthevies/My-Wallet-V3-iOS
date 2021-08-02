@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// A factory for text formatters
-public final class TextFormatterFactory {
+public enum TextFormatterFactory {
 
     public static var alwaysCorrect: TextFormatting {
         AlwaysCorrectFormatter()

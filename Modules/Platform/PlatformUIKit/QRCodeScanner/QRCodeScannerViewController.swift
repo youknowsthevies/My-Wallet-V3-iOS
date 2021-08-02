@@ -29,10 +29,12 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
     private let loadingViewPresenter: LoadingViewPresenting
     private let presentationType: QRCodePresentationType
 
-    init(presentationType: QRCodePresentationType = .modal(dismissWithAnimation: true),
-         viewModel: QRCodeScannerViewModelProtocol,
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         loadingViewStyle: LoadingViewPresenter.LoadingViewStyle) {
+    init(
+        presentationType: QRCodePresentationType = .modal(dismissWithAnimation: true),
+        viewModel: QRCodeScannerViewModelProtocol,
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        loadingViewStyle: LoadingViewPresenter.LoadingViewStyle
+    ) {
         self.presentationType = presentationType
         self.viewModel = viewModel
         self.loadingViewPresenter = loadingViewPresenter
@@ -116,7 +118,6 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             case .circle:
                 loadingViewPresenter.showCircular(with: loadingText)
             }
-
         }
         switch presentationType {
         case .modal(dismissWithAnimation: let animated):
@@ -164,8 +165,10 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
 }
 
 extension QRCodeScannerViewController: UIImagePickerControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController,
-                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+    func imagePickerController(
+        _ picker: UIImagePickerController,
+        didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+    ) {
         guard let pickedImage = info[.originalImage] as? UIImage else { return }
         picker.dismiss(animated: true) { [weak self] in
             self?.viewModel.handleSelectedQRImage(pickedImage)

@@ -18,11 +18,13 @@ public class PermissionsRequestor {
         case microphone
     }
 
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let settings: PermissionSettingsAPI
 
-    public init(analyticsRecorder: AnalyticsEventRecording = resolve(),
-                settings: PermissionSettingsAPI = resolve()) {
+    public init(
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        settings: PermissionSettingsAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.settings = settings
     }
@@ -80,9 +82,9 @@ public class PermissionsRequestor {
         }
 
         queue.addOperation {
-            DispatchQueue.main.async(execute: {
+            DispatchQueue.main.async {
                 callback()
-            })
+            }
         }
     }
 
@@ -96,7 +98,7 @@ public class PermissionsRequestor {
 
     private lazy var cameraOperation: AsyncBlockOperation = {
         let camera = AsyncBlockOperation { [weak self] done in
-            DispatchQueue.main.async(execute: {
+            DispatchQueue.main.async {
                 AVCaptureDevice.requestAccess(for: .video) { granted in
                     if granted {
                         self?.analyticsRecorder.record(
@@ -109,28 +111,28 @@ public class PermissionsRequestor {
                     }
                     done()
                 }
-            })
+            }
         }
         return camera
     }()
 
     private lazy var pushOperation: AsyncBlockOperation = {
         let push = AsyncBlockOperation { done in
-            DispatchQueue.main.async(execute: {
+            DispatchQueue.main.async {
                 UNUserNotificationCenter.current().requestAuthorization(
                     options: [.alert, .sound],
-                    completionHandler: { (_, _) in
+                    completionHandler: { _, _ in
                         done()
                     }
                 )
-            })
+            }
         }
         return push
     }()
 
     private lazy var microphoneOperation: AsyncBlockOperation = {
         let microphone = AsyncBlockOperation { [weak self] done in
-            DispatchQueue.main.async(execute: {
+            DispatchQueue.main.async {
                 AVAudioSession.sharedInstance().requestRecordPermission { granted in
                     if granted {
                         self?.analyticsRecorder.record(
@@ -143,7 +145,7 @@ public class PermissionsRequestor {
                     }
                     done()
                 }
-            })
+            }
         }
         return microphone
     }()
@@ -185,7 +187,7 @@ public class PermissionsRequestor {
 
     static func cameraRefused() -> Bool {
         let status = AVCaptureDevice.authorizationStatus(for: .video)
-        return  status == .denied || status == .restricted
+        return status == .denied || status == .restricted
     }
 
     static func microphonePermissionsUndetermined() -> Bool {

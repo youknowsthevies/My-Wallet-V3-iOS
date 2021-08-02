@@ -30,6 +30,7 @@ final class BuyIntroScreenViewController: BaseScreenViewController {
         super.init(nibName: BuyIntroScreenViewController.objectName, bundle: Self.bundle)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

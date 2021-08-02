@@ -14,7 +14,7 @@ import UIKit
 import WalletPayloadKit
 
 /// Used for canceling publishers
-private struct WalletCancelations {
+private enum WalletCancelations {
     struct DecryptId: Hashable {}
     struct AuthenticationId: Hashable {}
     struct InitializationId: Hashable {}
@@ -72,6 +72,7 @@ struct CoreAppEnvironment {
     var siftService: SiftServiceAPI
     var onboardingSettings: OnboardingSettingsAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
+    var buildVersionProvider: () -> String
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -85,9 +86,12 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     blockchainSettings: environment.blockchainSettings,
                     walletManager: environment.walletManager,
                     alertPresenter: environment.alertPresenter,
-                    mainQueue: .main
+                    mainQueue: .main,
+                    featureFlags: environment.internalFeatureService,
+                    buildVersionProvider: environment.buildVersionProvider
                 )
-            }),
+            }
+        ),
     loggedInReducer
         .optional()
         .pullback(
@@ -108,7 +112,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     featureFlagsService: environment.featureFlagsService,
                     fiatCurrencySettingsService: environment.fiatCurrencySettingsService
                 )
-            }),
+            }
+        ),
     mainAppReducerCore
 )
 
@@ -132,7 +137,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             // do nothing if we're on the authentication state,
             // meaning we either need to register, login or recover
             guard let onboarding = state.onboarding,
-                  onboarding.authenticationState == nil else {
+                  onboarding.welcomeState == nil
+            else {
                 return .none
             }
             state.loggedIn = nil
@@ -152,12 +158,13 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         }
         // check if we're on the authentication state and the deeplink
         // currently we only support only one deeplink for login, so being naive here
-        guard let authState = onboarding.authenticationState,
-              content.context == .blockchainLinks(.login) else {
+        guard let authState = onboarding.welcomeState,
+              content.context == .blockchainLinks(.login)
+        else {
             return .none
         }
         // Pass content to welcomeScreen to be handled
-        return Effect(value: .onboarding(.welcomeScreen(.verifyDevice(content.url))))
+        return Effect(value: .onboarding(.welcomeScreen(.deeplinkReceived(content.url))))
     case .deeplink(.handleLink(let content)):
         // we first check if we're logged in, if not we need to defer the deeplink routing
         guard state.isLoggedIn else {
@@ -167,8 +174,9 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             }
             // check if we're on the pinState and we need the user to enter their pin
             if let pinState = onboarding.pinState,
-                  pinState.requiresPinAuthentication,
-                  !content.context.usableOnlyDuringAuthentication {
+               pinState.requiresPinAuthentication,
+               !content.context.usableOnlyDuringAuthentication
+            {
                 // defer the deeplink until we handle the `.proceedToLoggedIn` action
                 state.onboarding?.deeplinkContent = content
             }
@@ -184,7 +192,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 style: .default,
                 handler: { _ in
                     UIApplication.shared.openAppStore()
-                }),
+                }
+            ),
             UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
         ]
         state.alertContent = AlertViewContent(
@@ -206,7 +215,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 .catchToEffect()
                 .cancellable(id: WalletCancelations.DecryptId(), cancelInFlight: false)
                 .map { result -> CoreAppAction in
-                    guard case let .success(value) = result else {
+                    guard case .success(let value) = result else {
                         return .none
                     }
                     return handleWalletDecryption(value)
@@ -216,7 +225,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 .catchToEffect()
                 .cancellable(id: WalletCancelations.AuthenticationId(), cancelInFlight: false)
                 .map { result -> CoreAppAction in
-                    guard case let .success(value) = result else {
+                    guard case .success(let value) = result else {
                         return CoreAppAction.authenticated(
                             .failure(.init(code: AuthenticationError.ErrorCode.unknown))
                         )
@@ -245,6 +254,26 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .decryptionFailure(let error):
         state.onboarding?.displayAlert = .walletAuthentication(error)
         return .cancel(id: WalletCancelations.DecryptId())
+    case .authenticated(.failure(let error)) where error.code == .failedToLoadWallet:
+        guard state.onboarding?.welcomeState != nil else {
+            state.onboarding?.displayAlert = .walletAuthentication(error)
+            return .cancel(id: WalletCancelations.AuthenticationId())
+        }
+        return .merge(
+            .cancel(id: WalletCancelations.AuthenticationId()),
+            Effect(value: CoreAppAction.onboarding(
+                .welcomeScreen(
+                    .emailLogin(
+                        .verifyDevice(
+                            .credentials(
+                                .password(.incorrectPasswordErrorVisibility(true))
+                            )
+                        )
+                    )
+                )
+            )
+            )
+        )
     case .authenticated(.failure(let error)):
         state.onboarding?.displayAlert = .walletAuthentication(error)
         return .cancel(id: WalletCancelations.AuthenticationId())
@@ -252,8 +281,15 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // decide if we need to set a pin or not
         guard environment.blockchainSettings.isPinSet else {
             state.onboarding?.hideLegacyScreenIfNeeded()
+            guard state.onboarding?.welcomeState != nil else {
+                return .merge(
+                    .cancel(id: WalletCancelations.AuthenticationId()),
+                    Effect(value: .setupPin)
+                )
+            }
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
+                Effect(value: .onboarding(.welcomeScreen(.presentScreenFlow(.welcomeScreen)))),
                 Effect(value: .setupPin)
             )
         }
@@ -319,10 +355,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 value: CoreAppAction.loggedIn(.start(context))
             )
         )
-    case .onboarding(.welcomeScreen(.createAccount)):
+    case .onboarding(.welcomeScreen(.presentScreenFlow(.createWalletScreen))):
         // send `authenticate` action so that we can listen for wallet creation
         return Effect(value: .authenticate)
-    case .onboarding(.welcomeScreen(.recoverFunds)):
+    case .onboarding(.welcomeScreen(.presentScreenFlow(.recoverWalletScreen))):
         // send `authenticate` action so that we can listen for wallet creation or recovery
         return Effect(value: .authenticate)
     case .onboarding(.createAccountScreenClosed),
@@ -348,6 +384,14 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .onboarding(.pin(.pinCreated)):
         return Effect(
             value: .initializeWallet
+        )
+    case .onboarding(.welcomeScreen(.requestedToDecryptWallet(let password))):
+        return Effect(
+            value: .fetchWallet(password)
+        )
+    case .onboarding(.welcomeScreen(.manualPairing(.authenticate(let password)))):
+        return Effect(
+            value: .fetchWallet(password)
         )
     case .onboarding(.pin(.logout)),
          .loggedIn(.logout):
@@ -394,8 +438,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 /// The backup/restore of guid and sharedKey requires an encryption/decryption step when backing up and restoring respectively.
 ///
 /// The key used to encrypt/decrypt the guid and sharedKey is provided in the response to a successful PIN auth attempt.
-internal func syncPinKeyWithICloud(blockchainSettings: BlockchainSettings.App,
-                                   credentialsStore: CredentialsStoreAPI) {
+internal func syncPinKeyWithICloud(
+    blockchainSettings: BlockchainSettings.App,
+    credentialsStore: CredentialsStoreAPI
+) {
     guard !blockchainSettings.isPairedWithWallet else {
         // Wallet is Paired, we do not need to restore.
         // We will back up after pin authentication
@@ -405,7 +451,8 @@ internal func syncPinKeyWithICloud(blockchainSettings: BlockchainSettings.App,
     if blockchainSettings.pinKey == nil,
        blockchainSettings.encryptedPinPassword == nil,
        blockchainSettings.guid == nil,
-       blockchainSettings.sharedKey == nil {
+       blockchainSettings.sharedKey == nil
+    {
 
         credentialsStore.synchronize()
 
@@ -446,7 +493,8 @@ func clearPinIfNeeded(for passwordPartHash: String?, appSettings: BlockchainSett
     // With the hash prefix we can then figure out if the password changed. If so, clear the pin
     // so that the user can reset it
     guard let passwordPartHash = passwordPartHash,
-          let savedPasswordPartHash = appSettings.passwordPartHash else {
+          let savedPasswordPartHash = appSettings.passwordPartHash
+    else {
         return
     }
 

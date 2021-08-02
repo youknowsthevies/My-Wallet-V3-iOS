@@ -11,7 +11,7 @@ final class RadioSelectionHandler: RadioSelectionHandling {
     init() {
         selectionState = selectionAction
             .distinctUntilChanged()
-            .scan(into: [String: Bool](), accumulator: { (state, action) in
+            .scan(into: [String: Bool](), accumulator: { state, action in
                 switch action {
                 case .initialValues(let values):
                     state = Dictionary(uniqueKeysWithValues: values.map { ($0, false) })
@@ -27,7 +27,6 @@ final class RadioSelectionHandler: RadioSelectionHandling {
                         state[key] = false
                     }
                 }
-
             })
             .share(replay: 1, scope: .whileConnected)
     }

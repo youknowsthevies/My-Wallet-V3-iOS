@@ -5,7 +5,7 @@
 import Foundation
 
 extension LocalizationConstants {
-    public enum Onboarding { }
+    public enum Onboarding {}
 }
 
 extension LocalizationConstants.Onboarding {
@@ -44,6 +44,7 @@ extension LocalizationConstants.Onboarding {
                 comment: "Welcome screen description: suffix"
             )
         }
+
         public enum Button {
             public static let createWallet = NSLocalizedString(
                 "Create a Wallet",
@@ -58,11 +59,13 @@ extension LocalizationConstants.Onboarding {
                 comment: "Welcome screen: recover funds CTA button"
             )
         }
+
         public static let title = NSLocalizedString(
             "Welcome to Blockchain",
             comment: "Welcome screen: title"
         )
     }
+
     public enum PairingIntroScreen {
         public enum Instruction {
             public static let firstPrefix = NSLocalizedString(
@@ -82,6 +85,7 @@ extension LocalizationConstants.Onboarding {
                 comment: "Pairing intro screen: third instruction"
             )
         }
+
         public static let title = NSLocalizedString(
             "Log In",
             comment: "Manual pairing screen title"
@@ -95,6 +99,7 @@ extension LocalizationConstants.Onboarding {
             comment: "Manual pairing CTA button"
         )
     }
+
     public enum AutoPairingScreen {
         public static let title = NSLocalizedString(
             "Automatic Pairing",
@@ -119,6 +124,7 @@ extension LocalizationConstants.Onboarding {
             )
         }
     }
+
     public enum ManualPairingScreen {
         public enum TwoFAAlert {
             public static let wrongCodeTitle = NSLocalizedString(
@@ -146,6 +152,7 @@ extension LocalizationConstants.Onboarding {
                 comment: "2FA alert: resend button"
             )
         }
+
         public enum AccountLockedAlert {
             public static let title = NSLocalizedString(
                 "Account locked",
@@ -156,6 +163,7 @@ extension LocalizationConstants.Onboarding {
                 comment: "Locked account alert: message"
             )
         }
+
         public static let title = NSLocalizedString(
             "Manual Pairing",
             comment: "Manual pairing screen title"
@@ -174,6 +182,7 @@ extension LocalizationConstants.Onboarding {
                 comment: "Message for email authorization alert"
             )
         }
+
         public enum RequestOtpMessageErrorAlert {
             public static let title = NSLocalizedString(
                 "An Error Occurred",
@@ -185,6 +194,7 @@ extension LocalizationConstants.Onboarding {
             )
         }
     }
+
     public enum CreateWalletScreen {
         public static let title = NSLocalizedString(
             "Create New Wallet",
@@ -212,6 +222,7 @@ extension LocalizationConstants.Onboarding {
                 comment: "Create new wallet screen TOS privacy policy part"
             )
         }
+
         // TODO: Format it properly
         public static let termsOfUseFormat = NSLocalizedString(
             "By creating a wallet you agree to Blockchain’s Terms of Services & Privacy Policy",
@@ -258,6 +269,7 @@ extension LocalizationConstants.Onboarding {
                 comment: "forgot password alert body"
             )
         }
+
         public enum ForgetWalletAlert {
             public static let title = NSLocalizedString(
                 "Warning",
@@ -307,10 +319,11 @@ extension LocalizationConstants.Onboarding {
         public enum Home {
             public static let title = NSLocalizedString("View Your Portfolio", comment: "View Your Portfolio")
             public static let description = NSLocalizedString(
-                "Keep track of your crypto balances from your Wallet's dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and USD Digital.",
-                comment: "Keep track of your crypto balances from your Wallet's dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and USD Digital."
+                "Keep track of your crypto balances from your Wallet's dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and PAX.",
+                comment: "Keep track of your crypto balances from your Wallet's dashboard. Your Wallet currently supports Bitcoin, Ether, Bitcoin Cash, Stellar XLM and PAX."
             )
         }
+
         public enum Send {
             public static let title = NSLocalizedString("Send", comment: "Send")
             public static let description = NSLocalizedString(
@@ -318,6 +331,7 @@ extension LocalizationConstants.Onboarding {
                 comment: "Send crypto anywhere, anytime. All you need is the recipient’s crypto address."
             )
         }
+
         public enum Request {
             public static let title = NSLocalizedString("Request", comment: "Request")
             public static let description = NSLocalizedString(
@@ -325,6 +339,7 @@ extension LocalizationConstants.Onboarding {
                 comment: "To receive crypto, all the sender needs is your crypto's address. You can find these addresses here."
             )
         }
+
         public enum Swap {
             public static let title = NSLocalizedString("Swap", comment: "Swap")
             public static let description = NSLocalizedString(
@@ -332,6 +347,7 @@ extension LocalizationConstants.Onboarding {
                 comment: "Trade crypto with low fees without leaving your wallet."
             )
         }
+
         public enum BuySell {
             public static let title = NSLocalizedString("Buy & Sell", comment: "Buy & Sell")
             public static let description = NSLocalizedString(

@@ -11,7 +11,7 @@ final class CryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI {
 
     var dataSource: Observable<[SelectionItemViewModel]> {
         service.pairs
-            .map { $0.cryptoCurrencies }
+            .map(\.cryptoCurrencies)
             .take(1)
             .map { $0.map(\.selectionItem) }
     }
@@ -43,8 +43,10 @@ final class CryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI {
     private let cryptoCurrencyRelay: BehaviorRelay<CryptoCurrency>
     private let disposeBag = DisposeBag()
 
-    init(service: SupportedPairsInteractorServiceAPI,
-         defaultSelectedData: CryptoCurrency) {
+    init(
+        service: SupportedPairsInteractorServiceAPI,
+        defaultSelectedData: CryptoCurrency
+    ) {
         self.service = service
         selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
         cryptoCurrencyRelay = BehaviorRelay(value: defaultSelectedData)
@@ -56,8 +58,8 @@ final class CryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI {
     }
 }
 
-fileprivate extension CryptoCurrency {
-    var selectionItem: SelectionItemViewModel {
+extension CryptoCurrency {
+    fileprivate var selectionItem: SelectionItemViewModel {
         SelectionItemViewModel(
             id: code,
             title: name,

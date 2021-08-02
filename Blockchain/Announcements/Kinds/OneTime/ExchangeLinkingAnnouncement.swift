@@ -27,7 +27,7 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
                 self.action()
                 self.dismiss()
             }
-            .disposed(by: self.disposeBag)
+            .disposed(by: disposeBag)
 
         return AnnouncementCardViewModel(
             type: type,
@@ -56,7 +56,7 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
     }
 
     let type = AnnouncementType.exchangeLinking
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -69,14 +69,16 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
 
     // MARK: - Setup
 
-    init(shouldShowExchangeAnnouncement: Bool,
-         cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
+    init(
+        shouldShowExchangeAnnouncement: Bool,
+        cacheSuite: CacheSuite = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
         self.shouldShowExchangeAnnouncement = shouldShowExchangeAnnouncement
-        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

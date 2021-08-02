@@ -10,11 +10,12 @@ extension String {
     /// "٫" = U+066B
     fileprivate static let arabicDecimalSeparator = "\u{066B}"
 }
+
 extension NumberFormatter {
 
-     /// Parses a decimal String into a UInt64 satoshis value.
-     /// - Parameter string: decimal string
-     /// - Returns: UInt64 Satoshis representation of the value
+    /// Parses a decimal String into a UInt64 satoshis value.
+    /// - Parameter string: decimal string
+    /// - Returns: UInt64 Satoshis representation of the value
     @objc class func parseBitcoinValue(from string: String?) -> UInt64 {
         // String should be not nil, nor empty
         guard let string = string, !string.isEmpty else { return 0 }
@@ -54,12 +55,12 @@ extension NumberFormatter {
             fractionalPart = String(fractionalPart.dropFirst())
         }
         // Creates UInt64 from fractionalPart
-        let fractionalPartUInt: UInt64 = UInt64(fractionalPart) ?? 0
+        let fractionalPartUInt = UInt64(fractionalPart) ?? 0
 
         // IntegralPart
-        let integralPart: String = String(components[0])
+        let integralPart = String(components[0])
         // Creates UInt64 from integralPart
-        guard let integralPartUInt: UInt64 = UInt64(integralPart) else {
+        guard let integralPartUInt = UInt64(integralPart) else {
             return nil
         }
 
@@ -88,9 +89,9 @@ extension NumberFormatter {
     ]
 
     /// - Returns: String by replacing occurrences of Arabic-Indic Unicode Digits with regular Unicode Digits
-    fileprivate class func replaceArabicIndicUnicodeIndicDigitsWithUnicodeDigits(from value: String) -> String {
+    private class func replaceArabicIndicUnicodeIndicDigitsWithUnicodeDigits(from value: String) -> String {
         arabicIndicDigitToDigitMap
-            .reduce(value) { (result, tuple) -> String in
+            .reduce(value) { result, tuple -> String in
                 result.replacingOccurrences(of: tuple.key, with: tuple.value)
             }
     }

@@ -2,7 +2,7 @@ import SwiftUI
 
 public struct FormTextFieldStyle: TextFieldStyle {
 
-    let paddingInsets: EdgeInsets = EdgeInsets(
+    let paddingInsets = EdgeInsets(
         top: 12,
         leading: 12,
         bottom: 12,
@@ -13,9 +13,11 @@ public struct FormTextFieldStyle: TextFieldStyle {
     let isActive: Bool
     let isError: Bool
 
-    public init(isEditing: Bool = false,
-                isActive: Bool = true,
-                isError: Bool = false) {
+    public init(
+        isEditing: Bool = false,
+        isActive: Bool = true,
+        isError: Bool = false
+    ) {
         // required for exposing the view to the external world
         self.isEditing = isEditing
         self.isActive = isActive

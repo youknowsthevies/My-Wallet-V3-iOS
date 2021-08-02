@@ -8,7 +8,7 @@ import UIKit
 @IBDesignable
 public class PrimaryButtonContainer: NibBasedView {
 
-    private struct FontNames {
+    private enum FontNames {
         static let montserratRegular = "Montserrat-Regular"
         static let montserratMedium = "Montserrat-Medium"
     }
@@ -24,12 +24,12 @@ public class PrimaryButtonContainer: NibBasedView {
                 return UIFont(
                     name: FontNames.montserratMedium,
                     size: 20.0
-                    ) ?? UIFont.systemFont(ofSize: 20, weight: .medium)
+                ) ?? UIFont.systemFont(ofSize: 20, weight: .medium)
             case .send:
                 return UIFont(
                     name: FontNames.montserratRegular,
                     size: 17.0
-                    ) ?? UIFont.systemFont(ofSize: 17.0, weight: .regular)
+                ) ?? UIFont.systemFont(ofSize: 17.0, weight: .regular)
             case .small:
                 return UIFont(
                     name: FontNames.montserratRegular,
@@ -50,7 +50,7 @@ public class PrimaryButtonContainer: NibBasedView {
     /// `primaryButton` is tapped.
     public var actionBlock: (() -> Void)?
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }

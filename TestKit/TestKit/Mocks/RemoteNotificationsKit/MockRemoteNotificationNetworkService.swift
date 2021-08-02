@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
+import AuthenticationKit
 import RxSwift
 
 @testable import RemoteNotificationsKit
@@ -12,9 +12,11 @@ final class MockRemoteNotificationNetworkService: RemoteNotificationNetworkServi
         self.expectedResult = expectedResult
     }
 
-    func register(with deviceToken: String,
-                  sharedKeyProvider: SharedKeyRepositoryAPI,
-                  guidProvider: GuidRepositoryAPI) -> Single<Void> {
+    func register(
+        with deviceToken: String,
+        sharedKeyProvider: SharedKeyRepositoryAPI,
+        guidProvider: GuidRepositoryAPI
+    ) -> Single<Void> {
         expectedResult.single
     }
 }

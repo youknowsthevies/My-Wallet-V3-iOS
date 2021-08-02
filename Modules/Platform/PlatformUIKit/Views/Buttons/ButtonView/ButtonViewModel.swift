@@ -22,12 +22,14 @@ public struct ButtonViewModel {
         public let text: String
         public let contentInset: UIEdgeInsets
 
-        public init(backgroundColor: UIColor,
-                    borderColor: UIColor = .clear,
-                    contentColor: UIColor,
-                    imageName: String? = nil,
-                    text: String,
-                    contentInset: UIEdgeInsets = .zero) {
+        public init(
+            backgroundColor: UIColor,
+            borderColor: UIColor = .clear,
+            contentColor: UIColor,
+            imageName: String? = nil,
+            text: String,
+            contentInset: UIEdgeInsets = .zero
+        ) {
             self.backgroundColor = backgroundColor
             self.borderColor = borderColor
             self.contentColor = contentColor
@@ -99,7 +101,7 @@ public struct ButtonViewModel {
                 isEnabled.asDriver(),
                 isHidden.asDriver()
             )
-            .map { (isEnabled, isHidden) in
+            .map { isEnabled, isHidden in
                 switch (isEnabled, isHidden) {
                 case (_, true):
                     return 0
@@ -162,7 +164,7 @@ public struct ButtonViewModel {
                     return UIImage(named: name)!.withRenderingMode(.alwaysTemplate)
                 }
                 return nil
-        }
+            }
     }
 
     /// Streams `true` if the view model contains an image
@@ -208,7 +210,7 @@ extension ButtonViewModel {
         cornerRadius: CGFloat = 8,
         font: UIFont = .main(.semibold, 16),
         accessibilityId: String = Accessibility.Identifier.General.mainCTAButton
-        ) -> ButtonViewModel {
+    ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: font,
             cornerRadius: cornerRadius,
@@ -232,7 +234,7 @@ extension ButtonViewModel {
         cornerRadius: CGFloat = 8,
         font: UIFont = .main(.semibold, 16),
         accessibilityId: String = Accessibility.Identifier.General.secondaryCTAButton
-        ) -> ButtonViewModel {
+    ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: font,
             cornerRadius: cornerRadius,
@@ -252,7 +254,7 @@ extension ButtonViewModel {
         with text: String,
         cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.destructiveCTAButton
-        ) -> ButtonViewModel {
+    ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: .main(.semibold, 16),
             cornerRadius: cornerRadius,
@@ -271,7 +273,7 @@ extension ButtonViewModel {
         with text: String,
         cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.cancelCTAButton
-        ) -> ButtonViewModel {
+    ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: .main(.semibold, 16),
             cornerRadius: cornerRadius,
@@ -290,7 +292,7 @@ extension ButtonViewModel {
     public static func warning(
         with text: String,
         accessibilityId: String
-        ) -> ButtonViewModel {
+    ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: .main(.semibold, 14),
             cornerRadius: 8,
@@ -309,7 +311,7 @@ extension ButtonViewModel {
     public static func currencyOutOfBounds(
         with text: String,
         accessibilityId: String
-        ) -> ButtonViewModel {
+    ) -> ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: .main(.semibold, 14),
             cornerRadius: 8,

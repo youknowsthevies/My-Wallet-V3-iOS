@@ -18,15 +18,17 @@ final class OrderCreationService: OrderCreationServiceAPI {
 
     // MARK: - Properties
 
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let client: OrderCreationClientAPI
     private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
 
     // MARK: - Setup
 
-    init(analyticsRecorder: AnalyticsEventRecording = resolve(),
-         client: OrderCreationClientAPI = resolve(),
-         pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve()) {
+    init(
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        client: OrderCreationClientAPI = resolve(),
+        pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
         self.pendingOrderDetailsService = pendingOrderDetailsService

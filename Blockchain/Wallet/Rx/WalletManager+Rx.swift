@@ -28,7 +28,7 @@ extension Reactive where Base: WalletManager {
 
         return Observable.merge(success, failure)
             .catchError { error -> Observable<Result<WalletCreation, WalletCreationError>> in
-                return .just(
+                .just(
                     .failure(
                         .unknownError(
                             error.localizedDescription
@@ -87,7 +87,7 @@ extension Reactive where Base: WalletManager {
         return Observable<Result<Bool, AuthenticationError>>
             .merge(success, decryptError, loadError)
             .catchError { error -> Observable<Result<Bool, AuthenticationError>> in
-                return .just(
+                .just(
                     .failure(
                         AuthenticationError(
                             code: AuthenticationError.ErrorCode.unknown,
@@ -103,34 +103,38 @@ extension Reactive where Base: WalletManager {
 
     /// Reactive wrapper for delegate method `walletDidGetAccountInfo`
     /// - Note: Invoked when the account info has been retrieved
-    var didGetAccountInfo: Completable {
+    var didGetAccountInfo: Observable<Void> {
         base.rx.methodInvoked(#selector(WalletManager.walletDidGetAccountInfo))
-            .ignoreElements()
+            .mapToVoid()
+            .share()
     }
 
     // MARK: WalletAddressesDelegate
 
     /// Reactive wrapper for delegate method `returnToAddressesScreen`
     /// - Note: Method invoked when finding a null account or address when checking if archived
-    var returnToAddressesScreen: Completable {
+    var returnToAddressesScreen: Observable<Void> {
         base.rx.methodInvoked(#selector(WalletManager.returnToAddressesScreen))
-            .ignoreElements()
+            .mapToVoid()
+            .share()
     }
 
     // MARK: WalletRecoveryDelegate
 
     /// Reactive wrapper for delegate method `didRecoverWallet`
     /// - Note:  Method invoked when the recovery sequence is completed
-    var didRecoverWallet: Completable {
+    var didRecoverWallet: Observable<Void> {
         base.rx.methodInvoked(#selector(WalletManager.didRecoverWallet))
-            .ignoreElements()
+            .mapToVoid()
+            .share()
     }
 
     /// Reactive wrapper for delegate method `didFailRecovery`
     /// - Note:  Method invoked when the recovery sequence fails to complete
-    var didFailRecovery: Completable {
+    var didFailRecovery: Observable<Void> {
         base.rx.methodInvoked(#selector(WalletManager.didFailRecovery))
-            .ignoreElements()
+            .mapToVoid()
+            .share()
     }
 
     // MARK: WalletHistoryDelegate
@@ -150,25 +154,28 @@ extension Reactive where Base: WalletManager {
 
     /// Reactive wrapper for delegate method `walletDidGetAccountInfoAndExchangeRates`
     /// - Note: Method invoked after getting account info and exchange rates on startup
-    var didGetAccountInfoAndExchangeRates: Completable {
+    var didGetAccountInfoAndExchangeRates: Observable<Void> {
         base.rx.methodInvoked(#selector(WalletManager.walletDidGetAccountInfoAndExchangeRates(_:)))
-            .ignoreElements()
+            .mapToVoid()
+            .share()
     }
 
     // MARK: WalletBackupDelegate
 
     /// Reactive wrapper for delegate method `didBackupWallet`
     /// - Note: Method invoked when backup sequence is completed
-    var didBackupWallet: Completable {
+    var didBackupWallet: Observable<Void> {
         base.rx.methodInvoked(#selector(WalletManager.didBackupWallet))
-            .ignoreElements()
+            .mapToVoid()
+            .share()
     }
 
     /// Reactive wrapper for delegate method `didFailBackupWallet`
     /// - Note: Method invoked when backup sequence is completed
-    var didFailBackupWallet: Completable {
+    var didFailBackupWallet: Observable<Void> {
         base.rx.methodInvoked(#selector(WalletManager.didFailBackupWallet))
-            .ignoreElements()
+            .mapToVoid()
+            .share()
     }
 
     // MARK: WalletSecondPasswordDelegate

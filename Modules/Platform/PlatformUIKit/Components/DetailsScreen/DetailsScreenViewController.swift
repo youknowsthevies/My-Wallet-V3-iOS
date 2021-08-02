@@ -27,7 +27,7 @@ public final class DetailsScreenViewController: BaseTableViewController {
 
     // MARK: - Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         extendSafeAreaUnderNavigationBar = presenter.extendSafeAreaUnderNavigationBar
         tableView.delegate = self
@@ -43,12 +43,12 @@ public final class DetailsScreenViewController: BaseTableViewController {
         setupKeyboardObserver()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         keyboardObserver.setup()
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         keyboardObserver.remove()
         super.viewWillDisappear(animated)
     }
@@ -98,10 +98,12 @@ public final class DetailsScreenViewController: BaseTableViewController {
 
     private func setupNavigationBar() {
         switch presenter.navigationBarAppearance {
-        case let .custom(leading: leading, trailing: trailing, barStyle: barStyle):
-            set(barStyle: barStyle,
+        case .custom(leading: let leading, trailing: let trailing, barStyle: let barStyle):
+            set(
+                barStyle: barStyle,
                 leadingButtonStyle: leading,
-                trailingButtonStyle: trailing)
+                trailingButtonStyle: trailing
+            )
         case .defaultDark:
             setStandardDarkContentStyle()
         case .defaultLight:
@@ -119,7 +121,7 @@ public final class DetailsScreenViewController: BaseTableViewController {
 
     // MARK: - Navigation
 
-    public override func navigationBarLeadingButtonPressed() {
+    override public func navigationBarLeadingButtonPressed() {
         switch presenter.navigationBarLeadingButtonAction {
         case .default:
             super.navigationBarLeadingButtonPressed()
@@ -128,7 +130,7 @@ public final class DetailsScreenViewController: BaseTableViewController {
         }
     }
 
-    public override func navigationBarTrailingButtonPressed() {
+    override public func navigationBarTrailingButtonPressed() {
         switch presenter.navigationBarTrailingButtonAction {
         case .default:
             super.navigationBarTrailingButtonPressed()
@@ -139,6 +141,7 @@ public final class DetailsScreenViewController: BaseTableViewController {
 }
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
+
 extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -173,14 +176,18 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
         }
     }
 
-    public func tableView(_ tableView: UITableView,
-                          numberOfRowsInSection section: Int) -> Int {
+    public func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
         assert(section == 0)
         return presenter.cells.count
     }
 
-    public func tableView(_ tableView: UITableView,
-                          cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
         assert(presenter.cells.indices.contains(indexPath.row))
         switch presenter.cells[indexPath.row] {
         case .numbered(let model):
@@ -217,6 +224,7 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
         )
         return cell
     }
+
     private func interactableTextCell(for indexPath: IndexPath, viewModel: InteractableTextViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(InteractableTextTableViewCell.self, for: indexPath)
         cell.contentInset = UIEdgeInsets(horizontal: 24, vertical: 0)

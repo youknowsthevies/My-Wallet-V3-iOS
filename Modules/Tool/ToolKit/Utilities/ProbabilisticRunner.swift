@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// Run a specified block probabilistically with an assigned probability
-public final class ProbabilisticRunner {
+public enum ProbabilisticRunner {
 
     /// The percentage used for the run expressed in `Basis Points` (`1/10000`)
     public struct BasisPoints {

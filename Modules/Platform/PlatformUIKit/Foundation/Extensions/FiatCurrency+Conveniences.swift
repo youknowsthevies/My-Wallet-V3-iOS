@@ -13,7 +13,7 @@ extension FiatCurrency {
         case .USD:
             return .local(name: "icon-usd", bundle: .platformUIKit)
         default:
-            fatalError("Currency \(self.code) does not have a logo image")
+            fatalError("Currency \(code) does not have a logo image")
         }
     }
 

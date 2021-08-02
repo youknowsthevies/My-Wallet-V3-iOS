@@ -35,20 +35,19 @@ class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView,
         VerifyEmailPresenter(view: self)
     }()
 
-    @Inject
-    private var analyticsRecorder: AnalyticsEventRecording
+    @Inject private var analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: KYCBaseViewController
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCBaseViewController {
+    override class func make(with coordinator: KYCRouter) -> KYCBaseViewController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .enterEmail
         return controller
     }
 
     override func apply(model: KYCPageModel) {
-        guard case let .email(user) = model else { return }
+        guard case .email(let user) = model else { return }
 
         validationTextFieldEmail.text = user.email.address
         validationTextFieldEmail.accessibilityIdentifier = "kyc.email_field"
@@ -120,7 +119,7 @@ extension KYCEnterEmailController: EmailVerificationInterface {
         }
         Logger.shared.info("Show verification view!")
         let payload = KYCPagePayload.emailPendingVerification(email: email)
-        coordinator.handle(event: .nextPageFromPageType(pageType, payload))
+        router.handle(event: .nextPageFromPageType(pageType, payload))
     }
 
     func showError(message: String) {

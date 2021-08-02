@@ -20,6 +20,6 @@ public struct AnyCryptoFeeService<FeeType: TransactionFee & Decodable>: CryptoFe
     }
 
     public init<API: CryptoFeeServiceAPI>(service: API) where API.FeeType == FeeType {
-        self._fees = { service.fees }
+        _fees = { service.fees }
     }
 }

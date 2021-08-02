@@ -6,12 +6,16 @@ import PlatformUIKit
 protocol AirdropRouterAPI: AnyObject {
 
     /// Presents airdrop status screen for raw value of `AirdropCampaigns.Campaign.Name`.
-    func presentAirdropStatusScreen(for campaignName: String,
-                                    presentationType: PresentationType)
+    func presentAirdropStatusScreen(
+        for campaignName: String,
+        presentationType: PresentationType
+    )
 
     /// Presents airdrop status screen for `AirdropCampaigns.Campaign.Name`.
-    func presentAirdropStatusScreen(for campaignName: AirdropCampaigns.Campaign.Name,
-                                    presentationType: PresentationType)
+    func presentAirdropStatusScreen(
+        for campaignName: AirdropCampaigns.Campaign.Name,
+        presentationType: PresentationType
+    )
 
     /// Presents airdrop center screen (collection of airdrop campaigns)
     func presentAirdropCenterScreen()
@@ -27,16 +31,20 @@ final class AirdropRouter: AirdropRouterAPI {
         self.topMostViewControllerProvider = topMostViewControllerProvider
     }
 
-    func presentAirdropStatusScreen(for campaignName: String,
-                                    presentationType: PresentationType) {
+    func presentAirdropStatusScreen(
+        for campaignName: String,
+        presentationType: PresentationType
+    ) {
         guard let campaignName = AirdropCampaigns.Campaign.Name(rawValue: campaignName) else {
             return
         }
         presentAirdropStatusScreen(for: campaignName, presentationType: presentationType)
     }
 
-    func presentAirdropStatusScreen(for campaignName: AirdropCampaigns.Campaign.Name,
-                                    presentationType: PresentationType) {
+    func presentAirdropStatusScreen(
+        for campaignName: AirdropCampaigns.Campaign.Name,
+        presentationType: PresentationType
+    ) {
 
         // Prepare the stack
 

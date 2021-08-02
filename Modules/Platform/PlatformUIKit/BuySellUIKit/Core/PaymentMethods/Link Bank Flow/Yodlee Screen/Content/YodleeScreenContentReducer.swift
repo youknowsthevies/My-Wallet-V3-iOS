@@ -9,9 +9,11 @@ final class YodleeScreenContentReducer {
         static var filledBlockchainLogo: ImageResource {
             .local(name: "filled_blockchain_logo", bundle: .platformUIKit)
         }
+
         static var largeBankIcon: ImageResource {
             .local(name: "large-bank-icon", bundle: .platformUIKit)
         }
+
         static var filledYodleeLogo: ImageResource {
             .local(name: "filled_yodlee_logo", bundle: .platformUIKit)
         }
@@ -45,6 +47,7 @@ final class YodleeScreenContentReducer {
     private let subtitleLinkTextStyle = InteractableTextViewModel.Style(color: .linkableText, font: .main(.regular, 14))
 
     private let supportUrl = "https://support.blockchain.com/hc/en-us/requests/new"
+
     // MARK: Pending Content
 
     func webviewSuccessContent(bankName: String?) -> YodleePendingContent {
@@ -62,13 +65,17 @@ final class YodleeScreenContentReducer {
                     )
                 )
             ),
-            mainTitleContent: .init(text: LocalizedStrings.WebViewSuccessContent.title,
-                                    font: .main(.bold, 20),
-                                    color: .darkTitleText,
-                                    alignment: .center),
-            subtitleTextViewModel: .init(inputs: [.text(string: subtitle)],
-                                         textStyle: subtitleTextStyle,
-                                         linkStyle: subtitleLinkTextStyle),
+            mainTitleContent: .init(
+                text: LocalizedStrings.WebViewSuccessContent.title,
+                font: .main(.bold, 20),
+                color: .darkTitleText,
+                alignment: .center
+            ),
+            subtitleTextViewModel: .init(
+                inputs: [.text(string: subtitle)],
+                textStyle: subtitleTextStyle,
+                linkStyle: subtitleLinkTextStyle
+            ),
             buttonContent: continueButtonContent()
         )
     }
@@ -81,13 +88,17 @@ final class YodleeScreenContentReducer {
                     sideViewAttributes: .init(type: .loader, position: .rightCorner)
                 )
             ),
-            mainTitleContent: .init(text: LocalizedStrings.WebViewPendingContent.title,
-                                    font: .main(.bold, 20),
-                                    color: .darkTitleText,
-                                    alignment: .center),
-            subtitleTextViewModel: .init(inputs: [.text(string: LocalizedStrings.WebViewPendingContent.subtitle)],
-                                         textStyle: subtitleTextStyle,
-                                         linkStyle: subtitleLinkTextStyle),
+            mainTitleContent: .init(
+                text: LocalizedStrings.WebViewPendingContent.title,
+                font: .main(.bold, 20),
+                color: .darkTitleText,
+                alignment: .center
+            ),
+            subtitleTextViewModel: .init(
+                inputs: [.text(string: LocalizedStrings.WebViewPendingContent.subtitle)],
+                textStyle: subtitleTextStyle,
+                linkStyle: subtitleLinkTextStyle
+            ),
             buttonContent: nil
         )
     }
@@ -103,10 +114,12 @@ final class YodleeScreenContentReducer {
                     )
                 )
             ),
-            mainTitleContent: .init(text: LocalizedStrings.FailurePendingContent.Generic.title,
-                                    font: .main(.bold, 20),
-                                    color: .darkTitleText,
-                                    alignment: .center),
+            mainTitleContent: .init(
+                text: LocalizedStrings.FailurePendingContent.Generic.title,
+                font: .main(.bold, 20),
+                color: .darkTitleText,
+                alignment: .center
+            ),
             subtitleTextViewModel: .init(
                 inputs: [
                     .text(string: LocalizedStrings.FailurePendingContent.Generic.subtitle),
@@ -127,10 +140,12 @@ final class YodleeScreenContentReducer {
                     sideViewAttributes: .init(type: .loader, position: .rightCorner)
                 )
             ),
-            mainTitleContent: .init(text: LocalizedStrings.LinkingPendingContent.title,
-                                    font: .main(.bold, 20),
-                                    color: .darkTitleText,
-                                    alignment: .center),
+            mainTitleContent: .init(
+                text: LocalizedStrings.LinkingPendingContent.title,
+                font: .main(.bold, 20),
+                color: .darkTitleText,
+                alignment: .center
+            ),
             subtitleTextViewModel: .empty,
             buttonContent: nil
         )
@@ -149,10 +164,12 @@ final class YodleeScreenContentReducer {
                     )
                 )
             ),
-            mainTitleContent: .init(text: failureTitles.title,
-                                    font: .main(.bold, 20),
-                                    color: .darkTitleText,
-                                    alignment: .center),
+            mainTitleContent: .init(
+                text: failureTitles.title,
+                font: .main(.bold, 20),
+                color: .darkTitleText,
+                alignment: .center
+            ),
             subtitleTextViewModel: failureTitles.subtitle,
             buttonContent: buttonContent
         )
@@ -212,6 +229,7 @@ final class YodleeScreenContentReducer {
             return tryAgainAndCanceButtonContent()
         }
     }
+
     private func linkingBankFailureTitles(from linkageError: LinkedBankData.LinkageError) -> (title: String, subtitle: InteractableTextViewModel) {
         switch linkageError {
         case .alreadyLinked:
@@ -230,37 +248,45 @@ final class YodleeScreenContentReducer {
         case .namesMismatched:
             return (
                 LocalizedStrings.FailurePendingContent.AccountNamesMismatched.title,
-                .init(inputs: [.text(string: LocalizedStrings.FailurePendingContent.AccountNamesMismatched.subtitle)],
-                      textStyle: subtitleTextStyle,
-                      linkStyle: subtitleLinkTextStyle,
-                      alignment: .center)
+                .init(
+                    inputs: [.text(string: LocalizedStrings.FailurePendingContent.AccountNamesMismatched.subtitle)],
+                    textStyle: subtitleTextStyle,
+                    linkStyle: subtitleLinkTextStyle,
+                    alignment: .center
+                )
             )
         case .unsuportedAccount:
             return (
                 LocalizedStrings.FailurePendingContent.AccountUnsupported.title,
-                .init(inputs: [.text(string: LocalizedStrings.FailurePendingContent.AccountUnsupported.subtitle)],
-                      textStyle: subtitleTextStyle,
-                      linkStyle: subtitleLinkTextStyle,
-                      alignment: .center)
+                .init(
+                    inputs: [.text(string: LocalizedStrings.FailurePendingContent.AccountUnsupported.subtitle)],
+                    textStyle: subtitleTextStyle,
+                    linkStyle: subtitleLinkTextStyle,
+                    alignment: .center
+                )
             )
         case .timeout:
             return (
                 LocalizedStrings.FailurePendingContent.Timeout.title,
-                .init(inputs: [.text(string: LocalizedStrings.FailurePendingContent.Timeout.subtitle)],
-                      textStyle: subtitleTextStyle,
-                      linkStyle: subtitleLinkTextStyle,
-                      alignment: .center)
+                .init(
+                    inputs: [.text(string: LocalizedStrings.FailurePendingContent.Timeout.subtitle)],
+                    textStyle: subtitleTextStyle,
+                    linkStyle: subtitleLinkTextStyle,
+                    alignment: .center
+                )
             )
         case .unknown:
             return (
                 LocalizedStrings.FailurePendingContent.Generic.title,
-                .init(inputs: [
-                    .text(string: LocalizedStrings.FailurePendingContent.Generic.subtitle),
-                    .url(string: LocalizedStrings.FailurePendingContent.contactSupport, url: supportUrl)
-                ],
-                textStyle: subtitleTextStyle,
-                linkStyle: subtitleLinkTextStyle,
-                alignment: .center)
+                .init(
+                    inputs: [
+                        .text(string: LocalizedStrings.FailurePendingContent.Generic.subtitle),
+                        .url(string: LocalizedStrings.FailurePendingContent.contactSupport, url: supportUrl)
+                    ],
+                    textStyle: subtitleTextStyle,
+                    linkStyle: subtitleLinkTextStyle,
+                    alignment: .center
+                )
             )
         }
     }

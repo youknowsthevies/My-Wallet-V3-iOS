@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -47,20 +48,23 @@ extension AlertViewPresenter {
             return
         }
         standardNotify(
-            title: LocalizationConstants.Errors.unsafeDeviceWarningMessage, message: LocalizationConstants.Errors.warning
+            title: LocalizationConstants.Errors.unsafeDeviceWarningMessage,
+            message: LocalizationConstants.Errors.warning
         )
     }
 
     // MARK: - 2FA alert
 
     /// Displays 2FA alert according to type
-    func notify2FA(type: AuthenticatorType,
-                   title: String,
-                   message: String,
-                   in viewController: UIViewController? = nil,
-                   resendAction: (() -> Void)? = nil,
-                   cancel: @escaping (() -> Void),
-                   verifyAction: @escaping (String) -> Void) {
+    func notify2FA(
+        type: WalletAuthenticatorType,
+        title: String,
+        message: String,
+        in viewController: UIViewController? = nil,
+        resendAction: (() -> Void)? = nil,
+        cancel: @escaping (() -> Void),
+        verifyAction: @escaping (String) -> Void
+    ) {
         Execution.MainQueue.dispatch { [weak self] in
             guard let self = self else { return }
             let alert = UIAlertController(
@@ -80,16 +84,18 @@ extension AlertViewPresenter {
             if type == .sms {
                 let resendAction = UIAlertAction(
                     title: LocalizationConstants.Onboarding.ManualPairingScreen.TwoFAAlert.resendButton,
-                    style: .default) { _ in
-                        resendAction?()
-                    }
+                    style: .default
+                ) { _ in
+                    resendAction?()
+                }
                 alert.addAction(resendAction)
             }
             let verifyAction = UIAlertAction(
                 title: LocalizationConstants.Onboarding.ManualPairingScreen.TwoFAAlert.verifyButton,
-                style: .default) { _ in
-                    verifyAction(alertTextField.text ?? "")
-                }
+                style: .default
+            ) { _ in
+                verifyAction(alertTextField.text ?? "")
+            }
             alert.addAction(verifyAction)
             alertTextField.rx
                 .text
@@ -112,7 +118,9 @@ extension AlertViewPresenter {
     /// - Parameter walletOptions: the WalletOptions
     func showMaintenanceError(from walletOptions: WalletOptions) {
         guard walletOptions.downForMaintenance else {
-            Logger.shared.info("Not showing site maintenance alert. WalletOptions `downForMaintenance` flag is not set.")
+            Logger.shared.info(
+                "Not showing site maintenance alert. WalletOptions `downForMaintenance` flag is not set."
+            )
             return
         }
         let message = walletOptions.mobileInfo?.message ?? LocalizationConstants.Errors.siteMaintenanceError

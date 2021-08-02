@@ -17,7 +17,7 @@ extension Notification.Name {
     private let payloadCrypto: PayloadCryptoAPI
     private let decryptionMapper: CryptoResultToJSMapper
 
-    @objc public convenience override init() {
+    @objc override public convenience init() {
         self.init(
             payloadCrypto: resolve(),
             decryptionMapper: { decryptionResult in
@@ -59,10 +59,10 @@ extension Notification.Name {
             return decryptionMapper(.failure(.noPassword))
         }
         return payloadCrypto.decryptWallet(
-                encryptedWalletData: encryptedWalletData,
-                password: password
-            )
-            .reduce(decryptionMapper)
+            encryptedWalletData: encryptedWalletData,
+            password: password
+        )
+        .reduce(decryptionMapper)
     }
 }
 
@@ -98,8 +98,7 @@ extension PayloadCryptoError {
     }
 }
 
-// swiftlint:disable:next private_over_fileprivate
-fileprivate struct WalletCryptoResult: Codable {
+private struct WalletCryptoResult: Codable {
 
     var encodedJSON: String {
         // swiftlint:disable:next force_try
@@ -111,11 +110,11 @@ fileprivate struct WalletCryptoResult: Codable {
 
     init(success: String) {
         self.success = success
-        self.failure = nil
+        failure = nil
     }
 
     init(failure: String) {
-        self.success = nil
+        success = nil
         self.failure = failure
     }
 }

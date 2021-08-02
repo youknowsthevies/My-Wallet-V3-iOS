@@ -6,7 +6,7 @@ import RxSwift
 import ToolKit
 
 public final class CryptoInterestAccount: CryptoAccount {
-    private(set) public lazy var identifier: AnyHashable = "CryptoInterestAccount." + asset.code
+    public private(set) lazy var identifier: AnyHashable = "CryptoInterestAccount." + asset.code
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
@@ -14,6 +14,7 @@ public final class CryptoInterestAccount: CryptoAccount {
     public var receiveAddress: Single<ReceiveAddress> {
         .error(ReceiveAddressError.notSupported)
     }
+
     public var requireSecondPassword: Single<Bool> {
         .just(false)
     }
@@ -42,17 +43,23 @@ public final class CryptoInterestAccount: CryptoAccount {
         .just([])
     }
 
+    public var activity: Single<[ActivityItemEvent]> {
+        .just([])
+    }
+
     private let fiatPriceService: FiatPriceServiceAPI
     private let balanceService: SavingsOverviewAPI
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset)
     }
 
-    public init(asset: CryptoCurrency,
-                fiatPriceService: FiatPriceServiceAPI = resolve(),
-                balanceService: SavingsOverviewAPI = resolve(),
-                exchangeProviding: ExchangeProviding = resolve()) {
-        self.label = asset.defaultInterestWalletName
+    public init(
+        asset: CryptoCurrency,
+        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        balanceService: SavingsOverviewAPI = resolve(),
+        exchangeProviding: ExchangeProviding = resolve()
+    ) {
+        label = asset.defaultInterestWalletName
         self.asset = asset
         self.balanceService = balanceService
         self.fiatPriceService = fiatPriceService
@@ -68,7 +75,7 @@ public final class CryptoInterestAccount: CryptoAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }
@@ -79,7 +86,7 @@ public final class CryptoInterestAccount: CryptoAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }

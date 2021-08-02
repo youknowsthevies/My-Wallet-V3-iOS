@@ -17,7 +17,7 @@ struct OrderTransactionLegacy {
 protocol LegacyWalletAPI: AnyObject {
 
     func updateAccountLabel(
-        _ cryptoCurrency: CryptoCurrency,
+        _ cryptoCurrency: NonCustodialCoinCode,
         index: Int,
         label: String
     ) -> Completable
@@ -31,7 +31,7 @@ protocol LegacyWalletAPI: AnyObject {
     ///   - completion: Result with built payment data or error.
     func createOrderPayment(
         orderTransaction: OrderTransactionLegacy,
-        completion: @escaping (Result<[AnyHashable : Any], Wallet.CreateOrderError>) -> Void
+        completion: @escaping (Result<[AnyHashable: Any], Wallet.CreateOrderError>) -> Void
     )
 
     /// Sign and publish a transaction that was built by `createOrderPayment:withOrderTransaction:completion`.
@@ -55,13 +55,14 @@ extension Wallet: LegacyWalletAPI {
         case sendOrderFailed(String)
         case cancelled
     }
+
     enum CreateOrderError: Error {
-        case createOrderFailed([AnyHashable : Any])
+        case createOrderFailed([AnyHashable: Any])
     }
 
     func createOrderPayment(
         orderTransaction: OrderTransactionLegacy,
-        completion: @escaping (Result<[AnyHashable : Any], CreateOrderError>) -> Void
+        completion: @escaping (Result<[AnyHashable: Any], CreateOrderError>) -> Void
     ) {
         let amount = NumberFormatter.parseBitcoinValue(from: orderTransaction.amount)
         let fees = NumberFormatter.parseBitcoinValue(from: orderTransaction.fees)
@@ -76,11 +77,11 @@ extension Wallet: LegacyWalletAPI {
         }
         context.invokeOnce(
             valueFunctionBlock: { jsValue in
-                var result: [AnyHashable : Any] = [:]
+                var result: [AnyHashable: Any] = [:]
                 if
                     let stringValue = jsValue.toString(),
                     let data = stringValue.data(using: .utf8),
-                    let decoded = try? JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable : Any]
+                    let decoded = try? JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable: Any]
                 {
                     result = decoded
                 }
@@ -91,11 +92,11 @@ extension Wallet: LegacyWalletAPI {
         )
         context.invokeOnce(
             valueFunctionBlock: { jsValue in
-                var result: [AnyHashable : Any] = [:]
+                var result: [AnyHashable: Any] = [:]
                 if
                     let stringValue = jsValue.toString(),
                     let data = stringValue.data(using: .utf8),
-                    let decoded = try? JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable : Any]
+                    let decoded = try? JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable: Any]
                 {
                     result = decoded
                 }

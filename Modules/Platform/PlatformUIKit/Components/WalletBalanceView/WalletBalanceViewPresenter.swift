@@ -24,10 +24,12 @@ public final class WalletBalanceViewPresenter {
             let descriptionFont: UIFont
             let descriptionTextColor: UIColor
 
-            public init(fiatFont: UIFont,
-                        fiatTextColor: UIColor,
-                        descriptionFont: UIFont,
-                        descriptionTextColor: UIColor) {
+            public init(
+                fiatFont: UIFont,
+                fiatTextColor: UIColor,
+                descriptionFont: UIFont,
+                descriptionTextColor: UIColor
+            ) {
                 self.fiatFont = fiatFont
                 self.fiatTextColor = fiatTextColor
                 self.descriptionFont = descriptionFont
@@ -37,8 +39,10 @@ public final class WalletBalanceViewPresenter {
 
         // MARK: - Setup
 
-        public init(with value: WalletBalanceViewInteractor.WalletBalance,
-                    descriptors: Descriptors = .default) {
+        public init(
+            with value: WalletBalanceViewInteractor.WalletBalance,
+            descriptors: Descriptors = .default
+        ) {
             fiatBalance = LabelContent(
                 text: value.fiatValue.toDisplayString(includeSymbol: true, locale: .current),
                 font: descriptors.fiatFont,
@@ -80,11 +84,13 @@ public final class WalletBalanceViewPresenter {
 
     // MARK: - Setup
 
-    public init(alignment: UIStackView.Alignment = .trailing,
-                interactor: WalletBalanceViewInteractor,
-                descriptors: WalletBalanceViewPresenter.WalletBalance.Descriptors = .default) {
+    public init(
+        alignment: UIStackView.Alignment = .trailing,
+        interactor: WalletBalanceViewInteractor,
+        descriptors: WalletBalanceViewPresenter.WalletBalance.Descriptors = .default
+    ) {
         self.interactor = interactor
-        self.alignmentRelay.accept(alignment)
+        alignmentRelay.accept(alignment)
 
         /// Map interaction state into presnetation state
         /// and bind it to `stateRelay`
@@ -95,9 +101,9 @@ public final class WalletBalanceViewPresenter {
     }
 }
 
-public extension WalletBalanceViewPresenter.WalletBalance.Descriptors {
-    typealias Descriptors = WalletBalanceViewPresenter.WalletBalance.Descriptors
-    static let `default` = Descriptors(
+extension WalletBalanceViewPresenter.WalletBalance.Descriptors {
+    public typealias Descriptors = WalletBalanceViewPresenter.WalletBalance.Descriptors
+    public static let `default` = Descriptors(
         fiatFont: .main(.semibold, 16.0),
         fiatTextColor: .textFieldText,
         descriptionFont: .main(.medium, 14.0),
@@ -106,8 +112,10 @@ public extension WalletBalanceViewPresenter.WalletBalance.Descriptors {
 }
 
 extension LoadingState where Content == WalletBalanceViewPresenter.WalletBalance {
-    init(with state: LoadingState<WalletBalanceViewInteractor.WalletBalance>,
-         descriptors: WalletBalanceViewPresenter.WalletBalance.Descriptors) {
+    init(
+        with state: LoadingState<WalletBalanceViewInteractor.WalletBalance>,
+        descriptors: WalletBalanceViewPresenter.WalletBalance.Descriptors
+    ) {
         switch state {
         case .loading:
             self = .loading

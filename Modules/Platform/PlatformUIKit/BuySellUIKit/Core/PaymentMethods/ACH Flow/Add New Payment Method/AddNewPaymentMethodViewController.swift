@@ -8,8 +8,9 @@ import RxSwift
 import UIKit
 
 final class AddNewPaymentMethodViewController: BaseScreenViewController,
-                                               AddNewPaymentMethodPresentable,
-                                               AddNewPaymentMethodViewControllable {
+    AddNewPaymentMethodPresentable,
+    AddNewPaymentMethodViewControllable
+{
 
     private typealias RxDataSource = RxTableViewSectionedReloadDataSource<AddNewPaymentMethodCellSectionModel>
 
@@ -45,7 +46,7 @@ final class AddNewPaymentMethodViewController: BaseScreenViewController,
             }
 
         let dataSource = RxDataSource(
-            configureCell: { [weak self] (_, _, indexPath, item) -> UITableViewCell in
+            configureCell: { [weak self] _, _, indexPath, item -> UITableViewCell in
                 guard let self = self else { return UITableViewCell() }
                 switch item {
                 case .suggestedPaymentMethod(let viewModel):
@@ -92,8 +93,10 @@ final class AddNewPaymentMethodViewController: BaseScreenViewController,
         tableView.layoutToSuperview(axis: .vertical)
     }
 
-    private func suggestedPaymentMethodCell(for indexPath: IndexPath,
-                                            viewModel: ExplainedActionViewModel) -> UITableViewCell {
+    private func suggestedPaymentMethodCell(
+        for indexPath: IndexPath,
+        viewModel: ExplainedActionViewModel
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(ExplainedActionTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell

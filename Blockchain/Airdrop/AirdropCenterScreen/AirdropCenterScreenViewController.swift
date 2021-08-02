@@ -22,6 +22,7 @@ final class AirdropCenterScreenViewController: BaseScreenViewController {
         super.init(nibName: Self.objectName, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -38,8 +39,10 @@ final class AirdropCenterScreenViewController: BaseScreenViewController {
 
     private func setupNavigationBar() {
         titleViewStyle = .text(value: LocalizationConstants.Airdrop.CenterScreen.title)
-        set(barStyle: .lightContent(),
-            leadingButtonStyle: .close)
+        set(
+            barStyle: .lightContent(),
+            leadingButtonStyle: .close
+        )
     }
 
     private func setupTableView() {

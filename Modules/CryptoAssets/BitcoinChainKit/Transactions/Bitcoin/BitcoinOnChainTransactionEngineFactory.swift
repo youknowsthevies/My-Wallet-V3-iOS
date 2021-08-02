@@ -3,7 +3,7 @@
 import TransactionKit
 
 public final class BitcoinOnChainTransactionEngineFactory<Token: BitcoinChainToken>: OnChainTransactionEngineFactory {
-    public init() { }
+    public init() {}
     public func build(requiresSecondPassword: Bool) -> OnChainTransactionEngine {
         BitcoinOnChainTransactionEngine<Token>(requireSecondPassword: requiresSecondPassword)
     }

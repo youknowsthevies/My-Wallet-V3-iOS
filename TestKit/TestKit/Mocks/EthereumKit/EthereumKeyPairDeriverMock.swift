@@ -10,6 +10,7 @@ class EthereumKeyPairDeriverMock: KeyPairDeriverAPI {
         MockEthereumWalletTestData.keyPair
     )
     var lastMnemonic: String?
+
     func derive(input: EthereumKeyDerivationInput) -> Result<EthereumKeyPair, Error> {
         lastMnemonic = input.mnemonic
         return deriveResult

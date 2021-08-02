@@ -2,21 +2,21 @@
 
 import Foundation
 
-public extension Encodable {
-    var dictionary: [String: Any] {
+extension Encodable {
+    public var dictionary: [String: Any] {
         guard let data = try? JSONEncoder().encode(self) else {
             return [:]
         }
         return (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] ?? [:]
     }
 
-    func encode() throws -> Data {
+    public func encode() throws -> Data {
         let encoder = JSONEncoder()
         return try encoder.encode(self)
     }
 
-    func encodeToString(encoding: String.Encoding) throws -> String {
-        let encodedData = try self.encode()
+    public func encodeToString(encoding: String.Encoding) throws -> String {
+        let encodedData = try encode()
         guard let string = String(data: encodedData, encoding: encoding) else {
             throw EncodingError.invalidValue(
                 encodedData,
@@ -29,23 +29,23 @@ public extension Encodable {
         return string
     }
 
-    func toDictionary() throws -> [String: Any] {
-        guard let data = try? self.encode(), let dictionary = try JSONSerialization.jsonObject(
+    public func toDictionary() throws -> [String: Any] {
+        guard let data = try? encode(), let dictionary = try JSONSerialization.jsonObject(
             with: data,
             options: .allowFragments
-            ) as? [String: Any] else {
-                throw NSError(domain: "Encodable", code: 0, userInfo: nil)
+        ) as? [String: Any] else {
+            throw NSError(domain: "Encodable", code: 0, userInfo: nil)
         }
         return dictionary
     }
 
-    func tryToEncode(
+    public func tryToEncode(
         encoding: String.Encoding,
         onSuccess: (String) -> Void,
         onError: () -> Void
-        ) {
+    ) {
         do {
-            let encodedData = try self.encode()
+            let encodedData = try encode()
             guard let string = String(data: encodedData, encoding: encoding) else {
                 onError()
                 return

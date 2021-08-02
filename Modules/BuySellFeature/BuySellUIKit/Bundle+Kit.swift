@@ -3,6 +3,7 @@
 import Foundation
 
 extension Bundle {
-    private class BuySellKitBundle { }
-    static let buySellKit: Bundle = Bundle(for: BuySellKitBundle.self)
+    private class BuySellKitBundle {}
+
+    static let buySellKit = Bundle(for: BuySellKitBundle.self)
 }

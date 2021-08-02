@@ -52,13 +52,15 @@ final class YodleeMessageService {
 
     private let messageHandler: YodleeMessageHandler
 
-    init(messageHandler: YodleeMessageHandler,
-         parser: @escaping (DataMessage) -> Effect) {
+    init(
+        messageHandler: YodleeMessageHandler,
+        parser: @escaping (DataMessage) -> Effect
+    ) {
         self.messageHandler = messageHandler
 
         effect = messageHandler.receivedMessage
             .map(\.data)
-            .map { (type) -> Effect in
+            .map { type -> Effect in
                 switch type {
                 case .externalLink(let data):
                     guard let url = URL(string: data.url) else {
@@ -70,7 +72,6 @@ final class YodleeMessageService {
                 }
             }
             .share(replay: 1, scope: .whileConnected)
-
     }
 
     /// Enables the monitor of events from the message handler

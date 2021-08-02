@@ -7,8 +7,9 @@ import ToolKit
 
 public protocol OrderQuoteRepositoryAPI: AnyObject {
 
-    func fetchQuote(direction: OrderDirection,
-                    sourceCurrencyType: CurrencyType,
-                    destinationCurrencyType: CurrencyType) -> Single<OrderQuotePayload>
+    func fetchQuote(
+        direction: OrderDirection,
+        sourceCurrencyType: CurrencyType,
+        destinationCurrencyType: CurrencyType
+    ) -> Single<OrderQuotePayload>
 }
-

@@ -11,7 +11,7 @@ final class MobileVerificationBadgeInteractor: DefaultBadgeAssetInteractor {
         super.init()
         service
             .valueObservable
-            .map { $0.isSMSVerified }
+            .map(\.isSMSVerified)
             .map { $0 ? .verified : .unverified }
             .map { .loaded(next: $0) }
             // TODO: Error handing

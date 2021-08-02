@@ -1,12 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 final class AccountPickerHeaderView: UIView {
-    private let patternImageView: UIImageView = UIImageView()
-    private let assetImageView: UIImageView = UIImageView()
-    private let titleLabel: UILabel = UILabel()
-    private let subtitleLabel: UILabel = UILabel()
-    private let selectWalletLabel: UILabel = UILabel()
-    private let separator: UIView = UIView()
+    private let patternImageView = UIImageView()
+    private let assetImageView = UIImageView()
+    private let titleLabel = UILabel()
+    private let subtitleLabel = UILabel()
+    private let selectWalletLabel = UILabel()
+    private let separator = UIView()
     private let fadeMask = CAGradientLayer()
 
     var model: AccountPickerHeaderModel! {

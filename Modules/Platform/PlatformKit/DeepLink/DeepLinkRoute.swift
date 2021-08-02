@@ -11,8 +11,10 @@ public enum DeepLinkRoute: CaseIterable {
 
 extension DeepLinkRoute {
 
-    public static func route(from url: String,
-                             supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases) -> DeepLinkRoute? {
+    public static func route(
+        from url: String,
+        supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases
+    ) -> DeepLinkRoute? {
         guard let lastPathWithProperties = url.components(separatedBy: "/").last else {
             return nil
         }
@@ -28,29 +30,36 @@ extension DeepLinkRoute {
         parameterPairs?.forEach { pair in
             let paramComponents = pair.components(separatedBy: "=")
             guard let key = paramComponents.first,
-                  let value = paramComponents.last?.removingPercentEncoding else {
+                  let value = paramComponents.last?.removingPercentEncoding
+            else {
                 return
             }
             parameters[key] = value
         }
 
-        return DeepLinkRoute.route(path: path,
-                                   parameters: parameters,
-                                   supportedRoutes: supportedRoutes)
+        return DeepLinkRoute.route(
+            path: path,
+            parameters: parameters,
+            supportedRoutes: supportedRoutes
+        )
     }
 
-    private static func route(path: String,
-                              parameters: [String: String]?,
-                              supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases) -> DeepLinkRoute? {
+    private static func route(
+        path: String,
+        parameters: [String: String]?,
+        supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases
+    ) -> DeepLinkRoute? {
         supportedRoutes.first { route -> Bool in
             if route.supportedPath == path {
                 if let key = route.requiredKeyParam,
                    let value = route.requiredValueParam,
-                   let routeParameters = parameters {
+                   let routeParameters = parameters
+                {
 
                     if let optionalKey = route.optionalKeyParameter,
                        let value = routeParameters[optionalKey],
-                       let context = FlowContext(rawValue: value) {
+                       let context = FlowContext(rawValue: value)
+                    {
                         return route == .exchangeVerifyEmail && context == .exchangeSignup
                     } else {
                         return routeParameters[key] == value

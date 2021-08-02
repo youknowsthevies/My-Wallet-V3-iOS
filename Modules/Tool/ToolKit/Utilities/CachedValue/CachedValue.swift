@@ -15,11 +15,6 @@ public class CachedValue<Value> {
     /// Typealias for fetch method
     typealias FetchMethod = () -> Single<Value>
 
-    @available(*, deprecated, message: "Do not use this! It is meant to support legacy code")
-    public var legacyValue: Value? {
-        atomicValue.value
-    }
-
     /// Streams a single value and terminates
     public var valueSingle: Single<Value> {
         _ = setup
@@ -49,7 +44,7 @@ public class CachedValue<Value> {
     /// Sets the fetch method. Must be called before any subscription.
     /// - Parameter fetch: The fetch method.
     public func setFetch(_ fetch: @escaping () -> Single<Value>) {
-        self.fetchMethod = fetch
+        fetchMethod = fetch
     }
 
     /// Sets the fetch method. Must be called before any subscription.
@@ -57,7 +52,7 @@ public class CachedValue<Value> {
     ///   - object: Weakly referenced object
     ///   - fetch: Fetch method
     public func setFetch<A: AnyObject>(weak object: A, fetch: @escaping (A) -> Single<Value>) {
-        self.fetchMethod = { [weak object] in
+        fetchMethod = { [weak object] in
             guard let object = object else {
                 return .error(ToolKitError.nullReference(A.self))
             }

@@ -66,6 +66,7 @@ final class SelectionItemTableViewCell: UITableViewCell {
         setup()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -127,7 +128,8 @@ final class SelectionItemTableViewCell: UITableViewCell {
             animations: {
                 self.contentView.backgroundColor = .hightlightedBackground
             },
-            completion: nil)
+            completion: nil
+        )
     }
 
     @objc
@@ -139,6 +141,7 @@ final class SelectionItemTableViewCell: UITableViewCell {
             animations: {
                 self.contentView.backgroundColor = .clear
             },
-            completion: nil)
+            completion: nil
+        )
     }
 }

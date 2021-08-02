@@ -3,25 +3,27 @@
 // swiftlint:disable all
 
 extension LocalizationConstants {
-    public struct DashboardDetails {
-        public struct BalanceCell {
-            public struct Title {
+    public enum DashboardDetails {
+        public enum BalanceCell {
+            public enum Title {
                 public static let trading = NSLocalizedString("Trading", comment: "Trading")
                 public static let savings = NSLocalizedString("Interest", comment: "Interest")
             }
-            public struct Description {
+
+            public enum Description {
                 public static let savingsPrefix = NSLocalizedString("Earn", comment: "Earn 3% APY")
                 public static let savingsSuffix = NSLocalizedString("% APY", comment: "Earn 3% APY")
             }
+
             public static let pending = NSLocalizedString("Pending", comment: "Pending")
         }
-                
+
         public static let current = NSLocalizedString("Current", comment: "Current")
         public static let price = NSLocalizedString("Price", comment: "Price")
-        
+
         public static let send = NSLocalizedString("Send", comment: "Send")
         public static let request = NSLocalizedString("Request", comment: "Request")
-        
+
         public static let day = NSLocalizedString("Day", comment: "Day")
         public static let week = NSLocalizedString("Week", comment: "Week")
         public static let month = NSLocalizedString("Month", comment: "Month")
@@ -31,5 +33,4 @@ extension LocalizationConstants {
         public static let swap = NSLocalizedString("Swap", comment: "Swap")
         public static let viewActivity = NSLocalizedString("View Activity", comment: "View Activity")
     }
-
 }

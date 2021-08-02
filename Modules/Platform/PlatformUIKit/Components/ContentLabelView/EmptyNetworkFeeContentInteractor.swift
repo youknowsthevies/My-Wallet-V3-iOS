@@ -8,5 +8,6 @@ public final class EmptyNetworkFeeContentInteractor: ContentLabelViewInteractorA
     public var contentCalculationState: Observable<ValueCalculationState<String>> {
         .just(.calculating)
     }
-    public init() { }
+
+    public init() {}
 }

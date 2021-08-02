@@ -32,14 +32,14 @@ final class CloudBackupSwitchViewPresenter: SwitchViewPresenting {
             .disposed(by: disposeBag)
 
         interactor.state
-            .compactMap { $0.value }
-            .map { $0.isEnabled }
+            .compactMap(\.value)
+            .map(\.isEnabled)
             .bindAndCatch(to: viewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         interactor.state
-            .compactMap { $0.value }
-            .map { $0.isOn }
+            .compactMap(\.value)
+            .map(\.isOn)
             .bindAndCatch(to: viewModel.isOnRelay)
             .disposed(by: disposeBag)
         return viewModel
@@ -48,12 +48,14 @@ final class CloudBackupSwitchViewPresenter: SwitchViewPresenting {
     // MARK: - Private
 
     private let interactor: SwitchViewInteracting
-    private let analyticsRecording: AnalyticsEventRecording
+    private let analyticsRecording: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
 
-    init(appSettings: BlockchainSettings.App,
-         credentialsStore: CredentialsStoreAPI,
-         analyticsRecording: AnalyticsEventRecording = resolve()) {
+    init(
+        appSettings: BlockchainSettings.App,
+        credentialsStore: CredentialsStoreAPI,
+        analyticsRecording: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.analyticsRecording = analyticsRecording
         interactor = CloudBackupSwitchViewInteractor(
             appSettings: appSettings,

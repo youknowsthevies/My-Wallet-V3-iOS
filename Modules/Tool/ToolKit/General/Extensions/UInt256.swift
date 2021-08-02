@@ -43,9 +43,11 @@ extension BigUInt {
     /// Number to string convertion options
     public struct StringOptions: OptionSet {
         public let rawValue: Int
+
         public init(rawValue: Int) {
             self.rawValue = rawValue
         }
+
         /// Fallback to scientific number. (like `1.0e-16`)
         public static let fallbackToScientific = StringOptions(rawValue: 0b1)
         /// Removes last zeroes (will print `1.123` instead of `1.12300000000000`)
@@ -68,7 +70,7 @@ extension BigUInt {
         let (quotient, remainder) = quotientAndRemainder(dividingBy: divisor)
         var fullRemainder = String(remainder)
         let fullPaddedRemainder = fullRemainder.leftPadding(toLength: unitDecimals, withPad: "0")
-        let remainderPadded = fullPaddedRemainder[0 ..< toDecimals]
+        let remainderPadded = fullPaddedRemainder[0..<toDecimals]
         let offset = remainderPadded.reversed().firstIndex(where: { $0 != "0" })?.base
 
         if let offset = offset {
@@ -87,16 +89,16 @@ extension BigUInt {
                 if char == "0" {
                     firstDigit += 1
                 } else {
-                    let firstDecimalUnit = String(fullPaddedRemainder[firstDigit ..< firstDigit+1])
+                    let firstDecimalUnit = String(fullPaddedRemainder[firstDigit..<firstDigit + 1])
                     var remainingDigits = ""
                     let numOfRemainingDecimals = fullPaddedRemainder.count - firstDigit - 1
                     if numOfRemainingDecimals <= 0 {
                         remainingDigits = ""
                     } else if numOfRemainingDecimals > decimals {
-                        let end = firstDigit+1+decimals > fullPaddedRemainder.count ? fullPaddedRemainder.count : firstDigit+1+decimals
-                        remainingDigits = String(fullPaddedRemainder[firstDigit+1 ..< end])
+                        let end = firstDigit + 1 + decimals > fullPaddedRemainder.count ? fullPaddedRemainder.count : firstDigit + 1 + decimals
+                        remainingDigits = String(fullPaddedRemainder[firstDigit + 1..<end])
                     } else {
-                        remainingDigits = String(fullPaddedRemainder[firstDigit+1 ..< fullPaddedRemainder.count])
+                        remainingDigits = String(fullPaddedRemainder[firstDigit + 1..<fullPaddedRemainder.count])
                     }
                     fullRemainder = firstDecimalUnit
                     if !remainingDigits.isEmpty {
@@ -130,9 +132,9 @@ extension BigInt {
     }
 }
 
-fileprivate extension String {
+extension String {
 
-    func leftPadding(toLength: Int, withPad character: Character) -> String {
+    fileprivate func leftPadding(toLength: Int, withPad character: Character) -> String {
         let stringLength = count
         if stringLength < toLength {
             return String(repeatElement(character, count: toLength - stringLength)) + self

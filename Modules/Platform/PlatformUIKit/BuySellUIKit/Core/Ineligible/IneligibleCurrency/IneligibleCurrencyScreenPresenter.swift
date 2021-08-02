@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
+import RxAnalyticsKit
 import RxCocoa
 import RxSwift
 import ToolKit
@@ -34,9 +35,11 @@ final class IneligibleCurrencyScreenPresenter {
     private let stateService: StateServiceAPI
     private let disposeBag = DisposeBag()
 
-    init(currency: FiatCurrency,
-         stateService: StateServiceAPI,
-         analyticsRecording: AnalyticsEventRecording = resolve()) {
+    init(
+        currency: FiatCurrency,
+        stateService: StateServiceAPI,
+        analyticsRecording: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.stateService = stateService
         titleLabelContent = .init(
             text: "\(currency.name) \(LocalizationString.title)",

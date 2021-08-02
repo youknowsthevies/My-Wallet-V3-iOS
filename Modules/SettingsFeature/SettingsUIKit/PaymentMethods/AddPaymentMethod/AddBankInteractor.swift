@@ -18,8 +18,10 @@ final class AddBankInteractor: AddSpecificPaymentMethodInteractorAPI {
             .share(replay: 1)
     }
 
-    init(beneficiariesService: BeneficiariesServiceAPI,
-         fiatCurrency: FiatCurrency) {
+    init(
+        beneficiariesService: BeneficiariesServiceAPI,
+        fiatCurrency: FiatCurrency
+    ) {
         self.fiatCurrency = fiatCurrency
         self.beneficiariesService = beneficiariesService
     }

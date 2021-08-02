@@ -7,6 +7,16 @@ import RxCombine
 public enum FeatureFlag: Hashable {
     case local(InternalFeature)
     case remote(AppFeature)
+
+    /// Enables the feature for alpha release overriding any internal or external config.
+    var isAlphaReady: Bool {
+        switch self {
+        case .local(let feature):
+            return feature.isAlphaReady
+        case .remote(let feature):
+            return feature.isAlphaReady
+        }
+    }
 }
 
 public enum FeatureFlagError: Error {
@@ -60,6 +70,11 @@ class FeatureFlagsService: FeatureFlagsServiceAPI {
     }
 
     func isEnabled(_ feature: FeatureFlag) -> AnyPublisher<Bool, Never> {
+        #if ALPHA_BUILD
+        if feature.isAlphaReady {
+            return .just(true)
+        }
+        #endif
         switch feature {
         case .local(let featureFlag):
             return .just(localFeatureFlagsService.isEnabled(featureFlag))

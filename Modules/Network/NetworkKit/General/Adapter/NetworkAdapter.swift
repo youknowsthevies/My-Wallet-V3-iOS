@@ -11,8 +11,10 @@ final class NetworkAdapter: NetworkAdapterAPI {
     private let communicator: NetworkCommunicatorAPI
     private let queue: DispatchQueue
 
-    init(communicator: NetworkCommunicatorAPI = resolve(),
-         queue: DispatchQueue = DispatchQueue.global(qos: .default)) {
+    init(
+        communicator: NetworkCommunicatorAPI = resolve(),
+        queue: DispatchQueue = DispatchQueue.global(qos: .default)
+    ) {
         self.communicator = communicator
         self.queue = queue
     }
@@ -23,7 +25,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType?, NetworkError> {
         communicator.dataTaskPublisher(for: request)
             .decodeOptional(responseType: responseType, for: request, using: request.decoder)
-            .subscribeOnQueueIfiOS14OrGreater(queue: queue)
+            .subscribe(on: queue)
             .eraseToAnyPublisher()
     }
 
@@ -33,7 +35,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType?, ErrorResponseType> {
         communicator.dataTaskPublisher(for: request)
             .decodeOptional(responseType: responseType, for: request, using: request.decoder)
-            .subscribeOnQueueIfiOS14OrGreater(queue: queue)
+            .subscribe(on: queue)
             .eraseToAnyPublisher()
     }
 
@@ -42,7 +44,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType, ErrorResponseType> {
         communicator.dataTaskPublisher(for: request)
             .decode(for: request, using: request.decoder)
-            .subscribeOnQueueIfiOS14OrGreater(queue: queue)
+            .subscribe(on: queue)
             .eraseToAnyPublisher()
     }
 
@@ -51,39 +53,14 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType, NetworkError> {
         communicator.dataTaskPublisher(for: request)
             .decode(for: request, using: request.decoder)
-            .subscribeOnQueueIfiOS14OrGreater(queue: queue)
+            .subscribe(on: queue)
             .eraseToAnyPublisher()
     }
 }
 
-extension AnyPublisher where Output: Decodable,
-                             Failure == NetworkError {
-
-    fileprivate func subscribeOnQueueIfiOS14OrGreater(
-        queue: DispatchQueue
-    ) -> AnyPublisher<Output, Failure> {
-        guard #available(iOS 14, *) else {
-            return self
-        }
-        return subscribe(on: queue).eraseToAnyPublisher()
-    }
-}
-
-extension AnyPublisher where Output: Decodable,
-                             Failure: FromNetworkErrorConvertible {
-
-    fileprivate func subscribeOnQueueIfiOS14OrGreater(
-        queue: DispatchQueue
-    ) -> AnyPublisher<Output, Failure> {
-        guard #available(iOS 14, *) else {
-            return self
-        }
-        return subscribe(on: queue).eraseToAnyPublisher()
-    }
-}
-
 extension AnyPublisher where Output == ServerResponse,
-                            Failure == NetworkError {
+    Failure == NetworkError
+{
 
     fileprivate func decodeOptional<ResponseType: Decodable>(
         responseType: ResponseType.Type,
@@ -119,7 +96,8 @@ extension AnyPublisher where Output == ServerResponse,
 }
 
 extension AnyPublisher where Output == ServerResponse,
-                             Failure == NetworkError {
+    Failure == NetworkError
+{
 
     fileprivate func decodeError<ErrorResponseType: FromNetworkErrorConvertible>(
         for request: NetworkRequest,
@@ -140,7 +118,8 @@ extension AnyPublisher where Output == ServerResponse,
 }
 
 extension AnyPublisher where Output == ServerResponse,
-                             Failure: FromNetworkErrorConvertible {
+    Failure: FromNetworkErrorConvertible
+{
 
     fileprivate func decodeSuccess<ResponseType: Decodable>(
         for request: NetworkRequest,
@@ -171,7 +150,8 @@ extension AnyPublisher where Output == ServerResponse,
 }
 
 extension AnyPublisher where Output == ServerResponse,
-                             Failure == NetworkError {
+    Failure == NetworkError
+{
 
     fileprivate func decodeSuccess<ResponseType: Decodable>(
         for request: NetworkRequest,

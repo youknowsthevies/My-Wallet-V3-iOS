@@ -9,17 +9,19 @@ final class FiatBalanceCollectionView: UICollectionView {
 
     // MARK: - Injected
 
-    public var presenter: FiatBalanceCollectionViewPresenter! {
+    var presenter: FiatBalanceCollectionViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
             guard let presenter = presenter else { return }
             presenter.presenters
-                .drive(rx.items(
-                    cellIdentifier: FiatCustodialBalanceCollectionViewCell.objectName,
-                    cellType: FiatCustodialBalanceCollectionViewCell.self),
-                       curriedArgument: { _, presenter, cell in
+                .drive(
+                    rx.items(
+                        cellIdentifier: FiatCustodialBalanceCollectionViewCell.objectName,
+                        cellType: FiatCustodialBalanceCollectionViewCell.self
+                    ),
+                    curriedArgument: { _, presenter, cell in
                         cell.presenter = presenter
                     }
                 )
@@ -33,7 +35,7 @@ final class FiatBalanceCollectionView: UICollectionView {
         }
     }
 
-    public let collectionViewFlowLayout: UICollectionViewFlowLayout = {
+    let collectionViewFlowLayout: UICollectionViewFlowLayout = {
         let flow = UICollectionViewFlowLayout()
         flow.estimatedItemSize = CGSize(width: 300, height: 70)
         flow.minimumInteritemSpacing = 0
@@ -49,7 +51,7 @@ final class FiatBalanceCollectionView: UICollectionView {
 
     // MARK: - Lifecycle
 
-    public init() {
+    init() {
         super.init(frame: UIScreen.main.bounds, collectionViewLayout: collectionViewFlowLayout)
         backgroundColor = .clear
         showsHorizontalScrollIndicator = false
@@ -59,5 +61,5 @@ final class FiatBalanceCollectionView: UICollectionView {
     }
 
     @available(*, unavailable)
-    public required init?(coder: NSCoder) { nil }
+    required init?(coder: NSCoder) { nil }
 }

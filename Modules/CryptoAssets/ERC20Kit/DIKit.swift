@@ -21,7 +21,7 @@ extension DependencyContainer {
 
         factory { ERC20AssetFactory() as ERC20AssetFactoryAPI }
 
-        factory { ERC20HistoricalTransactionService() as ERC20HistoricalTransactionServiceAPI }
+        single { ERC20HistoricalTransactionService() as ERC20HistoricalTransactionServiceAPI }
 
         factory { ERC20AccountDetailsService() as ERC20AccountDetailsServiceAPI }
 
@@ -30,7 +30,6 @@ extension DependencyContainer {
         factory { ERC20AccountAPIClient() as ERC20AccountAPIClientAPI }
 
         factory { ERC20AccountService() as ERC20AccountServiceAPI }
-
     }
 }
 

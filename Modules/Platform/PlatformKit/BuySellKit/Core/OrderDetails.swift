@@ -198,7 +198,7 @@ public struct OrderDetails {
 
     // MARK: - Setup
 
-    init?(recorder: AnalyticsEventRecording, response: OrderPayload.Response) {
+    init?(recorder: AnalyticsEventRecorderAPI, response: OrderPayload.Response) {
         switch response.side {
         case .buy:
             guard let buy = BuyOrderDetails(recorder: recorder, response: response) else { return nil }
@@ -227,10 +227,10 @@ extension AnalyticsEvents {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             switch self {
             case .updatedAtParsingError(date: let date):
-                return ["data" : date]
+                return ["data": date]
             }
         }
     }

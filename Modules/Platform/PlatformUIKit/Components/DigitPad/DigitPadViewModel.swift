@@ -3,7 +3,7 @@
 import RxCocoa
 import RxSwift
 
-/// TODO: Modularize to play nicer with different flows.
+// TODO: Modularize to play nicer with different flows.
 /// At the moment all the logic is centralized in the view model - there should be
 /// another object to take up responsibility for logic.
 public final class DigitPadViewModel {
@@ -68,10 +68,12 @@ public final class DigitPadViewModel {
 
     // MARK: - Setup
 
-    public init(padType: PadType,
-                customButtonViewModel: DigitPadButtonViewModel = .empty,
-                contentTint: UIColor = .black,
-                buttonHighlightColor: UIColor = .clear) {
+    public init(
+        padType: PadType,
+        customButtonViewModel: DigitPadButtonViewModel = .empty,
+        contentTint: UIColor = .black,
+        buttonHighlightColor: UIColor = .clear
+    ) {
 
         let buttonBackground = DigitPadButtonViewModel.Background(highlightColor: buttonHighlightColor)
 
@@ -87,7 +89,7 @@ public final class DigitPadViewModel {
         self.customButtonViewModel = customButtonViewModel
 
         // Digit count of the value
-        valueLengthObservable = valueRelay.map { $0.count }.share(replay: 1)
+        valueLengthObservable = valueRelay.map(\.count).share(replay: 1)
 
         // Bind backspace to an action
         backspaceButtonViewModel.tapObservable
@@ -104,7 +106,7 @@ public final class DigitPadViewModel {
 
         // Bind taps on the bottom left view to an action
         customButtonViewModel.tapObservable
-            .map { _ in Void() }
+            .map { _ in () }
             .bindAndCatch(to: customButtonTapRelay)
             .disposed(by: disposeBag)
 
@@ -116,7 +118,7 @@ public final class DigitPadViewModel {
         case .pin:
             buttons = digitButtonViewModelArray
         }
-        let tapObservable = Observable.merge(buttons.map { $0.tapObservable })
+        let tapObservable = Observable.merge(buttons.map(\.tapObservable))
 
         tapObservable
             .bind { [unowned self] content in
@@ -125,14 +127,14 @@ public final class DigitPadViewModel {
                     switch padType {
                     case .number:
                         self.valueRelay.accept(digit)
-                        self.valueInsertedPublishRelay.accept(Void())
+                        self.valueInsertedPublishRelay.accept(())
                     case .pin(maxCount: let count):
                         let value = "\(self.value)\(digit)"
                         if self.value.count < count {
                             self.valueRelay.accept(value)
                         }
                         if self.value.count == count {
-                            self.valueInsertedPublishRelay.accept(Void())
+                            self.valueInsertedPublishRelay.accept(())
                         }
                     }
                 case .image, .none:
@@ -145,7 +147,7 @@ public final class DigitPadViewModel {
     /// Resets the pin to a given value
     public func reset(to value: String = "") {
         valueRelay.accept(value)
-        valueInsertedPublishRelay.accept(Void())
+        valueInsertedPublishRelay.accept(())
     }
 
     /// Emits the updated lock time (seconds) due to new incorrect PIN attempt

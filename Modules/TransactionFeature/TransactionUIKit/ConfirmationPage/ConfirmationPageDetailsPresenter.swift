@@ -13,6 +13,7 @@ import ToolKit
 
 protocol ConfirmationPagePresentable: Presentable {
     var continueButtonTapped: Signal<Void> { get }
+
     func connect(action: Driver<ConfirmationPageInteractor.Action>) -> Driver<ConfirmationPageInteractor.Effects>
 }
 
@@ -33,6 +34,7 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
     }
 
     // MARK: - Actions
+
     var continueButtonTapped: Signal<Void> {
         contentReducer
             .continueButtonViewModel
@@ -47,6 +49,7 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             contentReducer.continueButtonViewModel
         ]
     }
+
     var cells: [DetailsScreen.CellType] {
         contentReducer.cells
     }
@@ -76,7 +79,7 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
     func connect(action: Driver<ConfirmationPageInteractor.Action>) -> Driver<ConfirmationPageInteractor.Effects> {
         let details = action
             .distinctUntilChanged()
-            .flatMap { (action) -> Driver<TransactionState> in
+            .flatMap { action -> Driver<TransactionState> in
                 switch action {
                 case .empty:
                     return .empty()
@@ -108,7 +111,7 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
 
         let memoChanged = contentReducer
             .memoUpdated
-            .map { (text, oldModel) in
+            .map { text, oldModel in
                 ConfirmationPageInteractor.Effects.updateMemo(text, oldModel: oldModel)
             }
             .asDriverCatchError()

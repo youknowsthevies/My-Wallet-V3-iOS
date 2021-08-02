@@ -77,7 +77,7 @@ extension AnalyticsEvents {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             nil
         }
     }

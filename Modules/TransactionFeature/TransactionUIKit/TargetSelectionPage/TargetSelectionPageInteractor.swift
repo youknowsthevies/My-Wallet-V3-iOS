@@ -10,9 +10,11 @@ import RxSwift
 import ToolKit
 
 protocol TargetSelectionPageRouting: ViewableRouting {
-    func presentQRScanner(for currency: CryptoCurrency,
-                          sourceAccount: CryptoAccount,
-                          model: TargetSelectionPageModel)
+    func presentQRScanner(
+        for currency: CryptoCurrency,
+        sourceAccount: CryptoAccount,
+        model: TargetSelectionPageModel
+    )
 }
 
 protocol TargetSelectionPageListener: AnyObject {
@@ -22,7 +24,8 @@ protocol TargetSelectionPageListener: AnyObject {
 }
 
 final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelectionPagePresentable>,
-                                           TargetSelectionPageInteractable {
+    TargetSelectionPageInteractable
+{
 
     weak var router: TargetSelectionPageRouting?
 
@@ -40,15 +43,17 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
     // MARK: - Init
 
-    init(targetSelectionPageModel: TargetSelectionPageModel,
-         presenter: TargetSelectionPagePresentable,
-         accountProvider: SourceAndTargetAccountProviding,
-         listener: TargetSelectionListenerBridge,
-         action: AssetAction,
-         radioSelectionHandler: RadioSelectionHandling,
-         backButtonInterceptor: @escaping BackButtonInterceptor,
-         messageRecorder: MessageRecording = resolve(),
-         featureConfigurator: FeatureConfiguring = resolve()) {
+    init(
+        targetSelectionPageModel: TargetSelectionPageModel,
+        presenter: TargetSelectionPagePresentable,
+        accountProvider: SourceAndTargetAccountProviding,
+        listener: TargetSelectionListenerBridge,
+        action: AssetAction,
+        radioSelectionHandler: RadioSelectionHandling,
+        backButtonInterceptor: @escaping BackButtonInterceptor,
+        messageRecorder: MessageRecording = resolve(),
+        featureConfigurator: FeatureConfiguring = resolve()
+    ) {
         self.action = action
         self.targetSelectionPageModel = targetSelectionPageModel
         self.accountProvider = accountProvider
@@ -61,7 +66,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             self.didSelect = didSelect
             self.listener = nil
         case .listener(let listener):
-            self.didSelect = nil
+            didSelect = nil
             self.listener = listener
         }
         super.init(presenter: presenter)
@@ -85,7 +90,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .subscribe(onNext: { [weak self] state in
                 let hasCorrectBackStack = state.backStack.isEmpty || state.backStack.contains(.selectTarget)
                 let hasCorrectStep = state.step == .enterAmount || state.step == .selectTarget
-                if hasCorrectStep && hasCorrectBackStack && state.isGoingBack {
+                if hasCorrectStep, hasCorrectBackStack, state.isGoingBack {
                     self?.targetSelectionPageModel.process(action: .returnToPreviousStep)
                 }
             })
@@ -144,7 +149,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         // `textWhileTyping` stream the text field text while it has focus.
         let textWhileTyping: Observable<String> = text
             .withLatestFrom(isFocused) { ($0, $1) }
-            .filter { $0.1 }
+            .filter(\.1)
             .map(\.0)
             .share(replay: 1, scope: .whileConnected)
 
@@ -186,16 +191,18 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
         let radioSelectionAction = transactionState
             // a selected input is inferred if the inputValidated is TargetSelectionInputValidation.account
-            .filter { $0.inputValidated.isAccountSelection }
+            .filter(\.inputValidated.isAccountSelection)
             .compactMap { $0.destination as? SingleAccount }
             .map(\.identifier)
             .map(RadioSelectionAction.select)
 
-        Observable.merge(initialTargetsAction,
-                         deselectAction,
-                         radioSelectionAction)
-            .bind(to: radioSelectionHandler.selectionAction)
-            .disposeOnDeactivate(interactor: self)
+        Observable.merge(
+            initialTargetsAction,
+            deselectAction,
+            radioSelectionAction
+        )
+        .bind(to: radioSelectionHandler.selectionAction)
+        .disposeOnDeactivate(interactor: self)
 
         /// Listens to the `step` which
         /// triggers routing to a new screen or ending the flow
@@ -203,13 +210,13 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .distinctUntilChanged(\.step)
             .withLatestFrom(sourceAccount) { ($0, $1) }
             .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onNext: { (state, source) in
+            .subscribe(onNext: { state, source in
                 self.handleStateChange(newState: state, sourceAccount: source)
             })
             .disposeOnDeactivate(interactor: self)
 
         sourceAccount
-            .map { (account) -> NSAttributedString in
+            .map { account -> NSAttributedString in
                 NSAttributedString(
                     string: String(format: LocalizationConstants.TextField.Title.cryptoAddress, account.currencyType.name),
                     attributes: [
@@ -230,7 +237,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
         let interactorState = transactionState
             .observeOn(MainScheduler.instance)
-            .scan(.empty) { [weak self] (state, updater) -> TargetSelectionPageInteractor.State in
+            .scan(.empty) { [weak self] state, updater -> TargetSelectionPageInteractor.State in
                 guard let self = self else {
                     return state
                 }
@@ -253,6 +260,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     }
 
     // MARK: - Private methods
+
     private func calculateNextState(
         with state: State,
         updater: TargetSelectionPageState,
@@ -265,8 +273,10 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
         if state.sourceInteractor?.account.identifier != sourceAccount.identifier {
             state = state
-                    .update(keyPath: \.sourceInteractor,
-                            value: .singleAccount(sourceAccount, AccountAssetBalanceViewInteractor(account: sourceAccount)))
+                .update(
+                    keyPath: \.sourceInteractor,
+                    value: .singleAccount(sourceAccount, AccountAssetBalanceViewInteractor(account: sourceAccount))
+                )
         }
 
         if state.destinationInteractors.isEmpty {
@@ -281,15 +291,9 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 .update(keyPath: \.destinationInteractors, value: destinations)
         }
 
-        let tradingAccountExternalSend = featureConfigurator.configuration(for: .tradingAccountExternalSend).isEnabled
-        if sourceAccount is NonCustodialAccount || tradingAccountExternalSend {
-            if state.inputFieldInteractor == nil {
-                state = state
-                    .update(keyPath: \.inputFieldInteractor, value: .walletInputField(sourceAccount, cryptoAddressViewModel))
-            }
-        } else {
+        if state.inputFieldInteractor == nil {
             state = state
-                .update(keyPath: \.inputFieldInteractor, value: nil)
+                .update(keyPath: \.inputFieldInteractor, value: .walletInputField(sourceAccount, cryptoAddressViewModel))
         }
 
         return state
@@ -312,6 +316,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     }
 
     private var initialStep: Bool = true
+
     private func handleStateChange(newState: TargetSelectionPageState, sourceAccount: BlockchainAccount) {
         if !initialStep, newState.step == TargetSelectionPageStep.initial {
             // no-op
@@ -373,9 +378,9 @@ extension TargetSelectionPageInteractor {
 
         private init(actionButtonEnabled: Bool) {
             self.actionButtonEnabled = actionButtonEnabled
-            self.sourceInteractor = nil
-            self.inputFieldInteractor = nil
-            self.destinationInteractors = []
+            sourceInteractor = nil
+            inputFieldInteractor = nil
+            destinationInteractors = []
         }
     }
 

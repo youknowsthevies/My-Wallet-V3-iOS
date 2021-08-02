@@ -4,7 +4,7 @@ import Localization
 import PlatformUIKit
 
 extension ScreenNavigationModel {
-    enum TargetSelection { }
+    enum TargetSelection {}
 }
 
 extension ScreenNavigationModel.TargetSelection {

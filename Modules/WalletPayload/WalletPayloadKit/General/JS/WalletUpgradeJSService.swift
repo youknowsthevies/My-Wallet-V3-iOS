@@ -29,6 +29,7 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
             case didUpgrade = "objc_upgrade_V3_success"
             case didFail = "objc_upgrade_V3_error"
         }
+
         enum V4Payload: NSString {
             case didUpgrade = "objc_upgrade_V4_success"
             case didFail = "objc_upgrade_V4_error"
@@ -41,6 +42,7 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
                 "MyWalletPhone.upgradeToV3(\"\(newWalletName)\")"
             }
         }
+
         enum V4Payload: String {
             case upgrade = "MyWalletPhone.upgradeToV4()"
         }

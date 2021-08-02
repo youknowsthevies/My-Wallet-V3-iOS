@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import BigInt
 import DIKit
 import PlatformKit
@@ -55,7 +56,6 @@ final class AnalyticsUserPropertyInteractor {
                     result[item.asset] = item.moneyValue
                 }
             }
-
     }
 
     /// Records all the user properties
@@ -70,7 +70,7 @@ final class AnalyticsUserPropertyInteractor {
                 fiatBalances()
             )
             .subscribe(
-                onSuccess: { [weak self] (user, tiers, authenticatorType, guid, balances) in
+                onSuccess: { [weak self] user, tiers, authenticatorType, guid, balances in
                     self?.record(
                         user: user,
                         tiers: tiers,
@@ -86,11 +86,13 @@ final class AnalyticsUserPropertyInteractor {
             .disposed(by: disposeBag)
     }
 
-    private func record(user: NabuUser?,
-                        tiers: KYC.UserTiers?,
-                        authenticatorType: AuthenticatorType,
-                        guid: String?,
-                        balances: [CryptoCurrency: MoneyValue]) {
+    private func record(
+        user: NabuUser?,
+        tiers: KYC.UserTiers?,
+        authenticatorType: WalletAuthenticatorType,
+        guid: String?,
+        balances: [CryptoCurrency: MoneyValue]
+    ) {
         if let identifier = user?.personalDetails.identifier {
             recorder.record(id: identifier)
         }
@@ -120,27 +122,31 @@ final class AnalyticsUserPropertyInteractor {
         recorder.record(StandardUserProperty(key: .twoFAEnabled, value: String(authenticatorType.isTwoFactor)))
 
         let positives: [String] = balances
-            .filter { $0.value.isPositive }
-            .map { $0.key.code }
+            .filter(\.value.isPositive)
+            .map(\.key.code)
 
         let totalFiatBalance = try? balances.values.reduce(FiatValue.zero(currency: .USD).moneyValue, +)
 
-        recorder.record(StandardUserProperty(key: .fundedCoins, value: positives.joined(separator: ",")))
-        recorder.record(StandardUserProperty(key: .totalBalance, value: balanceBucket(for: totalFiatBalance?.amount ?? 0)))
+        recorder.record(
+            StandardUserProperty(key: .fundedCoins, value: positives.joined(separator: ","))
+        )
+        recorder.record(
+            StandardUserProperty(key: .totalBalance, value: balanceBucket(for: totalFiatBalance?.amount ?? 0))
+        )
     }
 
     /// Total balance (measured in USD) in buckets: 0, 0-10, 10-100, 100-1000, >1000
     private func balanceBucket(for minorUSDBalance: BigInt) -> String {
         switch minorUSDBalance {
-        case ...0_99:
+        case ...099:
             return "0 USD"
-        case 1_00...10_99:
+        case 100...1099:
             return "1-10 USD"
-        case 11_00...100_99:
+        case 1100...10099:
             return "11-100 USD"
-        case 101_00...1000_99:
+        case 10100...100099:
             return "101-1000 USD"
-        case 1001_00...:
+        case 100100...:
             return "1001 USD"
         default:
             return "0 USD"

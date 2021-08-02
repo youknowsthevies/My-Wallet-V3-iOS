@@ -28,11 +28,11 @@ enum DerivationComponent: Equatable {
 extension Array where Element == DerivationComponent {
 
     func with(normal index: UInt32) -> Self {
-        self + [ .normal(index) ]
+        self + [.normal(index)]
     }
 
     func with(hardened index: UInt32) -> Self {
-        self + [ .hardened(index) ]
+        self + [.hardened(index)]
     }
 }
 
@@ -111,12 +111,12 @@ extension HDKeyPath {
 extension HDKeyPath {
 
     func with(normal index: UInt32, relative: Bool = true) -> Result<Self, HDWalletKitError> {
-        Result { try HDKeyPath(components + [ .normal(index) ], relative: relative) }
+        Result { try HDKeyPath(components + [.normal(index)], relative: relative) }
             .mapError { $0 as! HDWalletKitError }
     }
 
     func with(hardened index: UInt32, relative: Bool = true) -> Result<Self, HDWalletKitError> {
-        Result { try HDKeyPath(components + [ .hardened(index) ], relative: relative) }
+        Result { try HDKeyPath(components + [.hardened(index)], relative: relative) }
             .mapError { $0 as! HDWalletKitError }
     }
 }

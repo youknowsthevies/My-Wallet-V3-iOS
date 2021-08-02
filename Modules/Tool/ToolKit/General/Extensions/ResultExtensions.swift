@@ -25,7 +25,7 @@ extension Result {
 
 extension Result {
     public var successData: Success? {
-        try? self.get()
+        try? get()
     }
 }
 

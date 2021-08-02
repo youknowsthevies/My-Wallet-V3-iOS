@@ -19,12 +19,14 @@ final class LinkedCardViewModel {
         let limitFont: UIFont
         let limitContentColor: UIColor
 
-        init(cardName: String,
-             cardNameFont: UIFont = .main(.semibold, 16.0),
-             cardNameContentColor: UIColor = .textFieldText,
-             limit: String,
-             limitFont: UIFont = .main(.medium, 14.0),
-             limitContentColor: UIColor = .descriptionText) {
+        init(
+            cardName: String,
+            cardNameFont: UIFont = .main(.semibold, 16.0),
+            cardNameContentColor: UIColor = .textFieldText,
+            limit: String,
+            limitFont: UIFont = .main(.medium, 14.0),
+            limitContentColor: UIColor = .descriptionText
+        ) {
             self.cardName = cardName
             self.cardNameFont = cardNameFont
             self.cardNameContentColor = cardNameContentColor
@@ -43,16 +45,20 @@ final class LinkedCardViewModel {
         init(theme: Theme) {
             limitText = theme.limit
             nameText = theme.cardName
-            nameContent = .init(text: theme.cardName,
-                                font: theme.cardNameFont,
-                                color: theme.cardNameContentColor,
-                                alignment: .left,
-                                accessibility: .id(AccessibilityIDs.name))
-            limitContent = .init(text: theme.limit,
-                                 font: theme.limitFont,
-                                 color: theme.limitContentColor,
-                                 alignment: .left,
-                                 accessibility: .id(AccessibilityIDs.limit))
+            nameContent = .init(
+                text: theme.cardName,
+                font: theme.cardNameFont,
+                color: theme.cardNameContentColor,
+                alignment: .left,
+                accessibility: .id(AccessibilityIDs.name)
+            )
+            limitContent = .init(
+                text: theme.limit,
+                font: theme.limitFont,
+                color: theme.limitContentColor,
+                alignment: .left,
+                accessibility: .id(AccessibilityIDs.limit)
+            )
         }
     }
 
@@ -63,7 +69,8 @@ final class LinkedCardViewModel {
         get {
             Content(theme: Theme(
                 cardName: nameTextRelay.value,
-                limit: limitTextRelay.value)
+                limit: limitTextRelay.value
+            )
             )
         }
         set {
@@ -93,7 +100,7 @@ final class LinkedCardViewModel {
     private let limitTextRelay = BehaviorRelay(value: "")
 
     init(type: CardType) {
-        self.badgeImageViewModel = .default(
+        badgeImageViewModel = .default(
             image: type.thumbnail,
             cornerRadius: .value(4),
             accessibilityIdSuffix: type.name

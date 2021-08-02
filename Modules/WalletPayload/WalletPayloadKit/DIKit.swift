@@ -21,6 +21,5 @@ extension DependencyContainer {
         factory { WalletUpgradeService() as WalletUpgradeServicing }
 
         factory { WalletUpgradeJSService() as WalletUpgradeJSServicing }
-
     }
 }

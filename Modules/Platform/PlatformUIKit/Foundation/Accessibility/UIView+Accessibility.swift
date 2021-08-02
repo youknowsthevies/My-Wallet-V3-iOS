@@ -11,11 +11,13 @@ extension UIView {
     /// or `.none)` for traits.
     public var accessibility: Accessibility {
         get {
-            Accessibility(id: accessibilityIdentifier,
-                          label: accessibilityLabel,
-                          hint: accessibilityHint,
-                          traits: accessibilityTraits,
-                          isAccessible: isAccessibilityElement)
+            Accessibility(
+                id: accessibilityIdentifier,
+                label: accessibilityLabel,
+                hint: accessibilityHint,
+                traits: accessibilityTraits,
+                isAccessible: isAccessibilityElement
+            )
         }
         set {
             accessibilityIdentifier = newValue.id

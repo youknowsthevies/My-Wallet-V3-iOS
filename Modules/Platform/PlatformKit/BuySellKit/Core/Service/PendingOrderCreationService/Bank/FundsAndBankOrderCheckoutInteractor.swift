@@ -29,10 +29,12 @@ public final class FundsAndBankOrderCheckoutInteractor {
     private let orderCreationService: OrderCreationServiceAPI
     private let linkedBanksService: LinkedBanksServiceAPI
 
-    public init(paymentAccountService: PaymentAccountServiceAPI = resolve(),
-                orderQuoteService: OrderQuoteServiceAPI = resolve(),
-                orderCreationService: OrderCreationServiceAPI = resolve(),
-                linkedBanksService: LinkedBanksServiceAPI = resolve()) {
+    public init(
+        paymentAccountService: PaymentAccountServiceAPI = resolve(),
+        orderQuoteService: OrderQuoteServiceAPI = resolve(),
+        orderCreationService: OrderCreationServiceAPI = resolve(),
+        linkedBanksService: LinkedBanksServiceAPI = resolve()
+    ) {
         self.paymentAccountService = paymentAccountService
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
@@ -51,9 +53,9 @@ public final class FundsAndBankOrderCheckoutInteractor {
         }
         let quote = orderQuoteService
             .getQuote(
-               for: action,
-               cryptoCurrency: crypto.currencyType,
-               fiatValue: fiat
+                for: action,
+                cryptoCurrency: crypto.currencyType,
+                fiatValue: fiat
             )
 
         let finalCheckoutData: Single<CheckoutData>

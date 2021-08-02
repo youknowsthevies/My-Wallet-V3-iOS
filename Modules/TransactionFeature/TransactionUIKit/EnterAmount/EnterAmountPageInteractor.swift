@@ -7,6 +7,7 @@ import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
+import ToolKit
 import TransactionKit
 
 protocol EnterAmountPageRouting: AnyObject {
@@ -22,12 +23,17 @@ protocol EnterAmountPageListener: AnyObject {
 }
 
 protocol EnterAmountPagePresentable: Presentable {
+
     var continueButtonTapped: Signal<Void> { get }
-    func connect(state: Driver<EnterAmountPageInteractor.State>) -> Driver<EnterAmountPageInteractor.NavigationEffects>
+
+    func connect(
+        state: Driver<EnterAmountPageInteractor.State>
+    ) -> Driver<EnterAmountPageInteractor.NavigationEffects>
 }
 
 final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePresentable>,
-                                       EnterAmountPageInteractable {
+    EnterAmountPageInteractable
+{
 
     weak var router: EnterAmountPageRouting?
     weak var listener: EnterAmountPageListener?
@@ -46,28 +52,32 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
 
-    init(transactionModel: TransactionModel,
-         presenter: EnterAmountPagePresentable,
-         amountInteractor: AmountViewInteracting,
-         action: AssetAction,
-         navigationModel: ScreenNavigationModel,
-         analyticsHook: TransactionAnalyticsHook = resolve()) {
+    init(
+        transactionModel: TransactionModel,
+        presenter: EnterAmountPagePresentable,
+        amountInteractor: AmountViewInteracting,
+        action: AssetAction,
+        navigationModel: ScreenNavigationModel,
+        analyticsHook: TransactionAnalyticsHook = resolve()
+    ) {
         self.action = action
         self.transactionModel = transactionModel
-        self.amountViewInteractor = amountInteractor
+        amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
         self.analyticsHook = analyticsHook
-        self.sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
+        sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
         sendAuxiliaryViewPresenter = SendAuxiliaryViewPresenter(
             interactor: sendAuxiliaryViewInteractor
         )
-        self.accountAuxiliaryViewInteractor = AccountAuxiliaryViewInteractor()
-        self.accountAuxiliaryViewPresenter = AccountAuxiliaryViewPresenter(
+        accountAuxiliaryViewInteractor = AccountAuxiliaryViewInteractor()
+        accountAuxiliaryViewPresenter = AccountAuxiliaryViewPresenter(
             interactor: accountAuxiliaryViewInteractor
         )
         super.init(presenter: presenter)
     }
 
+    // TODO: Clean up this function
+    // swiftlint:disable function_body_length
     override func didBecomeActive() {
         super.didBecomeActive()
 
@@ -77,7 +87,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         amountViewInteractor
             .effect
-            .subscribe { [weak self] effect  in
+            .subscribe { [weak self] effect in
                 self?.handleAmountTranslation(effect: effect)
             }
             .disposeOnDeactivate(interactor: self)
@@ -85,7 +95,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         amountViewInteractor
             .amount
             .debounce(.milliseconds(500), scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
-            .flatMap { (amount) -> Observable<MoneyValue> in
+            .flatMap { amount -> Observable<MoneyValue> in
                 transactionState
                     .take(1)
                     .asSingle()
@@ -116,7 +126,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 transactionState,
                 amountViewInteractor.activeInput
             )
-            .map { (state, input) in
+            .map { state, input in
                 (
                     min: state.minSpendable.displayableRounding(roundingMode: .up),
                     max: state.maxSpendable.displayableRounding(roundingMode: .down),
@@ -135,6 +145,21 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 analyticsHook.onFeeSelected(state: state)
             })
             .disposeOnDeactivate(interactor: self)
+
+        let availableTargets = transactionState
+            .map(\.availableTargets)
+            .map { $0.compactMap { $0 as? BlockchainAccount } }
+            .share(scope: .whileConnected)
+
+        let availableSources = transactionState
+            .map(\.availableSources)
+            .share(scope: .whileConnected)
+
+        let accounts = transactionState
+            .map(\.action)
+            .flatMap { action -> Observable<[BlockchainAccount]> in
+                action == .withdraw ? availableTargets : availableSources
+            }
 
         let fee = transactionState
             .takeWhile { $0.action == .send }
@@ -163,13 +188,21 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .share(scope: .whileConnected)
 
         accountAuxiliaryViewInteractor
-            .connect(stream: bank)
+            .connect(stream: bank, accounts: accounts)
             .disposeOnDeactivate(interactor: self)
 
         accountAuxiliaryViewInteractor
             .auxiliaryViewTapped
-            .subscribe(onNext: { [weak self] _ in
-                self?.transactionModel.process(action: .showTargetSelection)
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: { [transactionModel, action] _ in
+                switch action {
+                case .withdraw:
+                    transactionModel.process(action: .showTargetSelection)
+                case .deposit:
+                    transactionModel.process(action: .showSourceSelection)
+                default:
+                    unimplemented("This view only supports withdraw and deposit at this time")
+                }
             })
             .disposeOnDeactivate(interactor: self)
 
@@ -227,7 +260,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         let interactorState = transactionState
-            .scan(initialState()) { [weak self] (currentState, updater) -> State in
+            .scan(initialState()) { [weak self] currentState, updater -> State in
                 guard let self = self else {
                     return currentState
                 }
@@ -254,20 +287,24 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         transactionState
-            .compactMap { state -> (action: AssetAction,
-                                    amountIsZero: Bool,
-                                    networkFeeAdjustmentSupported: Bool)? in
-                guard let pendingTransaction = state.pendingTransaction else {
-                    return nil
-                }
-                return (state.action,
-                        state.amount.isZero,
-                        pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported)
+            .compactMap { state -> (
+                action: AssetAction,
+                amountIsZero: Bool,
+                networkFeeAdjustmentSupported: Bool
+            )? in
+            guard let pendingTransaction = state.pendingTransaction else {
+                return nil
             }
-            .map { (action, amountIsZero, networkFeeAdjustmentSupported) in
+            return (
+                state.action,
+                state.amount.isZero,
+                pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported
+            )
+            }
+            .map { action, amountIsZero, networkFeeAdjustmentSupported in
                 (action, (networkFeeAdjustmentSupported && action == .send && !amountIsZero) ? .visible : .hidden)
             }
-            .map { (action, networkFeeVisibility) -> SendAuxiliaryViewPresenter.State in
+            .map { action, networkFeeVisibility -> SendAuxiliaryViewPresenter.State in
                 SendAuxiliaryViewPresenter.State(
                     maxButtonVisibility: networkFeeVisibility.inverted,
                     networkFeeVisibility: networkFeeVisibility,
@@ -288,12 +325,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     ) -> State {
         let topSelectionTitle = TransactionFlowDescriptor.EnterAmountScreen.headerTitle(state: updater)
         let topSelectionSubtitle = TransactionFlowDescriptor.EnterAmountScreen.headerSubtitle(state: updater)
+
         let topSelection = TopSelectionState(
             sourceAccount: updater.source,
             destinationAccount: updater.destination as? BlockchainAccount,
             action: updater.action,
-            titleAccessibility: .label(topSelectionTitle),
-            subtitleAccessibility: .label(topSelectionSubtitle)
+            titleAccessibility: state.topSelection.titleAccessibility.copy(label: topSelectionTitle),
+            subtitleAccessibility: state.topSelection.subtitleAccessibility.copy(label: topSelectionSubtitle)
         )
 
         return state
@@ -327,7 +365,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         let topSelectionState = TopSelectionState(
             sourceAccount: nil,
             destinationAccount: nil,
-            action: action
+            action: action,
+            titleAccessibility: .id(Accessibility.Identifier.ContentLabelView.title),
+            subtitleAccessibility: .id(Accessibility.Identifier.ContentLabelView.description)
         )
         let send = BottomAuxiliaryViewModelState.send(
             sendAuxiliaryViewPresenter
@@ -364,17 +404,19 @@ extension EnterAmountPageInteractor {
         let isEnabled: Bool = false
         var trailingContent: SelectionButtonViewModel.TrailingContent
         var leadingContent: SelectionButtonViewModel.LeadingContentType?
-        var titleAccessibility: Accessibility = .none
-        var subtitleAccessibility: Accessibility = .none
+        var titleAccessibility: Accessibility
+        var subtitleAccessibility: Accessibility
         var accessibilityContent: SelectionButtonViewModel.AccessibilityContent?
 
-        private init(titleDescriptor: (font: UIFont, textColor: UIColor),
-                     subtitleDescriptor: (font: UIFont, textColor: UIColor),
-                     trailingContent: SelectionButtonViewModel.TrailingContent,
-                     leadingContent: SelectionButtonViewModel.LeadingContentType?,
-                     accessibilityContent: SelectionButtonViewModel.AccessibilityContent?,
-                     titleAccessibility: Accessibility,
-                     subtitleAccessibility: Accessibility) {
+        private init(
+            titleDescriptor: (font: UIFont, textColor: UIColor),
+            subtitleDescriptor: (font: UIFont, textColor: UIColor),
+            trailingContent: SelectionButtonViewModel.TrailingContent,
+            leadingContent: SelectionButtonViewModel.LeadingContentType?,
+            accessibilityContent: SelectionButtonViewModel.AccessibilityContent?,
+            titleAccessibility: Accessibility,
+            subtitleAccessibility: Accessibility
+        ) {
             self.titleDescriptor = titleDescriptor
             self.subtitleDescriptor = subtitleDescriptor
             self.trailingContent = trailingContent
@@ -384,11 +426,13 @@ extension EnterAmountPageInteractor {
             self.subtitleAccessibility = subtitleAccessibility
         }
 
-        init(sourceAccount: BlockchainAccount?,
-             destinationAccount: BlockchainAccount?,
-             action: AssetAction,
-             titleAccessibility: Accessibility = .none,
-             subtitleAccessibility: Accessibility = .none) {
+        init(
+            sourceAccount: BlockchainAccount?,
+            destinationAccount: BlockchainAccount?,
+            action: AssetAction,
+            titleAccessibility: Accessibility,
+            subtitleAccessibility: Accessibility
+        ) {
             let transactionImageViewModel = TransactionDescriptorViewModel(
                 sourceAccount: sourceAccount as? SingleAccount,
                 destinationAccount: action == .swap ? destinationAccount as? SingleAccount : nil,
@@ -420,7 +464,6 @@ extension EnterAmountPageInteractor {
         /// Hidden - nothing to present
         case hidden
     }
-
 }
 
 extension EnterAmountPageInteractor {
@@ -447,7 +490,11 @@ extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
         case (.send, .send):
             return true
         case (.account, .account):
-            return true
+            /// The account selection could have changed so,
+            /// always update the bottom auxiliary view. Alternatively
+            /// we can have an identifier property on the interactor but
+            /// would rather not expose this.
+            return false
         default:
             return false
         }
@@ -456,12 +503,14 @@ extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
 
 extension TransactionErrorState {
     private typealias LocalizedString = LocalizationConstants.Transaction
-    func toAmountInteractorState(min: MoneyValue,
-                                 max: MoneyValue,
-                                 exchangeRate: MoneyValuePair?,
-                                 activeInput: ActiveAmountInput,
-                                 stateAmount:  MoneyValue,
-                                 listener: EnterAmountPageListener?) -> AmountInteractorState {
+    func toAmountInteractorState(
+        min: MoneyValue,
+        max: MoneyValue,
+        exchangeRate: MoneyValuePair?,
+        activeInput: ActiveAmountInput,
+        stateAmount: MoneyValue,
+        listener: EnterAmountPageListener?
+    ) -> AmountInteractorState {
         switch self {
         case .none:
             return .inBounds
@@ -502,7 +551,11 @@ extension TransactionErrorState {
         }
     }
 
-    private func convertToInputCurrency(_ source: MoneyValue, exchangeRate: MoneyValuePair?, input: ActiveAmountInput) -> MoneyValue {
+    private func convertToInputCurrency(
+        _ source: MoneyValue,
+        exchangeRate: MoneyValuePair?,
+        input: ActiveAmountInput
+    ) -> MoneyValue {
         switch (source.currencyType, input) {
         case (.crypto, .crypto),
              (.fiat, .fiat):

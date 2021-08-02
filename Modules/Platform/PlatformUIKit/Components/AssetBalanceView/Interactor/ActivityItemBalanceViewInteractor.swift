@@ -40,5 +40,5 @@ public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteractin
             .disposed(by: disposeBag)
     }
 
-    public func refresh() { }
+    public func refresh() {}
 }

@@ -33,9 +33,11 @@ public final class VerifyEmailPresenter {
 
     // MARK: - Setup
 
-    public init(view: EmailVerificationInterface,
-                emailVerificationService: EmailVerificationServiceAPI = resolve(),
-                emailSettingsService: EmailSettingsServiceAPI = resolve()) {
+    public init(
+        view: EmailVerificationInterface,
+        emailVerificationService: EmailVerificationServiceAPI = resolve(),
+        emailSettingsService: EmailSettingsServiceAPI = resolve()
+    ) {
         self.view = view
         self.emailVerificationService = emailVerificationService
         self.emailSettingsService = emailSettingsService
@@ -61,8 +63,10 @@ public final class VerifyEmailPresenter {
             .disposed(by: disposeBag)
     }
 
-    public func sendVerificationEmail(to email: String,
-                                      contextParameter: FlowContext? = nil) {
+    public func sendVerificationEmail(
+        to email: String,
+        contextParameter: FlowContext? = nil
+    ) {
         emailSettingsService.update(email: email, context: contextParameter)
             .observeOn(MainScheduler.instance)
             .do(

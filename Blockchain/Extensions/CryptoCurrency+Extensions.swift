@@ -8,9 +8,9 @@ extension CryptoCurrency {
     /// The legacy representation of `CryptoCurrency`
     var legacy: LegacyAssetType {
         switch self {
-        case .bitcoin:
+        case .coin(.bitcoin):
             return .bitcoin
-        case .bitcoinCash:
+        case .coin(.bitcoinCash):
             return .bitcoinCash
         default:
             impossible()
@@ -20,6 +20,15 @@ extension CryptoCurrency {
 
 extension LegacyAssetType {
     var cryptoCurrency: CryptoCurrency {
+        switch self {
+        case .bitcoin:
+            return .coin(.bitcoin)
+        case .bitcoinCash:
+            return .coin(.bitcoinCash)
+        }
+    }
+
+    var nonCustodialCoinCode: NonCustodialCoinCode {
         switch self {
         case .bitcoin:
             return .bitcoin

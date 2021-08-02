@@ -11,6 +11,7 @@ import SettingsKit
 
 protocol ExchangeAccountRepositoryAPI {
     var hasLinkedExchangeAccount: Single<Bool> { get }
+
     func syncDepositAddresses() -> Completable
     func syncDepositAddressesIfLinked() -> Completable
     func syncDepositAddressesIfLinkedPublisher() -> AnyPublisher<Void, Error>
@@ -18,7 +19,7 @@ protocol ExchangeAccountRepositoryAPI {
 
 enum ExchangeLinkingAPIError: Error {
     case noLinkID
-    case `unknown`
+    case unknown
 }
 
 final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
@@ -33,7 +34,7 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
         coincore: CoincoreAPI = resolve()
     ) {
         self.blockchainRepository = blockchainRepository
-        self.clientAPI = client
+        clientAPI = client
         self.coincore = coincore
     }
 

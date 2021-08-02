@@ -15,9 +15,9 @@ public protocol ExternalAppOpener: URLOpener {
     func openSettingsApp(completionHandler: @escaping (Bool) -> Void)
 }
 
-public extension ExternalAppOpener {
+extension ExternalAppOpener {
 
-    func openMailApp(completionHandler: @escaping (Bool) -> Void) {
+    public func openMailApp(completionHandler: @escaping (Bool) -> Void) {
         guard let url = URL(string: "message://") else {
             completionHandler(false)
             return
@@ -25,7 +25,7 @@ public extension ExternalAppOpener {
         open(url, completionHandler: completionHandler)
     }
 
-    func openSettingsApp(completionHandler: @escaping (Bool) -> Void) {
+    public func openSettingsApp(completionHandler: @escaping (Bool) -> Void) {
         guard let url = URL(string: UIApplication.openSettingsURLString) else {
             completionHandler(false)
             return

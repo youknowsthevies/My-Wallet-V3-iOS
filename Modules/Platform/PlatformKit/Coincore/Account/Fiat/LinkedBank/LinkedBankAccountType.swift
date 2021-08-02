@@ -5,15 +5,18 @@ import Localization
 public enum LinkedBankAccountType {
     case savings
     case checking
+    case unknown
 }
 
-public extension LinkedBankAccountType {
-    var title: String {
+extension LinkedBankAccountType {
+    public var title: String {
         switch self {
         case .checking:
             return LocalizationConstants.Transaction.checking
         case .savings:
             return LocalizationConstants.Transaction.savings
+        case .unknown:
+            return ""
         }
     }
 }
@@ -21,6 +24,8 @@ public extension LinkedBankAccountType {
 extension LinkedBankAccountType {
     init(from type: LinkedBankResponse.AccountType) {
         switch type {
+        case .none:
+            self = .unknown
         case .savings:
             self = .savings
         case .checking:

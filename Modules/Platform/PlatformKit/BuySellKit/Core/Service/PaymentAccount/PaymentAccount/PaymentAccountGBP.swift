@@ -25,11 +25,11 @@ struct PaymentAccountGBP: PaymentAccountDescribing, Equatable {
             let accountNumber: String = response.agent.account,
             let sortCode: String = response.agent.code,
             let recipientName: String = response.agent.recipient
-            else { return nil }
+        else { return nil }
         self.accountNumber = accountNumber
         self.sortCode = sortCode
         self.recipientName = recipientName
-        self.identifier = response.id
-        self.state = response.state
+        identifier = response.id
+        state = response.state
     }
 }

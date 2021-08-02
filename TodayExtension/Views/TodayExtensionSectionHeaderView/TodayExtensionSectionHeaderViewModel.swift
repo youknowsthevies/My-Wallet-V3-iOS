@@ -7,7 +7,7 @@ struct TodayExtensionSectionHeaderViewModel {
     let titleLabelContent: LabelContent
 
     init(title: LabelContent) {
-        self.titleLabelContent = title
+        titleLabelContent = title
     }
 }
 

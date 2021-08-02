@@ -16,9 +16,11 @@ final class StellarActivityDetailsInteractor {
 
     // MARK: - Init
 
-    init(fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         detailsService: AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails> = resolve()) {
+    init(
+        fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        detailsService: AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails> = resolve()
+    ) {
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
         self.detailsService = detailsService
@@ -53,7 +55,7 @@ final class StellarActivityDetailsInteractor {
 
     private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            for: CurrencyType.crypto(CryptoCurrency.stellar),
+            for: CurrencyType.crypto(.coin(.stellar)),
             in: fiatCurrency,
             at: date
         )

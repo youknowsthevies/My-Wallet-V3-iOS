@@ -12,7 +12,7 @@ final class PaymentMethodBuilder: PaymentMethodBuildable {
 
     // TODO: Consider injecting an `AssetAction` as the action may dictate
     // what payment methods are available to the user.
-    public init() { }
+    init() {}
 
     func build(withListener listener: PaymentMethodListener) -> PaymentMethodRouting {
         let viewController = PaymentMethodViewController()

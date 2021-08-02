@@ -120,7 +120,7 @@ public class PollService<Value> {
                     .catchError(weak: self) { (self, error) in
                         self.catchError(error: error)
                     }
-        }
+            }
     }
 
     /// Catches an error raised by `waitForCondition` and react accordingly.

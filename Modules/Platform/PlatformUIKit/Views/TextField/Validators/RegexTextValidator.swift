@@ -2,6 +2,7 @@
 
 import RxRelay
 import RxSwift
+import ToolKit
 
 /// Regex validator. Receives a `TextRegex` and validates the value against it.
 final class RegexTextValidator: TextValidating {

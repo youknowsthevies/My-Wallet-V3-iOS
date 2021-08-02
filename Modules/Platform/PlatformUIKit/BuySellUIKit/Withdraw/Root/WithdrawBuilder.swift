@@ -18,12 +18,13 @@ public final class WithdrawBuilder: WithdrawBuildable {
         let enterAmountBuilder = WithdrawAmountPageBuilder(currency: currency)
         let checkountPageBuilder = CheckoutPageBuilder()
         let interactor = WithdrawRootInteractor()
-        let router = WithdrawRootRouter(interactor: interactor,
-                                        navigation: rootNavigation,
-                                        selectBanksBuilder: linkedBanksBuilder,
-                                        enterAmountBuilder: enterAmountBuilder,
-                                        checkoutPageBuilder: checkountPageBuilder)
+        let router = WithdrawRootRouter(
+            interactor: interactor,
+            navigation: rootNavigation,
+            selectBanksBuilder: linkedBanksBuilder,
+            enterAmountBuilder: enterAmountBuilder,
+            checkoutPageBuilder: checkountPageBuilder
+        )
         return (router, rootNavigation)
     }
-
 }

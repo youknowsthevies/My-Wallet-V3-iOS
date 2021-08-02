@@ -22,7 +22,7 @@ public final class SparklineImageProvider {
 
     private let presenter: SparklineImagePresenter
     private let imageRelay: BehaviorRelay<UIImage?> = BehaviorRelay(value: nil)
-    private let disposeBag: DisposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
 
     public init(presenter: SparklineImagePresenter) {
         self.presenter = presenter

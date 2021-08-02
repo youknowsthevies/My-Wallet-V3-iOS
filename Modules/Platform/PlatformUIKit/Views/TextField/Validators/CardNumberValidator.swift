@@ -70,7 +70,7 @@ public final class CardNumberValidator: TextValidating, CardTypeSource {
                 }
 
                 return .valid
-             }
+            }
             .bindAndCatch(to: validationStateRelay)
             .disposed(by: disposeBag)
     }

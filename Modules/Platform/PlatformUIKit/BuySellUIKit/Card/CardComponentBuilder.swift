@@ -18,20 +18,21 @@ public protocol CardComponentBuilderAPI: AnyObject {
 
     /// Builds a card authorization screen
     func cardAuthorization(for data: PartnerAuthorizationData) -> UIViewController
-
 }
 
 public final class CardComponentBuilder: CardComponentBuilderAPI {
 
     private let routingInteractor: CardRouterInteractor
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let messageRecorder: MessageRecording
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
 
-    public init(routingInteractor: CardRouterInteractor,
-                paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-                analyticsRecorder: AnalyticsEventRecording = resolve(),
-                messageRecorder: MessageRecording = resolve()) {
+    public init(
+        routingInteractor: CardRouterInteractor,
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        messageRecorder: MessageRecording = resolve()
+    ) {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.routingInteractor = routingInteractor
         self.analyticsRecorder = analyticsRecorder
@@ -78,7 +79,7 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
     }
 
     public func billingAddress(for cardData: CardData, navigationControllerAPI: NavigationControllerAPI) -> UIViewController {
-        /// TODO: Move `SelectionRouter` to RIBs
+        // TODO: Move `SelectionRouter` to RIBs
         let selectionRouter = SelectionRouter(parent: navigationControllerAPI)
         let interactor = BillingAddressScreenInteractor(
             cardData: cardData,

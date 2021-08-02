@@ -51,9 +51,11 @@ class PinInteractorTests: XCTestCase {
             wallet: wallet,
             appSettings: appSettings
         )
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: false)
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
         switch operation {
         case .creation:
             _ = try interactor.create(using: payload).toBlocking().first()
@@ -77,13 +79,17 @@ class PinInteractorTests: XCTestCase {
         let expectedMessage = "server under maintenance"
         let maintenanceService = WalletServiceMock()
         maintenanceService.underlyingServerUnderMaintenanceMessage = expectedMessage
-        let interactor = PinInteractor(pinClient: MockPinClient(statusCode: .success),
-                                       maintenanceService: maintenanceService,
-                                       wallet: wallet,
-                                       appSettings: appSettings)
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: false)
+        let interactor = PinInteractor(
+            pinClient: MockPinClient(statusCode: .success),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings
+        )
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
 
         do {
             switch opeation {
@@ -104,17 +110,42 @@ class PinInteractorTests: XCTestCase {
         }
     }
 
+    // MARK: - Invalid Numerical Value
+
+    func testInvalidPinValidation() throws {
+        let interactor = PinInteractor(
+            pinClient: MockPinClient(statusCode: nil, error: "Invalid Numerical Value"),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings
+        )
+        let payload = PinPayload(
+            pinCode: "0000",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
+        do {
+            _ = try interactor.validate(using: payload).toBlocking().first()
+        } catch PinError.invalid {
+            XCTAssert(true)
+        }
+    }
+
     // MARK: - Incorrect PIN validation
 
     // Incorrect pin returns proper error
     func testIncorrectPinValidation() throws {
-        let interactor = PinInteractor(pinClient: MockPinClient(statusCode: .incorrect),
-                                       maintenanceService: maintenanceService,
-                                       wallet: wallet,
-                                       appSettings: appSettings)
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: false)
+        let interactor = PinInteractor(
+            pinClient: MockPinClient(statusCode: .incorrect),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings
+        )
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
         } catch PinError.incorrectPin {
@@ -125,19 +156,23 @@ class PinInteractorTests: XCTestCase {
     // Incorrect pin returns correct lock time and update cache correctly
     func testIncorrectPinLockTimeAndCacheUpdate() throws {
         let cache = MemoryCacheSuite()
-        let interactor = PinInteractor(pinClient: MockPinClient(statusCode: .incorrect),
-                                       maintenanceService: maintenanceService,
-                                       wallet: wallet,
-                                       appSettings: appSettings,
-                                       cacheSuite: cache)
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: false)
+        let interactor = PinInteractor(
+            pinClient: MockPinClient(statusCode: .incorrect),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings,
+            cacheSuite: cache
+        )
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
 
         // GIVEN: The user entered an incorrect PIN (1st wrong attempt)
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
-        // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
+            // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
         } catch PinError.incorrectPin(_, let lockTimeSeconds) {
             // THEN: The lock time should equal 10 seconds, cache should record wrong attempt and timestamp
             XCTAssertEqual(lockTimeSeconds, 10)
@@ -157,7 +192,7 @@ class PinInteractorTests: XCTestCase {
         // GIVEN: The user entered an incorrect PIN (4th incorrect attempts)
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
-        // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
+            // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
         } catch PinError.incorrectPin(_, let lockTimeSeconds) {
             // THEN: The lock time should equal 300 seconds, cache should record wrong attempt and timestamp
             XCTAssertEqual(lockTimeSeconds, 300)
@@ -168,7 +203,7 @@ class PinInteractorTests: XCTestCase {
         // GIVEN: The user entered an incorrect PIN (5th incorrect attempts)
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
-        // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
+            // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
         } catch PinError.incorrectPin(_, let lockTimeSeconds) {
             // THEN: The lock time should equal 3600 seconds, cache should record wrong attempt and timestamp
             XCTAssertEqual(lockTimeSeconds, 3600)
@@ -179,7 +214,7 @@ class PinInteractorTests: XCTestCase {
         // GIVEN: The user entered an incorrect PIN (6th incorrect attempts)
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
-        // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
+            // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
         } catch PinError.incorrectPin(_, let lockTimeSeconds) {
             // THEN: The lock time should equal 86400 seconds, cache should record wrong attempt and timestamp
             XCTAssertEqual(lockTimeSeconds, 86400)
@@ -190,13 +225,17 @@ class PinInteractorTests: XCTestCase {
 
     // Too many failed validation attempts
     func testTooManyFailedValidationAttempts() throws {
-        let interactor = PinInteractor(pinClient: MockPinClient(statusCode: .deleted),
-                                       maintenanceService: maintenanceService,
-                                       wallet: wallet,
-                                       appSettings: appSettings)
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: false)
+        let interactor = PinInteractor(
+            pinClient: MockPinClient(statusCode: .deleted),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings
+        )
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
         } catch PinError.tooManyAttempts {
@@ -210,14 +249,18 @@ class PinInteractorTests: XCTestCase {
     func testBackoffError() throws {
         let cache = MemoryCacheSuite()
         cache.set(10.0, forKey: UserDefaults.Keys.walletLastWrongPinTimestamp.rawValue)
-        let interactor = PinInteractor(pinClient: MockPinClient(statusCode: .backoff),
-                                       maintenanceService: maintenanceService,
-                                       wallet: wallet,
-                                       appSettings: appSettings,
-                                       cacheSuite: cache)
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: false)
+        let interactor = PinInteractor(
+            pinClient: MockPinClient(statusCode: .backoff),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings,
+            cacheSuite: cache
+        )
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
         } catch PinError.backoff {
@@ -228,14 +271,18 @@ class PinInteractorTests: XCTestCase {
     // Backoff generates a correct remaining lock time
     func testBackoffRemainingLockTime() throws {
         let cache = MemoryCacheSuite()
-        let interactorIncorrect = PinInteractor(pinClient: MockPinClient(statusCode: .incorrect),
-                                                maintenanceService: maintenanceService,
-                                                wallet: wallet,
-                                                appSettings: appSettings,
-                                                cacheSuite: cache)
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: false)
+        let interactorIncorrect = PinInteractor(
+            pinClient: MockPinClient(statusCode: .incorrect),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings,
+            cacheSuite: cache
+        )
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
 
         // Simulate incorrect PIN for 6 times
         for _ in 1...6 {
@@ -251,11 +298,13 @@ class PinInteractorTests: XCTestCase {
         let exp = expectation(description: "Test after 1 second")
         let result = XCTWaiter.wait(for: [exp], timeout: waitTime)
         if result == XCTWaiter.Result.timedOut {
-            let interactorBackoff = PinInteractor(pinClient: MockPinClient(statusCode: .backoff),
-                                                  maintenanceService: maintenanceService,
-                                                  wallet: wallet,
-                                                  appSettings: appSettings,
-                                                  cacheSuite: cache)
+            let interactorBackoff = PinInteractor(
+                pinClient: MockPinClient(statusCode: .backoff),
+                maintenanceService: maintenanceService,
+                wallet: wallet,
+                appSettings: appSettings,
+                cacheSuite: cache
+            )
 
             // GIVEN: The user entered a PIN during locked period (Backoff case), and it is 1 second after 6th wrong attempt
             do {
@@ -278,9 +327,11 @@ class PinInteractorTests: XCTestCase {
             wallet: wallet,
             appSettings: appSettings
         )
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: false)
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
         } catch {
@@ -291,13 +342,17 @@ class PinInteractorTests: XCTestCase {
     // Tests the the pin is persisted no app-settings object after validating payload
     func testPersistingPinAfterValidation() throws {
         let settings = MockAppSettings()
-        let interactor = PinInteractor(pinClient: MockPinClient(statusCode: .success),
-                                       maintenanceService: maintenanceService,
-                                       wallet: wallet,
-                                       appSettings: settings)
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: true)
+        let interactor = PinInteractor(
+            pinClient: MockPinClient(statusCode: .success),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: settings
+        )
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: true
+        )
         _ = try interactor.validate(using: payload).toBlocking().first()
         XCTAssertNotNil(settings.pin)
         XCTAssertNotNil(settings.biometryEnabled)
@@ -307,13 +362,17 @@ class PinInteractorTests: XCTestCase {
     func testServerErrorWhileCreatingPin() throws {
         struct ServerError: Error {}
         let pinClient = MockPinClient(statusCode: .success, error: "server error")
-        let interactor = PinInteractor(pinClient: pinClient,
-                                       maintenanceService: maintenanceService,
-                                       wallet: wallet,
-                                       appSettings: appSettings)
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: true)
+        let interactor = PinInteractor(
+            pinClient: pinClient,
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings
+        )
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: true
+        )
         do {
             _ = try interactor.create(using: payload).toBlocking().first()
             XCTAssert(false)
@@ -325,14 +384,18 @@ class PinInteractorTests: XCTestCase {
     // Test successful PIN attempt will reset wrong PIN attempts cache
     func testCorrectPinWillResetWrongPinAttempts() throws {
         let cache = MemoryCacheSuite()
-        let interactorIncorrect = PinInteractor(pinClient: MockPinClient(statusCode: .incorrect),
-                                                maintenanceService: maintenanceService,
-                                                wallet: wallet,
-                                                appSettings: appSettings,
-                                                cacheSuite: cache)
-        let payload = PinPayload(pinCode: "1234",
-                                 keyPair: try .generateNewKeyPair(),
-                                 persistsLocally: false)
+        let interactorIncorrect = PinInteractor(
+            pinClient: MockPinClient(statusCode: .incorrect),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings,
+            cacheSuite: cache
+        )
+        let payload = PinPayload(
+            pinCode: "1234",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
 
         // Simulate an incorrect PIN attempt
         do {
@@ -342,11 +405,13 @@ class PinInteractorTests: XCTestCase {
         }
 
         // GIVEN: The user entered a correct PIN
-        let interactorSuccess = PinInteractor(pinClient: MockPinClient(statusCode: .success),
-                                              maintenanceService: maintenanceService,
-                                              wallet: wallet,
-                                              appSettings: appSettings,
-                                              cacheSuite: cache)
+        let interactorSuccess = PinInteractor(
+            pinClient: MockPinClient(statusCode: .success),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings,
+            cacheSuite: cache
+        )
         do {
             // WHEN: The PIN interactor returns a successful result
             _ = try interactorSuccess.validate(using: payload).toBlocking().first()

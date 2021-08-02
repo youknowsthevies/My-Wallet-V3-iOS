@@ -6,7 +6,7 @@ public final class AnalyticsUserPropertyValidator {
 
     // MARK: - Types
 
-    public struct UserPropertyMaxLength {
+    public enum UserPropertyMaxLength {
         public static let name = 24
         public static let value = 36
     }

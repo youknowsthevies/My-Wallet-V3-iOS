@@ -2,6 +2,8 @@
 
 import ActivityKit
 import ActivityUIKit
+import AuthenticationDataKit
+import AuthenticationKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
@@ -20,8 +22,8 @@ import RIBs
 import RxSwift
 import SettingsKit
 import ToolKit
-import TransactionUIKit
 import TransactionDataKit
+import TransactionUIKit
 import WalletPayloadKit
 
 @available(*, deprecated, message: "This is being replaced by newer AppDelegate @see App.swift file")
@@ -55,8 +57,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     @LazyInject private var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
 
-    @LazyInject(tag: DebugScreenContext.tag)
-    private var debugCoordinator: DebugCoordinating
+    @LazyInject(tag: DebugScreenContext.tag) private var debugCoordinator: DebugCoordinating
 
     private let disposeBag = DisposeBag()
     private var appCoordinator: AppCoordinator { .shared }
@@ -66,14 +67,15 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         super.init()
 
         FirebaseApp.configure()
-
         defineDependencies()
     }
 
     // MARK: - Lifecycle Methods
 
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
         if ProcessInfo.processInfo.environmentBoolean(for: .eraseWallet) == true {
             // If ProcessInfo environment contains "automation_erase_data": true, erase wallet and settings.
             // This behaviour happens even on non-debug builds, this is necessary because our UI tests
@@ -151,15 +153,15 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         let wallet = WalletManager.shared.wallet
 
         if wallet.isInitialized() {
-            if appSettings.guid != nil && appSettings.sharedKey != nil {
+            if appSettings.guid != nil, appSettings.sharedKey != nil {
                 appSettings.hasEndedFirstSession = true
             }
             WalletManager.shared.close()
         }
 
-        /// TODO: Remove this - we don't want any such logic in `AppDelegate`
-        /// We have to make sure the 2FA alerts (email / auth app) are still showing
-        /// when the user goes back to foreground
+        // TODO: Remove this - we don't want any such logic in `AppDelegate`
+        // We have to make sure the 2FA alerts (email / auth app) are still showing
+        // when the user goes back to foreground
         if appCoordinator.onboardingRouter.state != .pending2FA {
             UIApplication.shared.keyWindow?.rootViewController?.dismiss(animated: false)
         }
@@ -174,8 +176,9 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     var backgroundTaskTimer = BackgroundTaskTimer(
-        invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(
-            identifier: UIBackgroundTaskIdentifier.invalid))
+        invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(identifier: UIBackgroundTaskIdentifier.invalid)
+    )
+
     func applicationDidEnterBackground(_ application: UIApplication) {
         let portfolioSyncingService: BalanceSharingSettingsServiceAPI = resolve()
         portfolioSyncingService.sync()
@@ -189,7 +192,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         Logger.shared.debug("applicationWillEnterForeground")
 
         if !WalletManager.shared.wallet.isInitialized() {
-            if BlockchainSettings.App.shared.guid != nil && BlockchainSettings.App.shared.sharedKey != nil {
+            if BlockchainSettings.App.shared.guid != nil, BlockchainSettings.App.shared.sharedKey != nil {
                 AuthenticationCoordinator.shared.start()
             } else {
                 if appCoordinator.onboardingRouter.state == .standard {
@@ -210,7 +213,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         let urlString = url.absoluteString
 
         guard BlockchainSettings.App.shared.isPinSet else {
-            if "\(AssetConstants.URLSchemes.blockchainWallet)loginAuthorized" == urlString {
+            if urlString == "\(AssetConstants.URLSchemes.blockchainWallet)loginAuthorized" {
                 // TODO: Link to manual pairing
                 appCoordinator.onboardingRouter.start()
                 return true
@@ -259,7 +262,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(
         _ application: UIApplication,
-        didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
         remoteNotificationServiceContainer.backgroundReceiver
@@ -289,10 +292,11 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
             // Check that the version of the link (if provided) is supported, if not, prompt the user to update
             if let minimumAppVersionStr = dynamicLink?.minimumAppVersion,
-                let minimumAppVersion = AppVersion(string: minimumAppVersionStr),
-                let appVersionStr = Bundle.applicationVersion,
-                let appVersion = AppVersion(string: appVersionStr),
-                appVersion < minimumAppVersion {
+               let minimumAppVersion = AppVersion(string: minimumAppVersionStr),
+               let appVersionStr = Bundle.applicationVersion,
+               let appVersion = AppVersion(string: appVersionStr),
+               appVersion < minimumAppVersion
+            {
                 self?.showUpdateAppAlert()
                 return
             }
@@ -317,7 +321,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
         onboardingSettings.firstRun = true
 
-        if appSettings.guid != nil && appSettings.sharedKey != nil && !appSettings.isPinSet {
+        if appSettings.guid != nil, appSettings.sharedKey != nil, !appSettings.isPinSet {
             AlertViewPresenter.shared.alertUserAskingToUseOldKeychain { _ in
                 AuthenticationCoordinator.shared.showPasswordRequiredViewController()
             }
@@ -342,7 +346,8 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
                         self.visualEffectView.removeFromSuperview()
                     }
                 }
-            })
+            }
+        )
     }
 
     // MARK: - Private
@@ -365,13 +370,18 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 // MARK: - Remote Notification Registration
 
 extension BlockchainAppDelegate {
-    func application(_ application: UIApplication,
-                     didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    func application(
+        _ application: UIApplication,
+        didFailToRegisterForRemoteNotificationsWithError error: Error
+    ) {
         remoteNotificationServiceContainer.tokenReceiver
             .appDidFailToRegisterForRemoteNotifications(with: error)
     }
-    func application(_ application: UIApplication,
-                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
         remoteNotificationServiceContainer.tokenReceiver
             .appDidRegisterForRemoteNotifications(with: deviceToken)
     }

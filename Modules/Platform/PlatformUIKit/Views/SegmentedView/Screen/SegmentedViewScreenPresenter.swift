@@ -28,10 +28,12 @@ public protocol SegmentedViewScreenPresenting: AnyObject {
     var barStyle: Screen.Style.Bar { get }
 
     // MARK: - Segmented View
+
     var segmentedViewModel: SegmentedViewModel { get }
     var items: [SegmentedViewScreenItem] { get }
 
     // MARK: - Segmented View Selection
+
     var itemIndexSelected: Observable<Int?> { get }
     var itemIndexSelectedRelay: BehaviorRelay<Int?> { get }
 }
@@ -41,7 +43,7 @@ extension SegmentedViewScreenPresenting {
         let items: [SegmentedViewModel.Item] = self.items
             .map(\.title)
             .enumerated()
-            .map { (index, title) in
+            .map { index, title in
                 SegmentedViewModel.Item(
                     content: .title(title),
                     action: { [weak self] in

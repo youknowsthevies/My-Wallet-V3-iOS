@@ -9,7 +9,7 @@ import RxSwift
 import ToolKit
 import UIKit
 
-@objc (TodayViewController)
+@objc(TodayViewController)
 class TodayViewController: UIViewController, NCWidgetProviding {
 
     // MARK: - Types
@@ -19,14 +19,12 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     // MARK: - Private Properties
 
     private static var setupDependencies: Void = {
-        // swiftlint:disable trailing_semicolon
         DependencyContainer.defined(by: modules {
-            DependencyContainer.today;
-            DependencyContainer.toolKit;
-            DependencyContainer.networkKit;
-            DependencyContainer.platformKit;
+            DependencyContainer.today
+            DependencyContainer.toolKit
+            DependencyContainer.networkKit
+            DependencyContainer.platformKit
         })
-        // swiftlint:enable trailing_semicolon
     }()
 
     private let tableView: SelfSizingTableView
@@ -35,11 +33,12 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
     init() {
         _ = Self.setupDependencies
-        self.presenter = TodayViewPresenter()
-        self.tableView = SelfSizingTableView()
+        presenter = TodayViewPresenter()
+        tableView = SelfSizingTableView()
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -88,7 +87,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             .disposed(by: disposeBag)
     }
 
-    func widgetPerformUpdate(completionHandler: (@escaping (NCUpdateResult) -> Void)) {
+    func widgetPerformUpdate(completionHandler: @escaping (NCUpdateResult) -> Void) {
         presenter.refresh()
         let exchangeProvider: ExchangeProviding = resolve()
         exchangeProvider.refresh()
@@ -127,7 +126,10 @@ extension TodayViewController {
         return cell
     }
 
-    private func assetPriceCell(for indexPath: IndexPath, presenter: AssetPriceCellPresenter) -> AssetPriceTableViewCell {
+    private func assetPriceCell(
+        for indexPath: IndexPath,
+        presenter: AssetPriceCellPresenter
+    ) -> AssetPriceTableViewCell {
         let cell = tableView.dequeue(AssetPriceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell

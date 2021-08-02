@@ -54,11 +54,11 @@ public protocol DepositRootRouting: AnyObject {
 
 extension DepositRootRouting where Self: RIBs.Router<DepositRootInteractable> {
     func start() {
-        self.load()
+        load()
     }
 }
 
-protocol DepositRootListener: ViewListener { }
+protocol DepositRootListener: ViewListener {}
 
 final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositRootListener {
 
@@ -68,8 +68,8 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
     // MARK: - Private Properties
 
     private var paymentMethodTypes: Single<[PaymentMethodPayloadType]> {
-        fiatCurrencyService
-            .fiatCurrency
+        Single
+            .just(targetAccount.fiatCurrency)
             .flatMap { [linkedBanksFactory] fiatCurrency -> Single<[PaymentMethodType]> in
                 linkedBanksFactory.bankPaymentMethods(for: fiatCurrency)
             }
@@ -82,10 +82,12 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let targetAccount: FiatAccount
 
-    init(targetAccount: FiatAccount,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+    init(
+        targetAccount: FiatAccount,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
         self.targetAccount = targetAccount
         self.analyticsRecorder = analyticsRecorder
         self.linkedBanksFactory = linkedBanksFactory
@@ -96,26 +98,32 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
     override func didBecomeActive() {
         super.didBecomeActive()
 
-        Single.zip(linkedBanksFactory.linkedBanks,
-                   paymentMethodTypes,
-                   fiatCurrencyService.fiatCurrency)
-            .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onSuccess: { [weak self] values in
-                guard let self = self else { return }
-                let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
-                if linkedBanks.isEmpty {
-                    self.handleNoLinkedBanks(
-                        paymentMethodTypes,
-                        fiatCurrency: fiatCurrency
-                    )
-                } else {
-                    self.router?.startDeposit(
-                        target: self.targetAccount,
-                        sourceAccount: linkedBanks.count > 1 ? nil : linkedBanks.first
-                    )
-                }
-            })
-            .disposeOnDeactivate(interactor: self)
+        Single.zip(
+            linkedBanksFactory.linkedBanks,
+            paymentMethodTypes,
+            .just(targetAccount.fiatCurrency)
+        )
+        .observeOn(MainScheduler.asyncInstance)
+        .subscribe(onSuccess: { [weak self] values in
+            guard let self = self else { return }
+            let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
+            let filteredLinkedBanks = linkedBanks.filter { linkedBank in
+                linkedBank.fiatCurrency == fiatCurrency && linkedBank.paymentType == .bankTransfer
+            }
+
+            if filteredLinkedBanks.isEmpty {
+                self.handleNoLinkedBanks(
+                    paymentMethodTypes,
+                    fiatCurrency: fiatCurrency
+                )
+            } else {
+                self.router?.startDeposit(
+                    target: self.targetAccount,
+                    sourceAccount: linkedBanks.count > 1 ? nil : linkedBanks.first
+                )
+            }
+        })
+        .disposeOnDeactivate(interactor: self)
     }
 
     func bankLinkingComplete() {
@@ -170,12 +178,12 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
     // MARK: - Private Functions
 
     private func handleNoLinkedBanks(_ paymentMethodTypes: [PaymentMethodPayloadType], fiatCurrency: FiatCurrency) {
-        if paymentMethodTypes.contains(.bankAccount) && paymentMethodTypes.contains(.bankTransfer) {
-            self.router?.routeToDepositLanding()
+        if paymentMethodTypes.contains(.bankAccount), paymentMethodTypes.contains(.bankTransfer) {
+            router?.routeToDepositLanding()
         } else if paymentMethodTypes.contains(.bankTransfer) {
-            self.router?.startWithLinkABank()
+            router?.startWithLinkABank()
         } else if paymentMethodTypes.contains(.bankAccount) {
-            self.router?.startWithWireInstructions(currency: fiatCurrency)
+            router?.startWithWireInstructions(currency: fiatCurrency)
         } else {
             // TODO: Show that deposit is not supported
         }

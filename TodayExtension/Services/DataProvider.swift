@@ -51,7 +51,7 @@ final class DataProvider {
                 )
             }
 
-        self.historicalPrices = HistoricalFiatPriceProvider(
+        historicalPrices = HistoricalFiatPriceProvider(
             services: cryptoFiatPriceServices
         )
     }

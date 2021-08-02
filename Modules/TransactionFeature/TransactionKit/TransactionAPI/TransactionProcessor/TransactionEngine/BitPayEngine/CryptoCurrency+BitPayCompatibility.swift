@@ -5,6 +5,6 @@ import PlatformKit
 extension CryptoCurrency {
     /// Indicates whether the currency supports bit pay transactions
     var supportsBitPay: Bool {
-        self == .bitcoin
+        self == .coin(.bitcoin)
     }
 }

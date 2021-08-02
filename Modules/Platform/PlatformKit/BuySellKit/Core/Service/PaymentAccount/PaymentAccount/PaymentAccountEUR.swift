@@ -28,23 +28,25 @@ struct PaymentAccountEUR: PaymentAccountDescribing, Equatable {
         guard
             let bankName: String = response.agent.name,
             let bankCode: String = response.agent.code
-            else { return nil }
+        else { return nil }
         self.bankName = bankName
-        self.bankCountry = response.agent.country ?? ""
-        self.iban = response.address
+        bankCountry = response.agent.country ?? ""
+        iban = response.address
         self.bankCode = bankCode
-        self.recipientName = response.agent.recipient ?? ""
-        self.identifier = response.id
-        self.state = response.state
+        recipientName = response.agent.recipient ?? ""
+        identifier = response.id
+        state = response.state
     }
 
-    init(identifier: String,
-         state: PaymentAccountProperty.State,
-         bankName: String,
-         bankCountry: String,
-         iban: String,
-         bankCode: String,
-         recipientName: String) {
+    init(
+        identifier: String,
+        state: PaymentAccountProperty.State,
+        bankName: String,
+        bankCountry: String,
+        iban: String,
+        bankCode: String,
+        recipientName: String
+    ) {
         self.bankName = bankName
         self.bankCountry = bankCountry
         self.iban = iban
@@ -55,22 +57,26 @@ struct PaymentAccountEUR: PaymentAccountDescribing, Equatable {
     }
 
     func with(bankCountry: String) -> PaymentAccountEUR {
-        .init(identifier: identifier,
-                     state: state,
-                     bankName: bankName,
-                     bankCountry: bankCountry,
-                     iban: iban,
-                     bankCode: bankCode,
-                     recipientName: recipientName)
+        .init(
+            identifier: identifier,
+            state: state,
+            bankName: bankName,
+            bankCountry: bankCountry,
+            iban: iban,
+            bankCode: bankCode,
+            recipientName: recipientName
+        )
     }
 
     func with(recipientName: String) -> PaymentAccountEUR {
-        .init(identifier: identifier,
-                     state: state,
-                     bankName: bankName,
-                     bankCountry: bankCountry,
-                     iban: iban,
-                     bankCode: bankCode,
-                     recipientName: recipientName)
+        .init(
+            identifier: identifier,
+            state: state,
+            bankName: bankName,
+            bankCountry: bankCountry,
+            iban: iban,
+            bankCode: bankCode,
+            recipientName: recipientName
+        )
     }
 }

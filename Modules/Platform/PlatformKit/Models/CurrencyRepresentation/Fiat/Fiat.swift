@@ -25,9 +25,11 @@ extension Fiat {
         toDisplayString(includeSymbol: includeSymbol, format: .fullLength, locale: locale)
     }
 
-    public func toDisplayString(includeSymbol: Bool,
-                                format: NumberFormatter.CurrencyFormat,
-                                locale: Locale) -> String {
+    public func toDisplayString(
+        includeSymbol: Bool,
+        format: NumberFormatter.CurrencyFormat,
+        locale: Locale
+    ) -> String {
         /// Determine how many fraction digits should be formatted from a `FiatValue`.
         /// If the rhs of the decimal point is different than zero -> display two digits,
         /// otherwise, display without the fractional part

@@ -18,7 +18,7 @@ extension DependencyContainer {
 
         factory(tag: BitcoinChainCoin.bitcoin) { AnyCryptoFeeService<BitcoinChainTransactionFee<BitcoinToken>>.bitcoin() }
 
-        factory(tag: CryptoCurrency.bitcoin) { BitcoinChainExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
+        factory(tag: CoinAssetModel.bitcoin.typeTag) { BitcoinChainExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
 
         factory { CryptoFeeService<BitcoinChainTransactionFee<BitcoinToken>>() }
 
@@ -30,7 +30,7 @@ extension DependencyContainer {
 
         factory(tag: BitcoinChainCoin.bitcoinCash) { AnyCryptoFeeService<BitcoinChainTransactionFee<BitcoinCashToken>>.bitcoinCash() }
 
-        factory(tag: CryptoCurrency.bitcoinCash) { BitcoinChainExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
+        factory(tag: CoinAssetModel.bitcoinCash.typeTag) { BitcoinChainExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
 
         factory { CryptoFeeService<BitcoinChainTransactionFee<BitcoinCashToken>>() }
     }

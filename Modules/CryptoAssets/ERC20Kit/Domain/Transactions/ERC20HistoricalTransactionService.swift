@@ -5,50 +5,50 @@ import EthereumKit
 import NetworkKit
 import PlatformKit
 import RxSwift
+import ToolKit
 
-public protocol ERC20HistoricalTransactionServiceAPI {
-    func transactions(cryptoCurrency: CryptoCurrency, token: String?, size: Int) -> Single<PageResult<ERC20HistoricalTransaction>>
+protocol ERC20HistoricalTransactionServiceAPI: AnyObject {
+    func transactions(erc20Asset: ERC20AssetModel, address: EthereumAddress) -> Single<[ERC20HistoricalTransaction]>
 }
 
 final class ERC20HistoricalTransactionService: ERC20HistoricalTransactionServiceAPI {
 
+    private enum ServiceError: Error {
+        case errorFetchingDetails
+    }
+
+    private struct Key: Hashable {
+        let erc20Asset: ERC20AssetModel
+        let address: EthereumAddress
+    }
+
     private let accountClient: ERC20AccountAPIClientAPI
-    private let bridge: EthereumWalletBridgeAPI
+    private let cache: Cache<Key, [ERC20HistoricalTransaction]>
 
-    init(bridge: EthereumWalletBridgeAPI = resolve(),
-         accountClient: ERC20AccountAPIClientAPI = resolve()) {
-        self.bridge = bridge
+    init(accountClient: ERC20AccountAPIClientAPI = resolve()) {
         self.accountClient = accountClient
+        cache = .init(entryLifetime: 60)
     }
 
-    func transactions(cryptoCurrency: CryptoCurrency, token: String?, size: Int) -> Single<PageResult<ERC20HistoricalTransaction>> {
-        bridge.address
-            .flatMap(weak: self) { (self, address) in
-                self.fetchTransactions(cryptoCurrency: cryptoCurrency, address: address, page: token ?? "0")
-            }
-            .map { transactions in
-                PageResult<ERC20HistoricalTransaction>(
-                    hasNextPage: transactions.count >= size,
-                    items: transactions
-                )
-            }
-    }
-
-    private func fetchTransactions(cryptoCurrency: CryptoCurrency, address: EthereumAddress, page: String) -> Single<[ERC20HistoricalTransaction]> {
-        guard let contractAddress = cryptoCurrency.contractAddress else {
-            fatalError("Not an ERC20 coin.")
-        }
-        return accountClient
-            .fetchTransactions(from: address.publicKey, page: page, contractAddress: contractAddress)
-            .map(\.transfers)
-            .map { transfers -> [ERC20HistoricalTransaction] in
-                transfers.map { item in
-                    ERC20HistoricalTransaction(
-                        response: item,
-                        cryptoCurrency: cryptoCurrency,
-                        source: address
-                    )
+    func transactions(erc20Asset: ERC20AssetModel, address: EthereumAddress) -> Single<[ERC20HistoricalTransaction]> {
+        let key = Key(erc20Asset: erc20Asset, address: address)
+        guard let response = cache.value(forKey: key) else {
+            return accountClient
+                .fetchTransactions(from: address.publicKey, page: nil, contractAddress: erc20Asset.contractAddress.publicKey)
+                .map(\.transfers)
+                .map { transfers in
+                    transfers.map { item in
+                        ERC20HistoricalTransaction(
+                            response: item,
+                            cryptoCurrency: .erc20(erc20Asset),
+                            source: address
+                        )
+                    }
                 }
-            }
+                .do(onSuccess: { [cache] response in
+                    cache.set(response, forKey: key)
+                })
+        }
+        return .just(response)
     }
 }

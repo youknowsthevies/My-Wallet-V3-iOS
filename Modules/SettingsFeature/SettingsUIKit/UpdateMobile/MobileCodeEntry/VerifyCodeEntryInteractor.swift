@@ -54,9 +54,10 @@ final class VerifyCodeEntryInteractor {
                 onCompleted: { [weak self] in
                     self?.interactionStateRelay.accept(.complete)
                 },
-                onError: { [weak self] (_) in
+                onError: { [weak self] _ in
                     self?.interactionStateRelay.accept(.failed)
-                })
+                }
+            )
             .disposed(by: disposeBag)
     }
 }

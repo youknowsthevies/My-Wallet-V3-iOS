@@ -18,7 +18,7 @@ enum PaymentMethodEffects {
     case navigate(method: PaymentMethod)
 }
 
-protocol PaymentMethodRouting: ViewableRouting { }
+protocol PaymentMethodRouting: ViewableRouting {}
 
 protocol PaymentMethodPresentable: Presentable {
     func connect(action: Driver<PaymentMethodAction>) -> Driver<PaymentMethodEffects>
@@ -56,11 +56,13 @@ final class PaymentMethodInteractor: PresentableInteractor<PaymentMethodPresenta
     private let loadingViewPresenter: LoadingViewPresenting
     private let selectionRelay = PublishRelay<(method: PaymentMethod, methodType: PaymentMethodType)>()
 
-    init(presenter: PaymentMethodPresentable,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+    init(
+        presenter: PaymentMethodPresentable,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.linkedBanksFactory = linkedBanksFactory
         self.fiatCurrencyService = fiatCurrencyService

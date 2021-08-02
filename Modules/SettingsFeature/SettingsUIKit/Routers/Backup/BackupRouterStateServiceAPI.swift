@@ -21,7 +21,7 @@ protocol BackupRouterStateEmitterServiceAPI: AnyObject {
 
 /// A composition of all of Simple-Buy state-services
 typealias BackupRouterStateServiceAPI = BackupRouterStateReceiverServiceAPI &
-                                        BackupRouterStateEmitterServiceAPI
+    BackupRouterStateEmitterServiceAPI
 
 /// `Entry` denotes from where the state is being started.
 /// The entry may mean controllers are presented with a different `PresentationType`.

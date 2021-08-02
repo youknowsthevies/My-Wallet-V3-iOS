@@ -10,7 +10,10 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
 
     public var withdrawFeeAndMinLimit: Single<WithdrawalFeeAndLimit> {
         withdrawService
-            .withdrawFeeAndLimit(for: fiatCurrency)
+            .withdrawFeeAndLimit(
+                for: fiatCurrency,
+                paymentMethodType: paymentType
+            )
     }
 
     // MARK: - BlockchainAccount
@@ -40,6 +43,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     public var balance: Single<MoneyValue> {
         .just(.zero(currency: fiatCurrency))
     }
+
     public var pendingBalance: Single<MoneyValue> {
         .just(.zero(currency: fiatCurrency))
     }
@@ -48,8 +52,12 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         .just(false)
     }
 
+    public var activity: Single<[ActivityItemEvent]> {
+        .just([])
+    }
+
     public let fiatCurrency: FiatCurrency
-    private(set) public lazy var identifier: AnyHashable = "LinkedBankAccount.\(accountId).\(accountNumber).\(paymentType)"
+    public private(set) lazy var identifier: AnyHashable = "LinkedBankAccount.\(accountId).\(accountNumber).\(paymentType)"
     public let label: String
     public let accountId: String
     public let accountNumber: String
@@ -75,9 +83,9 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         self.accountId = accountId
         self.accountType = accountType
         self.accountNumber = accountNumber
-        self.fiatCurrency = currency
+        fiatCurrency = currency
         self.paymentType = paymentType
-        self.withdrawService = withdrawServiceAPI
+        withdrawService = withdrawServiceAPI
     }
 
     // MARK: - BlockchainAccount

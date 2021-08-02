@@ -10,11 +10,13 @@ public struct NabuSessionTokenResponse {
     public let isActive: Bool
     public let expiresAt: Date?
 
-    public init(identifier: String,
-                userId: String,
-                token: String,
-                isActive: Bool,
-                expiresAt: Date?) {
+    public init(
+        identifier: String,
+        userId: String,
+        token: String,
+        isActive: Bool,
+        expiresAt: Date?
+    ) {
         self.identifier = identifier
         self.userId = userId
         self.token = token
@@ -26,10 +28,10 @@ public struct NabuSessionTokenResponse {
 extension NabuSessionTokenResponse: Decodable {
     enum CodingKeys: String, CodingKey {
         case identifier = "id"
-        case userId = "userId"
-        case token = "token"
-        case isActive = "isActive"
-        case expiresAt = "expiresAt"
+        case userId
+        case token
+        case isActive
+        case expiresAt
     }
 
     public init(from decoder: Decoder) throws {

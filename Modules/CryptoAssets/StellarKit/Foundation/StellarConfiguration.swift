@@ -2,12 +2,12 @@
 
 import stellarsdk
 
-private struct HorizonServer {
-    fileprivate struct Blockchain {
+private enum HorizonServer {
+    fileprivate enum Blockchain {
         fileprivate static let production = "https://horizon.blockchain.info"
     }
 
-    fileprivate struct Stellar {
+    fileprivate enum Stellar {
         fileprivate static let production = "https://horizon.stellar.org"
         fileprivate static let test = "https://horizon-testnet.stellar.org"
     }
@@ -31,14 +31,14 @@ public struct StellarConfiguration {
 }
 
 extension StellarConfiguration {
-    public struct Blockchain {
+    public enum Blockchain {
         public static let production = StellarConfiguration(
             sdk: StellarSDK(withHorizonUrl: HorizonServer.Blockchain.production),
             network: Network.public
         )
     }
 
-    public struct Stellar {
+    public enum Stellar {
         public static let production = StellarConfiguration(
             sdk: StellarSDK(withHorizonUrl: HorizonServer.Stellar.production),
             network: Network.public

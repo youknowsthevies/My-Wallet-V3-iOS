@@ -12,6 +12,6 @@ public struct OrderPriceTier {
     }
 }
 
-public extension OrderPriceTier {
-    static let zero = OrderPriceTier(volume: "0", price: "0", marginPrice: "0")
+extension OrderPriceTier {
+    public static let zero = OrderPriceTier(volume: "0", price: "0", marginPrice: "0")
 }

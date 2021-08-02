@@ -110,18 +110,20 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Init
 
-    init(alertViewPresenter: AlertViewPresenterAPI = resolve(),
-         event: TransactionalActivityItemEvent,
-         router: ActivityRouterAPI,
-         interactor: StellarActivityDetailsInteractor = .init(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
-        precondition(event.currency == .stellar, "Using StellarActivityDetailsPresenter with \(event.currency) event.")
+    init(
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        event: TransactionalActivityItemEvent,
+        router: ActivityRouterAPI,
+        interactor: StellarActivityDetailsInteractor = .init(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
+        precondition(event.currency == .coin(.stellar), "Using StellarActivityDetailsPresenter with \(event.currency) event.")
         self.alertViewPresenter = alertViewPresenter
         self.event = event
         self.router = router
         self.interactor = interactor
         explorerButton = .secondary(with: LocalizedString.Button.viewOnStellarChainIO)
-        buttons = [ explorerButton ]
+        buttons = [explorerButton]
         dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )

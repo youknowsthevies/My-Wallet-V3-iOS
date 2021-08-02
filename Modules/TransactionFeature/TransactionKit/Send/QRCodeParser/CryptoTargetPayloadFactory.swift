@@ -30,30 +30,29 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
         }
         let metadata = makeCryptoQRMetaData(fromString: data, asset: asset)
         return BitPayInvoiceTarget
-            /// Check if the data is a BitPay payload.
+            // Check if the data is a BitPay payload.
             .isBitPay(data)
-            /// Check if the asset is a supported asset for BitPay.
+            // Check if the asset is a supported asset for BitPay.
             .andThen(BitPayInvoiceTarget.isSupportedAsset(asset))
-            /// Return the BitPay data
+            // Return the BitPay data
             .andThen(Single.just(.bitpay(data)))
             .catchError { error in
                 guard let bitpayError = error as? BitPayError else { return .error(error) }
                 switch bitpayError {
-                /// If the BitPay URL is valid but
-                /// is invalid for either BTC or BCH
-                /// we throw an error.
+                // If the BitPay URL is valid but
+                // is invalid for either BTC or BCH
+                // we throw an error.
                 case .unsupportedCurrencyType,
                      .invalidBitcoinURL,
                      .invalidBitcoinCashURL,
                      .invoiceError:
                     return .error(bitpayError)
-                /// If the BitPay URL is invalid,
-                /// we return the data, as it's likely a regular
-                /// receive address.
+                // If the BitPay URL is invalid,
+                // we return the data, as it's likely a regular
+                // receive address.
                 case .invalidBitPayURL:
                     return metadata
                 }
-
             }
     }
 

@@ -13,21 +13,26 @@ final class DeepLinkHandler: DeepLinkHandling {
     private let appSettings: BlockchainSettings.App
     private let kycSettings: KYCSettingsAPI
 
-    init(appSettings: BlockchainSettings.App = resolve(),
-         kycSettings: KYCSettingsAPI = resolve()) {
+    init(
+        appSettings: BlockchainSettings.App = resolve(),
+        kycSettings: KYCSettingsAPI = resolve()
+    ) {
         self.appSettings = appSettings
         self.kycSettings = kycSettings
     }
 
-    func handle(deepLink: String,
-                supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases) {
-        Logger.shared.debug("Attempting to handle deep link.")
+    func handle(
+        deepLink: String,
+        supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases
+    ) {
+        Logger.shared.debug("[DeepLinkHandler] Attempting to handle deep link.")
         guard let route = DeepLinkRoute.route(from: deepLink, supportedRoutes: supportedRoutes),
-            let payload = DeepLinkPayload.create(from: deepLink, supportedRoutes: supportedRoutes) else {
+              let payload = DeepLinkPayload.create(from: deepLink, supportedRoutes: supportedRoutes)
+        else {
             Logger.shared.debug("Unhandled deep link \(deepLink)")
             return
         }
-        Logger.shared.debug("Handling deep link \(deepLink) on route \(route)")
+        Logger.shared.debug("[DeepLinkHandler] Handling deep link \(deepLink) on route \(route)")
         switch route {
         case .xlmAirdop:
             handleXlmAirdrop(payload.params)
@@ -45,7 +50,7 @@ final class DeepLinkHandler: DeepLinkHandling {
     private func handleXlmAirdrop(_ params: [String: String]) {
         appSettings.didTapOnAirdropDeepLink = true
         appSettings.didAttemptToRouteForAirdrop = false
-        Analytics.setUserProperty(FirebaseAnalyticsService.Campaigns.sunriver.rawValue, forName: "campaign")
+        Analytics.setUserProperty(FirebaseAnalyticsServiceProvider.Campaigns.sunriver.rawValue, forName: "campaign")
     }
 
     private func handleKycDocumentResubmission(_ params: [String: String]) {

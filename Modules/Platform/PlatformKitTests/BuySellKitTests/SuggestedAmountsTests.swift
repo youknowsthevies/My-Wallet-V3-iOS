@@ -29,7 +29,7 @@ class SuggestedAmountsTests: XCTestCase {
         XCTAssertEqual(amounts[.GBP].count, 3)
     }
 
-    static private let json = """
+    private static let json = """
     [
       {
         "EUR": [
@@ -48,7 +48,7 @@ class SuggestedAmountsTests: XCTestCase {
     ]
     """
 
-    static private let invalidJson = """
+    private static let invalidJson = """
     [
       {
         "not_a_currency": [

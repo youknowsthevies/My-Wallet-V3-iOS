@@ -22,12 +22,12 @@ public final class AssetBalanceView: ThreeLabelStackView {
                 .disposed(by: disposeBag)
 
             presenter.state
-                .compactMap { $0.value }
+                .compactMap(\.value)
                 .bindAndCatch(to: rx.values)
                 .disposed(by: disposeBag)
 
             presenter.state
-                .map { $0.isLoading }
+                .map(\.isLoading)
                 .mapToVoid()
                 .bind { [weak self] in
                     self?.startShimmering()
@@ -49,9 +49,11 @@ public final class AssetBalanceView: ThreeLabelStackView {
     fileprivate var fiatBalanceLabel: UILabel {
         topLabel
     }
+
     fileprivate var cryptoBalanceLabel: UILabel {
         middleLabel
     }
+
     fileprivate var pendingCryptoBalanceLabel: UILabel {
         bottomLabel
     }

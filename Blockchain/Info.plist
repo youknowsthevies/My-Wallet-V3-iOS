@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>COMMIT_HASH</key>
-	<string>${COMMIT_HASH}</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -21,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>4.4.1</string>
+	<string>4.5.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -36,7 +34,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>0</string>
+	<string>2</string>
+	<key>COMMIT_HASH</key>
+	<string>${COMMIT_HASH}</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -89,5 +89,7 @@
 	<string>$(SIFT_ACCOUNT_ID)</string>
 	<key>siftKey</key>
 	<string>$(SIFT_BEACON_KEY)</string>
+	<key>useNewAppDelegate</key>
+	<string>$(USE_NEW_APPDELEGATE)</string>
 </dict>
 </plist>

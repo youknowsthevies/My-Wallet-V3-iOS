@@ -5,7 +5,8 @@ import Foundation
 enum L10n {
 
     // MARK: Generic Error
-    struct GenericError {
+
+    enum GenericError {
         static let title = NSLocalizedString(
             "Something went wrong",
             comment: "A generic alert's title"
@@ -18,7 +19,8 @@ enum L10n {
     }
 
     // MARK: Email Verification Master View
-    struct EmailVerification {
+
+    enum EmailVerification {
         static let couldNotLoadVerificationStatusAlertMessage = NSLocalizedString(
             "We couldn't load your email's verification status. Please try again.",
             comment: "An alert's message to be presented when the app is unable to check the email verification status of a user"
@@ -26,7 +28,8 @@ enum L10n {
     }
 
     // MARK: Edit Email View
-    struct EditEmail {
+
+    enum EditEmail {
         static let title = NSLocalizedString(
             "Edit Email Address",
             comment: "The title for the view where a user can update their email address in the email verification flow"
@@ -57,7 +60,8 @@ enum L10n {
     }
 
     // MARK: Email Verification Help View
-    struct EmailVerificationHelp {
+
+    enum EmailVerificationHelp {
         static let title = NSLocalizedString(
             "Didn’t get the email?",
             comment: "The title for the Help view within the Email Verification Flow"
@@ -83,7 +87,8 @@ enum L10n {
     }
 
     // MARK: Email Verified View
-    struct EmailVerified {
+
+    enum EmailVerified {
         static let title = NSLocalizedString(
             "Email Verified",
             comment: "The title for the view confirming a user's email got correctly verified within the Email Verification Flow"
@@ -100,11 +105,13 @@ enum L10n {
     }
 
     // MARK: Verify Email View
-    struct VerifyEmail {
+
+    enum VerifyEmail {
         static let title = NSLocalizedString(
             "Verify Your Email",
             comment: "The title for the view asking the user to confirm their email address within the Email Verification Flow"
         )
+
         static func message(with emailAddress: String) -> String {
             let format = NSLocalizedString(
                 "We sent a verification email to %@. Please click the link in the email to continue.",

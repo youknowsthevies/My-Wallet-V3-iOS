@@ -18,7 +18,7 @@ public struct InstructionCellViewModel {
     public init(number: Int, inputs: [InteractableTextViewModel.Input]) {
         self.number = number
         numberViewModel = .init(
-            text:  "\(number)",
+            text: "\(number)",
             font: .main(.bold, 20),
             color: .titleText,
             alignment: .center,

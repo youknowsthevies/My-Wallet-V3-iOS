@@ -140,7 +140,7 @@ public enum BlockchainLinks: Equatable {
     public static let validRoutes: Set<String> = Set(BlockchainLinks.Route.allCases.map(\.rawValue))
 
     /// Defines url links that can be handled as part of a universal-link
-    /// TODO: These should not be hard-coded here, define them in environment variables?
+    // TODO: These should not be hard-coded here, define them in environment variables?
     public static let validLinks: Set<String> = [
         "login.blockchain.com",
         "login-staging.blockchain.com",
@@ -157,10 +157,12 @@ final class AppDeeplinkHandler: AppDeeplinkHandlerAPI {
     private let blockchainHandler: URIHandlingAPI
     private let firebaseHandler: URIHandlingAPI
 
-    init(deeplinkHandler: URIHandlingAPI,
-         blockchainHandler: URIHandlingAPI,
-         firebaseHandler: URIHandlingAPI) {
-        self.coreDeeplinkHandler = deeplinkHandler
+    init(
+        deeplinkHandler: URIHandlingAPI,
+        blockchainHandler: URIHandlingAPI,
+        firebaseHandler: URIHandlingAPI
+    ) {
+        coreDeeplinkHandler = deeplinkHandler
         self.blockchainHandler = blockchainHandler
         self.firebaseHandler = firebaseHandler
     }
@@ -210,8 +212,10 @@ final class CoreDeeplinkHandler: URIHandlingAPI {
 
     private let bitpayService: BitpayServiceProtocol
 
-    init(bitpayService: BitpayServiceProtocol = BitpayService.shared,
-         isPinSet: @escaping () -> Bool) {
+    init(
+        bitpayService: BitpayServiceProtocol = BitpayService.shared,
+        isPinSet: @escaping () -> Bool
+    ) {
         self.bitpayService = bitpayService
         self.isPinSet = isPinSet
     }
@@ -273,7 +277,8 @@ final class BlockchainLinksHandler: URIHandlingAPI {
         let pathOrFragment = url.fragment ?? url.path
         let route = pathOrFragment.split(separator: "/").first
         guard let route = route,
-              validRoutes.contains(String(route)) else {
+              validRoutes.contains(String(route))
+        else {
             Logger.shared.warning("unhandled route for url: \(url)")
             return .just(.ignore)
         }
@@ -323,7 +328,8 @@ final class FirebaseDeeplinkHandler: URIHandlingAPI {
                        let minimumAppVersion = AppVersion(string: minimumAppVersionStr),
                        let appVersionStr = Bundle.applicationVersion,
                        let appVersion = AppVersion(string: appVersionStr),
-                       appVersion < minimumAppVersion {
+                       appVersion < minimumAppVersion
+                    {
                         promise(.success(.informAppNeedsUpdate))
                         return
                     }
@@ -346,8 +352,8 @@ final class FirebaseDeeplinkHandler: URIHandlingAPI {
 
 // MARK: - Private
 
-private extension NSUserActivity {
-    var appOpenableUrl: URL? {
+extension NSUserActivity {
+    fileprivate var appOpenableUrl: URL? {
         guard activityType == NSUserActivityTypeBrowsingWeb, let url = webpageURL else {
             return nil
         }

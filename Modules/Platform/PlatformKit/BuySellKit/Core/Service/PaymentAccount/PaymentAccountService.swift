@@ -40,10 +40,12 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
 
     // MARK: - Setup
 
-    init(client: PaymentAccountClientAPI = resolve(),
-         dataRepository: DataRepositoryAPI = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
-         patcher: PaymentAccountPatcher = PaymentAccountPatcher()) {
+    init(
+        client: PaymentAccountClientAPI = resolve(),
+        dataRepository: DataRepositoryAPI = resolve(),
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
+        patcher: PaymentAccountPatcher = PaymentAccountPatcher()
+    ) {
         self.client = client
         self.fiatCurrencyService = fiatCurrencyService
         self.dataRepository = dataRepository
@@ -53,24 +55,26 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
     // MARK: - Public Methods
 
     func paymentAccount(for currency: FiatCurrency) -> Single<PaymentAccountDescribing> {
-        self.fetchPaymentAccount(for: currency, patcher: self.patcher)
+        fetchPaymentAccount(for: currency, patcher: patcher)
     }
 
     // MARK: - Private Methods
 
-    func fetchPaymentAccount(for currency: FiatCurrency,
-                             patcher: PaymentAccountPatcher) -> Single<PaymentAccountDescribing> {
+    func fetchPaymentAccount(
+        for currency: FiatCurrency,
+        patcher: PaymentAccountPatcher
+    ) -> Single<PaymentAccountDescribing> {
         Single
             .zip(
                 client.paymentAccount(for: currency).map(\.account),
                 dataRepository.user.take(1).asSingle()
             )
-            .map { (response, user) -> PaymentAccountDescribing? in
+            .map { response, user -> PaymentAccountDescribing? in
                 PaymentAccountBuilder
                     .build(response: response)
                     .map { patcher.patch($0, recipientName: user.personalDetails.fullName) }
             }
-            .map { (account) -> PaymentAccountDescribing in
+            .map { account -> PaymentAccountDescribing in
                 guard let account = account else {
                     throw ServiceError.invalidResponse
                 }

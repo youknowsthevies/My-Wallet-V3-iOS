@@ -6,7 +6,7 @@ public struct FormTextFieldGroup: View {
     public var title: String
     public let text: Binding<String>
     public let textPlaceholder: String
-    public let footnote: Binding<String>?
+    public let footnote: String?
     public let isDisabled: Bool
     public let isSecure: Bool
     public let error: ((_ text: String) -> Bool)?
@@ -15,14 +15,15 @@ public struct FormTextFieldGroup: View {
     @State private var isError: Bool = false
     @State private var hideSecuredText: Bool = true
 
-    public init(title: String,
-                text: Binding<String>,
-                textPlaceholder: String = "",
-                footnote: Binding<String>? = nil,
-                isDisabled: Bool = false,
-                isSecure: Bool = false,
-                error: ((_ text: String) -> Bool)? = nil,
-                errorMessage: String? = nil
+    public init(
+        title: String,
+        text: Binding<String>,
+        textPlaceholder: String = "",
+        footnote: String? = nil,
+        isDisabled: Bool = false,
+        isSecure: Bool = false,
+        error: ((_ text: String) -> Bool)? = nil,
+        errorMessage: String? = nil
     ) {
         self.title = title
         self.text = text
@@ -49,30 +50,33 @@ public struct FormTextFieldGroup: View {
                         } else {
                             TextField(textPlaceholder, text: text)
                         }
-                        Button(action : { hideSecuredText.toggle() },
-                               label: {
-                                   Image(systemName: hideSecuredText ? "eye.fill" : "eye.slash.fill")
-                                       .foregroundColor(Color.passwordPeekEyeColor)
-                               }
+                        Button(
+                            action: { hideSecuredText.toggle() },
+                            label: {
+                                Image(systemName: hideSecuredText ? "eye.fill" : "eye.slash.fill")
+                                    .foregroundColor(Color.passwordPeekEyeColor)
+                            }
                         )
                     }
                 } else {
                     TextField(textPlaceholder, text: text) { isEditing in
                         self.isEditing = isEditing
                     }
-                    .onReceive(Just(text), perform: { text in
-                        if let error = self.error {
-                            isError = error(text.wrappedValue)
-                        }
-                    })
                 }
             }
-            .textFieldStyle(FormTextFieldStyle(isEditing: isEditing,
-                                               isActive: !isDisabled,
-                                               isError: isError))
+            .onReceive(Just(text), perform: { text in
+                if let error = self.error {
+                    isError = error(text.wrappedValue)
+                }
+            })
+            .textFieldStyle(FormTextFieldStyle(
+                isEditing: isEditing,
+                isActive: !isDisabled,
+                isError: isError
+            ))
             .disabled(isDisabled)
             if let footnote = self.footnote {
-                Text(footnote.wrappedValue)
+                Text(footnote)
                     .textStyle(.subheading)
             }
             if isError, let error = errorMessage {
@@ -97,12 +101,12 @@ struct FormTextFieldGroupDemoView: View {
                 title: "My Text Field",
                 text: .constant(""),
                 textPlaceholder: "Some Placeholder",
-                footnote: .constant("Some Footnote")
+                footnote: "Some Footnote"
             )
             FormTextFieldGroup(
                 title: "My Text Field",
                 text: .constant("Lorem Ipsum"),
-                footnote: .constant("Lorem Ipsum")
+                footnote: "Lorem Ipsum"
             )
             FormTextFieldGroup(
                 title: "My Secure Text Field",

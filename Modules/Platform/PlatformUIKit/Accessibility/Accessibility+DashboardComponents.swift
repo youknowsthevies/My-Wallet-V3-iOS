@@ -2,7 +2,7 @@
 
 extension Accessibility.Identifier {
 
-    public struct CurrentBalanceCell {
+    public enum CurrentBalanceCell {
         public static let prefix = "CurrentBalance."
         public static let view = "\(prefix)view"
         public static let title = "\(prefix)title"
@@ -10,9 +10,9 @@ extension Accessibility.Identifier {
         public static let pending = "\(prefix)pending"
     }
 
-    public struct Dashboard {
+    public enum Dashboard {
         private static let prefix = "Dashboard."
-        public struct FiatCustodialCell {
+        public enum FiatCustodialCell {
             public static let prefix = "\(Dashboard.prefix)FiatCustodialCell."
             public static let currencyName = "\(prefix)currencyName"
             public static let currencyCode = "\(prefix)currencyCode"
@@ -20,18 +20,21 @@ extension Accessibility.Identifier {
             public static let baseFiatBalance = "\(prefix)baseFiatBalance"
             public static let quoteFiatBalance = "\(prefix)quoteFiatBalance"
         }
-        public struct Notice {
+
+        public enum Notice {
             private static let prefix = "\(Dashboard.prefix)Notice."
             public static let label = "\(prefix)label"
             public static let imageView = "\(prefix)imageView"
         }
-        public struct TotalBalanceCell {
+
+        public enum TotalBalanceCell {
             private static let prefix = "\(Dashboard.prefix)TotalBalanceCell."
             public static let titleLabel = "\(prefix)titleLabel"
             public static let valueLabelSuffix = "\(prefix)total"
             public static let pieChartView = "\(prefix)pieChartView"
         }
-        public struct AssetCell {
+
+        public enum AssetCell {
             private static let prefix = "\(Dashboard.prefix)AssetCell."
             public static let titleLabelFormat = "\(prefix)titleLabel."
             public static let assetImageView = "\(prefix)assetImageView."
@@ -41,7 +44,8 @@ extension Accessibility.Identifier {
             public static let marketFiatBalanceLabelFormat = "\(prefix)marketFiatBalanceLabel."
             public static let cryptoBalanceLabelFormat = "\(prefix)cryptoBalanceLabel."
         }
-        struct Announcement {
+
+        enum Announcement {
             private static let prefix = "\(Dashboard.prefix)Announcement."
 
             static let titleLabel = "\(prefix)titleLabel"
@@ -53,18 +57,20 @@ extension Accessibility.Identifier {
         }
     }
 
-    public struct WalletActionSheet {
+    public enum WalletActionSheet {
         public static let prefix = "WalletActionSheet."
         public enum NonCustodial {
             public static let prefix = "\(WalletActionSheet.prefix)NonCustodial"
             public static let cryptoValue = "\(prefix)cryptoValue"
             public static let fiatValue = "\(prefix)fiatValue"
         }
+
         public enum CustodialAction {
             private static let prefix = "CustodialAction."
             public static let cryptoValue = "\(prefix)AssetBalanceView.cryptoBalanceValue"
             public static let fiatValue = "\(prefix)AssetBalanceView.fiatBalanceValue"
         }
+
         public enum Action {
             public static let deposit = "\(WalletActionSheet.prefix)Deposit"
             public static let withdraw = "\(WalletActionSheet.prefix)Withdraw"
@@ -81,9 +87,9 @@ extension Accessibility.Identifier {
         }
     }
 
-    public struct DashboardDetails {
+    public enum DashboardDetails {
         private static let prefix = "DashboardDetails."
-        public struct CurrentBalanceCell {
+        public enum CurrentBalanceCell {
             public static let prefix = "\(DashboardDetails.prefix)CurrentBalance."
             public static let titleValue = "\(prefix)titleValue"
             public static let descriptionValue = "\(prefix)descriptionValue"

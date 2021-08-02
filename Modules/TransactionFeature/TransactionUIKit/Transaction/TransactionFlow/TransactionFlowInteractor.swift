@@ -46,6 +46,9 @@ protocol TransactionFlowRouting: Routing {
     /// Present the destination account picker modally over the current screen
     func presentDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
 
+    /// Present the bank linking flow modally over the current screen
+    func presentLinkABank(transactionModel: TransactionModel)
+
     /// Route to the in progress screen. This pushes onto the navigation stack.
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
 
@@ -63,10 +66,11 @@ protocol TransactionFlowListener: AnyObject {
 }
 
 final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPresentable>,
-                                       TransactionFlowInteractable,
-                                       AccountPickerListener,
-                                       TransactionFlowPresentableListener,
-                                       TargetSelectionPageListener {
+    TransactionFlowInteractable,
+    AccountPickerListener,
+    TransactionFlowPresentableListener,
+    TargetSelectionPageListener
+{
 
     weak var router: TransactionFlowRouting?
     weak var listener: TransactionFlowListener?
@@ -77,12 +81,14 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let target: TransactionTarget?
     private let analyticsHook: TransactionAnalyticsHook
 
-    init(transactionModel: TransactionModel,
-         action: AssetAction,
-         sourceAccount: BlockchainAccount?,
-         target: TransactionTarget?,
-         presenter: TransactionFlowPresentable,
-         analyticsHook: TransactionAnalyticsHook = resolve()) {
+    init(
+        transactionModel: TransactionModel,
+        action: AssetAction,
+        sourceAccount: BlockchainAccount?,
+        target: TransactionTarget?,
+        presenter: TransactionFlowPresentable,
+        analyticsHook: TransactionAnalyticsHook = resolve()
+    ) {
         self.transactionModel = transactionModel
         self.action = action
         self.sourceAccount = sourceAccount
@@ -101,7 +107,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         transactionModel
             .state
             .distinctUntilChanged(\.step)
-            .observeOn((MainScheduler.asyncInstance))
+            .observeOn(MainScheduler.asyncInstance)
             .subscribe { [weak self] state in
                 self?.handleStateChange(newState: state)
             }
@@ -165,6 +171,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         super.willResignActive()
     }
 
+    func didSelectActionButton() {
+        transactionModel.process(action: .showBankLinkingFlow)
+    }
+
     func didSelect(blockchainAccount: BlockchainAccount) {
         guard let target = blockchainAccount as? TransactionTarget else {
             fatalError("Account \(blockchainAccount.self) is not currently supported.")
@@ -190,7 +200,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 case .selectTarget:
                     self?.didSelectDestinationAccount(target: target)
                     if let selectedSource = state.source as? CryptoAccount,
-                       let target = target as? CryptoAccount {
+                       let target = target as? CryptoAccount
+                    {
                         self?.analyticsHook.onReceiveAccountSelected(
                             selectedSource,
                             target: target,
@@ -285,7 +296,13 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .initial:
             break
         case .enterAmount:
-            router?.routeToPriceInput(source: newState.source!, transactionModel: transactionModel, action: action)
+            router?.routeToPriceInput(
+                source: newState.source!,
+                transactionModel: transactionModel,
+                action: action
+            )
+        case .linkABank:
+            router?.presentLinkABank(transactionModel: transactionModel)
         case .enterPassword:
             unimplemented()
         case .selectTarget:
@@ -350,17 +367,37 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         }
     }
 
-    private func handleFiatDeposit(sourceAccount: BlockchainAccount?, target: TransactionTarget?, passwordRequired: Bool) -> TransactionAction {
+    private func handleFiatDeposit(
+        sourceAccount: BlockchainAccount?,
+        target: TransactionTarget?,
+        passwordRequired: Bool
+    ) -> TransactionAction {
         if let source = sourceAccount, let target = target {
-            return .initialiseWithSourceAndTargetAccount(action: .deposit, sourceAccount: source, target: target, passwordRequired: passwordRequired)
+            return .initialiseWithSourceAndTargetAccount(
+                action: .deposit,
+                sourceAccount: source,
+                target: target,
+                passwordRequired: passwordRequired
+            )
         }
         if let source = sourceAccount {
-            return .initialiseWithSourceAccount(action: .deposit, sourceAccount: source, passwordRequired: passwordRequired)
+            return .initialiseWithSourceAccount(
+                action: .deposit,
+                sourceAccount: source,
+                passwordRequired: passwordRequired
+            )
         }
         if let target = target {
-            return .initialiseWithTargetAndNoSource(action: .deposit, target: target, passwordRequired: passwordRequired)
+            return .initialiseWithTargetAndNoSource(
+                action: .deposit,
+                target: target,
+                passwordRequired: passwordRequired
+            )
         } else {
-            return .initialiseWithNoSourceOrTargetAccount(action: .deposit, passwordRequired: passwordRequired)
+            return .initialiseWithNoSourceOrTargetAccount(
+                action: .deposit,
+                passwordRequired: passwordRequired
+            )
         }
     }
 }

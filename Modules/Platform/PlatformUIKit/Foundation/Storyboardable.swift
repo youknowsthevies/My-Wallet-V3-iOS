@@ -6,12 +6,12 @@ public protocol Storyboardable: AnyObject {
     static var defaultStoryboardName: String { get }
 }
 
-public extension Storyboardable where Self: UIViewController {
-    static var defaultStoryboardName: String {
+extension Storyboardable where Self: UIViewController {
+    public static var defaultStoryboardName: String {
         String(describing: self)
     }
 
-    static func makeFromStoryboard() -> Self {
+    public static func makeFromStoryboard() -> Self {
         let bundle = Bundle(for: self)
         let storyboard = UIStoryboard(name: defaultStoryboardName, bundle: bundle)
 
@@ -23,4 +23,4 @@ public extension Storyboardable where Self: UIViewController {
     }
 }
 
-extension UIViewController: Storyboardable { }
+extension UIViewController: Storyboardable {}

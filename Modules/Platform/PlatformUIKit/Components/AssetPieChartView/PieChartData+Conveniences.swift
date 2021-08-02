@@ -11,7 +11,7 @@ extension PieChartData {
         set.drawValuesEnabled = false
         set.selectionShift = 0
         set.sliceSpace = 3
-        set.colors = values.map { $0.color }
+        set.colors = values.map(\.color)
         self.init(dataSet: set)
     }
 

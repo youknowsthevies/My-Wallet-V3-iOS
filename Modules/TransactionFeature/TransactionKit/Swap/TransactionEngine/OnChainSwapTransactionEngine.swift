@@ -15,6 +15,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     var orderDirection: OrderDirection {
         target is TradingAccount ? .fromUserKey : .onChain
     }
+
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderUpdateRepository: OrderUpdateRepositoryAPI
     let priceService: PriceServiceAPI
@@ -25,17 +26,19 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
-    init(quotesEngine: SwapQuotesEngine,
-         requireSecondPassword: Bool,
-         onChainEngine: OnChainTransactionEngine,
-         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
-         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
-         orderUpdateRepository: OrderUpdateRepositoryAPI = resolve(),
-         tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         receiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()) {
+    init(
+        quotesEngine: SwapQuotesEngine,
+        requireSecondPassword: Bool,
+        onChainEngine: OnChainTransactionEngine,
+        orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
+        orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
+        orderUpdateRepository: OrderUpdateRepositoryAPI = resolve(),
+        tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        receiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()
+    ) {
         self.quotesEngine = quotesEngine
         self.requireSecondPassword = requireSecondPassword
         self.orderQuoteRepository = orderQuoteRepository
@@ -190,9 +193,11 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
             }
     }
 
-    func doUpdateFeeLevel(pendingTransaction: PendingTransaction,
-                          level: FeeLevel,
-                          customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+    func doUpdateFeeLevel(
+        pendingTransaction: PendingTransaction,
+        level: FeeLevel,
+        customFeeAmount: MoneyValue
+    ) -> Single<PendingTransaction> {
         onChainEngine.doUpdateFeeLevel(
             pendingTransaction: pendingTransaction,
             level: level,

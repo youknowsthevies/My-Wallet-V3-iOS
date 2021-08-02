@@ -10,7 +10,7 @@ final class CardAuthorizationScreenInteractor: Interactor {
         self.routingInteractor = routingInteractor
     }
 
-    public func cardAuthorized(with identifier: String) {
+    func cardAuthorized(with identifier: String) {
         routingInteractor.cardAuthorized(with: identifier)
     }
 }

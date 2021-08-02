@@ -6,18 +6,20 @@ import Foundation
 extension AnalyticsEvents.New {
     public enum SimpleBuy: AnalyticsEvent {
 
-        public var type: AnalyticsEventType {
-            .new
-        }
+        public var type: AnalyticsEventType { .nabu }
 
-        case buySellClicked(type: Type,
-                            origin: Origin)
+        case buySellClicked(
+            type: Type,
+            origin: Origin
+        )
         case buySellViewed(type: Type)
         case buyPaymentMethodSelected(paymentType: PaymentType)
-        case buyAmountEntered(inputAmount: Double,
-                              inputCurrency: String,
-                              maxCardLimit: Double?,
-                              outputCurrency: String)
+        case buyAmountEntered(
+            inputAmount: Double,
+            inputCurrency: String,
+            maxCardLimit: Double?,
+            outputCurrency: String
+        )
 
         public enum PaymentType: String, StringRawRepresentable {
             case bankAccount = "BANK_ACCOUNT"

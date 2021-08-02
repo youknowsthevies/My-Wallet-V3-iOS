@@ -5,19 +5,21 @@ import Foundation
 
 /// To regenerate this file use:
 /** ```swift
-let locale = NSLocale(localeIdentifier: "en_US")
-var s = "public enum Country: String, Codable {"
-for code in NSLocale.isoCountryCodes as [String] {
-    var id = NSLocale.localeIdentifier(fromComponents: [NSLocale.Key.countryCode.rawValue: code])
-    if let name = locale.displayName(forKey: NSLocale.Key.identifier, value: id) {
-        s.append("\n\n\t/// \(name)")
-    }
-    id.removeFirst()
-    s.append("\n\tcase \(id)")
-}
-print(s + "\n}")
-```
-*/
+ let locale = NSLocale(localeIdentifier: "en_US")
+ var s = "public enum Country: String, Codable {"
+ for code in NSLocale.isoCountryCodes as [String] {
+     var id = NSLocale.localeIdentifier(fromComponents: [NSLocale.Key.countryCode.rawValue: code])
+     if let name = locale.displayName(forKey: NSLocale.Key.identifier, value: id) {
+         s.append("\n\n\t/// \(name)")
+     }
+     id.removeFirst()
+     s.append("\n\tcase \(id)")
+ }
+ print(s + "\n}")
+ ```
+ */
+
+// swiftlint:disable type_body_length
 
 public enum Country: String, Codable {
 
@@ -807,7 +809,7 @@ extension Country {
     /// The name of the country
     public var name: String {
         let locale = NSLocale.current as NSLocale
-        let rawCode = Self.rawCode(from: self.code)
+        let rawCode = Self.rawCode(from: code)
         return locale.displayName(forKey: NSLocale.Key.identifier, value: rawCode) ?? ""
     }
 

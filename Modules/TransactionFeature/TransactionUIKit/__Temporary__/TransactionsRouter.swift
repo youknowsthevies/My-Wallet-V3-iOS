@@ -157,7 +157,7 @@ class LegacyBuyFlowPresenter {
                             unexpectedDeallocation()
                         }
                         // Step 2b. present buy flow screen for selected crypto and locale's fiat currency
-                        guard case let .select(cryptoCurrency) = result else {
+                        guard case .select(let cryptoCurrency) = result else {
                             return .just(.abandoned)
                         }
                         return self.presentBuyScreen(
@@ -206,9 +206,9 @@ class LegacyBuyFlowPresenter {
 
     private func presentSimpleBuyScreen(from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
         // This is just levereging the existing buy flow, which isn't great but is getting replaced buy the new `Transactions` implementation
-        return self.presentBuyScreen(
+        presentBuyScreen(
             from: presenter,
-            targetCurrency: .bitcoin, // not important for simple buy
+            targetCurrency: .coin(.bitcoin), // not important for simple buy
             sourceCurrency: .locale, // not imporant for simple buy
             isSDDEligible: false
         )

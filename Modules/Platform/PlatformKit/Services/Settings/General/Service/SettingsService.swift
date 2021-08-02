@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Combine
 import DIKit
 import RxRelay
@@ -40,8 +41,10 @@ final class SettingsService: SettingsServiceAPI {
 
     // MARK: - Setup
 
-    init(client: SettingsClientAPI = resolve(),
-         credentialsRepository: CredentialsRepositoryAPI = resolve()) {
+    init(
+        client: SettingsClientAPI = resolve(),
+        credentialsRepository: CredentialsRepositoryAPI = resolve()
+    ) {
         self.client = client
         self.credentialsRepository = credentialsRepository
 
@@ -193,7 +196,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
 
     func update(currency: FiatCurrency, context: FlowContext) -> AnyPublisher<Void, CurrencyUpdateError> {
         let fetch = fetchPublisher(force: true)
-        return credentialsRepository.fetchCredentials()
+        return credentialsRepository.credentialsPublisher
             .mapError(CurrencyUpdateError.credentialsError)
             .flatMap { [client] (guid: String, sharedKey: String) in
                 client.updatePublisher(
@@ -222,7 +225,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
 extension SettingsService: EmailSettingsServiceAPI {
 
     var email: Single<String> {
-        valueSingle.map { $0.email }
+        valueSingle.map(\.email)
     }
 
     func update(email: String, context: FlowContext?) -> Completable {
@@ -238,9 +241,9 @@ extension SettingsService: EmailSettingsServiceAPI {
     }
 
     func update(email: String) -> AnyPublisher<String, EmailSettingsServiceError> {
-        credentialsRepository.fetchCredentials()
+        credentialsRepository.credentialsPublisher
             .mapError(EmailSettingsServiceError.credentialsError)
-            .flatMap { [client] (guid, sharedKey) in
+            .flatMap { [client] guid, sharedKey in
                 client.update(
                     email: email,
                     context: nil,
@@ -302,11 +305,11 @@ extension SettingsService: UpdateMobileSettingsServiceAPI {
                     guid: payload.guid,
                     sharedKey: payload.sharedKey
                 )
-        }
-        .flatMapSingle(weak: self) { (self) in
-            self.fetch(force: true)
-        }
-        .asCompletable()
+            }
+            .flatMapSingle(weak: self) { (self) in
+                self.fetch(force: true)
+            }
+            .asCompletable()
     }
 }
 
@@ -321,11 +324,11 @@ extension SettingsService: VerifyMobileSettingsServiceAPI {
                     guid: payload.guid,
                     sharedKey: payload.sharedKey
                 )
-        }
-        .flatMapSingle(weak: self) { (self) in
-            self.fetch(force: true)
-        }
-        .asCompletable()
+            }
+            .flatMapSingle(weak: self) { (self) in
+                self.fetch(force: true)
+            }
+            .asCompletable()
     }
 }
 
@@ -340,10 +343,10 @@ extension SettingsService: SMSTwoFactorSettingsServiceAPI {
                     guid: payload.guid,
                     sharedKey: payload.sharedKey
                 )
-        }
-        .flatMapSingle(weak: self) { (self) in
-            self.fetch(force: true)
-        }
-        .asCompletable()
+            }
+            .flatMapSingle(weak: self) { (self) in
+                self.fetch(force: true)
+            }
+            .asCompletable()
     }
 }

@@ -26,6 +26,7 @@ final class CheckoutPageDetailsPresenter: DetailsScreenPresenterAPI, CheckoutPag
     }
 
     // MARK: - Actions
+
     var continueButtonTapped: Signal<Void> {
         continueButtonPressed.asSignal()
     }
@@ -48,8 +49,10 @@ final class CheckoutPageDetailsPresenter: DetailsScreenPresenterAPI, CheckoutPag
     private let fiatCurrency: FiatCurrency
     private let analyticsRecorder: AnalyticsEventRecorderAPI
 
-    init(fiatCurrency: FiatCurrency,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        fiatCurrency: FiatCurrency,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.fiatCurrency = fiatCurrency
         self.analyticsRecorder = analyticsRecorder
 
@@ -62,8 +65,8 @@ final class CheckoutPageDetailsPresenter: DetailsScreenPresenterAPI, CheckoutPag
     func connect(action: Driver<CheckoutPageInteractor.Action>) -> Driver<CheckoutPageInteractor.Effects> {
         let details = action
             .distinctUntilChanged()
-            .flatMap { (action) -> Driver<WithdrawalCheckoutData> in
-                guard case let .load(data) = action else {
+            .flatMap { action -> Driver<WithdrawalCheckoutData> in
+                guard case .load(let data) = action else {
                     return .empty()
                 }
                 return .just(data)

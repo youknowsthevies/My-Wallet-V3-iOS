@@ -25,6 +25,7 @@ final class PasswordViewController: BaseScreenViewController {
         super.init(nibName: PasswordViewController.objectName, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -50,7 +51,7 @@ final class PasswordViewController: BaseScreenViewController {
         buttonView.viewModel.tapRelay
             .dismissKeyboard(using: keyboardInteractionController)
             .subscribe()
-            .disposed(by: self.disposeBag)
+            .disposed(by: disposeBag)
     }
 
     override func viewWillAppear(_ animated: Bool) {

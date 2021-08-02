@@ -25,7 +25,7 @@ public class BaseUIButton: UIButton {
 
     public var shadowOpacity: CGFloat = 0.20 {
         didSet {
-            self.setup()
+            setup()
         }
     }
 
@@ -33,7 +33,7 @@ public class BaseUIButton: UIButton {
         titleLabel?.font = Font(.branded(.montserratSemiBold), size: .custom(20.0)).result
 
         if showShadow {
-            layer.shadowColor = self.shadowColor.cgColor
+            layer.shadowColor = shadowColor.cgColor
             layer.shadowOffset = CGSize(width: 0.0, height: 8.0)
             layer.shadowRadius = 8.0
             layer.shadowOpacity = Float(shadowOpacity)
@@ -46,12 +46,12 @@ public class BaseUIButton: UIButton {
         layer.cornerRadius = cornerRadius
     }
 
-    public override func prepareForInterfaceBuilder() {
+    override public func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         setupLayout()
     }
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
@@ -63,7 +63,7 @@ public class BaseUIButton: UIButton {
 
     // MARK: Overrides
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         setupLayout()
     }
@@ -74,9 +74,10 @@ public class BaseUIButtonFill: BaseUIButton {
 
     @IBInspectable var fillColor: UIColor = .brandSecondary {
         didSet {
-            self.setup()
+            setup()
         }
     }
+
     @IBInspectable var textColor: UIColor = .white {
         didSet {
             self.setup()

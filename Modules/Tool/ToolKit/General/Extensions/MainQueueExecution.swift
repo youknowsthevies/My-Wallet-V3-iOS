@@ -4,10 +4,10 @@ import Foundation
 
 /// Container for executions
 @available(*, deprecated, message: "Do not use this as this is hard to test. Prefer reactive solutions instead")
-public struct Execution {
+public enum Execution {
 
     /// Main queue execution
-    public struct MainQueue {
+    public enum MainQueue {
 
         /// A work item to be executed
         public typealias WorkItem = () -> Void

@@ -22,8 +22,8 @@ public class StellarKeyPairDeriver: KeyPairDeriverAPI {
     }
 }
 
-private extension stellarsdk.KeyPair {
-    func toStellarKeyPair() -> StellarKeyPair {
+extension stellarsdk.KeyPair {
+    fileprivate func toStellarKeyPair() -> StellarKeyPair {
         StellarKeyPair(accountID: publicKey.accountId, secret: secretSeed)
     }
 }

@@ -4,13 +4,9 @@ import BigInt
 import BitcoinChainKit
 import PlatformKit
 
-public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactionResponse, HistoricalTransaction, Tokenized {
+public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactionResponse {
 
     public static let requiredConfirmations: Int = 3
-
-    // MARK: - HistoricalTransaction
-
-    public typealias Address = BitcoinCashAssetAddress
 
     // MARK: - Output
 
@@ -39,7 +35,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
             let values = try decoder.container(keyedBy: CodingKeys.self)
             spent = try values.decode(Bool.self, forKey: .spent)
             let satoshis = try values.decode(Int.self, forKey: .amount)
-            amount = CryptoValue(amount: BigInt(satoshis), currency: .bitcoinCash)
+            amount = CryptoValue(amount: BigInt(satoshis), currency: .coin(.bitcoinCash))
             address = try values.decode(String.self, forKey: .address)
             let xpub = try values.decodeIfPresent(Xpub.self, forKey: .xpub)
             change = xpub != nil
@@ -72,13 +68,9 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
         transactionHash
     }
 
-    public var token: String {
-        transactionHash
-    }
-
-    public let fromAddress: Address
-    public let toAddress: Address
     public let direction: Direction
+    public let fromAddress: BitcoinCashAssetAddress
+    public let toAddress: BitcoinCashAssetAddress
     public let amount: CryptoValue
     public let transactionHash: String
     public let createdAt: Date
@@ -96,7 +88,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
         case identifier = "hash"
         case amount = "result"
         case blockHeight = "block_height"
-        case time = "time"
+        case time
         case fee
         case inputs
         case outputs = "out"
@@ -104,18 +96,18 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
 
     // MARK: - Decodable
 
-    required public init(from decoder: Decoder) throws {
+    public required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let amount = try values.decode(Int64.self, forKey: .amount)
         let value = BigInt(integerLiteral: amount)
-        self.amount = CryptoValue.create(minor: abs(value), currency: .bitcoinCash)
+        self.amount = CryptoValue.create(minor: abs(value), currency: .coin(.bitcoinCash))
         direction = value.sign == .minus ? .credit : .debit
         transactionHash = try values.decode(String.self, forKey: .identifier)
         blockHeight = try values.decodeIfPresent(Int.self, forKey: .blockHeight)
         createdAt = try values.decode(Date.self, forKey: .time)
         inputs = try values.decode([Input].self, forKey: .inputs)
         let feeValue = try values.decode(Int.self, forKey: .fee)
-        fee = CryptoValue(amount: BigInt(feeValue), currency: .bitcoinCash)
+        fee = CryptoValue(amount: BigInt(feeValue), currency: .coin(.bitcoinCash))
         outputs = try values.decode([Output].self, forKey: .outputs)
 
         guard let destinationOutput = outputs.first else {

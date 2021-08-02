@@ -23,8 +23,10 @@ public final class AnnouncementRecorder {
 
     // MARK: - Setup
 
-    public init(cache: CacheSuite = resolve(),
-                errorRecorder: ErrorRecording) {
+    public init(
+        cache: CacheSuite = resolve(),
+        errorRecorder: ErrorRecording
+    ) {
         self.errorRecorder = errorRecorder
         self.cache = cache
     }
@@ -82,9 +84,11 @@ extension AnnouncementRecorder {
 
         // MARK: - Setup
 
-        init(errorRecorder: ErrorRecording,
-             recorder: AnnouncementRecorder,
-             key: AnnouncementRecord.Key) {
+        init(
+            errorRecorder: ErrorRecording,
+            recorder: AnnouncementRecorder,
+            key: AnnouncementRecord.Key
+        ) {
             self.errorRecorder = errorRecorder
             self.recorder = recorder
             self.key = key

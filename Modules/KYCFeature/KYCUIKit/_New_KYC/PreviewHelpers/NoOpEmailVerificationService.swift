@@ -9,20 +9,21 @@ import ToolKit
 class NoOpEmailVerificationService: EmailVerificationServiceAPI {
 
     func checkEmailVerificationStatus() -> AnyPublisher<EmailVerificationResponse, EmailVerificationCheckError> {
-        Future { (_) in
+        Future { _ in
             // no-op
         }
         .eraseToAnyPublisher()
     }
+
     func sendVerificationEmail(to emailAddress: String) -> AnyPublisher<Void, UpdateEmailAddressError> {
-        Future { (_) in
+        Future { _ in
             // no-op
         }
         .eraseToAnyPublisher()
     }
 
     func updateEmailAddress(to emailAddress: String) -> AnyPublisher<Void, UpdateEmailAddressError> {
-        Future { (_) in
+        Future { _ in
             // no-op
         }
         .eraseToAnyPublisher()

@@ -53,37 +53,39 @@ final class WithdrawAmountValidationService {
     private let coincore: CoincoreAPI
 
     // MARK: - Properties
+
     private let fiatCurrency: FiatCurrency
     private let beneficiary: Beneficiary
 
-    init(fiatCurrency: FiatCurrency,
-         beneficiary: Beneficiary,
-         coincore: CoincoreAPI = resolve(),
-         withdrawFeeService: WithdrawalServiceAPI = resolve()) {
+    init(
+        fiatCurrency: FiatCurrency,
+        beneficiary: Beneficiary,
+        coincore: CoincoreAPI = resolve(),
+        withdrawFeeService: WithdrawalServiceAPI = resolve()
+    ) {
         self.fiatCurrency = fiatCurrency
         self.beneficiary = beneficiary
         self.coincore = coincore
 
-        self.account = coincore.allAccounts
+        account = coincore.allAccounts
             .compactMap { [fiatCurrency] group in
                 group.accounts.first(where: { $0.currencyType == fiatCurrency.currency })
             }
             .asObservable()
             .share(replay: 1, scope: .whileConnected)
 
-        self.balance = account
+        balance = account
             .asObservable()
             .flatMap { account -> Single<MoneyValue> in
                 account.balance
             }
             .asSingle()
 
-        self.minValue = withdrawFeeService.withdrawalMinAmount(for: fiatCurrency)
+        minValue = withdrawFeeService.withdrawalMinAmount(for: fiatCurrency, paymentMethodType: .bankTransfer)
             .asObservable()
             .map(\.moneyValue)
             .startWith(.zero(currency: fiatCurrency))
             .share(replay: 1, scope: .whileConnected)
-
     }
 
     func connect(inputs: Observable<Input>) -> Observable<State> {
@@ -120,7 +122,6 @@ final class WithdrawAmountValidationService {
             amount: amount
         )
     }
-
 }
 
 extension WithdrawAmountValidationService.State {
@@ -138,9 +139,9 @@ extension WithdrawAmountValidationService.State {
         switch self {
         case .empty:
             return .empty
-        case let .maxLimitExceeded(value):
+        case .maxLimitExceeded(let value):
             return .maxLimitExceeded(value)
-        case let .minLimitNotReached(value):
+        case .minLimitNotReached(let value):
             return .underMinLimit(value)
         case .valid:
             return .inBounds

@@ -24,10 +24,12 @@ final class PendingCardStatusInteractor: Interactor {
 
     // MARK: - Setup
 
-    init(cardId: String,
-         activationService: CardActivationServiceAPI = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-         routingInteractor: CardRouterInteractor) {
+    init(
+        cardId: String,
+        activationService: CardActivationServiceAPI = resolve(),
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+        routingInteractor: CardRouterInteractor
+    ) {
         self.cardId = cardId
         self.routingInteractor = routingInteractor
         self.activationService = activationService
@@ -62,7 +64,7 @@ final class PendingCardStatusInteractor: Interactor {
         routingInteractor.end(with: cardData)
     }
 
-    /// End the polling without confirmation 
+    /// End the polling without confirmation
     func endWithoutConfirmation() {
         routingInteractor.dismiss()
     }

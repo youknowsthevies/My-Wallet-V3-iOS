@@ -3,7 +3,7 @@
 import Foundation
 
 extension Accessibility.Identifier {
-    struct DigitPad {
+    enum DigitPad {
         private static let prefix = "DigitPad."
         static let digitButtonFormat = "\(prefix)digit-"
         static let faceIdButton = "\(prefix)faceIdButton"

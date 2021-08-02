@@ -29,7 +29,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
     }
 
     public var pending: Driver<String> {
-       .empty()
+        .empty()
     }
 
     public var pendingLabelVisibility: Driver<Visibility> {
@@ -67,12 +67,14 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
     private let badgeFactory = SingleAccountBadgeFactory()
     private let account: SingleAccount
 
-    public init(account: SingleAccount,
-                assetAction: AssetAction,
-                interactor: AssetBalanceViewInteracting,
-                separatorVisibility: Visibility = .visible) {
+    public init(
+        account: SingleAccount,
+        assetAction: AssetAction,
+        interactor: AssetBalanceViewInteracting,
+        separatorVisibility: Visibility = .visible
+    ) {
         self.account = account
-        self.separatorVisibilityRelay = BehaviorRelay<Visibility>(value: separatorVisibility)
+        separatorVisibilityRelay = BehaviorRelay<Visibility>(value: separatorVisibility)
         titleAccessibilitySuffix = "\(AccessibilityId.titleLabel)"
         descriptionAccessibilitySuffix = "\(AccessibilityId.descriptionLabel)"
         pendingAccessibilitySuffix = "\(AccessibilityId.pendingLabel)"

@@ -6,6 +6,7 @@ public struct LinkedBankData {
     public enum Partner: String {
         case yodlee = "YODLEE"
         case yapily = "YAPILY"
+        case none = "NONE"
     }
 
     public struct Account {
@@ -14,18 +15,15 @@ public struct LinkedBankData {
         public let bankName: String
         public let number: String
 
-        init?(response: LinkedBankResponse) {
-            guard
-                let accountType = response.bankAccountType,
-                let accountNumber = response.accountNumber else {
-                return nil
-            }
-            name = response.name
-            type = LinkedBankAccountType(from: accountType)
+        init(response: LinkedBankResponse) {
+            let accountNumber = (response.accountNumber?.replacingOccurrences(of: "x", with: "") ?? "")
+            name = (response.accountName ?? response.name)
+            type = LinkedBankAccountType(from: response.bankAccountType)
             bankName = response.name
-            number = accountNumber.replacingOccurrences(of: "x", with: "")
+            number = accountNumber
         }
     }
+
     public enum LinkageError {
         case alreadyLinked
         case unsuportedAccount
@@ -33,6 +31,7 @@ public struct LinkedBankData {
         case timeout
         case unknown
     }
+
     public let currency: FiatCurrency
     public let identifier: String
     public let account: Account?

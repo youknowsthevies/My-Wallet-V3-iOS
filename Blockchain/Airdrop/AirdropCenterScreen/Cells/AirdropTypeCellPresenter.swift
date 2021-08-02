@@ -37,8 +37,8 @@ struct AirdropTypeCellPresenter {
         if let value = interactor.fiatValue {
             title = "\(value.toDisplayString(includeSymbol: true)) \(LocalizedString.fiatMiddle) \(interactor.cryptoCurrency.displayCode)"
         } else {
-            /// If the fiat value is missing, then it was not returned by the backend.
-            /// make sure to display something.
+            // If the fiat value is missing, then it was not returned by the backend.
+            // make sure to display something.
             title = interactor.cryptoCurrency.displayCode
         }
 

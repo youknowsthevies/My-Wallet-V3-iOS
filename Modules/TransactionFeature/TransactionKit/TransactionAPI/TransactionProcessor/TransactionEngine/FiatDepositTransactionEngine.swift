@@ -29,23 +29,17 @@ final class FiatDepositTransactionEngine: TransactionEngine {
 
     // MARK: - Private Properties
 
-    private var paymentMethodTypes: Single<[PaymentMethodType]> {
-        fiatCurrencyService
-            .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<[PaymentMethodType]> in
-                self.linkedBanksFactory.bankPaymentMethods(for: fiatCurrency)
-            }
-    }
-
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let bankTransferRepository: BankTransferRepositoryAPI
 
     // MARK: - Init
 
-    init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
-         bankTransferRepository: BankTransferRepositoryAPI = resolve()) {
+    init(
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
+        bankTransferRepository: BankTransferRepositoryAPI = resolve()
+    ) {
         self.linkedBanksFactory = linkedBanksFactory
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
@@ -60,8 +54,8 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        fiatCurrencyService
-            .fiatCurrency
+        Single
+            .just(target.fiatCurrency)
             .flatMap(weak: self) { (self, fiatCurrecy) -> Single<PaymentLimits> in
                 self.fetchBankTransferLimits(fiatCurrency: fiatCurrecy)
             }
@@ -83,15 +77,15 @@ final class FiatDepositTransactionEngine: TransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .just(pendingTransaction
-                .update(
-                    confirmations: [
-                        .source(.init(value: sourceAccount.label)),
-                        .destination(.init(value: target.label)),
-                        .transactionFee(.init(fee: pendingTransaction.feeAmount)),
-                        .arrivalDate(.default),
-                        .total(.init(total: pendingTransaction.amount))
-                    ]
-                )
+            .update(
+                confirmations: [
+                    .source(.init(value: sourceAccount.label)),
+                    .destination(.init(value: target.label)),
+                    .transactionFee(.init(fee: pendingTransaction.feeAmount)),
+                    .arrivalDate(.default),
+                    .total(.init(total: pendingTransaction.amount))
+                ]
+            )
         )
     }
 
@@ -100,7 +94,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     }
 
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        if pendingTransaction.validationState == .uninitialized && pendingTransaction.amount.isZero {
+        if pendingTransaction.validationState == .uninitialized, pendingTransaction.amount.isZero {
             return .just(pendingTransaction)
         } else {
             return validateAmountCompletable(pendingTransaction: pendingTransaction)
@@ -149,7 +143,8 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
             guard let maxLimit = pendingTransaction.maximumLimit,
-                  let minLimit = pendingTransaction.minimumLimit else {
+                  let minLimit = pendingTransaction.minimumLimit
+            else {
                 throw TransactionValidationFailure(state: .unknownError)
             }
             guard !pendingTransaction.amount.isZero else {

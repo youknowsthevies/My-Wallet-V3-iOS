@@ -17,10 +17,12 @@ class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletA
 
     private let bridge: StellarWalletBridgeAPI
     private let mnemonicAccessAPI: MnemonicAccessAPI
-    private let deriver: StellarKeyPairDeriver = StellarKeyPairDeriver()
+    private let deriver = StellarKeyPairDeriver()
 
-    init(bridge: StellarWalletBridgeAPI = resolve(),
-         mnemonicAccessAPI: MnemonicAccessAPI = resolve()) {
+    init(
+        bridge: StellarWalletBridgeAPI = resolve(),
+        mnemonicAccessAPI: MnemonicAccessAPI = resolve()
+    ) {
         self.bridge = bridge
         self.mnemonicAccessAPI = mnemonicAccessAPI
     }
@@ -95,7 +97,7 @@ class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletA
                 Account(
                     index: 0,
                     publicKey: keyPair.accountID,
-                    label: CryptoCurrency.stellar.defaultWalletName,
+                    label: CryptoCurrency.coin(.stellar).defaultWalletName,
                     archived: false
                 )
             }
@@ -105,7 +107,7 @@ class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletA
         Completable.create(weak: self) { (self, observer) -> Disposable in
             self.bridge.save(
                 keyPair: keyPair,
-                label: CryptoCurrency.stellar.defaultWalletName,
+                label: CryptoCurrency.coin(.stellar).defaultWalletName,
                 completion: { result in
                     switch result {
                     case .success:

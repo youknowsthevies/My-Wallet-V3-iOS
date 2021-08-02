@@ -66,7 +66,7 @@ public final class CryptoExchangeAccount: ExchangeAccount {
 
     public var pendingBalance: Single<MoneyValue> {
         /// Exchange API does not return a balance.
-        .just(MoneyValue.zero(currency: asset))
+        .just(.zero(currency: asset))
     }
 
     public var actions: Single<AvailableActions> {
@@ -77,7 +77,11 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(true)
     }
 
-    private(set) public lazy var identifier: AnyHashable = "CryptoExchangeAccount." + asset.code
+    public var activity: Single<[ActivityItemEvent]> {
+        .just([])
+    }
+
+    public private(set) lazy var identifier: AnyHashable = "CryptoExchangeAccount." + asset.code
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
     public let label: String
@@ -105,13 +109,15 @@ public final class CryptoExchangeAccount: ExchangeAccount {
 
     // MARK: - Init
 
-    init(response: CryptoExchangeAddressResponse,
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()) {
-        self.label = response.assetType.defaultExchangeWalletName
-        self.asset = response.assetType
-        self.address = response.address
-        self.state = .init(state: response.state)
+    init(
+        response: CryptoExchangeAddressResponse,
+        exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+        cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()
+    ) {
+        label = response.assetType.defaultExchangeWalletName
+        asset = response.assetType
+        address = response.address
+        state = .init(state: response.state)
         self.exchangeAccountProvider = exchangeAccountProvider
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
     }

@@ -24,9 +24,11 @@ final class KYCPendingInteractor: Interactor {
 
     // MARK: - Setup
 
-    init(kycTiersService: KYCTierUpdatePollingServiceAPI = resolve(),
-         eligibilityService: EligibilityServiceAPI = resolve(),
-         eligiblePaymentMethodsService: PaymentMethodsServiceAPI = resolve()) {
+    init(
+        kycTiersService: KYCTierUpdatePollingServiceAPI = resolve(),
+        eligibilityService: EligibilityServiceAPI = resolve(),
+        eligiblePaymentMethodsService: PaymentMethodsServiceAPI = resolve()
+    ) {
         self.kycTiersService = kycTiersService
         self.eligibilityService = eligibilityService
         self.eligiblePaymentMethodsService = eligiblePaymentMethodsService
@@ -35,7 +37,7 @@ final class KYCPendingInteractor: Interactor {
     func startPollingForGoldTier() {
         kycTiersService
             .poll(untilTier: .tier2, is: .approved, timeoutAfter: 30)
-            .map { $0.verificationState }
+            .map(\.verificationState)
             .flatMap(weak: self) { (self, state) -> Single<KYCPendingVerificationState> in
                 guard state == .completed else {
                     return .just(state)
@@ -61,8 +63,8 @@ final class KYCPendingInteractor: Interactor {
     }
 }
 
-fileprivate extension KYC.AccountStatus {
-    var verificationState: KYCPendingVerificationState {
+extension KYC.AccountStatus {
+    fileprivate var verificationState: KYCPendingVerificationState {
         switch self {
         case .approved:
             return .completed

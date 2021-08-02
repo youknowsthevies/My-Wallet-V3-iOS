@@ -7,7 +7,7 @@ public final class RadioAccountCellPresenter: IdentifiableType {
 
     // MARK: - Public Properties
 
-    /// Streams the image content 
+    /// Streams the image content
     public let imageContent: Driver<ImageViewContent>
 
     // MARK: - RxDataSources
@@ -20,8 +20,11 @@ public final class RadioAccountCellPresenter: IdentifiableType {
     let viewModel: Driver<WalletViewViewModel>
 
     // MARK: - Init
-    public init(interactor: RadioAccountCellInteractor,
-                accessibilityPrefix: String = "") {
+
+    public init(
+        interactor: RadioAccountCellInteractor,
+        accessibilityPrefix: String = ""
+    ) {
         let model = WalletViewViewModel(
             account: interactor.account,
             descriptor: .init(

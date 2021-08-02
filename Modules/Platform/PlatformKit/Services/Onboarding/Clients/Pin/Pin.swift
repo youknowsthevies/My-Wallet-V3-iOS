@@ -19,7 +19,7 @@ public struct Pin {
     // MARK: - Initializers
 
     public init(code: UInt) {
-        self.pinCode = code
+        pinCode = code
     }
 
     public init?(string: String) {
@@ -35,13 +35,13 @@ public struct Pin {
 
 // MARK: - Hashable, Equatable
 
- extension Pin: Hashable {
+extension Pin: Hashable {
     public static func == (lhs: Pin, rhs: Pin) -> Bool {
         lhs.pinCode == rhs.pinCode
     }
 
     public func isEqual(_ object: Any?) -> Bool {
-        self.pinCode == (object as? Pin)?.pinCode
+        pinCode == (object as? Pin)?.pinCode
     }
 
     public var hashValue: Int {

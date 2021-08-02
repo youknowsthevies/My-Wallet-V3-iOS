@@ -9,5 +9,6 @@ protocol LocationSuggestionAPI {
     func search(for query: String, with completion: @escaping LocationSuggestionCompletion)
     func fetchAddress(from suggestion: LocationSuggestion, with block: @escaping PostalAddressCompletion)
     func cancel()
+
     var isExecuting: Bool { get }
 }

@@ -18,7 +18,9 @@ final class MockCryptoCurrenciesService: CryptoCurrenciesServiceAPI {
     private(set) var recordedInvocations = RecordedInvocations()
     var stubbedResults = StubbedResults()
 
-    func fetchPurchasableCryptoCurrencies(using fiatCurrency: FiatCurrency) -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError> {
+    func fetchPurchasableCryptoCurrencies(
+        using fiatCurrency: FiatCurrency
+    ) -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError> {
         recordedInvocations.fetchPurchasableCryptoCurrencies.append(fiatCurrency)
         return stubbedResults.fetchPurchasableCryptoCurrencies
     }

@@ -41,8 +41,8 @@ final class AirdropCenterScreenInteractor {
         let allCampaigns = service.campaignsCalculationState
             .compactMap { $0.value?.campaigns }
             .map { campaigns in
-                 campaigns
-                    .sorted { (lhs, rhs) -> Bool in
+                campaigns
+                    .sorted { lhs, rhs -> Bool in
                         let lhsDate = lhs.dropDate ?? .distantFuture
                         let rhsDate = rhs.dropDate ?? .distantFuture
                         return lhsDate > rhsDate

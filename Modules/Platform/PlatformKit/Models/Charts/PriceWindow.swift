@@ -18,8 +18,8 @@ public enum PriceWindow: Equatable {
     case all(TimelineInterval?)
 }
 
-public extension PriceWindow {
-    static func == (lhs: PriceWindow, rhs: PriceWindow) -> Bool {
+extension PriceWindow {
+    public static func == (lhs: PriceWindow, rhs: PriceWindow) -> Bool {
         switch (lhs, rhs) {
         case (.day(let left), .day(let right)):
             return left == right
@@ -76,14 +76,14 @@ extension PriceWindow {
     }
 }
 
-public extension PriceWindow {
-    var scale: Int {
+extension PriceWindow {
+    public var scale: Int {
         Int(timelineInterval.value)
     }
 }
 
-public extension PriceWindow.TimelineInterval {
-    var value: TimeInterval {
+extension PriceWindow.TimelineInterval {
+    public var value: TimeInterval {
         switch self {
         case .fifteenMinutes:
             return 900

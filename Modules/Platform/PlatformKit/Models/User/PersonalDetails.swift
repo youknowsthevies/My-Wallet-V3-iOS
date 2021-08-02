@@ -36,9 +36,9 @@ public struct PersonalDetails: Decodable {
     }
 
     public init(id: String?, first: String?, last: String?, birthday: Date?) {
-        self.identifier = id
-        self.firstName = first
-        self.lastName = last
+        identifier = id
+        firstName = first
+        lastName = last
         self.birthday = birthday
     }
 

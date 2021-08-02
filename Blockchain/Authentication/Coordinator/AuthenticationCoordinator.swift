@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import AuthenticationKit
 import BitcoinKit
 import Combine
 import DIKit
@@ -14,13 +15,9 @@ import RxSwift
 import SettingsKit
 import ToolKit
 
-protocol PairingWalletFetching: AnyObject {
-    func authenticate(using password: String)
-}
-
-extension AuthenticationCoordinator: PairingWalletFetching {
+extension AuthenticationCoordinator: WalletPairingFetcherAPI {
     /// A new method for fetching wallet - is being used after manual pairing
-    /// TODO: Remove once done migrating JS to native
+    // TODO: Remove once done migrating JS to native
     func authenticate(using password: String) {
         loadingViewPresenter.showCircular()
         temporaryAuthHandler = authenticationHandler
@@ -34,9 +31,11 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     // MARK: - Types
 
-    typealias WalletAuthHandler = (_ authenticated: Bool, _
-                                   twoFactorType: AuthenticatorType?, _
-                                   error: AuthenticationError?) -> Void
+    typealias WalletAuthHandler = (
+        _ authenticated: Bool,
+        _ twoFactorType: WalletAuthenticatorType?,
+        _ error: AuthenticationError?
+    ) -> Void
 
     @Inject @objc static var shared: AuthenticationCoordinator
 
@@ -69,11 +68,11 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     @LazyInject private var analyticsRecoder: AnalyticsEventRecorderAPI
 
-    /// TODO: Delete when `AuthenticationCoordinator` is removed
+    // TODO: Delete when `AuthenticationCoordinator` is removed
     /// Temporary handler since `AuthenticationManager` was refactored.
     var temporaryAuthHandler: WalletAuthHandler?
 
-    /// TODO: Delete when `AuthenticationCoordiantor` is removed and
+    // TODO: Delete when `AuthenticationCoordiantor` is removed and
     /// `PasswordViewController` had it's own router.
     var isShowingSecondPasswordScreen = false
 
@@ -82,21 +81,23 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private let bag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
 
-   // MARK: - Initializer
+    // MARK: - Initializer
 
-    init(fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve(),
-         appSettings: BlockchainSettings.App = resolve(),
-         sharedContainter: SharedContainerUserDefaults = .default,
-         onboardingSettings: OnboardingSettings = resolve(),
-         wallet: Wallet = WalletManager.shared.wallet,
-         alertPresenter: AlertViewPresenter = resolve(),
-         walletManager: WalletManager = WalletManager.shared,
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-         deepLinkRouter: DeepLinkRouting = resolve(),
-         onboardingRouter: OnboardingUIKit.OnboardingRouterAPI = resolve(),
-         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-         remoteNotificationServiceContainer: RemoteNotificationServiceContaining = resolve()) {
+    init(
+        fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve(),
+        appSettings: BlockchainSettings.App = resolve(),
+        sharedContainter: SharedContainerUserDefaults = .default,
+        onboardingSettings: OnboardingSettings = resolve(),
+        wallet: Wallet = WalletManager.shared.wallet,
+        alertPresenter: AlertViewPresenter = resolve(),
+        walletManager: WalletManager = WalletManager.shared,
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
+        deepLinkRouter: DeepLinkRouting = resolve(),
+        onboardingRouter: OnboardingUIKit.OnboardingRouterAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
+        remoteNotificationServiceContainer: RemoteNotificationServiceContaining = resolve()
+    ) {
         self.sharedContainter = sharedContainter
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
         self.appSettings = appSettings
@@ -120,9 +121,11 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     /// but the current way wallet creation is designed, we need to share this handler
     /// with that flow. Eventually, wallet creation should be moved with AuthenticationCoordinator
     @available(*, deprecated, message: "This method is deprected and its logic should be distributed to separate services")
-    func authenticationHandler(_ isAuthenticated: Bool,
-                               _ twoFactorType: AuthenticatorType?,
-                               _ error: AuthenticationError?) {
+    func authenticationHandler(
+        _ isAuthenticated: Bool,
+        _ twoFactorType: WalletAuthenticatorType?,
+        _ error: AuthenticationError?
+    ) {
         defer {
             self.loadingViewPresenter.hide()
         }
@@ -240,8 +243,9 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     /// Cleanup any running authentication flows when the app is backgrounded.
     func cleanupOnAppBackgrounded() {
         guard let pinRouter = pinRouter,
-            pinRouter.isBeingDisplayed,
-            !pinRouter.flow.isLoginAuthentication else {
+              pinRouter.isBeingDisplayed,
+              !pinRouter.flow.isLoginAuthentication
+        else {
             return
         }
         pinRouter.cleanup()
@@ -269,9 +273,11 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     ///   - type: The type of the screen
     ///   - confirmHandler: Confirmation handler, receives the password
     ///   - dismissHandler: Dismiss handler (optional - defaults to `nil`)
-    func showPasswordScreen(type: PasswordScreenType,
-                            confirmHandler: @escaping PasswordScreenPresenter.ConfirmHandler,
-                            dismissHandler: PasswordScreenPresenter.DismissHandler? = nil) {
+    func showPasswordScreen(
+        type: PasswordScreenType,
+        confirmHandler: @escaping PasswordScreenPresenter.ConfirmHandler,
+        dismissHandler: PasswordScreenPresenter.DismissHandler? = nil
+    ) {
         guard !isShowingSecondPasswordScreen else { return }
         guard let parent = UIApplication.shared.topMostViewController else {
             return
@@ -305,8 +311,10 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     }
 
     /// ObjC compatible version of `showPasswordScreen`
-    @objc func showPasswordScreen(confirmHandler: @escaping PasswordScreenPresenter.ConfirmHandler,
-                                  dismissHandler: PasswordScreenPresenter.DismissHandler? = nil) {
+    @objc func showPasswordScreen(
+        confirmHandler: @escaping PasswordScreenPresenter.ConfirmHandler,
+        dismissHandler: PasswordScreenPresenter.DismissHandler? = nil
+    ) {
         showPasswordScreen(
             type: .actionRequiresPassword,
             confirmHandler: confirmHandler,
@@ -402,9 +410,10 @@ extension AuthenticationCoordinator: WalletAuthDelegate {
         // With the hash prefix we can then figure out if the password changed. If so, clear the pin
         // so that the user can reset it
         guard let password = password,
-            let passwordPartHash = password.passwordPartHash,
-            let savedPasswordPartHash = appSettings.passwordPartHash else {
-                return
+              let passwordPartHash = password.passwordPartHash,
+              let savedPasswordPartHash = appSettings.passwordPartHash
+        else {
+            return
         }
 
         guard passwordPartHash != savedPasswordPartHash else {
@@ -457,7 +466,7 @@ extension AuthenticationCoordinator {
         pinRouter = PinRouter(flow: flow) { [weak self] _ in
             guard let self = self else { return }
             self.alertPresenter.showMobileNoticeIfNeeded()
-            /// TODO: Inject app coordinator instead - currently there is
+            // TODO: Inject app coordinator instead - currently there is
             /// a crash related to circle-dependency between `AuthenticationCoordinator`
             /// and `AppCoordinator`.
             AppCoordinator.shared.startAfterWalletAuthentication(

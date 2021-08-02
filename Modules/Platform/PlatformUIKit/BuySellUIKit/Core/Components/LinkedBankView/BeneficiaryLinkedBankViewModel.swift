@@ -33,6 +33,7 @@ public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
 
     public let tapRelay = PublishRelay<Void>()
     public let isCustomButtonEnabled: Bool = false
+
     // MARK: - Setup
 
     public init(data: Beneficiary) {
@@ -87,8 +88,8 @@ extension BeneficiaryLinkedBankViewModel: Equatable {
     }
 }
 
-private extension Accessibility.Identifier {
-    enum LinkedBankView {
+extension Accessibility.Identifier {
+    fileprivate enum LinkedBankView {
         private static let prefix = "LinkedBankView."
         static let image = "\(prefix)image"
         static let name = "\(prefix)name."

@@ -7,7 +7,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-/// TODO: Refactor and decompose into smaller services
+// TODO: Refactor and decompose into smaller services
 /// Repository for fetching Blockchain data. Accessing properties in this repository
 /// will be fetched from the cache (if available), otherwise, data will be fetched over
 /// the network and subsequently cached for faster access.

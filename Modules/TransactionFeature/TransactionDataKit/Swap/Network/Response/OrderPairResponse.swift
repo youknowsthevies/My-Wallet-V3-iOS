@@ -16,7 +16,7 @@ struct OrderPairResponse: RawRepresentable {
     let sourceCurrencyType: CurrencyType
     let destinationCurrencyType: CurrencyType
 
-    public var rawValue: String {
+    var rawValue: String {
         "\(sourceCurrencyType.code)-\(destinationCurrencyType.code)"
     }
 

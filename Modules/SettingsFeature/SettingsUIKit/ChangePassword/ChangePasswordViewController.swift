@@ -27,6 +27,7 @@ final class ChangePasswordViewController: BaseScreenViewController {
         super.init(nibName: ChangePasswordViewController.objectName, bundle: Bundle(for: Self.self))
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -41,9 +42,11 @@ final class ChangePasswordViewController: BaseScreenViewController {
     }
 
     private func setupNavigationBar() {
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: .none)
+            trailingButtonStyle: .none
+        )
         titleViewStyle = presenter.titleView
     }
 
@@ -61,5 +64,4 @@ final class ChangePasswordViewController: BaseScreenViewController {
             keyboardInteractionController: keyboardInteractionController
         )
     }
-
 }

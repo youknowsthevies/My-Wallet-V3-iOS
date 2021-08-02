@@ -11,7 +11,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
 
     private(set) lazy var identifier: AnyHashable = "BitcoinCashCryptoAccount.\(xPub.address).\(xPub.derivationType)"
     let label: String
-    let asset: CryptoCurrency = .bitcoinCash
+    let asset: CryptoCurrency = .coin(.bitcoinCash)
     let isDefault: Bool
 
     func createTransactionEngine() -> Any {
@@ -19,7 +19,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var pendingBalance: Single<MoneyValue> {
-        .just(.zero(currency: .bitcoinCash))
+        .just(.zero(currency: .coin(.bitcoinCash)))
     }
 
     var balance: Single<MoneyValue> {
@@ -35,7 +35,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     var actions: Single<AvailableActions> {
         isFunded
             .map { isFunded -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive, .send]
+                var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
                 if isFunded {
                     base.insert(.swap)
                 }
@@ -58,7 +58,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
             }
 
         return Single.zip(receiveAddress, account)
-            .map { [label, onTxCompleted] (address, account) -> ReceiveAddress in
+            .map { [label, onTxCompleted] address, account -> ReceiveAddress in
                 BitcoinChainReceiveAddress<BitcoinCashToken>(
                     address: address,
                     label: label,
@@ -68,25 +68,56 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
             }
     }
 
+    var activity: Single<[ActivityItemEvent]> {
+        Single.zip(nonCustodialActivity, swapActivity)
+            .map { nonCustodialActivity, swapActivity in
+                Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
+            }
+    }
+
+    private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
+        transactionsService
+            .transactions(publicKeys: [xPub])
+            .map { response in
+                response
+                    .map(\.activityItemEvent)
+            }
+            .catchErrorJustReturn([])
+    }
+
+    private var swapActivity: Single<[SwapActivityItemEvent]> {
+        swapTransactionsService
+            .fetchActivity(cryptoCurrency: asset, directions: custodialDirections)
+            .catchErrorJustReturn([])
+    }
+
     private let xPub: XPub
     private let hdAccountIndex: Int
     private let balanceService: BalanceServiceAPI
     private let fiatPriceService: FiatPriceServiceAPI
     private let bridge: BitcoinCashWalletBridgeAPI
+    private let transactionsService: BitcoinCashHistoricalTransactionServiceAPI
+    private let swapTransactionsService: SwapActivityServiceAPI
 
-    init(xPub: XPub,
-         label: String?,
-         isDefault: Bool,
-         hdAccountIndex: Int,
-         fiatPriceService: FiatPriceServiceAPI = resolve(),
-         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
-         bridge: BitcoinCashWalletBridgeAPI = resolve()) {
+    init(
+        xPub: XPub,
+        label: String?,
+        isDefault: Bool,
+        hdAccountIndex: Int,
+        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        transactionsService: BitcoinCashHistoricalTransactionServiceAPI = resolve(),
+        swapTransactionsService: SwapActivityServiceAPI = resolve(),
+        balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
+        bridge: BitcoinCashWalletBridgeAPI = resolve()
+    ) {
         self.xPub = xPub
-        self.label = label ?? CryptoCurrency.bitcoinCash.defaultWalletName
+        self.label = label ?? CryptoCurrency.coin(.bitcoinCash).defaultWalletName
         self.isDefault = isDefault
         self.hdAccountIndex = hdAccountIndex
         self.fiatPriceService = fiatPriceService
         self.balanceService = balanceService
+        self.transactionsService = transactionsService
+        self.swapTransactionsService = swapTransactionsService
         self.bridge = bridge
     }
 
@@ -94,10 +125,10 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
         switch action {
         case .receive,
              .send,
+             .buy,
              .viewActivity:
             return .just(true)
         case .deposit,
-             .buy,
              .sell,
              .withdraw:
             return .just(false)
@@ -112,7 +143,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }
@@ -123,7 +154,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }

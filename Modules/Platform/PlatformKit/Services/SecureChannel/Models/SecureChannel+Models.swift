@@ -27,7 +27,7 @@ enum SecureChannel {
         let type: Authorization = .loginWallet
     }
 
-    struct  PairingResponse: Codable {
+    struct PairingResponse: Codable {
         let channelId: String
         let pubkey: String
         let success: Bool

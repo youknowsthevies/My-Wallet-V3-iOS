@@ -31,24 +31,26 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
     private var keyboardInteractionController: KeyboardInteractionController!
 
     private lazy var dataSource: RxDataSource = {
-        RxDataSource(animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none),
-                     configureCell: { [weak self] _, _, indexPath, item in
-            guard let self = self else { return UITableViewCell() }
+        RxDataSource(
+            animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none),
+            configureCell: { [weak self] _, _, indexPath, item in
+                guard let self = self else { return UITableViewCell() }
 
-            let cell: UITableViewCell
-            switch item.presenter {
-            case .cardView(let viewModel):
-                cell = self.cardCell(for: indexPath, viewModel: viewModel)
-            case .radioSelection(let presenter):
-                cell = self.radioCell(for: indexPath, presenter: presenter)
-            case .singleAccount(let presenter):
-                cell = self.balanceCell(for: indexPath, presenter: presenter)
-            case .walletInputField(let viewModel):
-                cell = self.walletTextfieldCell(for: indexPath, viewModel: viewModel)
+                let cell: UITableViewCell
+                switch item.presenter {
+                case .cardView(let viewModel):
+                    cell = self.cardCell(for: indexPath, viewModel: viewModel)
+                case .radioSelection(let presenter):
+                    cell = self.radioCell(for: indexPath, presenter: presenter)
+                case .singleAccount(let presenter):
+                    cell = self.balanceCell(for: indexPath, presenter: presenter)
+                case .walletInputField(let viewModel):
+                    cell = self.walletTextfieldCell(for: indexPath, viewModel: viewModel)
+                }
+                cell.selectionStyle = .none
+                return cell
             }
-            cell.selectionStyle = .none
-            return cell
-        })
+        )
     }()
 
     init(shouldOverrideNavigationEffects: Bool) {
@@ -61,9 +63,9 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
 
     // MARK: - Lifecycle
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
-        self.keyboardInteractionController = KeyboardInteractionController(in: self)
+        keyboardInteractionController = KeyboardInteractionController(in: self)
         setupUI()
     }
 
@@ -100,19 +102,21 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         tableView.delegate = self
 
         let stateWait: Driver<TargetSelectionPagePresenter.State> =
-            self.rx.viewDidLoad
-            .asDriver()
-            .flatMap { _ in
-                state
-            }
+            rx.viewDidLoad
+                .asDriver()
+                .flatMap { _ in
+                    state
+                }
 
         stateWait
             .map(\.navigationModel)
             .drive(weak: self) { (self, model) in
                 self.titleViewStyle = model.titleViewStyle
-                self.set(barStyle: model.barStyle,
-                         leadingButtonStyle: model.leadingButton,
-                         trailingButtonStyle: model.trailingButton)
+                self.set(
+                    barStyle: model.barStyle,
+                    leadingButtonStyle: model.leadingButton,
+                    trailingButtonStyle: model.trailingButton
+                )
             }
             .disposed(by: disposeBag)
 
@@ -145,13 +149,15 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
                 viewModel.tap
             }
             .asObservable()
-            .map { _ in  TargetSelectionPageInteractor.Effects.next }
+            .map { _ in TargetSelectionPageInteractor.Effects.next }
             .asDriverCatchError()
 
-        return .merge(backButtonEffect,
-                      closeButtonEffect,
-                      selectionEffect,
-                      nextButtonEffect)
+        return .merge(
+            backButtonEffect,
+            closeButtonEffect,
+            selectionEffect,
+            nextButtonEffect
+        )
     }
 
     // MARK: - Private Methods

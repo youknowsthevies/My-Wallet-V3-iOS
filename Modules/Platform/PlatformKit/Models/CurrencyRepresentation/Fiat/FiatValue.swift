@@ -18,7 +18,7 @@ public struct FiatValue: Fiat, Hashable {
 
     public init(amount: BigInt, currency: FiatCurrency) {
         self.amount = amount
-        self.currencyType = currency
+        currencyType = currency
     }
 }
 

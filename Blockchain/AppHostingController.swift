@@ -18,14 +18,17 @@ final class AppHostingController: UIViewController {
     private var loggedInController: LoggedInHostingController?
     private var loggedInDependencyBridge: LoggedInDependencyBridgeAPI
 
-    init(store: Store<CoreAppState, CoreAppAction>,
-         loggedInDependencyBridge: LoggedInDependencyBridgeAPI = resolve()) {
+    init(
+        store: Store<CoreAppState, CoreAppAction>,
+        loggedInDependencyBridge: LoggedInDependencyBridgeAPI = resolve()
+    ) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        viewStore = ViewStore(store)
         self.loggedInDependencyBridge = loggedInDependencyBridge
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -50,9 +53,11 @@ final class AppHostingController: UIViewController {
                 guard let self = self else { return }
                 let onboardingController = OnboardingHostingController(store: onboardingStore)
                 if let loggedInController = self.loggedInController {
-                    self.transition(from: loggedInController,
-                                    to: onboardingController,
-                                    animate: true)
+                    self.transition(
+                        from: loggedInController,
+                        to: onboardingController,
+                        animate: true
+                    )
                 } else {
                     self.add(child: onboardingController)
                 }
@@ -72,9 +77,11 @@ final class AppHostingController: UIViewController {
                 // for many places throughout the app
                 self.loggedInDependencyBridge.register(bridge: loggedInController)
                 if let onboardingController = self.onboardingController {
-                    self.transition(from: onboardingController,
-                                    to: loggedInController,
-                                    animate: true)
+                    self.transition(
+                        from: onboardingController,
+                        to: loggedInController,
+                        animate: true
+                    )
                 } else {
                     self.add(child: loggedInController)
                 }

@@ -107,7 +107,7 @@ public final class SegmentedView: UISegmentedControl {
         self.init(frame: .zero)
     }
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }

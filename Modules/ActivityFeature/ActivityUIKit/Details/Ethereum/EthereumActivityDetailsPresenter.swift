@@ -77,21 +77,23 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Init
 
-    init(alertViewPresenter: AlertViewPresenterAPI = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         event: TransactionalActivityItemEvent,
-         router: ActivityRouterAPI,
-         interactor: EthereumActivityDetailsInteractor = .init(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         messageRecorder: MessageRecording = resolve()) {
-        precondition(event.currency == .ethereum, "Using EthereumActivityDetailsPresenter with \(event.currency) event.")
+    init(
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        event: TransactionalActivityItemEvent,
+        router: ActivityRouterAPI,
+        interactor: EthereumActivityDetailsInteractor = .init(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        messageRecorder: MessageRecording = resolve()
+    ) {
+        precondition(event.currency == .coin(.ethereum), "Using EthereumActivityDetailsPresenter with \(event.currency) event.")
         self.alertViewPresenter = alertViewPresenter
         self.loadingViewPresenter = loadingViewPresenter
         self.router = router
         self.event = event
         self.interactor = interactor
         explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
-        buttons = [ explorerButton ]
+        buttons = [explorerButton]
         dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
@@ -201,7 +203,7 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .compactMap { $0?.confirmation.needConfirmation }
             .distinctUntilChanged()
             .map(weak: self) { (self, needConfirmation) in
-                needConfirmation ? [ self.statusBadge, self.confirmingBadge ] : [ self.statusBadge ]
+                needConfirmation ? [self.statusBadge, self.confirmingBadge] : [self.statusBadge]
             }
             .bindAndCatch(to: badgesModel.badgesRelay)
             .disposed(by: disposeBag)

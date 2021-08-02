@@ -9,10 +9,7 @@
 		<string>applinks:blockchainwallet.page.link</string>
 		<string>applinks:blockchainwalletstaging.page.link</string>
 		<string>applinks:blockchain.page.link</string>
-	</array>
-	<key>com.apple.security.application-groups</key>
-	<array>
-		<string>group.rainydayapps.blockchain</string>
+		<string>applinks:$(LOGIN_UNIVERSAL_LINK)$(UNIVERSAL_LINK_MODE)</string>
 	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array/>
@@ -20,5 +17,9 @@
 	<array/>
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
 	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.rainydayapps.blockchain</string>
+	</array>
 </dict>
 </plist>

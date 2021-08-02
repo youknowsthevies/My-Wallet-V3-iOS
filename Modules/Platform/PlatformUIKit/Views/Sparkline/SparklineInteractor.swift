@@ -23,7 +23,7 @@ public class SparklineInteractor: SparklineInteracting {
                 case .calculating, .invalid:
                     return .calculating
                 case .value(let value):
-                    let prices = value.historicalPrices.prices.map { $0.price }
+                    let prices = value.historicalPrices.prices.map(\.price)
                     return .value(prices)
                 }
             }
@@ -39,6 +39,5 @@ public class SparklineInteractor: SparklineInteracting {
     public init(priceService: HistoricalFiatPriceServiceAPI, cryptoCurrency: CryptoCurrency) {
         self.cryptoCurrency = cryptoCurrency
         self.priceService = priceService
-
     }
 }

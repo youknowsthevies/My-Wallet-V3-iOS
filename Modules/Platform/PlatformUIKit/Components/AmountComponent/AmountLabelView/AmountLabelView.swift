@@ -16,7 +16,7 @@ public final class AmountLabelView: UIView {
             guard let presenter = presenter else { return }
 
             presenter.output
-                .map { $0.string }
+                .map(\.string)
                 .drive(weak: self, onNext: { (self, attributedText) in
                     self.amountLabel.attributedText = attributedText
                     self.amountLabel.lineBreakMode = .byClipping
@@ -24,7 +24,7 @@ public final class AmountLabelView: UIView {
                 .disposed(by: disposeBag)
 
             presenter.output
-                .map { $0.accessibility }
+                .map(\.accessibility)
                 .drive(amountLabel.rx.accessibility)
                 .disposed(by: disposeBag)
         }
@@ -40,7 +40,7 @@ public final class AmountLabelView: UIView {
 
     // MARK: - Setup
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }

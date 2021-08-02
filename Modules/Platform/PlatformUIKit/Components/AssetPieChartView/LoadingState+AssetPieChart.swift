@@ -13,7 +13,7 @@ extension LoadingState where Content == PieChartData {
             self = .loading
         case .loaded(let values):
             let data: PieChartData
-            if (values.allSatisfy { $0.percentage.isZero }) {
+            if values.allSatisfy(\.percentage.isZero) {
                 data = .empty
             } else {
                 data = PieChartData(with: values)

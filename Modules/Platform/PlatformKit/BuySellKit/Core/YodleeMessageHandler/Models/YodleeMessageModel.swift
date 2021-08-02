@@ -22,6 +22,7 @@ public struct DataMessage: Decodable {
         public let providerAccountId: Int?
         public let providerName: String?
     }
+
     public let action: MessageAction?
     public let status: MessageStatus?
     public let sites: [SiteData]?
@@ -59,6 +60,7 @@ public struct YodleeModel: Decodable {
         case post = "POST_MESSAGE"
         case openUrl = "OPEN_EXTERNAL_URL"
     }
+
     public let type: MessageType
     public let data: YodleeDataType
 

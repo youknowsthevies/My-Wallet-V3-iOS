@@ -3,11 +3,11 @@
 import AnalyticsKit
 import PlatformKit
 
-public extension AnalyticsEvents {
+extension AnalyticsEvents {
 
     // MARK: - Request flow
 
-    enum Request: AnalyticsEvent {
+    public enum Request: AnalyticsEvent {
         case requestTabItemClick
         case requestQrAddressClick(asset: CryptoCurrency)
         case requestRequestPaymentClick(asset: CryptoCurrency)
@@ -26,9 +26,8 @@ public extension AnalyticsEvents {
             }
         }
 
-        public var params: [String : String]? {
+        public var params: [String: String]? {
             nil
         }
     }
-
 }

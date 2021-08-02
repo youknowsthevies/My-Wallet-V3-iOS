@@ -20,8 +20,10 @@ final class BillingAddressScreenViewController: BaseTableViewController {
 
     // MARK: - Setup
 
-    init(presenter: BillingAddressScreenPresenter,
-         alertViewPresenter: AlertViewPresenterAPI = resolve()) {
+    init(
+        presenter: BillingAddressScreenPresenter,
+        alertViewPresenter: AlertViewPresenterAPI = resolve()
+    ) {
         self.presenter = presenter
         self.alertViewPresenter = alertViewPresenter
         super.init()
@@ -75,7 +77,8 @@ final class BillingAddressScreenViewController: BaseTableViewController {
     }
 
     private func setupNavigationBar() {
-        set(barStyle: .darkContent(),
+        set(
+            barStyle: .darkContent(),
             leadingButtonStyle: .back
         )
         titleViewStyle = .text(value: presenter.title)
@@ -169,9 +172,11 @@ extension BillingAddressScreenViewController: UITableViewDelegate, UITableViewDa
         return cell
     }
 
-    private func doubleTextFieldCell(for row: Int,
-                                     leadingType: TextFieldType,
-                                     trailingType: TextFieldType) -> UITableViewCell {
+    private func doubleTextFieldCell(
+        for row: Int,
+        leadingType: TextFieldType,
+        trailingType: TextFieldType
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(
             DoubleTextFieldTableViewCell.self,
             for: IndexPath(row: row, section: 0)

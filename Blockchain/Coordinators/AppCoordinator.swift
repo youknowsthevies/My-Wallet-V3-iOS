@@ -14,16 +14,17 @@ import SettingsUIKit
 import ToolKit
 import WalletPayloadKit
 
-/// TODO: This class should be refactored so any view would load
+// TODO: This class should be refactored so any view would load
 /// as late as possible and also would be deallocated when is no longer in use
 /// TICKET: IOS-2619
 @objc class AppCoordinator: NSObject,
-                            MainFlowProviding,
-                            BackupFlowStarterAPI,
-                            SettingsStarterAPI,
-                            TabControllerManagerProvider,
-                            LoggedInReloadAPI,
-                            ClearOnLogoutAPI {
+    MainFlowProviding,
+    BackupFlowStarterAPI,
+    SettingsStarterAPI,
+    TabControllerManagerProvider,
+    LoggedInReloadAPI,
+    ClearOnLogoutAPI
+{
 
     // MARK: - Properties
 
@@ -45,7 +46,7 @@ import WalletPayloadKit
     @LazyInject private var walletUpgradeService: WalletUpgradeServicing
     @LazyInject private var reactiveWallet: ReactiveWalletAPI
     @LazyInject private var secondPasswordPrompter: SecondPasswordPromptable
-    @LazyInject private var recorder: AnalyticsEventRecording
+    @LazyInject private var recorder: AnalyticsEventRecorderAPI
     @LazyInject private var secureChannelRouter: SecureChannelRouting
     @LazyInject private var transactionsAdapter: TransactionsAdapterAPI
 
@@ -67,9 +68,9 @@ import WalletPayloadKit
 
     override init() {
         super.init()
-        self.walletManager.accountInfoAndExchangeRatesDelegate = self
-        self.walletManager.backupDelegate = self
-        self.walletManager.historyDelegate = self
+        walletManager.accountInfoAndExchangeRatesDelegate = self
+        walletManager.backupDelegate = self
+        walletManager.historyDelegate = self
         observeSymbolChanges()
     }
 
@@ -109,9 +110,10 @@ import WalletPayloadKit
         }
 
         if blockchainSettings.pinKey == nil,
-            blockchainSettings.encryptedPinPassword == nil,
-            blockchainSettings.guid == nil,
-            blockchainSettings.sharedKey == nil {
+           blockchainSettings.encryptedPinPassword == nil,
+           blockchainSettings.guid == nil,
+           blockchainSettings.sharedKey == nil
+        {
 
             credentialsStore.synchronize()
 
@@ -208,7 +210,11 @@ import WalletPayloadKit
         sideMenuViewController?.reload()
     }
 
-    private func setRootViewController(_ rootViewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
+    private func setRootViewController(
+        _ rootViewController: UIViewController,
+        animated: Bool,
+        completion: @escaping () -> Void
+    ) {
         // Sets root view controller
         window.setRootViewController(rootViewController)
         // Animate if needed
@@ -235,19 +241,19 @@ import WalletPayloadKit
     }
 
     private func setupLoggedInFlow() -> UIViewController {
-        self.setupTabControllerManager()
-        self.setupSideMenuViewController()
+        setupTabControllerManager()
+        setupSideMenuViewController()
         let viewController = ECSlidingViewController()
-        viewController.underLeftViewController = self.sideMenuViewController
-        viewController.topViewController = self.tabControllerManager?.tabViewController
-        self.slidingViewController = viewController
+        viewController.underLeftViewController = sideMenuViewController
+        viewController.topViewController = tabControllerManager?.tabViewController
+        slidingViewController = viewController
         sideMenuViewController.tabControllerManager = tabControllerManager
         sideMenuViewController.slidingViewController = slidingViewController
 
         sideMenuViewController?.peekPadding = viewController.anchorRightPeekAmount
-        self.tabControllerManager?.tabViewController.sideMenuGesture = viewController.panGesture
-        self.tabControllerManager?.tabViewController.loadViewIfNeeded()
-        self.tabControllerManager?.showDashboard()
+        tabControllerManager?.tabViewController.sideMenuGesture = viewController.panGesture
+        tabControllerManager?.tabViewController.loadViewIfNeeded()
+        tabControllerManager?.showDashboard()
         return viewController
     }
 
@@ -267,11 +273,11 @@ import WalletPayloadKit
                 )
             )
         }
-        self.sideMenuViewController = viewController
+        sideMenuViewController = viewController
     }
 
     private func setupTabControllerManager() {
-        self.tabControllerManager = TabControllerManager()
+        tabControllerManager = TabControllerManager()
     }
 
     /// Observes symbol changes so that view controllers can reflect the new symbol
@@ -286,6 +292,8 @@ import WalletPayloadKit
 extension AppCoordinator: SideMenuViewControllerDelegate {
     func sideMenuViewController(_ viewController: SideMenuViewController, didTapOn item: SideMenuItem) {
         switch item {
+        case .interest:
+            handleInterest()
         case .backup:
             startBackupFlow()
         case .accountsAndAddresses:
@@ -367,7 +375,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         ) as! AccountsAndAddressesNavigationController
         viewController.modalPresentationStyle = .fullScreen
         viewController.modalTransitionStyle = .coverVertical
-        self.accountsAndAddressesNavigationController = viewController
+        accountsAndAddressesNavigationController = viewController
         return viewController
     }
 
@@ -443,8 +451,12 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         sideMenuViewController = nil
     }
 
+    func handleInterest() {
+        unimplemented()
+    }
+
     /// Starts Buy Crypto flow.
-    func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
+    func handleBuyCrypto(currency: CryptoCurrency = .coin(.bitcoin)) {
         transactionsAdapter.presentTransactionFlow(to: .buy(currency), from: topMostViewController) { result in
             Logger.shared.info("[AppCoordinator] Transaction Flow completed with result '\(result)'")
         }
@@ -474,7 +486,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             stateService: stateService
         )
 
-        buyRouter = PlatformUIKit.Router(builder: builder)
+        buyRouter = PlatformUIKit.Router(builder: builder, currency: .coin(.bitcoin))
         buyRouter.setup(startImmediately: false)
         stateService.showFundsTransferDetails(
             for: fiatCurrency,
@@ -527,8 +539,10 @@ extension AppCoordinator: WalletBackupDelegate {
 
 extension AppCoordinator: WalletHistoryDelegate {
     func didFailGetHistory(error: String?) {
-        guard let errorMessage = error, errorMessage.count > 0 else {
-            AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork)
+        guard let errorMessage = error, !errorMessage.isEmpty else {
+            AlertViewPresenter.shared.standardError(
+                message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork
+            )
             return
         }
         recorder.record(event: AnalyticsEvents.AppCoordinatorEvent.btcHistoryError(errorMessage))

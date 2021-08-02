@@ -48,7 +48,7 @@ final class NetworkFeeSelectionReducer: NetworkFeeSelectionReducerAPI {
             }
 
         return Driver.zip(regular, priority)
-            .map { (regular, priority) in
+            .map { regular, priority in
                 PresenterState(
                     title: title,
                     isOkEnabled: isOkEnabled,

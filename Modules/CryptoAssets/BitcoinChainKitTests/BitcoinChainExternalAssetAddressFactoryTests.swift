@@ -25,7 +25,7 @@ class BitcoinChainExternalAssetAddressFactoryTests: XCTestCase {
 
     func testValid() {
         for testcase in Self.validTestCases {
-            let result = sut.makeExternalAssetAddress(asset: .bitcoin, address: testcase, label: "", onTxCompleted: { _ in .empty() })
+            let result = sut.makeExternalAssetAddress(asset: .coin(.bitcoin), address: testcase, label: "", onTxCompleted: { _ in .empty() })
             XCTAssertNoThrow(try result.get())
         }
     }
@@ -43,14 +43,14 @@ class BitcoinChainExternalAssetAddressFactoryTests: XCTestCase {
 
     func testInvalid() {
         for testcase in Self.invalidTestCases {
-            let result = sut.makeExternalAssetAddress(asset: .bitcoin, address: testcase, label: "", onTxCompleted: { _ in .empty() })
+            let result = sut.makeExternalAssetAddress(asset: .coin(.bitcoin), address: testcase, label: "", onTxCompleted: { _ in .empty() })
             XCTAssertThrowsError(try result.get(), "\(testcase)")
         }
     }
 
     func testValidWithPrefix() {
         let result = sut.makeExternalAssetAddress(
-            asset: .bitcoin,
+            asset: .coin(.bitcoin),
             address: "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq",
             label: "label",
             onTxCompleted: { _ in .empty() }

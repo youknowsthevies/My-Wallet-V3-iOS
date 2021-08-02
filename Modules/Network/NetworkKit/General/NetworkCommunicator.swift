@@ -20,15 +20,17 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
 
     private let session: NetworkSession
     private let authenticator: AuthenticatorAPI?
-    private let eventRecorder: AnalyticsEventRecording?
+    private let eventRecorder: AnalyticsEventRecorderAPI?
 
     // MARK: - Setup
 
-    init(session: NetworkSession = resolve(),
-         sessionDelegate: SessionDelegateAPI = resolve(),
-         sessionHandler: NetworkSessionDelegateAPI = resolve(),
-         authenticator: AuthenticatorAPI? = nil,
-         eventRecorder: AnalyticsEventRecording? = nil) {
+    init(
+        session: NetworkSession = resolve(),
+        sessionDelegate: SessionDelegateAPI = resolve(),
+        sessionHandler: NetworkSessionDelegateAPI = resolve(),
+        authenticator: AuthenticatorAPI? = nil,
+        eventRecorder: AnalyticsEventRecorderAPI? = nil
+    ) {
         self.session = session
         self.authenticator = authenticator
         self.eventRecorder = eventRecorder
@@ -95,10 +97,11 @@ extension URLSession: NetworkSession {
 }
 
 extension AnyPublisher where Output == ServerResponse,
-                             Failure == NetworkError {
+    Failure == NetworkError
+{
 
     fileprivate func recordErrors(
-        on recorder: AnalyticsEventRecording?,
+        on recorder: AnalyticsEventRecorderAPI?,
         request: NetworkRequest,
         errorMapper: @escaping (NetworkRequest, NetworkError) -> AnalyticsEvent?
     ) -> AnyPublisher<ServerResponse, NetworkError> {

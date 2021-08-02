@@ -14,8 +14,8 @@ class SecureChannelMessageServiceTests: XCTestCase {
 
     enum TestData {
         static let channelID = "ee92bd77-6c3b-4ad2-82e2-61b90f764273"
-        static let deviceKey = Data.init(hex: "fd4041852e9fbe31cc0a81fbb5750e33eba20e7a25058274c7b57a28daeba84a")
-        static let publicKey =  Data.init(hex: "0204a157928751500c12388d8995b7914b32901979be499602638e6133b64746f9")
+        static let deviceKey = Data(hex: "fd4041852e9fbe31cc0a81fbb5750e33eba20e7a25058274c7b57a28daeba84a")
+        static let publicKey = Data(hex: "0204a157928751500c12388d8995b7914b32901979be499602638e6133b64746f9")
     }
 
     func testBuildingMessage() throws {

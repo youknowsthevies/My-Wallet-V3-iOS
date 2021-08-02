@@ -19,9 +19,11 @@ final class CardDeletionService: PaymentMethodDeletionServiceAPI {
 
     // MARK: - Setup
 
-    init(client: CardDeletionClientAPI = resolve(),
-         cardListService: CardListServiceAPI = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve()) {
+    init(
+        client: CardDeletionClientAPI = resolve(),
+        cardListService: CardListServiceAPI = resolve(),
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve()
+    ) {
         self.client = client
         self.cardListService = cardListService
         self.paymentMethodTypesService = paymentMethodTypesService

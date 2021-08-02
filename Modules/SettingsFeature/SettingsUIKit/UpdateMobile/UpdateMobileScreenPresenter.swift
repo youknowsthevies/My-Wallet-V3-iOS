@@ -44,7 +44,7 @@ final class UpdateMobileScreenPresenter {
         updateVisibilityRelay.asDriver()
     }
 
-    let textField: TextFieldViewModel
+    let textFieldViewModel: TextFieldViewModel
     let descriptionLabel: LabelContent
     let disable2FALabel: LabelContent
     let continueButtonViewModel: ButtonViewModel
@@ -59,11 +59,13 @@ final class UpdateMobileScreenPresenter {
     private unowned let stateService: UpdateMobileStateServiceAPI
     private let disposeBag = DisposeBag()
 
-    init(stateService: UpdateMobileStateServiceAPI,
-         settingsAPI: MobileSettingsServiceAPI = resolve(),
-         loadingViewPresenting: LoadingViewPresenting = resolve()) {
+    init(
+        stateService: UpdateMobileStateServiceAPI,
+        settingsAPI: MobileSettingsServiceAPI = resolve(),
+        loadingViewPresenting: LoadingViewPresenting = resolve()
+    ) {
         self.stateService = stateService
-        textField = .init(
+        textFieldViewModel = .init(
             with: .mobile,
             validator: TextValidationFactory.Info.mobile,
             formatter: TextFormatterFactory.mobile,
@@ -90,43 +92,44 @@ final class UpdateMobileScreenPresenter {
         submissionInteractor = UpdateMobileScreenInteractor(service: settingsAPI)
         setupInteractor = UpdateMobileScreenSetupInteractor(service: settingsAPI)
 
-        textField.state
-            .compactMap { $0.value }
+        textFieldViewModel.state
+            .compactMap(\.value)
             .bindAndCatch(to: submissionInteractor.contentRelay)
             .disposed(by: disposeBag)
 
         setupInteractor.state
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .map { $0.isSMSVerified ? .visible : .hidden }
             .bindAndCatch(to: updateVisibilityRelay)
             .disposed(by: disposeBag)
 
         setupInteractor.state
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .map { $0.is2FAEnabled ? .visible : .hidden }
             .bindAndCatch(to: disable2FASMSVisibilityRelay)
             .disposed(by: disposeBag)
 
         setupInteractor.state
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .map { !$0.is2FAEnabled }
-            .bindAndCatch(to: textField.isEnabledRelay)
+            .bindAndCatch(to: textFieldViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         setupInteractor.state
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .map { !$0.isSMSVerified ? .visible : .hidden }
             .bindAndCatch(to: continueVisibilityRelay)
             .disposed(by: disposeBag)
 
         setupInteractor.state
             .map { !$0.isLoading }
-            .bindAndCatch(to: textField.isEnabledRelay)
+            .bindAndCatch(to: textFieldViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         setupInteractor.state
             .map { !$0.isLoading }
-            .bindAndCatch(to:
+            .bindAndCatch(
+                to:
                 continueButtonViewModel.isEnabledRelay,
                 updateButtonViewModel.isEnabledRelay
             )
@@ -134,7 +137,7 @@ final class UpdateMobileScreenPresenter {
 
         setupInteractor.state
             .compactMap { $0.value?.mobileNumber }
-            .bindAndCatch(to: textField.textRelay)
+            .bindAndCatch(to: textFieldViewModel.textRelay)
             .disposed(by: disposeBag)
 
         setupInteractor.state
@@ -142,10 +145,11 @@ final class UpdateMobileScreenPresenter {
             .bindAndCatch(to: badgeRelay)
             .disposed(by: disposeBag)
 
-    Observable.combineLatest(textField.state, setupInteractor.state)
+        Observable.combineLatest(textFieldViewModel.state, setupInteractor.state)
             .compactMap { ($0.0, $0.1.value) }
             .map { $0.0.isValid && $0.1?.is2FAEnabled == false }
-            .bindAndCatch(to:
+            .bindAndCatch(
+                to:
                 continueButtonViewModel.isEnabledRelay,
                 updateButtonViewModel.isEnabledRelay
             )

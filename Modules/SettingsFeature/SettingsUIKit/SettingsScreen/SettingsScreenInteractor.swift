@@ -20,7 +20,7 @@ final class SettingsScreenInteractor {
 
     // MARK: - Services
 
-    /// TODO: All interactors should be created inside this class,
+    // TODO: All interactors should be created inside this class,
     /// and services should be injected into them through the main class.
     /// The presenter should not contain any interaction logic
 
@@ -35,7 +35,6 @@ final class SettingsScreenInteractor {
     let biometryProviding: BiometryProviding
     let credentialsStore: CredentialsStoreAPI
     let appSettings: BlockchainSettings.App
-    let featureConfigurator: FeatureFetchingConfiguring
     let recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     let authenticationCoordinator: AuthenticationCoordinating
 
@@ -46,7 +45,7 @@ final class SettingsScreenInteractor {
     init(
         balanceSharingService: BalanceSharingSettingsServiceAPI = resolve(),
         credentialsStore: CredentialsStoreAPI = resolve(),
-        featureConfigurator: FeatureFetchingConfiguring = resolve(),
+        featureConfigurator: FeatureConfiguring = resolve(),
         settingsService: SettingsServiceAPI = resolve(),
         smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = resolve(),
         emailNotificationService: EmailNotificationSettingsServiceAPI = resolve(),
@@ -62,8 +61,7 @@ final class SettingsScreenInteractor {
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
         self.settingsService = settingsService
-        self.featureConfigurator = featureConfigurator
-        self.emailNotificationsService = emailNotificationService
+        emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding
         self.balanceSharingService = balanceSharingService
 
@@ -91,10 +89,10 @@ final class SettingsScreenInteractor {
             fiatCurrencyService: fiatCurrencyService
         )
 
-        self.biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
+        biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
         self.settingsAuthenticating = settingsAuthenticating
-        self.pitConnnectionProviding = pitConnectionAPI
-        self.recoveryPhraseStatusProviding = RecoveryPhraseStatusProvider(walletRecoveryVerifier: wallet)
+        pitConnnectionProviding = pitConnectionAPI
+        recoveryPhraseStatusProviding = RecoveryPhraseStatusProvider(walletRecoveryVerifier: wallet)
         self.credentialsStore = credentialsStore
         self.authenticationCoordinator = authenticationCoordinator
     }

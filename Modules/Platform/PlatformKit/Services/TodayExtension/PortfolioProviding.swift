@@ -19,7 +19,7 @@ public final class PortfolioProvider: PortfolioProviding {
     ) {
         self.fiatCurrencyService = fiatCurrencyService
         self.coincore = coincore
-        self.portfolioBalanceChangeProviding = PortfolioBalanceChangeProvider(
+        portfolioBalanceChangeProviding = PortfolioBalanceChangeProvider(
             coincore: coincore,
             fiatCurrencyService: fiatCurrencyService
         )
@@ -29,10 +29,10 @@ public final class PortfolioProvider: PortfolioProviding {
 
     public var portfolio: Observable<Portfolio> {
         let balancesObservable = Observable.combineLatest(
-            balance(for: .ethereum),
-            balance(for: .stellar),
-            balance(for: .bitcoin),
-            balance(for: .bitcoinCash)
+            balance(for: .coin(.ethereum)),
+            balance(for: .coin(.stellar)),
+            balance(for: .coin(.bitcoin)),
+            balance(for: .coin(.bitcoinCash))
         )
         return Observable
             .combineLatest(
@@ -40,14 +40,14 @@ public final class PortfolioProvider: PortfolioProviding {
                 change,
                 fiatCurrencyService.fiatCurrencyObservable
             )
-            .map { (accounts, change, fiatCurrency) -> Portfolio in
+            .map { accounts, change, fiatCurrency -> Portfolio in
                 let (ethereum, stellar, bitcoin, bitcoinCash) = accounts
                 return .init(
                     accounts: [
-                        .ethereum: ethereum,
-                        .stellar: stellar,
-                        .bitcoin: bitcoin,
-                        .bitcoinCash: bitcoinCash
+                        .coin(.ethereum): ethereum,
+                        .coin(.stellar): stellar,
+                        .coin(.bitcoin): bitcoin,
+                        .coin(.bitcoinCash): bitcoinCash
                     ],
                     balanceChange: .init(
                         balance: change.balance.displayMajorValue,

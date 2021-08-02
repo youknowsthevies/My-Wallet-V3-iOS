@@ -26,11 +26,13 @@ final class HorizonProxy: HorizonProxyAPI {
         configurationService.configuration
     }
 
-    private let minReserve = BigInt(5_000_000)
+    private let minReserve = BigInt(5000000)
 
-    init(configurationService: StellarConfigurationAPI = resolve(),
-         accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
-         walletOptions: WalletOptionsAPI = resolve()) {
+    init(
+        configurationService: StellarConfigurationAPI = resolve(),
+        accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
+        walletOptions: WalletOptionsAPI = resolve()
+    ) {
         self.configurationService = configurationService
         self.walletOptions = walletOptions
         self.accountRepository = accountRepository
@@ -50,7 +52,7 @@ final class HorizonProxy: HorizonProxyAPI {
     }
 
     func minimumBalance(subentryCount: UInt) -> CryptoValue {
-        CryptoValue(amount: BigInt(2 + subentryCount) * minReserve, currency: .stellar)
+        CryptoValue(amount: BigInt(2 + subentryCount) * minReserve, currency: .coin(.stellar))
     }
 
     func accountResponse(for accountID: String) -> Single<AccountResponse> {
@@ -80,9 +82,11 @@ final class HorizonProxy: HorizonProxyAPI {
         }
     }
 
-    private func submitTransaction(transaction: stellarsdk.Transaction,
-                                   with configuration: StellarConfiguration) -> Single<TransactionPostResponseEnum> {
-        Single.create(weak: self) { (_, observer) -> Disposable in
+    private func submitTransaction(
+        transaction: stellarsdk.Transaction,
+        with configuration: StellarConfiguration
+    ) -> Single<TransactionPostResponseEnum> {
+        Single.create(weak: self) { _, observer -> Disposable in
             do {
                 try configuration.sdk.transactions
                     .submitTransaction(transaction: transaction) { response in

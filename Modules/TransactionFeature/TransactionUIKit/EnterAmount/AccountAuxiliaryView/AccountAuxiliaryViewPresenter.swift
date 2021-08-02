@@ -12,6 +12,7 @@ final class AccountAuxiliaryViewPresenter {
     let badgeImageViewModel: Driver<BadgeImageViewModel>
     let titleLabel: Driver<LabelContent>
     let subtitleLabel: Driver<LabelContent>
+    let buttonEnabled: Driver<Bool>
     let tapRelay = PublishRelay<Void>()
 
     // MARK: - Private Properties
@@ -27,6 +28,10 @@ final class AccountAuxiliaryViewPresenter {
             .emit(to: interactor.auxiliaryViewTappedRelay)
             .disposed(by: disposeBag)
 
+        buttonEnabled = interactor
+            .state
+            .map(\.isEnabled)
+
         badgeImageViewModel = interactor
             .state
             .map(\.imageResource)
@@ -37,7 +42,6 @@ final class AccountAuxiliaryViewPresenter {
                     accessibilityIdSuffix: "AccountAuxiliaryViewBadge"
                 )
             }
-            .asDriverCatchError()
 
         titleLabel = interactor
             .state
@@ -51,7 +55,6 @@ final class AccountAuxiliaryViewPresenter {
                     accessibility: .id("AccountAuxiliaryViewTitle")
                 )
             }
-            .asDriverCatchError()
 
         subtitleLabel = interactor
             .state
@@ -65,6 +68,5 @@ final class AccountAuxiliaryViewPresenter {
                     accessibility: .id("AccountAuxiliaryViewSubtitle")
                 )
             }
-            .asDriverCatchError()
     }
 }

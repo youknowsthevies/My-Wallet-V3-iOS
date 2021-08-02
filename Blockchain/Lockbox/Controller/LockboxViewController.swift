@@ -31,6 +31,7 @@ final class LockboxViewController: UIViewController {
     @IBOutlet private var announcementCardImageView: UIImageView!
 
     @IBOutlet private var learnMoreLabel: UILabel!
+
     // MARK: - IBActions
 
     @IBAction func dismiss(_ sender: Any) {
@@ -101,7 +102,8 @@ final class LockboxViewController: UIViewController {
             return
         }
         if let lockboxRange = text.range(of: Constants.Url.lockbox),
-            sender.didTapAttributedText(in: learnMoreLabel, range: NSRange(lockboxRange, in: text)) {
+           sender.didTapAttributedText(in: learnMoreLabel, range: NSRange(lockboxRange, in: text))
+        {
             launchWebViewController(url: Constants.Url.lockbox, title: LocalizationConstants.SideMenu.lockbox)
         }
     }

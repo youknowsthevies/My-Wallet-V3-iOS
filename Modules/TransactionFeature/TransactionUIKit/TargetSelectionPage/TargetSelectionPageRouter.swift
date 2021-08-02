@@ -11,16 +11,19 @@ protocol TargetSelectionPageInteractable: Interactable {
 }
 
 final class TargetSelectionPageRouter: ViewableRouter<TargetSelectionPageInteractable, TargetSelectionPageViewControllable>,
-                                       TargetSelectionPageRouting {
+    TargetSelectionPageRouting
+{
 
     override init(interactor: TargetSelectionPageInteractable, viewController: TargetSelectionPageViewControllable) {
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
 
-    func presentQRScanner(for currency: CryptoCurrency,
-                          sourceAccount: CryptoAccount,
-                          model: TargetSelectionPageModel) {
+    func presentQRScanner(
+        for currency: CryptoCurrency,
+        sourceAccount: CryptoAccount,
+        model: TargetSelectionPageModel
+    ) {
         let parser = CryptoTargetQRCodeParser(assetType: currency)
         let textViewModel = TargetSelectionQRScanningViewModel()
         let builder = QRCodeScannerViewControllerBuilder(
@@ -31,8 +34,8 @@ final class TargetSelectionPageRouter: ViewableRouter<TargetSelectionPageInterac
                 if case .success(let value) = result {
                     switch value {
                     case .address(let cryptoReceiveAddress):
-                        /// We need to validate the address as if it were a
-                        /// value provided by user entry in the text field.
+                        // We need to validate the address as if it were a
+                        // value provided by user entry in the text field.
                         model.process(action: .validateQRScanner(cryptoReceiveAddress))
                     case .bitpay(let value):
                         model.process(action: .validateBitPayPayload(value, currency))

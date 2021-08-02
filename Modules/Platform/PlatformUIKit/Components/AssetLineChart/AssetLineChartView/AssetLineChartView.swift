@@ -44,13 +44,17 @@ public final class AssetLineChartView: UIView {
 
     // MARK: - Setup
 
-    public override func awakeFromNib() {
+    override public func awakeFromNib() {
         super.awakeFromNib()
         assetPriceView.shimmer(
-            estimatedPriceLabelSize: CGSize(width: 150,
-                                            height: 40),
-            estimatedChangeLabelSize: CGSize(width: 75,
-                                             height: 24)
+            estimatedPriceLabelSize: CGSize(
+                width: 150,
+                height: 40
+            ),
+            estimatedChangeLabelSize: CGSize(
+                width: 75,
+                height: 24
+            )
         )
 
         chartShimmeringView = ShimmeringView(
@@ -63,7 +67,7 @@ public final class AssetLineChartView: UIView {
         assetPriceView.layoutIfNeeded()
     }
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
@@ -78,7 +82,7 @@ public final class AssetLineChartView: UIView {
     }
 
     private func setupLineChartView(_ lineChartView: LineChartView) {
-        self.chartView = lineChartView
+        chartView = lineChartView
         chartContainer.addSubview(chartView)
         chartView.fillSuperview()
     }
@@ -86,8 +90,8 @@ public final class AssetLineChartView: UIView {
 
 // MARK: - Rx
 
-public extension Reactive where Base: AssetLineChartView {
-    var chartData: Binder<(AssetLineChartMarkerView.Theme, LineChartData)> {
+extension Reactive where Base: AssetLineChartView {
+    public var chartData: Binder<(AssetLineChartMarkerView.Theme, LineChartData)> {
         Binder(base) { view, payload in
             let data = payload.1
             let theme = payload.0
@@ -109,8 +113,8 @@ public extension Reactive where Base: AssetLineChartView {
     }
 }
 
-public extension Reactive where Base: AssetLineChartView {
-    var chartState: Binder<(AssetLineChart.State.Presentation)> {
+extension Reactive where Base: AssetLineChartView {
+    public var chartState: Binder<AssetLineChart.State.Presentation> {
         Binder(base) { view, payload in
             view.chartView.delegate?.chartValueNothingSelected?(view.chartView)
             view.chartView.marker = nil

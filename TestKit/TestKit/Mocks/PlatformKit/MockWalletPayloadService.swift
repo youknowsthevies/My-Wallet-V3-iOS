@@ -1,7 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import AuthenticationDataKit
+import Combine
 import Foundation
-@testable import PlatformKit
 import RxSwift
 
 final class MockWalletPayloadClient: WalletPayloadClientAPI {
@@ -12,8 +13,10 @@ final class MockWalletPayloadClient: WalletPayloadClientAPI {
         self.result = result
     }
 
-    func payload(guid: String,
-                 identifier: WalletPayloadClient.Identifier) -> Single<WalletPayloadClient.ClientResponse> {
+    func payload(
+        guid: String,
+        identifier: WalletPayloadClient.Identifier
+    ) -> Single<WalletPayloadClient.ClientResponse> {
         switch result {
         case .success(let response):
             do {
@@ -23,6 +26,22 @@ final class MockWalletPayloadClient: WalletPayloadClientAPI {
             }
         case .failure(let response):
             return .error(response)
+        }
+    }
+
+    func payloadPublisher(
+        guid: String,
+        identifier: WalletPayloadClient.Identifier
+    ) -> AnyPublisher<WalletPayloadClient.ClientResponse, WalletPayloadClient.ClientError> {
+        switch result {
+        case .success(let response):
+            do {
+                return .just(try WalletPayloadClient.ClientResponse(response: response))
+            } catch {
+                return .failure(.message(error.localizedDescription))
+            }
+        case .failure(let response):
+            return .failure(.message(response.localizedDescription))
         }
     }
 }

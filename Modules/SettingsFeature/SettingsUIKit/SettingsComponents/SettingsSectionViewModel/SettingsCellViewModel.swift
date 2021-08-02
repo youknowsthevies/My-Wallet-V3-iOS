@@ -17,17 +17,18 @@ struct SettingsCellViewModel {
     let cellType: SettingsSectionType.CellType
 
     /// The analytics recorder that records tap events.
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
-    init(cellType: SettingsSectionType.CellType,
-         analyticsRecorder: AnalyticsEventRecording = resolve()) {
+    init(
+        cellType: SettingsSectionType.CellType,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.cellType = cellType
     }
 
     func recordSelection() {
-        guard let event = cellType.analyticsEvent else { return }
-        analyticsRecorder.record(event: event)
+        analyticsRecorder.record(events: cellType.analyticsEvent)
     }
 }
 

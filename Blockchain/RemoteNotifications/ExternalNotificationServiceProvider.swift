@@ -42,7 +42,7 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
                     }
                 }
                 return Disposables.create()
-        }
+            }
     }
 
     func didReceiveNewApnsToken(token: Data) {

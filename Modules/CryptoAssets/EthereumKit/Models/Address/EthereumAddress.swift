@@ -5,14 +5,14 @@ import PlatformKit
 public struct EthereumAddress: AssetAddress, Hashable {
 
     public let publicKey: String
-    public let cryptoCurrency: CryptoCurrency = .ethereum
+    public let cryptoCurrency: CryptoCurrency = .coin(.ethereum)
 
     public init(string address: String) throws {
         try EthereumAddressValidator.validate(address: address)
         guard let eip55Address = EthereumAddressValidator.toChecksumAddress(address) else {
             throw AddressValidationError.eip55ChecksumFailed
         }
-        self.publicKey = eip55Address
+        publicKey = eip55Address
     }
 
     public init?(address: String) {

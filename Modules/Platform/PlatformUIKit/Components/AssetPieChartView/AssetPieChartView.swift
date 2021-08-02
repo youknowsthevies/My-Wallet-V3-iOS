@@ -19,7 +19,7 @@ public final class AssetPieChartView: UIView {
         didSet {
             guard let presenter = presenter else { return }
             presenter.state
-                .compactMap { $0.value }
+                .compactMap(\.value)
                 .bindAndCatch(to: rx.chartData)
                 .disposed(by: disposeBag)
         }
@@ -49,7 +49,7 @@ public final class AssetPieChartView: UIView {
 
     // MARK: - Setup
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
@@ -68,8 +68,8 @@ public final class AssetPieChartView: UIView {
 
 // MARK: - Rx
 
-fileprivate extension Reactive where Base: AssetPieChartView {
-    var chartData: Binder<PieChartData> {
+extension Reactive where Base: AssetPieChartView {
+    fileprivate var chartData: Binder<PieChartData> {
         Binder(base) { view, data in
             view.chartView.data = data
             view.chartView.setNeedsDisplay()

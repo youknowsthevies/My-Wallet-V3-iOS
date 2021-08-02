@@ -22,7 +22,7 @@ public final class ButtonsTableViewCell: UITableViewCell {
         buttonView.layout(dimension: .height, to: 48)
     }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         models = []
     }

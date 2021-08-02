@@ -3,5 +3,5 @@
 import Foundation
 
 public enum AnalyticsEventType {
-    case new, old
+    case nabu, firebase
 }

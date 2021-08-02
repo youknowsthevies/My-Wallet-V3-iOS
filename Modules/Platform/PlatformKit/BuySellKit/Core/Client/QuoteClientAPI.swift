@@ -3,7 +3,9 @@
 import RxSwift
 
 protocol QuoteClientAPI: AnyObject {
-    func getQuote(for action: Order.Action,
-                  to cryptoCurrency: CryptoCurrency,
-                  amount: FiatValue) -> Single<QuoteResponse>
+    func getQuote(
+        for action: Order.Action,
+        to cryptoCurrency: CryptoCurrency,
+        amount: FiatValue
+    ) -> Single<QuoteResponse>
 }

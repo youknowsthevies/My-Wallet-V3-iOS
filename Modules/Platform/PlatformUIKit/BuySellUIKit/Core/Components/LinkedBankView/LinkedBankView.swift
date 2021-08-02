@@ -23,20 +23,20 @@ final class LinkedBankView: UIView {
                 button.rx
                     .controlEvent(.touchDown)
                     .map { _ in UIColor.hightlightedBackground }
-                    .bindAndCatch(to: self.rx.backgroundColor)
+                    .bindAndCatch(to: rx.backgroundColor)
                     .disposed(by: disposeBag)
 
                 button.rx
                     .controlEvent(.touchCancel)
                     .map { _ in UIColor.white }
-                    .bindAndCatch(to: self.rx.backgroundColor)
+                    .bindAndCatch(to: rx.backgroundColor)
                     .disposed(by: disposeBag)
-
             }
         }
     }
 
     // MARK: - Private
+
     private var disposeBag = DisposeBag()
 
     private let stackView = UIStackView()

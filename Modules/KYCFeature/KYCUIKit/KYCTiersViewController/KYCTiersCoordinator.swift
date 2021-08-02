@@ -10,8 +10,10 @@ final class KYCTiersCoordinator {
     private let pageModelFactory: KYCTiersPageModelFactoryAPI
     private var disposable: Disposable?
 
-    init(interface: KYCTiersInterface?,
-         pageModelFactory: KYCTiersPageModelFactoryAPI = resolve()) {
+    init(
+        interface: KYCTiersInterface?,
+        pageModelFactory: KYCTiersPageModelFactoryAPI = resolve()
+    ) {
         self.interface = interface
         self.pageModelFactory = pageModelFactory
     }
@@ -23,7 +25,7 @@ final class KYCTiersCoordinator {
         disposable = pageModelFactory.tiersPageModel(suppressCTA: suppressCTA)
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(
-                onSuccess: { [weak self] (page) in
+                onSuccess: { [weak self] page in
                     guard let self = self else { return }
                     self.interface?.apply(page)
                     self.interface?.loadingIndicator(.hidden)

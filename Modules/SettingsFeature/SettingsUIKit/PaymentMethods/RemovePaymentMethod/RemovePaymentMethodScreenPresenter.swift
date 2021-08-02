@@ -32,9 +32,11 @@ final class RemovePaymentMethodScreenPresenter {
     private let dismissalRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
 
-    init(buttonLocalizedString: String,
-         interactor: RemovePaymentMethodScreenInteractor,
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+    init(
+        buttonLocalizedString: String,
+        interactor: RemovePaymentMethodScreenInteractor,
+        loadingViewPresenter: LoadingViewPresenting = resolve()
+    ) {
         self.loadingViewPresenter = loadingViewPresenter
         self.interactor = interactor
 
@@ -72,7 +74,7 @@ final class RemovePaymentMethodScreenPresenter {
 
     func viewDidLoad() {
         interactor.state
-            .map { $0.isCalculating }
+            .map(\.isCalculating)
             .bindAndCatch(weak: self) { (self, isCalculating) in
                 if isCalculating {
                     self.loadingViewPresenter.show(with: .circle, text: nil)
@@ -83,7 +85,7 @@ final class RemovePaymentMethodScreenPresenter {
             .disposed(by: disposeBag)
 
         interactor.state
-            .filter { $0.isValue }
+            .filter(\.isValue)
             .mapToVoid()
             .bindAndCatch(to: dismissalRelay)
             .disposed(by: disposeBag)

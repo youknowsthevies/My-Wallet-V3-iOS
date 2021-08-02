@@ -7,19 +7,19 @@ import Foundation
 // MARK: Groups
 
 extension LocalizationConstants {
-    public enum BackupFundsScreen { }
-    public enum RecoveryPhraseScreen { }
-    public enum VerifyBackupScreen { }
+    public enum BackupFundsScreen {}
+    public enum RecoveryPhraseScreen {}
+    public enum VerifyBackupScreen {}
 }
 
 // MARK: BackupFundsScreen
 
-public extension LocalizationConstants.BackupFundsScreen {
+extension LocalizationConstants.BackupFundsScreen {
 
-    static let title = NSLocalizedString("Secret Private Key Recovery", comment: "Screen title.")
-    static let action = NSLocalizedString("View Recovery Phrase", comment: "Button titleView Recovery Phrase.")
+    public static let title = NSLocalizedString("Secret Private Key Recovery", comment: "Screen title.")
+    public static let action = NSLocalizedString("View Recovery Phrase", comment: "Button titleView Recovery Phrase.")
 
-    enum Body {
+    public enum Body {
         public static let partA = NSLocalizedString(
             "In crypto, when you hold the private keys, you're in control of the funds in your Private Key Wallet. The downside is that WHOEVER holds your private keys can control your Private Key Wallet.",
             comment: ""
@@ -53,41 +53,40 @@ public extension LocalizationConstants.BackupFundsScreen {
     }
 }
 
-
 // MARK: RecoveryPhraseScreen
 
-public extension LocalizationConstants.RecoveryPhraseScreen {
-    static let title = NSLocalizedString("Recovery Phrase", comment: "Recovery Phrase")
-    static let subtitle = NSLocalizedString("Write Down Recovery Phrase", comment: "Write Down Recovery Phrase")
-    static let description = NSLocalizedString(
+extension LocalizationConstants.RecoveryPhraseScreen {
+    public static let title = NSLocalizedString("Recovery Phrase", comment: "Recovery Phrase")
+    public static let subtitle = NSLocalizedString("Write Down Recovery Phrase", comment: "Write Down Recovery Phrase")
+    public static let description = NSLocalizedString(
         "For your security, Blockchain does not keep any passwords on file. The following 12 word Backup Phrase will give you access to your funds in case you lose your password. Be sure to write it on a piece of paper and to keep it somewhere safe and secure.",
         comment: "For your security, Blockchain does not keep any passwords on file. The following 12 word Backup Phrase will give you access to your funds in case you lose your password. Be sure to write it on a piece of paper and to keep it somewhere safe and secure."
     )
-    static let copyToClipboard = NSLocalizedString("Copy to Clipboard", comment: "Copy to Clipboard")
-    static let next = NSLocalizedString("Next", comment: "Next")
+    public static let copyToClipboard = NSLocalizedString("Copy to Clipboard", comment: "Copy to Clipboard")
+    public static let next = NSLocalizedString("Next", comment: "Next")
 }
 
 // MARK: VerifyBackupScreen
 
-public extension LocalizationConstants.VerifyBackupScreen {
-    static let title = NSLocalizedString(
+extension LocalizationConstants.VerifyBackupScreen {
+    public static let title = NSLocalizedString(
         "Verify Your Backup",
         comment: "Verify Your Backup"
     )
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "Enter the following words from your Backup Phrase to complete the backup process.",
         comment: "Enter the following words from your Backup Phrase to complete the backup process."
     )
-    static let action = NSLocalizedString(
+    public static let action = NSLocalizedString(
         "Verify",
         comment: "Verify"
     )
-    static let errorDescription = NSLocalizedString(
+    public static let errorDescription = NSLocalizedString(
         "The words in your Recovery Phrase didn’t match. You can go back to the previous step and double check you wrote it down correctly",
         comment: "The words in your Recovery Phrase didn’t match. You can go back to the previous step and double check you wrote it down correctly"
     )
 
-    enum Index {
+    public enum Index {
         public static let first = NSLocalizedString("first word", comment: "first word")
         public static let second = NSLocalizedString("second word", comment: "second word")
         public static let third = NSLocalizedString("third word", comment: "third word")

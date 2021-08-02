@@ -24,10 +24,10 @@ final class TransactionModel {
     // MARK: - Init
 
     init(initialState: TransactionState = TransactionState(), transactionInteractor: TransactionInteractor) {
-        self.interactor = transactionInteractor
+        interactor = transactionInteractor
         mviModel = MviModel(
             initialState: initialState,
-            performAction: { [unowned self] (state, action) -> Disposable? in
+            performAction: { [unowned self] state, action -> Disposable? in
                 self.perform(previousState: state, action: action)
             }
         )
@@ -43,28 +43,35 @@ final class TransactionModel {
         switch action {
         case .pendingTransactionStarted:
             return nil
-        case let .initialiseWithSourceAndTargetAccount(action, sourceAccount, target, _):
+        case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, _):
             return processTargetSelectionConfirmed(
                 sourceAccount: sourceAccount,
                 transactionTarget: target,
                 amount: .zero(currency: sourceAccount.currencyType),
                 action: action
             )
-        case let .initialiseWithSourceAndPreferredTarget(action, sourceAccount, target, _):
+        case .initialiseWithSourceAndPreferredTarget(let action, let sourceAccount, let target, _):
             return processTargetSelectionConfirmed(
                 sourceAccount: sourceAccount,
                 transactionTarget: target,
                 amount: .zero(currency: sourceAccount.currencyType),
                 action: action
             )
-        case let .initialiseWithTargetAndNoSource(action, _, _),
-             let .initialiseWithNoSourceOrTargetAccount(action, _):
+        case .initialiseWithTargetAndNoSource(let action, _, _),
+             .initialiseWithNoSourceOrTargetAccount(let action, _):
             return processSourceAccountsListUpdate(action: action)
         case .availableSourceAccountsListUpdated:
             return nil
         case .availableDestinationAccountsListUpdated:
             return nil
-        case let .initialiseWithSourceAccount(action, sourceAccount, _):
+        case .bankAccountLinked(let action):
+            return processSourceAccountsListUpdate(action: action)
+        case .bankAccountLinkedFromSource(let source, let action):
+            return processAccountsListUpdate(fromAccount: source, action: action)
+        case .showBankLinkingFlow,
+             .bankLinkingFlowDismissed:
+            return nil
+        case .initialiseWithSourceAccount(let action, let sourceAccount, _):
             return processAccountsListUpdate(fromAccount: sourceAccount, action: action)
         case .targetAccountSelected(let destinationAccount):
             guard let source = previousState.source else {
@@ -73,10 +80,10 @@ final class TransactionModel {
             let sourceCurrency = source.currencyType
             let isAmountValid = previousState.amount.currencyType == sourceCurrency
             let amount = isAmountValid ? previousState.amount : .zero(currency: sourceCurrency)
-            /// If the `amount` `currencyType` differs from the source, we should
-            /// use `zero` as the amount. If not, it is safe to use the
-            /// `previousState.amount`.
-            /// The `amount` should always be the same `currencyType` as the `source`.
+            // If the `amount` `currencyType` differs from the source, we should
+            // use `zero` as the amount. If not, it is safe to use the
+            // `previousState.amount`.
+            // The `amount` should always be the same `currencyType` as the `source`.
             return processTargetSelectionConfirmed(
                 sourceAccount: source,
                 transactionTarget: destinationAccount,
@@ -92,7 +99,7 @@ final class TransactionModel {
         case .prepareTransaction:
             return nil
         case .executeTransaction:
-           return processExecuteTransaction(secondPassword: previousState.secondPassword)
+            return processExecuteTransaction(secondPassword: previousState.secondPassword)
         case .updateTransactionComplete:
             return nil
         case .fetchFiatRates:
@@ -118,10 +125,10 @@ final class TransactionModel {
             }
             return processTransactionInvalidation(action: previousState.action)
         case .sourceAccountSelected(let sourceAccount):
-            /// The user has already selected a destination
-            /// such as through `Deposit`. In this case we want to
-            /// go straight to the Enter Amount screen after they have
-            /// selected a `LinkedBankAccount` to deposit from.
+            // The user has already selected a destination
+            // such as through `Deposit`. In this case we want to
+            // go straight to the Enter Amount screen after they have
+            // selected a `LinkedBankAccount` to deposit from.
             if let target = previousState.destination {
                 return processTargetSelectionConfirmed(
                     sourceAccount: sourceAccount,
@@ -137,6 +144,8 @@ final class TransactionModel {
         case .invalidateTransaction:
             return processInvalidateTransaction()
         case .showTargetSelection:
+            return nil
+        case .showSourceSelection:
             return nil
         }
     }
@@ -171,7 +180,7 @@ final class TransactionModel {
         interactor.getAvailableSourceAccounts(action: action)
             .subscribe(
                 onSuccess: { [weak self] sourceAccounts in
-                     self?.process(action: .availableSourceAccountsListUpdated(sourceAccounts))
+                    self?.process(action: .availableSourceAccountsListUpdated(sourceAccounts))
                 }
             )
     }
@@ -211,10 +220,12 @@ final class TransactionModel {
     // the state object a bit more; depending on whether it's an internal, external,
     // bitpay or BTC Url address we can set things like note, amount, fee schedule
     // and hook up the correct processor to execute the transaction.
-    private func processTargetSelectionConfirmed(sourceAccount: BlockchainAccount,
-                                                 transactionTarget: TransactionTarget,
-                                                 amount: MoneyValue,
-                                                 action: AssetAction) -> Disposable {
+    private func processTargetSelectionConfirmed(
+        sourceAccount: BlockchainAccount,
+        transactionTarget: TransactionTarget,
+        amount: MoneyValue,
+        action: AssetAction
+    ) -> Disposable {
         hasInitializedTransaction = false
         return interactor
             .initializeTransaction(sourceAccount: sourceAccount, transactionTarget: transactionTarget, action: action)
@@ -253,7 +264,7 @@ final class TransactionModel {
     private func processFiatRatePairs() -> Disposable {
         interactor
             .startFiatRatePairsFetch
-            .subscribe { [weak self] (transactionMoneyValuePairs) in
+            .subscribe { [weak self] transactionMoneyValuePairs in
                 self?.process(action: .transactionFiatRatePairs(transactionMoneyValuePairs))
             }
     }
@@ -261,7 +272,7 @@ final class TransactionModel {
     private func processTransactionRatePair() -> Disposable {
         interactor
             .startCryptoRatePairFetch
-            .subscribe { [weak self] (moneyValuePair) in
+            .subscribe { [weak self] moneyValuePair in
                 self?.process(action: .sourceDestinationPair(moneyValuePair))
             }
     }

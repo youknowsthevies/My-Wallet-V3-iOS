@@ -31,11 +31,17 @@ public final class CryptoReceiveAddressFactoryService {
     ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
         let factory: CryptoReceiveAddressFactory
         switch asset {
-        case .other:
-            factory = PlainCryptoReceiveAddressFactory()
-        default:
+        case .coin(let model):
+            switch model.code {
+            case let code where NonCustodialCoinCode.allCases.map(\.rawValue).contains(code):
+                factory = { () -> CryptoReceiveAddressFactory in resolve(tag: asset.typeTag) }()
+            default:
+                factory = PlainCryptoReceiveAddressFactory()
+            }
+        case .erc20:
             factory = { () -> CryptoReceiveAddressFactory in resolve(tag: asset.typeTag) }()
         }
+
         return factory.makeExternalAssetAddress(
             asset: asset,
             address: address,
@@ -53,7 +59,15 @@ final class PlainCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
         label: String,
         onTxCompleted: @escaping TxCompleted
     ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
-        .success(PlainCryptoReceiveAddress(address: address, asset: asset, label: label))
+        guard let regex = try? NSRegularExpression(pattern: "[a-zA-Z0-9]{15,}") else {
+            return .failure(.invalidAddress)
+        }
+        let range = NSRange(location: 0, length: address.utf16.count)
+        let firstMatch = regex.firstMatch(in: address, options: [], range: range)
+        guard firstMatch != nil else {
+            return .failure(.invalidAddress)
+        }
+        return .success(PlainCryptoReceiveAddress(address: address, asset: asset, label: label))
     }
 }
 
@@ -65,6 +79,7 @@ struct PlainCryptoReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataPro
     var metadata: CryptoAssetQRMetadata {
         PlainCryptoAssetQRMetadata(address: address, cryptoCurrency: asset)
     }
+
     init(address: String, asset: CryptoCurrency, label: String) {
         self.address = address
         self.asset = asset

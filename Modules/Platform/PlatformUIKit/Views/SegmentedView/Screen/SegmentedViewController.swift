@@ -16,11 +16,11 @@ public final class SegmentedViewController: BaseScreenViewController {
     required init?(coder: NSCoder) { unimplemented() }
     public init(presenter: SegmentedViewScreenPresenting) {
         self.presenter = presenter
-        self.rootViewController = SegmentedTabViewController(items: presenter.items)
+        rootViewController = SegmentedTabViewController(items: presenter.items)
         super.init(nibName: nil, bundle: nil)
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         segmentedView.layout(dimension: .width, to: 196)
         segmentedView.viewModel = presenter.segmentedViewModel
@@ -33,17 +33,19 @@ public final class SegmentedViewController: BaseScreenViewController {
     }
 
     private func setupNavigationBar() {
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton)
+            trailingButtonStyle: presenter.trailingButton
+        )
         titleViewStyle = .view(value: segmentedView)
     }
 
-    public override func navigationBarLeadingButtonPressed() {
+    override public func navigationBarLeadingButtonPressed() {
         presenter.leadingButtonTapRelay.accept(())
     }
 
-    public override func navigationBarTrailingButtonPressed() {
+    override public func navigationBarTrailingButtonPressed() {
         presenter.trailingButtonTapRelay.accept(())
     }
 }

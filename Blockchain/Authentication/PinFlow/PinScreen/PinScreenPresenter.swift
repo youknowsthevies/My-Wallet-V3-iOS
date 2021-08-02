@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import LocalAuthentication
 import Localization
@@ -31,8 +32,8 @@ final class PinScreenPresenter {
     // MARK: - Types
 
     typealias Settings = AppSettingsAPI &
-                         AppSettingsAuthenticating &
-                         CloudBackupConfiguring
+        AppSettingsAuthenticating &
+        CloudBackupConfiguring
 
     // MARK: - Properties
 
@@ -159,6 +160,7 @@ final class PinScreenPresenter {
     private let appSettings: Settings
     private let biometryProvider: BiometryProviding
     private let credentialsStore: CredentialsStoreAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: - View Models
 
@@ -173,18 +175,21 @@ final class PinScreenPresenter {
 
     // MARK: - Setup
 
-    init(useCase: PinScreenUseCase,
-         flow: PinRouting.Flow,
-         interactor: PinInteracting = PinInteractor(),
-         biometryProvider: BiometryProviding = BiometryProvider(
+    init(
+        useCase: PinScreenUseCase,
+        flow: PinRouting.Flow,
+        interactor: PinInteracting = PinInteractor(),
+        biometryProvider: BiometryProviding = BiometryProvider(
             featureConfigurator: resolve()
-         ),
-         appSettings: Settings = BlockchainSettings.App.shared,
-         recorder: Recording = CrashlyticsRecorder(),
-         credentialsStore: CredentialsStoreAPI = resolve(),
-         backwardRouting: PinRouting.RoutingType.Backward? = nil,
-         forwardRouting: @escaping PinRouting.RoutingType.Forward,
-         performEffect: @escaping PinRouting.RoutingType.Effect) {
+        ),
+        appSettings: Settings = BlockchainSettings.App.shared,
+        recorder: Recording = CrashlyticsRecorder(),
+        credentialsStore: CredentialsStoreAPI = resolve(),
+        backwardRouting: PinRouting.RoutingType.Backward? = nil,
+        forwardRouting: @escaping PinRouting.RoutingType.Forward,
+        performEffect: @escaping PinRouting.RoutingType.Effect,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.useCase = useCase
         self.flow = flow
         self.interactor = interactor
@@ -195,6 +200,7 @@ final class PinScreenPresenter {
         self.forwardRouting = forwardRouting
         self.credentialsStore = credentialsStore
         self.performEffect = performEffect
+        self.analyticsRecorder = analyticsRecorder
 
         let emptyPinColor: UIColor
         let buttonHighlightColor: UIColor
@@ -292,7 +298,7 @@ final class PinScreenPresenter {
         let timer = digitPadViewModel.remainingLockTimeObservable
             .flatMapLatest { remaining -> Observable<Int> in
                 // Create a count down timer that counts for `remaining` seconds
-                return Observable<Int>.timer(.seconds(0), period: .seconds(1), scheduler: MainScheduler.instance)
+                Observable<Int>.timer(.seconds(0), period: .seconds(1), scheduler: MainScheduler.instance)
                     .take(remaining) // takes the first `remaining` seconds
                     .map { $0 + 1 } // timer increment by 1 every time
                     .map { remaining - $0 } // `remaining` - timer value equals actual seconds remaining
@@ -363,18 +369,18 @@ extension PinScreenPresenter {
     /// - parameter duration: the lock time duration in seconds
     private func formatRemainingLockTimeMessage(duration: Int) -> String {
         var message = ""
-        if duration > 0 && duration <= 60 {
+        if duration > 0, duration <= 60 {
             message = LocalizationConstants.Pin.tryAgain +
                 String(" \(duration)") + LocalizationConstants.Pin.seconds
-        } else if duration > 60 && duration <= 3600 {
+        } else if duration > 60, duration <= 3600 {
             message = LocalizationConstants.Pin.tryAgain +
-                String(" \(duration/60)") + LocalizationConstants.Pin.minutes +
-                String(" \(duration%60)") + LocalizationConstants.Pin.seconds
+                String(" \(duration / 60)") + LocalizationConstants.Pin.minutes +
+                String(" \(duration % 60)") + LocalizationConstants.Pin.seconds
         } else if duration > 3600 {
             message = LocalizationConstants.Pin.tryAgain +
-                String(" \(duration/3600)") + LocalizationConstants.Pin.hours +
-                String(" \((duration/60)%60)") + LocalizationConstants.Pin.minutes +
-                String(" \(duration%60)") + LocalizationConstants.Pin.seconds
+                String(" \(duration / 3600)") + LocalizationConstants.Pin.hours +
+                String(" \((duration / 60) % 60)") + LocalizationConstants.Pin.minutes +
+                String(" \(duration % 60)") + LocalizationConstants.Pin.seconds
         }
         return message
     }
@@ -477,9 +483,11 @@ extension PinScreenPresenter {
             }
 
             // Create the pin payload
-            let payload = PinPayload(pinCode: pin.toString,
-                                     keyPair: keyPair,
-                                     persistsLocally: self.biometryProvider.configurationStatus.isConfigured)
+            let payload = PinPayload(
+                pinCode: pin.toString,
+                keyPair: keyPair,
+                persistsLocally: self.biometryProvider.configurationStatus.isConfigured
+            )
 
             self.isProcessingRelay.accept(true)
 
@@ -549,7 +557,7 @@ extension PinScreenPresenter {
     /// Invoked during Pin Authentication.
     /// Proceeds with pin authentication using pinDecryptionKey to decrypt password.
     private func authenticatePin(pinDecryptionKey: String) -> Completable {
-        self.interactor
+        interactor
             .password(from: pinDecryptionKey)
             .do(
                 onSuccess: { [weak self] password in
@@ -575,7 +583,7 @@ extension PinScreenPresenter {
             return credentialsStore
                 .walletData(pinDecryptionKey: pinDecryptionKey)
                 .do(
-                    onSuccess: { [weak self] (data) in
+                    onSuccess: { [weak self] data in
                         // Restore everything to settings so the app can progress normally
                         self?.appSettings.guid = data.guid
                         self?.appSettings.sharedKey = data.sharedKey
@@ -638,9 +646,11 @@ extension PinScreenPresenter {
         let pin = self.pin.value!
 
         // Create a pin payload to be validated by the interactor
-        let payload = PinPayload(pinCode: pin.toString,
-                                 pinKey: pinKey,
-                                 persistsLocally: useCase.isAuthenticateBeforeEnablingBiometrics)
+        let payload = PinPayload(
+            pinCode: pin.toString,
+            pinKey: pinKey,
+            persistsLocally: useCase.isAuthenticateBeforeEnablingBiometrics
+        )
 
         isProcessingRelay.accept(true)
 
@@ -661,11 +671,13 @@ extension PinScreenPresenter {
     var logoutAlertModel: AlertModel {
         let okButton = AlertAction(style: .confirm(LocalizationConstants.okString))
         let image = UIImage(named: "lock_icon")!
-        return AlertModel(headline: LocalizationConstants.Pin.tooManyAttemptsTitle,
-                          body: LocalizationConstants.Pin.tooManyAttemptsLogoutMessage,
-                          actions: [okButton],
-                          image: image,
-                          style: .sheet)
+        return AlertModel(
+            headline: LocalizationConstants.Pin.tooManyAttemptsTitle,
+            body: LocalizationConstants.Pin.tooManyAttemptsLogoutMessage,
+            actions: [okButton],
+            image: image,
+            style: .sheet
+        )
     }
 
     /// Enabling biometrics alert model (if biometrics is configurable)
@@ -680,8 +692,10 @@ extension PinScreenPresenter {
         let okButtonAction = { [unowned self] in
             self.interactor.persist(pin: self.pin.value!)
         }
-        let okButton = AlertAction(style: .confirm(LocalizationConstants.okString),
-                                   metadata: .block(okButtonAction))
+        let okButton = AlertAction(
+            style: .confirm(LocalizationConstants.okString),
+            metadata: .block(okButtonAction)
+        )
         let cancelButton = AlertAction(style: .default(LocalizationConstants.Pin.enableBiometricsNotNowButton))
         let title: String
         let image: UIImage
@@ -693,11 +707,13 @@ extension PinScreenPresenter {
             title = LocalizationConstants.Pin.enableTouchIdTitle
             image = UIImage(named: "touch_id_icon")!
         }
-        let alert = AlertModel(headline: title,
-                               body: LocalizationConstants.Pin.enableBiometricsMessage,
-                               actions: [okButton, cancelButton],
-                               image: image.withRenderingMode(.alwaysTemplate),
-                               style: .sheet)
+        let alert = AlertModel(
+            headline: title,
+            body: LocalizationConstants.Pin.enableBiometricsMessage,
+            actions: [okButton, cancelButton],
+            image: image.withRenderingMode(.alwaysTemplate),
+            style: .sheet
+        )
         return alert
     }
 
@@ -706,14 +722,16 @@ extension PinScreenPresenter {
         guard flow.isChange else {
             return nil
         }
-
+        analyticsRecorder.record(event: AnalyticsEvents.New.Security.mobilePinCodeChanged)
         let okButton = AlertAction(style: .confirm(LocalizationConstants.continueString))
         let image = UIImage(named: "success_icon")!
-        let alert = AlertModel(headline: LocalizationConstants.Pin.pinSuccessfullySet,
-                               body: "",
-                               actions: [okButton],
-                               image: image,
-                               style: .sheet)
+        let alert = AlertModel(
+            headline: LocalizationConstants.Pin.pinSuccessfullySet,
+            body: "",
+            actions: [okButton],
+            image: image,
+            style: .sheet
+        )
         return alert
     }
 }

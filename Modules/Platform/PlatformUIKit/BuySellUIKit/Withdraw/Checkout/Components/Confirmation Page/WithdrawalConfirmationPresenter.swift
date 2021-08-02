@@ -36,17 +36,19 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
             }
             .disposed(by: disposeBag)
 
-        viewModel = Driver.deferred({ [interactor] () -> Driver<PendingStateViewModel> in
+        viewModel = Driver.deferred { [interactor] () -> Driver<PendingStateViewModel> in
             guard let amount = interactor.amount, interactor.isSuccess || interactor.isLoading else {
-                return .just(Self.errorViewModel(with: interactor.currencyType,
-                                                 buttonModel: buttonModel,
-                                                 errorDescription: interactor.errorDescription))
+                return .just(Self.errorViewModel(
+                    with: interactor.currencyType,
+                    buttonModel: buttonModel,
+                    errorDescription: interactor.errorDescription
+                ))
             }
             if interactor.isSuccess {
                 return .just(Self.viewModel(with: amount, buttonModel: buttonModel))
             }
             return .just(Self.loadingViewModel(with: amount))
-        })
+        }
     }
 
     // MARK: - View Model Providers
@@ -54,43 +56,52 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
     private static func loadingViewModel(with amount: FiatValue) -> PendingStateViewModel {
         PendingStateViewModel(
             compositeStatusViewType:
-                .composite(
-                    .init(baseViewType: .text(amount.currency.symbol),
-                          sideViewAttributes: .init(type: .loader, position: .rightCorner),
-                          backgroundColor: .fiat,
-                          cornerRadiusRatio: 0.2)
-                ),
+            .composite(
+                .init(
+                    baseViewType: .text(amount.currency.symbol),
+                    sideViewAttributes: .init(type: .loader, position: .rightCorner),
+                    backgroundColor: .fiat,
+                    cornerRadiusRatio: 0.2
+                )
+            ),
             title: String(format: LocalizedString.Loading.titlePrefix, amount.toDisplayString(includeSymbol: true)),
-            subtitle: LocalizedString.Loading.subtitle)
+            subtitle: LocalizedString.Loading.subtitle
+        )
     }
 
     private static func viewModel(with amount: FiatValue, buttonModel: ButtonViewModel) -> PendingStateViewModel {
-        PendingStateViewModel(compositeStatusViewType: .composite(
-            .init(
-                baseViewType: .text(amount.currencyType.symbol),
-                sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.success.imageResource), position: .radiusDistanceFromCenter),
-                backgroundColor: .fiat,
-                cornerRadiusRatio: 0.2
-            )
-        ),
-        title: String(format: LocalizedString.Success.titleSuffix, amount.toDisplayString(includeSymbol: true)),
-        subtitle: LocalizedString.Success.subtitle,
-        button: buttonModel)
+        PendingStateViewModel(
+            compositeStatusViewType: .composite(
+                .init(
+                    baseViewType: .text(amount.currencyType.symbol),
+                    sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.success.imageResource), position: .radiusDistanceFromCenter),
+                    backgroundColor: .fiat,
+                    cornerRadiusRatio: 0.2
+                )
+            ),
+            title: String(format: LocalizedString.Success.titleSuffix, amount.toDisplayString(includeSymbol: true)),
+            subtitle: LocalizedString.Success.subtitle,
+            button: buttonModel
+        )
     }
 
-    private static func errorViewModel(with currencyType: CurrencyType,
-                                       buttonModel: ButtonViewModel,
-                                       errorDescription: String?) -> PendingStateViewModel {
-        PendingStateViewModel(compositeStatusViewType: .composite(
-            .init(
-                baseViewType: .text(currencyType.symbol),
-                sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.imageResource), position: .rightCorner),
-                backgroundColor: .fiat,
-                cornerRadiusRatio: 0.2
-            )
-        ),
-        title: LocalizedString.Error.titleSuffix,
-        subtitle: [LocalizedString.Error.subtitle, errorDescription].compactMap { $0 }.joined(separator: "\n\n"),
-        button: buttonModel)
+    private static func errorViewModel(
+        with currencyType: CurrencyType,
+        buttonModel: ButtonViewModel,
+        errorDescription: String?
+    ) -> PendingStateViewModel {
+        PendingStateViewModel(
+            compositeStatusViewType: .composite(
+                .init(
+                    baseViewType: .text(currencyType.symbol),
+                    sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.imageResource), position: .rightCorner),
+                    backgroundColor: .fiat,
+                    cornerRadiusRatio: 0.2
+                )
+            ),
+            title: LocalizedString.Error.titleSuffix,
+            subtitle: [LocalizedString.Error.subtitle, errorDescription].compactMap { $0 }.joined(separator: "\n\n"),
+            button: buttonModel
+        )
     }
 }

@@ -25,8 +25,10 @@ final class TotalBalanceViewInteractor {
 
     // MARK: - Setup
 
-    init(chartInteractor: AssetPieChartInteracting,
-         balanceInteractor: AssetPriceViewInteracting) {
+    init(
+        chartInteractor: AssetPieChartInteracting,
+        balanceInteractor: AssetPriceViewInteracting
+    ) {
         self.chartInteractor = chartInteractor
         self.balanceInteractor = balanceInteractor
     }

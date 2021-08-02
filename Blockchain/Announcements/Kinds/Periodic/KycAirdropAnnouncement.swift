@@ -57,7 +57,7 @@ final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     }
 
     let type = AnnouncementType.kycAirdrop
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -70,16 +70,19 @@ final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     private let isKycSupported: Bool
 
     private let disposeBag = DisposeBag()
+
     // MARK: - Setup
 
-    init(canCompleteTier2: Bool,
-         isKycSupported: Bool,
-         cacheSuite: CacheSuite = resolve(),
-         reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
+    init(
+        canCompleteTier2: Bool,
+        isKycSupported: Bool,
+        cacheSuite: CacheSuite = resolve(),
+        reappearanceTimeInterval: TimeInterval,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
         self.canCompleteTier2 = canCompleteTier2
         self.isKycSupported = isKycSupported
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)

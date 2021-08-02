@@ -94,8 +94,10 @@ final class CheckoutPageContentReducer: CheckoutPageContentReducing {
 
         cancelButtonViewModel = .cancel(with: LocalizationConstants.cancel)
 
-        let continueButtonTitle = String(format: LocalizedString.Button.withdrawTitle,
-                                         data.amount.toDisplayString(includeSymbol: true))
+        let continueButtonTitle = String(
+            format: LocalizedString.Button.withdrawTitle,
+            data.amount.toDisplayString(includeSymbol: true)
+        )
         continueButtonViewModel = .primary(with: continueButtonTitle)
     }
 }

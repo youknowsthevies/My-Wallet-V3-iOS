@@ -31,7 +31,6 @@ public final class DefaultLabelContentPresenter: LabelContentPresenting {
             .map { .init(with: $0, descriptors: descriptors) }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-
     }
 
     public convenience init(knownValue: String, descriptors: Descriptors) {

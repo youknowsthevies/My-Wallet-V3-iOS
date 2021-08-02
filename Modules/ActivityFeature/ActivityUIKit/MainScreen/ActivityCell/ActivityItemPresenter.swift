@@ -22,6 +22,7 @@ final class ActivityItemPresenter: IdentifiableType {
     var titleLabelContent: Driver<LabelContent> {
         titleRelay.asDriver()
     }
+
     var descriptionLabelContent: Driver<LabelContent> {
         descriptionRelay.asDriver()
     }

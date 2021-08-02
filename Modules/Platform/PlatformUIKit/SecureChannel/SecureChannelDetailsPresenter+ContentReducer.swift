@@ -14,9 +14,11 @@ extension SecureChannelDetailsPresenter {
         var buttons: [ButtonViewModel] {
             [denyButton, approveButton]
         }
+
         var approveTapped: PublishRelay<Void> {
             approveButton.tapRelay
         }
+
         var denyTapped: PublishRelay<Void> {
             denyButton.tapRelay
         }
@@ -128,7 +130,7 @@ extension SecureChannelDetailsPresenter {
                 .separator,
                 .label(labelPresenter)
             ]
-            self.cells = baseCells
+            cells = baseCells
         }
     }
 }

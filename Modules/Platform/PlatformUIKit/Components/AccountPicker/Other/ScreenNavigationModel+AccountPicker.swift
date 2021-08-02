@@ -3,7 +3,7 @@
 import Localization
 
 extension ScreenNavigationModel {
-    public enum AccountPicker { }
+    public enum AccountPicker {}
 }
 
 extension ScreenNavigationModel.AccountPicker {

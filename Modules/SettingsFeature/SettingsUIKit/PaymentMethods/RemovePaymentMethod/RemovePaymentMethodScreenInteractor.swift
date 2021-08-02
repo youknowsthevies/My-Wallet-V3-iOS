@@ -22,11 +22,11 @@ final class RemovePaymentMethodScreenInteractor {
 
     private let stateRelay = BehaviorRelay<State>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
-    private let eventRecorder: AnalyticsEventRecording
+    private let eventRecorder: AnalyticsEventRecorderAPI
 
     private lazy var setup: Void = {
         stateRelay
-            .filter { $0.isValue }
+            .filter(\.isValue)
             .take(1)
             .mapToVoid()
             .record(analyticsEvent: data.event, using: eventRecorder)
@@ -45,9 +45,11 @@ final class RemovePaymentMethodScreenInteractor {
 
     private let deletionService: PaymentMethodDeletionServiceAPI
 
-    init(data: PaymentMethodRemovalData,
-         deletionService: PaymentMethodDeletionServiceAPI,
-         eventRecorder: AnalyticsEventRecording = resolve()) {
+    init(
+        data: PaymentMethodRemovalData,
+        deletionService: PaymentMethodDeletionServiceAPI,
+        eventRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.deletionService = deletionService
         self.eventRecorder = eventRecorder
         self.data = data

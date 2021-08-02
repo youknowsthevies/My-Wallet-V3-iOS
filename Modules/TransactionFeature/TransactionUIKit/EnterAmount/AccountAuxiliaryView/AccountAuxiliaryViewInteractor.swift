@@ -35,6 +35,17 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
         let title: String
         let subtitle: String
         let imageResource: ImageResource
+        let isEnabled: Bool
+
+        static let empty: State = .init(
+            title: "",
+            subtitle: "",
+            imageResource: .local(
+                name: "icon-bank",
+                bundle: .platformUIKit
+            ),
+            isEnabled: false
+        )
     }
 
     // MARK: - AccountAuxiliaryViewInteractorAPI
@@ -43,33 +54,38 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
 
     // MARK: Public Properties
 
-    var state: Observable<State> {
+    var state: Driver<State> {
         stateRelay
-            .asObservable()
-            .share(replay: 1, scope: .whileConnected)
+            .asDriver()
     }
 
-    let stateRelay = PublishRelay<State>()
+    let stateRelay = BehaviorRelay<State>(value: .empty)
 
     // MARK: - Connect API
 
-    func connect(stream: Observable<BlockchainAccount>) -> Disposable {
-        stream
-            .map { account -> State in
-                switch account {
-                case let bank as LinkedBankAccount:
-                    let type = bank.accountType.title
-                    let description = type + " \(LocalizationIds.account)"
-                    let subtitle = description + " \(bank.accountNumber)"
-                    return .init(
-                        title: bank.label,
-                        subtitle: subtitle,
-                        imageResource: bank.logoResource
-                    )
-                default:
-                    unimplemented()
-                }
+    func connect(stream: Observable<BlockchainAccount>, accounts: Observable<[BlockchainAccount]>) -> Disposable {
+        Observable.zip(
+            stream,
+            accounts
+                .map(\.count)
+                .map { $0 > 1 }
+        )
+        .map { account, tapEnabled -> State in
+            switch account {
+            case let bank as LinkedBankAccount:
+                let type = bank.accountType.title
+                let description = type + (type.isEmpty ? "" : " ") + "\(LocalizationIds.account) -"
+                let subtitle = description + " \(bank.accountNumber)"
+                return .init(
+                    title: bank.label,
+                    subtitle: subtitle,
+                    imageResource: bank.logoResource,
+                    isEnabled: tapEnabled
+                )
+            default:
+                unimplemented()
             }
-            .bindAndCatch(to: stateRelay)
+        }
+        .bindAndCatch(to: stateRelay)
     }
 }

@@ -28,8 +28,8 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
             public let maxTappedAnalyticsEvent: AnalyticsEvent
 
             public init(min: AnalyticsEvent, max: AnalyticsEvent) {
-                self.minTappedAnalyticsEvent = min
-                self.maxTappedAnalyticsEvent = max
+                minTappedAnalyticsEvent = min
+                maxTappedAnalyticsEvent = max
             }
         }
 
@@ -44,18 +44,18 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
         }
 
         public struct AccessibilityIdentifiers {
-            public init() {
-
-            }
+            public init() {}
         }
 
         public let strings: Strings
         public let events: Events
         public let accessibilityIdentifiers: AccessibilityIdentifiers
 
-        public init(events: Events,
-                    strings: Strings,
-                    accessibilityIdentifiers: AccessibilityIdentifiers) {
+        public init(
+            events: Events,
+            strings: Strings,
+            accessibilityIdentifiers: AccessibilityIdentifiers
+        ) {
             self.events = events
             self.strings = strings
             self.accessibilityIdentifiers = accessibilityIdentifiers
@@ -106,20 +106,22 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
 
     // MARK: - Setup
 
-    public init(interactor: AmountTranslationInteractor,
-                analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-                displayBundle: DisplayBundle,
-                inputTypeToggleVisiblity: Visibility) {
+    public init(
+        interactor: AmountTranslationInteractor,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        displayBundle: DisplayBundle,
+        inputTypeToggleVisiblity: Visibility
+    ) {
         self.displayBundle = displayBundle
-        self.swapButtonVisibilityRelay.accept(inputTypeToggleVisiblity)
+        swapButtonVisibilityRelay.accept(inputTypeToggleVisiblity)
         self.interactor = interactor
-        self.fiatPresenter = .init(interactor: interactor.fiatInteractor, currencyCodeSide: .leading)
-        self.cryptoPresenter = .init(interactor: interactor.cryptoInteractor, currencyCodeSide: .trailing)
+        fiatPresenter = .init(interactor: interactor.fiatInteractor, currencyCodeSide: .leading)
+        cryptoPresenter = .init(interactor: interactor.cryptoInteractor, currencyCodeSide: .trailing)
         self.analyticsRecorder = analyticsRecorder
 
         swapButtonTapRelay
             .withLatestFrom(interactor.activeInput)
-            .map { $0.inverted }
+            .map(\.inverted)
             .bindAndCatch(to: interactor.activeInputRelay)
             .disposed(by: disposeBag)
 
@@ -144,18 +146,20 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
             }
     }
 
-    private func setupButton(by state: AmountInteractorState,
-                             activeInput: ActiveAmountInput) -> AmountPresenterState {
+    private func setupButton(
+        by state: AmountInteractorState,
+        activeInput: ActiveAmountInput
+    ) -> AmountPresenterState {
         switch state {
         case .empty, .inBounds:
             return .showSecondaryAmountLabel
-        case let .error(message):
+        case .error(let message):
             let viewModel = ButtonViewModel.currencyOutOfBounds(
                 with: message,
                 accessibilityId: AccessibilityId.error
             )
             return .warning(viewModel)
-        case let .warning(message, action):
+        case .warning(let message, let action):
             let viewModel = ButtonViewModel.warning(
                 with: message,
                 accessibilityId: AccessibilityId.warning

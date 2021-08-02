@@ -6,6 +6,7 @@ import RxSwift
 
 public protocol WalletPickerSelectionServiceAPI: AnyObject {
     var selectedData: Observable<BlockchainAccount> { get }
+
     func record(selection: BlockchainAccount)
 }
 

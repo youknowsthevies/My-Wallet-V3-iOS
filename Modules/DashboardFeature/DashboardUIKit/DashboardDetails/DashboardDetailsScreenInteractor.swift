@@ -45,24 +45,27 @@ final class DashboardDetailsScreenInteractor {
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let recoveryPhraseStatus: RecoveryPhraseStatusProviding
     private let coincore: CoincoreAPI
+
     // MARK: - Setup
 
-    init(currency: CryptoCurrency,
-         coincore: CoincoreAPI = resolve(),
-         savingsAccountService: SavingsOverviewAPI = resolve(),
-         blockchainAccountFetcher: BlockchainAccountFetching = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
-         exchangeAPI: PairExchangeServiceAPI) {
+    init(
+        currency: CryptoCurrency,
+        coincore: CoincoreAPI = resolve(),
+        savingsAccountService: SavingsOverviewAPI = resolve(),
+        blockchainAccountFetcher: BlockchainAccountFetching = resolve(),
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
+        exchangeAPI: PairExchangeServiceAPI
+    ) {
         self.coincore = coincore
         self.blockchainAccountFetcher = blockchainAccountFetcher
         self.currency = currency
         self.savingsAccountService = savingsAccountService
-        self.priceServiceAPI = HistoricalFiatPriceService(
+        priceServiceAPI = HistoricalFiatPriceService(
             cryptoCurrency: currency,
             exchangeAPI: exchangeAPI,
             fiatCurrencyService: fiatCurrencyService
         )
-        self.recoveryPhraseStatus = resolve()
+        recoveryPhraseStatus = resolve()
         self.fiatCurrencyService = fiatCurrencyService
 
         priceServiceAPI.fetchTriggerRelay.accept(.week(.oneHour))

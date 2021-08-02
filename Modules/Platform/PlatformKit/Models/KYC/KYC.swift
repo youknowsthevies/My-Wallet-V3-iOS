@@ -3,4 +3,4 @@
 import Foundation
 
 /// Provides a namespace for KYC related content.
-public enum KYC { }
+public enum KYC {}

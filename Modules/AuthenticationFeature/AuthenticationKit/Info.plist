@@ -13,10 +13,14 @@
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
-	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>1</string>
+	<key>GOOGLE_RECAPTCHA_SITE_KEY</key>
+	<string>$(GOOGLE_RECAPTCHA_SITE_KEY)</string>
+	<key>LOGIN_URL</key>
+	<string>$(LOGIN_URL)</string>
 </dict>
 </plist>

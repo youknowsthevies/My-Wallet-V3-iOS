@@ -8,8 +8,10 @@ final class CardOrderCreationService: PendingOrderCreationServiceAPI {
     private let orderQuoteService: OrderQuoteServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
 
-    init(orderQuoteService: OrderQuoteServiceAPI = resolve(),
-         orderCreationService: OrderCreationServiceAPI = resolve()) {
+    init(
+        orderQuoteService: OrderQuoteServiceAPI = resolve(),
+        orderCreationService: OrderCreationServiceAPI = resolve()
+    ) {
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
     }
@@ -23,7 +25,7 @@ final class CardOrderCreationService: PendingOrderCreationServiceAPI {
         let creation = orderCreationService.create(using: candidateOrderDetails)
         return Single
             .zip(quote, creation)
-            .map { (quote, checkoutData) in
+            .map { quote, checkoutData in
                 PendingConfirmationCheckoutData(quote: quote, checkoutData: checkoutData)
             }
     }

@@ -71,7 +71,11 @@ public enum LoggedIn {
     }
 }
 
-let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environment> { state, action, environment in
+let loggedInReducer = Reducer<
+    LoggedIn.State,
+    LoggedIn.Action,
+    LoggedIn.Environment
+> { state, action, environment in
     switch action {
     case .start(let context):
         return .merge(
@@ -85,18 +89,22 @@ let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environm
             }
             .cancellable(id: LoggedInIdentifier()),
             environment.walletManager.walletDidGetAccountInfoAndExchangeRates
+                .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .cancellable(id: LoggedInIdentifier())
                 .map { _ in LoggedIn.Action.wallet(.accountInfoAndExchangeRates) },
             environment.walletManager.walletBackupFailed
+                .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .cancellable(id: LoggedInIdentifier())
                 .map { _ in LoggedIn.Action.wallet(.handleWalletBackup) },
             environment.walletManager.walletBackupSuccess
+                .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .cancellable(id: LoggedInIdentifier())
                 .map { _ in LoggedIn.Action.wallet(.handleWalletBackup) },
             environment.walletManager.walletFailedToGetHistory
+                .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .cancellable(id: LoggedInIdentifier())
                 .map { result in
@@ -107,21 +115,17 @@ let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environm
                 },
             environment.exchangeRepository
                 .syncDepositAddressesIfLinkedPublisher()
-                .ignoreOutput()
                 .catchToEffect()
                 .fireAndForget(),
             environment.remoteNotificationTokenSender
                 .sendTokenIfNeededPublisher()
-                .ignoreOutput()
                 .catchToEffect()
                 .fireAndForget(),
             environment.remoteNotificationAuthorizer
                 .requestAuthorizationIfNeededPublisher()
-                .ignoreOutput()
                 .catchToEffect()
                 .fireAndForget(),
             environment.coincore.initializePublisher()
-                .ignoreOutput()
                 .catchToEffect()
                 .fireAndForget(),
             .fireAndForget {
@@ -147,6 +151,7 @@ let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environm
         return .none
     case .handleNewWalletCreation:
         return environment.featureFlagsService.isEnabled(.remote(.showOnboardingAfterSignUp))
+            .receive(on: environment.mainQueue)
             .flatMap { shouldShowOnboarding -> Effect<LoggedIn.Action, Never> in
                 guard shouldShowOnboarding else {
                     // display old buy flow
@@ -164,6 +169,7 @@ let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environm
                 return Effect(value: .showOnboarding)
             }
             .eraseToEffect()
+            .cancellable(id: LoggedInIdentifier())
     case .showOnboarding:
         // display new onboarding flow
         state.displayOnboardingFlow = true
@@ -186,7 +192,8 @@ let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environm
         environment.walletManager.wallet.getHistoryForAllAssets()
         return .none
     case .wallet(.handleFailToLoadHistory(let error)):
-        guard let errorMessage = error, errorMessage.count > 0 else {
+        // the logic heres follow what was on the legacy AppCoordinator
+        guard let errorMessage = error, !errorMessage.isEmpty else {
             state.displayWalletAlertContent = AlertViewContent(
                 title: LocalizationConstants.Errors.error,
                 message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork

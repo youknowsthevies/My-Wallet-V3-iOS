@@ -10,7 +10,6 @@ import ToolKit
 extension AppEnvironment {
     static var live: AppEnvironment {
         AppEnvironment(
-            debugCoordinator: resolve(tag : DebugScreenContext.tag),
             loadingViewPresenter: resolve(),
             onboardingSettings: resolve(),
             blurEffectHandler: .init(),
@@ -38,7 +37,8 @@ extension AppEnvironment {
             blockchainSettings: .shared,
             credentialsStore: resolve(),
             urlSession: resolve(),
-            mainQueue: .main
+            mainQueue: .main,
+            buildVersionProvider: Bundle.versionAndBuildNumber
         )
     }
 }

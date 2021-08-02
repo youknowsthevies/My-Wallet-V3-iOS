@@ -38,24 +38,26 @@ final class LinkBankFailureScreenPresenter: RibBridgePresenter, PendingStatePres
             .emit(to: interactor.cancelTapped)
             .disposeOnDeactivate(interactor: interactor)
 
-        viewModel = Driver.deferred({ [weak self] () -> Driver<PendingStateViewModel> in
+        viewModel = Driver.deferred { [weak self] () -> Driver<PendingStateViewModel> in
             guard let self = self else { return .empty() }
             return .just(self.errorViewModel(buttonModel: buttonModel, canceButtonModel: cancelButtonModel))
-        })
+        }
     }
 
     // MARK: - View Model Providers
 
     private func errorViewModel(buttonModel: ButtonViewModel, canceButtonModel: ButtonViewModel) -> PendingStateViewModel {
-        PendingStateViewModel(compositeStatusViewType: .composite(
-            .init(
-                baseViewType: .image(.local(name: "large-bank-icon", bundle: .platformUIKit)),
-                sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.imageResource), position: .rightCorner)
-            )
-        ),
-        title: LocalizedString.GenericFailure.title,
-        subtitle: LocalizedString.GenericFailure.subtitle,
-        button: buttonModel,
-        supplementaryButton: canceButtonModel)
+        PendingStateViewModel(
+            compositeStatusViewType: .composite(
+                .init(
+                    baseViewType: .image(.local(name: "large-bank-icon", bundle: .platformUIKit)),
+                    sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.imageResource), position: .rightCorner)
+                )
+            ),
+            title: LocalizedString.GenericFailure.title,
+            subtitle: LocalizedString.GenericFailure.subtitle,
+            button: buttonModel,
+            supplementaryButton: canceButtonModel
+        )
     }
 }

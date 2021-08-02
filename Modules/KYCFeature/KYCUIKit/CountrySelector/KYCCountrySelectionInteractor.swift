@@ -13,8 +13,10 @@ class KYCCountrySelectionInteractor {
     private let jwtService: JWTServiceAPI
     private let kycClient: KYCClientAPI
 
-    init(jwtService: JWTServiceAPI = resolve(),
-         kycClient: KYCClientAPI = resolve()) {
+    init(
+        jwtService: JWTServiceAPI = resolve(),
+        kycClient: KYCClientAPI = resolve()
+    ) {
         self.kycClient = kycClient
         self.jwtService = jwtService
     }

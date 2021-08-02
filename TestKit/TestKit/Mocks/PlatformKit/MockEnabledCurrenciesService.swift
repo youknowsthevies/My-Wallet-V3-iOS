@@ -5,7 +5,5 @@ import PlatformKit
 class MockEnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     var allEnabledCryptoCurrencies: [CryptoCurrency] = []
     var allEnabledFiatCurrencies: [FiatCurrency] = []
-    var depositEnabledFiatCurrencies: [FiatCurrency] = []
-    var withdrawEnabledFiatCurrencies: [FiatCurrency] = []
     var bankTransferEligibleFiatCurrencies: [FiatCurrency] = []
 }

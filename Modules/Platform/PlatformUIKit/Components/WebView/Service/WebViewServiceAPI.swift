@@ -22,4 +22,4 @@ extension WebViewServiceAPI {
     }
 }
 
-class WebViewService: WebViewServiceAPI { }
+class WebViewService: WebViewServiceAPI {}

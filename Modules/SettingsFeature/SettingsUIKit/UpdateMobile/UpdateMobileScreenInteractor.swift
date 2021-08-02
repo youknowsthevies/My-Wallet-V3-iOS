@@ -40,14 +40,14 @@ final class UpdateMobileScreenInteractor {
     init(service: UpdateMobileSettingsServiceAPI) {
         triggerRelay
             .withLatestFrom(contentRelay)
-            .do(onNext: { [weak self] _ in
-                self?.interactionStateRelay.accept(.updating)
+            .do(onNext: { [interactionStateRelay] _ in
+                interactionStateRelay.accept(.updating)
             })
-            .flatMap(weak: self, selector: { (_, mobile) -> Observable<Void> in
+            .flatMap { mobile -> Observable<Void> in
                 service
                     .update(mobileNumber: mobile)
                     .andThen(Observable.just(()))
-            })
+            }
             .map { _ in .complete }
             .catchErrorJustReturn(.failed)
             .bindAndCatch(to: interactionStateRelay)

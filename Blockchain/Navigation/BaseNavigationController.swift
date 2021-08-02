@@ -13,8 +13,9 @@ enum NavigationCTAType {
     case activityIndicator
     case none
 }
-fileprivate extension NavigationCTAType {
-    var image: UIImage? {
+
+extension NavigationCTAType {
+    fileprivate var image: UIImage? {
         switch self {
         case .qrCode:
             return #imageLiteral(resourceName: "qr-code-icon").withRenderingMode(.alwaysTemplate)
@@ -106,7 +107,7 @@ extension NavigatableView where Self: UIViewController {
 /// It relies on `NavigatableView` to properly layout it's `UIBarButtonItems` as well
 /// as style itself. There is no default behavior should the current `UIViewController`
 /// not conform to `NavigatableView`. This is because the behaviors across all our different
-/// screens are pretty different. 
+/// screens are pretty different.
 @objc class BaseNavigationController: UINavigationController {
 
     private var leftBarButtonItem: UIBarButtonItem!
@@ -130,7 +131,7 @@ extension NavigatableView where Self: UIViewController {
         }
 
         if navigatableView.rightNavControllerCTAType == .activityIndicator {
-            let activityIndicator = UIActivityIndicatorView(style: .white)
+            let activityIndicator = UIActivityIndicatorView(style: .medium)
             activityIndicator.startAnimating()
             controller.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: activityIndicator)
         } else {
@@ -141,7 +142,9 @@ extension NavigatableView where Self: UIViewController {
                 action: #selector(rightBarButtonTapped)
             )
         }
-        controller.navigationItem.rightBarButtonItem?.accessibility = .id(navigatableView.rightNavControllerCTAType.accessibilityIdentifier)
+        controller.navigationItem.rightBarButtonItem?.accessibility = .id(
+            navigatableView.rightNavControllerCTAType.accessibilityIdentifier
+        )
 
         if navigatableView.leftNavControllerCTAType == .activityIndicator {
             assertionFailure("You should put the activity indicator in the right CTA.")
@@ -152,7 +155,9 @@ extension NavigatableView where Self: UIViewController {
                 target: self,
                 action: #selector(leftBarButtonTapped)
             )
-            controller.navigationItem.leftBarButtonItem?.accessibility = .id(navigatableView.leftNavControllerCTAType.accessibilityIdentifier)
+            controller.navigationItem.leftBarButtonItem?.accessibility = .id(
+                navigatableView.leftNavControllerCTAType.accessibilityIdentifier
+            )
         }
 
         controller.navigationItem.rightBarButtonItem?.tintColor = navigatableView.rightCTATintColor

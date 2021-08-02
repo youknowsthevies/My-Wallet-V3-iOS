@@ -7,12 +7,12 @@ public protocol FiatAccount: SingleAccount {
     var canWithdrawFunds: Single<Bool> { get }
 }
 
-public extension FiatAccount {
-    var currencyType: CurrencyType {
+extension FiatAccount {
+    public var currencyType: CurrencyType {
         fiatCurrency.currency
     }
 
-    var requireSecondPassword: Single<Bool> {
+    public var requireSecondPassword: Single<Bool> {
         .just(false)
     }
 }

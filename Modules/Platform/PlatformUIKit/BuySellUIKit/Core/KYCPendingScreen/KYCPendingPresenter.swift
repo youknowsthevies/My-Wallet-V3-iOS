@@ -37,10 +37,12 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
 
     // MARK: - Setup
 
-    init(stateService: RoutingStateEmitterAPI,
-         interactor: KYCPendingInteractor,
-         dismissControllerOnSuccess: @escaping () -> Void,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        stateService: RoutingStateEmitterAPI,
+        interactor: KYCPendingInteractor,
+        dismissControllerOnSuccess: @escaping () -> Void,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.interactor = interactor
@@ -61,8 +63,8 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
             .disposed(by: disposeBag)
 
         interactor.verificationState
-            .map { $0.analyticsEvent }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .map(\.analyticsEvent)
+            .subscribe(onNext: analyticsRecorder.record(event:))
             .disposed(by: disposeBag)
 
         interactor

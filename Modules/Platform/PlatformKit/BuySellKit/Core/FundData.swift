@@ -8,9 +8,9 @@ public struct FundData: Equatable {
         let fiatBalance = balance.available.fiatValue!
         let useTotalBalance = (try? fiatBalance < max) ?? false
         if useTotalBalance {
-            self.topLimit = fiatBalance
+            topLimit = fiatBalance
         } else {
-            self.topLimit = max
+            topLimit = max
         }
     }
 }

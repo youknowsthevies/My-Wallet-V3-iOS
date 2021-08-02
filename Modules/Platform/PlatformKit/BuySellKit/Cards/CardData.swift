@@ -76,22 +76,22 @@ extension CardData {
         guard let type = CardType(rawValue: response.card?.type ?? "") else { return nil }
 
         self.type = type
-        self.identifier = response.identifier
-        self.ownerName = ""
-        self.number = response.card?.number ?? ""
+        identifier = response.identifier
+        ownerName = ""
+        number = response.card?.number ?? ""
         if let label = response.card?.label, !label.isEmpty {
             self.label = label
         } else {
-            self.label = type.name
+            label = type.name
         }
-        self.month = response.card?.month ?? ""
-        self.year = response.card?.year ?? ""
-        self.cvv = ""
+        month = response.card?.month ?? ""
+        year = response.card?.year ?? ""
+        cvv = ""
 
-        self.topLimit = .zero(currency: currency)
-        self.state = response.state
+        topLimit = .zero(currency: currency)
+        state = response.state
         self.currency = currency
-        self.partner = response.partner
+        partner = response.partner
         self.billingAddress = BillingAddress(response: billingAddress)
     }
 }
@@ -115,14 +115,17 @@ extension CardData {
     ///   - number: The number of the card
     ///   - expirationDate: The expiration date in the format: MM/yy
     ///   - cvv: The cvv on the back of the card
-    public init?(ownerName: String?,
-                 number: String?,
-                 expirationDate: String?,
-                 cvv: String?) {
+    public init?(
+        ownerName: String?,
+        number: String?,
+        expirationDate: String?,
+        cvv: String?
+    ) {
         guard let ownerName = ownerName,
               var number = number,
               let expirationDate = expirationDate,
-              let cvv = cvv else {
+              let cvv = cvv
+        else {
             return nil
         }
 
@@ -134,19 +137,19 @@ extension CardData {
         number.removeAll { CharacterSet.whitespaces.contains($0) }
         self.number = number
 
-        self.month = String(dateComponents[0])
+        month = String(dateComponents[0])
 
-        self.year = "20\(dateComponents[1])"
+        year = "20\(dateComponents[1])"
         self.cvv = cvv
 
         type = CardType.determineType(from: number)
 
-        self.state = .none
-        self.partner = .unknown
-        self.currency = nil
-        self.label = "\(type.name) \(number.suffix(4))"
-        self.identifier = ""
-        self.topLimit = .zero(currency: .USD)
+        state = .none
+        partner = .unknown
+        currency = nil
+        label = "\(type.name) \(number.suffix(4))"
+        identifier = ""
+        topLimit = .zero(currency: .USD)
     }
 }
 

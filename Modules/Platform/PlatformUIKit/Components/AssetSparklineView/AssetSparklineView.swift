@@ -40,7 +40,7 @@ public final class AssetSparklineView: UIView {
     }
 
     private let pathRelay: BehaviorRelay<UIBezierPath?> = BehaviorRelay(value: nil)
-    private let shape: CAShapeLayer = CAShapeLayer()
+    private let shape = CAShapeLayer()
     private let disposeBag = DisposeBag()
     private var presenterDisposeBag = DisposeBag()
 
@@ -50,7 +50,7 @@ public final class AssetSparklineView: UIView {
 
     // MARK: - Init
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }

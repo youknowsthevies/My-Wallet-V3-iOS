@@ -6,6 +6,7 @@ import ToolKit
 
 public protocol TradingBalanceServiceAPI: AnyObject {
     var balances: Single<CustodialAccountBalanceStates> { get }
+
     func balance(for currencyType: CurrencyType) -> Single<CustodialAccountBalanceState>
     func fetchBalances() -> Single<CustodialAccountBalanceStates>
 }

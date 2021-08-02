@@ -2,4 +2,4 @@
 
 import Foundation
 
-public protocol MultiAddressAssetAccount: AssetAccount { }
+public protocol MultiAddressAssetAccount: AssetAccount {}

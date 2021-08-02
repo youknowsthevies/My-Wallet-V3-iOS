@@ -33,7 +33,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             switch self {
             case .sbCardEverypayFailure(data: let data):
                 return ["data": data]
@@ -49,15 +49,17 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     private let everyPayClient: EveryPayClientAPI
     private let dataRepository: DataRepositoryAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: - Setup
 
-    init(dataRepository: DataRepositoryAPI = resolve(),
-         cardClient: CardClientAPI = resolve(),
-         everyPayClient: EveryPayClientAPI = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve()) {
+    init(
+        dataRepository: DataRepositoryAPI = resolve(),
+        cardClient: CardClientAPI = resolve(),
+        everyPayClient: EveryPayClientAPI = resolve(),
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.dataRepository = dataRepository
         self.cardClient = cardClient
         self.everyPayClient = everyPayClient
@@ -69,65 +71,67 @@ public final class CardUpdateService: CardUpdateServiceAPI {
 
         // Get the user email
         let email = dataRepository.userSingle
-            .map { $0.email.address }
+            .map(\.email.address)
 
         return Single.zip(
-                fiatCurrencyService.fiatCurrency,
-                email
+            fiatCurrencyService.fiatCurrency,
+            email
+        )
+        .map { (currency: $0.0, email: $0.1) }
+        // 1. Add the card details via BE
+        .flatMap(weak: self) { (self, payload) -> Single<CardPayload> in
+            self.cardClient
+                .add(
+                    for: payload.currency.code,
+                    email: payload.email,
+                    billingAddress: card.billingAddress.requestPayload
+                )
+                .do(onError: { _ in
+                    self.analyticsRecorder.record(event: CardUpdateEvent.sbAddCardFailure)
+                })
+        }
+        // 2. Make sure the card partner is supported
+        .map { payload -> CardPayload in
+            guard payload.partner.isKnown else {
+                throw ServiceError.unknownPartner
+            }
+            return payload
+        }
+        // 3. Activate the card
+        .flatMap(weak: self) { (self, payload) -> Single<(cardId: String, partner: ActivateCardResponse.Partner)> in
+            self.cardClient.activateCard(
+                by: payload.identifier,
+                url: PartnerAuthorizationData.exitLink
             )
-            .map { (currency: $0.0, email: $0.1) }
-            // 1. Add the card details via BE
-            .flatMap(weak: self) { (self, payload) -> Single<CardPayload> in
-                self.cardClient
-                    .add(
-                        for: payload.currency.code,
-                        email: payload.email,
-                        billingAddress: card.billingAddress.requestPayload
-                    )
-                    .do(onError: { _ in
-                        self.analyticsRecorder.record(event: CardUpdateEvent.sbAddCardFailure)
-                    })
+            .map {
+                (cardId: payload.identifier, partner: $0)
             }
-            // 2. Make sure the card partner is supported
-            .map { payload -> CardPayload in
-                guard payload.partner.isKnown else {
-                    throw ServiceError.unknownPartner
-                }
-                return payload
-            }
-            // 3. Activate the card
-            .flatMap(weak: self) { (self, payload) -> Single<(cardId: String, partner: ActivateCardResponse.Partner)> in
-                self.cardClient.activateCard(
-                    by: payload.identifier,
-                    url: PartnerAuthorizationData.exitLink
+            .do(onError: { _ in
+                self.analyticsRecorder.record(event: CardUpdateEvent.sbCardActivationFailure)
+            })
+        }
+        // 4. Partner
+        .flatMap(weak: self) { (self, payload) -> Single<PartnerAuthorizationData> in
+            self
+                .add(
+                    card: card,
+                    via: payload.partner
                 )
                 .map {
-                    (cardId: payload.identifier, partner: $0)
-                }
-                .do(onError: { _ in
-                    self.analyticsRecorder.record(event: CardUpdateEvent.sbCardActivationFailure)
-                })
-            }
-            // 4. Partner
-            .flatMap(weak: self) { (self, payload) -> Single<PartnerAuthorizationData> in
-                self
-                    .add(
-                        card: card,
-                        via: payload.partner
+                    PartnerAuthorizationData(
+                        state: $0,
+                        paymentMethodId: payload.cardId
                     )
-                    .map {
-                        PartnerAuthorizationData(
-                            state: $0,
-                            paymentMethodId: payload.cardId
-                        )
-                    }
-            }
+                }
+        }
     }
 
     // MARK: - Partner Integration
 
-    private func add(card: CardData,
-                     via partner: ActivateCardResponse.Partner) -> Single<PartnerAuthorizationData.State> {
+    private func add(
+        card: CardData,
+        via partner: ActivateCardResponse.Partner
+    ) -> Single<PartnerAuthorizationData.State> {
         switch partner {
         case .everypay(let data):
             return add(card: card, with: data)
@@ -137,8 +141,10 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     }
 
     /// Add via every pay
-    private func add(card: CardData,
-                     with everyPayData: ActivateCardResponse.Partner.EveryPayData) -> Single<PartnerAuthorizationData.State> {
+    private func add(
+        card: CardData,
+        with everyPayData: ActivateCardResponse.Partner.EveryPayData
+    ) -> Single<PartnerAuthorizationData.State> {
         everyPayClient
             .send(
                 cardDetails: card.everyPayCardDetails,

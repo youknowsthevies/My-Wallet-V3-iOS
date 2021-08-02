@@ -31,17 +31,23 @@ final class KYCAdapter {
 
     // MARK: - Public Interface
 
-    func presentEmailVerificationAndKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCUIKit.FlowResult, KYCUIKit.RouterError> {
+    func presentEmailVerificationAndKYCIfNeeded(
+        from presenter: UIViewController
+    ) -> AnyPublisher<KYCUIKit.FlowResult, KYCUIKit.RouterError> {
         router.presentEmailVerificationAndKYCIfNeeded(from: presenter)
             .eraseToAnyPublisher()
     }
 
-    func presentEmailVerificationIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCUIKit.FlowResult, KYCUIKit.RouterError> {
+    func presentEmailVerificationIfNeeded(
+        from presenter: UIViewController
+    ) -> AnyPublisher<KYCUIKit.FlowResult, KYCUIKit.RouterError> {
         router.presentEmailVerificationIfNeeded(from: presenter)
             .eraseToAnyPublisher()
     }
 
-    func presentKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCUIKit.FlowResult, KYCUIKit.RouterError> {
+    func presentKYCIfNeeded(
+        from presenter: UIViewController
+    ) -> AnyPublisher<KYCUIKit.FlowResult, KYCUIKit.RouterError> {
         router.presentKYCIfNeeded(from: presenter)
             .eraseToAnyPublisher()
     }
@@ -77,21 +83,27 @@ extension KYCRoutingResult {
 
 extension KYCAdapter: PlatformUIKit.KYCRouting {
 
-    func presentEmailVerificationAndKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
+    func presentEmailVerificationAndKYCIfNeeded(
+        from presenter: UIViewController
+    ) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
         presentEmailVerificationAndKYCIfNeeded(from: presenter)
             .mapError(KYCRouterError.init)
             .map(KYCRoutingResult.init)
             .eraseToAnyPublisher()
     }
 
-    func presentEmailVerificationIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
+    func presentEmailVerificationIfNeeded(
+        from presenter: UIViewController
+    ) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
         presentEmailVerificationIfNeeded(from: presenter)
             .mapError(KYCRouterError.init)
             .map(KYCRoutingResult.init)
             .eraseToAnyPublisher()
     }
 
-    func presentKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
+    func presentKYCIfNeeded(
+        from presenter: UIViewController
+    ) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
         presentKYCIfNeeded(from: presenter)
             .mapError(KYCRouterError.init)
             .map(KYCRoutingResult.init)
@@ -141,7 +153,7 @@ extension KYCAdapter: PlatformUIKit.TierUpgradeRouterAPI {
                     ) // simply return to the prompt.
                     .eraseToAnyPublisher()
                 case .completed:
-                    legacyRouter.start(tier: .tier2)
+                    legacyRouter.start(tier: .tier2, parentFlow: .simpleBuy)
                     return Observable.merge(
                         legacyRouter.kycStopped,
                         legacyRouter.kycFinished

@@ -8,7 +8,8 @@ import RxSwift
 import ToolKit
 
 final class PaymentMethodViewController: BaseScreenViewController,
-                                         PaymentMethodViewControllable {
+    PaymentMethodViewControllable
+{
 
     weak var listener: PaymentMethodListener?
 
@@ -46,7 +47,7 @@ final class PaymentMethodViewController: BaseScreenViewController,
             }
 
         let dataSource = RxDataSource(
-            configureCell: { [weak self] (_, _, indexPath, item) -> UITableViewCell in
+            configureCell: { [weak self] _, _, indexPath, item -> UITableViewCell in
                 guard let self = self else { return UITableViewCell() }
                 switch item {
                 case .suggestedPaymentMethod(let viewModel):
@@ -94,8 +95,10 @@ final class PaymentMethodViewController: BaseScreenViewController,
         tableView.layoutToSuperview(axis: .vertical)
     }
 
-    private func suggestedPaymentMethodCell(for indexPath: IndexPath,
-                                            viewModel: ExplainedActionViewModel) -> UITableViewCell {
+    private func suggestedPaymentMethodCell(
+        for indexPath: IndexPath,
+        viewModel: ExplainedActionViewModel
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(ExplainedActionTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell

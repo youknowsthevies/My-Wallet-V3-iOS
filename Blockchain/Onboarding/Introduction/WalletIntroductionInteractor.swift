@@ -37,21 +37,21 @@ class WalletIntroductionInteractor: WalletIntroductionInteracting {
     }
 
     var isIntroductionComplete: Single<Bool> {
-        lastLocation.ifEmpty(default: .starter).flatMap(weak: self, { (self, step) -> Single<Bool> in
+        lastLocation.ifEmpty(default: .starter).flatMap(weak: self) { (self, step) -> Single<Bool> in
             self.next(step)
                 .map { _ -> Bool in
-                false
-            }
-            .catchErrorJustReturn(true)
-        })
+                    false
+                }
+                .catchErrorJustReturn(true)
+        }
     }
 
     var startingLocation: Single<WalletIntroductionLocation> {
         guard let step = onboardingSettings.walletIntroLatestLocation else { return defaultStartLocation }
-        return next(step).flatMap(weak: self, { (self, location) -> Single<WalletIntroductionLocation> in
+        return next(step).flatMap(weak: self) { (self, location) -> Single<WalletIntroductionLocation> in
             guard location.screen == self.screen else { return Single.error(WalletIntroductionError.invalidScreenForStep) }
             return Single.just(location)
-        })
+        }
     }
 
     var lastLocation: Maybe<WalletIntroductionLocation> {

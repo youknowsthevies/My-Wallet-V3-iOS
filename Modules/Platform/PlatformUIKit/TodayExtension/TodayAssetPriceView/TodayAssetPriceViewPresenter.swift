@@ -28,7 +28,6 @@ public final class TodayAssetPriceViewPresenter {
                 font: .systemFont(ofSize: 16.0, weight: .semibold),
                 color: .white,
                 accessibility: .none
-
             )
 
             let color: UIColor
@@ -90,7 +89,7 @@ public final class TodayAssetPriceViewPresenter {
         /// Map interaction state into presnetation state
         /// and bind it to `stateRelay`
         interactor.state
-            .map(weak: self) { (_, state) -> PresentationState in
+            .map(weak: self) { _, state -> PresentationState in
                 .init(with: state)
             }
             .bindAndCatch(to: stateRelay)
@@ -103,10 +102,12 @@ public final class TodayAssetPriceViewPresenter {
 
     // MARK: - Setup
 
-    public init(interactor: AssetPriceViewInteracting,
-                alignment: UIStackView.Alignment = .fill) {
+    public init(
+        interactor: AssetPriceViewInteracting,
+        alignment: UIStackView.Alignment = .fill
+    ) {
         self.interactor = interactor
-        self.alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
+        alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
     }
 }
 

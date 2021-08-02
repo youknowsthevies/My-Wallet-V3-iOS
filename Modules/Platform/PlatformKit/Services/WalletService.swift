@@ -41,7 +41,7 @@ class WalletService: WalletOptionsAPI {
     var serverUnderMaintenanceMessage: Single<String?> {
         walletOptions.map { options in
             if options.downForMaintenance {
-                // TODO
+                // TODO:
                 return options.mobileInfo?.message ?? ""
             } else {
                 return nil

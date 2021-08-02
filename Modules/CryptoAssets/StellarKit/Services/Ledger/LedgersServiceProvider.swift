@@ -13,7 +13,7 @@ final class LedgersServiceProvider: LedgersServiceProviderAPI {
 
     private let configurationService: StellarConfigurationAPI
 
-    public init(configurationService: StellarConfigurationAPI = resolve()) {
+    init(configurationService: StellarConfigurationAPI = resolve()) {
         self.configurationService = configurationService
     }
 

@@ -6,7 +6,7 @@ import ToolKit
 
 public typealias APICode = String
 
-struct Network {
+enum Network {
 
     struct Config {
 
@@ -54,9 +54,13 @@ struct Network {
 
 public class UserAgentProvider {
 
-    @Inject private var deviceInfo: DeviceInfo
+    private var deviceInfo: DeviceInfo
 
-    var userAgent: String? {
+    public init(deviceInfo: DeviceInfo = resolve()) {
+        self.deviceInfo = deviceInfo
+    }
+
+    public var userAgent: String? {
         guard
             let version = Bundle.applicationVersion,
             let build = Bundle.applicationBuildVersion

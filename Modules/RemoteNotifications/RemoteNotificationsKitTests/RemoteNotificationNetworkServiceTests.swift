@@ -28,9 +28,11 @@ final class RemoteNotificationNetworkServiceTests: XCTestCase {
         let credentialsProvider = MockGuidSharedKeyRepositoryAPI()
         let service = prepareServiceForHttpCodeOk(with: .success)
         let observable = service
-            .register(with: token,
-                      sharedKeyProvider: credentialsProvider,
-                      guidProvider: credentialsProvider)
+            .register(
+                with: token,
+                sharedKeyProvider: credentialsProvider,
+                guidProvider: credentialsProvider
+            )
             .toBlocking()
 
         do {
@@ -45,9 +47,11 @@ final class RemoteNotificationNetworkServiceTests: XCTestCase {
         let credentialsProvider = MockGuidSharedKeyRepositoryAPI()
         let service = prepareServiceForHttpCodeOk(with: .failure)
         let observable = service
-            .register(with: token,
-                      sharedKeyProvider: credentialsProvider,
-                      guidProvider: credentialsProvider)
+            .register(
+                with: token,
+                sharedKeyProvider: credentialsProvider,
+                guidProvider: credentialsProvider
+            )
             .toBlocking()
 
         do {

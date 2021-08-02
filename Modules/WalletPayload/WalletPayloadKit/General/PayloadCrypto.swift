@@ -123,14 +123,14 @@ final class PayloadCrypto: PayloadCryptoAPI {
         let salt = iv
 
         return stretchPassword(
-                password: key,
-                salt: salt,
-                iterations: iterations,
-                keyLengthBytes: Constants.keyBitLen
-            )
-            .flatMap { stretchedPassword -> Result<String, PayloadCryptoError> in
-                decrypt(buffer: payload, with: stretchedPassword.bytes, iv: iv, options: options)
-            }
+            password: key,
+            salt: salt,
+            iterations: iterations,
+            keyLengthBytes: Constants.keyBitLen
+        )
+        .flatMap { stretchedPassword -> Result<String, PayloadCryptoError> in
+            decrypt(buffer: payload, with: stretchedPassword.bytes, iv: iv, options: options)
+        }
     }
 
     func encrypt(
@@ -144,14 +144,14 @@ final class PayloadCrypto: PayloadCryptoAPI {
 
         let salt = PayloadCrypto.randomIV(Constants.saltBytes)
         return stretchPassword(
-                password: key,
-                salt: salt,
-                iterations: iterations,
-                keyLengthBytes: Constants.keyBitLen
-            )
-            .flatMap { key -> Result<String, PayloadCryptoError> in
-                encrypt(data: payload, with: key, iv: salt)
-            }
+            password: key,
+            salt: salt,
+            iterations: iterations,
+            keyLengthBytes: Constants.keyBitLen
+        )
+        .flatMap { key -> Result<String, PayloadCryptoError> in
+            encrypt(data: payload, with: key, iv: salt)
+        }
     }
 
     func decryptWallet(encryptedWalletData: String, password: String) -> Result<String, PayloadCryptoError> {
@@ -165,26 +165,26 @@ final class PayloadCrypto: PayloadCryptoAPI {
             fatalError(PayloadCryptoError.encryptionFailed.localizedDescription)
         }
         return cryptor.encrypt(
-                data: dataBytes,
-                with: key,
-                iv: Data(iv)
-            )
-            .replaceError(with: PayloadCryptoError.encryptionFailed)
-            .map { encryptedBytes -> String in
-                Data(iv + encryptedBytes).base64EncodedString()
-            }
+            data: dataBytes,
+            with: key,
+            iv: Data(iv)
+        )
+        .replaceError(with: PayloadCryptoError.encryptionFailed)
+        .map { encryptedBytes -> String in
+            Data(iv + encryptedBytes).base64EncodedString()
+        }
     }
 
     private func stretchPassword(password: String, salt: [UInt8], iterations: UInt32, keyLengthBytes: UInt) -> Result<Data, PayloadCryptoError> {
         let keyLenBytes = (keyLengthBytes | 256) / 8
         let saltData = Data(salt)
         return PBKDF2.deriveSHA1Result(
-                password: password,
-                salt: saltData,
-                iterations: iterations,
-                keySizeBytes: keyLenBytes
-            )
-            .replaceError(with: .keyDerivationFailed)
+            password: password,
+            salt: saltData,
+            iterations: iterations,
+            keySizeBytes: keyLenBytes
+        )
+        .replaceError(with: .keyDerivationFailed)
     }
 
     private func decrypt(buffer: [UInt8], with key: [UInt8], iv: [UInt8], options: AESOptions = .default) -> Result<String, PayloadCryptoError> {
@@ -192,12 +192,12 @@ final class PayloadCrypto: PayloadCryptoAPI {
         let keyData = Data(key)
         let ivData = Data(iv)
         return cryptor.decryptUTF8String(
-                data: data,
-                with: keyData,
-                iv: ivData,
-                options: options
-            )
-            .replaceError(with: .decryptionFailed)
+            data: data,
+            with: keyData,
+            iv: ivData,
+            options: options
+        )
+        .replaceError(with: .decryptionFailed)
     }
 
     private func decryptWalletSync(data: String, password: String) -> Result<String, PayloadCryptoError> {
@@ -299,7 +299,7 @@ final class PayloadCrypto: PayloadCryptoAPI {
         return .failure(.failedToDecryptV1Payload)
     }
 
-    private static func randomIV(_ count: Int) -> Array<UInt8> {
+    private static func randomIV(_ count: Int) -> [UInt8] {
         (0..<count).map { _ in UInt8.random(in: 0...UInt8.max) }
     }
 }

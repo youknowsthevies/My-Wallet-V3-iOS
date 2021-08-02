@@ -20,7 +20,7 @@ public final class InputAmountLabelInteractor {
         scanner = MoneyValueInputScanner(
             maxDigits: .init(integral: integralPlacesLimit, fractional: currency.maxDisplayableDecimalPlaces)
         )
-        self.interactor = AmountLabelViewInteractor(currency: currency)
+        interactor = AmountLabelViewInteractor(currency: currency)
 
         interactor.currency
             .map { .init(integral: integralPlacesLimit, fractional: $0.maxDisplayableDecimalPlaces) }

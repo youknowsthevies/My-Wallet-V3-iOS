@@ -20,7 +20,8 @@ public final class BitPayInvoiceTarget: InvoiceTarget, CryptoReceiveAddress {
             fatalError("Expected a date: \(expires)")
         }
         guard let seconds = Calendar.current.dateComponents([.second], from: Date(), to: expiryDate).second,
-              seconds >= 0 else {
+              seconds >= 0
+        else {
             return 0
         }
         return TimeInterval(seconds)
@@ -32,12 +33,14 @@ public final class BitPayInvoiceTarget: InvoiceTarget, CryptoReceiveAddress {
 
     // MARK: - Init
 
-    public init(asset: CryptoCurrency,
-                amount: CryptoValue,
-                invoiceId: String,
-                merchant: String,
-                address: String,
-                expires: String) {
+    public init(
+        asset: CryptoCurrency,
+        amount: CryptoValue,
+        invoiceId: String,
+        merchant: String,
+        address: String,
+        expires: String
+    ) {
         self.asset = asset
         self.amount = amount
         self.invoiceId = invoiceId

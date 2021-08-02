@@ -31,7 +31,8 @@ protocol AddNewBankAccountPresentable: Presentable {
 }
 
 final class AddNewBankAccountInteractor: PresentableInteractor<AddNewBankAccountPresentable>,
-                                         AddNewBankAccountInteractable {
+    AddNewBankAccountInteractable
+{
 
     weak var router: AddNewBankAccountRouting?
     weak var listener: AddNewBankAccountListener?
@@ -39,9 +40,11 @@ final class AddNewBankAccountInteractor: PresentableInteractor<AddNewBankAccount
     private let fiatCurrency: FiatCurrency
     private let paymentAccountService: PaymentAccountServiceAPI
 
-    init(presenter: AddNewBankAccountPresentable,
-         fiatCurrency: FiatCurrency,
-         paymentAccountService: PaymentAccountServiceAPI = resolve()) {
+    init(
+        presenter: AddNewBankAccountPresentable,
+        fiatCurrency: FiatCurrency,
+        paymentAccountService: PaymentAccountServiceAPI = resolve()
+    ) {
         self.fiatCurrency = fiatCurrency
         self.paymentAccountService = paymentAccountService
         super.init(presenter: presenter)

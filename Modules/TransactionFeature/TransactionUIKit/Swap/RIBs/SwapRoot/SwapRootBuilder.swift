@@ -12,15 +12,17 @@ public protocol SwapRootBuildable {
 
 public final class SwapRootBuilder: SwapRootBuildable {
 
-    public init() { }
+    public init() {}
 
     public func build() -> ViewableRouting {
         let viewController = SwapRootViewController()
         let interactor = SwapRootInteractor()
 
         viewController.listener = interactor
-        let router = SwapRootRouter(interactor: interactor,
-                                    viewController: viewController)
+        let router = SwapRootRouter(
+            interactor: interactor,
+            viewController: viewController
+        )
         interactor.router = router
         return router
     }

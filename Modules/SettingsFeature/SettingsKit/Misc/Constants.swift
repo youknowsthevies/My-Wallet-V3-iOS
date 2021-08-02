@@ -5,7 +5,7 @@ import Foundation
 public enum Constants {
     public static let commitHash = "COMMIT_HASH"
 
-    public struct Url {
+    public enum Url {
         public static let blockchainHome = "https://www.blockchain.com"
         public static let privacyPolicy = blockchainHome + "/privacy"
         public static let cookiesPolicy = blockchainHome + "/legal/cookies"

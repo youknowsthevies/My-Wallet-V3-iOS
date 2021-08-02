@@ -21,12 +21,15 @@ enum SideMenuItem {
     case secureChannel
     case lockbox
     case exchange
+    case interest
 }
 
 extension SideMenuItem {
 
     var analyticsEvents: [AnalyticsEvent] {
         switch self {
+        case .interest:
+            return [AnalyticsEvents.SideMenu.sideNavInterest]
         case .accountsAndAddresses:
             return [AnalyticsEvents.SideMenu.sideNavAccountsAndAddresses]
         case .backup:
@@ -62,6 +65,8 @@ extension SideMenuItem {
 
     var title: String {
         switch self {
+        case .interest:
+            return LocalizationConstants.SideMenu.earnInterest
         case .accountsAndAddresses:
             return LocalizationConstants.SideMenu.addresses
         case .backup:
@@ -91,6 +96,8 @@ extension SideMenuItem {
 
     private var imageName: String {
         switch self {
+        case .interest:
+            return "menu_interest"
         case .accountsAndAddresses:
             return "menu-icon-addresses"
         case .backup:
@@ -134,6 +141,7 @@ extension SideMenuItem {
              .airdrops,
              .lockbox,
              .webLogin,
+             .interest,
              .secureChannel:
             return false
         case .exchange:

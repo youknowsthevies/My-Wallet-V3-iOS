@@ -22,7 +22,7 @@ enum NetworkFeeSelectionSectionItem: Equatable, IdentifiableType {
         }
     }
 
-    static func ==(lhs: NetworkFeeSelectionSectionItem, rhs: NetworkFeeSelectionSectionItem) -> Bool {
+    static func == (lhs: NetworkFeeSelectionSectionItem, rhs: NetworkFeeSelectionSectionItem) -> Bool {
         switch (lhs, rhs) {
         case (.radio(let left), .radio(let right)):
             return left == right
@@ -54,7 +54,7 @@ struct NetworkFeeSelectionSectionModel: SectionModelType {
 }
 
 extension NetworkFeeSelectionSectionModel: Equatable {
-    static func ==(lhs: NetworkFeeSelectionSectionModel, rhs: NetworkFeeSelectionSectionModel) -> Bool {
+    static func == (lhs: NetworkFeeSelectionSectionModel, rhs: NetworkFeeSelectionSectionModel) -> Bool {
         lhs.items == rhs.items
     }
 }

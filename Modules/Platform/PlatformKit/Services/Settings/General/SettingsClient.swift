@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Combine
 import DIKit
 import NetworkKit
@@ -35,7 +36,7 @@ final class SettingsClient: SettingsClientAPI {
         case updateEmail = "update-email"
         case updateBtcCurrency = "update-btc-currency"
         case updateCurrency = "update-currency"
-        case updatePasswordHint  = "update-password-hint1"
+        case updatePasswordHint = "update-password-hint1"
         case updateAuthType = "update-auth-type"
         case updateBlockTorIps = "update-block-tor-ips"
         case updateLastTxTime = "update-last-tx-time"
@@ -48,8 +49,10 @@ final class SettingsClient: SettingsClientAPI {
 
     // MARK: - Setup
 
-    init(apiCode: String = BlockchainAPI.Parameters.apiCode,
-         networkAdapter: NetworkAdapterAPI = resolve()) {
+    init(
+        apiCode: String = BlockchainAPI.Parameters.apiCode,
+        networkAdapter: NetworkAdapterAPI = resolve()
+    ) {
         self.apiCode = apiCode
         self.networkAdapter = networkAdapter
     }
@@ -64,7 +67,7 @@ final class SettingsClient: SettingsClientAPI {
             method: Method.getInfo.rawValue,
             guid: guid,
             sharedKey: sharedKey,
-            apiCode: self.apiCode
+            apiCode: apiCode
         )
         let data = try? JSONEncoder().encode(payload)
         let request = NetworkRequest(
@@ -90,10 +93,12 @@ final class SettingsClient: SettingsClientAPI {
         )
     }
 
-    func update(currency: String,
-                context: FlowContext,
-                guid: String,
-                sharedKey: String) -> Completable {
+    func update(
+        currency: String,
+        context: FlowContext,
+        guid: String,
+        sharedKey: String
+    ) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -103,10 +108,12 @@ final class SettingsClient: SettingsClientAPI {
         )
     }
 
-    func updatePublisher(currency: String,
-                         context: FlowContext,
-                         guid: String,
-                         sharedKey: String) -> AnyPublisher<Void, CurrencyUpdateError> {
+    func updatePublisher(
+        currency: String,
+        context: FlowContext,
+        guid: String,
+        sharedKey: String
+    ) -> AnyPublisher<Void, CurrencyUpdateError> {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -125,10 +132,12 @@ final class SettingsClient: SettingsClientAPI {
     /// - Parameter guid: The wallet identifier that must be valid.
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Completable`.
-    func update(email: String,
-                context: FlowContext?,
-                guid: String,
-                sharedKey: String) -> Completable {
+    func update(
+        email: String,
+        context: FlowContext?,
+        guid: String,
+        sharedKey: String
+    ) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -144,10 +153,12 @@ final class SettingsClient: SettingsClientAPI {
     /// - Parameter guid: The wallet identifier that must be valid.
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Completable`.
-    func update(smsNumber: String,
-                context: FlowContext?,
-                guid: String,
-                sharedKey: String) -> Completable {
+    func update(
+        smsNumber: String,
+        context: FlowContext?,
+        guid: String,
+        sharedKey: String
+    ) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -198,11 +209,13 @@ final class SettingsClient: SettingsClientAPI {
     /// - Parameter payload: A raw payload associated with the type of updated content.
     /// - Parameter context: The context in which the update is happening.
     /// - Returns: a `Completable`.
-    private func update(guid: String,
-                        sharedKey: String,
-                        method: Method,
-                        payload: String,
-                        context: FlowContext? = nil) -> Completable {
+    private func update(
+        guid: String,
+        sharedKey: String,
+        method: Method,
+        payload: String,
+        context: FlowContext? = nil
+    ) -> Completable {
         networkAdapter.perform(
             request: request(
                 guid: guid,
@@ -214,11 +227,13 @@ final class SettingsClient: SettingsClientAPI {
         )
     }
 
-    private func update(guid: String,
-                        sharedKey: String,
-                        method: Method,
-                        payload: String,
-                        context: FlowContext? = nil) -> AnyPublisher<String, NetworkError> {
+    private func update(
+        guid: String,
+        sharedKey: String,
+        method: Method,
+        payload: String,
+        context: FlowContext? = nil
+    ) -> AnyPublisher<String, NetworkError> {
         networkAdapter.perform(
             request: request(
                 guid: guid,
@@ -230,7 +245,7 @@ final class SettingsClient: SettingsClientAPI {
         )
     }
 
-    public func update(email: String, context: FlowContext?, guid: String, sharedKey: String) -> AnyPublisher<String, NetworkError> {
+    func update(email: String, context: FlowContext?, guid: String, sharedKey: String) -> AnyPublisher<String, NetworkError> {
         networkAdapter.perform(
             request: request(
                 guid: guid,
@@ -244,7 +259,7 @@ final class SettingsClient: SettingsClientAPI {
 
 extension SettingsClient {
 
-    fileprivate func request(
+    private func request(
         guid: String,
         sharedKey: String,
         method: Method,
@@ -256,7 +271,7 @@ extension SettingsClient {
             method: method.rawValue,
             guid: guid,
             sharedKey: sharedKey,
-            apiCode: self.apiCode,
+            apiCode: apiCode,
             payload: payload,
             length: "\(payload.count)",
             format: SettingsRequest.Formats.plain,
@@ -270,5 +285,4 @@ extension SettingsClient {
             contentType: .formUrlEncoded
         )
     }
-
 }

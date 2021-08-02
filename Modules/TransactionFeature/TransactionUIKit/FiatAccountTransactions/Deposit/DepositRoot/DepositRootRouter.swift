@@ -9,9 +9,10 @@ import RxSwift
 import ToolKit
 
 protocol DepositRootInteractable: Interactable,
-                                  TransactionFlowListener,
-                                  PaymentMethodListener,
-                                  AddNewBankAccountListener {
+    TransactionFlowListener,
+    PaymentMethodListener,
+    AddNewBankAccountListener
+{
 
     var router: DepositRootRouting? { get set }
     var listener: DepositRootListener? { get set }
@@ -33,9 +34,11 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
 
     // MARK: - Init
 
-    init(interactor: DepositRootInteractable,
-         topMostViewControllerProviding: TopMostViewControllerProviding = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        interactor: DepositRootInteractable,
+        topMostViewControllerProviding: TopMostViewControllerProviding = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.topMostViewControllerProviding = topMostViewControllerProviding
         self.analyticsRecorder = analyticsRecorder
         super.init(interactor: interactor)
@@ -44,7 +47,7 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
 
     // MARK: - Overrides
 
-    public override func didLoad() {
+    override func didLoad() {
         super.didLoad()
         interactor.activate()
     }

@@ -27,7 +27,7 @@ extension KYC {
         public func tierAccountStatus(for tier: KYC.Tier) -> KYC.AccountStatus {
             tiers
                 .first(where: { $0.tier == tier })
-                .flatMap { $0.state.accountStatus } ?? .none
+                .map(\.state.accountStatus) ?? .none
         }
 
         /// Returns the latest tier, approved OR in progress (pending || in-review)
@@ -62,8 +62,8 @@ extension KYC {
     }
 }
 
-fileprivate extension KYC.Tier.State {
-    var accountStatus: KYC.AccountStatus {
+extension KYC.Tier.State {
+    fileprivate var accountStatus: KYC.AccountStatus {
         switch self {
         case .none:
             return .none

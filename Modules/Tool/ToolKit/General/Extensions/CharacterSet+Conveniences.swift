@@ -7,3 +7,11 @@ extension CharacterSet {
         !character.unicodeScalars.contains(where: { !contains($0) })
     }
 }
+
+extension CharacterSet {
+
+    /// Returns the character set for character symbols allowed in a URLQueryItem
+    public static var urlQueryItemSymbolsAllowed = CharacterSet(
+        charactersIn: "!*'();:@&=+$,/?%#[] "
+    ).inverted
+}

@@ -11,7 +11,7 @@ public struct TitledLink {
 
 /// A view model for `InteractableTextView`
 public struct InteractableTextViewModel {
-    public static let empty: InteractableTextViewModel = InteractableTextViewModel(
+    public static let empty = InteractableTextViewModel(
         inputs: [],
         textStyle: .init(color: .textFieldText, font: .main(.medium, 14.0)),
         linkStyle: .init(color: .linkableText, font: .main(.bold, 14.0))
@@ -53,12 +53,14 @@ public struct InteractableTextViewModel {
 
     let tapRelay = PublishRelay<TitledLink>()
 
-    public init(inputs: [Input],
-                textStyle: Style,
-                linkStyle: Style,
-                lineSpacing: CGFloat = 0,
-                alignment: NSTextAlignment = .natural) {
-        self.inputsRelay.accept(inputs)
+    public init(
+        inputs: [Input],
+        textStyle: Style,
+        linkStyle: Style,
+        lineSpacing: CGFloat = 0,
+        alignment: NSTextAlignment = .natural
+    ) {
+        inputsRelay.accept(inputs)
         self.textStyle = textStyle
         self.linkStyle = linkStyle
         self.lineSpacing = lineSpacing
@@ -72,8 +74,8 @@ extension InteractableTextViewModel: Equatable {
     }
 }
 
-public extension Reactive where Base: InteractableTextView {
-    var viewModel: Binder<InteractableTextViewModel> {
+extension Reactive where Base: InteractableTextView {
+    public var viewModel: Binder<InteractableTextViewModel> {
         Binder(base) { $0.viewModel = $1 }
     }
 }

@@ -12,7 +12,7 @@ public final class FiatCurrencySelectionService: SelectionServiceAPI {
 
     public var dataSource: Observable<[SelectionItemViewModel]> {
         provider.currencies
-            .map { $0.map { $0.selectionItem }.sorted() }
+            .map { $0.map(\.selectionItem).sorted() }
     }
 
     public let selectedDataRelay: BehaviorRelay<SelectionItemViewModel>
@@ -23,15 +23,17 @@ public final class FiatCurrencySelectionService: SelectionServiceAPI {
 
     private let provider: FiatCurrencySelectionProviderAPI
 
-    public init(defaultSelectedData: FiatCurrency = .locale,
-                provider: FiatCurrencySelectionProviderAPI = DefaultFiatCurrencySelectionProvider()) {
+    public init(
+        defaultSelectedData: FiatCurrency = .locale,
+        provider: FiatCurrencySelectionProviderAPI = DefaultFiatCurrencySelectionProvider()
+    ) {
         self.provider = provider
-        self.selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
+        selectedDataRelay = BehaviorRelay(value: defaultSelectedData.selectionItem)
     }
 }
 
-private extension FiatCurrency {
-    var selectionItem: SelectionItemViewModel {
+extension FiatCurrency {
+    fileprivate var selectionItem: SelectionItemViewModel {
         SelectionItemViewModel(
             id: code,
             title: name,

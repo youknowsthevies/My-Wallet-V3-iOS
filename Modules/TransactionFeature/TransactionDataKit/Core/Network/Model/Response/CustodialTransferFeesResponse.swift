@@ -21,23 +21,23 @@ struct CustodialTransferFeesResponse: Decodable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let minAmounts = try container.decode([Value].self, forKey: .minAmounts)
         let fees = try container.decode([Value].self, forKey: .fees)
-        self.minAmounts = minAmounts.reduce(into: [CurrencyType: MoneyValue]()) { (result, value) in
+        self.minAmounts = minAmounts.reduce(into: [CurrencyType: MoneyValue]()) { result, value in
             guard let currency = try? CurrencyType(code: value.symbol) else {
                 return
             }
             guard let amount = BigInt(value.minorValue) else {
                 return
             }
-            result[currency] = MoneyValue.init(amount: amount, currency: currency)
+            result[currency] = MoneyValue(amount: amount, currency: currency)
         }
-        self.fees = fees.reduce(into: [CurrencyType: MoneyValue]()) { (result, value) in
+        self.fees = fees.reduce(into: [CurrencyType: MoneyValue]()) { result, value in
             guard let currency = try? CurrencyType(code: value.symbol) else {
                 return
             }
             guard let amount = BigInt(value.minorValue) else {
                 return
             }
-            result[currency] = MoneyValue.init(amount: amount, currency: currency)
+            result[currency] = MoneyValue(amount: amount, currency: currency)
         }
     }
 }

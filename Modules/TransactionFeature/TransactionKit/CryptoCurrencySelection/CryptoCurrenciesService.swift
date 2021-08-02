@@ -45,20 +45,22 @@ public enum CryptoCurrenciesServiceError: Error, Equatable {
     case other(Error)
 
     var description: String? {
-        if case let .other(error) = self {
+        if case .other(let error) = self {
             return String(describing: error)
         }
         return nil
     }
 
     public static func == (lhs: CryptoCurrenciesServiceError, rhs: CryptoCurrenciesServiceError) -> Bool {
-        lhs.description == lhs.description
+        lhs.description == rhs.description
     }
 }
 
 public protocol CryptoCurrenciesServiceAPI {
 
-    func fetchPurchasableCryptoCurrencies(using fiatCurrency: FiatCurrency) -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError>
+    func fetchPurchasableCryptoCurrencies(
+        using fiatCurrency: FiatCurrency
+    ) -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError>
 }
 
 internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
@@ -93,16 +95,26 @@ internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
                             .asPublisher()
                             .zip(
                                 // Step 2b: Fetch also the historical prices to get the price change delta
-                                priceService.priceSeries(within: .day(.oneHour), of: pair.cryptoCurrency, in: pair.fiatCurrency)
+                                priceService
+                                    .priceSeries(
+                                        within: .day(.oneHour),
+                                        of: pair.cryptoCurrency,
+                                        in: pair.fiatCurrency
+                                    )
                                     .asPublisher()
                             )
                             .mapError(CryptoCurrenciesServiceError.other)
-                            .map { (quote, historicalPriceSeries) in
+                            .map { quote, historicalPriceSeries in
                                 CryptoCurrencyQuote(
                                     cryptoCurrency: pair.cryptoCurrency,
                                     fiatCurrency: pair.fiatCurrency,
                                     quote: quote.moneyValue.amount,
-                                    formattedQuote: quote.moneyValue.toDisplayString(includeSymbol: true, locale: .current),
+                                    formattedQuote: quote
+                                        .moneyValue
+                                        .toDisplayString(
+                                            includeSymbol: true,
+                                            locale: .current
+                                        ),
                                     priceChange: historicalPriceSeries.delta,
                                     formattedPriceChange: "\(historicalPriceSeries.deltaPercentage.string(with: 2))%",
                                     timestamp: quote.timestamp

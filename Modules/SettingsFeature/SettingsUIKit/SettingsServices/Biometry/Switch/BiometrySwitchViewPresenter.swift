@@ -26,26 +26,35 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
     private let interactor: BiometrySwitchViewInteractor
     private let disposeBag = DisposeBag()
 
-    init(provider: BiometryProviding,
-         settingsAuthenticating: AppSettingsAuthenticating,
-         authenticationCoordinator: AuthenticationCoordinating,
-         analyticsRecording: AnalyticsEventRecording = resolve()) {
-        interactor = BiometrySwitchViewInteractor(provider: provider,
-                                                  authenticationCoordinator: authenticationCoordinator,
-                                                  settingsAuthenticating: settingsAuthenticating)
+    init(
+        provider: BiometryProviding,
+        settingsAuthenticating: AppSettingsAuthenticating,
+        authenticationCoordinator: AuthenticationCoordinating,
+        analyticsRecording: AnalyticsEventRecorderAPI = resolve()
+    ) {
+        interactor = BiometrySwitchViewInteractor(
+            provider: provider,
+            authenticationCoordinator: authenticationCoordinator,
+            settingsAuthenticating: settingsAuthenticating
+        )
 
         let isSwitchedOn = viewModel.isSwitchedOnRelay
             .asObservable()
             .share(replay: 1, scope: .whileConnected)
 
-        Observable.combineLatest(isSwitchedOn,
-                                 Observable.just(interactor.configurationStatus),
-                                 Observable.just(interactor.supportedBiometryType))
-            .flatMap(weak: self) { (self, values) -> Observable<Bool> in
-                self.toggleBiometry(values.2, biometryStatus: values.1, isOn: values.0)
-            }
-            .bindAndCatch(to: interactor.switchTriggerRelay)
-            .disposed(by: disposeBag)
+        Observable.combineLatest(
+            isSwitchedOn,
+            Observable.just(interactor.configurationStatus),
+            Observable.just(interactor.supportedBiometryType)
+        )
+        .flatMap(weak: self) { (self, values) -> Observable<Bool> in
+            self.toggleBiometry(values.2, biometryStatus: values.1, isOn: values.0)
+        }
+        .do(onNext: { [analyticsRecording] isEnabled in
+            analyticsRecording.record(event: AnalyticsEvents.New.Security.biometricsUpdated(isEnabled: isEnabled))
+        })
+        .bindAndCatch(to: interactor.switchTriggerRelay)
+        .disposed(by: disposeBag)
 
         isSwitchedOn
             .bind { analyticsRecording.record(event: AnalyticsEvent.settingsBiometryAuthSwitch(value: $0)) }
@@ -53,15 +62,15 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
 
         interactor
             .state
-            .compactMap { $0.value }
-            .map { $0.isEnabled }
+            .compactMap(\.value)
+            .map(\.isEnabled)
             .bindAndCatch(to: viewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         interactor
             .state
-            .compactMap { $0.value }
-            .map { $0.isOn }
+            .compactMap(\.value)
+            .map(\.isOn)
             .bindAndCatch(to: viewModel.isOnRelay)
             .disposed(by: disposeBag)
     }
@@ -73,19 +82,20 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
                 return Disposables.create()
             }
 
-            if case let .unconfigurable(error) = biometryStatus {
+            if case .unconfigurable(let error) = biometryStatus {
                 let accept = UIAlertAction(
                     title: LocalizationConstants.okString,
                     style: .cancel,
                     handler: { _ in
                         observable.onNext(false)
-                    })
+                    }
+                )
                 AlertViewPresenter.shared
                     .standardNotify(
                         title: LocalizationConstants.Errors.error,
                         message: String(describing: error),
                         actions: [accept]
-                )
+                    )
                 return Disposables.create()
             }
 
@@ -96,19 +106,21 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
                 style: .cancel,
                 handler: { _ in
                     observable.onNext(false)
-                })
+                }
+            )
             let accept = UIAlertAction(
                 title: LocalizationConstants.continueString,
                 style: .default,
                 handler: { _ in
                     observable.onNext(true)
-                })
+                }
+            )
             AlertViewPresenter.shared
                 .standardNotify(
                     title: name,
                     message: biometryWarning,
                     actions: [cancel, accept]
-            )
+                )
             return Disposables.create()
         }
     }

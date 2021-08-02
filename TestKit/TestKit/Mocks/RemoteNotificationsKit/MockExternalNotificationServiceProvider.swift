@@ -21,8 +21,10 @@ final class MockExternalNotificationServiceProvider: ExternalNotificationProvidi
 
     private(set) var topics: [RemoteNotification.Topic] = []
 
-    init(expectedTokenResult: Result<String, FakeError>,
-         expectedTopicSubscriptionResult: Result<Void, FakeError>) {
+    init(
+        expectedTokenResult: Result<String, FakeError>,
+        expectedTopicSubscriptionResult: Result<Void, FakeError>
+    ) {
         self.expectedTokenResult = expectedTokenResult
         self.expectedTopicSubscriptionResult = expectedTopicSubscriptionResult
     }

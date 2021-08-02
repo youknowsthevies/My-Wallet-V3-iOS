@@ -123,7 +123,7 @@ public struct NabuUser: Decodable {
         personalDetails = try PersonalDetails(from: decoder)
         email = try Email(from: decoder)
         mobile = try? Mobile(from: decoder)
-        status = (try? values.decode(KYC.AccountStatus.self, forKey: .status)) ?? . none
+        status = (try? values.decode(KYC.AccountStatus.self, forKey: .status)) ?? .none
         state = (try? values.decode(UserState.self, forKey: .state)) ?? .none
         tags = try values.decodeIfPresent(Tags.self, forKey: .tags)
         needsDocumentResubmission = try values.decodeIfPresent(DocumentResubmission.self, forKey: .needsDocumentResubmission)
@@ -131,15 +131,15 @@ public struct NabuUser: Decodable {
         kycUpdateDate = try values.decodeIfPresent(String.self, forKey: .kycUpdateDate)
 
         depositAddresses = (try values.decodeIfPresent([String: String].self, forKey: .depositAddresses))
-            .flatMap({ data -> [DepositAddress] in
-                data.compactMap { (key, value) -> DepositAddress? in
+            .flatMap { data -> [DepositAddress] in
+                data.compactMap { key, value -> DepositAddress? in
                     DepositAddress(stringType: key, address: value)
                 }
-            }) ?? []
+            } ?? []
     }
 }
 
-extension NabuUser: User { }
+extension NabuUser: User {}
 
 extension NabuUser {
     /// User has a linked Exchange Account.
@@ -225,10 +225,12 @@ public struct Tags: Decodable {
         simpleBuy = try values.decodeIfPresent(SimpleBuy.self, forKey: .simpleBuy)
     }
 
-    public init(sunriver: Sunriver? = nil,
-                blockstack: Blockstack? = nil,
-                powerPax: PowerPax? = nil,
-                simpleBuy: SimpleBuy? = nil) {
+    public init(
+        sunriver: Sunriver? = nil,
+        blockstack: Blockstack? = nil,
+        powerPax: PowerPax? = nil,
+        simpleBuy: SimpleBuy? = nil
+    ) {
         self.sunriver = sunriver
         self.blockstack = blockstack
         self.powerPax = powerPax
@@ -284,7 +286,8 @@ public struct DepositAddress {
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
     ) {
         guard let type = enabledCurrenciesService.allEnabledCryptoCurrencies
-                .first(where: { $0.code == stringType.uppercased() }) else {
+            .first(where: { $0.code == stringType.uppercased() })
+        else {
             return nil
         }
         self.init(type: type, address: address)

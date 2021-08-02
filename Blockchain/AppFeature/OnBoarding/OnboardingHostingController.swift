@@ -22,16 +22,19 @@ final class OnboardingHostingController: UIViewController {
     /// This is assigned when the recover funds option is selected on the WelcomeScreen
     private var recoverWalletNavigationController: UINavigationController?
 
-    init(store: Store<Onboarding.State, Onboarding.Action>,
-         alertViewPresenter: AlertViewPresenterAPI = resolve(),
-         webViewService: WebViewServiceAPI = resolve()) {
+    init(
+        store: Store<Onboarding.State, Onboarding.Action>,
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        webViewService: WebViewServiceAPI = resolve()
+    ) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        viewStore = ViewStore(store)
         self.alertViewPresenter = alertViewPresenter
         self.webViewService = webViewService
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -78,7 +81,7 @@ final class OnboardingHostingController: UIViewController {
             .store(in: &cancellables)
 
         store
-            .scope(state: \.authenticationState, action: Onboarding.Action.welcomeScreen)
+            .scope(state: \.welcomeState, action: Onboarding.Action.welcomeScreen)
             .ifLet(then: { [weak self] authStore in
                 guard let self = self else { return }
                 let welcomeView = WelcomeView(store: authStore)
@@ -110,7 +113,10 @@ final class OnboardingHostingController: UIViewController {
                     self?.viewStore.send(.passwordScreen(.forgetWallet))
                 }
                 let interactor = PasswordRequiredScreenInteractor(walletFetcher: walletFetcher)
-                let presenter = PasswordRequiredScreenPresenter(interactor: interactor, forgetWalletRouting: forgetWalletRouting)
+                let presenter = PasswordRequiredScreenPresenter(
+                    interactor: interactor,
+                    forgetWalletRouting: forgetWalletRouting
+                )
                 let viewController = PasswordRequiredViewController(presenter: presenter)
                 let navigationController = UINavigationController(rootViewController: viewController)
 
@@ -137,11 +143,13 @@ final class OnboardingHostingController: UIViewController {
     /// Transition from the current controller, if any to the specified controller.
     private func transitionFromCurrentController(to controller: UIViewController) {
         if let currentController = self.currentController {
-            self.transition(from: currentController,
-                            to: controller,
-                            animate: true)
+            transition(
+                from: currentController,
+                to: controller,
+                animate: true
+            )
         } else {
-            self.add(child: controller)
+            add(child: controller)
         }
     }
 
@@ -206,7 +214,7 @@ final class OnboardingHostingController: UIViewController {
         controller.isModalInPresentation = true
         let navigationController = UINavigationController(rootViewController: controller)
         present(navigationController, animated: true, completion: nil)
-        self.recoverWalletNavigationController = navigationController
+        recoverWalletNavigationController = navigationController
     }
 
     private func navigateToCreateRecoveryWalletScreen(_ mnemonic: String) {
@@ -234,7 +242,7 @@ final class OnboardingHostingController: UIViewController {
         let viewController = RegisterWalletViewController(presenter: presenter, dismissHandler: dismissHandler)
         // disallow swipe down to dismiss
         viewController.isModalInPresentation = true
-        self.recoverWalletNavigationController?.pushViewController(viewController, animated: true)
+        recoverWalletNavigationController?.pushViewController(viewController, animated: true)
     }
 
     // MARK: Alerts
@@ -262,7 +270,7 @@ final class OnboardingHostingController: UIViewController {
 }
 
 extension OnboardingHostingController {
-    /// TODO: We should revisit this
+    // TODO: We should revisit this
     private func handleFailedToLoadWalletAlert() {
         let alertController = UIAlertController(
             title: LocalizationConstants.Authentication.failedToLoadWallet,
@@ -283,7 +291,10 @@ extension OnboardingHostingController {
                     }
                 )
                 forgetWalletAlert.addAction(
-                    UIAlertAction(title: LocalizationConstants.Authentication.forgetWallet, style: .default) { [weak self] _ in
+                    UIAlertAction(
+                        title: LocalizationConstants.Authentication.forgetWallet,
+                        style: .default
+                    ) { [weak self] _ in
                         self?.viewStore.send(.forgetWallet)
                     }
                 )
@@ -295,6 +306,6 @@ extension OnboardingHostingController {
                 UIApplication.shared.suspendApp()
             }
         )
-        self.present(alertController, animated: true)
+        present(alertController, animated: true)
     }
 }

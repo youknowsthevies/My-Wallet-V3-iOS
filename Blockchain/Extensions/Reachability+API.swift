@@ -29,5 +29,6 @@ public final class InternetReachability: InternetReachabilityAPI {
     var canConnect: Bool {
         Reachability.hasInternetConnection()
     }
+
     public init() {}
 }

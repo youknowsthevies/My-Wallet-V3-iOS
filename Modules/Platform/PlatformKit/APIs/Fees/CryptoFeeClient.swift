@@ -32,8 +32,10 @@ final class CryptoFeeClient<FeeType: TransactionFee & Decodable> {
 
     // MARK: - Init
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(),
-         requestBuilder: RequestBuilder = resolve()) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(),
+        requestBuilder: RequestBuilder = resolve()
+    ) {
         self.requestBuilder = requestBuilder
         self.networkAdapter = networkAdapter
     }

@@ -15,7 +15,7 @@ public struct BadgeCircleViewModel {
             .asObservable()
     }
 
-    public init() { }
+    public init() {}
 }
 
 public class BadgeCircleView: UIView {
@@ -33,8 +33,8 @@ public class BadgeCircleView: UIView {
                 .map { CGFloat($0) }
                 .bind { [weak self] fillRatio in
                     self?.strokeLayer.strokeEnd = fillRatio
-            }
-            .disposed(by: disposeBag)
+                }
+                .disposed(by: disposeBag)
         }
     }
 
@@ -49,7 +49,7 @@ public class BadgeCircleView: UIView {
     // MARK: - Private Properties
 
     private let strokeWidth: CGFloat
-    private let strokeLayer: CAShapeLayer = CAShapeLayer()
+    private let strokeLayer = CAShapeLayer()
     private var disposeBag = DisposeBag()
 
     // MARK: - Setup
@@ -57,10 +57,12 @@ public class BadgeCircleView: UIView {
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) { nil }
 
-    init(strokeColor: UIColor,
-         strokeBackgroundColor: UIColor,
-         fillColor: UIColor,
-         strokeWidth: CGFloat) {
+    init(
+        strokeColor: UIColor,
+        strokeBackgroundColor: UIColor,
+        fillColor: UIColor,
+        strokeWidth: CGFloat
+    ) {
         self.strokeWidth = strokeWidth
 
         super.init(frame: .zero)
@@ -71,7 +73,7 @@ public class BadgeCircleView: UIView {
         isAccessibilityElement = false
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         configurePath(layer, strokeWidth: strokeWidth)
         configurePath(strokeLayer, strokeWidth: strokeWidth)
@@ -86,12 +88,12 @@ public class BadgeCircleView: UIView {
 
     private func configurePath(_ layer: CAShapeLayer, strokeWidth: CGFloat) {
         let strokeEnd = layer.strokeEnd
-        let radius = CGFloat(min(bounds.midX - strokeWidth/2, bounds.midY - strokeWidth/2))
+        let radius = CGFloat(min(bounds.midX - strokeWidth / 2, bounds.midY - strokeWidth / 2))
         layer.path = UIBezierPath(
             arcCenter: .init(x: bounds.midX, y: bounds.midY),
             radius: radius,
-            startAngle: -CGFloat.pi/2,
-            endAngle: CGFloat.pi*1.5,
+            startAngle: -CGFloat.pi / 2,
+            endAngle: CGFloat.pi * 1.5,
             clockwise: true
         ).cgPath
         layer.strokeEnd = strokeEnd

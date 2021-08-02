@@ -25,19 +25,22 @@ final class CreateWalletInteractor: RegisterWalletScreenInteracting {
     let error: Observable<String>
 
     // MARK: - Private
+
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Injected
 
     private let reachability: InternetReachabilityAPI
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let walletManager: WalletManager
 
     // MARK: - Setup
 
-    init(reachability: InternetReachabilityAPI = InternetReachability(),
-         analyticsRecorder: AnalyticsEventRecording =  resolve(),
-         walletManager: WalletManager = resolve()) {
+    init(
+        reachability: InternetReachabilityAPI = InternetReachability(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        walletManager: WalletManager = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.reachability = reachability
         self.walletManager = walletManager
@@ -63,7 +66,7 @@ final class CreateWalletInteractor: RegisterWalletScreenInteracting {
         error = accountCreated
             .filter(\.isFailure)
             .compactMap { value -> String? in
-                guard case let .failure(error) = value else {
+                guard case .failure(let error) = value else {
                     return LocalizationConstants.Errors.genericError
                 }
                 return error.localizedDescription
@@ -74,7 +77,7 @@ final class CreateWalletInteractor: RegisterWalletScreenInteracting {
         // the code in the observation below is taken from the `CreateWalletScreenInteractor`
         accountCreated
             .filter(\.isSuccess)
-            .compactMap { $0.successData }
+            .compactMap(\.successData)
             .sink(receiveValue: { [walletManager] walletCreation in
                 /// Reset wallet + `JSContext`
                 walletManager.forgetWallet()

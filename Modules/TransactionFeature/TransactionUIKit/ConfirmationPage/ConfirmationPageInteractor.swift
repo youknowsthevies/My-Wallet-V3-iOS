@@ -14,16 +14,19 @@ protocol ConfirmationPageInteractable: Interactable {
 }
 
 final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePresentable>,
-                                    ConfirmationPageInteractable {
+    ConfirmationPageInteractable
+{
     weak var router: ConfirmationPageRouting?
     weak var listener: ConfirmationPageListener?
 
     private let transactionModel: TransactionModel
     private let analyticsHook: TransactionAnalyticsHook
 
-    init(presenter: ConfirmationPagePresentable,
-         transactionModel: TransactionModel,
-         analyticsHook: TransactionAnalyticsHook = resolve()) {
+    init(
+        presenter: ConfirmationPagePresentable,
+        transactionModel: TransactionModel,
+        analyticsHook: TransactionAnalyticsHook = resolve()
+    ) {
         self.transactionModel = transactionModel
         self.analyticsHook = analyticsHook
         super.init(presenter: presenter)

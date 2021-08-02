@@ -3,9 +3,7 @@
 import PlatformKit
 import RIBs
 
-protocol ConfirmationPageRouting: AnyObject {
-
-}
+protocol ConfirmationPageRouting: AnyObject {}
 
 final class ConfirmationPageRouter: ViewableRouter<ConfirmationPageInteractable, ViewControllable>, ConfirmationPageRouting {
 

@@ -71,8 +71,10 @@ public final class WebLoginScreenPresenter {
 
     // MARK: - Init
 
-    public init(alertPresenter: AlertViewPresenter = resolve(),
-                service: WebLoginQRCodeServiceAPI = WebLoginQRCodeService()) {
+    public init(
+        alertPresenter: AlertViewPresenter = resolve(),
+        service: WebLoginQRCodeServiceAPI = WebLoginQRCodeService()
+    ) {
         self.alertPresenter = alertPresenter
         self.service = service
 
@@ -100,7 +102,7 @@ public final class WebLoginScreenPresenter {
         actionButtonModel
             .tapRelay
             .withLatestFrom(qrCodeVisibilityRelay)
-            .map { $0.inverted }
+            .map(\.inverted)
             .bindAndCatch(to: qrCodeVisibilityRelay)
             .disposed(by: disposeBag)
     }

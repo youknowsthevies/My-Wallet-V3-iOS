@@ -15,11 +15,9 @@ extension DependencyContainer {
         factory { APIClient() as TransactionFeeClientAPI }
         factory { APIClient() as BalanceClientAPI }
 
-        factory(tag: CryptoCurrency.ethereum) { EthereumExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
+        factory(tag: CoinAssetModel.ethereum.typeTag) { EthereumExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
 
-        factory(tag: CryptoCurrency.ethereum) { EthereumAsset() as CryptoAsset }
-
-        factory(tag: CryptoCurrency.ethereum) { EthereumOnChainTransactionEngineFactory() as OnChainTransactionEngineFactory }
+        factory(tag: CryptoCurrency.coin(.ethereum)) { EthereumAsset() as CryptoAsset }
 
         single { EthereumAccountDetailsService() as EthereumAccountDetailsServiceAPI }
 
@@ -30,11 +28,11 @@ extension DependencyContainer {
             return repository as EthereumWalletAccountRepositoryAPI
         }
 
-        single { EthereumHistoricalTransactionService() }
+        single { EthereumHistoricalTransactionService() as EthereumHistoricalTransactionServiceAPI }
 
-        factory { EthereumTransactionalActivityItemEventsService() }
-
-        factory { EthereumActivityItemEventDetailsFetcher() }
+        factory { () -> AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> in
+            AnyActivityItemEventDetailsFetcher(api: EthereumActivityItemEventDetailsFetcher())
+        }
 
         factory { EthereumTransactionBuildingService() as EthereumTransactionBuildingServiceAPI }
 

@@ -40,10 +40,12 @@ final class MobileCodeEntryScreenPresenter {
 
     // MARK: - Init
 
-    init(stateService: UpdateMobileStateServiceAPI,
-         service: MobileSettingsServiceAPI,
-         loadingViewPresenting: LoadingViewPresenting = resolve()) {
-        self.interactor = MobileCodeEntryInteractor(service: service)
+    init(
+        stateService: UpdateMobileStateServiceAPI,
+        service: MobileSettingsServiceAPI,
+        loadingViewPresenting: LoadingViewPresenting = resolve()
+    ) {
+        interactor = MobileCodeEntryInteractor(service: service)
         self.stateService = stateService
         codeEntryTextFieldModel = .init(
             with: .oneTimeCode,
@@ -64,7 +66,7 @@ final class MobileCodeEntryScreenPresenter {
         confirmViewModel = .primary(with: LocalizationIDs.confirm, accessibilityId: AccessibilityIDs.confirmButton)
 
         codeEntryTextFieldModel.state
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .bindAndCatch(to: interactor.contentRelay)
             .disposed(by: disposeBag)
 
@@ -94,15 +96,16 @@ final class MobileCodeEntryScreenPresenter {
             .disposed(by: disposeBag)
 
         interactor.state
-            .map { $0.isReady }
-            .bindAndCatch(to:
+            .map(\.isReady)
+            .bindAndCatch(
+                to:
                 resendCodeViewModel.isEnabledRelay,
                 confirmViewModel.isEnabledRelay
             )
             .disposed(by: disposeBag)
 
         interactor.state
-            .filter { $0.isComplete }
+            .filter(\.isComplete)
             .mapToVoid()
             .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)

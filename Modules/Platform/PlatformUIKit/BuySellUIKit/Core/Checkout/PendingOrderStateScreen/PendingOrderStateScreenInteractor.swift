@@ -31,9 +31,11 @@ final class PendingOrderStateScreenInteractor: Interactor {
 
     // MARK: - Setup
 
-    init(orderDetails: OrderDetails,
-         service: PendingOrderCompletionServiceAPI = resolve(),
-         tiersService: KYCTiersServiceAPI = resolve()) {
+    init(
+        orderDetails: OrderDetails,
+        service: PendingOrderCompletionServiceAPI = resolve(),
+        tiersService: KYCTiersServiceAPI = resolve()
+    ) {
         self.orderDetails = orderDetails
         self.service = service
         self.tiersService = tiersService

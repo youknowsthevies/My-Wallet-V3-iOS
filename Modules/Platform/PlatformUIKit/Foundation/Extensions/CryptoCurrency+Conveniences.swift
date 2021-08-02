@@ -9,84 +9,105 @@ extension CryptoCurrency {
 
     public var brandColor: UIColor {
         switch self {
-        case .bitcoin:
-            return .bitcoin
-        case .bitcoinCash:
-            return .bitcoinCash
-        case .ethereum:
-            return .ethereum
-        case .stellar:
-            return .stellar
-        case let .other(model) where model.code == "DOT":
-            return .polkadot
-        case let .other(model) where model.code == "ALGO":
-            return .algorand
-        case .other:
-            // TODO: IOS-4958: Use color from model.
-            return .bitcoin
-        case .erc20(let model):
-            switch model.code {
-            case LegacyERC20Code.aave.rawValue:
-                return .aave
-            case LegacyERC20Code.pax.rawValue:
-                return .usdd
-            case LegacyERC20Code.tether.rawValue:
-                return .tether
-            case LegacyERC20Code.wdgld.rawValue:
+        case .coin(let model):
+            guard let spotColor = model.spotColor else {
                 return .black
-            case LegacyERC20Code.yearnFinance.rawValue:
-                return .yearnFinance
-            default:
-                return .ethereum
             }
+            return UIColor(hex: spotColor) ?? .black
+        case .erc20(let model):
+            guard let spotColor = model.spotColor else {
+                return CryptoCurrency.coin(.ethereum).brandColor
+            }
+            return UIColor(hex: spotColor) ?? .black
         }
     }
 
     /// Defaults to brand color with 15% opacity.
     public var accentColor: UIColor {
-        switch self {
-        // TODO: IOS-4958: Use color from model.
-        case .erc20(let model) where model.code == LegacyERC20Code.wdgld.rawValue:
-            return UIColor.wdgld.withAlphaComponent(0.15)
-        default:
-            return brandColor.withAlphaComponent(0.15)
-        }
+        brandColor.withAlphaComponent(0.15)
     }
 
     // MARK: Logo Image `ImageResource`
 
     public var logoResource: ImageResource {
         switch self {
-        case .bitcoin:
-            return .local(name: "filled_btc_large", bundle: .platformUIKit)
-        case .bitcoinCash:
-            return .local(name: "filled_bch_large", bundle: .platformUIKit)
-        case .ethereum:
-            return .local(name: "filled_eth_large", bundle: .platformUIKit)
-        case .stellar:
-            return .local(name: "filled_xlm_large", bundle: .platformUIKit)
-        case let .other(model) where model.code == "DOT":
-            return .local(name: "filled_dot_large", bundle: .platformUIKit)
-        case let .other(model) where model.code == "ALGO":
-            return .local(name: "filled_algo_large", bundle: .platformUIKit)
-        case .other:
-            // TODO: IOS-4958: Use correct asset.
-            return .local(name: "circular-error-icon", bundle: .platformUIKit)
+        case .coin(let model):
+            switch model.code {
+            case NonCustodialCoinCode.bitcoin.rawValue:
+                return .local(name: "crypto-btc", bundle: .platformUIKit)
+            case NonCustodialCoinCode.bitcoinCash.rawValue:
+                return .local(name: "crypto-bch", bundle: .platformUIKit)
+            case NonCustodialCoinCode.ethereum.rawValue:
+                return .local(name: "crypto-eth", bundle: .platformUIKit)
+            case NonCustodialCoinCode.stellar.rawValue:
+                return .local(name: "crypto-xlm", bundle: .platformUIKit)
+            case LegacyCustodialCode.polkadot.rawValue:
+                return .local(name: "crypto-dot", bundle: .platformUIKit)
+            case LegacyCustodialCode.algorand.rawValue:
+                return .local(name: "crypto-algo", bundle: .platformUIKit)
+            case NewCustodialCode.bitClout.rawValue:
+                return .local(name: "crypto-clout", bundle: .platformUIKit)
+            case NewCustodialCode.blockstack.rawValue:
+                return .local(name: "crypto-stx", bundle: .platformUIKit)
+            case NewCustodialCode.dogecoin.rawValue:
+                return .local(name: "crypto-doge", bundle: .platformUIKit)
+            case NewCustodialCode.eos.rawValue:
+                return .local(name: "crypto-eos", bundle: .platformUIKit)
+            case NewCustodialCode.ethereumClassic.rawValue:
+                return .local(name: "crypto-etc", bundle: .platformUIKit)
+            case NewCustodialCode.litecoin.rawValue:
+                return .local(name: "crypto-ltc", bundle: .platformUIKit)
+            case NewCustodialCode.mobileCoin.rawValue:
+                return .local(name: "crypto-mobi", bundle: .platformUIKit)
+            case NewCustodialCode.near.rawValue:
+                return .local(name: "crypto-near", bundle: .platformUIKit)
+            case NewCustodialCode.tezos.rawValue:
+                return .local(name: "crypto-xtz", bundle: .platformUIKit)
+            case NewCustodialCode.theta.rawValue:
+                return .local(name: "crypto-theta", bundle: .platformUIKit)
+            default:
+                return .local(name: "crypto-placeholder", bundle: .platformUIKit)
+            }
         case .erc20(let model):
             switch model.code {
             case LegacyERC20Code.aave.rawValue:
-                return .local(name: "filled_aave_large", bundle: .platformUIKit)
+                return .local(name: "crypto-aave", bundle: .platformUIKit)
             case LegacyERC20Code.pax.rawValue:
-                return .local(name: "filled_pax_large", bundle: .platformUIKit)
+                return .local(name: "crypto-pax", bundle: .platformUIKit)
             case LegacyERC20Code.tether.rawValue:
-                return .local(name: "filled_usdt_large", bundle: .platformUIKit)
+                return .local(name: "crypto-usdt", bundle: .platformUIKit)
             case LegacyERC20Code.wdgld.rawValue:
-                return .local(name: "filled_wdgld_large", bundle: .platformUIKit)
+                return .local(name: "crypto-wdgld", bundle: .platformUIKit)
             case LegacyERC20Code.yearnFinance.rawValue:
-                return .local(name: "filled_yfi_large", bundle: .platformUIKit)
+                return .local(name: "crypto-yfi", bundle: .platformUIKit)
+            case NewERC20Code.bat.rawValue:
+                return .local(name: "crypto-bat", bundle: .platformUIKit)
+            case NewERC20Code.comp.rawValue:
+                return .local(name: "crypto-comp", bundle: .platformUIKit)
+            case NewERC20Code.dai.rawValue:
+                return .local(name: "crypto-dai", bundle: .platformUIKit)
+            case NewERC20Code.enj.rawValue:
+                return .local(name: "crypto-enj", bundle: .platformUIKit)
+            case NewERC20Code.link.rawValue:
+                return .local(name: "crypto-link", bundle: .platformUIKit)
+            case NewERC20Code.ogn.rawValue:
+                return .local(name: "crypto-ogn", bundle: .platformUIKit)
+            case NewERC20Code.snx.rawValue:
+                return .local(name: "crypto-snx", bundle: .platformUIKit)
+            case NewERC20Code.sushi.rawValue:
+                return .local(name: "crypto-sushi", bundle: .platformUIKit)
+            case NewERC20Code.tbtc.rawValue:
+                return .local(name: "crypto-tbtc", bundle: .platformUIKit)
+            case NewERC20Code.uni.rawValue:
+                return .local(name: "crypto-uni", bundle: .platformUIKit)
+            case NewERC20Code.usdc.rawValue:
+                return .local(name: "crypto-usdc", bundle: .platformUIKit)
+            case NewERC20Code.wbtc.rawValue:
+                return .local(name: "crypto-wbtc", bundle: .platformUIKit)
+            case NewERC20Code.zrx.rawValue:
+                return .local(name: "crypto-zrx", bundle: .platformUIKit)
             default:
-                // TODO: These should use `model.logoPngUrl`.
-                return .local(name: "filled_eth_large", bundle: .platformUIKit)
+                return .local(name: "crypto-placeholder", bundle: .platformUIKit)
             }
         }
     }

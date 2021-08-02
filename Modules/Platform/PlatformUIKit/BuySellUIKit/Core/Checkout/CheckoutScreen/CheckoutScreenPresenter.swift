@@ -48,13 +48,15 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Setup
 
-    init(checkoutRouting: CheckoutRoutingInteracting,
-         contentReducer: CheckoutScreenContentReducing,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         errorRecorder: ErrorRecording = resolve(),
-         loader: LoadingViewPresenting = resolve(),
-         alert: AlertViewPresenterAPI = resolve(),
-         interactor: CheckoutScreenInteractor) {
+    init(
+        checkoutRouting: CheckoutRoutingInteracting,
+        contentReducer: CheckoutScreenContentReducing,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = resolve(),
+        loader: LoadingViewPresenting = resolve(),
+        alert: AlertViewPresenterAPI = resolve(),
+        interactor: CheckoutScreenInteractor
+    ) {
         self.errorRecorder = errorRecorder
         self.analyticsRecorder = analyticsRecorder
         self.checkoutRouting = checkoutRouting
@@ -72,8 +74,8 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
         buttons = [
             contentReducer.cancelButtonViewModel,
             contentReducer.continueButtonViewModel
-            ]
-            .compactMap { $0 }
+        ]
+        .compactMap { $0 }
 
         contentReducer.continueButtonViewModel
             .tapRelay

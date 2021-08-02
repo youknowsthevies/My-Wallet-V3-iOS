@@ -8,7 +8,7 @@ import ToolKit
 
 final class StellarAsset: CryptoAsset {
 
-    let asset: CryptoCurrency = .stellar
+    let asset: CryptoCurrency = .coin(.stellar)
 
     var defaultAccount: Single<SingleAccount> {
         Single.just(())
@@ -34,6 +34,7 @@ final class StellarAsset: CryptoAsset {
     private let accountRepository: StellarWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
     private let addressFactory: StellarCryptoReceiveAddressFactory
+
     init(
         accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
@@ -60,7 +61,7 @@ final class StellarAsset: CryptoAsset {
     func parse(address: String) -> Single<ReceiveAddress?> {
         let result = try? addressFactory
             .makeExternalAssetAddress(
-                asset: .stellar,
+                asset: .coin(.stellar),
                 address: address,
                 label: address,
                 onTxCompleted: { _ in Completable.empty() }
@@ -79,6 +80,8 @@ final class StellarAsset: CryptoAsset {
             return interestGroup
         case .nonCustodial:
             return nonCustodialGroup
+        case .exchange:
+            return exchangeGroup
         }
     }
 
@@ -96,43 +99,20 @@ final class StellarAsset: CryptoAsset {
     }
 
     private var custodialGroup: Single<AccountGroup> {
-        .just(CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)]))
+        .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoTradingAccount(asset: asset)))
     }
 
     private var interestGroup: Single<AccountGroup> {
-        let asset = self.asset
-        return Single
-            .just(CryptoInterestAccount(asset: asset))
-            .map { CryptoAccountCustodialGroup(asset: asset, accounts: [$0]) }
+        .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset)))
     }
 
     private var exchangeGroup: Single<AccountGroup> {
-        let asset = self.asset
-        return exchangeAccountProvider
+        exchangeAccountProvider
             .account(for: asset)
-            .optional()
-            .catchError { error in
-                /// TODO: This shouldn't prevent users from seeing all accounts.
-                /// Potentially return nil should this fail.
-                guard let serviceError = error as? ExchangeAccountsNetworkError else {
-                    #if INTERNAL_BUILD
-                    Logger.shared.error(error)
-                    throw error
-                    #else
-                    return Single.just(nil)
-                    #endif
-                }
-                switch serviceError {
-                case .missingAccount:
-                    return Single.just(nil)
-                }
+            .map { [asset] account in
+                CryptoAccountCustodialGroup(asset: asset, account: account)
             }
-            .map { account in
-                guard let account = account else {
-                    return CryptoAccountCustodialGroup(asset: asset, accounts: [])
-                }
-                return CryptoAccountCustodialGroup(asset: asset, accounts: [account])
-            }
+            .catchErrorJustReturn(CryptoAccountCustodialGroup(asset: asset))
     }
 
     private var nonCustodialGroup: Single<AccountGroup> {

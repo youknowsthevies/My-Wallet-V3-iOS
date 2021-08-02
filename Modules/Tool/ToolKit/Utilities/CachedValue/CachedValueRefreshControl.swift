@@ -54,5 +54,4 @@ struct CachedValueRefreshControl {
     func update(refreshDate: Date) {
         lastRefresh.mutate { $0 = refreshDate }
     }
-
 }

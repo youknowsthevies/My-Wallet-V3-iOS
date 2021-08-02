@@ -25,8 +25,9 @@ protocol LinkedBanksSelectionPresentable: Presentable {
 }
 
 final class LinkedBanksSelectionInteractor: PresentableInteractor<LinkedBanksSelectionPresentable>,
-                                            LinkedBanksSelectionInteractable,
-                                            AddNewBankAccountListener {
+    LinkedBanksSelectionInteractable,
+    AddNewBankAccountListener
+{
 
     weak var router: LinkedBanksSelectionRouting?
     weak var listener: LinkedBanksSelectionListener?
@@ -34,9 +35,11 @@ final class LinkedBanksSelectionInteractor: PresentableInteractor<LinkedBanksSel
     private let beneficiariesService: BeneficiariesServiceAPI
     private let currency: FiatCurrency
 
-    init(presenter: LinkedBanksSelectionPresentable,
-         currency: FiatCurrency,
-         beneficiariesService: BeneficiariesServiceAPI = resolve()) {
+    init(
+        presenter: LinkedBanksSelectionPresentable,
+        currency: FiatCurrency,
+        beneficiariesService: BeneficiariesServiceAPI = resolve()
+    ) {
         self.beneficiariesService = beneficiariesService
         self.currency = currency
         super.init(presenter: presenter)
@@ -77,7 +80,7 @@ final class LinkedBanksSelectionInteractor: PresentableInteractor<LinkedBanksSel
     func handleEffects(_ effect: LinkedBanksSelectionEffects) {
         switch effect {
         case .selection(let item):
-            self.handle(selection: item)
+            handle(selection: item)
         case .closeFlow:
             listener?.closeFlow()
         case .none:

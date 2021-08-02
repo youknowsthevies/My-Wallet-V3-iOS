@@ -4,10 +4,12 @@ import DIKit
 import RxSwift
 
 public protocol OrderQuoteServiceAPI: AnyObject {
-    
-    func getQuote(for action: Order.Action,
-                  cryptoCurrency: CryptoCurrency,
-                  fiatValue: FiatValue) -> Single<Quote>
+
+    func getQuote(
+        for action: Order.Action,
+        cryptoCurrency: CryptoCurrency,
+        fiatValue: FiatValue
+    ) -> Single<Quote>
 }
 
 final class OrderQuoteService: OrderQuoteServiceAPI {
@@ -24,9 +26,11 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
 
     // MARK: - API
 
-    func getQuote(for action: Order.Action,
-                  cryptoCurrency: CryptoCurrency,
-                  fiatValue: FiatValue) -> Single<Quote> {
+    func getQuote(
+        for action: Order.Action,
+        cryptoCurrency: CryptoCurrency,
+        fiatValue: FiatValue
+    ) -> Single<Quote> {
         client.getQuote(
             for: action,
             to: cryptoCurrency,

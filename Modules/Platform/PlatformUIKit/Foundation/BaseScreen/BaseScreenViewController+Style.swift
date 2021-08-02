@@ -4,7 +4,7 @@ import Foundation
 import UIKit
 
 public enum Screen {
-    public enum Style { }
+    public enum Style {}
 }
 
 public protocol ScreenNavigationButton: Equatable {
@@ -16,9 +16,12 @@ extension Screen {
         let title: String?
         let image: UIImage?
         let accessibility: Accessibility?
-        public init(title: String? = nil,
-                    image: UIImage? = nil,
-                    accessibility: Accessibility? = nil) {
+
+        public init(
+            title: String? = nil,
+            image: UIImage? = nil,
+            accessibility: Accessibility? = nil
+        ) {
             self.title = title
             self.image = image
             self.accessibility = accessibility
@@ -137,7 +140,7 @@ extension Screen.Style.Bar {
         .main(.medium, 20)
     }
 
-    public var titleTextAttributes: [ NSAttributedString.Key: Any ] {
+    public var titleTextAttributes: [NSAttributedString.Key: Any] {
         [
             .font: titleFont,
             .foregroundColor: titleColor

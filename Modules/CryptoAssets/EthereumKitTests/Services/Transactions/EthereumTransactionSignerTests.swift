@@ -23,7 +23,7 @@ class EthereumTransactionSignerTests: XCTestCase {
     }
 
     func test_sign_transaction() throws {
-        let amount = BigUInt("0.1", decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!
+        let amount = BigUInt("0.1", decimals: CryptoCurrency.coin(.ethereum).maxDecimalPlaces)!
         let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
         let keyPair = MockEthereumWalletTestData.keyPair
         let candidate = EthereumTransactionCandidate(
@@ -34,11 +34,11 @@ class EthereumTransactionSignerTests: XCTestCase {
             data: Data(),
             transferType: .transfer
         )
-        guard case let .success(costed) = builder.build(transaction: candidate, nonce: 9) else {
+        guard case .success(let costed) = builder.build(transaction: candidate, nonce: 9) else {
             XCTFail("Transaction building failed")
             return
         }
-        guard case let .success(signed) = subject.sign(transaction: costed, keyPair: keyPair) else {
+        guard case .success(let signed) = subject.sign(transaction: costed, keyPair: keyPair) else {
             XCTFail("Transaction signing failed")
             return
         }

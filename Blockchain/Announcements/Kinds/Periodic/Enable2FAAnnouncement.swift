@@ -54,7 +54,7 @@ final class Enable2FAAnnouncement: PeriodicAnnouncement & ActionableAnnouncement
     }
 
     let type = AnnouncementType.twoFA
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -66,15 +66,18 @@ final class Enable2FAAnnouncement: PeriodicAnnouncement & ActionableAnnouncement
     private let shouldEnable2FA: Bool
 
     private let disposeBag = DisposeBag()
+
     // MARK: - Setup
 
-    init(shouldEnable2FA: Bool,
-         cacheSuite: CacheSuite = resolve(),
-         reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
+    init(
+        shouldEnable2FA: Bool,
+        cacheSuite: CacheSuite = resolve(),
+        reappearanceTimeInterval: TimeInterval,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
         self.shouldEnable2FA = shouldEnable2FA
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)

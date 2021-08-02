@@ -1,13 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import AuthenticationDataKit
+@testable import AuthenticationKit
 import Foundation
-@testable import PlatformKit
 import RxSwift
 
 extension WalletPayloadClient.Response {
     static func fake(
         guid: String = "123-abc-456-def-789-ghi",
-        authenticatorType: AuthenticatorType = .standard,
+        authenticatorType: WalletAuthenticatorType = .standard,
         language: String = "en",
         serverTime: TimeInterval = Date().timeIntervalSince1970,
         payload: String? = "{\"pbkdf2_iterations\":1,\"version\":3,\"payload\":\"payload-for-wallet\"}",

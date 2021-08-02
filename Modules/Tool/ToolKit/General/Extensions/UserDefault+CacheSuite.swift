@@ -45,7 +45,7 @@ public protocol CacheSuite {
     func set(_ value: Any?, forKey key: String)
 
     /// Keeps each key-value pair
-    func register(defaults registrationDictionary: [String : Any])
+    func register(defaults registrationDictionary: [String: Any])
 
     // MARK: - Removal
 
@@ -100,7 +100,7 @@ public class MemoryCacheSuite: CacheSuite {
 
     // MARK: - Setters
 
-    public func register(defaults registrationDictionary: [String : Any]) {
+    public func register(defaults registrationDictionary: [String: Any]) {
         registrationDictionary.forEach {
             cache[$0.key] = $0.value
         }

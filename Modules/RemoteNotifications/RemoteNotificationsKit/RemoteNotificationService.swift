@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Combine
 import DIKit
 import PlatformKit
@@ -34,19 +35,21 @@ final class RemoteNotificationService: RemoteNotificationServicing {
 
     // MARK: - Setup
 
-    init(authorizer: RemoteNotificationAuthorizing = resolve(),
-         notificationRelay: RemoteNotificationEmitting = resolve(),
-         backgroundReceiver: RemoteNotificationBackgroundReceiving = resolve(),
-         externalService: ExternalNotificationProviding = resolve(),
-         networkService: RemoteNotificationNetworkServicing = resolve(),
-         sharedKeyRepository: SharedKeyRepositoryAPI = resolve(),
-         guidRepository: GuidRepositoryAPI = resolve()) {
+    init(
+        authorizer: RemoteNotificationAuthorizing = resolve(),
+        notificationRelay: RemoteNotificationEmitting = resolve(),
+        backgroundReceiver: RemoteNotificationBackgroundReceiving = resolve(),
+        externalService: ExternalNotificationProviding = resolve(),
+        networkService: RemoteNotificationNetworkServicing = resolve(),
+        sharedKeyRepository: SharedKeyRepositoryAPI = resolve(),
+        guidRepository: GuidRepositoryAPI = resolve()
+    ) {
         self.authorizer = authorizer
         self.externalService = externalService
         self.networkService = networkService
         self.sharedKeyRepository = sharedKeyRepository
         self.guidRepository = guidRepository
-        self.relay = notificationRelay
+        relay = notificationRelay
         self.backgroundReceiver = backgroundReceiver
     }
 }
@@ -66,9 +69,11 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
                 self.externalService.token
             }
             .flatMap(weak: self) { (self, token) -> Single<Void> in
-                self.networkService.register(with: token,
-                                             sharedKeyProvider: self.sharedKeyRepository,
-                                             guidProvider: self.guidRepository)
+                self.networkService.register(
+                    with: token,
+                    sharedKeyProvider: self.sharedKeyRepository,
+                    guidProvider: self.guidRepository
+                )
             }
     }
 

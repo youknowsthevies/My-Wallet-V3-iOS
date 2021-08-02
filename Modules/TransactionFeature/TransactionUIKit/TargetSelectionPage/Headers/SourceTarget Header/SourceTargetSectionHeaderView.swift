@@ -4,8 +4,8 @@ import UIKit
 
 final class SourceTargetSectionHeaderView: UIView {
     static let defaultHeight: CGFloat = 64
-    private let titleLabel: UILabel = UILabel()
-    private let separator: UIView = UIView()
+    private let titleLabel = UILabel()
+    private let separator = UIView()
 
     var model: SourceTargetSectionHeaderModel! {
         didSet {

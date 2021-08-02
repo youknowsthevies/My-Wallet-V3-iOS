@@ -57,8 +57,10 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Init
 
-    init(event: SwapActivityItemEvent,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        event: SwapActivityItemEvent,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.amounts.withdrawal.toDisplayString(includeSymbol: true),
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
@@ -111,7 +113,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 .loaded(
                     next: badgeItem
                 )
-        )
+            )
         badgesModel
             .badgesRelay
             .accept([statusBadge])
@@ -135,10 +137,10 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
         switch event.isCustodial {
         case true:
             values.append(contentsOf: [
-                 .lineItem(fromPresenter),
-                 .separator,
-                 .lineItem(toPresenter),
-                 .separator
+                .lineItem(fromPresenter),
+                .separator,
+                .lineItem(toPresenter),
+                .separator
             ])
         case false:
             values.append(contentsOf: [

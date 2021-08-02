@@ -69,18 +69,20 @@ final class BitcoinCashActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let explorerButton: ButtonViewModel
 
-    init(alertViewPresenter: AlertViewPresenterAPI = resolve(),
-         event: TransactionalActivityItemEvent,
-         router: ActivityRouterAPI,
-         interactor: BitcoinCashActivityDetailsInteractor = .init(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
-        precondition(event.currency == .bitcoinCash, "Using BitcoinCashActivityDetailsPresenter with \(event.currency) event.")
+    init(
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        event: TransactionalActivityItemEvent,
+        router: ActivityRouterAPI,
+        interactor: BitcoinCashActivityDetailsInteractor = .init(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
+        precondition(event.currency == .coin(.bitcoinCash), "Using BitcoinCashActivityDetailsPresenter with \(event.currency) event.")
         self.alertViewPresenter = alertViewPresenter
         self.event = event
         self.interactor = interactor
         self.router = router
         explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
-        buttons = [ explorerButton ]
+        buttons = [explorerButton]
         dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
@@ -178,7 +180,7 @@ final class BitcoinCashActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .compactMap { $0?.confirmation.needConfirmation }
             .distinctUntilChanged()
             .map(weak: self) { (self, needConfirmation) in
-                needConfirmation ? [ self.statusBadge, self.confirmingBadge ] : [ self.statusBadge ]
+                needConfirmation ? [self.statusBadge, self.confirmingBadge] : [self.statusBadge]
             }
             .bindAndCatch(to: badgesModel.badgesRelay)
             .disposed(by: disposeBag)

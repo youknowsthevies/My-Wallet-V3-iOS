@@ -23,15 +23,15 @@ public final class SelectionScreenPresenter {
 
     var preselection: Observable<Int> {
         Observable.combineLatest(selectionRelay, preselectionSupportedRelay)
-            .filter { $0.1 }
-            .compactMap { $0.0 }
+            .filter(\.1)
+            .compactMap(\.0)
             .observeOn(MainScheduler.instance)
     }
 
     var selection: Observable<Int> {
         Observable.combineLatest(selectionRelay, preselectionSupportedRelay)
             .filter { !$0.1 }
-            .compactMap { $0.0 }
+            .compactMap(\.0)
             .observeOn(MainScheduler.instance)
     }
 
@@ -56,14 +56,16 @@ public final class SelectionScreenPresenter {
 
     // MARK: - Setup
 
-    public init(title: String,
-                description: String? = nil,
-                shouldPreselect: Bool = true,
-                searchBarPlaceholder: String,
-                interactor: SelectionScreenInteractor) {
+    public init(
+        title: String,
+        description: String? = nil,
+        shouldPreselect: Bool = true,
+        searchBarPlaceholder: String,
+        interactor: SelectionScreenInteractor
+    ) {
         self.shouldPreselect = shouldPreselect
-        self.preselectionSupportedRelay.accept(shouldPreselect)
-        self.tableHeaderViewModel = SelectionScreenTableHeaderViewModel(title: description)
+        preselectionSupportedRelay.accept(shouldPreselect)
+        tableHeaderViewModel = SelectionScreenTableHeaderViewModel(title: description)
         self.searchBarPlaceholder = searchBarPlaceholder
         self.title = title
         self.interactor = interactor
@@ -90,7 +92,7 @@ public final class SelectionScreenPresenter {
             .bindAndCatch(weak: self) { (self, presenters) in
                 presenters
                     .enumerated()
-                    .forEach { (index, presenter) in
+                    .forEach { index, presenter in
                         presenter.setup {
                             let previousIndex = self.selectionRelay.value
                             guard previousIndex != index else { return }
@@ -135,7 +137,7 @@ public final class SelectionScreenPresenter {
                 presenters.take(1),
                 interactor.service.selectedDataRelay.take(1)
             )
-            .compactMap { (presenters, selectedData) in
+            .compactMap { presenters, selectedData in
                 presenters.firstIndex { $0.data == selectedData }
             }
             .share(replay: 1)
@@ -146,7 +148,7 @@ public final class SelectionScreenPresenter {
                 selectedIndex
             )
             .take(1)
-            .bind { (presenters, selectedIndex) in
+            .bind { presenters, selectedIndex in
                 presenters[selectedIndex].select()
             }
             .disposed(by: disposeBag)

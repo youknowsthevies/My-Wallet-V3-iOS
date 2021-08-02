@@ -7,7 +7,7 @@ import RxSwift
 /// is invalid. Insufficient funds would be an example of one that is applicable to
 /// pretty much every asset class but, in cases like ETH you may have a pending transaction
 /// that hasn't confirmed yet.
-public protocol TransactionValidationError: Error { }
+public protocol TransactionValidationError: Error {}
 
 public enum PlatformKitTransactionValidationError: TransactionValidationError {
     case `default`
@@ -42,7 +42,7 @@ public enum TransactionValidationResult {
 
 /// `ValidateTransactionAPI` takes a `CryptoMoney`. The reason that this is not a `CryptoValue` is `ERC20TokenValue`
 /// and `EthereumValue` are not `CryptoValues` though they do conform to `CryptoMoney`. Use this API to confirm
-/// that an amount you would like to send is valid. 
+/// that an amount you would like to send is valid.
 public protocol ValidateTransactionAPI {
     func validateCryptoAmount(amount: CryptoMoney) -> Single<TransactionValidationResult>
 }

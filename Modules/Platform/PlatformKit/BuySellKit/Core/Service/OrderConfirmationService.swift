@@ -18,18 +18,20 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
 
     // MARK: - Properties
 
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let client: CardOrderConfirmationClientAPI
 
     // MARK: - Setup
 
-    init(analyticsRecorder: AnalyticsEventRecording = resolve(),
-         client: CardOrderConfirmationClientAPI = resolve()) {
+    init(
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        client: CardOrderConfirmationClientAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
     }
 
-    public func confirm(checkoutData: CheckoutData) -> Single<CheckoutData> {
+    func confirm(checkoutData: CheckoutData) -> Single<CheckoutData> {
         let orderId = checkoutData.order.identifier
         let paymentMethodId = checkoutData.order.paymentMethodId
         let partner: OrderPayload.ConfirmOrder.Partner
@@ -44,20 +46,20 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
             partner = .funds
         }
 
-        return self.client.confirmOrder(
-                with: orderId,
-                partner: partner,
-                paymentMethodId: paymentMethodId
-            )
-            .map(weak: self) { (self, response) in
-                OrderDetails(recorder: self.analyticsRecorder, response: response)
+        return client.confirmOrder(
+            with: orderId,
+            partner: partner,
+            paymentMethodId: paymentMethodId
+        )
+        .map(weak: self) { (self, response) in
+            OrderDetails(recorder: self.analyticsRecorder, response: response)
+        }
+        .map { details -> OrderDetails in
+            guard let details = details else {
+                throw ServiceError.mappingError
             }
-            .map { details -> OrderDetails in
-                guard let details = details else {
-                    throw ServiceError.mappingError
-                }
-                return details
-            }
-            .map { checkoutData.checkoutData(byAppending: $0) }
+            return details
+        }
+        .map { checkoutData.checkoutData(byAppending: $0) }
     }
 }

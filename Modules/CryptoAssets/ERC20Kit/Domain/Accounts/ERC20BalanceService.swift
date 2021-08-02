@@ -14,8 +14,10 @@ class ERC20BalanceService: ERC20BalanceServiceAPI {
     private let bridge: EthereumWalletBridgeAPI
     private let accountClient: ERC20AccountAPIClientAPI
 
-    init(with bridge: EthereumWalletBridgeAPI = resolve(),
-         accountClient: ERC20AccountAPIClientAPI = resolve()) {
+    init(
+        with bridge: EthereumWalletBridgeAPI = resolve(),
+        accountClient: ERC20AccountAPIClientAPI = resolve()
+    ) {
         self.bridge = bridge
         self.accountClient = accountClient
     }
@@ -33,7 +35,7 @@ class ERC20BalanceService: ERC20BalanceServiceAPI {
         }
         return accountClient
             .fetchAccountSummary(from: address.publicKey, contractAddress: contractAddress)
-            .map { $0.balance }
+            .map(\.balance)
             .map { stringValue -> CryptoValue in
                 CryptoValue.create(minor: stringValue, currency: cryptoCurrency) ?? CryptoValue.zero(currency: cryptoCurrency)
             }

@@ -13,6 +13,7 @@ import XCTest
 
 @testable import Blockchain
 
+// swiftlint:disable type_body_length
 final class LoggedInReducerTests: XCTestCase {
 
     var mockWalletManager: WalletManager!
@@ -21,7 +22,7 @@ final class LoggedInReducerTests: XCTestCase {
     var mockSettingsApp: MockBlockchainSettingsApp!
     var mockAlertPresenter: MockAlertViewPresenter!
     var mockExchangeAccountRepository: MockExchangeAccountRepository!
-    var mockRemoteNotificationAuthorizer:MockRemoteNotificationAuthorizer!
+    var mockRemoteNotificationAuthorizer: MockRemoteNotificationAuthorizer!
     var mockRemoteNotificationServiceContainer: MockRemoteNotificationServiceContainer!
     var mockCoincore: MockCoincore!
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
@@ -91,27 +92,25 @@ final class LoggedInReducerTests: XCTestCase {
         )
     }
 
-    // TODO: Tests fail when the mock instances are deallocated at the end of the test
-//    override func tearDownWithError() throws {
-//        mockSettingsApp = nil
-//        mockWalletManager = nil
-//        mockAlertPresenter = nil
-//        mockExchangeAccountRepository = nil
-//        mockRemoteNotificationAuthorizer = nil
-//        mockRemoteNotificationServiceContainer = nil
-//        mockCoincore = nil
-//        mockAnalyticsRecorder = nil
-//        onboardingSettings = nil
-//        mockAppDeeplinkHandler = nil
-//        mockMainQueue = nil
-//        mockDeepLinkRouter = nil
-//        mockFeatureFlagsService = nil
-//        fiatCurrencySettingsServiceMock = nil
-//
-//        testStore = nil
-//
-//        try super.tearDownWithError()
-//    }
+    override func tearDownWithError() throws {
+        mockSettingsApp = nil
+        mockAlertPresenter = nil
+        mockExchangeAccountRepository = nil
+        mockRemoteNotificationAuthorizer = nil
+        mockRemoteNotificationServiceContainer = nil
+        mockCoincore = nil
+        mockAnalyticsRecorder = nil
+        onboardingSettings = nil
+        mockAppDeeplinkHandler = nil
+        mockMainQueue = nil
+        mockDeepLinkRouter = nil
+        mockFeatureFlagsService = nil
+        fiatCurrencySettingsServiceMock = nil
+
+        testStore = nil
+
+        try super.tearDownWithError()
+    }
 
     func test_verify_initial_state_is_correct() {
         let state = LoggedIn.State()
@@ -120,11 +119,106 @@ final class LoggedInReducerTests: XCTestCase {
         XCTAssertFalse(state.reloadAfterSymbolChanged)
     }
 
+    func test_calling_start_on_reducer_should_post_login_notification() {
+        let expectation = self.expectation(forNotification: .login, object: nil)
+
+        testStore.send(.start(.none))
+        mockMainQueue.advance()
+
+        wait(for: [expectation], timeout: 2)
+        testStore.send(.logout)
+    }
+
+    func test_calling_start_calls_required_services() {
+        testStore.send(.start(.none))
+        mockMainQueue.advance()
+
+        XCTAssertTrue(mockExchangeAccountRepository.syncDepositAddressesIfLinkedPublisherCalled)
+
+        XCTAssertTrue(mockRemoteNotificationServiceContainer.sendTokenIfNeededPublisherCalled)
+
+        XCTAssertTrue(mockRemoteNotificationAuthorizer.requestAuthorizationIfNeededPublisherCalled)
+
+        XCTAssertTrue(mockCoincore.initializePublisherCalled)
+
+        testStore.send(.logout)
+    }
+
+    func test_reducer_handles_new_wallet_correctly_should_show_new_onboarding() {
+        // when
+        _ = mockFeatureFlagsService.enable(.remote(.showOnboardingAfterSignUp))
+
+        // given
+        let context = LoggedIn.Context.wallet(.new)
+        testStore.send(.start(context))
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.handleNewWalletCreation)
+
+        testStore.receive(.showOnboarding) { state in
+            state.displayOnboardingFlow = true
+        }
+
+        testStore.send(.logout)
+    }
+
+    func test_reducer_handles_new_wallet_correctly_should_show_legacy_flow() {
+        // when
+        _ = mockFeatureFlagsService.disable(.remote(.showOnboardingAfterSignUp))
+
+        // given
+        let context = LoggedIn.Context.wallet(.new)
+        testStore.send(.start(context))
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.handleNewWalletCreation)
+
+        testStore.receive(.showLegacyBuyFlow) { state in
+            state.displayLegacyBuyFlow = true
+        }
+
+        testStore.send(.logout)
+    }
+
+    func test_reducer_handles_deeplink_sendCrypto_correctly() {
+        let uriContent = URIContent(url: URL(string: "https://")!, context: .sendCrypto)
+        let context = LoggedIn.Context.deeplink(uriContent)
+        testStore.send(.start(context))
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.deeplink(uriContent)) { state in
+            state.displaySendCryptoScreen = true
+        }
+
+        testStore.receive(.deeplinkHandled) { state in
+            state.displaySendCryptoScreen = false
+        }
+
+        testStore.send(.logout)
+    }
+
+    func test_reducer_handles_deeplink_executeDeeplinkRouting_correctly() {
+        let uriContent = URIContent(url: URL(string: "https://")!, context: .executeDeeplinkRouting)
+        let context = LoggedIn.Context.deeplink(uriContent)
+        testStore.send(.start(context))
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.deeplink(uriContent))
+
+        XCTAssertTrue(mockDeepLinkRouter.routeIfNeededCalled)
+
+        testStore.send(.logout)
+    }
+
     func test_verify_start_action_observers_symbol_changes() {
         testStore.send(.start(.none))
 
         mockSettingsApp.symbolLocal = false
-        mockSettingsApp.symbolLocal = true // needs to change to trigger action
+        mockSettingsApp.symbolLocal = true
 
         testStore.receive(.symbolChanged) { state in
             state.reloadAfterSymbolChanged = true
@@ -133,6 +227,8 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.receive(.symbolChangedHandled) { state in
             state.reloadAfterSymbolChanged = false
         }
+
+        testStore.send(.logout)
     }
 
     func test_verify_sending_wallet_accountInfoAndExchangeRates_updates_the_state() {
@@ -145,6 +241,7 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.receive(.wallet(.accountInfoAndExchangeRatesHandled)) { state in
             state.reloadAfterMultiAddressResponse = false
         }
+        testStore.send(.logout)
     }
 
     func test_verify_sending_wallet_handleWalletBackup() {
@@ -153,6 +250,8 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.send(.wallet(.handleWalletBackup))
 
         XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
+
+        testStore.send(.logout)
     }
 
     func test_verify_sending_wallet_handleFailToLoadHistory() {
@@ -174,5 +273,99 @@ final class LoggedInReducerTests: XCTestCase {
                 message: LocalizationConstants.Errors.balancesGeneric
             )
         }
+
+        testStore.send(.logout)
+    }
+
+    func test_reducer_handles_walletDidGetAccountInfoAndExchangeRates() {
+        // given
+        testStore.send(.start(.none))
+
+        // when
+        mockWallet.delegate.walletDidGetAccountInfoAndExchangeRates?(mockWallet)
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.wallet(.accountInfoAndExchangeRates)) { state in
+            state.reloadAfterMultiAddressResponse = true
+        }
+        testStore.receive(.wallet(.accountInfoAndExchangeRatesHandled)) { state in
+            state.reloadAfterMultiAddressResponse = false
+        }
+
+        testStore.send(.logout)
+    }
+
+    func test_reducer_handles_walletBackupFailed() {
+        // given
+        testStore.send(.start(.none))
+
+        // when
+        mockWallet.delegate?.didBackupWallet?()
+        mockMainQueue.advance()
+
+        // then
+        XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
+        testStore.receive(.wallet(.handleWalletBackup))
+
+        testStore.send(.logout)
+    }
+
+    func test_reducer_handles_walletBackupSuccess() {
+        // given
+        testStore.send(.start(.none))
+
+        // when
+        mockWallet.delegate?.didFailBackupWallet?()
+        mockMainQueue.advance()
+
+        // then
+        XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
+        testStore.receive(.wallet(.handleWalletBackup))
+
+        testStore.send(.logout)
+    }
+
+    func test_reducer_handles_walletFailedToGetHistory_with_an_error_message() {
+        // given
+        testStore.send(.start(.none))
+
+        // when
+        let errorMessage = "an error message"
+        mockWallet.delegate?.didFailGetHistory?(errorMessage)
+        mockMainQueue.advance()
+
+        // then
+        XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
+        testStore.receive(.wallet(.handleFailToLoadHistory(errorMessage))) { state in
+            state.displayWalletAlertContent = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.balancesGeneric
+            )
+        }
+
+        testStore.send(.logout)
+    }
+
+    func test_reducer_handles_walletFailedToGetHistory_with_an_empty_error_message() {
+        // given
+        testStore.send(.start(.none))
+
+        // when
+        let emptyErrorMessage = ""
+        mockWallet.delegate?.didFailGetHistory?(emptyErrorMessage)
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.wallet(.handleFailToLoadHistory(emptyErrorMessage))) { state in
+            state.displayWalletAlertContent = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork
+            )
+        }
+
+        testStore.send(.logout)
     }
 }
+
+// swiftlint:enable type_body_length

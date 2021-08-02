@@ -16,7 +16,7 @@ public protocol SecureChannelNotificationRelaying {
     /// - Returns:
     ///   Boolean flag indicating if this object decided to react to the notification payload. If this flag is `false` this object will not call the `completionHandler`.
     func didReceiveRemoteNotification(
-        _  userInfo: [AnyHashable : Any],
+        _ userInfo: [AnyHashable: Any],
         onApplicationState applicationState: UIApplication.State,
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) -> Bool
@@ -32,14 +32,16 @@ final class SecureChannelNotificationRelay: SecureChannelNotificationRelaying {
     let service: SecureChannelAPI
     let disposeBag = DisposeBag()
 
-    init(router: SecureChannelRouting = resolve(),
-         service: SecureChannelAPI = resolve()) {
+    init(
+        router: SecureChannelRouting = resolve(),
+        service: SecureChannelAPI = resolve()
+    ) {
         self.router = router
         self.service = service
     }
 
     func didReceiveRemoteNotification(
-        _  userInfo: [AnyHashable : Any],
+        _ userInfo: [AnyHashable: Any],
         onApplicationState applicationState: UIApplication.State,
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) -> Bool {
@@ -64,7 +66,7 @@ final class SecureChannelNotificationRelay: SecureChannelNotificationRelaying {
         return true
     }
 
-    private func scheduleLocalNotification(userInfo: [AnyHashable : Any]) -> Completable {
+    private func scheduleLocalNotification(userInfo: [AnyHashable: Any]) -> Completable {
         service.createSecureChannelConnectionCandidate(userInfo)
             .flatMapCompletable(weak: self) { (self, candidate) in
                 self.scheduleLocalNotification(candidate: candidate, userInfo: userInfo)
@@ -73,7 +75,7 @@ final class SecureChannelNotificationRelay: SecureChannelNotificationRelaying {
 
     private func scheduleLocalNotification(
         candidate: SecureChannelConnectionCandidate,
-        userInfo: [AnyHashable : Any]
+        userInfo: [AnyHashable: Any]
     ) -> Completable {
         let title: String
         let body: String

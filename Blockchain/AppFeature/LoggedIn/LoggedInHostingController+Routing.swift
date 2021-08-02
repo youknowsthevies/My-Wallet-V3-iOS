@@ -61,12 +61,16 @@ extension LoggedInHostingController {
         ) as! AccountsAndAddressesNavigationController
         viewController.modalPresentationStyle = .fullScreen
         viewController.modalTransitionStyle = .coverVertical
-        self.accountsAndAddressesNavigationController = viewController
+        accountsAndAddressesNavigationController = viewController
         return viewController
     }
 
     func handleAccountsAndAddresses() {
         present(createAccountsAndAddressesViewController(), animated: true)
+    }
+
+    func handleInterest() {
+        unimplemented()
     }
 
     func handleSettings() {
@@ -123,7 +127,7 @@ extension LoggedInHostingController {
     }
 
     /// Starts Buy Crypto flow.
-    func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
+    func handleBuyCrypto(currency: CryptoCurrency = .coin(.bitcoin)) {
         let presenter = topMostViewController ?? self
         transactionsAdapter.presentTransactionFlow(to: .buy(currency), from: presenter) { result in
             Logger.shared.info("[AppCoordinator] Transaction Flow completed with result '\(result)'")
@@ -154,7 +158,7 @@ extension LoggedInHostingController {
             stateService: stateService
         )
 
-        buyRouter = PlatformUIKit.Router(builder: builder)
+        buyRouter = PlatformUIKit.Router(builder: builder, currency: .coin(.bitcoin))
         buyRouter?.setup(startImmediately: false)
         stateService.showFundsTransferDetails(
             for: fiatCurrency,

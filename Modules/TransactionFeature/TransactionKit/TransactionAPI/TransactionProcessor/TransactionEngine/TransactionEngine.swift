@@ -24,9 +24,11 @@ public protocol TransactionEngine: AnyObject {
     var transactionExchangeRatePair: Observable<MoneyValuePair> { get }
 
     func assertInputsValid()
-    func start(sourceAccount: BlockchainAccount,
-               transactionTarget: TransactionTarget,
-               askForRefreshConfirmation: @escaping AskForRefreshConfirmation)
+    func start(
+        sourceAccount: BlockchainAccount,
+        transactionTarget: TransactionTarget,
+        askForRefreshConfirmation: @escaping AskForRefreshConfirmation
+    )
     func stop(pendingTransaction: PendingTransaction)
     func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction>
 
@@ -67,69 +69,74 @@ public protocol TransactionEngine: AnyObject {
 
     /// Update the selected fee level of this Tx.
     /// This should check & update balances etc.
-    /// This is only called when the user is applying a custom fee. 
+    /// This is only called when the user is applying a custom fee.
     func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction>
 
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction>
 }
 
-public extension TransactionEngine {
+extension TransactionEngine {
 
-    var transactionExchangeRatePair: Observable<MoneyValuePair> {
+    public var transactionExchangeRatePair: Observable<MoneyValuePair> {
         .empty()
     }
 
-    var sourceAsset: CurrencyType {
+    public var sourceAsset: CurrencyType {
         guard let account = sourceAccount as? SingleAccount else {
             fatalError("Expected a SingleAccount: \(String(describing: sourceAccount))")
         }
         return account.currencyType
     }
 
-    var sourceCryptoCurrency: CryptoCurrency {
+    public var sourceCryptoCurrency: CryptoCurrency {
         guard let crypto = sourceAsset.cryptoCurrency else {
             fatalError("Expected a CryptoCurrency type: \(sourceAsset.currency)")
         }
         return crypto
     }
 
-    var canTransactFiat: Bool { false }
+    public var canTransactFiat: Bool { false }
 
-    func stop(pendingTransaction: PendingTransaction) { }
+    public func stop(pendingTransaction: PendingTransaction) {}
 
-    func start(sourceAccount: BlockchainAccount,
-               transactionTarget: TransactionTarget,
-               askForRefreshConfirmation: @escaping (_ revalidate: Bool) -> Completable) {
+    public func start(
+        sourceAccount: BlockchainAccount,
+        transactionTarget: TransactionTarget,
+        askForRefreshConfirmation: @escaping (_ revalidate: Bool) -> Completable
+    ) {
         self.sourceAccount = sourceAccount
         self.transactionTarget = transactionTarget
         self.askForRefreshConfirmation = askForRefreshConfirmation
     }
 
-    func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    public func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         defaultRestart(transactionTarget: transactionTarget, pendingTransaction: pendingTransaction)
     }
 
-    func defaultRestart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    public func defaultRestart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         self.transactionTarget = transactionTarget
         return .just(pendingTransaction)
     }
 
-    func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    public func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .just(pendingTransaction)
     }
 
-    func doOptionUpdateRequest(pendingTransaction: PendingTransaction, newConfirmation: TransactionConfirmation) -> Single<PendingTransaction> {
+    public func doOptionUpdateRequest(
+        pendingTransaction: PendingTransaction,
+        newConfirmation: TransactionConfirmation
+    ) -> Single<PendingTransaction> {
         defaultDoOptionUpdateRequest(pendingTransaction: pendingTransaction, newConfirmation: newConfirmation)
     }
 
-    func defaultDoOptionUpdateRequest(
+    public func defaultDoOptionUpdateRequest(
         pendingTransaction: PendingTransaction,
         newConfirmation: TransactionConfirmation
     ) -> Single<PendingTransaction> {
         .just(pendingTransaction.insert(confirmation: newConfirmation))
     }
 
-    func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    public func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .just(pendingTransaction)
     }
 }

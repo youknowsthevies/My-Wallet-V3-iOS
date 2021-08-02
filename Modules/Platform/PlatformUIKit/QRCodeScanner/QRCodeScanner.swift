@@ -144,14 +144,17 @@ extension QRCodeScanner: AVCaptureMetadataOutputObjectsDelegate {
 
     // MARK: - AVCaptureMetadataOutputObjectsDelegate
 
-    public func metadataOutput(_ output: AVCaptureMetadataOutput,
-                               didOutput metadataObjects: [AVMetadataObject],
-                               from connection: AVCaptureConnection) {
+    public func metadataOutput(
+        _ output: AVCaptureMetadataOutput,
+        didOutput metadataObjects: [AVMetadataObject],
+        from connection: AVCaptureConnection
+    ) {
         guard !metadataObjects.isEmpty,
-            let metadataObject = metadataObjects.first,
-            metadataObject.type == .qr,
-            let codeObject = metadataObject as? AVMetadataMachineReadableCodeObject,
-            let stringValue = codeObject.stringValue else {
+              let metadataObject = metadataObjects.first,
+              metadataObject.type == .qr,
+              let codeObject = metadataObject as? AVMetadataMachineReadableCodeObject,
+              let stringValue = codeObject.stringValue
+        else {
             DispatchQueue.main.async { [weak self] in
                 self?.delegate?.scanComplete(with: .failure(QRScannerError.badMetadataObject))
             }
