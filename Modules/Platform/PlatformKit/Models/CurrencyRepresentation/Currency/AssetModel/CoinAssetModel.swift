@@ -48,9 +48,17 @@ public struct CoinAssetModel: AssetModel, Hashable {
         self.sortIndex = sortIndex
     }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(code)
-        hasher.combine(kind)
+    func with(products: [AssetModelProduct]) -> CoinAssetModel {
+        CoinAssetModel(
+            code: code,
+            name: name,
+            precision: precision,
+            products: products,
+            logoPngUrl: logoPngUrl,
+            spotColor: spotColor,
+            minimumOnChainConfirmations: minimumOnChainConfirmations,
+            sortIndex: sortIndex
+        )
     }
 }
 
@@ -105,162 +113,6 @@ extension CoinAssetModel {
             spotColor: "000000",
             minimumOnChainConfirmations: 3,
             sortIndex: 4
-        )
-    }
-
-    static var algorand: CoinAssetModel {
-        CoinAssetModel(
-            code: "ALGO",
-            name: "Algorand",
-            precision: 6,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "000000",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 101
-        )
-    }
-
-    static var polkadot: CoinAssetModel {
-        CoinAssetModel(
-            code: "DOT",
-            name: "Polkadot",
-            precision: 10,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "E6007A",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 102
-        )
-    }
-
-    static var dogecoin: CoinAssetModel {
-        CoinAssetModel(
-            code: "DOGE",
-            name: "Dogecoin",
-            precision: 8,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "C2A633",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 103
-        )
-    }
-
-    static var bitClout: CoinAssetModel {
-        CoinAssetModel(
-            code: "CLOUT",
-            name: "BitClout",
-            precision: 9,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "000000",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 104
-        )
-    }
-
-    static var ethereumClassic: CoinAssetModel {
-        CoinAssetModel(
-            code: "ETC",
-            name: "Ethereum Classic",
-            precision: 18,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "33FF99",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 105
-        )
-    }
-
-    static var litecoin: CoinAssetModel {
-        CoinAssetModel(
-            code: "LTC",
-            name: "Litecoin",
-            precision: 18,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "BFBBBB",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 106
-        )
-    }
-
-    static var blockstack: CoinAssetModel {
-        CoinAssetModel(
-            code: "STX",
-            name: "Stacks",
-            precision: 6,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "211F6D",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 107
-        )
-    }
-
-    static var tezos: CoinAssetModel {
-        CoinAssetModel(
-            code: "XTZ",
-            name: "Tezos",
-            precision: 6,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "2C7DF7",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 108
-        )
-    }
-
-    static var mobileCoin: CoinAssetModel {
-        CoinAssetModel(
-            code: "MOB",
-            name: "Mobile Coin",
-            precision: 12,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "243855",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 109
-        )
-    }
-
-    static var theta: CoinAssetModel {
-        CoinAssetModel(
-            code: "THETA",
-            name: "Theta Network",
-            precision: 18,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "2AB8E6",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 110
-        )
-    }
-
-    static var near: CoinAssetModel {
-        CoinAssetModel(
-            code: "NEAR",
-            name: "NEAR Protocol",
-            precision: 24,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "000000",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 111
-        )
-    }
-
-    static var eos: CoinAssetModel {
-        CoinAssetModel(
-            code: "EOS",
-            name: "EOS",
-            precision: 4,
-            products: [],
-            logoPngUrl: nil,
-            spotColor: "000000",
-            minimumOnChainConfirmations: 3,
-            sortIndex: 112
         )
     }
 }

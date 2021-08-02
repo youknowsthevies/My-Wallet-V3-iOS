@@ -10,15 +10,15 @@ extension CryptoCurrency {
     public var brandColor: UIColor {
         switch self {
         case .coin(let model):
-            guard let spotColor = model.spotColor else {
-                return .black
+            if let match = CustodialCoinCode.allCases.first(where: { $0.rawValue == model.code }) {
+                return UIColor(hex: match.spotColor) ?? .black
             }
-            return UIColor(hex: spotColor) ?? .black
+            return model.spotColor.flatMap(UIColor.init(hex:)) ?? .black
         case .erc20(let model):
-            guard let spotColor = model.spotColor else {
-                return CryptoCurrency.coin(.ethereum).brandColor
+            if let match = ERC20Code.allCases.first(where: { $0.rawValue == model.code }) {
+                return UIColor(hex: match.spotColor) ?? .black
             }
-            return UIColor(hex: spotColor) ?? .black
+            return model.spotColor.flatMap(UIColor.init(hex:)) ?? UIColor(hex: "473BCB")!
         }
     }
 
@@ -41,70 +41,70 @@ extension CryptoCurrency {
                 return .local(name: "crypto-eth", bundle: .platformUIKit)
             case NonCustodialCoinCode.stellar.rawValue:
                 return .local(name: "crypto-xlm", bundle: .platformUIKit)
-            case LegacyCustodialCode.polkadot.rawValue:
+            case CustodialCoinCode.polkadot.rawValue:
                 return .local(name: "crypto-dot", bundle: .platformUIKit)
-            case LegacyCustodialCode.algorand.rawValue:
+            case CustodialCoinCode.algorand.rawValue:
                 return .local(name: "crypto-algo", bundle: .platformUIKit)
-            case NewCustodialCode.bitClout.rawValue:
+            case CustodialCoinCode.bitClout.rawValue:
                 return .local(name: "crypto-clout", bundle: .platformUIKit)
-            case NewCustodialCode.blockstack.rawValue:
+            case CustodialCoinCode.blockstack.rawValue:
                 return .local(name: "crypto-stx", bundle: .platformUIKit)
-            case NewCustodialCode.dogecoin.rawValue:
+            case CustodialCoinCode.dogecoin.rawValue:
                 return .local(name: "crypto-doge", bundle: .platformUIKit)
-            case NewCustodialCode.eos.rawValue:
+            case CustodialCoinCode.eos.rawValue:
                 return .local(name: "crypto-eos", bundle: .platformUIKit)
-            case NewCustodialCode.ethereumClassic.rawValue:
+            case CustodialCoinCode.ethereumClassic.rawValue:
                 return .local(name: "crypto-etc", bundle: .platformUIKit)
-            case NewCustodialCode.litecoin.rawValue:
+            case CustodialCoinCode.litecoin.rawValue:
                 return .local(name: "crypto-ltc", bundle: .platformUIKit)
-            case NewCustodialCode.mobileCoin.rawValue:
+            case CustodialCoinCode.mobileCoin.rawValue:
                 return .local(name: "crypto-mobi", bundle: .platformUIKit)
-            case NewCustodialCode.near.rawValue:
+            case CustodialCoinCode.near.rawValue:
                 return .local(name: "crypto-near", bundle: .platformUIKit)
-            case NewCustodialCode.tezos.rawValue:
+            case CustodialCoinCode.tezos.rawValue:
                 return .local(name: "crypto-xtz", bundle: .platformUIKit)
-            case NewCustodialCode.theta.rawValue:
+            case CustodialCoinCode.theta.rawValue:
                 return .local(name: "crypto-theta", bundle: .platformUIKit)
             default:
                 return .local(name: "crypto-placeholder", bundle: .platformUIKit)
             }
         case .erc20(let model):
             switch model.code {
-            case LegacyERC20Code.aave.rawValue:
+            case ERC20Code.aave.rawValue:
                 return .local(name: "crypto-aave", bundle: .platformUIKit)
-            case LegacyERC20Code.pax.rawValue:
+            case ERC20Code.pax.rawValue:
                 return .local(name: "crypto-pax", bundle: .platformUIKit)
-            case LegacyERC20Code.tether.rawValue:
+            case ERC20Code.tether.rawValue:
                 return .local(name: "crypto-usdt", bundle: .platformUIKit)
-            case LegacyERC20Code.wdgld.rawValue:
+            case ERC20Code.wdgld.rawValue:
                 return .local(name: "crypto-wdgld", bundle: .platformUIKit)
-            case LegacyERC20Code.yearnFinance.rawValue:
+            case ERC20Code.yearnFinance.rawValue:
                 return .local(name: "crypto-yfi", bundle: .platformUIKit)
-            case NewERC20Code.bat.rawValue:
+            case ERC20Code.bat.rawValue:
                 return .local(name: "crypto-bat", bundle: .platformUIKit)
-            case NewERC20Code.comp.rawValue:
+            case ERC20Code.comp.rawValue:
                 return .local(name: "crypto-comp", bundle: .platformUIKit)
-            case NewERC20Code.dai.rawValue:
+            case ERC20Code.dai.rawValue:
                 return .local(name: "crypto-dai", bundle: .platformUIKit)
-            case NewERC20Code.enj.rawValue:
+            case ERC20Code.enj.rawValue:
                 return .local(name: "crypto-enj", bundle: .platformUIKit)
-            case NewERC20Code.link.rawValue:
+            case ERC20Code.link.rawValue:
                 return .local(name: "crypto-link", bundle: .platformUIKit)
-            case NewERC20Code.ogn.rawValue:
+            case ERC20Code.ogn.rawValue:
                 return .local(name: "crypto-ogn", bundle: .platformUIKit)
-            case NewERC20Code.snx.rawValue:
+            case ERC20Code.snx.rawValue:
                 return .local(name: "crypto-snx", bundle: .platformUIKit)
-            case NewERC20Code.sushi.rawValue:
+            case ERC20Code.sushi.rawValue:
                 return .local(name: "crypto-sushi", bundle: .platformUIKit)
-            case NewERC20Code.tbtc.rawValue:
+            case ERC20Code.tbtc.rawValue:
                 return .local(name: "crypto-tbtc", bundle: .platformUIKit)
-            case NewERC20Code.uni.rawValue:
+            case ERC20Code.uni.rawValue:
                 return .local(name: "crypto-uni", bundle: .platformUIKit)
-            case NewERC20Code.usdc.rawValue:
+            case ERC20Code.usdc.rawValue:
                 return .local(name: "crypto-usdc", bundle: .platformUIKit)
-            case NewERC20Code.wbtc.rawValue:
+            case ERC20Code.wbtc.rawValue:
                 return .local(name: "crypto-wbtc", bundle: .platformUIKit)
-            case NewERC20Code.zrx.rawValue:
+            case ERC20Code.zrx.rawValue:
                 return .local(name: "crypto-zrx", bundle: .platformUIKit)
             default:
                 return .local(name: "crypto-placeholder", bundle: .platformUIKit)

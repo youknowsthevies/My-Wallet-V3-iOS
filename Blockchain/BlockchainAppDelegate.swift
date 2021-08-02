@@ -7,6 +7,7 @@ import AuthenticationKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
+import Combine
 import DebugUIKit
 import DIKit
 import EthereumKit
@@ -56,12 +57,13 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
     @LazyInject private var deepLinkRouter: DeepLinkRouting
 
     @LazyInject private var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
-
+    @LazyInject private var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     @LazyInject(tag: DebugScreenContext.tag) private var debugCoordinator: DebugCoordinating
 
     private let disposeBag = DisposeBag()
     private var appCoordinator: AppCoordinator { .shared }
     private lazy var bitpayRouter = BitPayLinkRouter()
+    private var cancellables: Set<AnyCancellable> = []
 
     override init() {
         super.init()
@@ -102,6 +104,11 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
         // Migrate announcements
         AnnouncementRecorder.migrate(errorRecorder: CrashlyticsRecorder())
+
+        supportedAssetsRemoteService
+            .refreshCustodialAssetsCache()
+            .sink { _ in }
+            .store(in: &cancellables)
 
         // Register the application for remote notifications
         remoteNotificationServiceContainer.authorizer

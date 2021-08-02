@@ -55,11 +55,6 @@ public struct ERC20AssetModel: AssetModel, Hashable {
         self.sortIndex = sortIndex
     }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(code)
-        hasher.combine(kind)
-    }
-
     func with(products: [AssetModelProduct]) -> ERC20AssetModel {
         ERC20AssetModel(
             code: code,

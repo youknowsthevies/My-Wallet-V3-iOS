@@ -34,7 +34,7 @@ public struct SupportedPairs: Equatable {
         Set(pairs.map(\.minFiatValue.currencyType))
     }
 
-    var cryptoCurrencySet: Set<CryptoCurrency> {
+    public var cryptoCurrencySet: Set<CryptoCurrency> {
         Set(pairs.map(\.cryptoCurrency))
     }
 

@@ -105,14 +105,21 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public var actions: Single<AvailableActions> {
-        switch asset {
-        case .erc20(let model) where NewERC20Code.allCases.map(\.rawValue).contains(model.code):
-            return actionsNewCustodialAsset
-        case .coin(let model) where NewCustodialCode.allCases.map(\.rawValue).contains(model.code):
-            return actionsNewCustodialAsset
-        default:
-            return actionsLegacyAsset
-        }
+        Single.zip(balance, eligibilityService.isEligible, isPairToFiatAvailable)
+            .map { balance, isEligible, isPairToFiatAvailable -> AvailableActions in
+                var base: AvailableActions = [.viewActivity, .receive]
+                if isPairToFiatAvailable {
+                    base.insert(.buy)
+                }
+                if balance.isPositive {
+                    base.insert(.send)
+                }
+                if balance.isPositive, isEligible {
+                    base.insert(.sell)
+                    base.insert(.swap)
+                }
+                return base
+            }
     }
 
     public var activity: Single<[ActivityItemEvent]> {
@@ -129,50 +136,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             }
     }
 
-    public var actionsLegacyAsset: Single<AvailableActions> {
-        Single.zip(balance, eligibilityService.isEligible)
-            .map { balance, isEligible -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .buy]
-                if balance.isPositive {
-                    base.insert(.send)
-                }
-                if balance.isPositive, isEligible {
-                    base.insert(.sell)
-                    base.insert(.swap)
-                }
-                base.insert(.receive)
-                return base
-            }
-    }
-
-    private var actionsNewCustodialAsset: Single<AvailableActions> {
-        Single.zip(balance, eligibilityService.isEligible, custodialSupport)
-            .map { [asset] balance, isEligible, custodialSupport -> AvailableActions in
-                let canBuy = custodialSupport.data[asset.code]?.canBuy ?? false
-                let canSend = custodialSupport.data[asset.code]?.canSend ?? false
-                let canSell = custodialSupport.data[asset.code]?.canSell ?? false
-                let canSwap = custodialSupport.data[asset.code]?.canSwap ?? false
-                let canReceive = custodialSupport.data[asset.code]?.canReceive ?? false
-                var base: AvailableActions = [.viewActivity]
-                if balance.isPositive, canSend {
-                    base.insert(.send)
-                }
-                if balance.isPositive, isEligible, canSell {
-                    base.insert(.sell)
-                }
-                if balance.isPositive, isEligible, canSwap {
-                    base.insert(.swap)
-                }
-                if canReceive {
-                    base.insert(.receive)
-                }
-                if canBuy {
-                    base.insert(.buy)
-                }
-                return base
-            }
-    }
-
     private let balanceService: TradingBalanceServiceAPI
     private let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
     private let custodialAddressService: CustodialAddressServiceAPI
@@ -185,6 +148,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let ordersActivity: OrdersActivityServiceAPI
     private let swapActivity: SwapActivityServiceAPI
     private let buySellActivity: BuySellActivityItemEventServiceAPI
+    private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
 
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset.currency)
@@ -203,6 +167,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         custodialAddressService: CustodialAddressServiceAPI = resolve(),
         custodialPendingDepositService: CustodialPendingDepositServiceAPI = resolve(),
         eligibilityService: EligibilityServiceAPI = resolve(),
+        supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve()
     ) {
         self.asset = asset
@@ -219,76 +184,21 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.featureFetcher = featureFetcher
         self.kycTiersService = kycTiersService
         self.errorRecorder = errorRecorder
+        self.supportedPairsInteractorService = supportedPairsInteractorService
     }
 
-    private var custodialSupport: Single<CryptoCustodialSupport> {
-        featureFetcher
-            .fetch(for: .custodialOnlyTokens)
-            .map { (data: [String: [String]]) in
-                CryptoCustodialSupport(data: data)
+    private var isPairToFiatAvailable: Single<Bool> {
+        supportedPairsInteractorService
+            .pairs
+            .take(1)
+            .asSingle()
+            .map { [asset] pairs in
+                pairs.cryptoCurrencySet.contains(asset)
             }
-            .catchErrorJustReturn(.empty)
+            .catchErrorJustReturn(false)
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
-        switch asset {
-        case .erc20(let model) where NewERC20Code.allCases.map(\.rawValue).contains(model.code):
-            return canNewCustodialAsset(perform: action)
-                .flatMap(weak: self) { (self, canDoAction) in
-                    guard canDoAction else {
-                        return .just(false)
-                    }
-                    return self.canLegacyAsset(perform: action)
-                }
-        case .coin(let model) where NewCustodialCode.allCases.map(\.rawValue).contains(model.code):
-            return canNewCustodialAsset(perform: action)
-                .flatMap(weak: self) { (self, canDoAction) in
-                    guard canDoAction else {
-                        return .just(false)
-                    }
-                    return self.canLegacyAsset(perform: action)
-                }
-        default:
-            return canLegacyAsset(perform: action)
-        }
-    }
-
-    private func canNewCustodialAsset(perform action: AssetAction) -> Single<Bool> {
-        switch action {
-        case .viewActivity:
-            return .just(true)
-        case .send:
-            return custodialSupport
-                .map { [asset] support in
-                    support.data[asset.code]?.canSend ?? false
-                }
-        case .buy:
-            return custodialSupport
-                .map { [asset] support in
-                    support.data[asset.code]?.canBuy ?? false
-                }
-        case .sell:
-            return custodialSupport
-                .map { [asset] support in
-                    support.data[asset.code]?.canSell ?? false
-                }
-        case .swap:
-            return custodialSupport
-                .map { [asset] support in
-                    support.data[asset.code]?.canSwap ?? false
-                }
-        case .receive:
-            return custodialSupport
-                .map { [asset] support in
-                    support.data[asset.code]?.canReceive ?? false
-                }
-        case .deposit,
-             .withdraw:
-            return .just(false)
-        }
-    }
-
-    private func canLegacyAsset(perform action: AssetAction) -> Single<Bool> {
         switch action {
         case .viewActivity:
             return .just(true)
@@ -306,7 +216,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 .recordErrors(on: errorRecorder)
                 .catchErrorJustReturn(false)
         case .buy:
-            return .just(true)
+            return isPairToFiatAvailable
         case .sell,
              .swap:
             return balance

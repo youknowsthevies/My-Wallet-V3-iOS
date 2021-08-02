@@ -3,23 +3,30 @@
 @testable import PlatformKit
 import XCTest
 
-class SupportedAssetsLocalFilePathProviderTests: XCTestCase {
+final class SupportedAssetsFilePathProviderTests: XCTestCase {
 
-    var sut: SupportedAssetsLocalFilePathProviderAPI!
+    var sut: SupportedAssetsFilePathProviderAPI!
 
     override func setUp() {
-        sut = SupportedAssetsLocalFilePathProvider()
+        super.setUp()
+        sut = SupportedAssetsFilePathProvider()
     }
 
     override func tearDown() {
+        super.tearDown()
         sut = nil
     }
 
-    func testLocalFileIsPresent() {
-        guard let localFile = sut.localERC20Assets else {
+    func testLocalERC20FileIsNotPresent() {
+        XCTAssertNil(sut.localERC20Assets)
+    }
+
+    func testLocalCustodialFileIsPresent() {
+        guard let localFile = sut.localCustodialAssets else {
             XCTFail("Missing local file.")
             return
         }
-        XCTAssertTrue(localFile.contains("local-currencies-erc20.json"))
+        XCTAssertTrue(localFile.absoluteString.contains("local-currencies-custodial.json"))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: localFile.relativePath))
     }
 }

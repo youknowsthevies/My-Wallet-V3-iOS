@@ -36,6 +36,7 @@ public enum DashboardAsset {
                     case months(Int)
                     case years(Int)
                     case timestamp(Date)
+                    case all
 
                     var string: String {
                         switch self {
@@ -60,6 +61,8 @@ public enum DashboardAsset {
                             }
                         case .timestamp(let date):
                             return DateFormatter.medium.string(from: date)
+                        case .all:
+                            return LocalizationConstants.TimeUnit.Plural.allTime
                         }
                     }
                 }
@@ -256,8 +259,7 @@ extension PriceWindow {
     public func time(for currency: CryptoCurrency) -> Time {
         switch self {
         case .all:
-            let years = max(1.0, currency.maxStartDate / 31536000)
-            return .years(Int(years))
+            return .all
         case .year:
             return .years(1)
         case .month:

@@ -36,6 +36,15 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
     public var debugDescription: String {
         "CryptoCurrency.\(code)"
     }
+
+    public var assetModel: AssetModel {
+        switch self {
+        case .coin(let model):
+            return model
+        case .erc20(let model):
+            return model
+        }
+    }
 }
 
 // MARK: - Currency
@@ -128,45 +137,6 @@ extension CryptoCurrency {
             return model.typeTag
         case .coin(let model):
             return model.typeTag
-        }
-    }
-
-    public var maxStartDate: TimeInterval {
-        switch self {
-        case .erc20(let model):
-            switch model.code {
-            case LegacyERC20Code.aave.rawValue:
-                return 1615831200
-            case LegacyERC20Code.pax.rawValue:
-                return 1555060318
-            case LegacyERC20Code.tether.rawValue:
-                return 1511829681
-            case LegacyERC20Code.wdgld.rawValue:
-                return 1605636000
-            case LegacyERC20Code.yearnFinance.rawValue:
-                return 1615831200
-            default:
-                // TODO: IOS-4958: Use correct date from model.
-                return 1438992000
-            }
-        case .coin(let model):
-            switch model.code {
-            case NonCustodialCoinCode.bitcoin.rawValue:
-                return 1282089600
-            case NonCustodialCoinCode.bitcoinCash.rawValue:
-                return 1500854400
-            case NonCustodialCoinCode.ethereum.rawValue:
-                return 1438992000
-            case NonCustodialCoinCode.stellar.rawValue:
-                return 1525716000
-            case LegacyCustodialCode.polkadot.rawValue:
-                return 1615831200
-            case LegacyCustodialCode.algorand.rawValue:
-                return 1560211225
-            default:
-                // TODO: IOS-4958: Use correct date from model.
-                return 1625097600
-            }
         }
     }
 }
