@@ -39,7 +39,7 @@ final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, Ac
         buttonViewModel: ButtonViewModel? = nil
     ) {
         self.action = action
-        self.button = buttonViewModel
+        button = buttonViewModel
         self.navigationModel = navigationModel
         self.headerModel = headerModel
         super.init(viewController: viewController)

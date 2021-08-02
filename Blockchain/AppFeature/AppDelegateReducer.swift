@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import DebugUIKit
+import DIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
