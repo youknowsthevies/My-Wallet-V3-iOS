@@ -113,6 +113,10 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
             .bind { model in
                 guard case .default(let presenter) = model else { return }
                 switch presenter.action {
+                case .receive:
+                    stateService.receiveRelay.accept(())
+                case .send:
+                    stateService.sendRelay.accept(())
                 case .buy:
                     stateService.buyRelay.accept(())
                 case .sell:
