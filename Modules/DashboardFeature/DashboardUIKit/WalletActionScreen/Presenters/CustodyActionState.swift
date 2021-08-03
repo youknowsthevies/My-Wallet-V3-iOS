@@ -18,8 +18,11 @@ public enum CustodyActionState {
     /// Starts the `BackupRouter`
     case backup
 
-    /// The recovery phrase screen
+    /// Route to send
     case send
+
+    /// Route to receive
+    case receive
 
     /// Route to activity
     case activity
