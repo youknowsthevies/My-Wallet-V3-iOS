@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "Gifu",
+        "repositoryURL": "https://github.com/kaishin/Gifu",
+        "state": {
+          "branch": null,
+          "revision": "51f2eab32903e336f590c013267cfa4d7f8b06c4",
+          "version": "3.3.1"
+        }
+      },
+      {
         "package": "Lottie",
         "repositoryURL": "https://github.com/airbnb/lottie-ios.git",
         "state": {
@@ -35,6 +44,24 @@
           "branch": null,
           "revision": "37a8c220ef172ef261c436c1bc55a8b25dceab13",
           "version": "0.16.0"
+        }
+      },
+      {
+        "package": "Nuke",
+        "repositoryURL": "https://github.com/kean/Nuke",
+        "state": {
+          "branch": null,
+          "revision": "83e1edaa5a30c567eb129c21c6d00f2f552d2c6f",
+          "version": "10.3.1"
+        }
+      },
+      {
+        "package": "NukeUI",
+        "repositoryURL": "https://github.com/kean/NukeUI",
+        "state": {
+          "branch": null,
+          "revision": "bc1c252f23786f5ff4b906df4a115f6c7630965d",
+          "version": "0.6.5"
         }
       },
       {

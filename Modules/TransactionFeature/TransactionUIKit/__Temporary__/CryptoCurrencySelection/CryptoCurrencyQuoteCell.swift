@@ -1,7 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
-import PlatformUIKit // replace me with MoneyUIKit when available
+import NukeUI
+import PlatformUIKit
 import SwiftUI
 import TransactionKit
 import UIComponentsKit
@@ -22,11 +23,18 @@ struct CryptoCurrencyQuoteCell: View {
                     .contentShape(Rectangle())
                 VStack {
                     HStack(spacing: 16) {
-                        if case .image(let image) = viewStore.cryptoCurrency.logoResource.resource {
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 32.0, height: 32.0)
+                        if let logoResource = viewStore.cryptoCurrency.logoResource.resource {
+                            switch logoResource {
+                            case .image(let image):
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 32.0, height: 32.0)
+                            case .url(let url):
+                                LazyImage(source: url)
+                                    .scaledToFit()
+                                    .frame(width: 32.0, height: 32.0)
+                            }
                         }
                         VStack(alignment: .leading, spacing: .zero) {
                             Text(viewStore.cryptoCurrency.name)

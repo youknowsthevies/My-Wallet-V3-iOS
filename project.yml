@@ -311,6 +311,12 @@ packages:
   Lottie:
     url: https://github.com/airbnb/lottie-ios.git
     version: 3.2.1
+  Nuke:
+    url: https://github.com/kean/Nuke
+    from: 10.3.1
+  NukeUI:
+    url: https://github.com/kean/NukeUI
+    from: 0.6.5
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     version: 1.9.0
@@ -787,6 +793,8 @@ targets:
     dependencies:
     - package: ComposableArchitecture
     - package: CombineExt
+    - package: Nuke
+    - package: NukeUI
     platform: iOS
     deploymentTarget:
         iOS: '14.0'
@@ -1236,6 +1244,7 @@ targets:
     - target: PlatformKit
     - target: ToolKit
     - target: UIComponentsKit
+    - target: SharedPackagesKit
     - target: RxAnalyticsKit
     scheme:
       testTargets:
