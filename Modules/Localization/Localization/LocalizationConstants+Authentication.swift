@@ -220,4 +220,42 @@ extension LocalizationConstants.AuthenticationKit {
             )
         }
     }
+
+    // MARK: - Reset Password
+
+    public enum ResetPassword {
+        public static let navigationTitle = NSLocalizedString(
+            "Reset Password?",
+            comment: "Reset password screen: navigation title"
+        )
+        public static let message = NSLocalizedString(
+            "Would you like to reset your password? You can always do this later in Settings.",
+            comment: "Reset password screen: main message"
+        )
+        public enum TextFieldTitle {
+            public static let newPassword = NSLocalizedString(
+                "New Password",
+                comment: "Reset password screen: new password text field"
+            )
+            public static let confirmNewPassword = NSLocalizedString(
+                "Confirm New Password",
+                comment: "Reset password screen: confirm new password text field"
+            )
+        }
+
+        public static let confirmPasswordNotMatchError = NSLocalizedString(
+            "Passwords don't match.",
+            comment: "Reset password screen: passwords do not match error"
+        )
+        public enum Button {
+            public static let skip = NSLocalizedString(
+                "Skip",
+                comment: "Reset password screen: skip button"
+            )
+            public static let resetPassword = NSLocalizedString(
+                "Reset Password",
+                comment: "Reset password screen: reset password button"
+            )
+        }
+    }
 }

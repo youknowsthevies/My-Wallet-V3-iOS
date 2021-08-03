@@ -19,7 +19,7 @@ public enum PasswordValidationScore {
 
     /// Returns `true` if the password is valid.
     /// As a rule, `.none` is not valid, any higher score is
-    var isValid: Bool {
+    public var isValid: Bool {
         switch self {
         case .none, .weak:
             return false
@@ -28,7 +28,7 @@ public enum PasswordValidationScore {
         }
     }
 
-    init(zxcvbnScore: Int32, password: String) {
+    public init(zxcvbnScore: Int32, password: String) {
         guard !password.isEmpty else {
             self = .none
             return

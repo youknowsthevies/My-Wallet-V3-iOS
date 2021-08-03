@@ -55,4 +55,13 @@ final class AccessibilityIdentifiers: NSObject {
         static let resetTwoFAButton = "\(prefix)resetTwoFAButton"
         static let hardwareKeyGroup = "\(prefix)hardwareKeyGroup"
     }
+
+    enum ResetPasswordScreen {
+        static let prefix = "ResetPasswordScreen."
+
+        static let messageText = "\(prefix)messageText"
+        static let newPasswordGroup = "\(prefix)newPasswordGroup"
+        static let confirmNewPasswordGroup = "\(prefix)confirmNewPasswordGroup"
+        static let resetPasswordButton = "\(prefix)resetPasswordButton"
+    }
 }
