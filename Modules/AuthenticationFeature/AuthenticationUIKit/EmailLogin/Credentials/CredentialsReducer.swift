@@ -27,6 +27,7 @@ public enum CredentialsAction: Equatable {
         case pollWalletIdentifier
         case requestSMSCode
         case setupSessionToken
+        case startPolling
     }
 
     case didAppear(context: CredentialsContext)
@@ -190,17 +191,22 @@ let credentialsReducer = Reducer.combine(
 
         case .walletPairing(.approveEmailAuthorization):
             guard !state.emailCode.isEmpty else {
-                fatalError("Email code should not be empty")
+                // we still need to display an alert and poll here,
+                // since we might end up here in case of a deeplink failure
+                return .concatenate(
+                    Effect(
+                        value: .alert(
+                            .show(
+                                title: CredentialsLocalization.Alerts.EmailAuthorizationAlert.title,
+                                message: CredentialsLocalization.Alerts.EmailAuthorizationAlert.message
+                            )
+                        )
+                    ),
+                    Effect(value: .walletPairing(.startPolling))
+                )
             }
             return .merge(
-                // Poll the Guid every 2 seconds
-                Effect
-                    .timer(
-                        id: WalletPairingCancelations.WalletIdentifierPollingTimerId(),
-                        every: 2,
-                        on: environment.pollingQueue
-                    )
-                    .map { _ in .walletPairing(.pollWalletIdentifier) },
+                Effect(value: .walletPairing(.startPolling)),
                 // Immediately authorize the email
                 environment
                     .deviceVerificationService
@@ -225,6 +231,16 @@ let credentialsReducer = Reducer.combine(
                         return .none
                     }
             )
+
+        case .walletPairing(.startPolling):
+            // Poll the Guid every 2 seconds
+            return Effect
+                .timer(
+                    id: WalletPairingCancelations.WalletIdentifierPollingTimerId(),
+                    every: 2,
+                    on: environment.pollingQueue
+                )
+                .map { _ in .walletPairing(.pollWalletIdentifier) }
 
         case .walletPairing(.authenticate):
             guard !state.walletGuid.isEmpty else {

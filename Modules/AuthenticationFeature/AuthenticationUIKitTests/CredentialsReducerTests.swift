@@ -136,6 +136,7 @@ final class CredentialsReducerTests: XCTestCase {
 
             // authentication with email required
             .receive(.walletPairing(.approveEmailAuthorization)),
+            .receive(.walletPairing(.startPolling)),
             .receive(.none),
             .do { self.mockMainQueue.advance() },
             .environment { environment in
