@@ -37,7 +37,13 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     }
 
     public var receiveAddress: Single<ReceiveAddress> {
-        .just(BankAccountReceiveAddress(address: accountId, label: label))
+        .just(
+            BankAccountReceiveAddress(
+                address: accountId,
+                label: label,
+                currencyType: currencyType
+            )
+        )
     }
 
     public var balance: Single<MoneyValue> {

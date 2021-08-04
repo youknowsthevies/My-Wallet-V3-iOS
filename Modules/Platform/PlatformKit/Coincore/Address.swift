@@ -12,6 +12,7 @@ public protocol TransactionTarget {
     typealias TxCompleted = (TransactionResult) -> Completable
 
     var label: String { get }
+    var currencyType: CurrencyType { get }
     /// onTxCompleted should be used by CryptoInterestAccount and CustodialTradingAccount,
     /// it should POST to "payments/deposits/pending", check Android
     var onTxCompleted: TxCompleted { get }
@@ -38,6 +39,13 @@ public protocol InvoiceTarget {}
 
 public protocol CryptoTarget: TransactionTarget {
     var asset: CryptoCurrency { get }
+}
+
+extension CryptoTarget {
+
+    public var currencyType: CurrencyType {
+        asset.currency
+    }
 }
 
 public protocol CryptoReceiveAddress: ReceiveAddress, CryptoTarget {}

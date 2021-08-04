@@ -15,6 +15,7 @@ protocol EnterAmountPageBuildable {
     func build(
         listener: EnterAmountPageListener,
         sourceAccount: SingleAccount,
+        destinationAccount: TransactionTarget,
         action: AssetAction,
         navigationModel: ScreenNavigationModel
     ) -> EnterAmountPageRouter
@@ -43,19 +44,17 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
     func build(
         listener: EnterAmountPageListener,
         sourceAccount: SingleAccount,
+        destinationAccount: TransactionTarget,
         action: AssetAction,
         navigationModel: ScreenNavigationModel
     ) -> EnterAmountPageRouter {
         let displayBundle = DisplayBundle.bundle(for: action, sourceAccount: sourceAccount)
-
-        let initialActiveInput: ActiveAmountInput
         let amountViewable: AmountViewable
         let amountViewInteracting: AmountViewInteracting
         let amountViewPresenting: AmountViewPresenting
         switch action {
         case .swap,
              .send:
-            initialActiveInput = .fiat
             guard let crypto = sourceAccount.currencyType.cryptoCurrency else {
                 fatalError("Expected a crypto as a source account.")
             }
@@ -64,7 +63,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 cryptoCurrencyService: DefaultCryptoCurrencyService(currencyType: sourceAccount.currencyType),
                 priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),
                 defaultCryptoCurrency: crypto,
-                initialActiveInput: initialActiveInput
+                initialActiveInput: .fiat
             )
 
             amountViewPresenting = AmountTranslationPresenter(
@@ -75,6 +74,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             )
 
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
+
         case .deposit,
              .withdraw:
             amountViewInteracting = SingleAmountInteractor(
@@ -87,20 +87,40 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             )
 
             amountViewable = SingleAmountView(presenter: amountViewPresenting as! SingleAmountPresenter)
+
+        case .buy:
+            guard let cryptoAccount = destinationAccount as? CryptoAccount else {
+                fatalError("Expected a crypto as a destination account.")
+            }
+            amountViewInteracting = AmountTranslationInteractor(
+                fiatCurrencyService: fiatCurrencyService,
+                cryptoCurrencyService: DefaultCryptoCurrencyService(currencyType: cryptoAccount.currencyType),
+                priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),
+                defaultCryptoCurrency: cryptoAccount.asset,
+                initialActiveInput: .fiat
+            )
+
+            amountViewPresenting = AmountTranslationPresenter(
+                interactor: amountViewInteracting as! AmountTranslationInteractor,
+                analyticsRecorder: analyticsEventRecorder,
+                displayBundle: displayBundle.amountDisplayBundle,
+                inputTypeToggleVisiblity: .visible
+            )
+
+            amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
+
         default:
             unimplemented()
         }
 
         let digitPadViewModel = provideDigitPadViewModel()
         let continueButtonViewModel = ButtonViewModel.primary(with: LocalizationConstants.Transaction.next)
-        let topSelectionButtonViewModel = SelectionButtonViewModel(showSeparator: true)
 
         let viewController = EnterAmountViewController(
             displayBundle: displayBundle,
             devicePresenterType: DevicePresenter.type,
             digitPadViewModel: digitPadViewModel,
             continueButtonViewModel: continueButtonViewModel,
-            topSelectionButtonViewModel: topSelectionButtonViewModel,
             amountViewProvider: amountViewable
         )
 

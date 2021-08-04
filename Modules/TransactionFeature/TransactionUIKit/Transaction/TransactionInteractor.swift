@@ -27,6 +27,7 @@ final class TransactionInteractor {
     private let coincore: CoincoreAPI
     private let availablePairsService: AvailableTradingPairsServiceAPI
     private let swapEligibilityService: EligibilityServiceAPI
+    private let paymentMethodsService: PaymentAccountsServiceAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let errorRecorder: ErrorRecording
     private var transactionProcessor: TransactionProcessor?
@@ -38,6 +39,7 @@ final class TransactionInteractor {
         coincore: CoincoreAPI = resolve(),
         availablePairsService: AvailableTradingPairsServiceAPI = resolve(),
         swapEligibilityService: EligibilityServiceAPI = resolve(),
+        paymentMethodsService: PaymentAccountsServiceAPI = resolve(),
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve()
     ) {
@@ -45,6 +47,7 @@ final class TransactionInteractor {
         self.errorRecorder = errorRecorder
         self.availablePairsService = availablePairsService
         self.swapEligibilityService = swapEligibilityService
+        self.paymentMethodsService = paymentMethodsService
         self.linkedBanksFactory = linkedBanksFactory
     }
 
@@ -98,6 +101,16 @@ final class TransactionInteractor {
 
     func getAvailableSourceAccounts(action: AssetAction) -> Single<[SingleAccount]> {
         switch action {
+        case .buy:
+            // TODO: check the new limits API to understand whether passing asset and amount is really required
+            return paymentMethodsService
+                .fetchPaymentAccounts(
+                    for: .coin(.bitcoin),
+                    amount: .zero(currency: .coin(.bitcoin))
+                )
+                .map { $0 }
+                .asObservable()
+                .asSingle()
         case .swap:
             let tradingPairs = availablePairsService.availableTradingPairs
             let allAccounts = coincore.allAccounts

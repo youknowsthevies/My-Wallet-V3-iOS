@@ -31,6 +31,12 @@ extension LocalizationConstants {
             }
         }
 
+        public enum Buy {
+            public enum AmountPresenter {
+                public enum LimitView {}
+            }
+        }
+
         public enum Withdraw {
             public enum Completion {
                 public enum Pending {}
@@ -62,6 +68,28 @@ extension LocalizationConstants {
 
         public enum Error {}
     }
+}
+
+extension LocalizationConstants.Transaction.Buy.AmountPresenter {
+
+    public static func value(for assetCode: String, price formattedPrice: String) -> String {
+        String(
+            format: NSLocalizedString("1 %@ = %@", comment: "1 BTC = $30,000.00"),
+            assetCode,
+            formattedPrice
+        )
+    }
+}
+
+extension LocalizationConstants.Transaction.Buy.AmountPresenter.LimitView {
+    public static let useMin = NSLocalizedString(
+        "The minimum buy is %@",
+        comment: "The minimum buy is $X.XX"
+    )
+    public static let useMax = NSLocalizedString(
+        "You can buy up to %@",
+        comment: "You can buy up to $X.XX"
+    )
 }
 
 extension LocalizationConstants.Transaction.TargetSource.Radio {
@@ -310,6 +338,22 @@ extension LocalizationConstants.Transaction.Send.AmountPresenter.LimitView {
     )
 }
 
+extension LocalizationConstants.Transaction.Buy {
+
+    public static let title = NSLocalizedString(
+        "Buy",
+        comment: "Buy screen title prefix"
+    )
+    public static let selectSourceTitle = NSLocalizedString(
+        "Select a Payment Method",
+        comment: "Title of screen to select a Payment Method to Buy"
+    )
+    public static let selectDestinationTitle = NSLocalizedString(
+        "Select a Crypto Currency",
+        comment: "Title of screen to select the Crypto Currency to Buy"
+    )
+}
+
 extension LocalizationConstants.Transaction.Swap {
     public static let title = swap
     public static let swap = NSLocalizedString(
@@ -339,6 +383,10 @@ extension LocalizationConstants.Transaction.Swap {
     public static let send = NSLocalizedString(
         "Send %@",
         comment: "Send %@"
+    )
+    public static let buy = NSLocalizedString(
+        "Buy %@",
+        comment: "e.g. Buy BTC"
     )
     public static let sell = NSLocalizedString(
         "Sell %@",

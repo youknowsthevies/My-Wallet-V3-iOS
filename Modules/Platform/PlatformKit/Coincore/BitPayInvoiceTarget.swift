@@ -15,6 +15,10 @@ public final class BitPayInvoiceTarget: InvoiceTarget, CryptoReceiveAddress {
         "BitPay\(merchant)"
     }
 
+    public var currencyType: CurrencyType {
+        amount.currency
+    }
+
     public var expirationTimeInSeconds: TimeInterval {
         guard let expiryDate = DateFormatter.utcSessionDateFormat.date(from: expires) else {
             fatalError("Expected a date: \(expires)")

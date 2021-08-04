@@ -12,14 +12,14 @@ import TransactionKit
 
 protocol EnterAmountPageRouting: AnyObject {
     func showFeeSelectionSheet(with transactionModel: TransactionModel)
-    func showError()
+    func showError(_ error: Error)
 }
 
 protocol EnterAmountPageListener: AnyObject {
     func enterAmountDidTapBack()
     func closeFlow()
     func continueToKYCTiersScreen()
-    func showGenericFailure()
+    func showGenericFailure(error: Error)
 }
 
 protocol EnterAmountPagePresentable: Presentable {
@@ -31,9 +31,7 @@ protocol EnterAmountPagePresentable: Presentable {
     ) -> Driver<EnterAmountPageInteractor.NavigationEffects>
 }
 
-final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePresentable>,
-    EnterAmountPageInteractable
-{
+final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePresentable>, EnterAmountPageInteractable {
 
     weak var router: EnterAmountPageRouting?
     weak var listener: EnterAmountPageListener?
@@ -42,6 +40,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let sendAuxiliaryViewInteractor: SendAuxiliaryViewInteractor
     private let sendAuxiliaryViewPresenter: SendAuxiliaryViewPresenter
 
+    private let targetAccountPickerInteractor = TargetAuxiliaryViewInteractor()
     private let accountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractor
     private let accountAuxiliaryViewPresenter: AccountAuxiliaryViewPresenter
     /// The interactor that `SingleAmountPreseneter` uses
@@ -74,6 +73,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             interactor: accountAuxiliaryViewInteractor
         )
         super.init(presenter: presenter)
+        targetAccountPickerInteractor.enterAmountInteractor = self
     }
 
     // TODO: Clean up this function
@@ -85,6 +85,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .state
             .share(replay: 1, scope: .whileConnected)
 
+        // TODO: THIS IS NO AMOUNT CONVERSION. NAME IS CONFUSING.
         amountViewInteractor
             .effect
             .subscribe { [weak self] effect in
@@ -94,7 +95,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         amountViewInteractor
             .amount
-            .debounce(.milliseconds(500), scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+            .debounce(.milliseconds(250), scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
             .flatMap { amount -> Observable<MoneyValue> in
                 transactionState
                     .take(1)
@@ -167,42 +168,35 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .map(\.feeAmount)
             .share(scope: .whileConnected)
 
-        let bank = transactionState
-            .takeWhile { $0.action == .withdraw || $0.action == .deposit }
+        let auxiliaryViewAccount = transactionState
+            .takeWhile { $0.action.supportsBottomAccountsView }
             .map { state -> BlockchainAccount? in
                 switch state.action {
-                case .withdraw:
-                    return state.destination as? BlockchainAccount
-                case .deposit:
+                case .buy,
+                     .deposit:
                     return state.source
+                case .sell,
+                     .withdraw:
+                    return state.destination as? BlockchainAccount
                 case .viewActivity,
-                     .buy,
-                     .sell,
                      .send,
                      .receive,
                      .swap:
-                    fatalError("Expected either withdraw or deposit")
+                    fatalError("Unsupported action")
                 }
             }
             .compactMap { $0 }
             .share(scope: .whileConnected)
 
         accountAuxiliaryViewInteractor
-            .connect(stream: bank, accounts: accounts)
+            .connect(stream: auxiliaryViewAccount, accounts: accounts)
             .disposeOnDeactivate(interactor: self)
 
         accountAuxiliaryViewInteractor
             .auxiliaryViewTapped
             .withLatestFrom(transactionState)
-            .subscribe(onNext: { [transactionModel, action] _ in
-                switch action {
-                case .withdraw:
-                    transactionModel.process(action: .showTargetSelection)
-                case .deposit:
-                    transactionModel.process(action: .showSourceSelection)
-                default:
-                    unimplemented("This view only supports withdraw and deposit at this time")
-                }
+            .subscribe(onNext: { [weak self] state in
+                self?.handleBottomAuxiliaryViewTapped(state: state)
             })
             .disposeOnDeactivate(interactor: self)
 
@@ -317,28 +311,44 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
     }
 
+    func handleTopAuxiliaryViewTapped(state: TransactionState) {
+        switch state.action {
+        case .buy:
+            guard state.availableTargets.count > 1 else { return }
+            transactionModel.process(action: .showTargetSelection)
+        default:
+            break
+        }
+    }
+
+    private func handleBottomAuxiliaryViewTapped(state: TransactionState) {
+        switch state.action {
+        case .buy,
+             .deposit:
+            transactionModel.process(action: .showSourceSelection)
+        case .sell,
+             .withdraw:
+            transactionModel.process(action: .showTargetSelection)
+        default:
+            unimplemented("This view only supports withdraw and deposit at this time")
+        }
+    }
+
     // MARK: - Private methods
 
     private func calculateNextState(
         with state: State,
         updater: TransactionState
     ) -> State {
-        let topSelectionTitle = TransactionFlowDescriptor.EnterAmountScreen.headerTitle(state: updater)
-        let topSelectionSubtitle = TransactionFlowDescriptor.EnterAmountScreen.headerSubtitle(state: updater)
-
-        let topSelection = TopSelectionState(
-            sourceAccount: updater.source,
-            destinationAccount: updater.destination as? BlockchainAccount,
-            action: updater.action,
-            titleAccessibility: state.topSelection.titleAccessibility.copy(label: topSelectionTitle),
-            subtitleAccessibility: state.topSelection.subtitleAccessibility.copy(label: topSelectionSubtitle)
-        )
-
+        let topAuxiliaryModel: TopAuxiliaryViewModel
+        if updater.action.supportsTopAccountsView {
+            topAuxiliaryModel = .destinationAccountSelector(updater, targetAccountPickerInteractor)
+        } else {
+            topAuxiliaryModel = .info(updater)
+        }
         return state
             .update(\.canContinue, value: updater.nextEnabled)
-            .update(\.topSelection, value: topSelection)
-            .update(\.topSelection.title, value: topSelectionTitle)
-            .update(\.topSelection.subtitle, value: topSelectionSubtitle)
+            .update(\.topAuxiliaryModel, value: topAuxiliaryModel)
     }
 
     private func handle(effects: NavigationEffects) {
@@ -354,32 +364,24 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
     private func handleAmountTranslation(effect: AmountInteractorEffect) {
         switch effect {
-        case .failure:
-            listener?.showGenericFailure()
+        case .failure(let error):
+            listener?.showGenericFailure(error: error)
         case .none:
             break
         }
     }
 
     private func initialState() -> State {
-        let topSelectionState = TopSelectionState(
-            sourceAccount: nil,
-            destinationAccount: nil,
-            action: action,
-            titleAccessibility: .id(Accessibility.Identifier.ContentLabelView.title),
-            subtitleAccessibility: .id(Accessibility.Identifier.ContentLabelView.description)
-        )
         let send = BottomAuxiliaryViewModelState.send(
             sendAuxiliaryViewPresenter
         )
         let account = BottomAuxiliaryViewModelState.account(
             accountAuxiliaryViewPresenter
         )
-
-        let bottom = action == .deposit || action == .withdraw ? account : send
+        let bottom = action.supportsBottomAccountsView ? account : send
 
         return State(
-            topSelection: topSelectionState,
+            topAuxiliaryModel: .none,
             bottomAuxiliaryState: bottom,
             navigationModel: navigationModel,
             canContinue: false
@@ -388,8 +390,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 }
 
 extension EnterAmountPageInteractor {
+
     struct State {
-        var topSelection: TopSelectionState
+        var topAuxiliaryModel: TopAuxiliaryViewModel
         var bottomAuxiliaryState: BottomAuxiliaryViewModelState
         var navigationModel: ScreenNavigationModel
         var canContinue: Bool
@@ -397,18 +400,20 @@ extension EnterAmountPageInteractor {
 
     /// The state of the top selection view
     struct TopSelectionState {
-        var title: String = ""
-        var titleDescriptor: (font: UIFont, textColor: UIColor)
-        var subtitle: String = ""
-        var subtitleDescriptor: (font: UIFont, textColor: UIColor)
+        let title: String
+        let titleDescriptor: (font: UIFont, textColor: UIColor)
+        let subtitle: String
+        let subtitleDescriptor: (font: UIFont, textColor: UIColor)
         let isEnabled: Bool = false
-        var trailingContent: SelectionButtonViewModel.TrailingContent
-        var leadingContent: SelectionButtonViewModel.LeadingContentType?
-        var titleAccessibility: Accessibility
-        var subtitleAccessibility: Accessibility
-        var accessibilityContent: SelectionButtonViewModel.AccessibilityContent?
+        let trailingContent: SelectionButtonViewModel.TrailingContent
+        let leadingContent: SelectionButtonViewModel.LeadingContentType?
+        let titleAccessibility: Accessibility
+        let subtitleAccessibility: Accessibility
+        let accessibilityContent: SelectionButtonViewModel.AccessibilityContent?
 
         private init(
+            title: String,
+            subtitle: String,
             titleDescriptor: (font: UIFont, textColor: UIColor),
             subtitleDescriptor: (font: UIFont, textColor: UIColor),
             trailingContent: SelectionButtonViewModel.TrailingContent,
@@ -417,6 +422,8 @@ extension EnterAmountPageInteractor {
             titleAccessibility: Accessibility,
             subtitleAccessibility: Accessibility
         ) {
+            self.title = title
+            self.subtitle = subtitle
             self.titleDescriptor = titleDescriptor
             self.subtitleDescriptor = subtitleDescriptor
             self.trailingContent = trailingContent
@@ -427,6 +434,8 @@ extension EnterAmountPageInteractor {
         }
 
         init(
+            title: String,
+            subtitle: String,
             sourceAccount: BlockchainAccount?,
             destinationAccount: BlockchainAccount?,
             action: AssetAction,
@@ -440,6 +449,8 @@ extension EnterAmountPageInteractor {
                 adjustActionIconColor: action == .swap ? false : true
             )
             self.init(
+                title: title,
+                subtitle: subtitle,
                 titleDescriptor: (font: .main(.medium, 12.0), textColor: .descriptionText),
                 subtitleDescriptor: (font: .main(.semibold, 14.0), textColor: .titleText),
                 trailingContent: .transaction(transactionImageViewModel),
@@ -449,6 +460,20 @@ extension EnterAmountPageInteractor {
                 subtitleAccessibility: subtitleAccessibility
             )
         }
+    }
+
+    /// The state of the top auxiliary view
+    enum TopAuxiliaryViewModel {
+
+        /// Shows informations about the transaction
+        case info(TransactionState)
+
+        /// Shows a cell describing the currently selected destination account for the transaction.
+        /// Tapping on the cell shows a modal displaying all available destination accounts.
+        case destinationAccountSelector(TransactionState, TargetAuxiliaryViewInteractor)
+
+        /// Removes the top auxiliary view
+        case none
     }
 
     /// The state of the bottom auxiliary view
@@ -467,6 +492,7 @@ extension EnterAmountPageInteractor {
 }
 
 extension EnterAmountPageInteractor {
+
     enum NavigationEffects {
         case back
         case close
@@ -475,6 +501,7 @@ extension EnterAmountPageInteractor {
 }
 
 extension EnterAmountPageInteractor.State {
+
     func update<Value>(_ keyPath: WritableKeyPath<Self, Value>, value: Value) -> Self {
         var updated = self
         updated[keyPath: keyPath] = value
@@ -482,19 +509,71 @@ extension EnterAmountPageInteractor.State {
     }
 }
 
+extension EnterAmountPageInteractor.TopAuxiliaryViewModel {
+
+    var viewState: EnterAmountPageInteractor.TopSelectionState? {
+        let result: EnterAmountPageInteractor.TopSelectionState?
+        switch self {
+        case .info(let transactionState):
+            let topSelectionTitle = TransactionFlowDescriptor.EnterAmountScreen
+                .headerTitle(state: transactionState)
+            let topSelectionSubtitle = TransactionFlowDescriptor.EnterAmountScreen
+                .headerSubtitle(state: transactionState)
+            result = .init(
+                title: topSelectionTitle,
+                subtitle: topSelectionSubtitle,
+                sourceAccount: transactionState.source,
+                destinationAccount: transactionState.destination as? BlockchainAccount,
+                action: transactionState.action,
+                titleAccessibility: .id(Accessibility.Identifier.ContentLabelView.title)
+                    .copy(label: topSelectionTitle),
+                subtitleAccessibility: .id(Accessibility.Identifier.ContentLabelView.description)
+                    .copy(label: topSelectionSubtitle)
+            )
+
+        case .destinationAccountSelector(let transactionState, _):
+            let topSelectionTitle = TransactionFlowDescriptor.EnterAmountScreen
+                .headerTitle(state: transactionState)
+            let topSelectionSubtitle = TransactionFlowDescriptor.EnterAmountScreen
+                .headerSubtitle(state: transactionState)
+            result = .init(
+                title: topSelectionTitle,
+                subtitle: topSelectionSubtitle,
+                sourceAccount: transactionState.source,
+                destinationAccount: transactionState.destination as? BlockchainAccount,
+                action: transactionState.action,
+                titleAccessibility: .id(Accessibility.Identifier.ContentLabelView.title)
+                    .copy(label: topSelectionTitle),
+                subtitleAccessibility: .id(Accessibility.Identifier.ContentLabelView.description)
+                    .copy(label: topSelectionSubtitle)
+            )
+
+        case .none:
+            result = nil
+        }
+        return result
+    }
+}
+
+extension EnterAmountPageInteractor.TopAuxiliaryViewModel: Equatable {}
+
 extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
+
     static func == (lhs: Self, rhs: Self) -> Bool {
         switch (lhs, rhs) {
         case (.hidden, .hidden):
             return true
+
         case (.send, .send):
             return true
+
         case (.account, .account):
-            /// The account selection could have changed so,
-            /// always update the bottom auxiliary view. Alternatively
-            /// we can have an identifier property on the interactor but
-            /// would rather not expose this.
+            // The account selection could have changed so,
+            // always update the bottom auxiliary view. Alternatively
+            // we can have an identifier property on the interactor but
+            // would rather not expose this.
             return false
+
         default:
             return false
         }
@@ -502,7 +581,9 @@ extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
 }
 
 extension TransactionErrorState {
+
     private typealias LocalizedString = LocalizationConstants.Transaction
+
     func toAmountInteractorState(
         min: MoneyValue,
         max: MoneyValue,
@@ -514,10 +595,12 @@ extension TransactionErrorState {
         switch self {
         case .none:
             return .inBounds
+
         case .insufficientGas:
             return .error(
                 message: LocalizedString.Confirmation.Error.insufficientGas
             )
+
         case .overSilverTierLimit:
             return .warning(
                 message: LocalizedString.Swap.KYC.overSilverLimitWarning,
@@ -525,18 +608,21 @@ extension TransactionErrorState {
                     listener?.continueToKYCTiersScreen()
                 }
             )
+
         case .overGoldTierLimit,
              .overMaximumLimit,
              .insufficientFundsForFees,
              .insufficientFunds:
             let result = convertToInputCurrency(max, exchangeRate: exchangeRate, input: activeInput)
             return .maxLimitExceeded(result)
+
         case .belowMinimumLimit:
             guard !stateAmount.isZero else {
                 return .inBounds
             }
             let result = convertToInputCurrency(min, exchangeRate: exchangeRate, input: activeInput)
             return .underMinLimit(result)
+
         case .addressIsContract,
              .invalidAddress,
              .invalidAmount,
@@ -573,7 +659,38 @@ extension TransactionErrorState {
             }
             return result
         case (.fiat, .crypto):
-            Swift.fatalError("Shouldn't happen for the implemented paths (Swap).")
+            guard let quote = exchangeRate?.quote,
+                  let result = try? source.convert(usingInverse: quote, currencyType: source.currencyType)
+            else {
+                // Can't convert, use original value for error message.
+                return source
+            }
+            return result
+        }
+    }
+}
+
+extension AssetAction {
+
+    fileprivate var supportsTopAccountsView: Bool {
+        switch self {
+        case .buy,
+             .sell:
+            return true
+        default:
+            return false
+        }
+    }
+
+    fileprivate var supportsBottomAccountsView: Bool {
+        switch self {
+        case .buy,
+             .sell,
+             .deposit,
+             .withdraw:
+            return true
+        default:
+            return false
         }
     }
 }

@@ -143,6 +143,8 @@ final class TransactionModel {
             return processModifyTransactionConfirmation(confirmation: confirmation)
         case .invalidateTransaction:
             return processInvalidateTransaction()
+        case .showSourceSelection:
+            return nil
         case .showTargetSelection:
             return nil
         case .showSourceSelection:
@@ -181,6 +183,10 @@ final class TransactionModel {
             .subscribe(
                 onSuccess: { [weak self] sourceAccounts in
                     self?.process(action: .availableSourceAccountsListUpdated(sourceAccounts))
+                },
+                onError: { [weak self] error in
+                    Logger.shared.error("!TRANSACTION!> Unable to get source accounts: \(String(describing: error))")
+                    self?.process(action: .fatalTransactionError(error))
                 }
             )
     }

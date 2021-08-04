@@ -175,13 +175,16 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             return String(format: LocalizedString.Swap.swapAForB, source, destination)
         case .send:
             return String(format: LocalizedString.Swap.send, amount)
+        case .buy:
+            return String(format: LocalizedString.Swap.buy, state.destination?.currencyType.displayCode ?? "")
         case .sell:
             return String(format: LocalizedString.Swap.sell, amount)
         case .deposit:
             return [LocalizedString.Deposit.deposit, "\(state.amount.displayString)"].joined(separator: " ")
         case .withdraw:
             return LocalizedString.Withdraw.withdraw + " \(state.amount.displayString)"
-        default:
+        case .receive,
+             .viewActivity:
             fatalError("ConfirmationPageContentReducer: \(state.action) not supported.")
         }
     }

@@ -27,7 +27,11 @@ public enum TransactionFlowResult: Equatable {
 /// A protocol defining the API for the app's entry point to any `Transaction Flow`.
 /// NOTE: Presenting a Transaction Flow can never fail because it's expected for any error to be handled within the flow. Non-recoverable errors should force the user to abandon the flow.
 public protocol TransactionsRouterAPI {
-    func presentTransactionFlow(to action: TransactionFlowAction, from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never>
+
+    func presentTransactionFlow(
+        to action: TransactionFlowAction,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionFlowResult, Never>
 }
 
 public protocol KYCSDDServiceAPI {
@@ -54,7 +58,10 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.buyFlowBuilder = buyFlowBuilder
     }
 
-    func presentTransactionFlow(to action: TransactionFlowAction, from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
+    func presentTransactionFlow(
+        to action: TransactionFlowAction,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
         switch action {
         case .buy(let cryptoCurrency):
             if featureFlagsService.isEnabled(.useTransactionsFlowToBuyCrypto) {
@@ -86,8 +93,9 @@ extension TransactionsRouter {
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         let listener = BuyFlowListener()
-        let router = buyFlowBuilder.build(with: listener)
-        router.start(from: presenter)
+        let interactor = BuyFlowInteractor()
+        let router = buyFlowBuilder.build(with: listener, interactor: interactor)
+        router.start(from: presenter, with: cryptoCurrency)
         mimicRIBAttachment(router: router)
         return listener.publisher
     }
