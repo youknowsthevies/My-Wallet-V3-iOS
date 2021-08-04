@@ -1,14 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import PlatformUIKit
 import Zxcvbn
 
-protocol PasswordValidatorAPI {
+public protocol PasswordValidatorAPI {
     func validate(password: String) -> AnyPublisher<PasswordValidationScore, Never>
 }
 
-final class PasswordValidator: PasswordValidatorAPI {
+public final class PasswordValidator: PasswordValidatorAPI {
 
     // MARK: - Properties
 
@@ -16,13 +15,13 @@ final class PasswordValidator: PasswordValidatorAPI {
 
     // MARK: - Setup
 
-    init(validationProvider: DBZxcvbn = DBZxcvbn()) {
+    public init(validationProvider: DBZxcvbn = DBZxcvbn()) {
         self.validationProvider = validationProvider
     }
 
     // MARK: - API
 
-    func validate(password: String) -> AnyPublisher<PasswordValidationScore, Never> {
+    public func validate(password: String) -> AnyPublisher<PasswordValidationScore, Never> {
         let validationProvider = self.validationProvider
         return Deferred {
             Future { [validationProvider] promise in

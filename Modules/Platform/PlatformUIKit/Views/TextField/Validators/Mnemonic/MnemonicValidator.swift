@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -34,44 +35,48 @@ final class MnemonicValidator: MnemonicValidating {
         self.words = words
 
         valueRelay
-            .map(weak: self) { (self, phrase) -> MnemonicValidationScore in
+            .map(weak: self) { _, phrase -> MnemonicValidationScore in
                 if phrase.isEmpty {
                     return .none
                 }
 
                 /// Make an array of the individual words
-                let components = phrase.components(separatedBy: .whitespacesAndNewlines).filter { $0.count > 0 }
+                let components = phrase
+                    .components(separatedBy: .whitespacesAndNewlines)
+                    .filter { !$0.isEmpty }
+
+                if components.count < mnemonicLength {
+                    return .incomplete
+                } else if components.count > mnemonicLength {
+                    return .excess
+                }
 
                 /// Separate out the words that are duplicates
                 let duplicates = Set(components.duplicates ?? [])
 
                 /// The total number of duplicates entered
-                let duplicatesCount = duplicates.map { dupe in
-                    components.filter { $0 == dupe }.count
-                }
-                .reduce(0, +)
+                let duplicatesCount = duplicates
+                    .map { duplicate in
+                        components.filter { $0 == duplicate }.count
+                    }
+                    .reduce(0, +)
 
                 /// Make a set for all the individual entries
-                let set = Set(phrase.components(separatedBy: .whitespacesAndNewlines)).filter { $0.count > 0 && duplicates.contains($0) == false }
+                let set = Set(phrase.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty && !duplicates.contains($0) })
 
-                guard set.count > 0 || duplicatesCount > 0 else { return .none }
+                guard !set.isEmpty || duplicatesCount > 0 else {
+                    return .none
+                }
 
                 /// Are all the words entered thus far valid words
-                let entriesAreValid = set.isSubset(of: self.words) && Set(duplicates).isSubset(of: self.words)
+                let entriesAreValid = set.isSubset(of: words) && duplicates.isSubset(of: words)
                 if entriesAreValid {
-                    /// The total number of individual words entered
-                    let total = set.count + duplicatesCount
-                    switch total == mnemonicLength {
-                    case true:
-                        return .complete
-                    case false:
-                        return .incomplete
-                    }
+                    return .valid
                 }
 
                 /// Combine the `set` and `duplicates` to form a `Set<String>` of all
                 /// words that are not included in the `WordList`
-                let difference = set.union(duplicates).subtracting(self.words)
+                let difference = set.union(duplicates).subtracting(words)
 
                 /// Find the `NSRange` value for each word or incomplete word that is not
                 /// included in the `WordList`

@@ -10,12 +10,34 @@ import UIComponentsKit
 
 struct VerifyDeviceView: View {
 
+    private typealias LocalizedString = LocalizationConstants.AuthenticationKit.EmailLogin
+
+    private enum Layout {
+        static let bottomPadding: CGFloat = 34
+        static let leadingPadding: CGFloat = 24
+        static let trailingPadding: CGFloat = 24
+
+        static let imageSideLength: CGFloat = 72
+        static let imageBottomPadding: CGFloat = 16
+        static let descriptionFontSize: CGFloat = 16
+        static let descriptionLineSpacing: CGFloat = 4
+        static let buttonSpacing: CGFloat = 10
+    }
+
     private let store: Store<VerifyDeviceState, VerifyDeviceAction>
+    private var showOpenMailAppButton: Bool
     @ObservedObject private var viewStore: ViewStore<VerifyDeviceState, VerifyDeviceAction>
 
     init(store: Store<VerifyDeviceState, VerifyDeviceAction>) {
         self.store = store
         viewStore = ViewStore(store)
+
+        if let mailAppURL = URL(string: UIApplication.mailAppURLString),
+           UIApplication.shared.canOpenURL(mailAppURL) {
+            showOpenMailAppButton = true
+        } else {
+            showOpenMailAppButton = false
+        }
     }
 
     var body: some View {
@@ -23,24 +45,24 @@ struct VerifyDeviceView: View {
             VStack {
                 Spacer()
                 Image.CircleIcon.verifyDevice
-                    .frame(width: 72, height: 72)
+                    .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
+                    .padding(.bottom, Layout.imageBottomPadding)
                     .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceImage)
 
-                Text(EmailLoginString.VerifyDevice.title)
+                Text(LocalizedString.VerifyDevice.title)
                     .textStyle(.title)
-                    .padding(.top, 16)
                     .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceTitleText)
 
-                Text(EmailLoginString.VerifyDevice.description)
-                    .font(Font(weight: .medium, size: 16))
+                Text(LocalizedString.VerifyDevice.description)
+                    .font(Font(weight: .medium, size: Layout.descriptionFontSize))
                     .foregroundColor(.textSubheading)
-                    .lineSpacing(4)
+                    .lineSpacing(Layout.descriptionLineSpacing)
                     .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceDescriptionText)
                 Spacer()
             }
+            .multilineTextAlignment(.center)
 
-            EmailButtons(store: store, viewStore: viewStore)
-                .padding(.bottom, 34)
+            buttonSection
 
             NavigationLink(
                 destination: IfLetStore(
@@ -59,41 +81,26 @@ struct VerifyDeviceView: View {
                 label: EmptyView.init
             )
         }
-        .multilineTextAlignment(.center)
+        .padding(
+            EdgeInsets(
+                top: 0,
+                leading: Layout.leadingPadding,
+                bottom: Layout.bottomPadding,
+                trailing: Layout.trailingPadding
+            )
+        )
         .navigationBarTitleDisplayMode(.inline)
-        .padding([.leading, .trailing], 24)
+        .hideBackButtonTitle()
         .onDisappear {
             viewStore.send(.didDisappear)
         }
         .alert(self.store.scope(state: \.verifyDeviceFailureAlert), dismiss: .verifyDeviceFailureAlert(.dismiss))
     }
-}
 
-private struct EmailButtons: View {
-
-    let store: Store<VerifyDeviceState, VerifyDeviceAction>
-    @ObservedObject var viewStore: ViewStore<VerifyDeviceState, VerifyDeviceAction>
-
-    private var showOpenMailAppButton: Bool = true
-
-    init(
-        store: Store<VerifyDeviceState, VerifyDeviceAction>,
-        viewStore: ViewStore<VerifyDeviceState, VerifyDeviceAction>
-    ) {
-        self.store = store
-        self.viewStore = viewStore
-        guard let mailAppURL = URL(string: UIApplication.mailAppURLString),
-              UIApplication.shared.canOpenURL(mailAppURL)
-        else {
-            showOpenMailAppButton = false
-            return
-        }
-    }
-
-    var body: some View {
-        VStack {
+    private var buttonSection: some View {
+        VStack(spacing: Layout.buttonSpacing) {
             SecondaryButton(
-                title: EmailLoginString.Button.sendAgain,
+                title: LocalizedString.Button.sendAgain,
                 action: {
                     viewStore.send(.sendDeviceVerificationEmail)
                 },
@@ -102,10 +109,9 @@ private struct EmailButtons: View {
             .disabled(viewStore.sendEmailButtonIsLoading)
             .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.sendAgainButton)
             if showOpenMailAppButton {
-                PrimaryButton(title: EmailLoginString.Button.openEmail) {
+                PrimaryButton(title: LocalizedString.Button.openEmail) {
                     UIApplication.shared.openMailApplication()
                 }
-                .padding(.top, 10)
                 .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.openMailAppButton)
             }
         }
@@ -117,15 +123,15 @@ struct VerifyDeviceView_Previews: PreviewProvider {
     static var previews: some View {
         VerifyDeviceView(
             store:
-            Store(
-                initialState: .init(emailAddress: ""),
-                reducer: verifyDeviceReducer,
-                environment: .init(
-                    mainQueue: .main,
-                    deviceVerificationService: NoOpDeviceVerificationService(),
-                    errorRecorder: NoOpErrorRecorder()
+                Store(
+                    initialState: .init(emailAddress: ""),
+                    reducer: verifyDeviceReducer,
+                    environment: .init(
+                        mainQueue: .main,
+                        deviceVerificationService: NoOpDeviceVerificationService(),
+                        errorRecorder: NoOpErrorRecorder()
+                    )
                 )
-            )
         )
     }
 }

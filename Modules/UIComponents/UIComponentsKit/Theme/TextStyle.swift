@@ -10,6 +10,7 @@ public struct TextStyle: ViewModifier {
         case subheading
         case body
         case formField
+        case formFieldPlaceholder
     }
 
     public let fontStyle: FontStyle
@@ -52,6 +53,12 @@ public struct TextStyle: ViewModifier {
             fontSize = LayoutConstants.Text.FontSize.formField
             lineSpacing = LayoutConstants.Text.LineSpacing.formField
             singleLineSpacing = lineSpacing
+        case .formFieldPlaceholder:
+            textColor = .textMuted
+            fontWeight = .regular
+            fontSize = LayoutConstants.Text.FontSize.formField
+            lineSpacing = LayoutConstants.Text.LineSpacing.formField
+            singleLineSpacing = lineSpacing
         }
         return content
             .font(Font(weight: fontWeight, size: fontSize))
@@ -68,6 +75,7 @@ extension TextStyle {
     public static let subheading = TextStyle(fontStyle: .subheading)
     public static let body = TextStyle(fontStyle: .body)
     public static let formField = TextStyle(fontStyle: .formField)
+    public static let formFieldPlaceholder = TextStyle(fontStyle: .formFieldPlaceholder)
 }
 
 extension View {

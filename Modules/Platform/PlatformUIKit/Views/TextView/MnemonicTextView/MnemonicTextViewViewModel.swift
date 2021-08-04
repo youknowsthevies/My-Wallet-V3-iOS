@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Localization
 import RxCocoa
 import RxRelay
@@ -25,8 +26,8 @@ public struct MnemonicTextViewViewModel {
             invalidStyle: Style = .desctructive
         ) {
             switch score {
-            case .complete:
-                self = .complete(value: .init(
+            case .valid:
+                self = .valid(value: .init(
                     input.lowercased(),
                     font: validStyle.font,
                     color: validStyle.color
@@ -39,6 +40,12 @@ public struct MnemonicTextViewViewModel {
                     color: validStyle.color
                 )
                 )
+            case .excess:
+                self = .invalid(value: .init(
+                    input.lowercased(),
+                    font: invalidStyle.font,
+                    color: invalidStyle.color
+                ))
             case .invalid(let ranges):
                 let attributed: NSMutableAttributedString = .init(
                     input.lowercased(),
@@ -188,12 +195,13 @@ extension MnemonicTextViewViewModel.State {
 extension MnemonicValidationScore {
     var tintColor: UIColor {
         switch self {
-        case .complete:
+        case .valid:
             return .normalPassword
         case .incomplete,
              .none:
             return .mediumBorder
-        case .invalid:
+        case .invalid,
+             .excess:
             return .destructive
         }
     }

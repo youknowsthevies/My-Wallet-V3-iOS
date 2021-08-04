@@ -7,24 +7,36 @@ public enum MnemonicValidationScore: Equatable {
     /// There's no score as there is no entry
     case none
 
-    /// Valid words have been provided,
-    /// but there is not enough to fulfill the complete requirement
+    /// There are not enough words to fulfill the complete requirement
     case incomplete
 
-    /// One of the provided words is not included in the WordList
-    /// `[NSRange]` is the range of the words that are incorrect
-    case invalid([NSRange])
+    /// There are more words than the required mnemonic length
+    case excess
 
     /// Valid words have been provided
     /// and there are enough words to complete the mnemonic
-    case complete
+    case valid
+
+    /// There are enough words to complete the mnemonic
+    /// However, one of the provided words is not included in the WordList
+    /// `[NSRange]` is the range of the words that are incorrect
+    case invalid([NSRange])
 
     /// The score is only valid if the mnemonic is complete
-    var isValid: Bool {
+    public var isValid: Bool {
         switch self {
-        case .complete:
+        case .valid:
             return true
-        case .incomplete, .invalid, .none:
+        case .incomplete, .invalid, .excess, .none:
+            return false
+        }
+    }
+
+    public var isInvalid: Bool {
+        switch self {
+        case .invalid, .excess:
+            return true
+        case .valid, .incomplete, .none:
             return false
         }
     }
@@ -35,7 +47,8 @@ extension MnemonicValidationScore {
         switch (lhs, rhs) {
         case (.none, .none),
              (.incomplete, .incomplete),
-             (.complete, .complete):
+             (.valid, .valid),
+             (.excess, .excess):
             return true
         case (.invalid(let left), .invalid(let right)):
             return left == right

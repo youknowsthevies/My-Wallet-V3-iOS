@@ -56,6 +56,17 @@ final class AccessibilityIdentifiers: NSObject {
         static let hardwareKeyGroup = "\(prefix)hardwareKeyGroup"
     }
 
+    enum SeedPhraseScreen {
+        static let prefix = "SeedPhraseScreen."
+
+        static let instructionText = "\(prefix)instructionText"
+        static let seedPhraseTextEditor = "\(prefix)seedPhraseTextEditor"
+        static let invalidPhraseErrorText = "\(prefix)invalidPhraseErrorText"
+        static let resetAccountPromptText = "\(prefix)resetAccountPromptText"
+        static let resetAccountButton = "\(prefix)resetAccountButton"
+        static let logInButton = "\(prefix)logInButton"
+    }
+
     enum ResetAccountWarningScreen {
         static let prefix = "ResetAccountModal."
 

@@ -26,7 +26,7 @@ final class MnemonicTextViewTests: XCTestCase {
                 XCTFail("Expected a MnemonicValidationScore")
                 return
             }
-            XCTAssertEqual(result, .complete)
+            XCTAssertEqual(result, .valid)
         } catch {
             XCTFail("Expected a MnemonicValidationScore")
         }
@@ -39,7 +39,7 @@ final class MnemonicTextViewTests: XCTestCase {
                 XCTFail("Expected a MnemonicValidationScore")
                 return
             }
-            XCTAssertEqual(result, .complete)
+            XCTAssertEqual(result, .valid)
         } catch {
             XCTFail("Expected a MnemonicValidationScore")
         }
@@ -58,8 +58,21 @@ final class MnemonicTextViewTests: XCTestCase {
         }
     }
 
+    func testExcessMnemonic() {
+        validator.valueRelay.accept("client cruel tiny sniff girl crawl snap spice forum talk evidence dose echo")
+        do {
+            guard let result = try validator.score.toBlocking().first() else {
+                XCTFail("Expected a MnemonicValidationScore")
+                return
+            }
+            XCTAssertEqual(result, .excess)
+        } catch {
+            XCTFail("Expected a MnemonicValidationScore")
+        }
+    }
+
     func testInvalidMnemonic() {
-        validator.valueRelay.accept("meow cruel tiny meow girl crawl snap spice forum talk evidence")
+        validator.valueRelay.accept("meow cruel tiny meow girl crawl snap spice forum talk evidence meow")
         do {
             guard let result = try validator.score.toBlocking().first() else {
                 XCTFail("Expected a MnemonicValidationScore")
@@ -67,7 +80,8 @@ final class MnemonicTextViewTests: XCTestCase {
             }
             let first = NSRange(location: 0, length: 4)
             let second = NSRange(location: 16, length: 4)
-            XCTAssertEqual(result, .invalid([first, second]))
+            let third = NSRange(location: 63, length: 4)
+            XCTAssertEqual(result, .invalid([first, second, third]))
         } catch {
             XCTFail("Expected a MnemonicValidationScore")
         }

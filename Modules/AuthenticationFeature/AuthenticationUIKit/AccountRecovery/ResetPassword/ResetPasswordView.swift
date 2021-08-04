@@ -5,9 +5,9 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-private typealias LocalizedString = LocalizationConstants.AuthenticationKit.ResetPassword
-
 struct ResetPasswordView: View {
+
+    private typealias LocalizedString = LocalizationConstants.AuthenticationKit.ResetPassword
 
     private enum Layout {
         static let leadingPadding: CGFloat = 24
@@ -18,7 +18,6 @@ struct ResetPasswordView: View {
         static let textFieldBottomPadding: CGFloat = 16
     }
 
-    private let context: ResetPasswordContext
     private let store: Store<ResetPasswordState, ResetPasswordAction>
     @ObservedObject private var viewStore: ViewStore<ResetPasswordState, ResetPasswordAction>
 
@@ -27,11 +26,7 @@ struct ResetPasswordView: View {
     @State private var isPasswordVisible: Bool = false
     @State private var isConfirmNewPasswordVisible: Bool = false
 
-    init(
-        context: ResetPasswordContext,
-        store: Store<ResetPasswordState, ResetPasswordAction>
-    ) {
-        self.context = context
+    init(store: Store<ResetPasswordState, ResetPasswordAction>) {
         self.store = store
         viewStore = ViewStore(store)
     }
@@ -53,20 +48,13 @@ struct ResetPasswordView: View {
 
             Spacer()
 
-            PrimaryButton(
-                title: LocalizedString.Button.resetPassword
-            ) {
+            PrimaryButton(title: LocalizedString.Button.resetPassword) {
                 // TODO: reset password operation
             }
             .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.resetPasswordButton)
         }
         .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
         .hideBackButtonTitle()
-        .navigationBarItems(
-            trailing: Button(LocalizedString.Button.skip) {
-                // TODO: Skip operation
-            }
-        )
         .padding(
             EdgeInsets(
                 top: Layout.topPadding,
@@ -166,7 +154,6 @@ struct ResetPasswordView: View {
 struct ResetPasswordView_Previews: PreviewProvider {
     static var previews: some View {
         ResetPasswordView(
-            context: .none,
             store: .init(
                 initialState: .init(),
                 reducer: resetPasswordReducer,

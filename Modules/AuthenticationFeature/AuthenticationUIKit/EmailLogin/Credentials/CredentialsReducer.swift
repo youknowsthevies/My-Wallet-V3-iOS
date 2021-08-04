@@ -38,8 +38,10 @@ public enum CredentialsAction: Equatable {
     case twoFA(TwoFAAction)
     case hardwareKey(HardwareKeyAction)
     case walletPairing(WalletPairingAction)
+    case seedPhrase(SeedPhraseAction)
     case setTwoFAOrHardwareKeyVerified(Bool)
     case accountLockedErrorVisibility(Bool)
+    case setTroubleLoggingInScreenVisible(Bool)
     case alert(AlertAction)
     case closeButtonTapped
     case none
@@ -60,9 +62,11 @@ public enum CredentialsContext: Equatable {
 }
 
 struct CredentialsState: Equatable {
+    var isTroubleLoggingInScreenVisible: Bool
     var passwordState: PasswordState
     var twoFAState: TwoFAState?
     var hardwareKeyState: HardwareKeyState?
+    var seedPhraseState: SeedPhraseState?
     var emailAddress: String
     var walletGuid: String
     var emailCode: String
@@ -75,9 +79,11 @@ struct CredentialsState: Equatable {
     var isLoading: Bool
 
     init() {
+        isTroubleLoggingInScreenVisible = false
         passwordState = .init()
         twoFAState = .init()
         hardwareKeyState = .init()
+        seedPhraseState = .init()
         emailAddress = ""
         walletGuid = ""
         emailCode = ""
@@ -156,6 +162,13 @@ let credentialsReducer = Reducer.combine(
             action: /CredentialsAction.hardwareKey,
             environment: { $0 }
         ),
+    seedPhraseReducer
+        .optional()
+        .pullback(
+            state: \CredentialsState.seedPhraseState,
+            action: /CredentialsAction.seedPhrase,
+            environment: { _ in SeedPhraseEnvironment() }
+        ),
     Reducer<
         CredentialsState,
         CredentialsAction,
@@ -163,12 +176,14 @@ let credentialsReducer = Reducer.combine(
     > { state, action, environment in
         switch action {
         case .didAppear(.walletInfo(let info)):
+            state.isTroubleLoggingInScreenVisible = false
             state.emailAddress = info.email
             state.walletGuid = info.guid
             state.emailCode = info.emailCode
             return Effect(value: .walletPairing(.setupSessionToken))
 
         case .didAppear(.walletIdentifier(let email)):
+            state.isTroubleLoggingInScreenVisible = false
             state.emailAddress = email
             return Effect(value: .walletPairing(.setupSessionToken))
 
@@ -186,8 +201,6 @@ let credentialsReducer = Reducer.combine(
             state.emailCode = ""
             state.isTwoFACodeOrHardwareKeyVerified = false
             state.isAccountLocked = false
-            state.twoFAState = nil
-            state.hardwareKeyState = nil
             return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
 
         case .didChangeWalletIdentifier(let guid):
@@ -507,11 +520,17 @@ let credentialsReducer = Reducer.combine(
             state.isLoading = true
             return .none
 
+        case .setTroubleLoggingInScreenVisible(let visible):
+            state.isTroubleLoggingInScreenVisible = visible
+            return .none
+
         case .twoFA:
             return .none
         case .hardwareKey:
             return .none
         case .password:
+            return .none
+        case .seedPhrase:
             return .none
         case .closeButtonTapped:
             return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())

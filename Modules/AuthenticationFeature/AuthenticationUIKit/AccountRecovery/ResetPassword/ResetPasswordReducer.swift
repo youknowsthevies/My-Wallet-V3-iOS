@@ -1,15 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import ComposableArchitecture
 import PlatformUIKit
 
 // MARK: - Type
-
-enum ResetPasswordContext {
-    case mandatory
-    case optional
-    case none
-}
 
 public enum ResetPasswordAction: Equatable {
     case didDisappear
@@ -53,14 +48,12 @@ let resetPasswordReducer = Reducer<
     ResetPasswordEnvironment
 > { state, action, environment in
     switch action {
-
     case .didDisappear:
         // clear states after disappear
         state.newPassword = ""
         state.confirmNewPassword = ""
         state.passwordStrength = .none
         return .none
-
     case .didChangeNewPassword(let password):
         state.newPassword = password
         return .none

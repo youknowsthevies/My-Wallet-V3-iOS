@@ -1620,6 +1620,7 @@ targets:
     dependencies:
     - framework: Carthage/Build/RxSwift.xcframework
     - framework: Carthage/Build/RxRelay.xcframework
+    - target: HDWalletKit
     - target: NetworkKit
     info:
       path: Modules/AuthenticationFeature/AuthenticationKit/Info.plist

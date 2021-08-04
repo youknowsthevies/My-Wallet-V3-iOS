@@ -9,6 +9,9 @@ extension LocalizationConstants {
 }
 
 extension LocalizationConstants.AuthenticationKit {
+
+    // MARK: - Welcome
+
     public enum Welcome {
         public enum Description {
             public static let prefix = NSLocalizedString(
@@ -69,6 +72,8 @@ extension LocalizationConstants.AuthenticationKit {
             comment: "Welcome screen: title"
         )
     }
+
+    // MARK: - EmailLogin
 
     public enum EmailLogin {
         public static let navigationTitle = NSLocalizedString(
@@ -221,6 +226,46 @@ extension LocalizationConstants.AuthenticationKit {
         }
     }
 
+    // MARK: - Seed Phrase
+
+    public enum SeedPhrase {
+        public enum NavigationTitle {
+            public static let troubleLoggingIn = NSLocalizedString(
+                "Trouble Logging In",
+                comment: "Seed phrase screen: trouble logging in navigation title"
+            )
+            public static let importWallet = NSLocalizedString(
+                "Import Wallet",
+                comment: "Seed phrase screen: import wallet navigation title"
+            )
+        }
+
+        public static let instruction = NSLocalizedString(
+            "Enter your twelve word Secret Private Key Recovery Phrase to log in. Separate each word with a space.",
+            comment: "Seed phrase screen: main instruction"
+        )
+        public static let placeholder = NSLocalizedString(
+            "Enter recovery phrase",
+            comment: "Seed phrase screen: text field placeholder"
+        )
+        public static let invalidPhrase = NSLocalizedString(
+            "Invalid recovery phrase",
+            comment: "Seed phrase screen: invalid seed phrase error state"
+        )
+        public static let resetAccountPrompt = NSLocalizedString(
+            "Can’t find your phrase?",
+            comment: "Seed phrase screen: prompt for reset account if user lost their seed phrase"
+        )
+        public static let resetAccountLink = NSLocalizedString(
+            "Reset Account",
+            comment: "Seed phrase screen: link for reset account"
+        )
+        public static let loginInButton = NSLocalizedString(
+            "Log In",
+            comment: "Seed phrase screen: login CTA button"
+        )
+    }
+
     public enum ResetAccountWarning {
         public enum Title {
             public static let resetAccount = NSLocalizedString(
@@ -286,6 +331,10 @@ extension LocalizationConstants.AuthenticationKit {
             )
         }
 
+        public static let securityCallOut = NSLocalizedString(
+            "For your security, you may have to re-verify your identity before accessing your trading or interest account.",
+            comment: "Seed phrase screen: callout message for the security measure"
+        )
         public static let confirmPasswordNotMatchError = NSLocalizedString(
             "Passwords don't match.",
             comment: "Reset password screen: passwords do not match error"

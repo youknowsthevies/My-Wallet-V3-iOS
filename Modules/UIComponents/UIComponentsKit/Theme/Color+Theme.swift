@@ -6,6 +6,7 @@ extension Color {
 
     public static let borderPrimary = Color(paletteColor: .grey100)
     public static let borderFocused = Color(paletteColor: .blue600)
+    public static let borderSuccess = Color(paletteColor: .green800)
     public static let borderError = Color(paletteColor: .red600)
 
     // MARK: Backgrounds
@@ -37,11 +38,13 @@ extension Color {
     public static let textSubheading = Color(paletteColor: .grey600)
     public static let textBody = Color(paletteColor: .grey900)
     public static let textMuted = Color(paletteColor: .grey400)
+    public static let textError = Color(paletteColor: .red600)
     public static let formField = Color(paletteColor: .greyFade800)
 
     // MARK: TextField
 
     public static let textFieldPrefilledAndDisabledBackground = Color(paletteColor: .grey100)
+    public static let textCallOutBackground = Color(paletteColor: .grey000)
     public static let secureFieldEyeSymbol = Color(paletteColor: .grey400)
 
     // MARK: Badge

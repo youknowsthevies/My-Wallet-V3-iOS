@@ -78,7 +78,7 @@ public struct FormTextFieldGroup<TrailingAccessoryView: View>: View {
             if let error = errorMessage, isError {
                 Text(error)
                     .font(Font(weight: .medium, size: 14))
-                    .foregroundColor(Color.borderError)
+                    .foregroundColor(Color.textError)
             }
         }
     }

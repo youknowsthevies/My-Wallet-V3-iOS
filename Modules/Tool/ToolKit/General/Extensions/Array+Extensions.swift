@@ -19,7 +19,7 @@ extension Array where Element: Hashable {
         let dictionary = Dictionary(grouping: self, by: { $0 })
         let pairs = dictionary.filter { $1.count > 1 }
         let duplicates = Array(pairs.keys)
-        return duplicates.count > 0 ? duplicates : nil
+        return !duplicates.isEmpty ? duplicates : nil
     }
 }
 
