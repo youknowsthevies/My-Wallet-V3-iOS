@@ -260,7 +260,7 @@ let credentialsReducer = Reducer.combine(
                 .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId()),
                 environment
                     .loginService
-                    .loginPublisher(walletIdentifier: state.walletGuid)
+                    .login(walletIdentifier: state.walletGuid)
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result -> CredentialsAction in
@@ -320,7 +320,7 @@ let credentialsReducer = Reducer.combine(
                 Effect(value: .twoFA(.incorrectTwoFACodeErrorVisibility(.none))),
                 environment
                     .loginService
-                    .loginPublisher(
+                    .login(
                         walletIdentifier: state.walletGuid,
                         code: twoFAState.twoFACode
                     )
@@ -386,7 +386,7 @@ let credentialsReducer = Reducer.combine(
                 Effect(value: .twoFA(.twoFACodeFieldVisibility(true))),
                 environment
                     .smsService
-                    .requestPublisher()
+                    .request()
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result -> CredentialsAction in
@@ -411,7 +411,7 @@ let credentialsReducer = Reducer.combine(
         case .walletPairing(.setupSessionToken):
             return environment
                 .sessionTokenService
-                .setupSessionTokenPublisher()
+                .setupSessionToken()
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .map { result -> CredentialsAction in

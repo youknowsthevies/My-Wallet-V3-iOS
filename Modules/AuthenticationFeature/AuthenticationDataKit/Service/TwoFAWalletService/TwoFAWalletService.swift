@@ -2,7 +2,6 @@
 
 import AuthenticationKit
 import Combine
-import RxSwift
 import WalletPayloadKit
 
 public final class TwoFAWalletService: TwoFAWalletServiceAPI {
@@ -25,59 +24,7 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
 
     // MARK: - API
 
-    public func send(code: String) -> Completable {
-        // Trim whitespaces before verifying and sending
-        let code = code.trimmingWhitespaces
-
-        // Verify the code is not empty to save network call
-        guard !code.isEmpty else {
-            return .error(TwoFAWalletServiceError.missingCode)
-        }
-
-        // 1. Zip guid and session-token
-        // 2. Verify they have values
-        // 3. Send payload request using client
-        // 4. Validate the payload (by checking it is not empty) and cache it
-        // 5. Convert to `Completable`
-        // *. Errors along the way should be caught and mapped
-        return Single
-            .zip(repository.guid, repository.sessionToken)
-            .map(weak: self) { _, credentials -> (guid: String, sessionToken: String) in
-                guard let guid = credentials.0 else {
-                    throw MissingCredentialsError.guid
-                }
-                guard let sessionToken = credentials.1 else {
-                    throw MissingCredentialsError.sessionToken
-                }
-                return (guid, sessionToken)
-            }
-            .flatMap(weak: self) { (self, credentials) -> Single<WalletPayloadWrapper> in
-                self.client.payload(guid: credentials.guid, sessionToken: credentials.sessionToken, code: code)
-            }
-            .flatMapCompletable(weak: self) { (self, response) -> Completable in
-                guard let rawPayload = response.stringRepresentation, !rawPayload.isEmpty else {
-                    throw TwoFAWalletServiceError.missingPayload
-                }
-                return self.repository.set(payload: rawPayload)
-            }
-            .catchError { error -> Completable in
-                switch error {
-                case TwoFAWalletClient.ClientError.wrongCode(attemptsLeft: let attempts):
-                    throw TwoFAWalletServiceError.wrongCode(attemptsLeft: attempts)
-                case TwoFAWalletClient.ClientError.accountLocked:
-                    throw TwoFAWalletServiceError.accountLocked
-                default:
-                    throw error
-                }
-            }
-    }
-}
-
-// MARK: - TwoFAWalletServiceCombineAPI
-
-extension TwoFAWalletService {
-
-    public func sendPublisher(code: String) -> AnyPublisher<Void, TwoFAWalletServiceError> {
+    public func send(code: String) -> AnyPublisher<Void, TwoFAWalletServiceError> {
         // Trim whitespaces before verifying and sending
         let code = code.trimmingWhitespaces
 
@@ -98,7 +45,7 @@ extension TwoFAWalletService {
                 return .just((guid, sessionToken))
             }
             .flatMap { [client] credentails -> AnyPublisher<WalletPayloadWrapper, TwoFAWalletServiceError> in
-                client.payloadPublisher(
+                client.payload(
                     guid: credentails.guid,
                     sessionToken: credentails.sessionToken,
                     code: code

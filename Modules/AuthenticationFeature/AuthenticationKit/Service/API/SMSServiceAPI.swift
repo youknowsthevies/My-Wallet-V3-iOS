@@ -2,7 +2,6 @@
 
 import Combine
 import NetworkKit
-import RxSwift
 
 /// A potential SMS service error
 public enum SMSServiceError: LocalizedError {
@@ -14,12 +13,7 @@ public enum SMSServiceError: LocalizedError {
     case networkError(NetworkError)
 }
 
-public protocol SMSServiceCombineAPI: AnyObject {
+public protocol SMSServiceAPI: AnyObject {
     /// Requests SMS OTP
-    func requestPublisher() -> AnyPublisher<Void, SMSServiceError>
-}
-
-public protocol SMSServiceAPI: SMSServiceCombineAPI {
-    /// Requests SMS OTP
-    func request() -> Completable
+    func request() -> AnyPublisher<Void, SMSServiceError>
 }

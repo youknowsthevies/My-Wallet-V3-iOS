@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import AuthenticationKit
+import Combine
 import DIKit
 import PlatformKit
 import RxCocoa
@@ -64,6 +65,7 @@ final class ManualPairingInteractor {
     private var authenticator = Atomic<WalletAuthenticatorType>(.standard)
     private let authenticationActionRelay = PublishRelay<AuthenticationAction>()
     private let disposeBag = DisposeBag()
+    private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - Setup
 
@@ -73,14 +75,13 @@ final class ManualPairingInteractor {
         dependencies
             .loginService
             .authenticator
-            .distinctUntilChanged()
-            .observeOn(MainScheduler.instance)
-            .subscribe { [authenticator] authenticatorType in
+            .removeDuplicates()
+            .sink { [authenticator] authenticatorType in
                 authenticator.mutate { authenticator in
                     authenticator = authenticatorType
                 }
             }
-            .disposed(by: disposeBag)
+            .store(in: &cancellables)
     }
 
     // MARK: - API
@@ -100,33 +101,34 @@ final class ManualPairingInteractor {
         dependencies.wallet.loadJSIfNeeded()
 
         let walletIdentifier = contentStateRelay.value.walletIdentifier
+        let authenticate = self.authenticate(walletIdentifier:action:)
         dependencies.sessionTokenService.setupSessionToken()
-            .subscribe(
-                onCompleted: { [weak self] in
-                    self?.authenticate(
-                        walletIdentifier: walletIdentifier,
-                        action: action
-                    )
+            .sink(
+                receiveCompletion: { [dependencies, authenticationActionRelay] completion in
+                    switch completion {
+                    case .finished:
+                        authenticate(walletIdentifier, action)
+                    case .failure(let error):
+                        dependencies.errorRecorder.error(error)
+                        authenticationActionRelay.accept(.error(error))
+                    }
                 },
-                onError: { [weak self] error in
-                    guard let self = self else { return }
-                    self.dependencies.errorRecorder.error(error)
-                    self.authenticationActionRelay.accept(.error(error))
-                }
+                receiveValue: { _ in }
             )
-            .disposed(by: disposeBag)
+            .store(in: &cancellables)
     }
 
     /// Requests OTP via SMS
     func requestOTPMessage() -> Completable {
-        dependencies.smsService.request()
+        dependencies.smsService.request().asObservable().ignoreElements()
     }
 
     // MARK: - Accessors
 
     /// Invokes the login service
     private func authenticate(walletIdentifier: String, action: AuthenticationType) {
-        let login: Completable
+        let handleAuthentication = handleAuthentication(error:)
+        let login: AnyPublisher<Void, LoginServiceError>
         switch action {
         case .standard:
             login = dependencies.loginService.login(
@@ -139,21 +141,19 @@ final class ManualPairingInteractor {
             )
         }
         login
-            .subscribe(
-                onCompleted: { [weak self] in
-                    guard let self = self else { return }
-                    // TODO: Continue refactoring wallet fetching logic
-                    /// by removing `walletFetcher` reference in favor of a dedicated
-                    /// Rx based service.
-                    self.dependencies.walletFetcher.authenticate(
-                        using: self.contentStateRelay.value.password
-                    )
+            .receive(on: RunLoop.main)
+            .sink(
+                receiveCompletion: { [contentStateRelay, dependencies] completion in
+                    switch completion {
+                    case .finished:
+                        dependencies.walletFetcher.authenticate(using: contentStateRelay.value.password)
+                    case .failure(let error):
+                        handleAuthentication(error)
+                    }
                 },
-                onError: { [weak self] error in
-                    self?.handleAuthentication(error: error)
-                }
+                receiveValue: { _ in }
             )
-            .disposed(by: disposeBag)
+            .store(in: &cancellables)
     }
 
     /// Handles any authentication error by streaming it to the relay

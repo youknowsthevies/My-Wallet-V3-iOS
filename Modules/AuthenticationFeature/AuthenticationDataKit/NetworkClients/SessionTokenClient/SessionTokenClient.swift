@@ -4,10 +4,15 @@ import AuthenticationKit
 import Combine
 import DIKit
 import NetworkKit
-import RxSwift
 
 /// A session token client implementation
 public final class SessionTokenClient: SessionTokenClientAPI {
+
+    // MARK: - Types
+
+    private enum Path {
+        static let walletSession = ["wallet", "sessions"]
+    }
 
     private struct Response: Decodable {
         let token: String?
@@ -16,46 +21,26 @@ public final class SessionTokenClient: SessionTokenClientAPI {
     // MARK: - Properties
 
     /// Requests a session token for the wallet, if not available already
-    public var token: Single<String> {
-        let request = NetworkRequest(
-            endpoint: url,
-            method: .post,
-            contentType: .json
-        )
-        return networkAdapter
-            .perform(request: request, responseType: Response.self)
-            .map(\.token)
-            .map { token -> String in
-                guard let token = token else { throw SessionTokenServiceError.missingSessionToken }
-                return token
-            }
-    }
-
-    private let url = URL(string: BlockchainAPI.shared.walletSession)!
-    private let networkAdapter: NetworkAdapterAPI
-
-    // MARK: - Setup
-
-    public init(
-        networkAdapter: NetworkAdapterAPI = resolve())
-    {
-        self.networkAdapter = networkAdapter
-    }
-}
-
-// MARK: - Combine
-
-extension SessionTokenClient {
-
-    public var tokenPublisher: AnyPublisher<String?, NetworkError> {
-        let request = NetworkRequest(
-            endpoint: url,
-            method: .post,
-            contentType: .json
-        )
+    public var token: AnyPublisher<String?, NetworkError> {
+        let request = requestBuilder.post(
+            path: Path.walletSession
+        )!
         return networkAdapter
             .perform(request: request, responseType: Response.self)
             .map(\.token)
             .eraseToAnyPublisher()
+    }
+
+    private let networkAdapter: NetworkAdapterAPI
+    private let requestBuilder: RequestBuilder
+
+    // MARK: - Setup
+
+    public init(
+        networkAdapter: NetworkAdapterAPI = resolve(),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)
+    ) {
+        self.networkAdapter = networkAdapter
+        self.requestBuilder = requestBuilder
     }
 }

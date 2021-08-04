@@ -49,7 +49,10 @@ final class PasswordRequiredScreenInteractor {
 
     /// Authenticates the wallet
     func authenticate() {
-        walletPayloadService.requestUsingSharedKey()
+        walletPayloadService
+            .requestUsingSharedKey()
+            .asObservable()
+            .ignoreElements()
             .subscribe(
                 onCompleted: { [weak self] in
                     guard let self = self else { return }

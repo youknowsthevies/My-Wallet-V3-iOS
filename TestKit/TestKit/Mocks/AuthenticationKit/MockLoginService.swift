@@ -2,7 +2,6 @@
 
 @testable import AuthenticationKit
 import Combine
-import RxSwift
 
 final class MockLoginService: LoginServiceAPI {
 
@@ -10,17 +9,9 @@ final class MockLoginService: LoginServiceAPI {
     var twoFAType: WalletAuthenticatorType = .standard
     var twoFAServiceError: LoginServiceError?
 
-    func login(walletIdentifier: String) -> Completable {
-        .empty()
-    }
+    var authenticator: AnyPublisher<WalletAuthenticatorType, Never> = .just(.standard)
 
-    func login(walletIdentifier: String, code: String) -> Completable {
-        .empty()
-    }
-
-    var authenticator: Observable<WalletAuthenticatorType> = .just(.standard)
-
-    func loginPublisher(walletIdentifier: String) -> AnyPublisher<Void, LoginServiceError> {
+    func login(walletIdentifier: String) -> AnyPublisher<Void, LoginServiceError> {
         switch twoFAType {
         case .standard:
             return .just(())
@@ -37,7 +28,7 @@ final class MockLoginService: LoginServiceAPI {
         }
     }
 
-    func loginPublisher(walletIdentifier: String, code: String) -> AnyPublisher<Void, LoginServiceError> {
+    func login(walletIdentifier: String, code: String) -> AnyPublisher<Void, LoginServiceError> {
         if let error = twoFAServiceError {
             return .failure(error)
         }

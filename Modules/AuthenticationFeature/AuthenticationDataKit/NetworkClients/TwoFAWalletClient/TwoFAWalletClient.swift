@@ -3,7 +3,6 @@
 import Combine
 import DIKit
 import NetworkKit
-import RxSwift
 import WalletPayloadKit
 
 public final class TwoFAWalletClient: TwoFAWalletClientAPI {
@@ -66,35 +65,7 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
         guid: String,
         sessionToken: String,
         code: String
-    ) -> Single<WalletPayloadWrapper> {
-        let request = requestBuilder.build(
-            guid: guid,
-            sessionToken: sessionToken,
-            code: code
-        )
-        return networkAdapter
-            .perform(
-                request: request,
-                responseType: WalletPayloadWrapper.self
-            )
-            .catchError { error -> Single<WalletPayloadWrapper> in
-                guard let communicatorError = error as? NetworkError else {
-                    throw error
-                }
-                switch communicatorError {
-                case .payloadError(.badData(rawPayload: let payload)):
-                    throw ClientError(plainServerError: payload) ?? error
-                default:
-                    throw error
-                }
-            }
-    }
-}
-
-// MARK: - TwoFAWalletClientCombineAPI
-
-extension TwoFAWalletClient {
-    public func payloadPublisher(guid: String, sessionToken: String, code: String) -> AnyPublisher<WalletPayloadWrapper, ClientError> {
+    ) -> AnyPublisher<WalletPayloadWrapper, ClientError> {
         let request = requestBuilder.build(
             guid: guid,
             sessionToken: sessionToken,
@@ -150,6 +121,11 @@ extension TwoFAWalletClient {
 
         private let pathComponents = ["wallet"]
 
+        private enum Parameters {
+            static let guid = "guid"
+            static let code = "code"
+        }
+
         private enum HeaderKey: String {
             case authorization = "Authorization"
         }
@@ -181,19 +157,23 @@ extension TwoFAWalletClient {
 
         func build(guid: String, sessionToken: String, code: String) -> NetworkRequest {
             let headers = [HeaderKey.authorization.rawValue: "Bearer \(sessionToken)"]
-            let body = self.body(from: guid, code: code)
+            let parameters = [
+                URLQueryItem(
+                    name: Parameters.guid,
+                    value: guid
+                ),
+                URLQueryItem(
+                    name: Parameters.code,
+                    value: code
+                )
+            ]
+            let data = RequestBuilder.body(from: parameters)
             return requestBuilder.post(
                 path: pathComponents,
-                body: body,
+                body: data,
                 headers: headers,
                 contentType: .formUrlEncoded
             )!
-        }
-
-        private func body(from guid: String, code: String) -> Data! {
-            let payload = Payload(guid: guid, payload: code)
-            let data = ParameterEncoder(payload.dictionary).encoded!
-            return data
         }
     }
 }

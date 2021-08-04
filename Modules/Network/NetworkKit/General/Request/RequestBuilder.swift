@@ -182,13 +182,22 @@ public class RequestBuilder {
         )
     }
 
-    public static func path(from components: [String] = []) -> String {
+    // MARK: - Utilities
+
+    public static func body(from parameters: [URLQueryItem]) -> Data? {
+        var components = URLComponents()
+        components.queryItems = parameters
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        return components.percentEncodedQuery?.data(using: .utf8)
+    }
+
+    // MARK: - Private methods
+
+    private static func path(from components: [String] = []) -> String {
         components.reduce(into: "") { path, component in
             path += "/\(component)"
         }
     }
-
-    // MARK: - Private methods
 
     private func buildRequest(
         method: NetworkRequest.NetworkMethod,

@@ -2,6 +2,7 @@
 
 import AuthenticationKit
 import Combine
+import RxCombine
 import RxRelay
 import RxSwift
 import ToolKit
@@ -49,7 +50,7 @@ public final class EmailAuthorizationService: EmailAuthorizationServiceAPI {
 
     public func authorizeEmailPublisher() -> AnyPublisher<Void, EmailAuthorizationServiceError> {
         guidService
-            .guidPublisher
+            .guid
             .mapToVoid()
             .catch { error -> AnyPublisher<Void, EmailAuthorizationServiceError> in
                 switch error {
@@ -67,7 +68,10 @@ public final class EmailAuthorizationService: EmailAuthorizationServiceAPI {
             return .error(EmailAuthorizationServiceError.authorizationAlreadyActive)
         }
         isActive = true
-        return guidService.guid // Fetch the guid
+        return guidService
+            .guid // Fetch the guid
+            .asObservable()
+            .asSingle()
             .mapToVoid() // Map to void as we just want to verify it could be retrieved
             /// Any error should be caught and unless the request was cancelled or
             /// session token was missing, just keep polling until the guid is retrieved

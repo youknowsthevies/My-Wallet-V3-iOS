@@ -142,6 +142,15 @@ extension NetworkRequest: CustomStringConvertible {
     public var description: String {
         "\(method.rawValue) \(endpoint) (\(authenticated ? "authenticated" : "unauthenticated"))"
     }
+
+    public var bodyDescription: String? {
+        guard let data = body,
+              let description = String(data: data, encoding: .utf8)
+        else {
+            return nil
+        }
+        return description
+    }
 }
 
 extension NetworkRequest: Hashable {
