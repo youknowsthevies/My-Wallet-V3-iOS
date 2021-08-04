@@ -221,6 +221,49 @@ extension LocalizationConstants.AuthenticationKit {
         }
     }
 
+    public enum ResetAccountWarning {
+        public enum Title {
+            public static let resetAccount = NSLocalizedString(
+                "Reset Your Account?",
+                comment: "Reset Account Warning: title"
+            )
+            public static let lostFund = NSLocalizedString(
+                "Resetting Account May Result In\nLost Funds",
+                comment: "Lost Fund Warning: title"
+            )
+        }
+
+        public enum Message {
+            public static let resetAccount = NSLocalizedString(
+                "Resetting will restore your Trading, Interest, and Exchange accounts.",
+                comment: "Reset account warning: message"
+            )
+            public static let lostFund = NSLocalizedString(
+                "This means that if you lose your recovery phrase, you will lose access to your Private Key Wallet funds. You can always restore your Private Key Wallet funds later if you find your recovery phrase.",
+                comment: "Lost fund warning: message"
+            )
+        }
+
+        public enum Button {
+            public static let continueReset = NSLocalizedString(
+                "Continue to Reset",
+                comment: "Continue to reset CTA Button"
+            )
+            public static let retryRecoveryPhrase = NSLocalizedString(
+                "Retry Recovery Phrase",
+                comment: "Retry Recovery Phrase CTA Button"
+            )
+            public static let resetAccount = NSLocalizedString(
+                "Reset Account",
+                comment: "Reset Account CTA Button"
+            )
+            public static let goBack = NSLocalizedString(
+                "Go Back",
+                comment: "Go Back CTA Button"
+            )
+        }
+    }
+
     // MARK: - Reset Password
 
     public enum ResetPassword {

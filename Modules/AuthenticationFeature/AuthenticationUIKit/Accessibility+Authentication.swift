@@ -56,6 +56,26 @@ final class AccessibilityIdentifiers: NSObject {
         static let hardwareKeyGroup = "\(prefix)hardwareKeyGroup"
     }
 
+    enum ResetAccountWarningScreen {
+        static let prefix = "ResetAccountModal."
+
+        static let resetAccountImage = "\(prefix)resetAccountImage"
+        static let resetAccountTitleText = "\(prefix)resetAccountTitleText"
+        static let resetAccountMessageText = "\(prefix)resetAccountMessageText"
+        static let continueToResetButton = "\(prefix)continueToResetButton"
+        static let retryRecoveryPhraseButton = "\(prefix)retryRecoveryPhraseButton"
+    }
+
+    enum LostFundsWarningScreen {
+        static let prefix = "LostFundsWarningScreen."
+
+        static let lostFundsWarningImage = "\(prefix)lostFundsWarningImage"
+        static let lostFundsWarningTitleText = "\(prefix)lostFundsWarningTitleText"
+        static let lostFundsWarningMessageText = "\(prefix)lostFundsWarningMessageText"
+        static let resetAccountButton = "\(prefix)resetAccountButton"
+        static let goBackButton = "\(prefix)goBackButton"
+    }
+
     enum ResetPasswordScreen {
         static let prefix = "ResetPasswordScreen."
 
