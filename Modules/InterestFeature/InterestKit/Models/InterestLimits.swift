@@ -3,13 +3,13 @@
 import BigInt
 import PlatformKit
 
-public struct SavingsAccountLimitsResponse: Decodable {
+public struct InterestAccountLimitsResponse: Decodable {
 
-    public static let empty = SavingsAccountLimitsResponse()
+    public static let empty = InterestAccountLimitsResponse()
 
     // MARK: - Properties
 
-    private let limits: [String: SavingsAccountLimits]
+    private let limits: [String: InterestLimits]
 
     // MARK: - Init
 
@@ -23,17 +23,17 @@ public struct SavingsAccountLimitsResponse: Decodable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        limits = try values.decode([String: SavingsAccountLimits].self, forKey: .limits)
+        limits = try values.decode([String: InterestLimits].self, forKey: .limits)
     }
 
     // MARK: - Subscript
 
-    subscript(currency: CryptoCurrency) -> SavingsAccountLimits? {
+    subscript(currency: CryptoCurrency) -> InterestLimits? {
         limits[currency.code]
     }
 }
 
-public struct SavingsAccountLimits: Decodable {
+public struct InterestLimits: Decodable {
 
     public let currency: FiatCurrency
     public let lockUpDuration: Double
@@ -61,7 +61,7 @@ public struct SavingsAccountLimits: Decodable {
     }
 }
 
-extension SavingsAccountLimits {
+extension InterestLimits {
     public var lockupDescription: String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.day]

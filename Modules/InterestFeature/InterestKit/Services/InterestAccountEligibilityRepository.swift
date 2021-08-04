@@ -9,6 +9,14 @@ public enum InterestAccountEligibilityError: Error {
 }
 
 public protocol InterestAccountEligibilityRepositoryAPI {
+
+    /// Fetches all `InterestAccountEligibility` objects.
+    func fetchAllInterestAccountEligibility()
+        -> AnyPublisher<[InterestAccountEligibility], InterestAccountEligibilityError>
+
+    /// Fetches an `InterestAccountEligibility` object for a given
+    /// currency code.
+    /// - Parameter code: A currency code
     func fetchInterestAccountEligibilityForCurrencyCode(
         _ code: String
     ) -> AnyPublisher<InterestAccountEligibility, InterestAccountEligibilityError>
@@ -25,6 +33,13 @@ final class InterestAccountEligibilityRepository: InterestAccountEligibilityRepo
     ) {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.client = client
+    }
+
+    func fetchAllInterestAccountEligibility()
+        -> AnyPublisher<[InterestAccountEligibility], InterestAccountEligibilityError>
+    {
+        fetchInterestAccountEligibilities()
+            .eraseToAnyPublisher()
     }
 
     func fetchInterestAccountEligibilityForCurrencyCode(

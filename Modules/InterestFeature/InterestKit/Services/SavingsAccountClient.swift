@@ -12,9 +12,17 @@ protocol InterestAccountEligibilityClientAPI: AnyObject {
         -> AnyPublisher<InterestEligibilityResponse, NetworkError>
 }
 
-protocol SavingsAccountClientAPI: InterestAccountEligibilityClientAPI {
+protocol InterestAccountLimitsClientAPI: AnyObject {
+    func fetchInterestAccountLimitsResponseForFiatCurrency(_ fiatCurrency: FiatCurrency)
+        -> AnyPublisher<InterestAccountLimitsResponse, NetworkError>
+}
+
+typealias InterestAccountClientAPI = InterestAccountLimitsClientAPI &
+    InterestAccountEligibilityClientAPI
+
+protocol SavingsAccountClientAPI: InterestAccountClientAPI {
     func balance(with fiatCurrency: FiatCurrency) -> Single<SavingsAccountBalanceResponse?>
-    func limits(fiatCurrency: FiatCurrency) -> Single<SavingsAccountLimitsResponse>
+    func limits(fiatCurrency: FiatCurrency) -> Single<InterestAccountLimitsResponse>
     func rate(for currency: String) -> Single<SavingsAccountInterestRateResponse>
 }
 
@@ -47,7 +55,7 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
         self.requestBuilder = requestBuilder
     }
 
-    // MARK: - SavingsAccountClientAPI
+    // MARK: - InterestAccountClientAPI
 
     func fetchInterestAccountEligibilityResponse()
         -> AnyPublisher<InterestEligibilityResponse, NetworkError>
@@ -60,7 +68,27 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
             .perform(request: request)
     }
 
-    func limits(fiatCurrency: FiatCurrency) -> Single<SavingsAccountLimitsResponse> {
+    func fetchInterestAccountLimitsResponseForFiatCurrency(_ fiatCurrency: FiatCurrency)
+        -> AnyPublisher<InterestAccountLimitsResponse, NetworkError>
+    {
+        let parameters = [
+            URLQueryItem(
+                name: Parameter.currency,
+                value: fiatCurrency.code
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Path.limits,
+            parameters: parameters,
+            authenticated: true
+        )!
+        return networkAdapter
+            .perform(request: request)
+    }
+
+    // MARK: - SavingsAccountClientAPI
+
+    func limits(fiatCurrency: FiatCurrency) -> Single<InterestAccountLimitsResponse> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.currency,
