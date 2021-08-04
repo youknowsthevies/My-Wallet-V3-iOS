@@ -325,6 +325,7 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.guid = nil
         mockSettingsApp.sharedKey = nil
         mockSettingsApp.isPinSet = false
+        mockInternalFeatureFlagService.enable(.disableGUIDLogin)
 
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()
@@ -376,6 +377,7 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.guid = nil
         mockSettingsApp.sharedKey = nil
         mockSettingsApp.isPinSet = false
+        mockInternalFeatureFlagService.enable(.disableGUIDLogin)
 
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()

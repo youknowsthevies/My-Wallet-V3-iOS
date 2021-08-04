@@ -13,6 +13,8 @@ public enum WelcomeAction: Equatable {
     case emailLogin(EmailLoginAction)
     case deeplinkReceived(URL)
     case requestedToDecryptWallet(String)
+    /// should only be used on internal builds
+    case manualPairing(CredentialsAction)
 }
 
 // MARK: - Properties
@@ -24,16 +26,24 @@ public struct WelcomeState: Equatable {
         case createWalletScreen
         case emailLoginScreen
         case recoverWalletScreen
+        /// this should only be used for internal builds
+        case manualLoginScreen
     }
 
     public var screenFlow: ScreenFlow
     public var buildVersion: String
     var emailLoginState: EmailLoginState?
 
+    /// should only be used on internal builds
+    var manualCredentialsState: CredentialsState?
+    var manualPairingEnabled: Bool
+
     public init() {
         emailLoginState = .init()
+        manualCredentialsState = nil
         buildVersion = ""
         screenFlow = .welcomeScreen
+        manualPairingEnabled = false
     }
 }
 
@@ -42,17 +52,20 @@ public struct WelcomeEnvironment {
     let deviceVerificationService: DeviceVerificationServiceAPI
     let buildVersionProvider: () -> String
     let featureFlags: InternalFeatureFlagServiceAPI
+    let errorRecorder: ErrorRecording
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         deviceVerificationService: DeviceVerificationServiceAPI = resolve(),
         featureFlags: InternalFeatureFlagServiceAPI,
-        buildVersionProvider: @escaping () -> String
+        buildVersionProvider: @escaping () -> String,
+        errorRecorder: ErrorRecording = resolve()
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
         self.buildVersionProvider = buildVersionProvider
         self.featureFlags = featureFlags
+        self.errorRecorder = errorRecorder
     }
 }
 
@@ -69,6 +82,18 @@ public let welcomeReducer = Reducer.combine(
                 )
             }
         ),
+    credentialsReducer
+        .optional()
+        .pullback(
+            state: \.manualCredentialsState,
+            action: /WelcomeAction.manualPairing,
+            environment: {
+                CredentialsEnvironment(
+                    deviceVerificationService: $0.deviceVerificationService,
+                    errorRecorder: $0.errorRecorder
+                )
+            }
+        ),
     Reducer<
         WelcomeState,
         WelcomeAction,
@@ -77,9 +102,17 @@ public let welcomeReducer = Reducer.combine(
         switch action {
         case .start:
             state.buildVersion = environment.buildVersionProvider()
+            #if INTERNAL_BUILD
+            state.manualPairingEnabled = !environment.featureFlags.isEnabled(.disableGUIDLogin)
+            #endif
             return .none
         case .presentScreenFlow(let screenFlow):
             state.screenFlow = screenFlow
+            #if INTERNAL_BUILD
+            if screenFlow == .manualLoginScreen {
+                state.manualCredentialsState = .init()
+            }
+            #endif
             return .none
         case .deeplinkReceived(let url):
             // we currently only support deeplink if we're on the verify device screen
@@ -101,6 +134,15 @@ public let welcomeReducer = Reducer.combine(
             return Effect(value: .requestedToDecryptWallet(password))
         case .emailLogin:
             // handled in email login reducer
+            return .none
+
+        case .manualPairing(.walletPairing(.decryptWalletWithPassword(let password))):
+            return Effect(value: .requestedToDecryptWallet(password))
+        case .manualPairing(.closeButtonTapped),
+             .manualPairing(.didDisappear):
+            state.screenFlow = .welcomeScreen
+            return .none
+        case .manualPairing:
             return .none
         }
     }

@@ -23,6 +23,10 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable non-custodial sell
     case nonCustodialSell
 
+    /// Disable the guid login at welcome screen, useful for demo purposes
+    /// - Note: Old manual guid login screen is used only for internal builds
+    case disableGUIDLogin
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -37,6 +41,8 @@ public enum InternalFeature: String, CaseIterable {
         case .requestConsoleLogging:
             return false
         case .useTransactionsFlowToBuyCrypto:
+            return false
+        case .disableGUIDLogin:
             return false
         }
     }
@@ -63,6 +69,8 @@ extension InternalFeature {
             return "Enable Network Request Console Logs"
         case .useTransactionsFlowToBuyCrypto:
             return "Uses Transactions Flow to Buy Crypto"
+        case .disableGUIDLogin:
+            return "Disable manual (guid) login option"
         }
     }
 }

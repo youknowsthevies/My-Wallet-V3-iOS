@@ -37,6 +37,9 @@ class OnboardingReducerTests: XCTestCase {
         mockInternalFeatureFlags = InternalFeatureFlagServiceMock()
         mockAlertPresenter = MockAlertViewPresenter()
         mockQueue = DispatchQueue.test
+
+        // disable the manual login
+        mockInternalFeatureFlags.enable(.disableGUIDLogin)
     }
 
     override func tearDownWithError() throws {

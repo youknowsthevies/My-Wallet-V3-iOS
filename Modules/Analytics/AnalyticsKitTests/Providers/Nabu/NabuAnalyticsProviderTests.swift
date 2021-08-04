@@ -124,7 +124,7 @@ final class NabuAnalyticsProviderTests: XCTestCase {
             verify(fileCacheMock.save(events: any([Event].self))).wasCalled(exactly(2))
             verify(nabuAnalyticsEventsRepositoryMock.publish(events: any(EventsWrapper.self))).wasCalled(exactly(1))
         }
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: 5.0)
     }
 
     fileprivate func createNabuAnalyticsProvider(

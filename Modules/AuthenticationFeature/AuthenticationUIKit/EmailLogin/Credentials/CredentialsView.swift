@@ -256,7 +256,8 @@ struct CredentialsView: View {
         switch context {
         case .walletInfo(let info):
             return AnyView(emailTextfield(info: info))
-        case .walletIdentifier:
+        case .walletIdentifier,
+             .manualPairing:
             return AnyView(walletIdentifierTextfield())
         case .none:
             return AnyView(Divider().foregroundColor(.clear))

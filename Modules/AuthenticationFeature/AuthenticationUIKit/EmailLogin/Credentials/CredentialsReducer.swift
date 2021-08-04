@@ -21,13 +21,14 @@ public enum CredentialsAction: Equatable {
 
     public enum WalletPairingAction: Equatable {
         case approveEmailAuthorization
+        case needsEmailAuthorization
         case authenticate
         case authenticateWithTwoFAOrHardwareKey
         case decryptWalletWithPassword(String)
+        case startPolling
         case pollWalletIdentifier
         case requestSMSCode
         case setupSessionToken
-        case startPolling
     }
 
     case didAppear(context: CredentialsContext)
@@ -40,6 +41,7 @@ public enum CredentialsAction: Equatable {
     case setTwoFAOrHardwareKeyVerified(Bool)
     case accountLockedErrorVisibility(Bool)
     case alert(AlertAction)
+    case closeButtonTapped
     case none
 }
 
@@ -53,6 +55,7 @@ enum WalletPairingCancelations {
 public enum CredentialsContext: Equatable {
     case walletInfo(WalletInfo)
     case walletIdentifier(email: String)
+    case manualPairing
     case none
 }
 
@@ -67,6 +70,7 @@ struct CredentialsState: Equatable {
     var isAccountLocked: Bool
     var isWalletIdentifierIncorrect: Bool
     var credentialsFailureAlert: AlertState<CredentialsAction>?
+    var isManualPairing: Bool
 
     var isLoading: Bool
 
@@ -81,6 +85,7 @@ struct CredentialsState: Equatable {
         isAccountLocked = false
         isWalletIdentifierIncorrect = false
         isLoading = false
+        isManualPairing = false
     }
 }
 
@@ -167,6 +172,11 @@ let credentialsReducer = Reducer.combine(
             state.emailAddress = email
             return Effect(value: .walletPairing(.setupSessionToken))
 
+        case .didAppear(.manualPairing):
+            state.emailAddress = "not available on manual pairing"
+            state.isManualPairing = true
+            return Effect(value: .walletPairing(.setupSessionToken))
+
         case .didAppear:
             return .none
 
@@ -206,8 +216,8 @@ let credentialsReducer = Reducer.combine(
                 )
             }
             return .merge(
-                Effect(value: .walletPairing(.startPolling)),
                 // Immediately authorize the email
+                Effect(value: .walletPairing(.startPolling)),
                 environment
                     .deviceVerificationService
                     .authorizeLogin(emailCode: state.emailCode)
@@ -242,6 +252,19 @@ let credentialsReducer = Reducer.combine(
                 )
                 .map { _ in .walletPairing(.pollWalletIdentifier) }
 
+        case .walletPairing(.needsEmailAuthorization):
+            return .concatenate(
+                Effect(
+                    value: .alert(
+                        .show(
+                            title: CredentialsLocalization.Alerts.EmailAuthorizationAlert.title,
+                            message: CredentialsLocalization.Alerts.EmailAuthorizationAlert.message
+                        )
+                    )
+                ),
+                Effect(value: .walletPairing(.startPolling))
+            )
+
         case .walletPairing(.authenticate):
             guard !state.walletGuid.isEmpty else {
                 fatalError("GUID should not be empty")
@@ -253,6 +276,7 @@ let credentialsReducer = Reducer.combine(
             }
             state.isLoading = true
             let password = state.passwordState.password
+            let isManualPairing = state.isManualPairing
             return .merge(
                 // Clear error states
                 Effect(value: .accountLockedErrorVisibility(false)),
@@ -277,6 +301,9 @@ let credentialsReducer = Reducer.combine(
                                 }
                                 switch type {
                                 case .email:
+                                    if isManualPairing {
+                                        return .walletPairing(.needsEmailAuthorization)
+                                    }
                                     return .walletPairing(.approveEmailAuthorization)
                                 case .sms:
                                     return .walletPairing(.requestSMSCode)
@@ -486,7 +513,8 @@ let credentialsReducer = Reducer.combine(
             return .none
         case .password:
             return .none
-
+        case .closeButtonTapped:
+            return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
         case .none:
             return .none
         }

@@ -37,6 +37,29 @@ public struct WelcomeView: View {
                 then: EmailLoginView.init(store:)
             )
         }
+        .sheet(isPresented: .constant(viewStore.screenFlow == .manualLoginScreen)) {
+            IfLetStore(
+                store.scope(
+                    state: \.manualCredentialsState,
+                    action: WelcomeAction.manualPairing
+                ),
+                then: { store in
+                    NavigationView {
+                        CredentialsView(
+                            context: .manualPairing,
+                            store: store
+                        )
+                        .trailingNavigationButton(.close) {
+                            viewStore.send(.manualPairing(.closeButtonTapped))
+                        }
+                        .whiteNavigationBarStyle()
+                        .navigationTitle(
+                            WelcomeViewString.Button.manualPairing
+                        )
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -103,6 +126,14 @@ private struct WelcomeActionSection: View {
                     viewStore.send(.presentScreenFlow(.emailLoginScreen))
                 }
                 .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.emailLoginButton)
+
+                if viewStore.manualPairingEnabled {
+                    Divider()
+                    manualPairingButton()
+                        .accessibility(
+                            identifier: AccessibilityIdentifiers.WelcomeScreen.manualPairingButton
+                        )
+                }
             }
             .padding(.bottom, 20)
 
@@ -121,6 +152,26 @@ private struct WelcomeActionSection: View {
             }
         }
         .padding([.leading, .trailing], 24)
+    }
+
+    // MARK: - Private
+
+    private func manualPairingButton() -> some View {
+        Button(WelcomeViewString.Button.manualPairing) {
+            viewStore.send(.presentScreenFlow(.manualLoginScreen))
+        }
+        .font(Font(weight: .semibold, size: 16))
+        .frame(maxWidth: .infinity, minHeight: LayoutConstants.buttonMinHeight)
+        .padding(.horizontal)
+        .foregroundColor(Color.textSubheading)
+        .background(
+            RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
+                .fill(Color.buttonSecondaryBackground)
+        )
+        .background(
+            RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
+                .stroke(Color.borderPrimary)
+        )
     }
 }
 
