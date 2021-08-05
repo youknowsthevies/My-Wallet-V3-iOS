@@ -6,10 +6,32 @@ extension AppDelegate {
 
     func application(
         _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        viewStore.send(
+            .appDelegate(
+                .didReceiveRemoteNotification(
+                    application,
+                    userInfo: userInfo,
+                    completionHandler: completionHandler
+                )
+            )
+        )
+    }
+
+    func application(
+        _ application: UIApplication,
         didFailToRegisterForRemoteNotificationsWithError error: Error
     ) {
         viewStore.send(
-            .appDelegate(.didRegisterForRemoteNotifications(.failure(error as NSError)))
+            .appDelegate(
+                .didRegisterForRemoteNotifications(
+                    .failure(
+                        error as NSError
+                    )
+                )
+            )
         )
     }
 
@@ -18,7 +40,13 @@ extension AppDelegate {
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
         viewStore.send(
-            .appDelegate(.didRegisterForRemoteNotifications(.success(deviceToken)))
+            .appDelegate(
+                .didRegisterForRemoteNotifications(
+                    .success(
+                        deviceToken
+                    )
+                )
+            )
         )
     }
 }

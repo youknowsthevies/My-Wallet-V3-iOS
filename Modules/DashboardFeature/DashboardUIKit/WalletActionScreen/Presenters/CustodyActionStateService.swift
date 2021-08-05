@@ -35,6 +35,14 @@ public protocol CustodyBuyEmitterAPI: AnyObject {
     var buyRelay: PublishRelay<Void> { get }
 }
 
+public protocol CustodySendEmitterAPI: AnyObject {
+    var sendRelay: PublishRelay<Void> { get }
+}
+
+public protocol CustodyReceiveEmitterAPI: AnyObject {
+    var receiveRelay: PublishRelay<Void> { get }
+}
+
 public protocol CustodySellEmitterAPI: AnyObject {
     var sellRelay: PublishRelay<Void> { get }
 }
@@ -47,7 +55,9 @@ public typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServic
     CustodyDepositEmitterAPI &
     RoutingPreviousStateEmitterAPI &
     CustodyWithdrawEmitterAPI &
-    CustodySwapEmitterAPI
+    CustodySwapEmitterAPI &
+    CustodySendEmitterAPI &
+    CustodyReceiveEmitterAPI
 
 public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public typealias State = CustodyActionState
@@ -120,6 +130,8 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public let buyRelay = PublishRelay<Void>()
     public let withdrawRelay = PublishRelay<Void>()
     public let swapRelay = PublishRelay<Void>()
+    public let sendRelay = PublishRelay<Void>()
+    public let receiveRelay = PublishRelay<Void>()
 
     private let statesRelay = BehaviorRelay<States>(value: .start)
     private let actionRelay = PublishRelay<Action>()
@@ -195,6 +207,22 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
             }
             .disposed(by: disposeBag)
 
+        sendRelay
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(weak: self) { (self) in
+                let nextStates = self.statesRelay.value.states(byAppending: .send)
+                self.apply(action: .next(.send), states: nextStates)
+            }
+            .disposed(by: disposeBag)
+
+        receiveRelay
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(weak: self) { (self) in
+                let nextStates = self.statesRelay.value.states(byAppending: .receive)
+                self.apply(action: .next(.receive), states: nextStates)
+            }
+            .disposed(by: disposeBag)
+
         withdrawRelay
             .observeOn(MainScheduler.instance)
             .flatMap {
@@ -217,7 +245,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
         let states = statesRelay.value
         switch states.current {
         case .start:
-            state = .send
+            state = .start
             action = .next(state)
         case .introduction:
             cacheSuite.set(true, forKey: Constant.introScreenShown)
@@ -238,6 +266,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
              .withdrawalFiat,
              .withdrawalAfterBackup,
              .swap,
+             .receive,
              .end:
             state = .end
             action = .next(state)

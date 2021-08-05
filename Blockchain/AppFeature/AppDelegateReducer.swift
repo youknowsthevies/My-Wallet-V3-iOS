@@ -28,6 +28,24 @@ public enum AppDelegateAction: Equatable {
     case open(_ url: URL)
     case userActivity(_ userActivity: NSUserActivity)
     case didRegisterForRemoteNotifications(Result<Data, NSError>)
+    case didReceiveRemoteNotification(
+        _ application: UIApplication,
+        userInfo: [AnyHashable: Any],
+        completionHandler: (UIBackgroundFetchResult) -> Void
+    )
+}
+
+extension AppDelegateAction {
+    public static func == (lhs: AppDelegateAction, rhs: AppDelegateAction) -> Bool {
+        switch (lhs, rhs) {
+        case (.didReceiveRemoteNotification, .didReceiveRemoteNotification):
+            // since we can't compare the userInfo
+            // we'll always assume the notifications are different
+            return false
+        default:
+            return lhs == rhs
+        }
+    }
 }
 
 /// Holds the dependencies
@@ -35,6 +53,7 @@ struct AppDelegateEnvironment {
     var appSettings: BlockchainSettings.App
     var onboardingSettings: OnboardingSettings
     var cacheSuite: CacheSuite
+    var remoteNotificationBackgroundReceiver: RemoteNotificationBackgroundReceiving
     var remoteNotificationAuthorizer: RemoteNotificationRegistering
     var remoteNotificationTokenReceiver: RemoteNotificationDeviceTokenReceiving
     var certificatePinner: CertificatePinnerAPI
@@ -118,6 +137,15 @@ let appDelegateReducer = Reducer<
                 environment.remoteNotificationTokenReceiver
                     .appDidFailToRegisterForRemoteNotifications(with: error)
             }
+        }
+    case .didReceiveRemoteNotification(let application, let userInfo, let completionHandler):
+        return .fireAndForget {
+            environment.remoteNotificationBackgroundReceiver
+                .didReceiveRemoteNotification(
+                    userInfo,
+                    onApplicationState: application.applicationState,
+                    fetchCompletionHandler: completionHandler
+                )
         }
     case .userActivity(let userActivity):
         return .none

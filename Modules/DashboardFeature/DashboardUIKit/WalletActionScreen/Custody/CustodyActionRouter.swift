@@ -133,7 +133,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     public func next(to state: CustodyActionStateService.State) {
         switch state {
         case .start:
-            break
+            showWalletActionSheet()
         case .introduction:
             /// The `topMost` screen is the `CustodyActionScreen`
             dismiss { [weak self] in
@@ -148,7 +148,9 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
                 self.backupRouterAPI.start()
             }
         case .send:
-            showSendCustody()
+            showSend()
+        case .receive:
+            showReceive()
         case .activity:
             showActivityScreen()
         case .sell:
@@ -200,7 +202,16 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         }
     }
 
-    private func showSendCustody() {
+    private func showReceive() {
+        dismiss { [weak self] in
+            guard let self = self else {
+                return
+            }
+            self.tabSwapping.switchTabToReceive()
+        }
+    }
+
+    private func showWalletActionSheet() {
         if case .crypto(let cryptoCurrency) = account.currencyType {
             analyticsService.recordTradingWalletClicked(for: cryptoCurrency)
         }
