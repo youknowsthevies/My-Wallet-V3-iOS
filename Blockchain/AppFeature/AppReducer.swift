@@ -29,6 +29,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     appSettings: $0.blockchainSettings,
                     onboardingSettings: $0.onboardingSettings,
                     cacheSuite: $0.cacheSuite,
+                    remoteNotificationBackgroundReceiver: $0.remoteNotificationServiceContainer.backgroundReceiver,
                     remoteNotificationAuthorizer: $0.remoteNotificationServiceContainer.authorizer,
                     remoteNotificationTokenReceiver: $0.remoteNotificationServiceContainer.tokenReceiver,
                     certificatePinner: $0.certificatePinner,
