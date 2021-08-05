@@ -11,6 +11,7 @@ public struct TextStyle: ViewModifier {
         case body
         case formField
         case formFieldPlaceholder
+        case link
     }
 
     public let fontStyle: FontStyle
@@ -59,6 +60,12 @@ public struct TextStyle: ViewModifier {
             fontSize = LayoutConstants.Text.FontSize.formField
             lineSpacing = LayoutConstants.Text.LineSpacing.formField
             singleLineSpacing = lineSpacing
+        case .link:
+            textColor = .buttonLinkText
+            fontWeight = .medium
+            fontSize = LayoutConstants.Text.FontSize.body
+            lineSpacing = LayoutConstants.Text.LineSpacing.body
+            singleLineSpacing = lineSpacing
         }
         return content
             .font(Font(weight: fontWeight, size: fontSize))
@@ -76,6 +83,7 @@ extension TextStyle {
     public static let body = TextStyle(fontStyle: .body)
     public static let formField = TextStyle(fontStyle: .formField)
     public static let formFieldPlaceholder = TextStyle(fontStyle: .formFieldPlaceholder)
+    public static let link = TextStyle(fontStyle: .link)
 }
 
 extension View {

@@ -1665,6 +1665,8 @@ targets:
       path: TestKit/TestKit/Mocks/AnalyticsKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
     templateAttributes:
       featureName: AuthenticationFeature
     templates:

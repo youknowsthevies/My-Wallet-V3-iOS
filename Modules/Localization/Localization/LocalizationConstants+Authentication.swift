@@ -73,7 +73,7 @@ extension LocalizationConstants.AuthenticationKit {
         )
     }
 
-    // MARK: - EmailLogin
+    // MARK: - Email Login
 
     public enum EmailLogin {
         public static let navigationTitle = NSLocalizedString(
@@ -226,6 +226,95 @@ extension LocalizationConstants.AuthenticationKit {
         }
     }
 
+    // MARK: - Import Wallet
+
+    public enum ImportWallet {
+        public static let importWalletTitle = NSLocalizedString(
+            "Import Your Wallet?",
+            comment: "Import Wallet Screen: title"
+        )
+        public static let importWalletMessage = NSLocalizedString(
+            "There’s no account associated with the seed phrase you entered. You can import and manage your wallet instead.",
+            comment: "Import Wallet Screen: message"
+        )
+        public enum Button {
+            public static let importWallet = NSLocalizedString(
+                "Import Wallet",
+                comment: "Import Wallet screen: import wallet CTA button"
+            )
+            public static let goBack = NSLocalizedString(
+                "Go Back",
+                comment: "Import Wallet screen: go back CTA button"
+            )
+        }
+    }
+
+    // MARK: - Create Account
+
+    public enum CreateAccount {
+        public static let navigationTitle = NSLocalizedString(
+            "Create Account",
+            comment: "Create Account screen: navigation title"
+        )
+        public enum TextFieldTitle {
+            public static let email = NSLocalizedString(
+                "Email",
+                comment: "Create Account screen: email text field"
+            )
+            public static let password = NSLocalizedString(
+                "Password",
+                comment: "Create Account screen: password text field"
+            )
+            public static let confirmPassword = NSLocalizedString(
+                "Confirm New Password",
+                comment: "Create Account screen: confirm password text field"
+            )
+        }
+
+        public enum TextFieldPlaceholder {
+            public static let email = NSLocalizedString(
+                "your@email.com",
+                comment: "Create Account screen: email text field placeholder"
+            )
+            public static let password = NSLocalizedString(
+                "Enter a password",
+                comment: "Create Account screen: password text field placeholder"
+            )
+        }
+
+        public enum TextFieldError {
+            public static let invalidEmail = NSLocalizedString(
+                "Invalid Email",
+                comment: "Create Account screen: invalid email error"
+            )
+            public static let confirmPasswordNotMatch = NSLocalizedString(
+                "Passwords don't match",
+                comment: "Create Account screen: passwords do not match error"
+            )
+        }
+
+        public static let agreementPrompt = NSLocalizedString(
+            "By creating a wallet you agree to Blockchain’s",
+            comment: "Create Account screen: agreement prompt footnote"
+        )
+        public static let termsOfServiceLink = NSLocalizedString(
+            "Terms of Services",
+            comment: "Create Account screen: terms of service link"
+        )
+        public static let and = NSLocalizedString(
+            "and",
+            comment: "Create Account screen: and (connective)"
+        )
+        public static let privacyPolicyLink = NSLocalizedString(
+            "Privacy Policy",
+            comment: "Create Account screen: privacy policy link"
+        )
+        public static let createAccountButton = NSLocalizedString(
+            "Create Account",
+            comment: "Create Account screen: create account CTA button"
+        )
+    }
+
     // MARK: - Seed Phrase
 
     public enum SeedPhrase {
@@ -265,6 +354,8 @@ extension LocalizationConstants.AuthenticationKit {
             comment: "Seed phrase screen: login CTA button"
         )
     }
+
+    // MARK: - Reset Account Warning
 
     public enum ResetAccountWarning {
         public enum Title {
@@ -331,13 +422,13 @@ extension LocalizationConstants.AuthenticationKit {
             )
         }
 
+        public static let confirmPasswordNotMatch = NSLocalizedString(
+            "Passwords don't match",
+            comment: "Reset password screen: passwords do not match error"
+        )
         public static let securityCallOut = NSLocalizedString(
             "For your security, you may have to re-verify your identity before accessing your trading or interest account.",
             comment: "Seed phrase screen: callout message for the security measure"
-        )
-        public static let confirmPasswordNotMatchError = NSLocalizedString(
-            "Passwords don't match.",
-            comment: "Reset password screen: passwords do not match error"
         )
         public enum Button {
             public static let skip = NSLocalizedString(

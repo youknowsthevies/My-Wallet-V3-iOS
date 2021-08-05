@@ -27,7 +27,8 @@ final class VerifyDeviceReducerTests: XCTestCase {
             environment: .init(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 deviceVerificationService: MockDeviceVerificationService(),
-                errorRecorder: NoOpErrorRecorder()
+                errorRecorder: NoOpErrorRecorder(),
+                externalAppOpener: MockExternalAppOpener()
             )
         )
     }

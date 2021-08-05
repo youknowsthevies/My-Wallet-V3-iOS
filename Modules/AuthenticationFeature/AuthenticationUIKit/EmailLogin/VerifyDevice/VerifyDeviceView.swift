@@ -33,7 +33,8 @@ struct VerifyDeviceView: View {
         viewStore = ViewStore(store)
 
         if let mailAppURL = URL(string: UIApplication.mailAppURLString),
-           UIApplication.shared.canOpenURL(mailAppURL) {
+           UIApplication.shared.canOpenURL(mailAppURL)
+        {
             showOpenMailAppButton = true
         } else {
             showOpenMailAppButton = false
@@ -110,7 +111,7 @@ struct VerifyDeviceView: View {
             .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.sendAgainButton)
             if showOpenMailAppButton {
                 PrimaryButton(title: LocalizedString.Button.openEmail) {
-                    UIApplication.shared.openMailApplication()
+                    viewStore.send(.openMailApp)
                 }
                 .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.openMailAppButton)
             }
@@ -123,15 +124,15 @@ struct VerifyDeviceView_Previews: PreviewProvider {
     static var previews: some View {
         VerifyDeviceView(
             store:
-                Store(
-                    initialState: .init(emailAddress: ""),
-                    reducer: verifyDeviceReducer,
-                    environment: .init(
-                        mainQueue: .main,
-                        deviceVerificationService: NoOpDeviceVerificationService(),
-                        errorRecorder: NoOpErrorRecorder()
-                    )
+            Store(
+                initialState: .init(emailAddress: ""),
+                reducer: verifyDeviceReducer,
+                environment: .init(
+                    mainQueue: .main,
+                    deviceVerificationService: NoOpDeviceVerificationService(),
+                    errorRecorder: NoOpErrorRecorder()
                 )
+            )
         )
     }
 }

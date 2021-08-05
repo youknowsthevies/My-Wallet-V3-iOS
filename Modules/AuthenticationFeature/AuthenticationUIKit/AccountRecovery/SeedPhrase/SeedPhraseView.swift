@@ -124,10 +124,12 @@ struct SeedPhraseView: View {
 
     private var seedPhraseTextEditor: some View {
         ZStack(alignment: .topLeading) {
-            TextEditor(text: viewStore.binding(
-                get: { $0.seedPhrase.lowercased() },
-                send: { .didChangeSeedPhrase($0.lowercased()) }
-            ))
+            TextEditor(
+                text: viewStore.binding(
+                    get: { $0.seedPhrase.lowercased() },
+                    send: { .didChangeSeedPhrase($0.lowercased()) }
+                )
+            )
             .onChange(of: viewStore.seedPhrase) { _ in
                 viewStore.send(.validateSeedPhrase)
             }

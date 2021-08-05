@@ -51,6 +51,7 @@ struct ResetPasswordView: View {
             PrimaryButton(title: LocalizedString.Button.resetPassword) {
                 // TODO: reset password operation
             }
+            .disabled(viewStore.newPassword.isEmpty || viewStore.newPassword != viewStore.confirmNewPassword)
             .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.resetPasswordButton)
         }
         .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
@@ -82,7 +83,6 @@ struct ResetPasswordView: View {
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
                 $0.textContentType = .password
-                $0.returnKeyType = .next
             },
             onPaddingTapped: {
                 isNewPasswordFieldFirstResponder = true
@@ -126,9 +126,8 @@ struct ResetPasswordView: View {
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
                 $0.textContentType = .password
-                $0.returnKeyType = .next
             },
-            errorMessage: LocalizedString.confirmPasswordNotMatchError,
+            errorMessage: LocalizedString.confirmPasswordNotMatch,
             onPaddingTapped: {
                 isNewPasswordFieldFirstResponder = false
                 isConfirmNewPasswordFieldFirstResponder = true

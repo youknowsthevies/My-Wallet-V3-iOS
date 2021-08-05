@@ -6,9 +6,18 @@ public enum Constants {
         public static var resetTwoFA: String {
             "https://\(loginHost)/#/reset-2fa"
         }
+
+        public static var terms: String {
+            "https://\(blockchainHost)/terms"
+        }
+
+        public static var privacyPolicy: String {
+            "https://\(blockchainHost)/privacy"
+        }
     }
 
     private static let loginHost: String = InfoDictionaryHelper.value(for: .loginUrl)
+    private static let blockchainHost: String = InfoDictionaryHelper.value(for: .blockchainUrl)
 }
 
 class AuthenticationKitBundle {}
@@ -16,6 +25,7 @@ class AuthenticationKitBundle {}
 private enum InfoDictionaryHelper {
     enum Key: String {
         case loginUrl = "LOGIN_URL"
+        case blockchainUrl = "BLOCKCHAIN_URL"
     }
 
     private static let infoDictionary = Bundle(for: AuthenticationKitBundle.self).infoDictionary

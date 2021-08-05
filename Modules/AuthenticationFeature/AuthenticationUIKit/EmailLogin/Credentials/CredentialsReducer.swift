@@ -5,9 +5,8 @@ import AuthenticationKit
 import ComposableArchitecture
 import DIKit
 import Localization
-import SwiftUI
+import PlatformUIKit
 import ToolKit
-import UIComponentsKit
 
 // MARK: - Type
 
@@ -42,6 +41,7 @@ public enum CredentialsAction: Equatable {
     case setTwoFAOrHardwareKeyVerified(Bool)
     case accountLockedErrorVisibility(Bool)
     case setTroubleLoggingInScreenVisible(Bool)
+    case openExternalLink(URL)
     case alert(AlertAction)
     case closeButtonTapped
     case none
@@ -107,6 +107,7 @@ struct CredentialsEnvironment {
     let loginService: LoginServiceAPI
     let wallet: WalletAuthenticationKitWrapper
     let analyticsRecorder: AnalyticsEventRecorderAPI
+    let externalAppOpener: ExternalAppOpener
     let errorRecorder: ErrorRecording
     let walletIdentifierValidator: WalletValidation
 
@@ -123,6 +124,7 @@ struct CredentialsEnvironment {
         loginService: LoginServiceAPI = resolve(),
         wallet: WalletAuthenticationKitWrapper = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        externalAppOpener: ExternalAppOpener = resolve(),
         walletIdentifierValidator: @escaping WalletValidation = identifierValidator,
         errorRecorder: ErrorRecording
     ) {
@@ -136,6 +138,7 @@ struct CredentialsEnvironment {
         self.loginService = loginService
         self.wallet = wallet
         self.analyticsRecorder = analyticsRecorder
+        self.externalAppOpener = externalAppOpener
         self.walletIdentifierValidator = walletIdentifierValidator
         self.errorRecorder = errorRecorder
     }
@@ -481,6 +484,12 @@ let credentialsReducer = Reducer.combine(
         case .accountLockedErrorVisibility(let isVisible):
             state.isAccountLocked = isVisible
             state.isLoading = isVisible ? false : state.isLoading
+            return .none
+
+        case .openExternalLink(let url):
+            environment
+                .externalAppOpener
+                .open(url) { _ in }
             return .none
 
         case .alert(.show(let title, let message)):

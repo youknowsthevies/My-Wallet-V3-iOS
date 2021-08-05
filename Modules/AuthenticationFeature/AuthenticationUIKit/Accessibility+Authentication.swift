@@ -95,4 +95,26 @@ final class AccessibilityIdentifiers: NSObject {
         static let confirmNewPasswordGroup = "\(prefix)confirmNewPasswordGroup"
         static let resetPasswordButton = "\(prefix)resetPasswordButton"
     }
+
+    enum ImportWalletScreen {
+        static let prefix = "ImportWalletScreen."
+
+        static let importWalletImage = "\(prefix)importWalletImage"
+        static let importWalletTitleText = "\(prefix)importWalletTitleText"
+        static let importWalletMessageText = "\(prefix)importWalletMessageText"
+        static let importWalletButton = "\(prefix)importWalletButton"
+        static let goBackButton = "\(prefix)goBackButton"
+    }
+
+    enum CreateAccountScreen {
+        static let prefix = "CreateAccountScreen."
+
+        static let emailGroup = "\(prefix)emailGroup"
+        static let agreementPromptText = "\(prefix)agreementPromptText"
+        static let termsOfServiceButton = "\(prefix)termsOfServiceButton"
+        static let privacyPolicyButton = "\(prefix)privacyPolicyButton"
+        static let passwordGroup = "\(prefix)passwordGroup"
+        static let confirmPasswordGroup = "\(prefix)confirmPasswordGroup"
+        static let createAccountButton = "\(prefix)createAccountButton"
+    }
 }

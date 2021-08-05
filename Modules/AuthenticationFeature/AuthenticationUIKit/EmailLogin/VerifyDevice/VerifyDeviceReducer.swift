@@ -5,6 +5,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import Localization
+import PlatformUIKit
 import ToolKit
 
 // MARK: - Type
@@ -22,6 +23,7 @@ public enum VerifyDeviceAction: Equatable {
     case didExtractWalletInfo(WalletInfo)
     case didReceiveWalletInfoDeeplink(URL)
     case sendDeviceVerificationEmail
+    case openMailApp
     case setCredentialsScreenVisible(Bool)
     case verifyDeviceFailureAlert(AlertAction)
     case none
@@ -50,15 +52,18 @@ struct VerifyDeviceEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let deviceVerificationService: DeviceVerificationServiceAPI
     let errorRecorder: ErrorRecording
+    let externalAppOpener: ExternalAppOpener
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
         deviceVerificationService: DeviceVerificationServiceAPI,
-        errorRecorder: ErrorRecording = resolve()
+        errorRecorder: ErrorRecording = resolve(),
+        externalAppOpener: ExternalAppOpener = resolve()
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
         self.errorRecorder = errorRecorder
+        self.externalAppOpener = externalAppOpener
     }
 }
 
@@ -123,6 +128,12 @@ let verifyDeviceReducer = Reducer.combine(
 
         case .sendDeviceVerificationEmail:
             // handled in email login reducer
+            return .none
+
+        case .openMailApp:
+            environment
+                .externalAppOpener
+                .openMailApp { _ in }
             return .none
 
         case .setCredentialsScreenVisible(let isVisible):
