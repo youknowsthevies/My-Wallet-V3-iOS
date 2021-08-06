@@ -20,7 +20,7 @@ extension NavigationButton {
 
     public func button(action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(iconName, bundle: .current)
+            Image(iconName, bundle: Bundle.module)
                 .renderingMode(.original)
         }
     }

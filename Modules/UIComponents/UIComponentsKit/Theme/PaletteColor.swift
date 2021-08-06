@@ -6,14 +6,14 @@ import UIKit
 extension UIColor {
     convenience init(paletteColor: PaletteColor) {
         let colorName = paletteColor.rawValue.capitalizeFirstLetter
-        self.init(named: colorName, in: .current, compatibleWith: nil)!
+        self.init(named: colorName, in: Bundle.module, compatibleWith: nil)!
     }
 }
 
 extension Color {
     init(paletteColor: PaletteColor) {
         let colorName = paletteColor.rawValue.capitalizeFirstLetter
-        self.init(colorName, bundle: .current)
+        self.init(colorName, bundle: Bundle.module)
     }
 }
 

@@ -5,6 +5,9 @@
       location = "group:project.yml">
    </FileRef>
    <FileRef
+      location = "group:scripts">
+   </FileRef>
+   <FileRef
       location = "group:Blockchain.xcodeproj">
    </FileRef>
 </Workspace>

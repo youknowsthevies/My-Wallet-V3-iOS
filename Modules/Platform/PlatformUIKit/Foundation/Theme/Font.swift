@@ -43,10 +43,6 @@ public struct Font {
         case montserratLight = "Montserrat-Light"
         case montserratMedium = "Montserrat-Medium"
         case montserratBold = "Montserrat-Bold"
-        case interRegular = "Inter-Regular"
-        case interMedium = "Inter-Medium"
-        case interSemiBold = "Inter-SemiBold"
-        case interBold = "Inter-Bold"
     }
 
     public enum StandardSize {

@@ -186,14 +186,14 @@ final class PinScreenViewController: BaseScreenViewController {
 
     private func setupErrorLabel() {
         errorLabel.accessibility = .id(AccessibilityIdentifiers.PinScreen.errorLabel)
-        errorLabel.font = Font(.branded(.interSemiBold), size: .standard(.small(.h2))).result
+        errorLabel.font = .main(.semibold, 15.0)
         errorLabel.textColor = presenter.contentColor
     }
 
     private func setupLockTimeLabel() {
         remainingLockTimeLabel.accessibility =
             .id(AccessibilityIdentifiers.PinScreen.lockTimeLabel)
-        remainingLockTimeLabel.font = Font(.branded(.interSemiBold), size: .standard(.small(.h2))).result
+        remainingLockTimeLabel.font = .main(.semibold, 15.0)
         remainingLockTimeLabel.textColor = presenter.contentColor
     }
 

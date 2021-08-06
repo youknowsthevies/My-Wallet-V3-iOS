@@ -55,10 +55,6 @@
 	<string>Your permission is needed in order to upload documents from your photo library.</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Inter-Bold.ttf</string>
-		<string>Inter-SemiBold.ttf</string>
-		<string>Inter-Regular.ttf</string>
-		<string>Inter-Medium.ttf</string>
 		<string>Montserrat-Bold.ttf</string>
 		<string>Montserrat-Light.ttf</string>
 		<string>Montserrat-Medium.ttf</string>
