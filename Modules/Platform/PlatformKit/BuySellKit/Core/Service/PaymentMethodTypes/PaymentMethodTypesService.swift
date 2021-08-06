@@ -560,7 +560,8 @@ extension Array where Element == PaymentMethodType {
                 case .bankAccount:
                     return false // this method is not supported
                 case .bankTransfer:
-                    return accountForEligibility ? paymentMethod.isEligible : true
+                    let isFiatSupported = paymentMethod.fiatCurrency == currentWalletCurrency
+                    return accountForEligibility ? (paymentMethod.isEligible && isFiatSupported) : isFiatSupported
                 case .funds(let currency):
                     guard accountForEligibility else {
                         return currency == currentWalletCurrency.currency
@@ -572,7 +573,7 @@ extension Array where Element == PaymentMethodType {
             case .card(let data):
                 return data.state == .active
             case .linkedBank(let data):
-                return data.state == .active
+                return data.state == .active && data.currency == currentWalletCurrency
             }
         }
     }

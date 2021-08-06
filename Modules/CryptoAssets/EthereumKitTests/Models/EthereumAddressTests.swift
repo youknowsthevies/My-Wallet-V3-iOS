@@ -31,6 +31,16 @@ class EthereumAddressTests: XCTestCase {
         }
     }
 
+    func test_address_validation_succeeds_for_prefixed_address() {
+        let address = "ethereum:0x829B325036EE8F6B6ec80311d2699505505696eF"
+        XCTAssertNotNil(try EthereumAddress(string: address.removing(prefix: "ethereum:")))
+    }
+
+    func test_address_validation_succeeds_for_non_prefixed_address() {
+        let address = "0x829B325036EE8F6B6ec80311d2699505505696eF"
+        XCTAssertNotNil(try EthereumAddress(string: address.removing(prefix: "ethereum:")))
+    }
+
     func test_address_validation_fails_for_invalid_length() {
         // Sanity check
         XCTAssertTrue(MockEthereumWalletTestData.account.contains("e"))

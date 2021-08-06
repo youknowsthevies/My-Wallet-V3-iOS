@@ -39,7 +39,6 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         self.enabledCurrenciesService = enabledCurrenciesService
 
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
-        let bankTransferEligibleFiatCurrencies = enabledCurrenciesService.bankTransferEligibleFiatCurrencies
         let fetch = fiatCurrencyService.fiatCurrencyObservable
             .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Observable<[PaymentMethod]> in
                 let fetchTiers = tiersService.fetchTiers()
@@ -73,13 +72,11 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                 .map { paymentMethods in
                     paymentMethods.filter { paymentMethod in
                         switch paymentMethod.type {
-                        case .card:
+                        case .card,
+                             .bankTransfer:
                             return true
                         case .funds(let currencyType):
                             return currencyType.code == fiatCurrency.code
-                        case .bankTransfer:
-                            // this gets special treatment as we currently only support bank linkage in the US.
-                            return bankTransferEligibleFiatCurrencies.contains(paymentMethod.min.currencyType)
                         case .bankAccount:
                             // Filter out bank transfer details from currencies we do not
                             //  have local support/UI.
@@ -159,13 +156,11 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                 .map { paymentMethods in
                     paymentMethods.filter { paymentMethod in
                         switch paymentMethod.type {
-                        case .card:
+                        case .card,
+                             .bankTransfer:
                             return true
                         case .funds(let currencyType):
                             return currencyType.code == fiatCurrency.code
-                        case .bankTransfer:
-                            // this gets special treatment as we currently only support bank linkage in the US.
-                            return bankTransferEligibleFiatCurrencies.contains(paymentMethod.min.currencyType)
                         case .bankAccount:
                             // Filter out bank transfer details from currencies we do not
                             //  have local support/UI.
