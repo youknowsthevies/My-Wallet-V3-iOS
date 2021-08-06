@@ -119,7 +119,7 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
             } else {
                 self.router?.startDeposit(
                     target: self.targetAccount,
-                    sourceAccount: linkedBanks.count > 1 ? nil : linkedBanks.first
+                    sourceAccount: filteredLinkedBanks.count > 1 ? nil : filteredLinkedBanks.first
                 )
             }
         })
