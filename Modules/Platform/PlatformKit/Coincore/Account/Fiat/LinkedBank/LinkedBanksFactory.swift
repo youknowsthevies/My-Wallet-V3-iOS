@@ -12,6 +12,12 @@ public protocol LinkedBanksFactoryAPI {
     func bankTransferLimits(for currency: FiatCurrency) -> Single<PaymentLimits>
 }
 
+/// A top-level closure that checks if the passed `LinkedBankData.Partner` is of type `yodlee`
+/// Currently we only support deposit for linked accounts via `Yodlee` not `Yapily` (aka Open Banking)
+var checkDepositSupport = { (partner: LinkedBankData.Partner) -> Bool in
+    partner == .yodlee
+}
+
 final class LinkedBanksFactory: LinkedBanksFactoryAPI {
 
     private let linkedBankService: LinkedBanksServiceAPI
@@ -39,7 +45,8 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
                         accountId: data.identifier,
                         accountType: data.account?.type ?? .checking,
                         currency: data.currency,
-                        paymentType: data.paymentMethodType
+                        paymentType: data.paymentMethodType,
+                        supportsDeposit: checkDepositSupport(data.partner)
                     )
                 }
             }
@@ -62,7 +69,8 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
                         accountId: data.identifier,
                         accountType: data.account?.type ?? .checking,
                         currency: data.currency,
-                        paymentType: data.paymentMethodType
+                        paymentType: data.paymentMethodType,
+                        supportsDeposit: checkDepositSupport(data.partner)
                     )
                 }
             }

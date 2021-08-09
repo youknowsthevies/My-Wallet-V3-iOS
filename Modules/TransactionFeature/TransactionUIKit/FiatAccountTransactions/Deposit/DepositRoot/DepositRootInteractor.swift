@@ -107,8 +107,11 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
         .subscribe(onSuccess: { [weak self] values in
             guard let self = self else { return }
             let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
+            // An array of linked bank accounts that can be used for Deposit
             let filteredLinkedBanks = linkedBanks.filter { linkedBank in
-                linkedBank.fiatCurrency == fiatCurrency && linkedBank.paymentType == .bankTransfer
+                linkedBank.fiatCurrency == fiatCurrency
+                    && linkedBank.paymentType == .bankTransfer
+                    && linkedBank.supportsDeposit
             }
 
             if filteredLinkedBanks.isEmpty {
