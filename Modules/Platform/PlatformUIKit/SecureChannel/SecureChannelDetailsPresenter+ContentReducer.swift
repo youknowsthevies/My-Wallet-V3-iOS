@@ -12,7 +12,7 @@ extension SecureChannelDetailsPresenter {
         let cells: [DetailsScreen.CellType]
         let headers: [Int: HeaderBuilder]
         var buttons: [ButtonViewModel] {
-            [denyButton, approveButton]
+            [approveButton, denyButton]
         }
 
         var approveTapped: PublishRelay<Void> {
@@ -30,7 +30,7 @@ extension SecureChannelDetailsPresenter {
 
             // MARK: Buttons
 
-            denyButton = ButtonViewModel.destructive(with: LocalizedString.CTA.deny)
+            denyButton = ButtonViewModel.cancel(with: LocalizedString.CTA.deny)
             approveButton = ButtonViewModel.primary(with: LocalizedString.CTA.approve)
 
             // MARK: Header
@@ -107,7 +107,7 @@ extension SecureChannelDetailsPresenter {
 
             let labelPresenter = DefaultLabelContentPresenter(
                 knownValue: LocalizedString.Text.warning,
-                descriptors: .disclaimer(accessibilityId: "")
+                descriptors: .body(accessibilityId: "")
             )
 
             var baseCells: [DetailsScreen.CellType] = [

@@ -49,17 +49,20 @@ extension LabelContent.Value.Presentation {
             let fontWeight: FontWeight
             let contentColor: UIColor
             let fontSize: CGFloat
+            let lineSpacing: CGFloat
             let accessibility: Accessibility
 
             public init(
                 fontWeight: FontWeight = .medium,
                 contentColor: UIColor = .titleText,
                 fontSize: CGFloat,
+                lineSpacing: CGFloat = 1,
                 accessibility: Accessibility
             ) {
                 self.fontWeight = fontWeight
                 self.contentColor = contentColor
                 self.fontSize = fontSize
+                self.lineSpacing = lineSpacing
                 self.accessibility = accessibility
             }
         }
@@ -79,14 +82,32 @@ extension LabelContent.Value.Presentation {
 
 extension LabelContent.Value.Presentation.Content.Descriptors {
     /// Returns a descriptor for a disclaimer in a `Settings` cell.
-    public static func disclaimer(accessibilityId: String) -> LabelContent.Value.Presentation.Content.Descriptors {
+    public static func disclaimer(
+        accessibilityId: String
+    ) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontSize: 12,
             accessibility: .id(accessibilityId)
         )
     }
 
-    public static func lineItemTitle(accessibilityIdPrefix: String) -> LabelContent.Value.Presentation.Content.Descriptors {
+    public static func body(
+        accessibilityId: String
+    ) ->
+        LabelContent.Value.Presentation.Content.Descriptors
+    {
+        .init(
+            fontWeight: .medium,
+            contentColor: .darkTitleText,
+            fontSize: 14,
+            lineSpacing: 1.18,
+            accessibility: .id(accessibilityId)
+        )
+    }
+
+    public static func lineItemTitle(
+        accessibilityIdPrefix: String
+    ) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontWeight: .medium,
             contentColor: .descriptionText,
@@ -95,7 +116,9 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
         )
     }
 
-    public static func lineItemDescription(accessibilityIdPrefix: String) -> LabelContent.Value.Presentation.Content.Descriptors {
+    public static func lineItemDescription(
+        accessibilityIdPrefix: String
+    ) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontWeight: .semibold,
             contentColor: .textFieldText,
@@ -104,7 +127,9 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
         )
     }
 
-    public static func h1(accessibilityIdPrefix: String) -> LabelContent.Value.Presentation.Content.Descriptors {
+    public static func h1(
+        accessibilityIdPrefix: String
+    ) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontWeight: .semibold,
             fontSize: 32,
@@ -112,7 +137,10 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
         )
     }
 
-    public static func success(fontSize: CGFloat, accessibility: Accessibility) -> LabelContent.Value.Presentation.Content.Descriptors {
+    public static func success(
+        fontSize: CGFloat,
+        accessibility: Accessibility
+    ) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             contentColor: .positivePrice,
             fontSize: fontSize,
