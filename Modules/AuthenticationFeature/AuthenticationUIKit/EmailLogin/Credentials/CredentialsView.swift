@@ -68,12 +68,14 @@ struct CredentialsView: View {
                 .padding(.bottom, Layout.textFieldBottomPadding)
 
             passwordField
+                .padding(.bottom, Layout.textFieldBottomPadding)
                 .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.passwordGroup)
 
+            // TODO: remove internal build flag when SSO account recovery is ready to release
+            #if INTERNAL_BUILD
             Button(
                 action: {
-                    // TODO: Uncomment this when we want to use new SSO Account Recovery, in SSO I releasse, we should navigate to the old restore wallet screen
-                    // viewStore.send(.setTroubleLoggingInScreenVisible(true))
+                    viewStore.send(.setTroubleLoggingInScreenVisible(true))
                 },
                 label: {
                     Text(LocalizedString.Link.troubleLogInLink)
@@ -84,6 +86,7 @@ struct CredentialsView: View {
             .padding(.top, Layout.troubleLogInTextTopPadding)
             .padding(.bottom, Layout.textFieldBottomPadding)
             .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.troubleLoggingInButton)
+            #endif
 
             if let state = viewStore.twoFAState, state.isTwoFACodeFieldVisible {
                 twoFAField
