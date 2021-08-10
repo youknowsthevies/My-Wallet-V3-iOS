@@ -11,9 +11,11 @@ public struct MnemonicTextViewViewModel {
 
     public enum State: Equatable {
 
-        case complete(value: NSAttributedString)
-
         case valid(value: NSAttributedString)
+
+        case incomplete(value: NSAttributedString)
+
+        case excess(value: NSAttributedString)
 
         case empty
 
@@ -34,14 +36,14 @@ public struct MnemonicTextViewViewModel {
                 )
                 )
             case .incomplete:
-                self = .valid(value: .init(
+                self = .incomplete(value: .init(
                     input.lowercased(),
                     font: validStyle.font,
                     color: validStyle.color
                 )
                 )
             case .excess:
-                self = .invalid(value: .init(
+                self = .excess(value: .init(
                     input.lowercased(),
                     font: invalidStyle.font,
                     color: invalidStyle.color
@@ -147,7 +149,9 @@ public struct MnemonicTextViewViewModel {
                 return .init(string: "")
             case .valid(value: let value):
                 return value
-            case .complete(value: let value):
+            case .incomplete(value: let value):
+                return value
+            case .excess(value: let value):
                 return value
             case .invalid(value: let value):
                 return value
@@ -178,11 +182,13 @@ extension MnemonicTextViewViewModel.Style {
 extension MnemonicTextViewViewModel.State {
     public static func == (lhs: MnemonicTextViewViewModel.State, rhs: MnemonicTextViewViewModel.State) -> Bool {
         switch (lhs, rhs) {
-        case (.complete(let left), .complete(value: let right)):
+        case (.valid(let left), .valid(value: let right)):
             return left == right
         case (.invalid(let left), .invalid(let right)):
             return left == right
-        case (.valid(let left), .valid(value: let right)):
+        case (.incomplete(let left), .incomplete(value: let right)):
+            return left == right
+        case (.excess(let left), .excess(value: let right)):
             return left == right
         case (.empty, .empty):
             return true

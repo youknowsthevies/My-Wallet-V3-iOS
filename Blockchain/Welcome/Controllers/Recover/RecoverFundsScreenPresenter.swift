@@ -19,6 +19,7 @@ final class RecoverFundsScreenPresenter {
 
         enum InvalidReason {
             case incompleteMnemonic
+            case excessMnemonic
             case invalidMnemonic
             case emptyTextView
         }
@@ -83,10 +84,12 @@ final class RecoverFundsScreenPresenter {
         self.trailingButton = trailingButton
         let stateObservable = mnemonicTextViewModel.state.map { payload -> State in
             switch payload {
-            case .complete(let value):
+            case .valid(let value):
                 return .valid(.init(mneumonic: value.string))
-            case .valid:
+            case .incomplete:
                 return .invalid(.incompleteMnemonic)
+            case .excess:
+                return .invalid(.excessMnemonic)
             case .empty:
                 return .invalid(.emptyTextView)
             case .invalid:
