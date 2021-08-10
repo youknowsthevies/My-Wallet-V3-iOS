@@ -3,6 +3,7 @@
 import Localization
 import PlatformUIKit
 import SettingsKit
+import ToolKit
 
 final class AboutView: UIView {
 
@@ -54,8 +55,9 @@ final class AboutView: UIView {
             alignment: .center,
             accessibility: .id(AccessibilityIDs.versionLabel)
         )
+
         copyrightLabel.content = .init(
-            text: LocalizationIDs.copyright,
+            text: String(format: "\(LocalizationIDs.copyright)", Date().currentYear),
             font: .main(.medium, 12.0),
             color: .textFieldPlaceholder,
             alignment: .center,
