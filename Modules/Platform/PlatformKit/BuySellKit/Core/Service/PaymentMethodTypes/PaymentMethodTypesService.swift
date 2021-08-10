@@ -210,7 +210,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         linkedBankService: LinkedBanksServiceAPI = resolve(),
         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
-        featureFetching: FeatureFetching = resolve()
+        featureFetching: FeatureFetching = resolve(),
+        notificationCenter: NotificationCenter = .default
     ) {
         self.featureFetching = featureFetching
         self.enabledCurrenciesService = enabledCurrenciesService
@@ -221,6 +222,12 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         self.linkedBankService = linkedBankService
         self.beneficiariesServiceUpdater = beneficiariesServiceUpdater
         self.kycTiersService = kycTiersService
+        notificationCenter.when(.login) { [weak self] _ in
+            self?.preferredPaymentMethodTypeRelay.accept(nil)
+        }
+        notificationCenter.when(.logout) { [weak self] _ in
+            self?.preferredPaymentMethodTypeRelay.accept(nil)
+        }
     }
 
     func canTransactWithBankPaymentMethods(
