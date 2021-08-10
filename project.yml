@@ -325,6 +325,8 @@ packages:
     version: 0.16.0
   UIComponents:
     path: Modules/UIComponents
+  FeatureAccountPicker:
+    path: Modules/FeatureAccountPicker
 targets:
   ActivityKit:
     dependencies:
@@ -799,6 +801,7 @@ targets:
     - package: CombineExt
     - package: Nuke
     - package: NukeUI
+    - package: FeatureAccountPicker
     platform: iOS
     deploymentTarget:
         iOS: '14.0'

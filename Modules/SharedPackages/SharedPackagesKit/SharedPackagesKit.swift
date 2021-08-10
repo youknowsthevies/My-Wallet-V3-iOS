@@ -3,5 +3,6 @@
 //
 @_exported import CombineExt
 @_exported import ComposableArchitecture
+@_exported import FeatureAccountPickerUI
 @_exported import Nuke
 @_exported import NukeUI
