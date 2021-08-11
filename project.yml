@@ -274,6 +274,7 @@ targetTemplates:
   Module:
     dependencies:
     - framework: Carthage/Build/DIKit.xcframework
+    - target: SharedPackagesKit
     platform: iOS
     schemes:
       gatherCoverageData: true
@@ -291,7 +292,12 @@ targetTemplates:
     - framework: Carthage/Build/RxSwift.xcframework
     - framework: Carthage/Build/RxBlocking.xcframework
     - framework: Carthage/Build/RxTest.xcframework
-    - target: SharedPackagesKit
+    - package: ComposableArchitecture
+    - package: CombineExt
+    - package: Nuke
+    - package: NukeUI
+    - package: FeatureAccountPicker
+    - package: UIComponents
     platform: iOS
     sources:
     - createIntermediateGroups: true
@@ -373,7 +379,6 @@ targets:
     - target: PlatformKit
     - target: PlatformUIKit
     - target: ToolKit
-    - package: UIComponents
     scheme:
       testTargets:
       - ActivityUIKitTests
@@ -398,8 +403,6 @@ targets:
     templates:
     - ModuleTests
   AnalyticsKit:
-    dependencies:
-    - target: SharedPackagesKit
     scheme:
       testTargets:
         - AnalyticsKitTests
@@ -627,7 +630,6 @@ targets:
     - target: SettingsUIKit
     - target: SettingsKit
     - target: SharedPackagesKit
-    - package: UIComponents
     - target: RemoteNotificationsKit
     - target: AuthenticationKit
     - target: AuthenticationUIKit
@@ -729,7 +731,8 @@ targets:
     - framework: Carthage/Build/RxRelay.xcframework
     - framework: Carthage/Build/RxSwift.xcframework
     - framework: Carthage/Build/RxTest.xcframework
-    - target: SharedPackagesKit
+    - package: ComposableArchitecture
+    - package: CombineExt
     - target: Blockchain
     platform: iOS
     sources:
@@ -780,7 +783,6 @@ targets:
     - target: DashboardKit
     - target: PlatformUIKit
     - target: TransactionUIKit
-    - package: UIComponents
     scheme:
       testTargets:
       - DashboardUIKitTests
@@ -802,6 +804,7 @@ targets:
     - package: Nuke
     - package: NukeUI
     - package: FeatureAccountPicker
+    - package: UIComponents
     platform: iOS
     deploymentTarget:
         iOS: '14.0'
@@ -968,7 +971,6 @@ targets:
     - target: PlatformKit
     - target: PlatformUIKit
     - target: ToolKit
-    - package: UIComponents
     scheme:
       testTargets:
       - InterestUIKitTests
@@ -1032,9 +1034,7 @@ targets:
     - target: NetworkKit
     - target: PlatformKit
     - target: PlatformUIKit
-    - target: SharedPackagesKit
     - target: ToolKit
-    - package: UIComponents
     scheme:
       testTargets:
       - KYCUIKitTests
@@ -1045,7 +1045,6 @@ targets:
   KYCUIKitTests:
     dependencies:
     - package: SnapshotTesting
-    - package: UIComponents
     - target: KYCUIKit
     - target: SnapshotTestsHostApp # required for snapshot tests
     settings:
@@ -1150,7 +1149,6 @@ targets:
     - target: PlatformUIKit
     - target: SharedPackagesKit
     - target: ToolKit
-    - package: UIComponents
     platform: iOS
     sources:
       - createIntermediateGroups: true
@@ -1211,7 +1209,6 @@ targets:
     - target: ToolKit
     - target: WalletPayloadKit
     - target: RxAnalyticsKit
-    - target: SharedPackagesKit
     scheme:
       testTargets:
       - PlatformKitTests
@@ -1252,8 +1249,6 @@ targets:
     - target: Localization
     - target: PlatformKit
     - target: ToolKit
-    - target: SharedPackagesKit
-    - package: UIComponents
     - target: RxAnalyticsKit
     scheme:
       testTargets:
@@ -1311,6 +1306,7 @@ targets:
       featureName: SettingsFeature
   SettingsUIKit:
     dependencies:
+      - target: SharedPackagesKit
       - target: KYCKit
       - target: KYCUIKit
       - target: ToolKit
@@ -1321,12 +1317,11 @@ targets:
       - framework: Carthage/Build/RxSwift.xcframework
       - framework: Carthage/Build/RxRelay.xcframework
       - framework: Carthage/Build/RxCocoa.xcframework
-      - package: UIComponents
     scheme:
       testTargets:
         - SettingsUIKitTests
     templates:
-      - Module
+    - Module
     templateAttributes:
       featureName: SettingsFeature
   SettingsUIKitTests:
@@ -1384,7 +1379,7 @@ targets:
     - framework: Carthage/Build/RxDataSources.xcframework
     - framework: Carthage/Build/DIKit.xcframework
     - framework: Carthage/Build/Differentiator.xcframework
-    - package: UIComponents
+    - target: SharedPackagesKit
     platform: iOS
     scheme: {}
     settings:
@@ -1513,10 +1508,8 @@ targets:
     - target: Localization
     - target: PlatformKit
     - target: PlatformUIKit
-    - target: SharedPackagesKit
     - target: ToolKit
     - target: TransactionKit
-    - package: UIComponents
     templateAttributes:
       featureName: TransactionFeature
     templates:
@@ -1640,8 +1633,6 @@ targets:
     dependencies:
     - target: AuthenticationKit
     - target: PlatformUIKit
-    - target: SharedPackagesKit
-    - package: UIComponents
     scheme:
       testTargets:
       - AuthenticationUIKitTests
