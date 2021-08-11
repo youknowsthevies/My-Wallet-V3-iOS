@@ -86,7 +86,26 @@ public struct WelcomeView: View {
                 }
             )
         }
+        .sheet(
+            isPresented: .constant(viewStore.modals == .secondPasswordNoticeScreen),
+            onDismiss: { viewStore.send(.modalDismissed(.secondPasswordNoticeScreen)) },
+            content: {
+                IfLetStore(
+                    store.scope(
+                        state: \.secondPasswordNoticeState,
+                        action: WelcomeAction.secondPasswordNotice
+                    ),
+                    then: { store in
+                        NavigationView {
+                            SecondPasswordNoticeView(store: store)
+                        }
+                    }
+                )
+            }
+        )
     }
+
+    // MARK: - Private
 
     private var welcomeMessageSection: some View {
         VStack {
@@ -164,8 +183,6 @@ public struct WelcomeView: View {
                 .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.buildVersionText)
         }
     }
-
-    // MARK: - Private
 
     private func manualPairingButton() -> some View {
         Button(LocalizedString.Button.manualPairing) {
