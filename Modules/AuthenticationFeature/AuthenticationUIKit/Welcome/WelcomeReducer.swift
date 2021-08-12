@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import AuthenticationKit
 import ComposableArchitecture
 import DIKit
@@ -68,6 +69,7 @@ public struct WelcomeEnvironment {
     let featureFlags: InternalFeatureFlagServiceAPI
     let errorRecorder: ErrorRecording
     let externalAppOpener: ExternalAppOpener
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -75,7 +77,8 @@ public struct WelcomeEnvironment {
         featureFlags: InternalFeatureFlagServiceAPI,
         buildVersionProvider: @escaping () -> String,
         errorRecorder: ErrorRecording = resolve(),
-        externalAppOpener: ExternalAppOpener = resolve()
+        externalAppOpener: ExternalAppOpener = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
@@ -83,6 +86,7 @@ public struct WelcomeEnvironment {
         self.featureFlags = featureFlags
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
+        self.analyticsRecorder = analyticsRecorder
     }
 }
 
@@ -95,7 +99,8 @@ public let welcomeReducer = Reducer.combine(
             environment: {
                 EmailLoginEnvironment(
                     deviceVerificationService: $0.deviceVerificationService,
-                    mainQueue: $0.mainQueue
+                    mainQueue: $0.mainQueue,
+                    analyticsRecorder: $0.analyticsRecorder
                 )
             }
         ),
@@ -198,3 +203,30 @@ public let welcomeReducer = Reducer.combine(
         }
     }
 )
+.analytics()
+
+extension Reducer where
+    Action == WelcomeAction,
+    State == WelcomeState,
+    Environment == WelcomeEnvironment
+{
+    func analytics() -> Self {
+        combined(
+            with: Reducer<
+                WelcomeState,
+                WelcomeAction,
+                WelcomeEnvironment
+            > { _, action, environment in
+                switch action {
+                case .presentScreenFlow(.emailLoginScreen):
+                    environment.analyticsRecorder.record(
+                        event: .loginClicked()
+                    )
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
+    }
+}

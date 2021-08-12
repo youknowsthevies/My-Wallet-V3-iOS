@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import AuthenticationKit
 import Combine
 import ComposableArchitecture
@@ -53,17 +54,20 @@ struct VerifyDeviceEnvironment {
     let deviceVerificationService: DeviceVerificationServiceAPI
     let errorRecorder: ErrorRecording
     let externalAppOpener: ExternalAppOpener
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
         deviceVerificationService: DeviceVerificationServiceAPI,
         errorRecorder: ErrorRecording = resolve(),
-        externalAppOpener: ExternalAppOpener = resolve()
+        externalAppOpener: ExternalAppOpener = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
+        self.analyticsRecorder = analyticsRecorder
     }
 }
 
@@ -159,3 +163,33 @@ let verifyDeviceReducer = Reducer.combine(
         }
     }
 )
+.analytics()
+
+// MARK: - Private
+
+extension Reducer where
+    Action == VerifyDeviceAction,
+    State == VerifyDeviceState,
+    Environment == VerifyDeviceEnvironment
+{
+    /// Helper reducer for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                VerifyDeviceState,
+                VerifyDeviceAction,
+                VerifyDeviceEnvironment
+            > { _, action, environment in
+                switch action {
+                case .didExtractWalletInfo(let walletInfo):
+                    environment.analyticsRecorder.record(
+                        event: .deviceVerified(info: walletInfo)
+                    )
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
+    }
+}

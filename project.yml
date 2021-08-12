@@ -1631,6 +1631,7 @@ targets:
       - ModuleTests
   AuthenticationUIKit:
     dependencies:
+    - target: AnalyticsKit
     - target: AuthenticationKit
     - target: PlatformUIKit
     scheme:

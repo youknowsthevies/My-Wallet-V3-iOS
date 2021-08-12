@@ -33,7 +33,8 @@ final class WelcomeReducerTests: XCTestCase {
                 featureFlags: mockInternalFeatureFlagService,
                 buildVersionProvider: { "Test Version" },
                 errorRecorder: MockErrorRecorder(),
-                externalAppOpener: MockExternalAppOpener()
+                externalAppOpener: MockExternalAppOpener(),
+                analyticsRecorder: MockAnalyticsRecorder()
             )
         )
     }

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import AuthenticationKit
 import ComposableArchitecture
 import DIKit
@@ -17,6 +18,7 @@ public enum EmailLoginAction: Equatable {
     }
 
     case closeButtonTapped
+    case onAppear
     case didDisappear
     case didChangeEmailAddress(String)
     case didSendDeviceVerificationEmail(Result<EmptyValue, DeviceVerificationServiceError>)
@@ -50,14 +52,17 @@ struct EmailLoginEnvironment {
     let deviceVerificationService: DeviceVerificationServiceAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let validateEmail: (String) -> Bool
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(
         deviceVerificationService: DeviceVerificationServiceAPI,
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
+        analyticsRecorder: AnalyticsEventRecorderAPI,
         validateEmail: @escaping (String) -> Bool = { $0.isEmail }
     ) {
         self.deviceVerificationService = deviceVerificationService
         self.mainQueue = mainQueue
+        self.analyticsRecorder = analyticsRecorder
         self.validateEmail = validateEmail
     }
 }
@@ -79,6 +84,12 @@ let emailLoginReducer = Reducer.combine(
         switch action {
         case .closeButtonTapped:
             // handled in welcome reducer
+            return .none
+
+        case .onAppear:
+            environment.analyticsRecorder.record(
+                event: .loginViewed
+            )
             return .none
 
         case .didDisappear:
@@ -166,3 +177,35 @@ let emailLoginReducer = Reducer.combine(
         }
     }
 )
+.analytics()
+
+// MARK: - Private
+
+extension Reducer where
+    Action == EmailLoginAction,
+    State == EmailLoginState,
+    Environment == EmailLoginEnvironment
+{
+    /// Helper reducer for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                EmailLoginState,
+                EmailLoginAction,
+                EmailLoginEnvironment
+            > { _, action, environment in
+                switch action {
+                case .sendDeviceVerificationEmail:
+                    environment.analyticsRecorder.record(
+                        event: .loginClicked(
+                            origin: .navigation
+                        )
+                    )
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
+    }
+}

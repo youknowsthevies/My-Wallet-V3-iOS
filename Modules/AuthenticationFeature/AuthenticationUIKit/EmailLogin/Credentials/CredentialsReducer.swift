@@ -30,6 +30,7 @@ public enum CredentialsAction: Equatable {
         case setupSessionToken
     }
 
+    case continueButtonTapped
     case didAppear(context: CredentialsContext)
     case didDisappear
     case didChangeWalletIdentifier(String)
@@ -128,7 +129,6 @@ struct CredentialsEnvironment {
         walletIdentifierValidator: @escaping WalletValidation = identifierValidator,
         errorRecorder: ErrorRecording
     ) {
-
         self.mainQueue = mainQueue
         self.pollingQueue = pollingQueue
         self.deviceVerificationService = deviceVerificationService
@@ -214,6 +214,9 @@ let credentialsReducer = Reducer.combine(
             }
             state.isWalletIdentifierIncorrect = !environment.walletIdentifierValidator(guid)
             return .none
+
+        case .continueButtonTapped:
+            return Effect(value: .walletPairing(.authenticate))
 
         case .walletPairing(.approveEmailAuthorization):
             guard !state.emailCode.isEmpty else {
@@ -548,9 +551,47 @@ let credentialsReducer = Reducer.combine(
         }
     }
 )
+.analytics()
 
 // MARK: - Private
 
 private func identifierValidator(_ value: String) -> Bool {
     value.range(of: TextRegex.walletIdentifier.rawValue, options: .regularExpression) != nil
+}
+
+extension Reducer where
+    Action == CredentialsAction,
+    State == CredentialsState,
+    Environment == CredentialsEnvironment
+{
+    /// Helper reducer for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                CredentialsState,
+                CredentialsAction,
+                CredentialsEnvironment
+            > { _, action, environment in
+                switch action {
+                case .continueButtonTapped:
+                    environment.analyticsRecorder.record(
+                        event: .loginPasswordEntered
+                    )
+                    return .none
+                case .walletPairing(.authenticateWithTwoFAOrHardwareKey):
+                    environment.analyticsRecorder.record(
+                        event: .loginTwoStepVerificationEntered
+                    )
+                    return .none
+                case .twoFA(.didChangeTwoFACodeAttemptsLeft):
+                    environment.analyticsRecorder.record(
+                        event: .loginTwoStepVerificationDenied
+                    )
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
+    }
 }
