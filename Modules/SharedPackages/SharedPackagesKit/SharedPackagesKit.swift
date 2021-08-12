@@ -10,6 +10,7 @@
 @_exported import DIKit
 @_exported import FeatureAccountPickerUI
 @_exported import Lottie
+@_exported import NetworkKit
 @_exported import Nuke
 @_exported import NukeUI
 @_exported import RIBs

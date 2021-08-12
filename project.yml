@@ -37,8 +37,6 @@ schemeTemplates:
       config: ${debugConfig}
       gatherCoverageData: true
       targets:
-      - name: NetworkKitTests
-        randomExecutionOrder: true
       - name: CommonCryptoKitTests
         randomExecutionOrder: true
       - name: PlatformKitTests
@@ -294,6 +292,8 @@ targetTemplates:
       product: AnalyticsKit
     - package: Analytics
       product: RxAnalyticsKit
+    - package: Network
+      product: NetworkKit
     platform: iOS
     sources:
     - createIntermediateGroups: true
@@ -351,6 +351,8 @@ packages:
     path: Modules/Tool
   Analytics:
     path: Modules/Analytics
+  Network:
+    path: Modules/Network
 targets:
   ActivityKit:
     dependencies:
@@ -358,7 +360,6 @@ targets:
     - target: BitcoinKit
     - target: ERC20Kit
     - target: EthereumKit
-    - target: NetworkKit
     - target: StellarKit
     scheme:
       testTargets:
@@ -416,7 +417,6 @@ targets:
     dependencies:
     - target: BitcoinChainKit
     - target: Localization
-    - target: NetworkKit
     - target: PlatformKit
     scheme:
       testTargets:
@@ -443,7 +443,6 @@ targets:
     dependencies:
     - framework: Carthage/Build/SwiftProtobuf.xcframework
     - target: Localization
-    - target: NetworkKit
     - target: PlatformKit
     - target: TransactionKit
     scheme:
@@ -472,7 +471,6 @@ targets:
     - framework: Carthage/Build/WalletCore.xcframework
     - target: BitcoinChainKit
     - target: Localization
-    - target: NetworkKit
     - target: PlatformKit
     - target: TransactionKit
     scheme:
@@ -568,7 +566,6 @@ targets:
     - target: TransactionDataKit
     - target: TransactionUIKit
     - target: WalletPayloadKit
-    - target: NetworkKit
     - target: StellarKit
     - target: EthereumKit
     - target: ERC20Kit
@@ -602,6 +599,8 @@ targets:
       name: Run Crashlytics
       script: ${PROJECT_DIR}/scripts/crashlytics/run
     postCompileScripts:
+    - name: Get SSL Certificate
+      path: Blockchain/Scripts/get_ssl_certificate.sh
     - name: Swiftlint
       path: Blockchain/Scripts/swiftlint.sh
     - name: Setup Firebase Environment
@@ -662,12 +661,19 @@ targets:
           - release_signing_internal
           - base_ios
     sources:
+    - buildPhase:
+        copyFiles:
+          destination: resources
+      group: Blockchain/Cert
+      optional: true
+      path: Blockchain/Cert/blockchain.der
     - group: Blockchain/JavaScript
       optional: true
       path: Submodules/My-Wallet-V3/dist/my-wallet.js
     - excludes:
       - Firebase
       - Scripts
+      - Cert
       path: Blockchain
     - includes:
       - BTCAddress.[hm]
@@ -699,6 +705,8 @@ targets:
       product: AnalyticsKit
     - package: Analytics
       product: RxAnalyticsKit
+    - package: Network
+      product: NetworkKit
     - target: Blockchain
     platform: iOS
     sources:
@@ -772,6 +780,8 @@ targets:
     - package: DIKit
     - package: FeatureAccountPicker
     - package: Lottie
+    - package: Network
+      product: NetworkKit
     - package: Nuke
     - package: NukeUI
     - package: RIBs
@@ -828,7 +838,6 @@ targets:
     - framework: Carthage/Build/SwiftProtobuf.xcframework
     - framework: Carthage/Build/WalletCore.xcframework
     - target: EthereumKit
-    - target: NetworkKit
     - target: PlatformKit
     - target: TransactionKit
     scheme:
@@ -860,7 +869,6 @@ targets:
     dependencies:
     - framework: Carthage/Build/SwiftProtobuf.xcframework
     - framework: Carthage/Build/WalletCore.xcframework
-    - target: NetworkKit
     - target: PlatformKit
     - target: TransactionKit
     scheme:
@@ -906,7 +914,6 @@ targets:
   InterestKit:
     dependencies:
     - target: Localization
-    - target: NetworkKit
     - target: PlatformKit
     scheme:
       testTargets:
@@ -934,7 +941,6 @@ targets:
     - target: CommonCryptoKit
     - target: InterestKit
     - target: Localization
-    - target: NetworkKit
     - target: PlatformKit
     - target: PlatformUIKit
     scheme:
@@ -963,7 +969,6 @@ targets:
   KYCKit:
     dependencies:
     - target: Localization
-    - target: NetworkKit
     - target: PlatformKit
     scheme:
       testTargets:
@@ -991,7 +996,6 @@ targets:
     - framework: Carthage/Build/Veriff.xcframework
     - target: KYCKit
     - target: Localization
-    - target: NetworkKit
     - target: PlatformKit
     - target: PlatformUIKit
     scheme:
@@ -1033,66 +1037,6 @@ targets:
     scheme: {}
     templates:
     - Module
-  NetworkKit:
-    configFiles:
-      Debug Dev: Config/NetworkKitConfig/NetworkKit-Dev.xcconfig
-      Debug Production: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
-      Debug Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
-      Debug Alpha: Config/NetworkKitConfig/NetworkKit-Alpha.xcconfig
-      Release: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
-      Release Internal: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
-      Release Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
-      Release Alpha: Config/NetworkKitConfig/NetworkKit-Alpha.xcconfig
-    dependencies:
-    - target: SharedPackagesKit
-    info:
-      path: Modules/Network/NetworkKit/Info.plist
-      properties:
-        API_URL: $(API_URL)
-        EVERYPAY_API_URL: $(EVERYPAY_API_URL)
-        EXCHANGE_URL: $(EXCHANGE_URL)
-        EXPLORER_SERVER: $(EXPLORER_SERVER)
-        PIN_CERTIFICATE: $(PIN_CERTIFICATE)
-        RETAIL_CORE_SOCKET_URL: $(RETAIL_CORE_SOCKET_URL)
-        RETAIL_CORE_URL: $(RETAIL_CORE_URL)
-        SWIFTY_BEAVER_APP_ID: $(SWIFTY_BEAVER_APP_ID)
-        SWIFTY_BEAVER_APP_KEY: $(SWIFTY_BEAVER_APP_KEY)
-        SWIFTY_BEAVER_APP_SECRET: $(SWIFTY_BEAVER_APP_SECRET)
-        WALLET_SERVER: $(WALLET_SERVER)
-    platform: iOS
-    postCompileScripts:
-    - name: Get SSL Certificate
-      path: Modules/Network/NetworkKit/Scripts/get_ssl_certificate.sh
-    scheme:
-      testTargets:
-      - NetworkKitTests
-    sources:
-    - createIntermediateGroups: true
-      excludes:
-      - Scripts
-      - Cert
-      path: Modules/Network/NetworkKit
-    - buildPhase:
-        copyFiles:
-          destination: resources
-      group: Modules/Network/NetworkKit/Cert
-      optional: true
-      path: Modules/Network/NetworkKit/Cert/blockchain.der
-    schemes:
-      gatherCoverageData: true
-    type: framework
-  NetworkKitTests:
-    dependencies:
-    - target: NetworkKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/ToolKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/NetworkKit
-    templateAttributes:
-      featureName: Network
-    templates:
-    - ModuleTests
   OnboardingDemo:
     dependencies:
     - target: KYCKit
@@ -1154,7 +1098,6 @@ targets:
     - target: AuthenticationKit
     - target: CommonCryptoKit
     - target: Localization
-    - target: NetworkKit
     - target: WalletPayloadKit
     scheme:
       testTargets:
@@ -1217,7 +1160,6 @@ targets:
     - target: PlatformKit
     - target: PlatformUIKit
     - target: CommonCryptoKit
-    - target: NetworkKit
     - target: WalletPayloadKit
     - target: KYCKit
     templateAttributes:
@@ -1296,7 +1238,6 @@ targets:
     - sdk: NotificationCenter.framework
     - target: PlatformKit
     - target: PlatformUIKit
-    - target: NetworkKit
     - target: Localization
     - target: SharedPackagesKit
     platform: iOS
@@ -1333,7 +1274,6 @@ targets:
   TransactionKit:
     dependencies:
     - target: Localization
-    - target: NetworkKit
     - target: PlatformKit
     scheme:
       testTargets:
@@ -1362,7 +1302,6 @@ targets:
     dependencies:
     - target: TransactionKit
     - target: PlatformKit
-    - target: NetworkKit
     scheme:
       testTargets:
       - TransactionDataKitTests
@@ -1445,7 +1384,6 @@ targets:
     dependencies:
     - target: PlatformKit
     - target: PlatformUIKit
-    - target: NetworkKit
     scheme:
       testTargets:
       - RemoteNotificationsKitTests
@@ -1481,7 +1419,6 @@ targets:
       Release Staging: Config/AuthenticationKitConfig/AuthenticationKit-Staging.xcconfig
     dependencies:
     - target: HDWalletKit
-    - target: NetworkKit
     - framework: Carthage/Build/Zxcvbn.xcframework
     info:
       path: Modules/AuthenticationFeature/AuthenticationKit/Info.plist
@@ -1533,7 +1470,6 @@ targets:
   AuthenticationDataKit:
     dependencies:
     - target: AuthenticationKit
-    - target: NetworkKit
     - target: WalletPayloadKit
     - target: CommonCryptoKit
     scheme:

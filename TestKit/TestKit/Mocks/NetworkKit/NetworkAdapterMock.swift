@@ -3,6 +3,7 @@
 import Combine
 @testable import NetworkKit
 import ToolKit
+import UIKit
 
 final class NetworkAdapterMock: NetworkAdapterAPI {
 

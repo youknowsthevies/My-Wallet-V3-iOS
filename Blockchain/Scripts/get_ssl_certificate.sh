@@ -9,15 +9,15 @@
 
 set -ue
 
-NETWORK_KIT_PATH="${SRCROOT}/Modules/Network/NetworkKit"
+CERTIFICATE_PATH="${SRCROOT}/Blockchain/Cert"
 
-if [ ! -d ${NETWORK_KIT_PATH}/Cert ]; then
-    echo "Creating ${NETWORK_KIT_PATH}/Cert directory"
-    mkdir ${NETWORK_KIT_PATH}/Cert
+if [ ! -d ${CERTIFICATE_PATH} ]; then
+    echo "Creating ${CERTIFICATE_PATH} directory"
+    mkdir ${CERTIFICATE_PATH}
 fi
-cd ${NETWORK_KIT_PATH}/Cert
+cd ${CERTIFICATE_PATH}
 
-if [ ! -f ${NETWORK_KIT_PATH}/Cert/blockchain_${WALLET_SERVER}.der ]; then
+if [ ! -f ${CERTIFICATE_PATH}/blockchain_${WALLET_SERVER}.der ]; then
     echo "Downloading certificate from ${WALLET_SERVER}:443"
     openssl s_client -connect ${WALLET_SERVER}:443 -showcerts -CApath etc/ssl/certs/ | openssl x509 -outform DER > blockchain_${WALLET_SERVER}.der
 else

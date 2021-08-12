@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import Foundation
 import RxCombine
 import RxSwift
 import ToolKit

@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import Foundation
 import RxSwift
 
 public enum DIKitContext: String {
@@ -16,6 +17,8 @@ extension DependencyContainer {
     // MARK: - NetworkKit Module
 
     public static var networkKit = module {
+
+        factory { CertificateProvider() as CertificateProviderAPI }
 
         factory { BlockchainAPI.shared }
 
@@ -151,12 +154,4 @@ extension URLSessionConfiguration {
         sessionConfiguration.timeoutIntervalForResource = 300
         return sessionConfiguration
     }
-}
-
-@available(*, deprecated, message: "Don't use this. If you're reaching for this you're doing something wrong.")
-@objc public class NetworkDependenciesObjc: NSObject {
-
-    @Inject @objc public static var certificatePinner: CertificatePinnerAPI
-
-    @Inject @objc public static var session: URLSession
 }

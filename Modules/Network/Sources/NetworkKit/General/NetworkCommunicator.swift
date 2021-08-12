@@ -3,6 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import Foundation
 import ToolKit
 
 protocol NetworkCommunicatorAPI {

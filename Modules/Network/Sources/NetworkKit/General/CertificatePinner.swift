@@ -1,11 +1,29 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Foundation
 import ToolKit
 
-@objc public protocol CertificatePinnerAPI {
+protocol CertificateProviderAPI: AnyObject {
 
     var certificateData: Data? { get }
+}
+
+final class CertificateProvider: CertificateProviderAPI {
+    var certificateData: Data? {
+        guard let certificateURL = localCertificateURL else {
+            return nil
+        }
+        return try? Data(contentsOf: certificateURL)
+    }
+
+    /// Path to the local certificate file
+    private lazy var localCertificateURL: URL? = {
+        Bundle.main.url(forResource: "blockchain", withExtension: "der")
+    }()
+}
+
+public protocol CertificatePinnerAPI: AnyObject {
 
     func pinCertificateIfNeeded()
 
@@ -24,31 +42,26 @@ final class CertificatePinner: CertificatePinnerAPI {
     // MARK: - Properties
 
     /// Certificate Data
-    var certificateData: Data? {
-        guard let certificateURL = localCertificateURL else {
-            return nil
-        }
-        return try? Data(contentsOf: certificateURL)
-    }
 
-    /// Path to the local certificate file
-    private lazy var localCertificateURL: URL? = {
-        Bundle(for: CertificatePinner.self).url(forResource: "blockchain", withExtension: "der")
-    }()
-
+    private let blockchainAPI: BlockchainAPI
+    private let certificateProvider: CertificateProviderAPI
     private let session: URLSession
 
     // MARK: - Initialization
 
-    init(session: URLSession = resolve()) {
+    init(session: URLSession = resolve(),
+         blockchainAPI: BlockchainAPI = resolve(),
+         certificateProvider: CertificateProviderAPI = resolve()) {
+        self.blockchainAPI = blockchainAPI
+        self.certificateProvider = certificateProvider
         self.session = session
     }
 
     func pinCertificateIfNeeded() {
-        guard BlockchainAPI.shared.shouldPinCertificate else {
+        guard blockchainAPI.shouldPinCertificate else {
             return
         }
-        let walletUrl = BlockchainAPI.shared.walletUrl
+        let walletUrl = blockchainAPI.walletUrl
         guard let url = URL(string: walletUrl) else {
             fatalError("Failed to get wallet url from Bundle.")
         }
@@ -68,7 +81,7 @@ final class CertificatePinner: CertificatePinnerAPI {
 
         guard
             let serverTrust = challenge.protectionSpace.serverTrust,
-            let certificateData = self.certificateData,
+            let certificateData = certificateProvider.certificateData,
             let localCertificate = SecCertificateCreateWithData(kCFAllocatorDefault, certificateData as NSData),
             SecTrustCreateWithCertificates(localCertificate, policy, &localTrust) == errSecSuccess
         else {

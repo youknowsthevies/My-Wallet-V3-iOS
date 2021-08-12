@@ -2,6 +2,28 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>API_URL</key>
+	<string>$(API_URL)</string>
+	<key>EVERYPAY_API_URL</key>
+	<string>$(EVERYPAY_API_URL)</string>
+	<key>EXCHANGE_URL</key>
+	<string>$(EXCHANGE_URL)</string>
+	<key>EXPLORER_SERVER</key>
+	<string>$(EXPLORER_SERVER)</string>
+	<key>PIN_CERTIFICATE</key>
+	<string>$(PIN_CERTIFICATE)</string>
+	<key>RETAIL_CORE_SOCKET_URL</key>
+	<string>$(RETAIL_CORE_SOCKET_URL)</string>
+	<key>RETAIL_CORE_URL</key>
+	<string>$(RETAIL_CORE_URL)</string>
+	<key>SWIFTY_BEAVER_APP_ID</key>
+	<string>$(SWIFTY_BEAVER_APP_ID)</string>
+	<key>SWIFTY_BEAVER_APP_KEY</key>
+	<string>$(SWIFTY_BEAVER_APP_KEY)</string>
+	<key>SWIFTY_BEAVER_APP_SECRET</key>
+	<string>$(SWIFTY_BEAVER_APP_SECRET)</string>
+	<key>WALLET_SERVER</key>
+	<string>$(WALLET_SERVER)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
