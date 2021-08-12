@@ -290,6 +290,10 @@ targetTemplates:
     - package: UIComponents
     - package: Tool
       product: ToolKit
+    - package: Analytics
+      product: AnalyticsKit
+    - package: Analytics
+      product: RxAnalyticsKit
     platform: iOS
     sources:
     - createIntermediateGroups: true
@@ -345,6 +349,8 @@ packages:
     version: 0.10.2
   Tool:
     path: Modules/Tool
+  Analytics:
+    path: Modules/Analytics
 targets:
   ActivityKit:
     dependencies:
@@ -406,29 +412,6 @@ targets:
       featureName: ActivityFeature
     templates:
     - ModuleTests
-  AnalyticsKit:
-    scheme:
-      testTargets:
-        - AnalyticsKitTests
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - Module
-  AnalyticsKitTests:
-    dependencies:
-    - target: AnalyticsKit
-    - package: Mockingbird
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - ModuleTests
-  RxAnalyticsKit:
-    dependencies:
-    - target: AnalyticsKit
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - Module
   BitcoinCashKit:
     dependencies:
     - target: BitcoinChainKit
@@ -611,8 +594,6 @@ targets:
     - target: AuthenticationKit
     - target: AuthenticationUIKit
     - target: AuthenticationDataKit
-    - target: AnalyticsKit
-    - target: RxAnalyticsKit
     platform: iOS
     postBuildScripts:
     - inputFiles:
@@ -714,6 +695,10 @@ targets:
       product: RxRelay
     - package: RxSwift
       product: RxSwift
+    - package: Analytics
+      product: AnalyticsKit
+    - package: Analytics
+      product: RxAnalyticsKit
     - target: Blockchain
     platform: iOS
     sources:
@@ -777,6 +762,10 @@ targets:
       featureName: DashboardFeature
   SharedPackagesKit:
     dependencies:
+    - package: Analytics
+      product: AnalyticsKit
+    - package: Analytics
+      product: RxAnalyticsKit
     - package: BigInt
     - package: CombineExt
     - package: ComposableArchitecture
@@ -1000,7 +989,6 @@ targets:
   KYCUIKit:
     dependencies:
     - framework: Carthage/Build/Veriff.xcframework
-    - target: AnalyticsKit
     - target: KYCKit
     - target: Localization
     - target: NetworkKit
@@ -1056,7 +1044,6 @@ targets:
       Release Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
       Release Alpha: Config/NetworkKitConfig/NetworkKit-Alpha.xcconfig
     dependencies:
-    - target: AnalyticsKit
     - target: SharedPackagesKit
     info:
       path: Modules/Network/NetworkKit/Info.plist
@@ -1169,7 +1156,6 @@ targets:
     - target: Localization
     - target: NetworkKit
     - target: WalletPayloadKit
-    - target: RxAnalyticsKit
     scheme:
       testTargets:
       - PlatformKitTests
@@ -1198,10 +1184,8 @@ targets:
     - framework: Carthage/Build/Charts.xcframework
     - framework: Carthage/Build/PhoneNumberKit.xcframework
     - framework: Carthage/Build/Zxcvbn.xcframework
-    - target: AnalyticsKit
     - target: Localization
     - target: PlatformKit
-    - target: RxAnalyticsKit
     scheme:
       testTargets:
       - PlatformUIKitTests
@@ -1351,7 +1335,6 @@ targets:
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
-    - target: AnalyticsKit
     scheme:
       testTargets:
       - TransactionKitTests
@@ -1404,7 +1387,6 @@ targets:
       testTargets:
       - TransactionUIKitTests
     dependencies:
-    - target: AnalyticsKit
     - target: KYCKit
     - target: KYCUIKit
     - target: Localization
@@ -1463,7 +1445,6 @@ targets:
     dependencies:
     - target: PlatformKit
     - target: PlatformUIKit
-    - target: AnalyticsKit
     - target: NetworkKit
     scheme:
       testTargets:
