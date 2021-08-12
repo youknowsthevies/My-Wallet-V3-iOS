@@ -227,13 +227,13 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
 
     init(
         jsContextProvider: JSContextProviderAPI,
-        settings: AppSettingsAPI,
+        appSettings: AppSettingsAPI,
         reactiveWallet: ReactiveWalletAPI,
         jsScheduler: SerialDispatchQueueScheduler = MainScheduler.instance,
         combineJSScheduler: DispatchQueue = DispatchQueue.main
     ) {
         self.jsContextProvider = jsContextProvider
-        self.settings = settings
+        self.settings = appSettings
         self.reactiveWallet = reactiveWallet
         self.jsScheduler = jsScheduler
         self.combineJSScheduler = combineJSScheduler

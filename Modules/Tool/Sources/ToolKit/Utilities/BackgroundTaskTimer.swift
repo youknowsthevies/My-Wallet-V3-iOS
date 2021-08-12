@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 /// Wrappes an UIBackgroundTaskIdentifier
 public struct BackgroundTaskIdentifier {
     /// A UIBackgroundTaskIdentifier

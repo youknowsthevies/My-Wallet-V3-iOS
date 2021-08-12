@@ -10,11 +10,18 @@ public protocol AppSettingsAuthenticating: AnyObject {
     var passwordPartHash: String? { get set }
     var encryptedPinPassword: String? { get set }
     var isPairedWithWallet: Bool { get }
+    var isPinSet: Bool { get }
+    func clearPin()
 }
 
 // TICKET: IOS-2738
 // TODO: Refactor BlockchainSettings.App/Onboarding Rx code to be thread-safe
 extension AppSettingsAuthenticating {
+
+    public var isPinSet: Bool {
+        pinKey != nil && encryptedPinPassword != nil
+    }
+
     public var pin: Single<String?> {
         Single.deferred { [weak self] in
             guard let self = self else {

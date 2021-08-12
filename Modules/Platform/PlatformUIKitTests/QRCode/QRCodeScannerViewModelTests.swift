@@ -14,16 +14,8 @@ class QRCodeScannerViewModelTests: XCTestCase {
     var scannableArea: MockQRScannableArea!
     var completion: ((Result<MockQRCodeScannerParser.Success, MockQRCodeScannerParser.Failure>) -> Void)!
 
-    override class func setUp() {
-        DependencyContainer.defined(by: modules {
-            module {
-                factory { MockDeepLinkHandler() as DeepLinkHandling }
-                factory { MockDeepLinkRouter() as DeepLinkRouting }
-            }
-        })
-    }
-
     override func setUp() {
+        super.setUp()
         parser = MockQRCodeScannerParser()
         textViewModel = MockScannerTextViewModel()
         scanner = MockQRCodeScanner()
@@ -36,7 +28,9 @@ class QRCodeScannerViewModelTests: XCTestCase {
             textViewModel: textViewModel,
             supportsCameraRoll: false,
             scanner: scanner,
-            completed: completion
+            completed: completion,
+            deepLinkHandler: MockDeepLinkHandler(),
+            deepLinkRouter: MockDeepLinkRouter()
         )
     }
 
@@ -46,6 +40,7 @@ class QRCodeScannerViewModelTests: XCTestCase {
         scanner = nil
         completion = nil
         subject = nil
+        super.tearDown()
     }
 
     func test_setup() {
@@ -111,7 +106,9 @@ class QRCodeScannerViewModelTests: XCTestCase {
                 }
                 XCTAssertEqual(model, MockQRCodeScannerParser.Model(value: "ScanValue"))
                 expecationParseCalled.fulfill()
-            }
+            },
+            deepLinkHandler: MockDeepLinkHandler(),
+            deepLinkRouter: MockDeepLinkRouter()
         )
 
         subject.scanComplete = { result in

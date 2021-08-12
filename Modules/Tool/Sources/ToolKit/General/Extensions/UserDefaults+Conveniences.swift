@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 extension UserDefaults {
     public func set<T: Encodable>(codable: T?, forKey key: String) {
         let encoder = JSONEncoder()

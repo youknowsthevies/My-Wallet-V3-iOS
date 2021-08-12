@@ -50,7 +50,7 @@ public enum Onboarding {
     }
 
     public struct Environment {
-        var blockchainSettings: BlockchainSettings.App
+        var appSettings: BlockchainSettingsAppAPI
         var walletManager: WalletManager
         var alertPresenter: AlertViewPresenterAPI
         var mainQueue: AnySchedulerOf<DispatchQueue>
@@ -82,7 +82,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             environment: {
                 PinCore.Environment(
                     walletManager: $0.walletManager,
-                    appSettings: $0.blockchainSettings,
+                    appSettings: $0.appSettings,
                     alertPresenter: $0.alertPresenter
                 )
             }
@@ -110,7 +110,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
         case .start:
             return decideFlow(
                 state: &state,
-                blockchainSettings: environment.blockchainSettings
+                appSettings: environment.appSettings
             )
         case .pin:
             return .none
@@ -161,11 +161,11 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
 
 func decideFlow(
     state: inout Onboarding.State,
-    blockchainSettings: BlockchainSettings.App
+    appSettings: BlockchainSettingsAppAPI
 ) -> Effect<Onboarding.Action, Never> {
-    if blockchainSettings.guid != nil, blockchainSettings.sharedKey != nil {
+    if appSettings.guid != nil, appSettings.sharedKey != nil {
         // Original flow
-        if blockchainSettings.isPinSet {
+        if appSettings.isPinSet {
             state.pinState = .init()
             state.passwordScreen = nil
             return Effect(value: .pin(.authenticate))
@@ -174,9 +174,9 @@ func decideFlow(
             state.passwordScreen = .init()
             return Effect(value: .passwordScreen(.start))
         }
-    } else if blockchainSettings.pinKey != nil, blockchainSettings.encryptedPinPassword != nil {
+    } else if appSettings.pinKey != nil, appSettings.encryptedPinPassword != nil {
         // iCloud restoration flow
-        if blockchainSettings.isPinSet {
+        if appSettings.isPinSet {
             state.pinState = .init()
             state.passwordScreen = nil
             return Effect(value: .pin(.authenticate))

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import Localization
 import PlatformKit
 
@@ -80,7 +81,9 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
         supportsCameraRoll: Bool,
         scanner: QRCodeScannerProtocol,
         completed: CompletionHandler?,
-        closeHandler: (() -> Void)? = nil
+        closeHandler: (() -> Void)? = nil,
+        deepLinkHandler: DeepLinkHandling = resolve(),
+        deepLinkRouter: DeepLinkRouting = resolve()
     ) {
         guard let completed = completed else { return nil }
 
@@ -91,7 +94,11 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
         case .strict:
             additionalLinkRoutes = []
         }
-        deepLinkQRCodeRouter = DeepLinkQRCodeRouter(supportedRoutes: additionalLinkRoutes)
+        deepLinkQRCodeRouter = DeepLinkQRCodeRouter(
+            supportedRoutes: additionalLinkRoutes,
+            deepLinkHandler: deepLinkHandler,
+            deepLinkRouter: deepLinkRouter
+        )
         self.parser = AnyQRCodeScannerParsing(parser: parser)
         self.textViewModel = textViewModel
         self.scanner = scanner

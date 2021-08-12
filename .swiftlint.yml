@@ -138,6 +138,8 @@ excluded:
   - Carthage/
   - vendor/bundle
   - Blockchain/JavaScript/
+  - Modules/*/.build/
+  - Modules/*/*.generated.swift
 file_length:
   warning: 600
   error: 800

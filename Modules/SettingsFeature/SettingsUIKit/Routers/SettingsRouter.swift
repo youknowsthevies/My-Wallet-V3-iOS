@@ -14,6 +14,7 @@ import RxSwift
 import SafariServices
 import SettingsKit
 import ToolKit
+import UIKit
 
 public protocol AppCoordinating: AnyObject {
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool)
