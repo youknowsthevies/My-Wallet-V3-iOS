@@ -3,6 +3,7 @@
 import AuthenticationKit
 import ComposableArchitecture
 import DIKit
+import PlatformUIKit
 import ToolKit
 
 // MARK: - Type
@@ -15,6 +16,9 @@ public enum WelcomeAction: Equatable {
     case requestedToDecryptWallet(String)
     /// should only be used on internal builds
     case manualPairing(CredentialsAction)
+    case secondPasswordNotice(SecondPasswordNotice.Action)
+    case informSecondPasswordDetected
+    case modalDismissed(WelcomeState.Modals)
 }
 
 // MARK: - Properties
@@ -30,9 +34,17 @@ public struct WelcomeState: Equatable {
         case manualLoginScreen
     }
 
+    public enum Modals: Equatable {
+        case secondPasswordNoticeScreen
+        case none
+    }
+
     public var screenFlow: ScreenFlow
+    public var modals: Modals
     public var buildVersion: String
     var emailLoginState: EmailLoginState?
+
+    var secondPasswordNoticeState: SecondPasswordNotice.State?
 
     /// should only be used on internal builds
     var manualCredentialsState: CredentialsState?
@@ -41,9 +53,11 @@ public struct WelcomeState: Equatable {
     public init() {
         emailLoginState = .init()
         manualCredentialsState = nil
+        secondPasswordNoticeState = nil
         buildVersion = ""
         screenFlow = .welcomeScreen
         manualPairingEnabled = false
+        modals = .none
     }
 }
 
@@ -53,19 +67,22 @@ public struct WelcomeEnvironment {
     let buildVersionProvider: () -> String
     let featureFlags: InternalFeatureFlagServiceAPI
     let errorRecorder: ErrorRecording
+    let externalAppOpener: ExternalAppOpener
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         deviceVerificationService: DeviceVerificationServiceAPI = resolve(),
         featureFlags: InternalFeatureFlagServiceAPI,
         buildVersionProvider: @escaping () -> String,
-        errorRecorder: ErrorRecording = resolve()
+        errorRecorder: ErrorRecording = resolve(),
+        externalAppOpener: ExternalAppOpener = resolve()
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
         self.buildVersionProvider = buildVersionProvider
         self.featureFlags = featureFlags
         self.errorRecorder = errorRecorder
+        self.externalAppOpener = externalAppOpener
     }
 }
 
@@ -91,6 +108,17 @@ public let welcomeReducer = Reducer.combine(
                 CredentialsEnvironment(
                     deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder
+                )
+            }
+        ),
+    secondPasswordNoticeReducer
+        .optional()
+        .pullback(
+            state: \.secondPasswordNoticeState,
+            action: /WelcomeAction.secondPasswordNotice,
+            environment: {
+                SecondPasswordNotice.Environment(
+                    externalAppOpener: $0.externalAppOpener
                 )
             }
         ),
@@ -143,6 +171,29 @@ public let welcomeReducer = Reducer.combine(
             state.screenFlow = .welcomeScreen
             return .none
         case .manualPairing:
+            return .none
+        case .informSecondPasswordDetected:
+            state.screenFlow = .welcomeScreen
+            state.modals = .secondPasswordNoticeScreen
+            state.secondPasswordNoticeState = .init()
+            return .none
+        case .secondPasswordNotice(.closeButtonTapped):
+            state.screenFlow = .welcomeScreen
+            state.modals = .none
+            state.emailLoginState = .init()
+            state.manualCredentialsState = nil
+            state.secondPasswordNoticeState = nil
+            return .none
+        case .secondPasswordNotice:
+            return .none
+        case .modalDismissed(.secondPasswordNoticeScreen) where state.secondPasswordNoticeState != nil:
+            state.screenFlow = .welcomeScreen
+            state.modals = .none
+            state.emailLoginState = .init()
+            state.manualCredentialsState = nil
+            state.secondPasswordNoticeState = nil
+            return .none
+        case .modalDismissed:
             return .none
         }
     }

@@ -246,6 +246,13 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // relies on attaching the loader to the top window's view!!, this is error-prone and there are cases
         // where the loader would not show above a presented view controller...
         environment.loadingViewPresenter.hide()
+
+        // skip saving guid and sharedKey if we detect a second password is needed
+        // TODO: Refactor this so that we don't call legacy methods directly
+        guard !environment.walletManager.wallet.needsSecondPassword() else {
+            return .cancel(id: WalletCancelations.DecryptId())
+        }
+
         environment.loadingViewPresenter.showCircular()
         environment.blockchainSettings.guid = decryption.guid
         environment.blockchainSettings.sharedKey = decryption.sharedKey
@@ -286,6 +293,22 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         state.onboarding?.displayAlert = .walletAuthentication(error)
         return .cancel(id: WalletCancelations.AuthenticationId())
     case .authenticated(.success):
+        // when on authenticated success we need to check if the wallet
+        // requires a second password, if we do then we stop the process
+        // and display a notice to the user
+        // TODO: Refactor this so that we don't call legacy methods directly
+        guard !environment.walletManager.wallet.needsSecondPassword() else {
+            // unfortunately during login we store the guid in the settings
+            // we need to reset this if we detect a second password
+            environment.blockchainSettings.guid = nil
+            environment.blockchainSettings.sharedKey = nil
+            return .merge(
+                .cancel(id: WalletCancelations.AuthenticationId()),
+                Effect(
+                    value: .onboarding(.welcomeScreen(.informSecondPasswordDetected))
+                )
+            )
+        }
         // decide if we need to set a pin or not
         guard environment.blockchainSettings.isPinSet else {
             state.onboarding?.hideLegacyScreenIfNeeded()
@@ -318,7 +341,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .cancellable(id: WalletCancelations.InitializationId(), cancelInFlight: false)
             .map { _ in CoreAppAction.walletInitialized }
     case .walletInitialized:
-        // TODO: Handle second password as well
         return environment.walletUpgradeService
             .needsWalletUpgradePublisher
             .receive(on: environment.mainQueue)

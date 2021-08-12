@@ -7,6 +7,11 @@ public enum Constants {
             "https://\(loginHost)/#/reset-2fa"
         }
 
+        /// A url string that points to Blockchain login page
+        public static var loginOnWeb: String {
+            "https://\(loginHost)/#/login"
+        }
+
         public static var terms: String {
             "https://\(blockchainHost)/terms"
         }
@@ -14,6 +19,11 @@ public enum Constants {
         public static var privacyPolicy: String {
             "https://\(blockchainHost)/privacy"
         }
+    }
+
+    public enum SecondPassword {
+        /// A url string that points to Blockchain support page for enabling 2FA
+        public static let twoFASupportLink = "https://support.blockchain.com/hc/en-us/articles/211164103"
     }
 
     private static let loginHost: String = InfoDictionaryHelper.value(for: .loginUrl)

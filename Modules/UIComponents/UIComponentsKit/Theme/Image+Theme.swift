@@ -16,5 +16,6 @@ extension Image {
         public static let importWallet = Image("icon_import_wallet")
         public static let resetAccount = Image("icon_reset_account")
         public static let lostFundWarning = Image("icon_lost_fund_warning")
+        public static let lockedIcon = Image("circle-locked-icon")
     }
 }

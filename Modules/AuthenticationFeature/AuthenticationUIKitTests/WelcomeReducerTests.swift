@@ -32,7 +32,8 @@ final class WelcomeReducerTests: XCTestCase {
                 deviceVerificationService: MockDeviceVerificationService(),
                 featureFlags: mockInternalFeatureFlagService,
                 buildVersionProvider: { "Test Version" },
-                errorRecorder: MockErrorRecorder()
+                errorRecorder: MockErrorRecorder(),
+                externalAppOpener: MockExternalAppOpener()
             )
         )
     }
@@ -82,6 +83,67 @@ final class WelcomeReducerTests: XCTestCase {
         testStore.send(.emailLogin(.closeButtonTapped)) { state in
             state.screenFlow = .welcomeScreen
             XCTAssertNotNil(state.emailLoginState)
+        }
+    }
+
+    func test_secondPassword_modal_can_be_presented() {
+        // given (we're in a flow)
+        testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
+            state.screenFlow = .manualLoginScreen
+            state.manualCredentialsState = .init()
+        }
+
+        // when
+        testStore.send(.informSecondPasswordDetected) { state in
+            state.screenFlow = .welcomeScreen
+            state.modals = .secondPasswordNoticeScreen
+            state.secondPasswordNoticeState = .init()
+        }
+    }
+
+    func test_secondPassword_modal_can_be_dismissed_from_close_button() {
+        // given (we're in a flow)
+        testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
+            state.screenFlow = .manualLoginScreen
+            state.manualCredentialsState = .init()
+        }
+
+        // when
+        testStore.send(.informSecondPasswordDetected) { state in
+            state.screenFlow = .welcomeScreen
+            state.modals = .secondPasswordNoticeScreen
+            state.secondPasswordNoticeState = .init()
+        }
+
+        // when
+        testStore.send(.secondPasswordNotice(.closeButtonTapped)) { state in
+            state.screenFlow = .welcomeScreen
+            state.modals = .none
+            state.secondPasswordNoticeState = nil
+            state.manualCredentialsState = nil
+        }
+    }
+
+    func test_secondPassword_modal_can_be_dismissed_interactively() {
+        // given (we're in a flow)
+        testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
+            state.screenFlow = .manualLoginScreen
+            state.manualCredentialsState = .init()
+        }
+
+        // when
+        testStore.send(.informSecondPasswordDetected) { state in
+            state.screenFlow = .welcomeScreen
+            state.modals = .secondPasswordNoticeScreen
+            state.secondPasswordNoticeState = .init()
+        }
+
+        // when
+        testStore.send(.modalDismissed(.secondPasswordNoticeScreen)) { state in
+            state.screenFlow = .welcomeScreen
+            state.modals = .none
+            state.secondPasswordNoticeState = nil
+            state.manualCredentialsState = nil
         }
     }
 }

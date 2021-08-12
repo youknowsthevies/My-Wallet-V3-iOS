@@ -17,6 +17,16 @@ final class AccessibilityIdentifiers: NSObject {
         static let buildVersionText = "\(prefix)buildVersionText"
     }
 
+    enum SecondPasswordScreen {
+        static let prefix = "SecondPasswordScreen."
+
+        static let lockedIconImage = "\(prefix)lockedIconImage"
+        static let titleText = "\(prefix)titleText"
+        static let descriptionText = "\(prefix)descriptionText"
+        static let learnMoreText = "\(prefix)learnMoreText"
+        static let loginOnWebButton = "\(prefix)loginWithWebButton"
+    }
+
     enum EmailLoginScreen {
         static let prefix = "EmailLoginScreen."
 
