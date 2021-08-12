@@ -102,9 +102,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         // Trigger routing hierarchy
         appCoordinator.window = window
 
-        // Migrate announcements
-        AnnouncementRecorder.migrate(errorRecorder: CrashlyticsRecorder())
-
         supportedAssetsRemoteService
             .refreshCustodialAssetsCache()
             .sink { _ in }

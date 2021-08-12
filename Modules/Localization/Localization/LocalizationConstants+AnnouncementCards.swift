@@ -139,18 +139,18 @@ extension LocalizationConstants {
             )
         }
 
-        public enum PaxRenaming {
+        public enum NewAsset {
             public static let title = NSLocalizedString(
-                "USD-D is now PAX",
-                comment: "PAX announcement card title"
+                "%@ (%@) is Now Trading",
+                comment: "New asset announcement card title."
             )
             public static let description = NSLocalizedString(
-                "We've updated the name of USD Digital (USD-D) to Paxos Standard (PAX). Any held funds are not affected.",
-                comment: "PAX announcement card description"
+                "Buy, sell, swap, send, receive and store %@ in your Blockchain.com Wallet.",
+                comment: "New asset announcement card description."
             )
             public static let ctaButton = NSLocalizedString(
-                "Learn more",
-                comment: "PAX announcement card CTA button title"
+                "Buy %@",
+                comment: "New asset card CTA button title."
             )
         }
 

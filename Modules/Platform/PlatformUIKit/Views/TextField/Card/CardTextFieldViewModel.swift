@@ -22,7 +22,7 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
                     imageResource: type.thumbnail,
                     accessibility: .id(type.name)
                 )
-                let viewModel = BadgeImageViewModel(cornerRadius: .value(4))
+                let viewModel = BadgeImageViewModel(cornerRadius: .roundedLow)
                 viewModel.sizingTypeRelay.accept(.constant(CGSize(width: 32, height: 20)))
                 viewModel.marginOffsetRelay.accept(0)
                 viewModel.set(

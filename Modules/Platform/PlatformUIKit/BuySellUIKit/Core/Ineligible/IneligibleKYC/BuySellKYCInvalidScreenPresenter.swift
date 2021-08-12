@@ -58,11 +58,10 @@ final class BuySellKYCInvalidScreenPresenter {
                 image: .local(name: "Icon-User", bundle: .platformUIKit),
                 contentColor: .primaryButton,
                 backgroundColor: .clear,
-                cornerRadius: .value(0.0),
+                cornerRadius: .none,
                 size: .init(edge: 32.0)
             ),
             background: .init(color: .clear, imageName: "pcb_bg", bundle: .platformUIKit),
-            image: .hidden,
             title: LocalizationId.title,
             description: LocalizationId.subtitle,
             dismissState: .undismissible

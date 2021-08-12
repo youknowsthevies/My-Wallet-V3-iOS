@@ -7,6 +7,8 @@ public protocol CacheSuite {
 
     // MARK: - Getters
 
+    func dictionaryRepresentation() -> [String: Any]
+
     func object(forKey key: String) -> Any?
 
     /// Returns a boolean value for key
@@ -69,6 +71,10 @@ public class MemoryCacheSuite: CacheSuite {
     }
 
     // MARK: - Getters
+
+    public func dictionaryRepresentation() -> [String: Any] {
+        cache
+    }
 
     public func object(forKey key: String) -> Any? {
         cache[key]

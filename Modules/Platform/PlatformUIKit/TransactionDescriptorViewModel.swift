@@ -68,13 +68,13 @@ public struct TransactionDescriptorViewModel {
                         image: attributes.imageResource,
                         contentColor: .white,
                         backgroundColor: attributes.brandColor,
-                        cornerRadius: attributes.isFiat ? .value(8.0) : .round,
+                        cornerRadius: attributes.isFiat ? .roundedHigh : .round,
                         accessibilityIdSuffix: ""
                     )
                 case false:
                     model = BadgeImageViewModel.default(
                         image: attributes.imageResource,
-                        cornerRadius: attributes.isFiat ? .value(8.0) : .round,
+                        cornerRadius: attributes.isFiat ? .roundedHigh : .round,
                         accessibilityIdSuffix: ""
                     )
                 }
@@ -93,7 +93,7 @@ public struct TransactionDescriptorViewModel {
             .map { attributes -> BadgeImageViewModel in
                 let model = BadgeImageViewModel.default(
                     image: attributes.imageResource,
-                    cornerRadius: attributes.isFiat ? .value(8.0) : .round,
+                    cornerRadius: attributes.isFiat ? .roundedHigh : .round,
                     accessibilityIdSuffix: ""
                 )
                 model.marginOffsetRelay.accept(0)
@@ -165,6 +165,7 @@ public struct TransactionDescriptorViewModel {
             image: .local(name: assetAction.assetImageName, bundle: .platformUIKit),
             templateColor: accentColor,
             backgroundColor: backgroundColor,
+            cornerRadius: .round,
             accessibilityIdSuffix: ""
         )
         viewModel.marginOffsetRelay.accept(0)

@@ -14,6 +14,9 @@ public enum AppFeature: Int, CaseIterable {
     /// The announcements
     case announcements
 
+    /// The announcements
+    case announcementAsset
+
     /// Sift Science SDK is enabled
     case siftScienceEnabled
 
@@ -56,6 +59,8 @@ extension AppFeature {
             return "ios_non_custodial_sell"
         case .announcements:
             return "announcements"
+        case .announcementAsset:
+            return "new_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
         case .secureChannel:
@@ -78,6 +83,8 @@ extension AppFeature {
     /// Enables the feature for alpha release by overriding remote config settings.
     var isAlphaReady: Bool {
         switch self {
+        case .announcementAsset:
+            return false
         case .interestWithdrawAndDeposit:
             return false
         case .nonCustodialSell:

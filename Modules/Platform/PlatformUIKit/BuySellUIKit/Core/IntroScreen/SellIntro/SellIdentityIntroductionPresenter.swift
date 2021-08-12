@@ -79,7 +79,6 @@ final class SellIdentityIntroductionPresenter {
             ),
             background: .init(color: .clear, imageName: "pcb_bg", bundle: .platformUIKit),
             border: .none,
-            image: .hidden,
             title: LocalizationId.title,
             description: LocalizationId.description,
             dismissState: .undismissible

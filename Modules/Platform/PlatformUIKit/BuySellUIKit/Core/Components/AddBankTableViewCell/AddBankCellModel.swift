@@ -21,7 +21,7 @@ final class AddBankCellModel {
             image: .local(name: "icon-bank", bundle: .platformUIKit),
             templateColor: .secondary,
             backgroundColor: .clear,
-            cornerRadius: .value(0),
+            cornerRadius: .none,
             accessibilityIdSuffix: AccessibilityId.image
         )
         badgeImageViewModel.marginOffsetRelay.accept(0)

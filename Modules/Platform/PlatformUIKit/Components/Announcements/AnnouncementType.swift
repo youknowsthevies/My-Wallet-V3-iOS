@@ -1,5 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+import ToolKit
+
 /// The announcement types as defined remotely
 public enum AnnouncementType: String, Codable {
     case sddUsersFirstBuy = "sdd_users_buy"
@@ -21,9 +24,9 @@ public enum AnnouncementType: String, Codable {
     case fiatFundsKYC = "fiat_funds_kyc"
     case fiatFundsNoKYC = "fiat_funds_no_kyc"
     case interestFunds = "interest_funds"
-    case paxRenaming = "pax_renamed"
+    case newAsset = "new_asset"
 
-    /// The key indentifying the announcement in cache
+    /// The key identifying the announcement in cache
     var key: AnnouncementRecord.Key {
         switch self {
         case .sddUsersFirstBuy:
@@ -64,8 +67,12 @@ public enum AnnouncementType: String, Codable {
             return .fiatFundsNoKYC
         case .interestFunds:
             return .interestFunds
-        case .paxRenaming:
-            return .paxRenaming
+        case .newAsset:
+            #if INTERNAL_BUILD
+            unimplemented("AnnouncementType.newAsset does not have a default key.")
+            #else
+            return .newAsset(code: "")
+            #endif
         }
     }
 }

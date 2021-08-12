@@ -57,9 +57,15 @@ final class BuyIntroScreenPresenter {
         )
 
         cardViewModel = AnnouncementCardViewModel(
+            badgeImage: .init(
+                image: .local(name: "card-icon-cart", bundle: .main),
+                contentColor: nil,
+                backgroundColor: .clear,
+                cornerRadius: .none,
+                size: .edge(48)
+            ),
             contentAlignment: .center,
             border: .none,
-            image: .init(name: "card-icon-cart", size: .init(edge: 48)),
             title: LocalizedString.BuyCard.title,
             description: LocalizedString.BuyCard.description,
             dismissState: .undismissible

@@ -8,14 +8,14 @@ public final class BadgeImageView: UIView {
 
     // MARK: - Private IBOutlets
 
-    @IBOutlet private var imageView: UIImageView!
-    @IBOutlet private var containerView: UIView!
+    private var imageView: UIImageView!
+    private var containerView: UIView!
 
-    @IBOutlet private var leadingOffsetConstraint: NSLayoutConstraint!
-    @IBOutlet private var trailingOffsetConstraint: NSLayoutConstraint!
+    private var leadingOffsetConstraint: NSLayoutConstraint!
+    private var trailingOffsetConstraint: NSLayoutConstraint!
 
-    @IBOutlet private var topOffsetConstraint: NSLayoutConstraint!
-    @IBOutlet private var bottomOffsetConstraint: NSLayoutConstraint!
+    private var topOffsetConstraint: NSLayoutConstraint!
+    private var bottomOffsetConstraint: NSLayoutConstraint!
 
     private var sizeConstraints: LayoutForm.Constraints!
 
@@ -98,20 +98,52 @@ public final class BadgeImageView: UIView {
     }
 
     private func setup() {
-        fromNib()
-        clipsToBounds = true
+        containerView = UIView()
+        imageView = UIImageView()
+        addSubview(containerView)
+        containerView.addSubview(imageView)
+        containerView.layoutToSuperview(.leading, .trailing, .top, .bottom)
+        topOffsetConstraint = imageView.layout(
+            edge: .top,
+            to: .top,
+            of: containerView,
+            offset: 4
+        )
+        bottomOffsetConstraint = containerView.layout(
+            edge: .bottom,
+            to: .bottom,
+            of: imageView,
+            offset: 4
+        )
+        leadingOffsetConstraint = imageView.layout(
+            edge: .leading,
+            to: .leading,
+            of: containerView,
+            offset: 4
+        )
+        trailingOffsetConstraint = containerView.layout(
+            edge: .trailing,
+            to: .trailing,
+            of: imageView,
+            offset: 4
+        )
 
-        sizeConstraints = layout(size: .init(edge: 32), priority: .penultimateLow)
+        clipsToBounds = true
+        sizeConstraints = layout(size: .edge(32), priority: .penultimateLow)
     }
 
     override public func layoutSubviews() {
         super.layoutSubviews()
         guard let viewModel = viewModel else { return }
         switch viewModel.cornerRadiusRelay.value {
+        case .none:
+            layer.cornerRadius = 0
+        case .roundedLow:
+            layer.cornerRadius = 4
+        case .roundedHigh:
+            layer.cornerRadius = 8
         case .round:
             layer.cornerRadius = bounds.width * 0.5
-        case .value(let value):
-            layer.cornerRadius = value
         }
     }
 }

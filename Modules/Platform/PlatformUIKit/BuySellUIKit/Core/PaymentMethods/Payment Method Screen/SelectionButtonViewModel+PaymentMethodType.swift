@@ -66,7 +66,7 @@ extension SelectionButtonViewModel {
                         image: thumbnail,
                         background: .background,
                         offset: 0,
-                        cornerRadius: .value(4),
+                        cornerRadius: .roundedLow,
                         size: .init(width: 32, height: 20)
                     )
                 )
@@ -86,7 +86,7 @@ extension SelectionButtonViewModel {
                     image: data.topLimit.currency.logoResource,
                     background: .fiat,
                     offset: 4,
-                    cornerRadius: .value(8),
+                    cornerRadius: .roundedHigh,
                     size: .init(edge: 32)
                 )
             )

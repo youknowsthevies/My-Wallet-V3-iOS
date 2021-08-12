@@ -11,7 +11,6 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
     // MARK: - UI Properties
 
     @IBOutlet private var backgroundImageView: UIImageView!
-    @IBOutlet private var thumbImageView: UIImageView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet private var dismissButton: UIButton!
@@ -21,10 +20,7 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
 
     @IBOutlet private var bottomSeparatorView: UIView!
 
-    @IBOutlet private var titleToThumbnailImageView: NSLayoutConstraint!
     @IBOutlet private var titleToBadgeImageView: NSLayoutConstraint!
-    @IBOutlet private var imageViewLeadingToSuperviewConstraint: NSLayoutConstraint!
-    @IBOutlet private var imageViewCenterInSuperviewConstraint: NSLayoutConstraint!
     @IBOutlet private var stackViewToBottomConstraint: NSLayoutConstraint!
 
     private let disposeBag = DisposeBag()
@@ -52,9 +48,6 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         backgroundColor = viewModel.background.color
         backgroundImageView.image = viewModel.background.image
 
-        thumbImageView.image = viewModel.image.uiImage
-        thumbImageView.tintColor = viewModel.image.tintColor
-        thumbImageView.layout(size: viewModel.image.size)
         if let viewModel = viewModel.badgeImage.viewModel {
             badgeImageView.viewModel = viewModel
         }
@@ -85,7 +78,6 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         typealias Identifier = Accessibility.Identifier.Dashboard.Announcement
         titleLabel.accessibility = .id(Identifier.titleLabel)
         descriptionLabel.accessibility = .id(Identifier.descriptionLabel)
-        thumbImageView.accessibility = .id(Identifier.imageView)
         dismissButton.accessibility = .id(Identifier.dismissButton)
     }
 
@@ -113,12 +105,7 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
 
     private func fixPositions() {
         if viewModel.title == nil {
-            titleToThumbnailImageView.constant = 0
             titleToBadgeImageView.constant = 0
-        }
-
-        if !viewModel.image.isVisible {
-            thumbImageView.removeFromSuperview()
         }
 
         if !viewModel.badgeImage.isVisible {
@@ -137,13 +124,9 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         case .center:
             titleLabel.textAlignment = .center
             descriptionLabel.textAlignment = .center
-            imageViewLeadingToSuperviewConstraint.priority = .defaultLow
-            imageViewCenterInSuperviewConstraint.priority = .penultimateHigh
         case .natural:
             titleLabel.textAlignment = .natural
             descriptionLabel.textAlignment = .natural
-            imageViewLeadingToSuperviewConstraint.priority = .penultimateHigh
-            imageViewCenterInSuperviewConstraint.priority = .defaultLow
         }
     }
 }

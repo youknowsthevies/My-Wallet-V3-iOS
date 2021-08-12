@@ -43,7 +43,6 @@ public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboa
                 size: .init(edge: 32.0)
             ),
             border: .none,
-            image: .hidden,
             title: LocalizationId.title,
             description: LocalizationId.description,
             dismissState: .undismissible

@@ -82,21 +82,31 @@ public final class AnnouncementCardViewModel {
 
         public init(
             image: ImageResource,
-            contentColor: UIColor = .defaultBadge,
+            contentColor: UIColor? = .defaultBadge,
             backgroundColor: UIColor = .lightBadgeBackground,
-            cornerRadius: BadgeImageViewModel.CornerRadius = .value(8.0),
+            cornerRadius: BadgeImageViewModel.CornerRadius = .roundedHigh,
             accessibilitySuffix: String = "\(AccessibilityId.badge)",
             size: CGSize
         ) {
-            self = .visible(
-                .template(
+            let badgeImageModel: BadgeImageViewModel
+            if let contentColor = contentColor {
+                badgeImageModel = .template(
                     image: image,
                     templateColor: contentColor,
                     backgroundColor: backgroundColor,
+                    cornerRadius: cornerRadius,
                     accessibilityIdSuffix: accessibilitySuffix
-                ),
-                size
-            )
+                )
+            } else {
+                badgeImageModel = .default(
+                    image: image,
+                    backgroundColor: backgroundColor,
+                    cornerRadius: cornerRadius,
+                    accessibilityIdSuffix: accessibilitySuffix
+                )
+            }
+            badgeImageModel.marginOffsetRelay.accept(0)
+            self = .visible(badgeImageModel, size)
         }
 
         var verticalPadding: CGFloat {
@@ -136,112 +146,6 @@ public final class AnnouncementCardViewModel {
         }
     }
 
-    public enum Image {
-        case hidden
-        case visible(ImageDescriptor)
-
-        public init(
-            name: String,
-            size: CGSize = CGSize(width: 40, height: 40),
-            tintColor: UIColor? = nil,
-            bundle: Bundle = .main
-        ) {
-            self = .visible(
-                .init(
-                    name: name,
-                    size: size,
-                    tintColor: tintColor,
-                    bundle: bundle
-                )
-            )
-        }
-
-        var verticalPadding: CGFloat {
-            switch self {
-            case .hidden:
-                return 0.0
-            case .visible:
-                return 16.0
-            }
-        }
-
-        var size: CGSize {
-            switch self {
-            case .hidden:
-                return .zero
-            case .visible(let value):
-                return value.size
-            }
-        }
-
-        var tintColor: UIColor? {
-            switch self {
-            case .hidden:
-                return nil
-            case .visible(let value):
-                return value.tintColor
-            }
-        }
-
-        var isVisible: Bool {
-            switch self {
-            case .hidden:
-                return false
-            case .visible:
-                return true
-            }
-        }
-
-        var uiImage: UIImage? {
-            switch self {
-            case .hidden:
-                return nil
-            case .visible(let descriptor):
-                return UIImage(
-                    named: descriptor.name,
-                    in: descriptor.bundle,
-                    compatibleWith: .none
-                )
-                .map { value in
-                    if descriptor.tintColor != nil {
-                        return value.withRenderingMode(.alwaysTemplate)
-                    }
-                    return value
-                }
-            }
-        }
-    }
-
-    /// The image descriptor
-    public struct ImageDescriptor {
-        let name: String
-        let size: CGSize
-        let tintColor: UIColor?
-        let bundle: Bundle
-
-        var uiImage: UIImage? {
-            UIImage(named: name, in: bundle, compatibleWith: .none)
-                .map {
-                    if tintColor != nil {
-                        return $0.withRenderingMode(.alwaysTemplate)
-                    }
-                    return $0
-                }
-        }
-
-        public init(
-            name: String,
-            size: CGSize = CGSize(width: 40, height: 40),
-            tintColor: UIColor? = nil,
-            bundle: Bundle = .main
-        ) {
-            self.name = name
-            self.size = size
-            self.tintColor = tintColor
-            self.bundle = bundle
-        }
-    }
-
     /// The dismissal state of the card announcement
     public enum DismissState {
 
@@ -260,9 +164,6 @@ public final class AnnouncementCardViewModel {
 
         /// This will render a regular full size card
         case regular
-
-        /// This will render a mini card that can have an optional action
-        case mini
     }
 
     /// The interaction of the user with the card itself
@@ -296,7 +197,6 @@ public final class AnnouncementCardViewModel {
     let contentAlignment: Alignment
     let background: Background
     let border: Border
-    let image: Image
     let title: String?
     let description: String?
     let buttons: [ButtonViewModel]
@@ -348,7 +248,6 @@ public final class AnnouncementCardViewModel {
         contentAlignment: Alignment = .natural,
         background: Background = .white,
         border: Border = .bottomSeparator(.mediumBorder),
-        image: Image,
         title: String? = nil,
         description: String? = nil,
         buttons: [ButtonViewModel] = [],
@@ -362,7 +261,6 @@ public final class AnnouncementCardViewModel {
         self.contentAlignment = contentAlignment
         self.background = background
         self.border = border
-        self.image = image
         self.title = title
         self.description = description
         self.dismissState = dismissState

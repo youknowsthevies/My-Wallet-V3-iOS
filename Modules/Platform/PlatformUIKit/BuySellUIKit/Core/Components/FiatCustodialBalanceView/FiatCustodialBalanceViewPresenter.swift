@@ -82,7 +82,7 @@ final class FiatCustodialBalanceViewPresenter: Equatable {
                     image: logoResource,
                     contentColor: .white,
                     backgroundColor: .fiat,
-                    cornerRadius: .value(8.0),
+                    cornerRadius: .roundedHigh,
                     accessibilityIdSuffix: descriptors.badgeImageAccessibilitySuffix
                 )
             }

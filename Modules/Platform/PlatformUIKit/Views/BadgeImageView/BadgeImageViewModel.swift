@@ -27,14 +27,20 @@ public struct BadgeImageViewModel {
     }
 
     public enum CornerRadius {
+        /// Straight corners
+        case none
+        /// An 4pt corner radius
+        case roundedLow
+        /// An 8pt corner radius
+        case roundedHigh
+        /// A corner radius that makes the item round.
         case round
-        case value(CGFloat)
     }
 
     // MARK: - Properties
 
     /// Corner radius
-    public let cornerRadiusRelay = BehaviorRelay<CornerRadius>(value: .value(8))
+    public let cornerRadiusRelay = BehaviorRelay<CornerRadius>(value: .roundedHigh)
 
     /// Image to be displayed on the badge
     public var cornerRadius: Driver<CornerRadius> {
@@ -68,7 +74,7 @@ public struct BadgeImageViewModel {
     }
 
     /// - parameter cornerRadius: corner radius of the component
-    public init(cornerRadius: CornerRadius = .value(4)) {
+    public init(cornerRadius: CornerRadius = .roundedLow) {
         cornerRadiusRelay.accept(cornerRadius)
     }
 
@@ -94,13 +100,14 @@ extension BadgeImageViewModel {
     /// It has rounded corners.
     public static func `default`(
         image: ImageResource?,
-        cornerRadius: CornerRadius = .value(8),
+        backgroundColor: UIColor = .background,
+        cornerRadius: CornerRadius = .roundedHigh,
         accessibilityIdSuffix: String
     ) -> BadgeImageViewModel {
         let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
         viewModel.set(
             theme: Theme(
-                backgroundColor: .background,
+                backgroundColor: backgroundColor,
                 imageViewContent: ImageViewContent(
                     imageResource: image,
                     accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
@@ -115,7 +122,7 @@ extension BadgeImageViewModel {
         image: ImageResource,
         templateColor: UIColor,
         backgroundColor: UIColor,
-        cornerRadius: CornerRadius = .round,
+        cornerRadius: CornerRadius,
         accessibilityIdSuffix: String
     ) -> BadgeImageViewModel {
         let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
@@ -140,7 +147,7 @@ extension BadgeImageViewModel {
         image: ImageResource,
         contentColor: UIColor = .defaultBadge,
         backgroundColor: UIColor = .lightBadgeBackground,
-        cornerRadius: CornerRadius = .value(8),
+        cornerRadius: CornerRadius = .roundedHigh,
         accessibilityIdSuffix: String
     ) -> BadgeImageViewModel {
         let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)

@@ -102,7 +102,7 @@ final class LinkedCardViewModel {
     init(type: CardType) {
         badgeImageViewModel = .default(
             image: type.thumbnail,
-            cornerRadius: .value(4),
+            cornerRadius: .roundedLow,
             accessibilityIdSuffix: type.name
         )
         badgeImageViewModel.marginOffsetRelay.accept(0)

@@ -9,11 +9,9 @@ import ToolKit
 /// - Tag: `AnnouncementRecorder`
 public final class AnnouncementRecorder {
 
-    // MARK: - Types
-
     // MARK: - Properties
 
-    private var cache: CacheSuite
+    private let cache: CacheSuite
     private let errorRecorder: ErrorRecording
 
     /// Key subscript for an entry
@@ -36,28 +34,18 @@ public final class AnnouncementRecorder {
 
 extension AnnouncementRecorder {
 
-    /// Perform one time migration of announcement keys
-    public static func migrate(errorRecorder: ErrorRecording, cache: CacheSuite = resolve()) {
-        struct KeyCategoryPair {
-            let legacyKey: AnnouncementRecord.LegacyKey
-            let category: AnnouncementRecord.Category
-        }
-
-        [KeyCategoryPair(legacyKey: .shouldHidePITLinkingCard, category: .oneTime)]
-            .filter { cache.bool(forKey: $0.legacyKey.rawValue) }
-            .filter { $0.legacyKey.key != nil }
-            .forEach {
-                let recorder = AnnouncementRecorder(cache: cache, errorRecorder: errorRecorder)
-                recorder[$0.legacyKey.key!].markDismissed(category: $0.category)
-            }
-    }
-
     /// Resets the announcements entirely by clearing any announcements from user defaults
     public static func reset() {
         let cacheSuite: CacheSuite = resolve()
-        for key in AnnouncementRecord.Key.allCases {
-            cacheSuite.removeObject(forKey: key.rawValue)
-        }
+        cacheSuite
+            .dictionaryRepresentation()
+            .keys
+            .filter { key in
+                key.hasPrefix("announcement-")
+            }
+            .forEach {
+                cacheSuite.removeObject(forKey: $0)
+            }
     }
 }
 
@@ -129,14 +117,14 @@ extension AnnouncementRecorder {
         private func save(record: AnnouncementRecord) {
             do {
                 let data = try record.encode()
-                recorder.cache.set(data, forKey: key.rawValue)
+                recorder.cache.set(data, forKey: key.string)
             } catch {
                 errorRecorder.error(error)
             }
         }
 
         private func value(for key: AnnouncementRecord.Key) -> AnnouncementRecord? {
-            guard let data = recorder.cache.data(forKey: key.rawValue) else {
+            guard let data = recorder.cache.data(forKey: key.string) else {
                 return nil
             }
             return try? data.decode(to: AnnouncementRecord.self)
@@ -145,13 +133,13 @@ extension AnnouncementRecorder {
         // MARK: Hashable
 
         public func hash(into hasher: inout Hasher) {
-            hasher.combine(key)
+            hasher.combine(key.string)
         }
 
         // MARK: - Equatable
 
         public static func == (lhs: AnnouncementRecorder.Entry, rhs: AnnouncementRecorder.Entry) -> Bool {
-            lhs.key == rhs.key
+            lhs.key.string == rhs.key.string
         }
     }
 }

@@ -21,8 +21,6 @@ public final class AnnouncementTableViewCell: UITableViewCell {
             switch viewModel.presentation {
             case .regular:
                 cardView = AnnouncementCardView(using: viewModel)
-            case .mini:
-                cardView = AnnouncementMiniCardView(using: viewModel)
             }
             contentView.addSubview(cardView)
             cardView.layoutToSuperview(.top, .leading, .trailing)
