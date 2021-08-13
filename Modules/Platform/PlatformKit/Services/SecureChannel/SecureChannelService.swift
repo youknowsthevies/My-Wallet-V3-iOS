@@ -81,6 +81,7 @@ final class SecureChannelService: SecureChannelAPI {
             return .error(SecureChannelError.malformedPayload)
         }
         return browserIdentityService.getBrowserIdentity(pubKeyHash: details.pubkeyHash)
+            .eraseError()
             .flatMap { browserIdentity -> Result<(SecureChannelConnectionCandidate, BrowserIdentity), Error> in
                 decryptMessage(details.messageRawEncrypted, pubKeyHash: details.pubkeyHash)
                     .map { message -> SecureChannelConnectionCandidate in
@@ -116,6 +117,7 @@ final class SecureChannelService: SecureChannelAPI {
             .flatMap {
                 browserIdentityService.updateBrowserIdentityUsedTimestamp(pubKeyHash: details.pubkeyHash)
             }
+            .eraseError()
             .flatMap {
                 decryptMessage(details.messageRawEncrypted, pubKeyHash: details.pubkeyHash)
             }
@@ -249,6 +251,7 @@ final class SecureChannelService: SecureChannelAPI {
         pubKeyHash: String
     ) -> Result<SecureChannel.BrowserMessage, Error> {
         browserIdentityService.getBrowserIdentity(pubKeyHash: pubKeyHash)
+            .eraseError()
             .flatMap { browserIdentity in
                 let deviceKey = browserIdentityService.getDeviceKey()
                 return messageService
@@ -268,6 +271,7 @@ final class SecureChannelService: SecureChannelAPI {
         success: Bool
     ) -> Completable {
         browserIdentityService.getBrowserIdentity(pubKeyHash: pubKeyHash)
+            .eraseError()
             .flatMap { browserIdentity -> Result<SecureChannel.PairingResponse, Error> in
                 let deviceKey = browserIdentityService.getDeviceKey()
                 return messageService.buildMessage(

@@ -29,6 +29,17 @@ extension Result {
     }
 }
 
+extension Result where Success: OptionalType {
+    public func onNil(error: Failure) -> Result<Success.Wrapped, Failure> {
+        flatMap { element -> Result<Success.Wrapped, Failure> in
+            guard let value = element.value else {
+                return .failure(error)
+            }
+            return .success(value)
+        }
+    }
+}
+
 extension Result {
     public var single: Single<Success> {
         switch self {

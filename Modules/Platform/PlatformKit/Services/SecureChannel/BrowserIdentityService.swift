@@ -9,12 +9,15 @@ final class BrowserIdentityService {
 
     enum IdentityError: LocalizedError {
         case identitySaveFailed
+        case identityEncodingFailed
         case unknownPubKeyHash(String)
 
         var errorDescription: String? {
             switch self {
             case .identitySaveFailed:
                 return "BrowserIdentityService: Unable to save browser identity."
+            case .identityEncodingFailed:
+                return "BrowserIdentityService: Unable encode identity."
             case .unknownPubKeyHash:
                 return "BrowserIdentityService: Browser not recognized."
             }
@@ -36,31 +39,19 @@ final class BrowserIdentityService {
         self.cryptoService = cryptoService
     }
 
-    func getIdentities() -> Result<[String: BrowserIdentity], Error> {
-        guard let string = appSettingsSecureChannel.browserIdentities else {
-            return .success([:])
-        }
-        guard let data = string.data(using: .utf8) else {
-            return .success([:])
-        }
-        guard let decoded = try? JSONDecoder().decode([String: BrowserIdentity].self, from: data) else {
-            return .success([:])
-        }
-        return .success(decoded)
-    }
-
-    func saveIdentities(identities: [String: BrowserIdentity]) -> Result<Void, Error> {
-        Result {
-            let data = try JSONEncoder().encode(identities)
-            guard let string = String(data: data, encoding: .utf8) else {
-                throw IdentityError.identitySaveFailed
+    func saveIdentities(identities: [String: BrowserIdentity]) -> Result<Void, IdentityError> {
+        Result { try JSONEncoder().encode(identities) }
+            .replaceError(with: IdentityError.identityEncodingFailed)
+            .map { String(data: $0, encoding: .utf8) }
+            .onNil(error: .identitySaveFailed)
+            .map { string in
+                appSettingsSecureChannel.browserIdentities = string
             }
-            appSettingsSecureChannel.browserIdentities = string
-        }
     }
 
-    func addBrowserIdentity(identity: BrowserIdentity) -> Result<Void, Error> {
+    func addBrowserIdentity(identity: BrowserIdentity) -> Result<Void, IdentityError> {
         getIdentities()
+            .mapError(to: IdentityError.self)
             .flatMap { list in
                 var newList = list
                 newList[identity.pubKeyHash] = identity
@@ -68,20 +59,16 @@ final class BrowserIdentityService {
             }
     }
 
-    func getBrowserIdentity(pubKeyHash: String) -> Result<BrowserIdentity, Error> {
+    func getBrowserIdentity(pubKeyHash: String) -> Result<BrowserIdentity, IdentityError> {
         getIdentities()
-            .flatMap { identities in
-                Result {
-                    guard let browserIdentity = identities[pubKeyHash] else {
-                        throw IdentityError.unknownPubKeyHash(pubKeyHash)
-                    }
-                    return browserIdentity
-                }
-            }
+            .mapError(to: IdentityError.self)
+            .map(\.[pubKeyHash])
+            .onNil(error: .unknownPubKeyHash(pubKeyHash))
     }
 
-    func deleteBrowserIdentity(pubKeyHash: String) -> Result<Void, Error> {
+    func deleteBrowserIdentity(pubKeyHash: String) -> Result<Void, IdentityError> {
         getIdentities()
+            .mapError(to: IdentityError.self)
             .flatMap { list in
                 var list = list
                 list[pubKeyHash] = nil
@@ -89,8 +76,9 @@ final class BrowserIdentityService {
             }
     }
 
-    func updateBrowserIdentityUsedTimestamp(pubKeyHash: String) -> Result<Void, Error> {
+    func updateBrowserIdentityUsedTimestamp(pubKeyHash: String) -> Result<Void, IdentityError> {
         getIdentities()
+            .mapError(to: IdentityError.self)
             .flatMap { list in
                 var list = list
                 var identity = list[pubKeyHash]
@@ -101,8 +89,9 @@ final class BrowserIdentityService {
     }
 
     /// Finds the `BrowserIdentity` with the given `pubKeyHash`and sets its `authorized`
-    func addBrowserIdentityAuthorization(pubKeyHash: String, authorized: Bool) -> Result<Void, Error> {
+    func addBrowserIdentityAuthorization(pubKeyHash: String, authorized: Bool) -> Result<Void, IdentityError> {
         getIdentities()
+            .mapError(to: IdentityError.self)
             .flatMap { list in
                 var list = list
                 var identity = list[pubKeyHash]
@@ -113,11 +102,12 @@ final class BrowserIdentityService {
     }
 
     /// Prunes entries that were never used and were create more than a cutoff date.
-    func pruneBrowserIdentities() -> Result<Void, Error> {
+    func pruneBrowserIdentities() -> Result<Void, IdentityError> {
         let cutOffMinutes: Int = 5
         let cutOffDate = Date().addingTimeInterval(-TimeInterval(cutOffMinutes * 60))
         let cutOffPoint = UInt64(cutOffDate.timeIntervalSince1970 * 1000)
         return getIdentities()
+            .mapError(to: IdentityError.self)
             .flatMap { list in
                 let newList = list.filter { item in
                     item.value.lastUsed != 0 || item.value.creation > cutOffPoint
@@ -136,5 +126,18 @@ final class BrowserIdentityService {
             appSettingsSecureChannel.deviceKey = deviceKey
         }
         return Data(hex: deviceKey!)
+    }
+
+    private func getIdentities() -> Result<[String: BrowserIdentity], Never> {
+        guard let string = appSettingsSecureChannel.browserIdentities else {
+            return .success([:])
+        }
+        guard let data = string.data(using: .utf8) else {
+            return .success([:])
+        }
+        guard let decoded = try? JSONDecoder().decode([String: BrowserIdentity].self, from: data) else {
+            return .success([:])
+        }
+        return .success(decoded)
     }
 }
