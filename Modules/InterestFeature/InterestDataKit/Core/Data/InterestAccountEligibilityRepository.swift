@@ -2,25 +2,8 @@
 
 import Combine
 import DIKit
+import InterestKit
 import PlatformKit
-
-public enum InterestAccountEligibilityError: Error {
-    case networkError(Error)
-}
-
-public protocol InterestAccountEligibilityRepositoryAPI {
-
-    /// Fetches all `InterestAccountEligibility` objects.
-    func fetchAllInterestAccountEligibility()
-        -> AnyPublisher<[InterestAccountEligibility], InterestAccountEligibilityError>
-
-    /// Fetches an `InterestAccountEligibility` object for a given
-    /// currency code.
-    /// - Parameter code: A currency code
-    func fetchInterestAccountEligibilityForCurrencyCode(
-        _ code: String
-    ) -> AnyPublisher<InterestAccountEligibility, InterestAccountEligibilityError>
-}
 
 final class InterestAccountEligibilityRepository: InterestAccountEligibilityRepositoryAPI {
 

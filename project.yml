@@ -561,6 +561,7 @@ targets:
     - target: TodayExtension
     - target: PlatformKit
     - target: InterestKit
+    - target: InterestDataKit
     - target: InterestUIKit
     - target: TransactionKit
     - target: TransactionDataKit
@@ -591,6 +592,7 @@ targets:
     - target: AuthenticationKit
     - target: AuthenticationUIKit
     - target: AuthenticationDataKit
+    - target: InterestDataKit
     platform: iOS
     postBuildScripts:
     - inputFiles:
@@ -930,6 +932,29 @@ targets:
       path: TestKit/TestKit/Mocks/NetworkKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: InterestFeature
+    templates:
+    - ModuleTests
+  InterestDataKit:
+    dependencies:
+    - target: InterestKit
+    - target: PlatformKit
+    scheme:
+      testTargets:
+      - InterestDataKitTests
+    templateAttributes:
+      featureName: InterestFeature
+    templates:
+      - Module
+  InterestDataKitTests:
+    dependencies:
+    - target: InterestDataKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:

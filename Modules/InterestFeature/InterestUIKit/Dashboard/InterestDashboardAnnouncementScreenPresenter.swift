@@ -31,7 +31,7 @@ public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboa
 
     public init(
         router: InterestDashboardAnnouncementRouting,
-        service: SavingAccountServiceAPI = resolve()
+        service: InterestAccountServiceAPI = resolve()
     ) {
         self.router = router
         announcement = .init(

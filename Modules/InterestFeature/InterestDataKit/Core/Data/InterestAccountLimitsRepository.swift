@@ -2,20 +2,9 @@
 
 import Combine
 import DIKit
+import InterestKit
 import PlatformKit
 import ToolKit
-
-public enum InterestAccountLimitsError: Error {
-    case networkError(Error)
-}
-
-protocol InterestAccountLimitsRepositoryAPI {
-    /// Fetches all `CryptoCurrency` `InterestAccountLimits` for a given `FiatCurrency`.
-    /// - Parameter fiatCurrency: The user's `FiatCurrency`
-    func fetchInterestAccountLimitsForAllAssets(
-        _ fiatCurrency: FiatCurrency
-    ) -> AnyPublisher<[InterestAccountLimits], InterestAccountLimitsError>
-}
 
 public final class InterestAccountLimitsRepository: InterestAccountLimitsRepositoryAPI {
 
@@ -36,7 +25,7 @@ public final class InterestAccountLimitsRepository: InterestAccountLimitsReposit
 
     // MARK: - InterestAccountLimitsRepositoryAPI
 
-    func fetchInterestAccountLimitsForAllAssets(
+    public func fetchInterestAccountLimitsForAllAssets(
         _ fiatCurrency: FiatCurrency
     ) -> AnyPublisher<[InterestAccountLimits], InterestAccountLimitsError> {
         let enabledCryptoCurrencies = enabledCurrenciesService
@@ -48,7 +37,10 @@ public final class InterestAccountLimitsRepository: InterestAccountLimitsReposit
                 enabledCryptoCurrencies
                     .compactMap { crypto -> InterestAccountLimits? in
                         guard let value = response[crypto] else { return nil }
-                        return InterestAccountLimits(value, cryptoCurrency: crypto)
+                        return InterestAccountLimits(
+                            value,
+                            cryptoCurrency: crypto
+                        )
                     }
             }
             .eraseToAnyPublisher()

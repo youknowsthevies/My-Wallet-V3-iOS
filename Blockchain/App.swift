@@ -4,6 +4,7 @@ import ComposableArchitecture
 import DebugUIKit
 import DIKit
 import Firebase
+import InterestDataKit
 import PlatformKit
 import SettingsKit
 import ToolKit
@@ -78,6 +79,7 @@ func defineDependencies() {
         DependencyContainer.walletPayloadKit
         DependencyContainer.platformKit
         DependencyContainer.interestKit
+        DependencyContainer.interestDataKit
         DependencyContainer.platformUIKit
         DependencyContainer.ethereumKit
         DependencyContainer.erc20Kit

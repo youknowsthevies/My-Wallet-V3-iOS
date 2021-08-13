@@ -5,7 +5,7 @@ import Localization
 import RxSwift
 import ToolKit
 
-public final class CryptoInterestAccount: CryptoAccount {
+public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     public private(set) lazy var identifier: AnyHashable = "CryptoInterestAccount." + asset.code
     public let label: String
     public let asset: CryptoCurrency
@@ -48,7 +48,7 @@ public final class CryptoInterestAccount: CryptoAccount {
     }
 
     private let fiatPriceService: FiatPriceServiceAPI
-    private let balanceService: SavingsOverviewAPI
+    private let balanceService: InterestAccountOverviewAPI
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset)
     }
@@ -56,7 +56,7 @@ public final class CryptoInterestAccount: CryptoAccount {
     public init(
         asset: CryptoCurrency,
         fiatPriceService: FiatPriceServiceAPI = resolve(),
-        balanceService: SavingsOverviewAPI = resolve(),
+        balanceService: InterestAccountOverviewAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve()
     ) {
         label = asset.defaultInterestWalletName

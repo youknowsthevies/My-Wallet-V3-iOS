@@ -1,14 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-
 public struct SavingsAccountBalanceResponse: Decodable {
 
     public static let empty = SavingsAccountBalanceResponse()
 
     // MARK: - Properties
 
-    let balances: [String: SavingsAccountBalanceDetails]
+    public let balances: [String: SavingsAccountBalanceDetails]
 
     // MARK: - Init
 
@@ -23,7 +21,7 @@ public struct SavingsAccountBalanceResponse: Decodable {
 
     // MARK: - Subscript
 
-    subscript(currency: CryptoCurrency) -> SavingsAccountBalanceDetails? {
+    public subscript(currency: CryptoCurrency) -> SavingsAccountBalanceDetails? {
         balances[currency.code]
     }
 }

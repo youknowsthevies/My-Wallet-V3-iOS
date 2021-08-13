@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
+import InterestKit
 
-public struct SavingsAccountBalanceDetails: Decodable {
+public struct InterestAccountBalanceDetailsResponse: Decodable {
 
     public let balance: String?
     public let pendingInterest: String?
@@ -26,5 +26,17 @@ public struct SavingsAccountBalanceDetails: Decodable {
         pendingInterest = try values.decodeIfPresent(String.self, forKey: .pendingInterest)
         pendingWithdrawal = try values.decodeIfPresent(String.self, forKey: .pendingWithdrawal)
         totalInterest = try values.decodeIfPresent(String.self, forKey: .totalInterest)
+    }
+}
+
+extension InterestAccountBalanceDetails {
+    init(_ response: InterestAccountBalanceDetailsResponse) {
+        self.init(
+            balance: response.balance,
+            pendingInterest: response.pendingInterest,
+            totalInterest: response.totalInterest,
+            pendingWithdrawal: response.pendingWithdrawal,
+            pendingDeposit: response.pendingDeposit
+        )
     }
 }

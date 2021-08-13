@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import InterestKit
 import PlatformKit
 
 struct InterestEligibilityResponse: Decodable {
@@ -19,15 +20,5 @@ struct InterestEligibilityResponse: Decodable {
 
     subscript(currencyType: CurrencyType) -> InterestEligibility? {
         interestEligibilities[currencyType.code]
-    }
-}
-
-struct InterestEligibility: Decodable {
-    let isEligible: Bool
-    let ineligibilityReason: String?
-
-    enum CodingKeys: String, CodingKey {
-        case isEligible = "eligible"
-        case ineligibilityReason
     }
 }

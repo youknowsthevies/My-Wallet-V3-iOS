@@ -6,12 +6,12 @@ public struct CustodialBalanceResponse: Decodable {
 
     // MARK: - Types
 
-    struct Balance: Decodable {
-        let pending: String
-        let pendingDeposit: String
-        let pendingWithdrawal: String
-        let available: String
-        let withdrawable: String
+    public struct Balance: Decodable {
+        public let pending: String
+        public let pendingDeposit: String
+        public let pendingWithdrawal: String
+        public let available: String
+        public let withdrawable: String
 
         var totalPending: String {
             String((Int(pendingDeposit) ?? 0) - (Int(pendingWithdrawal) ?? 0))

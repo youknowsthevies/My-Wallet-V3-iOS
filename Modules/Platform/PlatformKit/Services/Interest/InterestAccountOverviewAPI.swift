@@ -6,7 +6,7 @@
 import Foundation
 import RxSwift
 
-public protocol SavingsOverviewAPI {
+public protocol InterestAccountOverviewAPI {
     func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState>
     func rate(for currency: CryptoCurrency) -> Single<Double>
 }
