@@ -917,6 +917,7 @@ targets:
     dependencies:
     - target: Localization
     - target: PlatformKit
+    - target: TransactionKit
     scheme:
       testTargets:
       - InterestKitTests
