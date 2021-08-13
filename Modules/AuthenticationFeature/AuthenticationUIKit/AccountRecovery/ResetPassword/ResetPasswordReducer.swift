@@ -2,16 +2,29 @@
 
 import AuthenticationKit
 import ComposableArchitecture
+import DIKit
 import PlatformUIKit
 
 // MARK: - Type
 
 public enum ResetPasswordAction: Equatable {
+    public enum URLContent {
+        case identifyVerificationOverview
+
+        var url: URL? {
+            switch self {
+            case .identifyVerificationOverview:
+                return URL(string: Constants.SupportURL.ResetPassword.identityVerificationOverview)
+            }
+        }
+    }
+
     case didDisappear
     case didChangeNewPassword(String)
     case didChangeConfirmNewPassword(String)
     case didChangePasswordStrength(PasswordValidationScore)
     case validatePasswordStrength
+    case open(urlContent: URLContent)
     case none
 }
 
@@ -32,13 +45,16 @@ struct ResetPasswordState: Equatable {
 struct ResetPasswordEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let passwordValidator: PasswordValidatorAPI
+    let externalAppOpener: ExternalAppOpener
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
-        passwordValidator: PasswordValidatorAPI = PasswordValidator()
+        passwordValidator: PasswordValidatorAPI = PasswordValidator(),
+        externalAppOpener: ExternalAppOpener = resolve()
     ) {
         self.mainQueue = mainQueue
         self.passwordValidator = passwordValidator
+        self.externalAppOpener = externalAppOpener
     }
 }
 
@@ -75,6 +91,12 @@ let resetPasswordReducer = Reducer<
                 }
                 return .didChangePasswordStrength(score)
             }
+    case .open(let urlContent):
+        guard let url = urlContent.url else {
+            return .none
+        }
+        environment.externalAppOpener.open(url, completionHandler: nil)
+        return .none
     case .none:
         return .none
     }

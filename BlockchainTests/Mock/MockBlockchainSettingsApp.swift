@@ -35,6 +35,7 @@ final class MockBlockchainSettingsApp: BlockchainSettingsAppAPI {
     func clearPin() {
         clearPinCalled = true
     }
+
     func reset() {
         resetCalled = true
     }

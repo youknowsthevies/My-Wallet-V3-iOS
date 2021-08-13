@@ -9,7 +9,7 @@ let package = Package(
         .library(
             name: "NetworkKit",
             targets: ["NetworkKit"]
-            )
+        )
     ],
     dependencies: [
         .package(name: "Analytics", path: "../Analytics"),

@@ -12,10 +12,12 @@ struct ResetPasswordView: View {
     private enum Layout {
         static let leadingPadding: CGFloat = 24
         static let trailingPadding: CGFloat = 24
-        static let topPadding: CGFloat = 20
+        static let topPadding: CGFloat = 34
         static let bottomPadding: CGFloat = 34
-        static let messageBottomPadding: CGFloat = 20
-        static let textFieldBottomPadding: CGFloat = 16
+        static let textFieldSpacing: CGFloat = 16
+        static let messageFontSize: CGFloat = 12
+        static let callOutMessageTopPadding: CGFloat = 10
+        static let callOutMessageCornerRadius: CGFloat = 8
     }
 
     private let store: Store<ResetPasswordState, ResetPasswordAction>
@@ -33,25 +35,35 @@ struct ResetPasswordView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text(LocalizedString.message)
-                .textStyle(.body)
-                .multilineTextAlignment(.leading)
-                .padding(.bottom, Layout.messageBottomPadding)
-                .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.messageText)
-
             newPasswordField
-                .padding(.bottom, Layout.textFieldBottomPadding)
                 .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.newPasswordGroup)
 
+            passwordInstruction
+                .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.passwordInstructionText)
+
+            PasswordStrengthIndicatorView(
+                passwordStrength: viewStore.binding(
+                    get: \.passwordStrength,
+                    send: .none
+                )
+            )
+            .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.passwordStrengthIndicatorGroup)
+
             confirmNewPasswordField
+                .padding(.top, Layout.textFieldSpacing)
                 .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.confirmNewPasswordGroup)
+
+            securityCallOut
+                .padding(.top, Layout.callOutMessageTopPadding)
+                .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.securityCallOutGroup)
 
             Spacer()
 
             PrimaryButton(title: LocalizedString.Button.resetPassword) {
                 // TODO: reset password operation
             }
-            .disabled(viewStore.newPassword.isEmpty || viewStore.newPassword != viewStore.confirmNewPassword)
+            .disabled(viewStore.newPassword.isEmpty || viewStore.newPassword != viewStore.confirmNewPassword ||
+                viewStore.passwordStrength != .strong)
             .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.resetPasswordButton)
         }
         .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
@@ -82,7 +94,8 @@ struct ResetPasswordView: View {
                 $0.isSecureTextEntry = !isPasswordVisible
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
-                $0.textContentType = .password
+                $0.placeholder = LocalizedString.TextFieldPlaceholder.newPassword
+                $0.textContentType = .newPassword
             },
             onPaddingTapped: {
                 isNewPasswordFieldFirstResponder = true
@@ -93,20 +106,18 @@ struct ResetPasswordView: View {
                 isConfirmNewPasswordFieldFirstResponder = true
             },
             trailingAccessoryView: {
-                Button(
-                    action: { isPasswordVisible.toggle() },
-                    label: {
-                        Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
-                            .foregroundColor(Color.secureFieldEyeSymbol)
-                    }
-                )
+                PasswordEyeSymbolButton(isPasswordVisible: $isPasswordVisible)
             }
         )
         .onChange(of: viewStore.newPassword) { _ in
             viewStore.send(.validatePasswordStrength)
-            // TODO: wait for design
-            print("TTT \(viewStore.passwordStrength)")
         }
+    }
+
+    private var passwordInstruction: some View {
+        Text(LocalizedString.passwordInstruction)
+            .font(Font(weight: .medium, size: 12))
+            .foregroundColor(.textSubheading)
     }
 
     private var confirmNewPasswordField: some View {
@@ -125,7 +136,8 @@ struct ResetPasswordView: View {
                 $0.isSecureTextEntry = !isConfirmNewPasswordVisible
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
-                $0.textContentType = .password
+                $0.placeholder = LocalizedString.TextFieldPlaceholder.confirmNewPassword
+                $0.textContentType = .newPassword
             },
             errorMessage: LocalizedString.confirmPasswordNotMatch,
             onPaddingTapped: {
@@ -137,15 +149,29 @@ struct ResetPasswordView: View {
                 isConfirmNewPasswordFieldFirstResponder = false
             },
             trailingAccessoryView: {
-                Button(
-                    action: { isConfirmNewPasswordVisible.toggle() },
-                    label: {
-                        Image(systemName: isConfirmNewPasswordVisible ? "eye.slash.fill" : "eye.fill")
-                            .foregroundColor(Color.secureFieldEyeSymbol)
-                    }
-                )
+                PasswordEyeSymbolButton(isPasswordVisible: $isConfirmNewPasswordVisible)
             }
         )
+    }
+
+    private var securityCallOut: some View {
+        HStack {
+            Text(LocalizedString.securityCallOut + " ")
+                .font(Font(weight: .medium, size: Layout.messageFontSize))
+                .foregroundColor(.textSubheading) +
+                Text(LocalizedString.Button.learnMore)
+                .font(Font(weight: .medium, size: Layout.messageFontSize))
+                .foregroundColor(Color.buttonPrimaryBackground)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
+        .background(
+            RoundedRectangle(cornerRadius: Layout.callOutMessageCornerRadius)
+                .fill(Color.textCallOutBackground)
+        )
+        .onTapGesture {
+            viewStore.send(.open(urlContent: .identifyVerificationOverview))
+        }
     }
 }
 

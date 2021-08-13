@@ -100,9 +100,11 @@ final class AccessibilityIdentifiers: NSObject {
     enum ResetPasswordScreen {
         static let prefix = "ResetPasswordScreen."
 
-        static let messageText = "\(prefix)messageText"
         static let newPasswordGroup = "\(prefix)newPasswordGroup"
+        static let passwordInstructionText = "\(prefix)passwordInstructionText"
+        static let passwordStrengthIndicatorGroup = "\(prefix)passwordStrengthIndicatorGroup"
         static let confirmNewPasswordGroup = "\(prefix)confirmNewPasswordGroup"
+        static let securityCallOutGroup = "\(prefix)securityCallOutGroup"
         static let resetPasswordButton = "\(prefix)resetPasswordButton"
     }
 
@@ -124,6 +126,8 @@ final class AccessibilityIdentifiers: NSObject {
         static let termsOfServiceButton = "\(prefix)termsOfServiceButton"
         static let privacyPolicyButton = "\(prefix)privacyPolicyButton"
         static let passwordGroup = "\(prefix)passwordGroup"
+        static let passwordInstructionText = "\(prefix)passwordInstructionText"
+        static let passwordStrengthIndicatorGroup = "\(prefix)passwordStrengthIndicatorGroup"
         static let confirmPasswordGroup = "\(prefix)confirmPasswordGroup"
         static let createAccountButton = "\(prefix)createAccountButton"
     }

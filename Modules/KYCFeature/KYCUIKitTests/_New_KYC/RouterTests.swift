@@ -58,7 +58,9 @@ final class RouterTests: XCTestCase {
             })
         let openMailRequest = mockExternalAppOpener.recordedInvocations.open.first
         XCTAssertEqual(openMailRequest?.url, URL(string: "message://"))
-        openMailRequest?.completionHandler(true)
+        if let completionHandler = openMailRequest?.completionHandler {
+            completionHandler(true)
+        }
         waitForExpectations(timeout: 3)
         XCTAssertTrue(valueReceived)
         cancellable.cancel()

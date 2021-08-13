@@ -6,12 +6,12 @@ import PlatformUIKit
 public final class MockExternalAppOpener: ExternalAppOpener {
 
     public struct RecordedInvocations {
-        public var open: [(url: URL, completionHandler: (Bool) -> Void)] = []
+        public var open: [(url: URL, completionHandler: ((Bool) -> Void)?)] = []
     }
 
     public private(set) var recordedInvocations = RecordedInvocations()
 
-    public func open(_ url: URL, completionHandler: @escaping (Bool) -> Void) {
+    public func open(_ url: URL, completionHandler: ((Bool) -> Void)?) {
         recordedInvocations.open.append((url, completionHandler))
     }
 }

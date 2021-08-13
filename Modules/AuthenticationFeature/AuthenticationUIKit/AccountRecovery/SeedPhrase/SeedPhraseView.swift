@@ -18,7 +18,7 @@ struct SeedPhraseView: View {
         static let leadingPadding: CGFloat = 24
         static let trailingPadding: CGFloat = 24
         static let instructionBottomPadding: CGFloat = 8
-        static let securityCallOutTopPadding: CGFloat = 10
+        static let resetAccountCallOutTopPadding: CGFloat = 10
 
         static let cornerRadius: CGFloat = 8
         static let fontSize: CGFloat = 12
@@ -72,7 +72,7 @@ struct SeedPhraseView: View {
             }
 
             resetAccountCallOut
-                .padding(.top, Layout.securityCallOutTopPadding)
+                .padding(.top, Layout.resetAccountCallOutTopPadding)
 
             Spacer()
 

@@ -15,9 +15,9 @@ public enum SecondPasswordNotice {
         var url: URL? {
             switch self {
             case .loginOnWeb:
-                return URL(string: Constants.Url.loginOnWeb)
+                return URL(string: Constants.HostURL.loginOnWeb)
             case .twoFASupport:
-                return URL(string: Constants.SecondPassword.twoFASupportLink)
+                return URL(string: Constants.SupportURL.SecondPassword.twoFASupport)
             }
         }
     }
@@ -44,7 +44,7 @@ let secondPasswordNoticeReducer = Reducer<
         guard let url = urlContent.url else {
             return .none
         }
-        environment.externalAppOpener.open(url) { _ in }
+        environment.externalAppOpener.open(url, completionHandler: nil)
         return .none
     case .closeButtonTapped:
         return .none

@@ -49,9 +49,11 @@ final class CertificatePinner: CertificatePinnerAPI {
 
     // MARK: - Initialization
 
-    init(session: URLSession = resolve(),
-         blockchainAPI: BlockchainAPI = resolve(),
-         certificateProvider: CertificateProviderAPI = resolve()) {
+    init(
+        session: URLSession = resolve(),
+        blockchainAPI: BlockchainAPI = resolve(),
+        certificateProvider: CertificateProviderAPI = resolve()
+    ) {
         self.blockchainAPI = blockchainAPI
         self.certificateProvider = certificateProvider
         self.session = session

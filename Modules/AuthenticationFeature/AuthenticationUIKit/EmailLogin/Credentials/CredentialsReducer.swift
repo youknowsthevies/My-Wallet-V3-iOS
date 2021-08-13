@@ -487,9 +487,7 @@ let credentialsReducer = Reducer.combine(
             return .none
 
         case .openExternalLink(let url):
-            environment
-                .externalAppOpener
-                .open(url) { _ in }
+            environment.externalAppOpener.open(url, completionHandler: nil)
             return .none
 
         case .alert(.show(let title, let message)):

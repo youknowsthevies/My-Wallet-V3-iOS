@@ -97,6 +97,7 @@ extension Wallet {
         context
             .evaluateScriptCheckIsOnMainQueue("MyWalletPhone.updateServerURL(\"\(newURL.escapedForJS())\")")
     }
+
     private func updateAPIURL(_ newURL: String) {
         context
             .evaluateScriptCheckIsOnMainQueue("MyWalletPhone.updateAPIURL(\"\(newURL.escapedForJS())\")")

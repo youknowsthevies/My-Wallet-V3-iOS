@@ -111,7 +111,7 @@ struct CredentialsView: View {
                         .textStyle(.subheading)
                     Button(
                         action: {
-                            guard let url = URL(string: Constants.Url.resetTwoFA) else { return }
+                            guard let url = URL(string: Constants.HostURL.resetTwoFA) else { return }
                             UIApplication.shared.open(url)
                         },
                         label: {
@@ -239,7 +239,7 @@ struct CredentialsView: View {
                 self.isWalletIdentifierFirstResponder = false
                 self.isPasswordFieldFirstResponder = true
                 self.isTwoFAFieldFirstResponder = false
-                self.isHardwareKeyCodeVisible = false
+                self.isHardwareKeyCodeFieldFirstResponder = false
             }
         )
         .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.guidGroup)
@@ -279,13 +279,7 @@ struct CredentialsView: View {
                 self.isHardwareKeyCodeFieldFirstResponder = true
             },
             trailingAccessoryView: {
-                Button(
-                    action: { isPasswordVisible.toggle() },
-                    label: {
-                        Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
-                            .foregroundColor(Color.secureFieldEyeSymbol)
-                    }
-                )
+                PasswordEyeSymbolButton(isPasswordVisible: $isPasswordVisible)
             }
         )
     }
@@ -358,13 +352,7 @@ struct CredentialsView: View {
                 self.isHardwareKeyCodeFieldFirstResponder = false
             },
             trailingAccessoryView: {
-                Button(
-                    action: { isHardwareKeyCodeVisible.toggle() },
-                    label: {
-                        Image(systemName: isHardwareKeyCodeVisible ? "eye.slash.fill" : "eye.fill")
-                            .foregroundColor(Color.secureFieldEyeSymbol)
-                    }
-                )
+                PasswordEyeSymbolButton(isPasswordVisible: $isHardwareKeyCodeVisible)
             }
         )
     }

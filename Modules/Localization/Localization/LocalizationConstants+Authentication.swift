@@ -271,14 +271,22 @@ extension LocalizationConstants.AuthenticationKit {
             )
         }
 
+        public static let passwordInstruction = NSLocalizedString(
+            "Use at least 8 characters and a mix of letters, numbers, and symbols",
+            comment: "Reset password screen: password instruction"
+        )
         public enum TextFieldPlaceholder {
             public static let email = NSLocalizedString(
                 "your@email.com",
                 comment: "Create Account screen: email text field placeholder"
             )
             public static let password = NSLocalizedString(
-                "Enter a password",
+                "Enter new password",
                 comment: "Create Account screen: password text field placeholder"
+            )
+            public static let confirmPassword = NSLocalizedString(
+                "Re-enter new password",
+                comment: "Create Account screen: confirm password text field placeholder"
             )
         }
 
@@ -404,12 +412,8 @@ extension LocalizationConstants.AuthenticationKit {
 
     public enum ResetPassword {
         public static let navigationTitle = NSLocalizedString(
-            "Reset Password?",
+            "Reset Password",
             comment: "Reset password screen: navigation title"
-        )
-        public static let message = NSLocalizedString(
-            "Would you like to reset your password? You can always do this later in Settings.",
-            comment: "Reset password screen: main message"
         )
         public enum TextFieldTitle {
             public static let newPassword = NSLocalizedString(
@@ -422,6 +426,21 @@ extension LocalizationConstants.AuthenticationKit {
             )
         }
 
+        public enum TextFieldPlaceholder {
+            public static let newPassword = NSLocalizedString(
+                "Enter new password",
+                comment: "Reset password screen: new password text field"
+            )
+            public static let confirmNewPassword = NSLocalizedString(
+                "Re-enter new password",
+                comment: "Reset password screen: confirm new password text field"
+            )
+        }
+
+        public static let passwordInstruction = NSLocalizedString(
+            "Use at least 8 characters and a mix of letters, numbers, and symbols",
+            comment: "Reset password screen: password instruction"
+        )
         public static let confirmPasswordNotMatch = NSLocalizedString(
             "Passwords don't match",
             comment: "Reset password screen: passwords do not match error"
@@ -431,14 +450,35 @@ extension LocalizationConstants.AuthenticationKit {
             comment: "Seed phrase screen: callout message for the security measure"
         )
         public enum Button {
-            public static let skip = NSLocalizedString(
-                "Skip",
-                comment: "Reset password screen: skip button"
-            )
             public static let resetPassword = NSLocalizedString(
                 "Reset Password",
                 comment: "Reset password screen: reset password button"
             )
+            public static let learnMore = NSLocalizedString(
+                "Learn more",
+                comment: "Reset password screen: learn more: identity verification."
+            )
         }
+    }
+
+    // MARK: - Password Strength Indicator
+
+    public enum PasswordStrength {
+        public static let title = NSLocalizedString(
+            "Password Strength",
+            comment: "Reset password screen: password strength indicator title"
+        )
+        public static let weak = NSLocalizedString(
+            "Weak",
+            comment: "Reset password screen: password strength indicator: weak"
+        )
+        public static let medium = NSLocalizedString(
+            "Medium",
+            comment: "Reset password screen: password strength indicator: medium"
+        )
+        public static let strong = NSLocalizedString(
+            "Strong",
+            comment: "Reset password screen: password strength indicator: strong"
+        )
     }
 }

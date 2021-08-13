@@ -17,9 +17,9 @@ struct CreateAccountView: View {
         static let leadingPadding: CGFloat = 24
         static let trailingPadding: CGFloat = 24
         static let footnoteTopPadding: CGFloat = 1
-        static let textFieldBottomPadding: CGFloat = 20
+        static let textFieldSpacing: CGFloat = 20
 
-        static let footnoteFontSize: CGFloat = 12
+        static let messageFontSize: CGFloat = 12
         static let lineSpacing: CGFloat = 4
     }
 
@@ -41,21 +41,29 @@ struct CreateAccountView: View {
         VStack(alignment: .leading) {
 
             emailField
-                .padding(.bottom, Layout.textFieldBottomPadding)
+                .padding(.bottom, Layout.textFieldSpacing)
                 .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.emailGroup)
 
             passwordField
-                .padding(.bottom, Layout.textFieldBottomPadding)
                 .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.passwordGroup)
 
+            PasswordStrengthIndicatorView(
+                passwordStrength: viewStore.binding(
+                    get: \.passwordStrength,
+                    send: .none
+                )
+            )
+            .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.passwordStrengthIndicatorGroup)
+
             confirmPasswordField
+                .padding(.top, Layout.textFieldSpacing)
                 .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.confirmPasswordGroup)
 
             agreementText
-                .font(Font(weight: .medium, size: Layout.footnoteFontSize))
+                .font(Font(weight: .medium, size: Layout.messageFontSize))
                 .lineSpacing(Layout.lineSpacing)
                 .padding(.top, Layout.footnoteTopPadding)
-                .padding(.bottom, Layout.textFieldBottomPadding)
+                .padding(.bottom, Layout.textFieldSpacing)
 
             Spacer()
 
@@ -85,7 +93,7 @@ struct CreateAccountView: View {
                 Text(LocalizedString.termsOfServiceLink)
                     .foregroundColor(.buttonLinkText)
                     .onTapGesture {
-                        guard let url = URL(string: Constants.Url.terms) else { return }
+                        guard let url = URL(string: Constants.HostURL.terms) else { return }
                         viewStore.send(.openExternalLink(url))
                     }
                     .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.termsOfServiceButton)
@@ -94,7 +102,7 @@ struct CreateAccountView: View {
                 Text(LocalizedString.privacyPolicyLink)
                     .foregroundColor(.buttonLinkText)
                     .onTapGesture {
-                        guard let url = URL(string: Constants.Url.privacyPolicy) else { return }
+                        guard let url = URL(string: Constants.HostURL.privacyPolicy) else { return }
                         viewStore.send(.openExternalLink(url))
                     }
                     .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.privacyPolicyButton)
@@ -150,7 +158,7 @@ struct CreateAccountView: View {
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
                 $0.isSecureTextEntry = !isPasswordVisible
-                $0.textContentType = .password
+                $0.textContentType = .newPassword
                 $0.placeholder = LocalizedString.TextFieldPlaceholder.password
             },
             onPaddingTapped: {
@@ -164,20 +172,18 @@ struct CreateAccountView: View {
                 self.isConfirmPasswordFieldFirstResponder = true
             },
             trailingAccessoryView: {
-                Button(
-                    action: { isPasswordVisible.toggle() },
-                    label: {
-                        Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
-                            .foregroundColor(Color.secureFieldEyeSymbol)
-                    }
-                )
+                PasswordEyeSymbolButton(isPasswordVisible: $isPasswordVisible)
             }
         )
         .onChange(of: viewStore.password) { _ in
             viewStore.send(.validatePasswordStrength)
-            // TODO: wait for design
-            print("TTT \(viewStore.passwordStrength)")
         }
+    }
+
+    private var passwordInstruction: some View {
+        Text(LocalizedString.passwordInstruction)
+            .font(Font(weight: .medium, size: 12))
+            .foregroundColor(.textSubheading)
     }
 
     private var confirmPasswordField: some View {
@@ -196,7 +202,8 @@ struct CreateAccountView: View {
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
                 $0.isSecureTextEntry = !isConfirmPasswordVisible
-                $0.textContentType = .password
+                $0.textContentType = .newPassword
+                $0.placeholder = LocalizedString.TextFieldPlaceholder.confirmPassword
             },
             errorMessage: LocalizedString.TextFieldError.confirmPasswordNotMatch,
             onPaddingTapped: {
@@ -210,13 +217,7 @@ struct CreateAccountView: View {
                 self.isConfirmPasswordFieldFirstResponder = false
             },
             trailingAccessoryView: {
-                Button(
-                    action: { isConfirmPasswordVisible.toggle() },
-                    label: {
-                        Image(systemName: isConfirmPasswordVisible ? "eye.slash.fill" : "eye.fill")
-                            .foregroundColor(Color.secureFieldEyeSymbol)
-                    }
-                )
+                PasswordEyeSymbolButton(isPasswordVisible: $isConfirmPasswordVisible)
             }
         )
     }
