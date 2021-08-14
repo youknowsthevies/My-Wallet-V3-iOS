@@ -277,6 +277,7 @@ final class MainAppReducerTests: XCTestCase {
         XCTAssertNil(mockSettingsApp.guid)
         XCTAssertNil(mockSettingsApp.sharedKey)
 
+        testStore.receive(.onboarding(.informSecondPasswordDetected))
         testStore.receive(.onboarding(.welcomeScreen(.informSecondPasswordDetected))) { state in
             state.onboarding?.welcomeState?.screenFlow = .welcomeScreen
             state.onboarding?.welcomeState?.modals = .secondPasswordNoticeScreen
