@@ -249,7 +249,9 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 
         // skip saving guid and sharedKey if we detect a second password is needed
         // TODO: Refactor this so that we don't call legacy methods directly
-        guard !environment.walletManager.wallet.needsSecondPassword() else {
+        if environment.walletManager.wallet.needsSecondPassword(),
+           state.onboarding?.welcomeState != nil
+        {
             return .cancel(id: WalletCancelations.DecryptId())
         }
 
@@ -297,7 +299,9 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // requires a second password, if we do then we stop the process
         // and display a notice to the user
         // TODO: Refactor this so that we don't call legacy methods directly
-        guard !environment.walletManager.wallet.needsSecondPassword() else {
+        if environment.walletManager.wallet.needsSecondPassword(),
+           state.onboarding?.welcomeState != nil
+        {
             // unfortunately during login we store the guid in the settings
             // we need to reset this if we detect a second password
             environment.blockchainSettings.guid = nil
@@ -305,7 +309,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
                 Effect(
-                    value: .onboarding(.welcomeScreen(.informSecondPasswordDetected))
+                    value: .onboarding(.informSecondPasswordDetected)
                 )
             )
         }
