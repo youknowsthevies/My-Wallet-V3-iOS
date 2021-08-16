@@ -2,7 +2,7 @@
 
 import ComposableArchitecture
 @testable import KYCUIKit
-import SnapshotTesting
+import TestKit
 import SwiftUI
 import XCTest
 

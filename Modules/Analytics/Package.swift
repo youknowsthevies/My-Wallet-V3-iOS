@@ -13,6 +13,10 @@ let package = Package(
         .library(
             name: "RxAnalyticsKit",
             targets: ["RxAnalyticsKit"]
+        ),
+        .library(
+            name: "AnalyticsKitMock",
+            targets: ["AnalyticsKitMock"]
         )
     ],
     dependencies: [
@@ -33,6 +37,10 @@ let package = Package(
                 "AnalyticsKit",
                 .product(name: "RxSwift", package: "RxSwift")
             ]
+        ),
+        .target(
+            name: "AnalyticsKitMock",
+            dependencies: ["AnalyticsKit"]
         ),
         .testTarget(
             name: "AnalyticsKitTests",

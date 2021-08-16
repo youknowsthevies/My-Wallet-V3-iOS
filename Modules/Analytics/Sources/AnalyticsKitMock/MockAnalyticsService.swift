@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import RxCocoa
 
 class MockAnalyticsService: AnalyticsServiceProviderAPI {
     var supportedEventTypes = [AnalyticsEventType.firebase]
@@ -10,8 +9,7 @@ class MockAnalyticsService: AnalyticsServiceProviderAPI {
 }
 
 class MockAnalyticsRecorder: AnalyticsEventRecorderAPI {
-    var recordRelay = PublishRelay<AnalyticsEvent>()
-
+    
     func trackEvent(title: String, parameters: [String: Any]?) {}
 
     var recordEventCalled: (called: Bool, event: AnalyticsEvent?) = (false, nil)

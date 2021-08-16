@@ -4,6 +4,7 @@ import Combine
 import ComposableArchitecture
 @testable import KYCUIKit
 import PlatformUIKit
+import TestKit
 import SwiftUI
 import XCTest
 

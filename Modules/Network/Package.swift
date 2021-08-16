@@ -9,6 +9,10 @@ let package = Package(
         .library(
             name: "NetworkKit",
             targets: ["NetworkKit"]
+        ),
+        .library(
+            name: "NetworkKitMock",
+            targets: ["NetworkKitMock"]
         )
     ],
     dependencies: [
@@ -27,6 +31,12 @@ let package = Package(
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "RxCombine", package: "RxCombine"),
                 .product(name: "DIKit", package: "DIKit")
+            ]
+        ),
+        .target(
+            name: "NetworkKitMock",
+            dependencies: [
+                "NetworkKit"
             ]
         ),
         .testTarget(

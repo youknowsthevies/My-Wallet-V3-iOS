@@ -2,6 +2,7 @@
 
 @testable import BitcoinKit
 import XCTest
+import TestKit
 
 class BitcoinKeyPairDeriverTests: XCTestCase {
 
