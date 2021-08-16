@@ -7,5 +7,5 @@ import NetworkKit
 public protocol GuidClientAPI: AnyObject {
     /// An `AnyPublisher` that streams the `GUID` on success or fails due
     /// to network error.
-    func guid(by sessionToken: String) -> AnyPublisher<String, NetworkError>
+    func guid(by sessionToken: String) -> AnyPublisher<String?, NetworkError>
 }

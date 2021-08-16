@@ -54,6 +54,8 @@ public final class EmailAuthorizationService: EmailAuthorizationServiceAPI {
             .mapToVoid()
             .catch { error -> AnyPublisher<Void, EmailAuthorizationServiceError> in
                 switch error {
+                case .missingGuid:
+                    return .failure(.missingGuid)
                 case .missingSessionToken:
                     return .failure(.missingSessionToken)
                 case .networkError(let networkError):

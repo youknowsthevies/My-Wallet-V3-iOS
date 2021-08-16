@@ -31,7 +31,6 @@ final class CredentialsReducerTests: XCTestCase {
                 pollingQueue: mockPollingQueue.eraseToAnyScheduler(),
                 deviceVerificationService: MockDeviceVerificationService(),
                 emailAuthorizationService: MockEmailAuthorizationService(),
-                sessionTokenService: MockSessionTokenService(),
                 smsService: MockSMSService(),
                 loginService: MockLoginService(),
                 wallet: MockWalletAuthenticationKitWrapper(),
@@ -67,10 +66,7 @@ final class CredentialsReducerTests: XCTestCase {
                 state.emailAddress = mockWalletInfo.email
                 state.walletGuid = mockWalletInfo.guid
                 state.emailCode = mockWalletInfo.emailCode
-            },
-            .receive(.walletPairing(.setupSessionToken)),
-            .do { self.mockMainQueue.advance() },
-            .receive(.none)
+            }
         )
     }
 
@@ -79,13 +75,13 @@ final class CredentialsReducerTests: XCTestCase {
     func test_authenticate_success_should_update_view_state_and_decrypt_password() {
         /*
          Use Case: Authentication flow without any 2FA
-         1. Setup walletInfo and sessionToken
+         1. Setup walletInfo
          2. Reset error states (account locked or password error, for any previous errors)
          3. Decrypt wallet with the password from user
          */
 
         // some preliminery actions
-        setupWalletInfoAndSessionToken()
+        setupWalletInfo()
 
         testStore.assert(
             // authentication without 2FA
@@ -108,7 +104,7 @@ final class CredentialsReducerTests: XCTestCase {
     func test_authenticate_email_required_should_return_relevant_actions() {
         /*
          Use Case: Authentication flow with auto-authorized email approval
-         1. Setup walletInfo and sessionToken
+         1. Setup walletInfo
          2. Reset error states (account locked or password error, for any previous errors)
          3. When authenticate request sent, received an error saying email authorization required
          4. Auto-approve email authorization, the 2FA type will be set to standard
@@ -120,7 +116,7 @@ final class CredentialsReducerTests: XCTestCase {
         (testStore.environment.loginService as! MockLoginService).twoFAType = .email
 
         // some preliminery actions
-        setupWalletInfoAndSessionToken()
+        setupWalletInfo()
 
         testStore.assert(
             // authentication
@@ -173,7 +169,7 @@ final class CredentialsReducerTests: XCTestCase {
     func test_authenticate_sms_required_should_return_relevant_actions() {
         /*
          Use Case: Authentication flow with SMS as 2FA
-         1. Setup walletInfo and sessionToken
+         1. Setup walletInfo
          2. Reset error states (account locked or password error, for any previous errors)
          3. When authenticate request sent, received an error saying SMS required
          4. Request an SMS code for user
@@ -184,7 +180,7 @@ final class CredentialsReducerTests: XCTestCase {
         (testStore.environment.loginService as! MockLoginService).twoFAType = .sms
 
         // some preliminery actions
-        setupWalletInfoAndSessionToken()
+        setupWalletInfo()
 
         testStore.assert(
             // authentication
@@ -232,7 +228,7 @@ final class CredentialsReducerTests: XCTestCase {
     func test_authenticate_google_auth_required_should_return_relevant_actions() {
         /*
          Use Case: Authentication flow with google authenticator as 2FA
-         1. Setup walletInfo and sessionToken
+         1. Setup walletInfo
          2. Reset error states (account locked or password error, for any previous errors)
          3. When authenticate request sent, received an error saying google authenticator required
          4. Show the 2FA Field
@@ -242,7 +238,7 @@ final class CredentialsReducerTests: XCTestCase {
         (testStore.environment.loginService as! MockLoginService).twoFAType = .google
 
         // some preliminery actions
-        setupWalletInfoAndSessionToken()
+        setupWalletInfo()
 
         testStore.assert(
             // authentication
@@ -268,7 +264,7 @@ final class CredentialsReducerTests: XCTestCase {
     func test_authenticate_hardware_key_required_should_return_relevant_actions() {
         /*
          Use Case: Authentication flow with hardware key as 2FA
-         1. Setup walletInfo and sessionToken
+         1. Setup walletInfo
          2. Reset error states (account locked or password error, for any previous errors)
          3. When authenticate request sent, received an error saying yubikey required
          4. Show the Hardware Key Field
@@ -278,7 +274,7 @@ final class CredentialsReducerTests: XCTestCase {
         (testStore.environment.loginService as! MockLoginService).twoFAType = .yubiKey
 
         // some preliminery actions
-        setupWalletInfoAndSessionToken()
+        setupWalletInfo()
 
         testStore.assert(
             // authentication
@@ -305,7 +301,7 @@ final class CredentialsReducerTests: XCTestCase {
         /*
          Use Case: Authentication flow with SMS as 2FA
          1. Assuming twoFA field/Hardware Key field has been set visible
-         2. Setup walletInfo and session token
+         2. Setup walletInfo
          3. Reset error states
          4. Authenticate with 2FA, clear 2FA error states
          5. Set 2FA verified on success
@@ -316,7 +312,7 @@ final class CredentialsReducerTests: XCTestCase {
         (testStore.environment.loginService as! MockLoginService).twoFAType = .sms
 
         // some preliminery actions
-        setupWalletInfoAndSessionToken()
+        setupWalletInfo()
 
         testStore.assert(
             // set twoFA field visible
@@ -364,7 +360,7 @@ final class CredentialsReducerTests: XCTestCase {
             .twoFAServiceError = .twoFAWalletServiceError(.wrongCode(attemptsLeft: mockAttemptsLeft))
 
         // some preliminery actions
-        setupWalletInfoAndSessionToken()
+        setupWalletInfo()
 
         testStore.assert(
             .send(.walletPairing(.authenticateWithTwoFAOrHardwareKey)) { state in
@@ -391,17 +387,14 @@ final class CredentialsReducerTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func setupWalletInfoAndSessionToken() {
+    private func setupWalletInfo() {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
         testStore.assert(
             .send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
                 state.emailAddress = mockWalletInfo.email
                 state.walletGuid = mockWalletInfo.guid
                 state.emailCode = mockWalletInfo.emailCode
-            },
-            .receive(.walletPairing(.setupSessionToken)),
-            .do { self.mockMainQueue.advance() },
-            .receive(.none)
+            }
         )
     }
 }

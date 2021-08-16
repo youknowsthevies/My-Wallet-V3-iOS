@@ -30,7 +30,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
     // MARK: - API
 
     public func requestUsingSessionToken() -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> {
-        let requestPublisher = request(guid:sessionToken:)
+        let request = request(guid:sessionToken:)
         return repository.guidPublisher
             .zip(repository.sessionTokenPublisher)
             .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), WalletPayloadServiceError> in
@@ -43,13 +43,13 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
                 return .just((guid, sessionToken))
             }
             .flatMap { credentials -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
-                requestPublisher(credentials.guid, credentials.sessionToken)
+                request(credentials.guid, credentials.sessionToken)
             }
             .eraseToAnyPublisher()
     }
 
     public func requestUsingSharedKey() -> AnyPublisher<Void, WalletPayloadServiceError> {
-        let requestPublisher = request(guid:sharedKey:)
+        let request = request(guid:sharedKey:)
         return repository.guidPublisher
             .zip(repository.sharedKeyPublisher)
             .flatMap { credentials -> AnyPublisher<(guid: String, sharedKey: String), WalletPayloadServiceError> in
@@ -62,30 +62,30 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
                 return .just((guid, sharedKey))
             }
             .flatMap { credentials -> AnyPublisher<Void, WalletPayloadServiceError> in
-                requestPublisher(credentials.guid, credentials.sharedKey)
+                request(credentials.guid, credentials.sharedKey)
             }
             .eraseToAnyPublisher()
     }
 
     public func request(guid: String, sharedKey: String) -> AnyPublisher<Void, WalletPayloadServiceError> {
-        let cacheWalletDataPublisher = cacheWalletData(from:)
+        let cacheWalletData = cacheWalletData(from:)
         return client
             .payload(guid: guid, identifier: .sharedKey(sharedKey))
             .mapError(WalletPayloadServiceError.init)
             .flatMap { response -> AnyPublisher<Void, WalletPayloadServiceError> in
-                cacheWalletDataPublisher(response)
+                cacheWalletData(response)
                     .mapToVoid()
             }
             .eraseToAnyPublisher()
     }
 
     public func request(guid: String, sessionToken: String) -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> {
-        let cacheWalletDataPublisher = cacheWalletData(from:)
+        let cacheWalletData = cacheWalletData(from:)
         return client
             .payload(guid: guid, identifier: .sessionToken(sessionToken))
             .mapError(WalletPayloadServiceError.init)
             .flatMap { response -> AnyPublisher<WalletPayloadClient.ClientResponse, WalletPayloadServiceError> in
-                cacheWalletDataPublisher(response)
+                cacheWalletData(response)
             }
             .flatMap { response -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
                 guard let type = WalletAuthenticatorType(rawValue: response.authType) else {

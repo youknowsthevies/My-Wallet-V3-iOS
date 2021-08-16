@@ -11,14 +11,19 @@ public final class GuidService: GuidServiceAPI {
     public var guid: AnyPublisher<String, GuidServiceError> {
         sessionTokenRepository
             .sessionTokenPublisher
-            .flatMap { [client] token -> AnyPublisher<String, GuidServiceError> in
+            .flatMap { [client] token -> AnyPublisher<String?, GuidServiceError> in
                 guard let token = token else {
                     return .failure(.missingSessionToken)
                 }
-                return client
-                    .guid(by: token)
+                return client.guid(by: token)
                     .mapError(GuidServiceError.networkError)
                     .eraseToAnyPublisher()
+            }
+            .flatMap { guidOrNil -> AnyPublisher<String, GuidServiceError> in
+                guard let guid = guidOrNil else {
+                    return .failure(.missingGuid)
+                }
+                return .just(guid)
             }
             .eraseToAnyPublisher()
     }
@@ -28,7 +33,10 @@ public final class GuidService: GuidServiceAPI {
 
     // MARK: - Setup
 
-    public init(sessionTokenRepository: SessionTokenRepositoryAPI, client: GuidClientAPI) {
+    public init(
+        sessionTokenRepository: SessionTokenRepositoryAPI,
+        client: GuidClientAPI
+    ) {
         self.sessionTokenRepository = sessionTokenRepository
         self.client = client
     }

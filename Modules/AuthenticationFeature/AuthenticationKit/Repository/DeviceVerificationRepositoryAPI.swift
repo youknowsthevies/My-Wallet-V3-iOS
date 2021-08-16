@@ -6,10 +6,12 @@ import Combine
 public protocol DeviceVerificationRepositoryAPI {
 
     /// Sends a verification email to the user's email address. Thie will trigger the send GUID reminder endpoint and user will receive a link to verify their device in their inbox if they have an account registered with the email
+    /// - Parameters: sessionToken: The session token stored in the repository
     /// - Parameters: emailAddress: The email address of the user
     /// - Parameters: captcha: The captcha token returned from reCaptcha Service
     /// - Returns: A combine `Publisher` that emits Void on success or DeviceVerificationServiceError on failure
     func sendDeviceVerificationEmail(
+        sessionToken: String,
         to emailAddress: String,
         captcha: String
     ) -> AnyPublisher<Void, DeviceVerificationServiceError>

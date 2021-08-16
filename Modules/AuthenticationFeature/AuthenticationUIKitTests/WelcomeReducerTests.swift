@@ -29,6 +29,7 @@ final class WelcomeReducerTests: XCTestCase {
             reducer: welcomeReducer,
             environment: WelcomeEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
                 featureFlags: mockInternalFeatureFlagService,
                 buildVersionProvider: { "Test Version" },

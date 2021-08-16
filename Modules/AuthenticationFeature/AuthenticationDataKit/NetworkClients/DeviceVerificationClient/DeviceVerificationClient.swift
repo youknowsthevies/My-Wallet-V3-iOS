@@ -50,7 +50,12 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
 
     // MARK: - Methods
 
-    func sendGuidReminder(emailAddress: String, captcha: String) -> AnyPublisher<Void, NetworkError> {
+    func sendGuidReminder(
+        sessionToken: String,
+        emailAddress: String,
+        captcha: String
+    ) -> AnyPublisher<Void, NetworkError> {
+        let headers = [HeaderKey.cookie.rawValue: "SID=\(sessionToken)"]
         let parameters = [
             URLQueryItem(
                 name: Parameters.SendGuidReminder.method,
@@ -73,6 +78,7 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
         let request = requestBuilder.post(
             path: Path.wallet,
             body: data,
+            headers: headers,
             contentType: .formUrlEncoded
         )!
         return networkAdapter.perform(request: request)

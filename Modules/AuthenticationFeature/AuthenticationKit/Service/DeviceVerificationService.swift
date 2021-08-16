@@ -32,9 +32,18 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
         recaptchaService
             .verifyForLogin()
             .mapError(DeviceVerificationServiceError.recaptchaError)
-            .flatMap { [deviceVerificationRepository] captcha -> AnyPublisher<Void, DeviceVerificationServiceError> in
-                deviceVerificationRepository
-                    .sendDeviceVerificationEmail(to: emailAddress, captcha: captcha)
+            .zip(
+                sessionTokenRepository
+                    .sessionTokenPublisher
+                    .setFailureType(to: DeviceVerificationServiceError.self)
+            )
+            .flatMap { [deviceVerificationRepository] captcha, sessionTokenOrNil ->
+                AnyPublisher<Void, DeviceVerificationServiceError> in
+                guard let sessionToken = sessionTokenOrNil else {
+                    return .failure(.missingSessionToken)
+                }
+                return deviceVerificationRepository
+                    .sendDeviceVerificationEmail(sessionToken: sessionToken, to: emailAddress, captcha: captcha)
             }
             .eraseToAnyPublisher()
     }
@@ -51,7 +60,6 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
             .flatMap { [deviceVerificationRepository] sessionToken -> AnyPublisher<Void, DeviceVerificationServiceError> in
                 deviceVerificationRepository
                     .authorizeLogin(sessionToken: sessionToken, emailCode: emailCode)
-                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
