@@ -212,6 +212,7 @@ struct WelcomeView_Previews: PreviewProvider {
                 reducer: welcomeReducer,
                 environment: .init(
                     mainQueue: .main,
+                    sessionTokenService: NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlags: NoOpInternalFeatureFlagService(),
                     buildVersionProvider: { "Test version" }

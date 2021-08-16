@@ -27,7 +27,6 @@ public enum CredentialsAction: Equatable {
         case startPolling
         case pollWalletIdentifier
         case requestSMSCode
-        case setupSessionToken
     }
 
     case continueButtonTapped
@@ -103,7 +102,6 @@ struct CredentialsEnvironment {
     let pollingQueue: AnySchedulerOf<DispatchQueue>
     let deviceVerificationService: DeviceVerificationServiceAPI
     let emailAuthorizationService: EmailAuthorizationServiceAPI
-    let sessionTokenService: SessionTokenServiceAPI
     let smsService: SMSServiceAPI
     let loginService: LoginServiceAPI
     let wallet: WalletAuthenticationKitWrapper
@@ -120,7 +118,6 @@ struct CredentialsEnvironment {
         ).eraseToAnyScheduler(),
         deviceVerificationService: DeviceVerificationServiceAPI,
         emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
-        sessionTokenService: SessionTokenServiceAPI = resolve(),
         smsService: SMSServiceAPI = resolve(),
         loginService: LoginServiceAPI = resolve(),
         wallet: WalletAuthenticationKitWrapper = resolve(),
@@ -133,7 +130,6 @@ struct CredentialsEnvironment {
         self.pollingQueue = pollingQueue
         self.deviceVerificationService = deviceVerificationService
         self.emailAuthorizationService = emailAuthorizationService
-        self.sessionTokenService = sessionTokenService
         self.smsService = smsService
         self.loginService = loginService
         self.wallet = wallet
@@ -183,17 +179,17 @@ let credentialsReducer = Reducer.combine(
             state.emailAddress = info.email
             state.walletGuid = info.guid
             state.emailCode = info.emailCode
-            return Effect(value: .walletPairing(.setupSessionToken))
+            return .none
 
         case .didAppear(.walletIdentifier(let email)):
             state.isTroubleLoggingInScreenVisible = false
             state.emailAddress = email
-            return Effect(value: .walletPairing(.setupSessionToken))
+            return .none
 
         case .didAppear(.manualPairing):
             state.emailAddress = "not available on manual pairing"
             state.isManualPairing = true
-            return Effect(value: .walletPairing(.setupSessionToken))
+            return .none
 
         case .didAppear:
             return .none
@@ -453,25 +449,6 @@ let credentialsReducer = Reducer.combine(
                         )
                     }
             )
-
-        case .walletPairing(.setupSessionToken):
-            return environment
-                .sessionTokenService
-                .setupSessionToken()
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .map { result -> CredentialsAction in
-                    if case .failure(let error) = result {
-                        environment.errorRecorder.error(error)
-                        return .alert(
-                            .show(
-                                title: CredentialsLocalization.Alerts.GenericNetworkError.title,
-                                message: CredentialsLocalization.Alerts.GenericNetworkError.message
-                            )
-                        )
-                    }
-                    return .none
-                }
 
         case .setTwoFAOrHardwareKeyVerified(let isVerified):
             state.isTwoFACodeOrHardwareKeyVerified = isVerified

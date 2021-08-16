@@ -64,6 +64,7 @@ public struct WelcomeState: Equatable {
 
 public struct WelcomeEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let sessionTokenService: SessionTokenServiceAPI
     let deviceVerificationService: DeviceVerificationServiceAPI
     let buildVersionProvider: () -> String
     let featureFlags: InternalFeatureFlagServiceAPI
@@ -73,6 +74,7 @@ public struct WelcomeEnvironment {
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
+        sessionTokenService: SessionTokenServiceAPI = resolve(),
         deviceVerificationService: DeviceVerificationServiceAPI = resolve(),
         featureFlags: InternalFeatureFlagServiceAPI,
         buildVersionProvider: @escaping () -> String,
@@ -81,6 +83,7 @@ public struct WelcomeEnvironment {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.mainQueue = mainQueue
+        self.sessionTokenService = sessionTokenService
         self.deviceVerificationService = deviceVerificationService
         self.buildVersionProvider = buildVersionProvider
         self.featureFlags = featureFlags
@@ -98,8 +101,11 @@ public let welcomeReducer = Reducer.combine(
             action: /WelcomeAction.emailLogin,
             environment: {
                 EmailLoginEnvironment(
+                    sessionTokenService:
+                    $0.sessionTokenService,
                     deviceVerificationService: $0.deviceVerificationService,
                     mainQueue: $0.mainQueue,
+                    errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder
                 )
             }

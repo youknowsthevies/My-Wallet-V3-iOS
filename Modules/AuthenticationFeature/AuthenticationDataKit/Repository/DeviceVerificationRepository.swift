@@ -19,11 +19,12 @@ final class DeviceVerificationRepository: DeviceVerificationRepositoryAPI {
     // MARK: - DeviceVerificationRepositoryAPI
 
     func sendDeviceVerificationEmail(
+        sessionToken: String,
         to emailAddress: String,
         captcha: String
     ) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         apiClient
-            .sendGuidReminder(emailAddress: emailAddress, captcha: captcha)
+            .sendGuidReminder(sessionToken: sessionToken, emailAddress: emailAddress, captcha: captcha)
             .mapError(DeviceVerificationServiceError.networkError)
             .eraseToAnyPublisher()
     }

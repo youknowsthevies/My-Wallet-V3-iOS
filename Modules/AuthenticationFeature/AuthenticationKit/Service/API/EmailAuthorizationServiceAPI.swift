@@ -7,6 +7,9 @@ public enum EmailAuthorizationServiceError: Error {
     /// Session token is missing
     case missingSessionToken
 
+    /// Guid is missing
+    case missingGuid
+
     /// Instance of self was deallocated
     case unretainedSelf
 

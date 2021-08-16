@@ -10,7 +10,7 @@ public final class GuidClient: GuidClientAPI {
     // MARK: - Types
 
     struct Response: Decodable {
-        let guid: String
+        let guid: String?
     }
 
     // MARK: - Properties
@@ -31,7 +31,7 @@ public final class GuidClient: GuidClientAPI {
     // MARK: - API
 
     /// fetches the `GUID`
-    public func guid(by sessionToken: String) -> AnyPublisher<String, NetworkError> {
+    public func guid(by sessionToken: String) -> AnyPublisher<String?, NetworkError> {
         let request = requestBuilder.build(sessionToken: sessionToken)
         return networkAdpater
             .perform(request: request, responseType: Response.self)
