@@ -53,10 +53,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         debugCoordinator.enableDebugMenu(for: window)
         #endif
 
-        guard !newWelcomeScreenIsDisabled() else {
-            viewStore.send(.appDelegate(.didFinishLaunching(window: window)))
-            return true
-        }
         let hostingController = AppHostingController(
             store: store.scope(
                 state: \.coreState,
@@ -119,11 +115,6 @@ private func bootstrap() {
     let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
     featureFlagService.enable(.disableNewWelcomeScreen)
     #endif
-}
-
-func newWelcomeScreenIsDisabled() -> Bool {
-    let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
-    return featureFlagService.isEnabled(.disableNewWelcomeScreen)
 }
 
 private func eraseWalletForUITestsIfNeeded() {
