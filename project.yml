@@ -57,8 +57,6 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: EthereumKitTests
         randomExecutionOrder: true
-      - name: HDWalletKitTests
-        randomExecutionOrder: true
       - name: TransactionKitTests
         randomExecutionOrder: true
       - name: TransactionUIKitTests
@@ -346,6 +344,8 @@ packages:
     path: Modules/Localization
   WalletPayload:
     path: Modules/WalletPayload
+  HDWallet:
+    path: Modules/HDWallet
 targets:
   ActivityKit:
     dependencies:
@@ -556,7 +556,6 @@ targets:
     - target: BitcoinKit
     - target: BitcoinCashKit
     - target: BitcoinChainKit
-    - target: HDWalletKit
     - target: ActivityKit
     - target: ActivityUIKit
     - target: DashboardKit
@@ -686,6 +685,8 @@ targets:
       product: RxSwift
     - package: Analytics
       product: AnalyticsKit
+    - package: HDWallet
+      product: HDWalletKit
     - package: Analytics
       product: RxAnalyticsKit
     - package: Network
@@ -769,6 +770,8 @@ targets:
     - package: ComposableArchitecture
     - package: DIKit
     - package: FeatureAccountPicker
+    - package: HDWallet
+      product: HDWalletKit
     - package: Localization
     - package: Lottie
     - package: Network
@@ -863,21 +866,6 @@ targets:
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
       featureName: CryptoAssets
-    templates:
-    - ModuleTests
-  HDWalletKit:
-    scheme:
-      testTargets:
-      - HDWalletKitTests
-    templateAttributes:
-      featureName: HDWallet
-    templates:
-    - Module
-  HDWalletKitTests:
-    dependencies:
-    - target: HDWalletKit
-    templateAttributes:
-      featureName: HDWallet
     templates:
     - ModuleTests
   InterestKit:
@@ -1362,7 +1350,6 @@ targets:
       Release Internal: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
       Release Staging: Config/AuthenticationKitConfig/AuthenticationKit-Staging.xcconfig
     dependencies:
-    - target: HDWalletKit
     - framework: Carthage/Build/Zxcvbn.xcframework
     info:
       path: Modules/AuthenticationFeature/AuthenticationKit/Info.plist

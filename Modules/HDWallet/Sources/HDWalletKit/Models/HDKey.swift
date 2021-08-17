@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 struct ExtendedKey {
     let raw: Data
     let privateKey: UInt32

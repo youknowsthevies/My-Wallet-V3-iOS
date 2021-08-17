@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import CommonCryptoKit
+import Foundation
 
 struct Seed: HexRepresentable {
 

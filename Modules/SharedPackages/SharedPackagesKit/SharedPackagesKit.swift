@@ -11,6 +11,7 @@
 @_exported import Differentiator
 @_exported import DIKit
 @_exported import FeatureAccountPickerUI
+@_exported import HDWalletKit
 @_exported import Localization
 @_exported import Lottie
 @_exported import NetworkKit
