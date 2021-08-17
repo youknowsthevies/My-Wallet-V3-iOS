@@ -278,17 +278,20 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         }
         return .merge(
             .cancel(id: WalletCancelations.AuthenticationId()),
-            Effect(value: CoreAppAction.onboarding(
-                .welcomeScreen(
-                    .emailLogin(
-                        .verifyDevice(
-                            .credentials(
-                                .password(.incorrectPasswordErrorVisibility(true))
+            Effect(
+                value: CoreAppAction.onboarding(
+                    .welcomeScreen(
+                        .emailLogin(
+                            .verifyDevice(
+                                .credentials(
+                                    .password(
+                                        .incorrectPasswordErrorVisibility(true)
+                                    )
+                                )
                             )
                         )
                     )
                 )
-            )
             )
         )
     case .authenticated(.failure(let error)):
