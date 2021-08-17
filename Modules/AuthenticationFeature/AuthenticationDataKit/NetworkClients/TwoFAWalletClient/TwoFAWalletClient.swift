@@ -122,27 +122,16 @@ extension TwoFAWalletClient {
         private let pathComponents = ["wallet"]
 
         private enum Parameters {
+            static let method = "method"
             static let guid = "guid"
-            static let code = "code"
+            static let payload = "payload"
+            static let length = "length"
+            static let format = "format"
+            static let apiCode = "apiCode"
         }
 
         private enum HeaderKey: String {
             case authorization = "Authorization"
-        }
-
-        private struct Payload: Encodable {
-            let method = "get-wallet"
-            let guid: String
-            let payload: String
-            let length: Int
-            let format = "plain"
-            let apiCode = "api_code"
-
-            init(guid: String, payload: String) {
-                self.guid = guid
-                self.payload = payload
-                length = payload.count
-            }
         }
 
         // MARK: - Builder
@@ -159,12 +148,28 @@ extension TwoFAWalletClient {
             let headers = [HeaderKey.authorization.rawValue: "Bearer \(sessionToken)"]
             let parameters = [
                 URLQueryItem(
+                    name: Parameters.method,
+                    value: "get-wallet"
+                ),
+                URLQueryItem(
                     name: Parameters.guid,
                     value: guid
                 ),
                 URLQueryItem(
-                    name: Parameters.code,
+                    name: Parameters.payload,
                     value: code
+                ),
+                URLQueryItem(
+                    name: Parameters.length,
+                    value: String(code.count)
+                ),
+                URLQueryItem(
+                    name: Parameters.format,
+                    value: "plain"
+                ),
+                URLQueryItem(
+                    name: Parameters.apiCode,
+                    value: "api_code"
                 )
             ]
             let data = RequestBuilder.body(from: parameters)
