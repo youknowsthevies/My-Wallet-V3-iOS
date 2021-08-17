@@ -95,7 +95,7 @@ struct CredentialsView: View {
                 if let state = viewStore.twoFAState, state.isResendSMSButtonVisible {
                     Button(
                         action: {
-                            viewStore.send(.walletPairing(.requestSMSCode))
+                            viewStore.send(.walletPairing(.requestSMSCode(isResend: true)))
                         },
                         label: {
                             Text(LocalizedString.Button.resendSMS)

@@ -196,7 +196,7 @@ final class CredentialsReducerTests: XCTestCase {
             .do { self.mockMainQueue.advance() },
 
             // authentication with sms requied
-            .receive(.walletPairing(.requestSMSCode)),
+            .receive(.walletPairing(.requestSMSCode(isResend: false))),
             .receive(.twoFA(.resendSMSButtonVisibility(true))) { state in
                 state.twoFAState?.isResendSMSButtonVisible = true
             },

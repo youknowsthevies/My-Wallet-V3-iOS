@@ -26,7 +26,7 @@ public enum CredentialsAction: Equatable {
         case decryptWalletWithPassword(String)
         case startPolling
         case pollWalletIdentifier
-        case requestSMSCode
+        case requestSMSCode(isResend: Bool)
     }
 
     case continueButtonTapped
@@ -312,7 +312,7 @@ let credentialsReducer = Reducer.combine(
                                     }
                                     return .walletPairing(.approveEmailAuthorization)
                                 case .sms:
-                                    return .walletPairing(.requestSMSCode)
+                                    return .walletPairing(.requestSMSCode(isResend: false))
                                 case .google:
                                     return .twoFA(.twoFACodeFieldVisibility(true))
                                 case .yubiKey, .yubikeyMtGox:
@@ -413,13 +413,13 @@ let credentialsReducer = Reducer.combine(
                     }
             )
 
-        case .walletPairing(.requestSMSCode):
+        case .walletPairing(.requestSMSCode(let isResend)):
             return .merge(
                 Effect(value: .twoFA(.resendSMSButtonVisibility(true))),
                 Effect(value: .twoFA(.twoFACodeFieldVisibility(true))),
                 environment
                     .smsService
-                    .request()
+                    .request(isResend: isResend)
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result -> CredentialsAction in
