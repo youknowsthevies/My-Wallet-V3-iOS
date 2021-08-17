@@ -28,6 +28,12 @@ let package = Package(
                 .product(name: "BigInt", package: "BigInt")
             ]
         ),
+        .target(
+            name: "ToolKitMock",
+            dependencies: [
+                "ToolKit"
+            ]
+        ),
         .testTarget(
             name: "ToolKitTests",
             dependencies: [

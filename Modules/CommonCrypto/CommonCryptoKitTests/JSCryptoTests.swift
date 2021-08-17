@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import XCTest
-
 @testable import CommonCryptoKit
+import TestKit
+import XCTest
 
 class JSCryptoTests: XCTestCase {
 

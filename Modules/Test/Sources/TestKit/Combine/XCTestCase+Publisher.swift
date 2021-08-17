@@ -6,7 +6,7 @@ import XCTest
 extension XCTestCase {
 
     @discardableResult
-    func wait<Output, Error>(
+    public func wait<Output, Error>(
         for publisher: AnyPublisher<Output, Error>,
         file: StaticString = #file,
         line: UInt = #line

@@ -2,13 +2,13 @@
 
 import Foundation
 
-class MockUserDefaults: UserDefaults {
+public class MockUserDefaults: UserDefaults {
 
-    convenience init() {
+    public convenience init() {
         self.init(suiteName: "MockUserDefaults")!
     }
 
-    override init?(suiteName suitename: String?) {
+    override public init?(suiteName suitename: String?) {
         super.init(suiteName: suitename)
         super.removePersistentDomain(forName: suitename!)
     }

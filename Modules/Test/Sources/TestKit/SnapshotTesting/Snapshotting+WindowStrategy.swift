@@ -1,13 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import SnapshotTesting
 import SwiftUI
 import UIKit
-import XCTest
 
 extension XCTestCase {
 
-    func assert<Content: View>(
+    public func assert<Content: View>(
         _ view: Content,
         on config: ViewImageConfig,
         renderInWindow: Bool = false,

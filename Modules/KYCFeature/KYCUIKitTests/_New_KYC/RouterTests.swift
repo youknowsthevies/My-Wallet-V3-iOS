@@ -5,6 +5,7 @@ import ComposableArchitecture
 @testable import KYCUIKit
 import PlatformUIKit
 import SwiftUI
+import TestKit
 import XCTest
 
 final class RouterTests: XCTestCase {
