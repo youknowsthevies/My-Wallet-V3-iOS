@@ -91,9 +91,6 @@ struct EmailLoginView: View {
         .onAppear {
             viewStore.send(.onAppear)
         }
-        .onDisappear {
-            viewStore.send(.didDisappear)
-        }
     }
 
     private var emailField: some View {

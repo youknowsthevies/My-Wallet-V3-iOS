@@ -31,7 +31,6 @@ public enum CredentialsAction: Equatable {
 
     case continueButtonTapped
     case didAppear(context: CredentialsContext)
-    case didDisappear
     case didChangeWalletIdentifier(String)
     case password(PasswordAction)
     case twoFA(TwoFAAction)
@@ -193,14 +192,6 @@ let credentialsReducer = Reducer.combine(
 
         case .didAppear:
             return .none
-
-        case .didDisappear:
-            state.emailAddress = ""
-            state.walletGuid = ""
-            state.emailCode = ""
-            state.isTwoFACodeOrHardwareKeyVerified = false
-            state.isAccountLocked = false
-            return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
 
         case .didChangeWalletIdentifier(let guid):
             state.walletGuid = guid
