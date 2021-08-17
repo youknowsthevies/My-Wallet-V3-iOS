@@ -11,6 +11,7 @@
 @_exported import Differentiator
 @_exported import DIKit
 @_exported import FeatureAccountPickerUI
+@_exported import Localization
 @_exported import Lottie
 @_exported import NetworkKit
 @_exported import Nuke
@@ -26,3 +27,4 @@
 @_exported import ToolKit
 @_exported import UIComponentsKit
 @_exported import WalletCore
+@_exported import WalletPayloadKit

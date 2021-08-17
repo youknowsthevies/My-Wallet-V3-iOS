@@ -342,6 +342,10 @@ packages:
   WalletCore:
     url: git@github.com:oliveratkinson-bc/wallet-core.git
     branch: blockchain/swift-package-manager
+  Localization:
+    path: Modules/Localization
+  WalletPayload:
+    path: Modules/WalletPayload
 targets:
   ActivityKit:
     dependencies:
@@ -376,7 +380,6 @@ targets:
     - sdk: LinkPresentation.framework
     - sdk: SafariServices.framework
     - target: ActivityKit
-    - target: Localization
     - target: PlatformKit
     - target: PlatformUIKit
     scheme:
@@ -405,7 +408,6 @@ targets:
   BitcoinCashKit:
     dependencies:
     - target: BitcoinChainKit
-    - target: Localization
     - target: PlatformKit
     scheme:
       testTargets:
@@ -430,7 +432,6 @@ targets:
     - ModuleTests
   BitcoinChainKit:
     dependencies:
-    - target: Localization
     - target: PlatformKit
     - target: TransactionKit
     scheme:
@@ -457,7 +458,6 @@ targets:
   BitcoinKit:
     dependencies:
     - target: BitcoinChainKit
-    - target: Localization
     - target: PlatformKit
     - target: TransactionKit
     scheme:
@@ -550,7 +550,6 @@ targets:
     - target: TransactionKit
     - target: TransactionDataKit
     - target: TransactionUIKit
-    - target: WalletPayloadKit
     - target: StellarKit
     - target: EthereumKit
     - target: ERC20Kit
@@ -558,7 +557,6 @@ targets:
     - target: BitcoinCashKit
     - target: BitcoinChainKit
     - target: HDWalletKit
-    - target: Localization
     - target: ActivityKit
     - target: ActivityUIKit
     - target: DashboardKit
@@ -695,6 +693,9 @@ targets:
     - target: Blockchain
     - package: Test
       product: TestKit
+    - package: Localization
+    - package: WalletPayload
+      product: WalletPayloadKit
     platform: iOS
     sources:
     - path: BlockchainTests
@@ -768,6 +769,7 @@ targets:
     - package: ComposableArchitecture
     - package: DIKit
     - package: FeatureAccountPicker
+    - package: Localization
     - package: Lottie
     - package: Network
       product: NetworkKit
@@ -786,6 +788,8 @@ targets:
       product: ToolKit
     - package: UIComponents
     - package: WalletCore
+    - package: WalletPayload
+      product: WalletPayloadKit
     platform: iOS
     deploymentTarget:
         iOS: '14.0'
@@ -878,7 +882,6 @@ targets:
     - ModuleTests
   InterestKit:
     dependencies:
-    - target: Localization
     - target: PlatformKit
     - target: TransactionKit
     scheme:
@@ -928,7 +931,6 @@ targets:
   InterestUIKit:
     dependencies:
     - target: InterestKit
-    - target: Localization
     - target: PlatformKit
     - target: PlatformUIKit
     scheme:
@@ -956,7 +958,6 @@ targets:
     - ModuleTests
   KYCKit:
     dependencies:
-    - target: Localization
     - target: PlatformKit
     scheme:
       testTargets:
@@ -983,7 +984,6 @@ targets:
     dependencies:
     - framework: Carthage/Build/Veriff.xcframework
     - target: KYCKit
-    - target: Localization
     - target: PlatformKit
     - target: PlatformUIKit
     scheme:
@@ -1016,12 +1016,6 @@ targets:
       featureName: KYCFeature
     templates:
     - ModuleTests
-  Localization:
-    templateAttributes:
-      featureName: Localization
-    scheme: {}
-    templates:
-    - Module
   OnboardingDemo:
     dependencies:
     - target: KYCKit
@@ -1080,8 +1074,6 @@ targets:
   PlatformKit:
     dependencies:
     - target: AuthenticationKit
-    - target: Localization
-    - target: WalletPayloadKit
     scheme:
       testTargets:
       - PlatformKitTests
@@ -1110,7 +1102,6 @@ targets:
     - framework: Carthage/Build/Charts.xcframework
     - framework: Carthage/Build/PhoneNumberKit.xcframework
     - framework: Carthage/Build/Zxcvbn.xcframework
-    - target: Localization
     - target: PlatformKit
     scheme:
       testTargets:
@@ -1142,7 +1133,6 @@ targets:
     dependencies:
     - target: PlatformKit
     - target: PlatformUIKit
-    - target: WalletPayloadKit
     - target: KYCKit
     templateAttributes:
       featureName: SettingsFeature
@@ -1166,7 +1156,6 @@ targets:
       - target: KYCUIKit
       - target: PlatformKit
       - target: PlatformUIKit
-      - target: Localization
       - target: SettingsKit
     scheme:
       testTargets:
@@ -1190,7 +1179,6 @@ targets:
   StellarKit:
     dependencies:
     - target: PlatformKit
-    - target: Localization
     - target: TransactionKit
     - framework: Carthage/Build/stellarsdk.xcframework
     scheme:
@@ -1219,7 +1207,6 @@ targets:
     - sdk: NotificationCenter.framework
     - target: PlatformKit
     - target: PlatformUIKit
-    - target: Localization
     - target: SharedPackagesKit
     platform: iOS
     scheme: {}
@@ -1254,7 +1241,6 @@ targets:
     type: app-extension
   TransactionKit:
     dependencies:
-    - target: Localization
     - target: PlatformKit
     scheme:
       testTargets:
@@ -1309,7 +1295,6 @@ targets:
     dependencies:
     - target: KYCKit
     - target: KYCUIKit
-    - target: Localization
     - target: PlatformKit
     - target: PlatformUIKit
     - target: TransactionKit
@@ -1337,26 +1322,6 @@ targets:
       path: TestKit/TestKit/Mocks/TransactionUIKit
     templateAttributes:
       featureName: TransactionFeature
-    templates:
-    - ModuleTests
-  WalletPayloadKit:
-    dependencies:
-    - target: Localization
-    scheme:
-      testTargets:
-      - WalletPayloadKitTests
-    templateAttributes:
-      featureName: WalletPayload
-    templates:
-    - Module
-  WalletPayloadKitTests:
-    dependencies:
-    - target: WalletPayloadKit
-    sources:
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    templateAttributes:
-      featureName: WalletPayload
     templates:
     - ModuleTests
   RemoteNotificationsKit:
@@ -1449,7 +1414,6 @@ targets:
   AuthenticationDataKit:
     dependencies:
     - target: AuthenticationKit
-    - target: WalletPayloadKit
     scheme:
       testTargets:
       - AuthenticationDataKitTests
