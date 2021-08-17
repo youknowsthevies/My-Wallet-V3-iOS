@@ -19,7 +19,6 @@ public enum EmailLoginAction: Equatable {
 
     case closeButtonTapped
     case onAppear
-    case didDisappear
     case didChangeEmailAddress(String)
     case didSendDeviceVerificationEmail(Result<EmptyValue, DeviceVerificationServiceError>)
     case alert(AlertAction)
@@ -41,7 +40,7 @@ struct EmailLoginState: Equatable {
     var isLoading: Bool
 
     init() {
-        verifyDeviceState = .init(emailAddress: "")
+        verifyDeviceState = nil
         emailAddress = ""
         isEmailValid = false
         isVerifyDeviceScreenVisible = false
@@ -102,13 +101,6 @@ let emailLoginReducer = Reducer.combine(
                 event: .loginViewed
             )
             return Effect(value: .setupSessionToken)
-
-        case .didDisappear:
-            state.emailAddress = ""
-            state.isEmailValid = false
-            state.isVerifyDeviceScreenVisible = false
-            state.emailLoginFailureAlert = nil
-            return .none
 
         case .didChangeEmailAddress(let emailAddress):
             state.emailAddress = emailAddress
@@ -196,6 +188,9 @@ let emailLoginReducer = Reducer.combine(
 
         case .setVerifyDeviceScreenVisible(let isVisible):
             state.isVerifyDeviceScreenVisible = isVisible
+            if isVisible {
+                state.verifyDeviceState = .init(emailAddress: state.emailAddress)
+            }
             return .none
 
         case .verifyDevice:

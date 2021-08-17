@@ -50,7 +50,7 @@ final class WelcomeReducerTests: XCTestCase {
 
     func test_verify_initial_state_is_correct() {
         let state = WelcomeState()
-        XCTAssertNotNil(state.emailLoginState)
+        XCTAssertNil(state.emailLoginState)
     }
 
     func test_start_updates_the_build_version() {
@@ -76,15 +76,25 @@ final class WelcomeReducerTests: XCTestCase {
         ]
         screenFlows.forEach { screenFlow in
             testStore.send(.presentScreenFlow(screenFlow)) { state in
+                switch screenFlow {
+                case .emailLoginScreen:
+                    state.emailLoginState = .init()
+                case .welcomeScreen, .createWalletScreen, .recoverWalletScreen, .manualLoginScreen:
+                    state.emailLoginState = nil
+                }
                 state.screenFlow = screenFlow
             }
         }
     }
 
     func test_close_email_login_should_reset_state() {
+        testStore.send(.presentScreenFlow(.emailLoginScreen)) { state in
+            state.screenFlow = .emailLoginScreen
+            state.emailLoginState = .init()
+        }
         testStore.send(.emailLogin(.closeButtonTapped)) { state in
             state.screenFlow = .welcomeScreen
-            XCTAssertNotNil(state.emailLoginState)
+            state.emailLoginState = nil
         }
     }
 
@@ -121,6 +131,7 @@ final class WelcomeReducerTests: XCTestCase {
         testStore.send(.secondPasswordNotice(.closeButtonTapped)) { state in
             state.screenFlow = .welcomeScreen
             state.modals = .none
+            state.emailLoginState = nil
             state.secondPasswordNoticeState = nil
             state.manualCredentialsState = nil
         }
@@ -144,6 +155,7 @@ final class WelcomeReducerTests: XCTestCase {
         testStore.send(.modalDismissed(.secondPasswordNoticeScreen)) { state in
             state.screenFlow = .welcomeScreen
             state.modals = .none
+            state.emailLoginState = nil
             state.secondPasswordNoticeState = nil
             state.manualCredentialsState = nil
         }

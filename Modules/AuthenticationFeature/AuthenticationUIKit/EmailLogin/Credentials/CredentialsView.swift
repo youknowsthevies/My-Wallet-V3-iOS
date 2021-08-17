@@ -178,9 +178,6 @@ struct CredentialsView: View {
         .onAppear {
             viewStore.send(.didAppear(context: context))
         }
-        .onDisappear {
-            viewStore.send(.didDisappear)
-        }
         .alert(self.store.scope(state: \.credentialsFailureAlert), dismiss: .alert(.dismiss))
     }
 

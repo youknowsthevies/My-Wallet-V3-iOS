@@ -42,7 +42,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
 
     func test_verify_initial_state_is_correct() {
         let state = VerifyDeviceState(emailAddress: "")
-        XCTAssertNotNil(state.credentialsState)
+        XCTAssertNil(state.credentialsState)
         XCTAssertEqual(state.credentialsContext, .none)
         XCTAssertFalse(state.isCredentialsScreenVisible)
     }
@@ -55,6 +55,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
                 state.credentialsContext = .walletInfo(MockDeviceVerificationService.mockWalletInfo)
             },
             .receive(.setCredentialsScreenVisible(true)) { state in
+                state.credentialsState = .init()
                 state.isCredentialsScreenVisible = true
             }
         )
@@ -69,6 +70,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
         }
 
         testStore.receive(.setCredentialsScreenVisible(true)) { state in
+            state.credentialsState = .init()
             state.isCredentialsScreenVisible = true
         }
     }
