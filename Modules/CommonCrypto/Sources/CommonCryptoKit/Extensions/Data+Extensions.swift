@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 extension NSData {
     public var hexValue: String {
         (self as Data).hexValue

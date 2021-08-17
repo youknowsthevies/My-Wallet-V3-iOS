@@ -2,6 +2,7 @@
 
 import CommonCryptoKit
 import DIKit
+import Foundation
 
 enum PayloadCryptoError: Error {
     case unknown

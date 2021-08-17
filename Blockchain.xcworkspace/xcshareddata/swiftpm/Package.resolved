@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "CryptoSwift",
+        "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
+        "state": {
+          "branch": null,
+          "revision": "8d4f6384e0a8cc41f2005247241dd553963a492a",
+          "version": "1.4.1"
+        }
+      },
+      {
         "package": "DIKit",
         "repositoryURL": "git@github.com:jackpooleybc/DIKit.git",
         "state": {
@@ -128,30 +137,12 @@
         }
       },
       {
-        "package": "swift-collections",
-        "repositoryURL": "https://github.com/apple/swift-collections",
-        "state": {
-          "branch": null,
-          "revision": "0959ba76a1d4a98fd11163aa83fd49c25b93bfae",
-          "version": "0.0.5"
-        }
-      },
-      {
         "package": "swift-composable-architecture",
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "96cdc7e38e2d1d89b95b0ad80c914eb369476c4b",
-          "version": "0.24.0"
-        }
-      },
-      {
-        "package": "swift-identified-collections",
-        "repositoryURL": "https://github.com/pointfreeco/swift-identified-collections",
-        "state": {
-          "branch": null,
-          "revision": "edececbdb56b07e9402f2f3f5b907d220a28b4ea",
-          "version": "0.1.1"
+          "revision": "0f026d395d414efab5cfdf8d697ec0ae766dd021",
+          "version": "0.18.0"
         }
       },
       {
@@ -161,6 +152,15 @@
           "branch": null,
           "revision": "f8a9c997c3c1dab4e216a8ec9014e23144cbab37",
           "version": "1.9.0"
+        }
+      },
+      {
+        "package": "WalletCore",
+        "repositoryURL": "git@github.com:oliveratkinson-bc/wallet-core.git",
+        "state": {
+          "branch": "blockchain/swift-package-manager",
+          "revision": "b71f88aa2f3087a8c1ecd00371f16970b8cbbec3",
+          "version": null
         }
       },
       {

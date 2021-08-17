@@ -5,7 +5,9 @@
 @_exported import AnalyticsKit
 @_exported import BigInt
 @_exported import CombineExt
+@_exported import CommonCryptoKit
 @_exported import ComposableArchitecture
+@_exported import CryptoSwift
 @_exported import Differentiator
 @_exported import DIKit
 @_exported import FeatureAccountPickerUI
@@ -20,5 +22,7 @@
 @_exported import RxDataSources
 @_exported import RxRelay
 @_exported import RxSwift
+@_exported import SwiftProtobuf
 @_exported import ToolKit
 @_exported import UIComponentsKit
+@_exported import WalletCore

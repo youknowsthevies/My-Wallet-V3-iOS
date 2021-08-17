@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import CommonCrypto
+import Foundation
 
 public enum PBKDF2Error: Error {
     case keyDerivationError

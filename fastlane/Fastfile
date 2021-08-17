@@ -97,7 +97,9 @@ platform :ios do
   
   desc "Runs all unit tests on Blockchain (Staging) scheme"
   lane :execute_tests do
-    scan
+    scan(
+      cloned_source_packages_path: "SourcePackages"
+    )
   end
   
   desc "Updates code signing on the current machine"

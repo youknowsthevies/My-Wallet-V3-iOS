@@ -59,7 +59,7 @@ class JSCryptoTests: XCTestCase {
                 expectedHex: "447624b536f1197235e40cf4391c9eb57f08cdd00264047840e87d06ecbf9786"
             ),
             TestItem(
-                password: MockWalletTestData.Bip39.passphrase,
+                password: "M6rv3L9JavGy3Si%PD5EHTKPz$E9N5",
                 salt: [
                     194,
                     5,
@@ -118,7 +118,7 @@ class JSCryptoTests: XCTestCase {
 
         let tests = [
             TestItem(
-                password: MockWalletTestData.Bip39.mnemonic,
+                password: "exercise loop fly noodle various century tooth remember relief castle entire high",
                 salt: [
                     109,
                     110,

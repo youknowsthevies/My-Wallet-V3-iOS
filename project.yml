@@ -37,8 +37,6 @@ schemeTemplates:
       config: ${debugConfig}
       gatherCoverageData: true
       targets:
-      - name: CommonCryptoKitTests
-        randomExecutionOrder: true
       - name: PlatformKitTests
         randomExecutionOrder: true
       - name: PlatformUIKitTests
@@ -339,6 +337,11 @@ packages:
     path: Modules/Network
   Test:
     path: Modules/Test
+  CommonCrypto:
+    path: Modules/CommonCrypto
+  WalletCore:
+    url: git@github.com:oliveratkinson-bc/wallet-core.git
+    branch: blockchain/swift-package-manager
 targets:
   ActivityKit:
     dependencies:
@@ -427,7 +430,6 @@ targets:
     - ModuleTests
   BitcoinChainKit:
     dependencies:
-    - framework: Carthage/Build/SwiftProtobuf.xcframework
     - target: Localization
     - target: PlatformKit
     - target: TransactionKit
@@ -454,7 +456,6 @@ targets:
     - ModuleTests
   BitcoinKit:
     dependencies:
-    - framework: Carthage/Build/WalletCore.xcframework
     - target: BitcoinChainKit
     - target: Localization
     - target: PlatformKit
@@ -495,7 +496,6 @@ targets:
     dependencies:
     - sdk: libicucore.tbd
     - framework: Carthage/Build/Charts.xcframework
-    - framework: Carthage/Build/CryptoSwift.xcframework
     - framework: Carthage/Build/FirebaseABTesting.xcframework
       embed: false
     - framework: Carthage/Build/FirebaseAnalytics.xcframework
@@ -537,9 +537,7 @@ targets:
       embed: false
     - framework: Carthage/Build/Sift.xcframework
     - framework: Carthage/Build/stellarsdk.xcframework
-    - framework: Carthage/Build/SwiftProtobuf.xcframework
     - framework: Carthage/Build/Veriff.xcframework
-    - framework: Carthage/Build/WalletCore.xcframework
     - framework: Carthage/Build/Zxcvbn.xcframework
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
@@ -560,7 +558,6 @@ targets:
     - target: BitcoinCashKit
     - target: BitcoinChainKit
     - target: HDWalletKit
-    - target: CommonCryptoKit
     - target: Localization
     - target: ActivityKit
     - target: ActivityUIKit
@@ -766,6 +763,8 @@ targets:
       product: RxAnalyticsKit
     - package: BigInt
     - package: CombineExt
+    - package: CommonCrypto
+      product: CommonCryptoKit
     - package: ComposableArchitecture
     - package: DIKit
     - package: FeatureAccountPicker
@@ -786,6 +785,7 @@ targets:
     - package: Tool
       product: ToolKit
     - package: UIComponents
+    - package: WalletCore
     platform: iOS
     deploymentTarget:
         iOS: '14.0'
@@ -796,25 +796,6 @@ targets:
       - Scripts
       path: Modules/SharedPackages/SharedPackagesKit
     type: framework
-  CommonCryptoKit:
-    dependencies:
-    - framework: Carthage/Build/CryptoSwift.xcframework
-    - framework: Carthage/Build/SwiftProtobuf.xcframework
-    - framework: Carthage/Build/WalletCore.xcframework
-    scheme:
-      testTargets:
-      - CommonCryptoKitTests
-    templateAttributes:
-      featureName: CommonCrypto
-    templates:
-    - Module
-  CommonCryptoKitTests:
-    dependencies:
-    - target: CommonCryptoKit
-    templateAttributes:
-      featureName: CommonCrypto
-    templates:
-    - ModuleTests
   DebugUIKit:
     dependencies:
     - target: PlatformKit
@@ -825,8 +806,6 @@ targets:
     - Module
   ERC20Kit:
     dependencies:
-    - framework: Carthage/Build/SwiftProtobuf.xcframework
-    - framework: Carthage/Build/WalletCore.xcframework
     - target: EthereumKit
     - target: PlatformKit
     - target: TransactionKit
@@ -857,8 +836,6 @@ targets:
     - ModuleTests
   EthereumKit:
     dependencies:
-    - framework: Carthage/Build/SwiftProtobuf.xcframework
-    - framework: Carthage/Build/WalletCore.xcframework
     - target: PlatformKit
     - target: TransactionKit
     scheme:
@@ -885,8 +862,6 @@ targets:
     templates:
     - ModuleTests
   HDWalletKit:
-    dependencies:
-    - target: CommonCryptoKit
     scheme:
       testTargets:
       - HDWalletKitTests
@@ -952,7 +927,6 @@ targets:
     - ModuleTests
   InterestUIKit:
     dependencies:
-    - target: CommonCryptoKit
     - target: InterestKit
     - target: Localization
     - target: PlatformKit
@@ -1105,9 +1079,7 @@ targets:
     - ModuleTests
   PlatformKit:
     dependencies:
-    - framework: Carthage/Build/CryptoSwift.xcframework
     - target: AuthenticationKit
-    - target: CommonCryptoKit
     - target: Localization
     - target: WalletPayloadKit
     scheme:
@@ -1170,7 +1142,6 @@ targets:
     dependencies:
     - target: PlatformKit
     - target: PlatformUIKit
-    - target: CommonCryptoKit
     - target: WalletPayloadKit
     - target: KYCKit
     templateAttributes:
@@ -1191,7 +1162,6 @@ targets:
       featureName: SettingsFeature
   SettingsUIKit:
     dependencies:
-      - target: SharedPackagesKit
       - target: KYCKit
       - target: KYCUIKit
       - target: PlatformKit
@@ -1371,8 +1341,6 @@ targets:
     - ModuleTests
   WalletPayloadKit:
     dependencies:
-    - framework: Carthage/Build/CryptoSwift.xcframework
-    - target: CommonCryptoKit
     - target: Localization
     scheme:
       testTargets:
@@ -1482,7 +1450,6 @@ targets:
     dependencies:
     - target: AuthenticationKit
     - target: WalletPayloadKit
-    - target: CommonCryptoKit
     scheme:
       testTargets:
       - AuthenticationDataKitTests

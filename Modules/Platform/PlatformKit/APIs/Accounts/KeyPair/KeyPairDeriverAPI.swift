@@ -5,6 +5,7 @@ import Foundation
 public protocol KeyPairDeriverAPI {
     associatedtype Pair: KeyPair
     associatedtype Input: KeyDerivationInput
+    associatedtype Error: Swift.Error
 
     /// Derives a `KeyPair` given specific inputs (e.g. mnemonic + password)
     /// This action is deterministic (i.e. the same mnemonic + password combination will create the
@@ -15,17 +16,17 @@ public protocol KeyPairDeriverAPI {
     func derive(input: Input) -> Result<Pair, Error>
 }
 
-public struct AnyKeyPairDeriver<P: KeyPair, I: KeyDerivationInput>: KeyPairDeriverAPI {
+public struct AnyKeyPairDeriver<P: KeyPair, I: KeyDerivationInput, E: Error>: KeyPairDeriverAPI {
 
-    public typealias Deriver = (I) -> Result<P, Error>
+    public typealias Deriver = (I) -> Result<P, E>
 
     private let derivingClosure: Deriver
 
-    public init<D: KeyPairDeriverAPI>(deriver: D) where D.Pair == P, D.Input == I {
+    public init<D: KeyPairDeriverAPI>(deriver: D) where D.Pair == P, D.Input == I, D.Error == E {
         derivingClosure = deriver.derive
     }
 
-    public func derive(input: I) -> Result<P, Error> {
+    public func derive(input: I) -> Result<P, E> {
         derivingClosure(input)
     }
 }
