@@ -2,8 +2,8 @@
 
 import ComposableArchitecture
 @testable import KYCUIKit
-import TestKit
 import SwiftUI
+import TestKit
 import XCTest
 
 // swiftlint:disable type_body_length

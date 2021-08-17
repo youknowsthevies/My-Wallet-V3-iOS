@@ -4,8 +4,8 @@ import Combine
 import ComposableArchitecture
 @testable import KYCUIKit
 import PlatformUIKit
-import TestKit
 import SwiftUI
+import TestKit
 import XCTest
 
 final class RouterTests: XCTestCase {

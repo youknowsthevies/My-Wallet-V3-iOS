@@ -9,7 +9,7 @@ class MockAnalyticsService: AnalyticsServiceProviderAPI {
 }
 
 class MockAnalyticsRecorder: AnalyticsEventRecorderAPI {
-    
+
     func trackEvent(title: String, parameters: [String: Any]?) {}
 
     var recordEventCalled: (called: Bool, event: AnalyticsEvent?) = (false, nil)

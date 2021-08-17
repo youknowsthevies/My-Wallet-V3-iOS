@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import OnboardingUIKit
+import TestKit
 import ToolKit
 import XCTest
-import TestKit
 
 final class OnboardingRouterTests: XCTestCase {
 

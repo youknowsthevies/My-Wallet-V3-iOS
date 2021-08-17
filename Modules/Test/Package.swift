@@ -10,7 +10,7 @@ let package = Package(
         .library(
             name: "TestKit",
             targets: ["TestKit"]
-        ),
+        )
     ],
     dependencies: [
         .package(name: "SnapshotTesting", url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.9.0")
