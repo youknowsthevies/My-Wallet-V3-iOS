@@ -26,13 +26,11 @@ public enum CredentialsAction: Equatable {
         case decryptWalletWithPassword(String)
         case startPolling
         case pollWalletIdentifier
-        case requestSMSCode
-        case setupSessionToken
+        case requestSMSCode(isResend: Bool)
     }
 
     case continueButtonTapped
     case didAppear(context: CredentialsContext)
-    case didDisappear
     case didChangeWalletIdentifier(String)
     case password(PasswordAction)
     case twoFA(TwoFAAction)
@@ -103,7 +101,6 @@ struct CredentialsEnvironment {
     let pollingQueue: AnySchedulerOf<DispatchQueue>
     let deviceVerificationService: DeviceVerificationServiceAPI
     let emailAuthorizationService: EmailAuthorizationServiceAPI
-    let sessionTokenService: SessionTokenServiceAPI
     let smsService: SMSServiceAPI
     let loginService: LoginServiceAPI
     let wallet: WalletAuthenticationKitWrapper
@@ -120,7 +117,6 @@ struct CredentialsEnvironment {
         ).eraseToAnyScheduler(),
         deviceVerificationService: DeviceVerificationServiceAPI,
         emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
-        sessionTokenService: SessionTokenServiceAPI = resolve(),
         smsService: SMSServiceAPI = resolve(),
         loginService: LoginServiceAPI = resolve(),
         wallet: WalletAuthenticationKitWrapper = resolve(),
@@ -133,7 +129,6 @@ struct CredentialsEnvironment {
         self.pollingQueue = pollingQueue
         self.deviceVerificationService = deviceVerificationService
         self.emailAuthorizationService = emailAuthorizationService
-        self.sessionTokenService = sessionTokenService
         self.smsService = smsService
         self.loginService = loginService
         self.wallet = wallet
@@ -183,28 +178,20 @@ let credentialsReducer = Reducer.combine(
             state.emailAddress = info.email
             state.walletGuid = info.guid
             state.emailCode = info.emailCode
-            return Effect(value: .walletPairing(.setupSessionToken))
+            return .none
 
         case .didAppear(.walletIdentifier(let email)):
             state.isTroubleLoggingInScreenVisible = false
             state.emailAddress = email
-            return Effect(value: .walletPairing(.setupSessionToken))
+            return .none
 
         case .didAppear(.manualPairing):
             state.emailAddress = "not available on manual pairing"
             state.isManualPairing = true
-            return Effect(value: .walletPairing(.setupSessionToken))
+            return .none
 
         case .didAppear:
             return .none
-
-        case .didDisappear:
-            state.emailAddress = ""
-            state.walletGuid = ""
-            state.emailCode = ""
-            state.isTwoFACodeOrHardwareKeyVerified = false
-            state.isAccountLocked = false
-            return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
 
         case .didChangeWalletIdentifier(let guid):
             state.walletGuid = guid
@@ -325,7 +312,7 @@ let credentialsReducer = Reducer.combine(
                                     }
                                     return .walletPairing(.approveEmailAuthorization)
                                 case .sms:
-                                    return .walletPairing(.requestSMSCode)
+                                    return .walletPairing(.requestSMSCode(isResend: false))
                                 case .google:
                                     return .twoFA(.twoFACodeFieldVisibility(true))
                                 case .yubiKey, .yubikeyMtGox:
@@ -426,13 +413,13 @@ let credentialsReducer = Reducer.combine(
                     }
             )
 
-        case .walletPairing(.requestSMSCode):
+        case .walletPairing(.requestSMSCode(let isResend)):
             return .merge(
                 Effect(value: .twoFA(.resendSMSButtonVisibility(true))),
                 Effect(value: .twoFA(.twoFACodeFieldVisibility(true))),
                 environment
                     .smsService
-                    .request()
+                    .request(isResend: isResend)
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result -> CredentialsAction in
@@ -453,25 +440,6 @@ let credentialsReducer = Reducer.combine(
                         )
                     }
             )
-
-        case .walletPairing(.setupSessionToken):
-            return environment
-                .sessionTokenService
-                .setupSessionToken()
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .map { result -> CredentialsAction in
-                    if case .failure(let error) = result {
-                        environment.errorRecorder.error(error)
-                        return .alert(
-                            .show(
-                                title: CredentialsLocalization.Alerts.GenericNetworkError.title,
-                                message: CredentialsLocalization.Alerts.GenericNetworkError.message
-                            )
-                        )
-                    }
-                    return .none
-                }
 
         case .setTwoFAOrHardwareKeyVerified(let isVerified):
             state.isTwoFACodeOrHardwareKeyVerified = isVerified

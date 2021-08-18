@@ -19,7 +19,6 @@ public enum VerifyDeviceAction: Equatable {
 
     case credentials(CredentialsAction)
     case didAppear
-    case didDisappear
     case fallbackToWalletIdentifier
     case didExtractWalletInfo(WalletInfo)
     case didReceiveWalletInfoDeeplink(URL)
@@ -42,7 +41,7 @@ struct VerifyDeviceState: Equatable {
 
     init(emailAddress: String) {
         self.emailAddress = emailAddress
-        credentialsState = .init()
+        credentialsState = nil
         isCredentialsScreenVisible = false
         credentialsContext = .none
         sendEmailButtonIsLoading = false
@@ -96,21 +95,15 @@ let verifyDeviceReducer = Reducer.combine(
             state.isCredentialsScreenVisible = false
             return .none
 
-        case .didDisappear:
-            state.verifyDeviceFailureAlert = nil
-            return .none
-
         case .credentials:
             // handled in credentials reducer
             return .none
 
         case .didExtractWalletInfo(let walletInfo):
-            state.credentialsState = .init()
             state.credentialsContext = .walletInfo(walletInfo)
             return Effect(value: .setCredentialsScreenVisible(true))
 
         case .fallbackToWalletIdentifier:
-            state.credentialsState = .init()
             state.credentialsContext = .walletIdentifier(email: state.emailAddress)
             return Effect(value: .setCredentialsScreenVisible(true))
 
@@ -142,6 +135,9 @@ let verifyDeviceReducer = Reducer.combine(
 
         case .setCredentialsScreenVisible(let isVisible):
             state.isCredentialsScreenVisible = isVisible
+            if isVisible {
+                state.credentialsState = .init()
+            }
             return .none
 
         case .verifyDeviceFailureAlert(.show(let title, let message)):

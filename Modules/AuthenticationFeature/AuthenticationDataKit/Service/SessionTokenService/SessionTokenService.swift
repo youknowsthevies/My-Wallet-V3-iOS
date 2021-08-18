@@ -19,9 +19,9 @@ public final class SessionTokenService: SessionTokenServiceAPI {
 
     public func setupSessionToken() -> AnyPublisher<Void, SessionTokenServiceError> {
         repository.hasSessionTokenPublisher
-            .flatMap { [client] hasSessionToken -> AnyPublisher<String?, SessionTokenServiceError> in
+            .flatMap { [repository, client] hasSessionToken -> AnyPublisher<String?, SessionTokenServiceError> in
                 guard !hasSessionToken else {
-                    return .just("")
+                    return repository.sessionToken.asPublisher().ignoreFailure(setFailureType: SessionTokenServiceError.self)
                 }
                 return client.token
                     .mapError(SessionTokenServiceError.networkError)

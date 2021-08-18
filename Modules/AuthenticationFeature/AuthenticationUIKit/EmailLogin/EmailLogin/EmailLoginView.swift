@@ -89,10 +89,7 @@ struct EmailLoginView: View {
         }
         .alert(self.store.scope(state: \.emailLoginFailureAlert), dismiss: .alert(.dismiss))
         .onAppear {
-            self.viewStore.send(.onAppear)
-        }
-        .onDisappear {
-            self.viewStore.send(.didDisappear)
+            viewStore.send(.onAppear)
         }
     }
 
@@ -141,8 +138,11 @@ struct EmailLoginView_Previews: PreviewProvider {
                 initialState: .init(),
                 reducer: emailLoginReducer,
                 environment: .init(
+                    sessionTokenService:
+                    NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     mainQueue: .main,
+                    errorRecorder: NoOpErrorRecoder(),
                     analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )

@@ -52,7 +52,7 @@ public struct WelcomeState: Equatable {
     var manualPairingEnabled: Bool
 
     public init() {
-        emailLoginState = .init()
+        emailLoginState = nil
         manualCredentialsState = nil
         secondPasswordNoticeState = nil
         buildVersion = ""
@@ -64,6 +64,7 @@ public struct WelcomeState: Equatable {
 
 public struct WelcomeEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let sessionTokenService: SessionTokenServiceAPI
     let deviceVerificationService: DeviceVerificationServiceAPI
     let buildVersionProvider: () -> String
     let featureFlags: InternalFeatureFlagServiceAPI
@@ -73,6 +74,7 @@ public struct WelcomeEnvironment {
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
+        sessionTokenService: SessionTokenServiceAPI = resolve(),
         deviceVerificationService: DeviceVerificationServiceAPI = resolve(),
         featureFlags: InternalFeatureFlagServiceAPI,
         buildVersionProvider: @escaping () -> String,
@@ -81,6 +83,7 @@ public struct WelcomeEnvironment {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.mainQueue = mainQueue
+        self.sessionTokenService = sessionTokenService
         self.deviceVerificationService = deviceVerificationService
         self.buildVersionProvider = buildVersionProvider
         self.featureFlags = featureFlags
@@ -98,8 +101,11 @@ public let welcomeReducer = Reducer.combine(
             action: /WelcomeAction.emailLogin,
             environment: {
                 EmailLoginEnvironment(
+                    sessionTokenService:
+                    $0.sessionTokenService,
                     deviceVerificationService: $0.deviceVerificationService,
                     mainQueue: $0.mainQueue,
+                    errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder
                 )
             }
@@ -141,6 +147,12 @@ public let welcomeReducer = Reducer.combine(
             return .none
         case .presentScreenFlow(let screenFlow):
             state.screenFlow = screenFlow
+            switch screenFlow {
+            case .emailLoginScreen:
+                state.emailLoginState = .init()
+            case .welcomeScreen, .createWalletScreen, .recoverWalletScreen, .manualLoginScreen:
+                state.emailLoginState = nil
+            }
             #if INTERNAL_BUILD
             if screenFlow == .manualLoginScreen {
                 state.manualCredentialsState = .init()
@@ -158,10 +170,9 @@ public let welcomeReducer = Reducer.combine(
         case .requestedToDecryptWallet(let password):
             // handled in core coordinator
             return .none
-        case .emailLogin(.closeButtonTapped),
-             .emailLogin(.didDisappear):
+        case .emailLogin(.closeButtonTapped):
             state.screenFlow = .welcomeScreen
-            state.emailLoginState = .init()
+            state.emailLoginState = nil
             return .none
         case .emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))):
             return Effect(value: .requestedToDecryptWallet(password))
@@ -171,8 +182,7 @@ public let welcomeReducer = Reducer.combine(
 
         case .manualPairing(.walletPairing(.decryptWalletWithPassword(let password))):
             return Effect(value: .requestedToDecryptWallet(password))
-        case .manualPairing(.closeButtonTapped),
-             .manualPairing(.didDisappear):
+        case .manualPairing(.closeButtonTapped):
             state.screenFlow = .welcomeScreen
             return .none
         case .manualPairing:
@@ -185,7 +195,7 @@ public let welcomeReducer = Reducer.combine(
         case .secondPasswordNotice(.closeButtonTapped):
             state.screenFlow = .welcomeScreen
             state.modals = .none
-            state.emailLoginState = .init()
+            state.emailLoginState = nil
             state.manualCredentialsState = nil
             state.secondPasswordNoticeState = nil
             return .none
@@ -194,7 +204,7 @@ public let welcomeReducer = Reducer.combine(
         case .modalDismissed(.secondPasswordNoticeScreen) where state.secondPasswordNoticeState != nil:
             state.screenFlow = .welcomeScreen
             state.modals = .none
-            state.emailLoginState = .init()
+            state.emailLoginState = nil
             state.manualCredentialsState = nil
             state.secondPasswordNoticeState = nil
             return .none

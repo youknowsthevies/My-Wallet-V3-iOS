@@ -5,6 +5,7 @@ import NetworkKit
 
 protocol DeviceVerificationClientAPI {
     func sendGuidReminder(
+        sessionToken: String,
         emailAddress: String,
         captcha: String
     ) -> AnyPublisher<

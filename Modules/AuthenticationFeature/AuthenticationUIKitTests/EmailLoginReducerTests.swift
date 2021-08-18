@@ -24,8 +24,10 @@ final class EmailLoginReducerTests: XCTestCase {
             initialState: .init(),
             reducer: emailLoginReducer,
             environment: .init(
+                sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                errorRecorder: MockErrorRecorder(),
                 analyticsRecorder: MockAnalyticsRecorder()
             )
         )
@@ -39,18 +41,19 @@ final class EmailLoginReducerTests: XCTestCase {
 
     func test_verify_initial_state_is_correct() {
         let state = EmailLoginState()
-        XCTAssertNotNil(state.verifyDeviceState)
+        XCTAssertNil(state.verifyDeviceState)
         XCTAssertEqual(state.emailAddress, "")
         XCTAssertFalse(state.isEmailValid)
         XCTAssertFalse(state.isVerifyDeviceScreenVisible)
     }
 
-    func test_disappear_will_reset_state() {
-        testStore.send(.didDisappear) { state in
-            XCTAssertEqual(state.emailAddress, "")
-            XCTAssertFalse(state.isEmailValid)
-            XCTAssertFalse(state.isVerifyDeviceScreenVisible)
-        }
+    func test_on_appear_should_setup_session_token() {
+        testStore.assert(
+            .send(.onAppear),
+            .receive(.setupSessionToken),
+            .do { self.mockMainQueue.advance() },
+            .receive(.none)
+        )
     }
 
     func test_send_device_verification_email_success() {
@@ -71,6 +74,8 @@ final class EmailLoginReducerTests: XCTestCase {
                 state.verifyDeviceState?.sendEmailButtonIsLoading = false
             },
             .receive(.setVerifyDeviceScreenVisible(true)) { state in
+                XCTAssertNotNil(state.verifyDeviceState)
+                state.verifyDeviceState?.emailAddress = validEmail
                 state.isVerifyDeviceScreenVisible = true
             }
         )

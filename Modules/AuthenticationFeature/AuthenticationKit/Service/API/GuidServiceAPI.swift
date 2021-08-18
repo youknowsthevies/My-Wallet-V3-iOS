@@ -7,6 +7,7 @@ import NetworkKit
 
 public enum GuidServiceError: Error {
     case missingSessionToken
+    case missingGuid
     case networkError(NetworkError)
 }
 

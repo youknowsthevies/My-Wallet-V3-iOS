@@ -95,7 +95,7 @@ struct CredentialsView: View {
                 if let state = viewStore.twoFAState, state.isResendSMSButtonVisible {
                     Button(
                         action: {
-                            viewStore.send(.walletPairing(.requestSMSCode))
+                            viewStore.send(.walletPairing(.requestSMSCode(isResend: true)))
                         },
                         label: {
                             Text(LocalizedString.Button.resendSMS)
@@ -177,9 +177,6 @@ struct CredentialsView: View {
         .hideBackButtonTitle()
         .onAppear {
             viewStore.send(.didAppear(context: context))
-        }
-        .onDisappear {
-            viewStore.send(.didDisappear)
         }
         .alert(self.store.scope(state: \.credentialsFailureAlert), dismiss: .alert(.dismiss))
     }

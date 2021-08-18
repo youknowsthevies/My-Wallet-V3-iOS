@@ -19,10 +19,10 @@ public enum EmailLoginAction: Equatable {
 
     case closeButtonTapped
     case onAppear
-    case didDisappear
     case didChangeEmailAddress(String)
     case didSendDeviceVerificationEmail(Result<EmptyValue, DeviceVerificationServiceError>)
     case alert(AlertAction)
+    case setupSessionToken
     case sendDeviceVerificationEmail
     case setVerifyDeviceScreenVisible(Bool)
     case verifyDevice(VerifyDeviceAction)
@@ -40,7 +40,7 @@ struct EmailLoginState: Equatable {
     var isLoading: Bool
 
     init() {
-        verifyDeviceState = .init(emailAddress: "")
+        verifyDeviceState = nil
         emailAddress = ""
         isEmailValid = false
         isVerifyDeviceScreenVisible = false
@@ -49,19 +49,25 @@ struct EmailLoginState: Equatable {
 }
 
 struct EmailLoginEnvironment {
+    let sessionTokenService: SessionTokenServiceAPI
     let deviceVerificationService: DeviceVerificationServiceAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let errorRecorder: ErrorRecording
     let validateEmail: (String) -> Bool
     let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(
+        sessionTokenService: SessionTokenServiceAPI,
         deviceVerificationService: DeviceVerificationServiceAPI,
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
+        errorRecorder: ErrorRecording,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         validateEmail: @escaping (String) -> Bool = { $0.isEmail }
     ) {
+        self.sessionTokenService = sessionTokenService
         self.deviceVerificationService = deviceVerificationService
         self.mainQueue = mainQueue
+        self.errorRecorder = errorRecorder
         self.analyticsRecorder = analyticsRecorder
         self.validateEmail = validateEmail
     }
@@ -80,7 +86,11 @@ let emailLoginReducer = Reducer.combine(
                 )
             }
         ),
-    Reducer<EmailLoginState, EmailLoginAction, EmailLoginEnvironment> { state, action, environment in
+    Reducer<
+        EmailLoginState,
+        EmailLoginAction,
+        EmailLoginEnvironment
+    > { state, action, environment in
         switch action {
         case .closeButtonTapped:
             // handled in welcome reducer
@@ -90,14 +100,7 @@ let emailLoginReducer = Reducer.combine(
             environment.analyticsRecorder.record(
                 event: .loginViewed
             )
-            return .none
-
-        case .didDisappear:
-            state.emailAddress = ""
-            state.isEmailValid = false
-            state.isVerifyDeviceScreenVisible = false
-            state.emailLoginFailureAlert = nil
-            return .none
+            return Effect(value: .setupSessionToken)
 
         case .didChangeEmailAddress(let emailAddress):
             state.emailAddress = emailAddress
@@ -143,6 +146,25 @@ let emailLoginReducer = Reducer.combine(
             state.emailLoginFailureAlert = nil
             return .none
 
+        case .setupSessionToken:
+            return environment
+                .sessionTokenService
+                .setupSessionToken()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map { result -> EmailLoginAction in
+                    if case .failure(let error) = result {
+                        environment.errorRecorder.error(error)
+                        return .alert(
+                            .show(
+                                title: EmailLoginLocalization.Alerts.SignInError.title,
+                                message: EmailLoginLocalization.Alerts.SignInError.message
+                            )
+                        )
+                    }
+                    return .none
+                }
+
         case .sendDeviceVerificationEmail,
              .verifyDevice(.sendDeviceVerificationEmail):
             guard state.isEmailValid else {
@@ -166,6 +188,9 @@ let emailLoginReducer = Reducer.combine(
 
         case .setVerifyDeviceScreenVisible(let isVisible):
             state.isVerifyDeviceScreenVisible = isVisible
+            if isVisible {
+                state.verifyDeviceState = .init(emailAddress: state.emailAddress)
+            }
             return .none
 
         case .verifyDevice:

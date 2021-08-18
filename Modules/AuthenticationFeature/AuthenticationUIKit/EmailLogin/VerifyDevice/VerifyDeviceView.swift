@@ -92,9 +92,6 @@ struct VerifyDeviceView: View {
         )
         .navigationBarTitleDisplayMode(.inline)
         .hideBackButtonTitle()
-        .onDisappear {
-            viewStore.send(.didDisappear)
-        }
         .alert(self.store.scope(state: \.verifyDeviceFailureAlert), dismiss: .verifyDeviceFailureAlert(.dismiss))
     }
 
