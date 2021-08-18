@@ -6,13 +6,14 @@ let package = Package(
     name: "WalletPayload",
     platforms: [.iOS(.v14)],
     products: [
-        .library(name: "WalletPayloadKit", targets: ["WalletPayloadKit"])
+        .library(name: "WalletPayloadKit", targets: ["WalletPayloadKit"]),
+        .library(name: "WalletPayloadKitMock", targets: ["WalletPayloadKitMock"])
     ],
     dependencies: [
+        .package(url: "git@github.com:jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
         .package(path: "../Localization"),
         .package(path: "../CommonCrypto"),
-        .package(path: "../Tool"),
-        .package(url: "git@github.com:jackpooleybc/DIKit.git", .branch("safe-property-wrappers"))
+        .package(path: "../Tool")
     ],
     targets: [
         .target(
@@ -24,10 +25,15 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit")
             ]
         ),
+        .target(
+            name: "WalletPayloadKitMock",
+            dependencies: ["WalletPayloadKit"]
+        ),
         .testTarget(
             name: "WalletPayloadKitTests",
             dependencies: [
-                "WalletPayloadKit"
+                "WalletPayloadKit",
+                "WalletPayloadKitMock"
             ],
             resources: [
                 .copy("Fixtures/wallet-data.json")

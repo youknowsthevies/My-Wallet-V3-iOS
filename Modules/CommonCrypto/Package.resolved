@@ -9,6 +9,24 @@
           "revision": "8d4f6384e0a8cc41f2005247241dd553963a492a",
           "version": "1.4.1"
         }
+      },
+      {
+        "package": "SnapshotTesting",
+        "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing",
+        "state": {
+          "branch": null,
+          "revision": "f8a9c997c3c1dab4e216a8ec9014e23144cbab37",
+          "version": "1.9.0"
+        }
+      },
+      {
+        "package": "WalletCore",
+        "repositoryURL": "git@github.com:oliveratkinson-bc/wallet-core.git",
+        "state": {
+          "branch": "blockchain/swift-package-manager",
+          "revision": "b71f88aa2f3087a8c1ecd00371f16970b8cbbec3",
+          "version": null
+        }
       }
     ]
   },

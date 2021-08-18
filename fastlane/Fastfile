@@ -181,7 +181,9 @@ platform :ios do
   desc "Runs Gym for the current configuration."
   private_lane :build_and_archive do | options |
     puts "🏗  Building App"
-    build_app
+    build_app(
+      cloned_source_packages_path: "SourcePackages"
+    )
   end
   
   private_lane :run_tests_if_needed do | options |

@@ -721,7 +721,7 @@ targets:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/SettingsKit
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/WalletPayloadKit
+      path: Modules/WalletPayload/Sources/WalletPayloadKitMock
     type: bundle.unit-test
   DashboardKit:
     scheme:
