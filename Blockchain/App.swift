@@ -108,11 +108,6 @@ func defineDependencies() {
 private func bootstrap() {
     FirebaseApp.configure()
     defineDependencies()
-    #if !INTERNAL_BUILD
-    // Intentionally disable the new welcome screen on prod
-    let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
-    featureFlagService.enable(.disableNewWelcomeScreen)
-    #endif
 }
 
 private func eraseWalletForUITestsIfNeeded() {
