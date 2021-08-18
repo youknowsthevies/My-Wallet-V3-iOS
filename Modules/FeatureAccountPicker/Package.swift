@@ -19,7 +19,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.24.0"),
-        .package(name: "SnapshotTesting", url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.9.0")
+        .package(name: "SnapshotTesting", url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.9.0"),
+        .package(path: "../UIComponents")
     ],
     targets: [
         .target(
@@ -40,6 +41,7 @@ let package = Package(
             name: "FeatureAccountPickerUI",
             dependencies: [
                 "FeatureAccountPickerDomain",
+                "UIComponents",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
             path: "UI"
