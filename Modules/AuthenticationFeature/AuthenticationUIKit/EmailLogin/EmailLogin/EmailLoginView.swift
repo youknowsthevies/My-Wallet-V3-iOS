@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import AuthenticationKit
 import ComposableArchitecture
 import Localization
@@ -87,6 +88,9 @@ struct EmailLoginView: View {
             .hideBackButtonTitle()
         }
         .alert(self.store.scope(state: \.emailLoginFailureAlert), dismiss: .alert(.dismiss))
+        .onAppear {
+            self.viewStore.send(.onAppear)
+        }
         .onDisappear {
             self.viewStore.send(.didDisappear)
         }
@@ -138,7 +142,8 @@ struct EmailLoginView_Previews: PreviewProvider {
                 reducer: emailLoginReducer,
                 environment: .init(
                     deviceVerificationService: NoOpDeviceVerificationService(),
-                    mainQueue: .main
+                    mainQueue: .main,
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )

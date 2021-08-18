@@ -1373,6 +1373,7 @@ targets:
       - ModuleTests
   AuthenticationUIKit:
     dependencies:
+    - target: SharedPackagesKit
     - target: AuthenticationKit
     - target: PlatformUIKit
     scheme:

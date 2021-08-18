@@ -141,7 +141,7 @@ struct CredentialsView: View {
                     if viewStore.isTwoFACodeOrHardwareKeyVerified {
                         viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState.password)))
                     } else {
-                        viewStore.send(.walletPairing(.authenticate))
+                        viewStore.send(.continueButtonTapped)
                     }
                 },
                 loading: viewStore.binding(get: \.isLoading, send: .none)
