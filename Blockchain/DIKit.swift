@@ -534,7 +534,7 @@ extension DependencyContainer {
 
         factory { () -> SessionTokenServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return SessionTokenService(client: DIKit.resolve(), repository: manager.repository)
+            return sessionTokenServiceFactory(walletRepository: manager.repository)
         }
 
         factory { () -> SMSServiceAPI in

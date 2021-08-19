@@ -28,5 +28,7 @@ extension DependencyContainer {
         // MARK: - Repositories
 
         factory { DeviceVerificationRepository() as DeviceVerificationRepositoryAPI }
+
+        factory { RemoteSessionTokenRepository() as RemoteSessionTokenRepositoryAPI }
     }
 }

@@ -11,3 +11,7 @@ public enum SessionTokenServiceError: Error {
 public protocol SessionTokenServiceAPI: AnyObject {
     func setupSessionToken() -> AnyPublisher<Void, SessionTokenServiceError>
 }
+
+public func sessionTokenServiceFactory(walletRepository: SessionTokenRepositoryAPI) -> SessionTokenServiceAPI {
+    SessionTokenService(walletRepository: walletRepository)
+}
