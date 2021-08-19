@@ -395,8 +395,9 @@ public final class Router: RouterAPI {
         guard let viewController = navigationRouter.topMostViewControllerProvider.topMostViewController else {
             fatalError("This is not supposed to be nil. It shouldn't even be optional, probably...")
         }
+        // Buy requires Tier 1 for SDD users, Tier 2 for everyone else. Requiring Tier 1 will ensure the SDD check is done.
         return newKYCRouter
-            .presentKYCIfNeeded(from: viewController)
+            .presentKYCIfNeeded(from: viewController, requiredTier: .tier1)
             .mapError(RouterError.kyc)
             .eraseToAnyPublisher()
     }

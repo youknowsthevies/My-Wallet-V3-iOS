@@ -29,3 +29,5 @@ extension ScreenNavigationModel {
         barStyle: .darkContent()
     )
 }
+
+extension ScreenNavigationModel: Equatable {}

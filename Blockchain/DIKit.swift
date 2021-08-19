@@ -478,6 +478,8 @@ extension DependencyContainer {
             let externalAppOpener: ExternalAppOpener = DIKit.resolve()
             return KYCUIKit.Router(
                 analyticsRecorder: DIKit.resolve(),
+                legacyRouter: DIKit.resolve(),
+                kycService: DIKit.resolve(),
                 emailVerificationService: emailVerificationService,
                 openMailApp: externalAppOpener.openMailApp
             )

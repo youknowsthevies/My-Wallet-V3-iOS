@@ -20,6 +20,8 @@ final class RouterTests: XCTestCase {
         mockEmailVerificationService = MockEmailVerificationService()
         router = .init(
             analyticsRecorder: MockAnalyticsRecorder(),
+            legacyRouter: MockLegacyKYCRouter(),
+            kycService: MockKYCTiersService(),
             emailVerificationService: mockEmailVerificationService,
             openMailApp: mockExternalAppOpener.openMailApp
         )

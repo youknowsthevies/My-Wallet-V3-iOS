@@ -208,6 +208,23 @@ public struct MoneyValue: Money, Hashable, Equatable {
     }
 }
 
+extension MoneyValue {
+
+    public enum MoneyValueConversionError: Error {
+        case mismatchingCurrencies(MoneyValue, MoneyValue)
+    }
+
+    public func convert(using exchangeRate: MoneyValuePair) throws -> MoneyValue {
+        guard currency != exchangeRate.quote.currency else {
+            return self
+        }
+        guard currency == exchangeRate.base.currency else {
+            throw MoneyValueConversionError.mismatchingCurrencies(self, exchangeRate.base)
+        }
+        return try convert(using: exchangeRate.quote)
+    }
+}
+
 extension MoneyValue: MoneyOperating {}
 
 extension CryptoValue {

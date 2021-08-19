@@ -44,7 +44,18 @@ public enum KYCRoutingResult: Equatable {
 }
 
 public protocol KYCRouting {
-    func presentEmailVerificationAndKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError>
-    func presentEmailVerificationIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError>
-    func presentKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError>
+
+    func presentEmailVerificationAndKYCIfNeeded(
+        from presenter: UIViewController,
+        requiredTier: KYC.Tier
+    ) -> AnyPublisher<KYCRoutingResult, KYCRouterError>
+
+    func presentEmailVerificationIfNeeded(
+        from presenter: UIViewController
+    ) -> AnyPublisher<KYCRoutingResult, KYCRouterError>
+
+    func presentKYCIfNeeded(
+        from presenter: UIViewController,
+        requiredTier: KYC.Tier
+    ) -> AnyPublisher<KYCRoutingResult, KYCRouterError>
 }

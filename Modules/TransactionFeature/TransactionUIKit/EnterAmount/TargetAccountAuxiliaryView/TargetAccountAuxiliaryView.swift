@@ -80,7 +80,7 @@ struct TargetAccountAuxiliaryView: View {
                 }
             )
             .disabled(!viewStore.enabled)
-            .buttonStyle(PlainButtonStyle())
+            .buttonStyle(BorderlessButtonStyle())
         }
     }
 }

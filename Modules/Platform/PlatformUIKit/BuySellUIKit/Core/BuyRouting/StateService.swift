@@ -9,6 +9,11 @@ import ToolKit
 import UIKit
 
 public protocol TierUpgradeRouterAPI {
+
+    /// Presents a `UIViewController` prompting the user to upgrade to a higher tier. Usually Tier 2 (Gold).
+    /// - Parameters:
+    ///   - presenter: The `UIViewController` from where the prompt has to be presenter. If you pass `nil` the app's top most view controller will be used.
+    ///   - completion: A closure called ONLY if the user successfully upgrades to a new Tier.
     func presentPromptToUpgradeTier(from presenter: UIViewController?, completion: @escaping () -> Void)
 }
 

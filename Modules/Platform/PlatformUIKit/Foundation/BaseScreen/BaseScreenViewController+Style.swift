@@ -34,7 +34,7 @@ extension Screen.Style {
     // MARK: - The bar style
 
     /// Describes the bar style
-    public enum Bar {
+    public enum Bar: Equatable {
 
         /// Light content bar style
         /// Dark background and light content
