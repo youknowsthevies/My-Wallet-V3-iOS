@@ -1,5 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public enum Product: String {
+public enum ProductType: String {
     case brokerage = "BROKERAGE"
 }

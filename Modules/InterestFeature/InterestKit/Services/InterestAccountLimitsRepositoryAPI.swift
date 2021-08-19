@@ -5,6 +5,7 @@ import PlatformKit
 
 public enum InterestAccountLimitsError: Error {
     case networkError(Error)
+    case interestAccountLimitsUnavailable
 }
 
 public protocol InterestAccountLimitsRepositoryAPI {
@@ -14,4 +15,12 @@ public protocol InterestAccountLimitsRepositoryAPI {
     func fetchInterestAccountLimitsForAllAssets(
         _ fiatCurrency: FiatCurrency
     ) -> AnyPublisher<[InterestAccountLimits], InterestAccountLimitsError>
+
+    /// Fetches `InterestAccountLimits` for a given `CryptoCurrency`.
+    /// - Parameter cryptoCurrency: CryptoCurrency
+    /// - Parameter fiatCurrency: The user's `FiatCurrency`
+    func fetchInterestAccountLimitsForCryptoCurrency(
+        _ cryptoCurrency: CryptoCurrency,
+        fiatCurrency: FiatCurrency
+    ) -> AnyPublisher<InterestAccountLimits, InterestAccountLimitsError>
 }

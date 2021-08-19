@@ -45,4 +45,21 @@ public final class InterestAccountLimitsRepository: InterestAccountLimitsReposit
             }
             .eraseToAnyPublisher()
     }
+
+    public func fetchInterestAccountLimitsForCryptoCurrency(
+        _ cryptoCurrency: CryptoCurrency,
+        fiatCurrency: FiatCurrency
+    ) -> AnyPublisher<InterestAccountLimits, InterestAccountLimitsError> {
+        fetchInterestAccountLimitsForAllAssets(fiatCurrency)
+            .tryMap { interestAccountLimits -> InterestAccountLimits in
+                let limit = interestAccountLimits
+                    .first(where: { $0.cryptoCurrency == cryptoCurrency })
+                guard let limit = limit else {
+                    throw InterestAccountLimitsError.interestAccountLimitsUnavailable
+                }
+                return limit
+            }
+            .mapError(InterestAccountLimitsError.networkError)
+            .eraseToAnyPublisher()
+    }
 }
