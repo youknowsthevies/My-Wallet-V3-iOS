@@ -176,8 +176,8 @@
         "package": "WalletCore",
         "repositoryURL": "git@github.com:oliveratkinson-bc/wallet-core.git",
         "state": {
-          "branch": "blockchain/swift-package-manager",
-          "revision": "b71f88aa2f3087a8c1ecd00371f16970b8cbbec3",
+          "branch": null,
+          "revision": "ef1483ce58db6c51dff8d06d5cd2de3804d65522",
           "version": null
         }
       },

@@ -12,7 +12,11 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/krzyzanowskim/CryptoSwift.git", from: "1.4.1"),
-        .package(name: "WalletCore", url: "git@github.com:oliveratkinson-bc/wallet-core.git", .branch("blockchain/swift-package-manager")),
+        .package(
+            name: "WalletCore",
+            url: "git@github.com:oliveratkinson-bc/wallet-core.git",
+            .revision("ef1483ce58db6c51dff8d06d5cd2de3804d65522")
+        ),
         .package(path: "../Test")
     ],
     targets: [
@@ -21,6 +25,9 @@ let package = Package(
             dependencies: [
                 .product(name: "WalletCore", package: "WalletCore"),
                 .product(name: "CryptoSwift", package: "CryptoSwift")
+            ],
+            linkerSettings: [
+                .linkedLibrary("c++")
             ]
         ),
         .testTarget(
