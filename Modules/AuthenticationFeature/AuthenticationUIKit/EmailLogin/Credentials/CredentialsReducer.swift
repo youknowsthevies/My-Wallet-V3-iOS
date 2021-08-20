@@ -26,7 +26,8 @@ public enum CredentialsAction: Equatable {
         case decryptWalletWithPassword(String)
         case startPolling
         case pollWalletIdentifier
-        case requestSMSCode(isResend: Bool)
+        case handleSMS
+        case resendSMSCode
         case setupSessionToken
     }
 
@@ -208,6 +209,14 @@ let credentialsReducer = Reducer.combine(
             return .none
 
         case .continueButtonTapped:
+            guard let twoFAState = state.twoFAState,
+                  let hardwareKeyState = state.hardwareKeyState else {
+                fatalError("States should not be nil")
+            }
+            if twoFAState.isTwoFACodeFieldVisible ||
+                hardwareKeyState.isHardwareKeyCodeFieldVisible {
+                return Effect(value: .walletPairing(.authenticateWithTwoFAOrHardwareKey))
+            }
             return Effect(value: .walletPairing(.authenticate))
 
         case .walletPairing(.approveEmailAuthorization):
@@ -281,8 +290,7 @@ let credentialsReducer = Reducer.combine(
                 fatalError("GUID should not be empty")
             }
             guard let twoFAState = state.twoFAState,
-                  let hardwareKeyState = state.hardwareKeyState
-            else {
+                  let hardwareKeyState = state.hardwareKeyState else {
                 fatalError("States should not be nil")
             }
             state.isLoading = true
@@ -305,11 +313,6 @@ let credentialsReducer = Reducer.combine(
                         case .failure(let error):
                             switch error {
                             case .twoFactorOTPRequired(let type):
-                                if twoFAState.isTwoFACodeFieldVisible ||
-                                    hardwareKeyState.isHardwareKeyCodeFieldVisible
-                                {
-                                    return .walletPairing(.authenticateWithTwoFAOrHardwareKey)
-                                }
                                 switch type {
                                 case .email:
                                     if isManualPairing {
@@ -317,7 +320,7 @@ let credentialsReducer = Reducer.combine(
                                     }
                                     return .walletPairing(.approveEmailAuthorization)
                                 case .sms:
-                                    return .walletPairing(.requestSMSCode(isResend: false))
+                                    return .walletPairing(.handleSMS)
                                 case .google:
                                     return .twoFA(.twoFACodeFieldVisibility(true))
                                 case .yubiKey, .yubikeyMtGox:
@@ -418,33 +421,41 @@ let credentialsReducer = Reducer.combine(
                     }
             )
 
-        case .walletPairing(.requestSMSCode(let isResend)):
+        case .walletPairing(.handleSMS):
             return .merge(
                 Effect(value: .twoFA(.resendSMSButtonVisibility(true))),
                 Effect(value: .twoFA(.twoFACodeFieldVisibility(true))),
-                environment
-                    .smsService
-                    .request(isResend: isResend)
-                    .receive(on: environment.mainQueue)
-                    .catchToEffect()
-                    .map { result -> CredentialsAction in
-                        if case .failure(let error) = result {
-                            environment.errorRecorder.error(error)
-                            return .alert(
-                                .show(
-                                    title: CredentialsLocalization.Alerts.SMSCode.Failure.title,
-                                    message: CredentialsLocalization.Alerts.SMSCode.Failure.message
-                                )
-                            )
-                        }
+                Effect(value: .alert(
+                    .show(
+                        title: CredentialsLocalization.Alerts.SMSCode.Success.title,
+                        message: CredentialsLocalization.Alerts.SMSCode.Success.message
+                    )
+                ))
+            )
+
+        case .walletPairing(.resendSMSCode):
+            return environment
+                .smsService
+                .request()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map { result -> CredentialsAction in
+                    if case .failure(let error) = result {
+                        environment.errorRecorder.error(error)
                         return .alert(
                             .show(
-                                title: CredentialsLocalization.Alerts.SMSCode.Success.title,
-                                message: CredentialsLocalization.Alerts.SMSCode.Success.message
+                                title: CredentialsLocalization.Alerts.SMSCode.Failure.title,
+                                message: CredentialsLocalization.Alerts.SMSCode.Failure.message
                             )
                         )
                     }
-            )
+                    return .alert(
+                        .show(
+                            title: CredentialsLocalization.Alerts.SMSCode.Success.title,
+                            message: CredentialsLocalization.Alerts.SMSCode.Success.message
+                        )
+                    )
+                }
 
         case .walletPairing(.setupSessionToken):
             return environment

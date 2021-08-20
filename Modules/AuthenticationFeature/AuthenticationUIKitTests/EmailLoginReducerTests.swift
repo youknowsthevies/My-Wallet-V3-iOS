@@ -69,51 +69,63 @@ final class EmailLoginReducerTests: XCTestCase {
             },
             .do { self.mockMainQueue.advance() },
             .receive(.didSendDeviceVerificationEmail(.success(.noValue))) { state in
-                state.verifyDeviceState = .init(emailAddress: validEmail)
                 state.isLoading = false
                 state.verifyDeviceState?.sendEmailButtonIsLoading = false
             },
             .receive(.setVerifyDeviceScreenVisible(true)) { state in
-                XCTAssertNotNil(state.verifyDeviceState)
-                state.verifyDeviceState?.emailAddress = validEmail
+                state.verifyDeviceState = .init(emailAddress: validEmail)
                 state.isVerifyDeviceScreenVisible = true
             }
         )
     }
-    // TODO: Comment for now (wait until error states design are finalised)
-//    func test_send_device_verification_email_failure() {
-//        testStore.assert(
-//            // should still go to verify device screen if it is a network error
-//            .send(.didSendDeviceVerificationEmail(.failure(.networkError(.authentication(MockError.unknown))))),
-//            .receive(.setVerifyDeviceScreenVisible(true)) { state in
-//                state.isVerifyDeviceScreenVisible = true
-//            },
-//
-//            // should not go to verify device screen if it is a missing session token error
-//            .send(.didSendDeviceVerificationEmail(.failure(.missingSessionToken))),
-//            .receive(.emailLoginFailureAlert(.show(title: "", message: ""))) { state in
-//                state.emailLoginFailureAlert = AlertState(
-//                    title: TextState(""),
-//                    message: TextState(""),
-//                    dismissButton: .default(
-//                        TextState(LocalizationConstants.okString),
-//                        send: .emailLoginFailureAlert(.dismiss)
-//                    )
-//                )
-//            },
-//
-//            // should not go to verify device screen if it is a recaptcha error
-//            .send(.didSendDeviceVerificationEmail(.failure(.recaptchaError(.unknownError)))),
-//            .receive(.emailLoginFailureAlert(.show(title: "", message: ""))) { state in
-//                state.emailLoginFailureAlert = AlertState(
-//                    title: TextState(""),
-//                    message: TextState(""),
-//                    dismissButton: .default(
-//                        TextState(LocalizationConstants.okString),
-//                        send: .emailLoginFailureAlert(.dismiss)
-//                    )
-//                )
-//            }
-//        )
-//    }
+    func test_send_device_verification_email_failure() {
+        testStore.assert(
+            // should still go to verify device screen if it is a network error
+            .send(.didSendDeviceVerificationEmail(.failure(.networkError(.authentication(MockError.unknown))))),
+            .receive(.setVerifyDeviceScreenVisible(true)) { state in
+                state.verifyDeviceState = .init(emailAddress: "")
+                state.isVerifyDeviceScreenVisible = true
+            },
+
+            // should not go to verify device screen if it is a missing session token error
+            .send(.didSendDeviceVerificationEmail(.failure(.missingSessionToken))),
+            .receive(
+                .alert(
+                    .show(
+                        title: LocalizationConstants.EmailLogin.Alerts.SignInError.title,
+                        message: LocalizationConstants.EmailLogin.Alerts.SignInError.message
+                    )
+                )
+            ) { state in
+                state.emailLoginFailureAlert = AlertState(
+                    title: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.title),
+                    message: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.message),
+                    dismissButton: .default(
+                        TextState(LocalizationConstants.continueString),
+                        send: .alert(.dismiss)
+                    )
+                )
+            },
+
+            // should not go to verify device screen if it is a recaptcha error
+            .send(.didSendDeviceVerificationEmail(.failure(.recaptchaError(.unknownError)))),
+            .receive(
+                .alert(
+                    .show(
+                        title: LocalizationConstants.EmailLogin.Alerts.SignInError.title,
+                        message: LocalizationConstants.EmailLogin.Alerts.SignInError.message
+                    )
+                )
+            ) { state in
+                state.emailLoginFailureAlert = AlertState(
+                    title: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.title),
+                    message: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.message),
+                    dismissButton: .default(
+                        TextState(LocalizationConstants.continueString),
+                        send: .alert(.dismiss)
+                    )
+                )
+            }
+        )
+    }
 }

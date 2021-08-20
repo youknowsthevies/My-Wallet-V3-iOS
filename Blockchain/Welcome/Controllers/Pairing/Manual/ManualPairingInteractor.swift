@@ -120,7 +120,7 @@ final class ManualPairingInteractor {
 
     /// Requests OTP via SMS
     func requestOTPMessage() -> Completable {
-        dependencies.smsService.request(isResend: false).asObservable().ignoreElements()
+        dependencies.smsService.request().asObservable().ignoreElements()
     }
 
     // MARK: - Accessors

@@ -7,5 +7,5 @@ import NetworkKit
 public protocol SMSClientAPI: AnyObject {
 
     /// Requests the server to send a new OTP
-    func requestOTP(sessionToken: String, guid: String, isResend: Bool) -> AnyPublisher<Void, NetworkError>
+    func requestOTP(sessionToken: String, guid: String) -> AnyPublisher<Void, NetworkError>
 }

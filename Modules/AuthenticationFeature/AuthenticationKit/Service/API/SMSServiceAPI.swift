@@ -15,5 +15,5 @@ public enum SMSServiceError: LocalizedError {
 
 public protocol SMSServiceAPI: AnyObject {
     /// Requests SMS OTP
-    func request(isResend: Bool) -> AnyPublisher<Void, SMSServiceError>
+    func request() -> AnyPublisher<Void, SMSServiceError>
 }

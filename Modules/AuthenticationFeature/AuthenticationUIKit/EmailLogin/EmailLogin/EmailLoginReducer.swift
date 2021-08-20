@@ -128,7 +128,6 @@ let emailLoginReducer = Reducer.combine(
                     break
                 }
             }
-            state.verifyDeviceState = .init(emailAddress: state.emailAddress)
             return Effect(value: .setVerifyDeviceScreenVisible(true))
 
         case .alert(.show(let title, let message)):
@@ -157,8 +156,8 @@ let emailLoginReducer = Reducer.combine(
                         environment.errorRecorder.error(error)
                         return .alert(
                             .show(
-                                title: EmailLoginLocalization.Alerts.SignInError.title,
-                                message: EmailLoginLocalization.Alerts.SignInError.message
+                                title: EmailLoginLocalization.Alerts.GenericNetworkError.title,
+                                message: EmailLoginLocalization.Alerts.GenericNetworkError.message
                             )
                         )
                     }
