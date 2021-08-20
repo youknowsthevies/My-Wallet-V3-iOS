@@ -20,8 +20,8 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/CombineCommunity/CombineExt.git", from: "1.3.0"),
-        .package(url: "git@github.com:paulo-bc/RxSwift.git", from: "5.1.3"),
+        .package(name: "CombineExt", url: "https://github.com/CombineCommunity/CombineExt.git", from: "1.3.0"),
+        .package(name: "RxSwift", url: "git@github.com:ReactiveX/RxSwift.git", from: "5.1.3"),
         .package(name: "Mockingbird", url: "https://github.com/birdrides/mockingbird", from: "0.16.0")
     ],
     targets: [

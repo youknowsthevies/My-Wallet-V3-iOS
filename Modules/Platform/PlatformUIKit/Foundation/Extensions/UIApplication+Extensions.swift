@@ -2,18 +2,8 @@
 
 import Foundation
 import Localization
+import ToolKit
 import UIKit
-
-public protocol URLOpener {
-
-    func open(_ url: URL, completionHandler: ((Bool) -> Void)?)
-}
-
-public protocol ExternalAppOpener: URLOpener {
-
-    func openMailApp(completionHandler: ((Bool) -> Void)?)
-    func openSettingsApp(completionHandler: ((Bool) -> Void)?)
-}
 
 extension ExternalAppOpener {
 
@@ -21,17 +11,25 @@ extension ExternalAppOpener {
         "message://"
     }
 
-    public func openMailApp(completionHandler: ((Bool) -> Void)? = nil) {
+    public func openMailApp() {
+        openMailApp(completionHandler: { _ in })
+    }
+
+    public func openMailApp(completionHandler: @escaping (Bool) -> Void) {
         guard let url = URL(string: UIApplication.mailAppURLString) else {
-            completionHandler?(false)
+            completionHandler(false)
             return
         }
         open(url, completionHandler: completionHandler)
     }
 
-    public func openSettingsApp(completionHandler: ((Bool) -> Void)? = nil) {
+    public func openSettingsApp() {
+        openSettingsApp(completionHandler: { _ in })
+    }
+
+    public func openSettingsApp(completionHandler: @escaping (Bool) -> Void) {
         guard let url = URL(string: UIApplication.openSettingsURLString) else {
-            completionHandler?(false)
+            completionHandler(false)
             return
         }
         open(url, completionHandler: completionHandler)
@@ -40,9 +38,9 @@ extension ExternalAppOpener {
 
 extension UIApplication: ExternalAppOpener {
 
-    public func open(_ url: URL, completionHandler: ((Bool) -> Void)? = nil) {
+    public func open(_ url: URL, completionHandler: @escaping (Bool) -> Void) {
         guard canOpenURL(url) else {
-            completionHandler?(false)
+            completionHandler(false)
             return
         }
         open(url, options: [.universalLinksOnly: false], completionHandler: completionHandler)

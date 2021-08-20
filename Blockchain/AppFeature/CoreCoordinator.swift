@@ -1,10 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import AuthenticationUIKit
 import Combine
 import ComposableArchitecture
 import DIKit
+import FeatureAuthenticationUI
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit

@@ -1,8 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import AuthenticationDataKit
-import AuthenticationKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
@@ -11,6 +9,8 @@ import DebugUIKit
 import DIKit
 import ERC20Kit
 import EthereumKit
+import FeatureAuthenticationData
+import FeatureAuthenticationDomain
 import KYCKit
 import KYCUIKit
 import NetworkKit
@@ -49,9 +49,9 @@ extension AnnouncementPresenter: DashboardUIKit.AnnouncementPresenting {}
 
 extension SettingsUIKit.BackupFundsRouter: DashboardUIKit.BackupRouterAPI {}
 
-// MARK: - AuthenticationFeature Dependencies
+// MARK: - FeatureAuthentication Dependencies
 
-extension Wallet: WalletAuthenticationKitWrapper {}
+extension Wallet: WalletFeatureAuthenticationDomainWrapper {}
 
 // MARK: - AnalyticsKit Dependencies
 
@@ -295,9 +295,9 @@ extension DependencyContainer {
             return walletManager.repository as SharedKeyRepositoryAPI
         }
 
-        factory { () -> AuthenticationKit.GuidRepositoryAPI in
+        factory { () -> FeatureAuthenticationDomain.GuidRepositoryAPI in
             let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as AuthenticationKit.GuidRepositoryAPI
+            return walletManager.repository as FeatureAuthenticationDomain.GuidRepositoryAPI
         }
 
         factory { () -> PasswordRepositoryAPI in
@@ -522,7 +522,7 @@ extension DependencyContainer {
             TransactionsKYCAdapter()
         }
 
-        // MARK: AuthenticationFeature Module
+        // MARK: FeatureAuthentication Module
 
         factory { () -> AutoWalletPairingServiceAPI in
             let manager: WalletManager = DIKit.resolve()
@@ -578,9 +578,9 @@ extension DependencyContainer {
 
         factory { GoogleRecaptchaService() as GoogleRecaptchaServiceAPI }
 
-        factory { () -> WalletAuthenticationKitWrapper in
+        factory { () -> WalletFeatureAuthenticationDomainWrapper in
             let manager: WalletManager = DIKit.resolve()
-            return manager.wallet as WalletAuthenticationKitWrapper
+            return manager.wallet as WalletFeatureAuthenticationDomainWrapper
         }
 
         // MARK: Analytics

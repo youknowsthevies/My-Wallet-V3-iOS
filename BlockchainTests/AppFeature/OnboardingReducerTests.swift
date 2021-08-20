@@ -8,8 +8,8 @@ import RxSwift
 import SettingsKit
 import XCTest
 
-@testable import AuthenticationUIKit
 @testable import Blockchain
+@testable import FeatureAuthenticationUI
 
 class OnboardingReducerTests: XCTestCase {
 

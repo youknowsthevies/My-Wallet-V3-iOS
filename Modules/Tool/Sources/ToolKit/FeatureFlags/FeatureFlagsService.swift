@@ -19,6 +19,10 @@ public enum FeatureFlag: Hashable {
     }
 }
 
+public enum BuildFlag {
+    public static var isInternal: Bool = true
+}
+
 public enum FeatureFlagError: Error {
     case decodingError(Error)
 }

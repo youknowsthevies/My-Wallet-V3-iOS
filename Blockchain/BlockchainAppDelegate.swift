@@ -2,8 +2,6 @@
 
 import ActivityKit
 import ActivityUIKit
-import AuthenticationDataKit
-import AuthenticationKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
@@ -11,6 +9,8 @@ import Combine
 import DebugUIKit
 import DIKit
 import EthereumKit
+import FeatureAuthenticationData
+import FeatureAuthenticationDomain
 import Firebase
 import FirebaseDynamicLinks
 import KYCKit
@@ -67,6 +67,14 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     override init() {
         super.init()
+
+        BuildFlag.isInternal = {
+            #if INTERNAL_BUILD
+            true
+            #else
+            false
+            #endif
+        }()
 
         FirebaseApp.configure()
         defineDependencies()

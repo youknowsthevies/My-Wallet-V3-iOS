@@ -5,10 +5,10 @@
 import Foundation
 
 extension LocalizationConstants {
-    public enum AuthenticationKit {}
+    public enum FeatureAuthentication {}
 }
 
-extension LocalizationConstants.AuthenticationKit {
+extension LocalizationConstants.FeatureAuthentication {
 
     // MARK: - Welcome
 

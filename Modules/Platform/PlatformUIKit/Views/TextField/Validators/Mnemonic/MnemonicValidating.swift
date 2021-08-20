@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import AuthenticationKit
+import FeatureAuthenticationDomain
 import RxSwift
 
 @available(*, deprecated, message: "This has been replaced by new Combine SeedPhraseValidatorAPI as part of SSO Account Recovery Development")

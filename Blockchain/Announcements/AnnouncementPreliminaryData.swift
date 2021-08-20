@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import AuthenticationKit
 import DIKit
+import FeatureAuthenticationDomain
 import PlatformKit
 
 /// Contains any needed remotely fetched data before displaying announcements.

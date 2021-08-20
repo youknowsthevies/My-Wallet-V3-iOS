@@ -79,12 +79,6 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
         randomExecutionOrder: true
-      - name: AuthenticationKitTests
-        randomExecutionOrder: true
-      - name: AuthenticationUIKitTests
-        randomExecutionOrder: true
-      - name: AuthenticationDataKitTests
-        randomExecutionOrder: true
       - name: BlockchainTests
         randomExecutionOrder: true
 schemes:
@@ -348,6 +342,10 @@ packages:
     path: Modules/WalletPayload
   HDWallet:
     path: Modules/HDWallet
+  Test:
+    path: Modules/Test
+  FeatureAuthentication:
+    path: Modules/FeatureAuthentication
 targets:
   ActivityKit:
     dependencies:
@@ -540,7 +538,6 @@ targets:
     - framework: Carthage/Build/Sift.xcframework
     - framework: Carthage/Build/stellarsdk.xcframework
     - framework: Carthage/Build/Veriff.xcframework
-    - framework: Carthage/Build/Zxcvbn.xcframework
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: PlatformUIKit
@@ -571,9 +568,6 @@ targets:
     - target: SettingsKit
     - target: SharedPackagesKit
     - target: RemoteNotificationsKit
-    - target: AuthenticationKit
-    - target: AuthenticationUIKit
-    - target: AuthenticationDataKit
     - target: InterestDataKit
     platform: iOS
     postBuildScripts:
@@ -674,31 +668,12 @@ targets:
       path: Submodules/CoreBitcoin/CoreBitcoin
     type: application
   BlockchainTests:
+    settings:
+       OTHER_LDFLAGS: -undefined dynamic_lookup
     dependencies:
-    - package: ComposableArchitecture
-    - package: CombineExt
-    - package: Tool
-      product: ToolKit
-    - package: RxSwift
-      product: RxCocoa
-    - package: RxSwift
-      product: RxRelay
-    - package: RxSwift
-      product: RxSwift
-    - package: Analytics
-      product: AnalyticsKit
-    - package: HDWallet
-      product: HDWalletKit
-    - package: Analytics
-      product: RxAnalyticsKit
-    - package: Network
-      product: NetworkKit
     - target: Blockchain
     - package: Test
       product: TestKit
-    - package: Localization
-    - package: WalletPayload
-      product: WalletPayloadKit
     platform: iOS
     sources:
     - path: BlockchainTests
@@ -763,6 +738,8 @@ targets:
     dependencies:
     - package: Analytics
       product: AnalyticsKit
+    - package: FeatureAuthentication
+      product: FeatureAuthentication
     - package: Analytics
       product: RxAnalyticsKit
     - package: BigInt
@@ -1062,8 +1039,6 @@ targets:
     templates:
     - ModuleTests
   PlatformKit:
-    dependencies:
-    - target: AuthenticationKit
     scheme:
       testTargets:
       - PlatformKitTests
@@ -1091,7 +1066,6 @@ targets:
     dependencies:
     - framework: Carthage/Build/Charts.xcframework
     - framework: Carthage/Build/PhoneNumberKit.xcframework
-    - framework: Carthage/Build/Zxcvbn.xcframework
     - target: PlatformKit
     scheme:
       testTargets:
@@ -1341,84 +1315,3 @@ targets:
       featureName: RemoteNotifications
     templates:
     - ModuleTests
-  AuthenticationKit:
-    configFiles:
-      Debug Dev: Config/AuthenticationKitConfig/AuthenticationKit-Dev.xcconfig
-      Debug Production: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
-      Debug Staging: Config/AuthenticationKitConfig/AuthenticationKit-Staging.xcconfig
-      Debug Alpha: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
-      Release Alpha: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
-      Release: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
-      Release Internal: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
-      Release Staging: Config/AuthenticationKitConfig/AuthenticationKit-Staging.xcconfig
-    dependencies:
-    - framework: Carthage/Build/Zxcvbn.xcframework
-    info:
-      path: Modules/AuthenticationFeature/AuthenticationKit/Info.plist
-      properties:
-        LOGIN_URL: $(LOGIN_URL)
-        GOOGLE_RECAPTCHA_SITE_KEY: $(GOOGLE_RECAPTCHA_SITE_KEY)
-    platform: iOS
-    scheme:
-      testTargets:
-      - AuthenticationKitTests
-    templateAttributes:
-      featureName: AuthenticationFeature
-    templates:
-    - Module
-  AuthenticationKitTests:
-    dependencies:
-    - target: AuthenticationKit
-    templateAttributes:
-      featureName: AuthenticationFeature
-    templates:
-      - ModuleTests
-  AuthenticationUIKit:
-    dependencies:
-    - target: SharedPackagesKit
-    - target: AuthenticationKit
-    - target: PlatformUIKit
-    scheme:
-      testTargets:
-      - AuthenticationUIKitTests
-    templateAttributes:
-      featureName: AuthenticationFeature
-    templates:
-      - Module
-  AuthenticationUIKitTests:
-    dependencies:
-    - target: AuthenticationUIKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/AuthenticationKit
-    - createIntermediateGroups: true
-      path: Modules/Analytics/Sources/AnalyticsKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformUIKit
-    templateAttributes:
-      featureName: AuthenticationFeature
-    templates:
-      - ModuleTests
-  AuthenticationDataKit:
-    dependencies:
-    - target: AuthenticationKit
-    scheme:
-      testTargets:
-      - AuthenticationDataKitTests
-    templateAttributes:
-      featureName: AuthenticationFeature
-    templates:
-      - Module
-  AuthenticationDataKitTests:
-    dependencies:
-    - target: AuthenticationDataKit
-    - target: PlatformKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
-    templateAttributes:
-      featureName: AuthenticationFeature
-    templates:
-      - ModuleTests

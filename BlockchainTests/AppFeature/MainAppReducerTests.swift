@@ -11,8 +11,8 @@ import SettingsKit
 import WalletPayloadKit
 import XCTest
 
-@testable import AuthenticationUIKit
 @testable import Blockchain
+@testable import FeatureAuthenticationUI
 
 // swiftlint:disable type_body_length
 final class MainAppReducerTests: XCTestCase {

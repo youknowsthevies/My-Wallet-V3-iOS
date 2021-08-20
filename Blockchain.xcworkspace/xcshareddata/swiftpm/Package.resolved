@@ -189,6 +189,15 @@
           "revision": "152390e9e78ebbf0d767ee52971d41e7f44f39bc",
           "version": "0.1.1"
         }
+      },
+      {
+        "package": "Zxcvbn",
+        "repositoryURL": "git@github.com:oliveratkinson-bc/zxcvbn-ios.git",
+        "state": {
+          "branch": "swift-package-manager",
+          "revision": "c0db9d5278bbc07b28937278406cc042e4bebf68",
+          "version": null
+        }
       }
     ]
   },

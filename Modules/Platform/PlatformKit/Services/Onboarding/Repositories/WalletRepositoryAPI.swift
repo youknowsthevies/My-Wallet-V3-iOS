@@ -1,5 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
-import AuthenticationKit
+import FeatureAuthenticationDomain
 
 public typealias WalletRepositoryAPI = SessionTokenRepositoryAPI
     & SharedKeyRepositoryAPI

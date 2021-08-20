@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import AuthenticationKit
 import DIKit
+import FeatureAuthenticationDomain
 import KYCKit
 import KYCUIKit
 import Localization
@@ -52,7 +52,7 @@ final class SettingsRouter: SettingsRouterAPI {
 
     // MARK: - Private
 
-    private let guidRepositoryAPI: AuthenticationKit.GuidRepositoryAPI
+    private let guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
     private var cardRouter: CardRouter!
@@ -82,7 +82,7 @@ final class SettingsRouter: SettingsRouterAPI {
         appCoordinator: AppCoordinating = resolve(),
         builder: SettingsBuilding = SettingsBuilder(),
         wallet: WalletRecoveryVerifing = resolve(),
-        guidRepositoryAPI: AuthenticationKit.GuidRepositoryAPI = resolve(),
+        guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI = resolve(),
         authenticationCoordinator: AuthenticationCoordinating = resolve(),
         exchangeCoordinator: ExchangeCoordinating = resolve(),
         appStoreOpener: AppStoreOpening = resolve(),

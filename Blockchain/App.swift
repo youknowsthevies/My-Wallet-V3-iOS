@@ -95,7 +95,7 @@ func defineDependencies() {
         DependencyContainer.settingsKit
         DependencyContainer.settingsUIKit
         DependencyContainer.remoteNotificationsKit
-        DependencyContainer.authenticationDataKit
+        DependencyContainer.featureAuthenticationData
         #if INTERNAL_BUILD
         DependencyContainer.debugUIKit
         #endif
@@ -108,6 +108,13 @@ func defineDependencies() {
 /// Takes cares of configuring Firebase and
 /// defines the dependencies required by the app
 private func bootstrap() {
+    BuildFlag.isInternal = {
+        #if INTERNAL_BUILD
+        true
+        #else
+        false
+        #endif
+    }()
     FirebaseApp.configure()
     defineDependencies()
 }
