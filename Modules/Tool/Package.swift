@@ -9,6 +9,10 @@ let package = Package(
         .library(
             name: "ToolKit",
             targets: ["ToolKit"]
+        ),
+        .library(
+            name: "ToolKitMock",
+            targets: ["ToolKitMock"]
         )
     ],
     dependencies: [

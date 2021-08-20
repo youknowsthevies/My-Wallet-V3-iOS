@@ -19,6 +19,8 @@ options:
     iOS: '14.0'
   groupSortPosition: bottom
   platform: iOS
+  preGenCommand: ./scripts/check_dependencies.sh
+  postGenCommand: xcrun swift sh scripts/add_test_targets.swift
 schemeTemplates:
   BlockchainScheme:
     analyze:

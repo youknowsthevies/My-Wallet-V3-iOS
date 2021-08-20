@@ -10,6 +10,7 @@ let package = Package(
         .library(name: "WalletPayloadKitMock", targets: ["WalletPayloadKitMock"])
     ],
     dependencies: [
+        .package(url: "git@github.com:ReactiveX/RxSwift.git", from: "5.1.3"),
         .package(url: "git@github.com:jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
         .package(path: "../Localization"),
         .package(path: "../CommonCrypto"),
@@ -27,13 +28,20 @@ let package = Package(
         ),
         .target(
             name: "WalletPayloadKitMock",
-            dependencies: ["WalletPayloadKit"]
+            dependencies: [
+                "WalletPayloadKit",
+                .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "RxCocoa", package: "RxSwift")
+            ]
         ),
         .testTarget(
             name: "WalletPayloadKitTests",
             dependencies: [
                 "WalletPayloadKit",
-                "WalletPayloadKitMock"
+                "WalletPayloadKitMock",
+                .product(name: "ToolKitMock", package: "Tool"),
+                .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift")
             ],
             resources: [
                 .copy("Fixtures/wallet-data.json")

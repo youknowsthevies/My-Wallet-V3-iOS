@@ -3,10 +3,14 @@
 import JavaScriptCore
 import ToolKit
 
-class MockContextProvider: JSContextProviderAPI {
-    var underlyingContext: JSContext!
+public class MockContextProvider: JSContextProviderAPI {
+    public var underlyingContext: JSContext!
 
-    func fetchJSContext() -> JSContext {
+    public func fetchJSContext() -> JSContext {
         underlyingContext
+    }
+
+    public init(underlyingContext: JSContext? = nil) {
+        self.underlyingContext = underlyingContext
     }
 }
