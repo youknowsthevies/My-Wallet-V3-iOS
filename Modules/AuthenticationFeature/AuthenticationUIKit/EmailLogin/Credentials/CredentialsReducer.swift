@@ -27,6 +27,7 @@ public enum CredentialsAction: Equatable {
         case startPolling
         case pollWalletIdentifier
         case requestSMSCode(isResend: Bool)
+        case setupSessionToken
     }
 
     case continueButtonTapped
@@ -99,6 +100,7 @@ struct CredentialsEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let pollingQueue: AnySchedulerOf<DispatchQueue>
+    let sessionTokenService: SessionTokenServiceAPI
     let deviceVerificationService: DeviceVerificationServiceAPI
     let emailAuthorizationService: EmailAuthorizationServiceAPI
     let smsService: SMSServiceAPI
@@ -115,6 +117,7 @@ struct CredentialsEnvironment {
             label: "com.blockchain.AuthenticationEnvironmentPollingQueue",
             qos: .utility
         ).eraseToAnyScheduler(),
+        sessionTokenService: SessionTokenServiceAPI = resolve(),
         deviceVerificationService: DeviceVerificationServiceAPI,
         emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
         smsService: SMSServiceAPI = resolve(),
@@ -127,6 +130,7 @@ struct CredentialsEnvironment {
     ) {
         self.mainQueue = mainQueue
         self.pollingQueue = pollingQueue
+        self.sessionTokenService = sessionTokenService
         self.deviceVerificationService = deviceVerificationService
         self.emailAuthorizationService = emailAuthorizationService
         self.smsService = smsService
@@ -186,9 +190,10 @@ let credentialsReducer = Reducer.combine(
             return .none
 
         case .didAppear(.manualPairing):
+            state.isTroubleLoggingInScreenVisible = false
             state.emailAddress = "not available on manual pairing"
             state.isManualPairing = true
-            return .none
+            return Effect(value: .walletPairing(.setupSessionToken))
 
         case .didAppear:
             return .none
@@ -440,6 +445,25 @@ let credentialsReducer = Reducer.combine(
                         )
                     }
             )
+
+        case .walletPairing(.setupSessionToken):
+            return environment
+                .sessionTokenService
+                .setupSessionToken()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map { result -> CredentialsAction in
+                    if case .failure(let error) = result {
+                        environment.errorRecorder.error(error)
+                        return .alert(
+                            .show(
+                                title: CredentialsLocalization.Alerts.GenericNetworkError.title,
+                                message: CredentialsLocalization.Alerts.GenericNetworkError.message
+                            )
+                        )
+                    }
+                    return .none
+                }
 
         case .setTwoFAOrHardwareKeyVerified(let isVerified):
             state.isTwoFACodeOrHardwareKeyVerified = isVerified

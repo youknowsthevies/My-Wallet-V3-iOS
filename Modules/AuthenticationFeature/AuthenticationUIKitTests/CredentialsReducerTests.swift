@@ -29,6 +29,7 @@ final class CredentialsReducerTests: XCTestCase {
             environment: .init(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 pollingQueue: mockPollingQueue.eraseToAnyScheduler(),
+                sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
                 emailAuthorizationService: MockEmailAuthorizationService(),
                 smsService: MockSMSService(),
