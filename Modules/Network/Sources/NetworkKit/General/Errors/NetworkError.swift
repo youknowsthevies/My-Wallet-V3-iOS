@@ -28,6 +28,13 @@ public enum NetworkError: Error {
     }
 }
 
+extension NetworkError: FromNetworkError {
+
+    public static func from(_ networkError: NetworkError) -> NetworkError {
+        networkError
+    }
+}
+
 /// Errors returned when there is an unexpected response
 public enum HTTPRequestServerError: Error {
     case badResponse
