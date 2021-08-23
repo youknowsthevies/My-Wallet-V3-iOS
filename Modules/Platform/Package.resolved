@@ -11,15 +11,6 @@
         }
       },
       {
-        "package": "Charts",
-        "repositoryURL": "git@github.com:danielgindi/Charts.git",
-        "state": {
-          "branch": null,
-          "revision": "66546404a6739173b8e436ab6bc1f2897cd08594",
-          "version": "3.6.0"
-        }
-      },
-      {
         "package": "combine-schedulers",
         "repositoryURL": "https://github.com/pointfreeco/combine-schedulers",
         "state": {
@@ -56,66 +47,12 @@
         }
       },
       {
-        "package": "Gifu",
-        "repositoryURL": "https://github.com/kaishin/Gifu",
-        "state": {
-          "branch": null,
-          "revision": "51f2eab32903e336f590c013267cfa4d7f8b06c4",
-          "version": "3.3.1"
-        }
-      },
-      {
-        "package": "Lottie",
-        "repositoryURL": "https://github.com/airbnb/lottie-ios.git",
-        "state": {
-          "branch": null,
-          "revision": "b3c60ba1716baab6faeeb217d8ce1da336f92718",
-          "version": "3.2.1"
-        }
-      },
-      {
-        "package": "Mockingbird",
-        "repositoryURL": "https://github.com/birdrides/mockingbird",
-        "state": {
-          "branch": null,
-          "revision": "37a8c220ef172ef261c436c1bc55a8b25dceab13",
-          "version": "0.16.0"
-        }
-      },
-      {
-        "package": "Nuke",
-        "repositoryURL": "https://github.com/kean/Nuke",
-        "state": {
-          "branch": null,
-          "revision": "3bd3a1765bdf62d561d4c2e10e1c4fc7a010f44e",
-          "version": "10.3.2"
-        }
-      },
-      {
-        "package": "NukeUI",
-        "repositoryURL": "https://github.com/kean/NukeUI",
-        "state": {
-          "branch": null,
-          "revision": "41a4d68121a0b1000202528e791209ae7432db52",
-          "version": "0.6.7"
-        }
-      },
-      {
-        "package": "PhoneNumberKit",
-        "repositoryURL": "git@github.com:marmelroy/PhoneNumberKit.git",
-        "state": {
-          "branch": null,
-          "revision": "1ef0431b971f69c48ca5eb4cdba07f2c5da54c35",
-          "version": "3.3.3"
-        }
-      },
-      {
         "package": "RIBs",
-        "repositoryURL": "git@github.com:paulo-bc/RIBs.git",
+        "repositoryURL": "https://github.com/uber/RIBs.git",
         "state": {
           "branch": null,
-          "revision": "6cad1e953d9b60ab177a963dd63715806ed0d192",
-          "version": "0.10.2"
+          "revision": "fa4372becbeca3ce41d1f600f2fc5ffffeb35381",
+          "version": "0.10.1"
         }
       },
       {
@@ -125,24 +62,6 @@
           "branch": null,
           "revision": "0762454fba26dcf315aaa7ac5ed5fbdecd50fef2",
           "version": "1.6.2"
-        }
-      },
-      {
-        "package": "RxDataSources",
-        "repositoryURL": "git@github.com:RxSwiftCommunity/RxDataSources.git",
-        "state": {
-          "branch": null,
-          "revision": "a18cee01c9ee55f04d0c7eb15c77a96c3648c88e",
-          "version": "4.0.1"
-        }
-      },
-      {
-        "package": "RxSwift",
-        "repositoryURL": "git@github.com:ReactiveX/RxSwift.git",
-        "state": {
-          "branch": null,
-          "revision": "cec68169a048a079f461ba203fe85636548d7a89",
-          "version": "5.1.3"
         }
       },
       {
@@ -182,20 +101,11 @@
         }
       },
       {
-        "package": "SnapshotTesting",
-        "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing",
-        "state": {
-          "branch": null,
-          "revision": "f8a9c997c3c1dab4e216a8ec9014e23144cbab37",
-          "version": "1.9.0"
-        }
-      },
-      {
         "package": "WalletCore",
         "repositoryURL": "git@github.com:oliveratkinson-bc/wallet-core.git",
         "state": {
-          "branch": null,
-          "revision": "ef1483ce58db6c51dff8d06d5cd2de3804d65522",
+          "branch": "blockchain/swift-package-manager",
+          "revision": "b71f88aa2f3087a8c1ecd00371f16970b8cbbec3",
           "version": null
         }
       },
@@ -204,8 +114,8 @@
         "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
         "state": {
           "branch": null,
-          "revision": "152390e9e78ebbf0d767ee52971d41e7f44f39bc",
-          "version": "0.1.1"
+          "revision": "b9eeb1a7ea3fd6fea54ce57dee2f5794b667c8df",
+          "version": "0.2.0"
         }
       },
       {

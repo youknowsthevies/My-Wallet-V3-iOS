@@ -7,6 +7,3 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.j
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json" "8.5.0"
 github "SiftScience/sift-ios" "v2.0.1"
 github "Soneso/stellar-ios-mac-sdk" "1.9.9"
-github "danielgindi/Charts" "v3.6.0"
-github "dropbox/zxcvbn-ios" "v1.0.4"
-github "marmelroy/PhoneNumberKit" "3.3.3"

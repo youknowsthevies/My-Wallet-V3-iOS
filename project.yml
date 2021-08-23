@@ -39,10 +39,6 @@ schemeTemplates:
       config: ${debugConfig}
       gatherCoverageData: true
       targets:
-      - name: PlatformKitTests
-        randomExecutionOrder: true
-      - name: PlatformUIKitTests
-        randomExecutionOrder: true
       - name: ActivityKitTests
         randomExecutionOrder: true
       - name: BitcoinKitTests
@@ -282,6 +278,9 @@ targetTemplates:
       - "**/__Snapshots__"
       path: Modules/${featureName}/${target_name}
     type: bundle.unit-test
+  UIModule:
+    settings:
+      SWIFT_INSTALL_OBJC_HEADER: NO
 packages:
   ComposableArchitecture:
     url: https://github.com/pointfreeco/swift-composable-architecture
@@ -323,6 +322,9 @@ packages:
   RIBs:
     url: git@github.com:paulo-bc/RIBs.git
     version: 0.10.2
+  PhoneNumberKit:
+    url: git@github.com:marmelroy/PhoneNumberKit.git
+    version: 3.3.3
   Tool:
     path: Modules/Tool
   Analytics:
@@ -346,6 +348,8 @@ packages:
     path: Modules/Test
   FeatureAuthentication:
     path: Modules/FeatureAuthentication
+  Platform:
+    path: Modules/Platform
 targets:
   ActivityKit:
     dependencies:
@@ -368,7 +372,7 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
@@ -380,8 +384,6 @@ targets:
     - sdk: LinkPresentation.framework
     - sdk: SafariServices.framework
     - target: ActivityKit
-    - target: PlatformKit
-    - target: PlatformUIKit
     scheme:
       testTargets:
       - ActivityUIKitTests
@@ -389,6 +391,7 @@ targets:
       featureName: ActivityFeature
     templates:
     - Module
+    - UIModule
   ActivityUIKitTests:
     dependencies:
     - target: ActivityUIKit
@@ -396,9 +399,9 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformUIKit
+      path: Modules/Platform/Sources/PlatformUIKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
@@ -408,7 +411,6 @@ targets:
   BitcoinCashKit:
     dependencies:
     - target: BitcoinChainKit
-    - target: PlatformKit
     scheme:
       testTargets:
       - BitcoinCashKitTests
@@ -423,7 +425,7 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
@@ -432,7 +434,6 @@ targets:
     - ModuleTests
   BitcoinChainKit:
     dependencies:
-    - target: PlatformKit
     - target: TransactionKit
     scheme:
       testTargets:
@@ -448,7 +449,7 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
@@ -458,7 +459,6 @@ targets:
   BitcoinKit:
     dependencies:
     - target: BitcoinChainKit
-    - target: PlatformKit
     - target: TransactionKit
     scheme:
       testTargets:
@@ -476,7 +476,7 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
@@ -495,7 +495,6 @@ targets:
       Release Alpha: Config/BlockchainConfig/Blockchain-Alpha.xcconfig
     dependencies:
     - sdk: libicucore.tbd
-    - framework: Carthage/Build/Charts.xcframework
     - framework: Carthage/Build/FirebaseABTesting.xcframework
       embed: false
     - framework: Carthage/Build/FirebaseAnalytics.xcframework
@@ -522,7 +521,6 @@ targets:
       embed: false
     - framework: Carthage/Build/nanopb.xcframework
       embed: false
-    - framework: Carthage/Build/PhoneNumberKit.xcframework
     - framework: Carthage/Build/PromisesObjC.xcframework
       embed: false
     - framework: Carthage/Build/recaptcha.framework
@@ -540,9 +538,7 @@ targets:
     - framework: Carthage/Build/Veriff.xcframework
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
-    - target: PlatformUIKit
     - target: TodayExtension
-    - target: PlatformKit
     - target: InterestKit
     - target: InterestDataKit
     - target: InterestUIKit
@@ -684,9 +680,9 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformUIKit
+      path: Modules/Platform/Sources/PlatformUIKitMock
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/RemoteNotificationsKit
     - createIntermediateGroups: true
@@ -718,13 +714,13 @@ targets:
   DashboardUIKit:
     dependencies:
     - target: DashboardKit
-    - target: PlatformUIKit
     - target: TransactionUIKit
     scheme:
       testTargets:
       - DashboardUIKitTests
     templates:
     - Module
+    - UIModule
     templateAttributes:
       featureName: DashboardFeature
   DashboardUIKitTests:
@@ -757,6 +753,10 @@ targets:
       product: NetworkKit
     - package: Nuke
     - package: NukeUI
+    - package: Platform
+      product: PlatformKit
+    - package: Platform
+      product: PlatformUIKit
     - package: RIBs
     - package: RxCombine
     - package: RxDataSources
@@ -783,17 +783,14 @@ targets:
       path: Modules/SharedPackages/SharedPackagesKit
     type: framework
   DebugUIKit:
-    dependencies:
-    - target: PlatformKit
-    - target: PlatformUIKit
     templateAttributes:
       featureName: DebugUI
     templates:
     - Module
+    - UIModule
   ERC20Kit:
     dependencies:
     - target: EthereumKit
-    - target: PlatformKit
     - target: TransactionKit
     scheme:
       testTargets:
@@ -813,7 +810,7 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
@@ -822,7 +819,6 @@ targets:
     - ModuleTests
   EthereumKit:
     dependencies:
-    - target: PlatformKit
     - target: TransactionKit
     scheme:
       testTargets:
@@ -840,7 +836,7 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
@@ -849,7 +845,6 @@ targets:
     - ModuleTests
   InterestKit:
     dependencies:
-    - target: PlatformKit
     - target: TransactionKit
     scheme:
       testTargets:
@@ -865,7 +860,7 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
@@ -875,7 +870,6 @@ targets:
   InterestDataKit:
     dependencies:
     - target: InterestKit
-    - target: PlatformKit
     scheme:
       testTargets:
       - InterestDataKitTests
@@ -898,8 +892,6 @@ targets:
   InterestUIKit:
     dependencies:
     - target: InterestKit
-    - target: PlatformKit
-    - target: PlatformUIKit
     scheme:
       testTargets:
       - InterestUIKitTests
@@ -907,6 +899,7 @@ targets:
       featureName: InterestFeature
     templates:
     - Module
+    - UIModule
   InterestUIKitTests:
     dependencies:
     - target: InterestUIKit
@@ -914,9 +907,9 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformUIKit
+      path: Modules/Platform/Sources/PlatformUIKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
@@ -924,8 +917,6 @@ targets:
     templates:
     - ModuleTests
   KYCKit:
-    dependencies:
-    - target: PlatformKit
     scheme:
       testTargets:
       - KYCKitTests
@@ -940,7 +931,7 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
@@ -951,8 +942,6 @@ targets:
     dependencies:
     - framework: Carthage/Build/Veriff.xcframework
     - target: KYCKit
-    - target: PlatformKit
-    - target: PlatformUIKit
     scheme:
       testTargets:
       - KYCUIKitTests
@@ -960,6 +949,7 @@ targets:
       featureName: KYCFeature
     templates:
     - Module
+    - UIModule
   KYCUIKitTests:
     dependencies:
     - target: KYCUIKit
@@ -972,9 +962,9 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformUIKit
+      path: Modules/Platform/Sources/PlatformUIKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     - createIntermediateGroups: true
@@ -989,8 +979,6 @@ targets:
     - target: KYCUIKit
     - target: OnboardingKit
     - target: OnboardingUIKit
-    - target: PlatformKit
-    - target: PlatformUIKit
     - target: SharedPackagesKit
     platform: iOS
     sources:
@@ -1022,72 +1010,19 @@ targets:
       featureName: OnboardingFeature
     templates:
     - Module
+    - UIModule
   OnboardingUIKitTests:
     dependencies:
     - target: OnboardingUIKit
-    - target: PlatformKit
-    - target: PlatformUIKit
     sources:
     - createIntermediateGroups: true
       path: Modules/Analytics/Sources/AnalyticsKitMock # required for PlatformUIKit mocks to compile
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformUIKit
+      path: Modules/Platform/Sources/PlatformUIKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
       featureName: OnboardingFeature
-    templates:
-    - ModuleTests
-  PlatformKit:
-    scheme:
-      testTargets:
-      - PlatformKitTests
-    templateAttributes:
-      featureName: Platform
-    templates:
-    - Module
-  PlatformKitTests:
-    dependencies:
-    - target: PlatformKit
-    sources:
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/BuySellKit
-    templateAttributes:
-      featureName: Platform
-    templates:
-    - ModuleTests
-  PlatformUIKit:
-    dependencies:
-    - framework: Carthage/Build/Charts.xcframework
-    - framework: Carthage/Build/PhoneNumberKit.xcframework
-    - target: PlatformKit
-    scheme:
-      testTargets:
-      - PlatformUIKitTests
-    templateAttributes:
-      featureName: Platform
-    templates:
-    - Module
-  PlatformUIKitTests:
-    dependencies:
-    - target: PlatformUIKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformUIKit
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    - createIntermediateGroups: true
-      path: Modules/Analytics/Sources/AnalyticsKitMock
-    templateAttributes:
-      featureName: Platform
     templates:
     - ModuleTests
   SettingsKit:
@@ -1095,8 +1030,6 @@ targets:
       testTargets:
         - SettingsKitTests
     dependencies:
-    - target: PlatformKit
-    - target: PlatformUIKit
     - target: KYCKit
     templateAttributes:
       featureName: SettingsFeature
@@ -1107,7 +1040,7 @@ targets:
       - target: SettingsKit
     sources:
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/SettingsKit
     templates:
@@ -1118,14 +1051,13 @@ targets:
     dependencies:
       - target: KYCKit
       - target: KYCUIKit
-      - target: PlatformKit
-      - target: PlatformUIKit
       - target: SettingsKit
     scheme:
       testTargets:
         - SettingsUIKitTests
     templates:
     - Module
+    - UIModule
     templateAttributes:
       featureName: SettingsFeature
   SettingsUIKitTests:
@@ -1139,10 +1071,12 @@ targets:
     platform: iOS
     sources:
     - path: SnapshotTestsHostApp
+    postBuildScripts:
+      - path: scripts/fix-snapshot-host-app.sh 
+        name: "[blockchain] Copy Swift Package Manager Generated Bundles"
     type: application
   StellarKit:
     dependencies:
-    - target: PlatformKit
     - target: TransactionKit
     - framework: Carthage/Build/stellarsdk.xcframework
     scheme:
@@ -1157,7 +1091,7 @@ targets:
     - target: StellarKit
     sources:
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/StellarKit
     - createIntermediateGroups: true
@@ -1169,8 +1103,6 @@ targets:
   TodayExtension:
     dependencies:
     - sdk: NotificationCenter.framework
-    - target: PlatformKit
-    - target: PlatformUIKit
     - target: SharedPackagesKit
     platform: iOS
     scheme: {}
@@ -1204,8 +1136,6 @@ targets:
     - TodayExtension
     type: app-extension
   TransactionKit:
-    dependencies:
-    - target: PlatformKit
     scheme:
       testTargets:
       - TransactionKitTests
@@ -1220,7 +1150,7 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     - createIntermediateGroups: true
@@ -1232,7 +1162,6 @@ targets:
   TransactionDataKit:
     dependencies:
     - target: TransactionKit
-    - target: PlatformKit
     scheme:
       testTargets:
       - TransactionDataKitTests
@@ -1259,13 +1188,12 @@ targets:
     dependencies:
     - target: KYCKit
     - target: KYCUIKit
-    - target: PlatformKit
-    - target: PlatformUIKit
     - target: TransactionKit
     templateAttributes:
       featureName: TransactionFeature
     templates:
     - Module
+    - UIModule
   TransactionUIKitTests:
     dependencies:
     - target: TransactionUIKit
@@ -1275,9 +1203,9 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
+      path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformUIKit
+      path: Modules/Platform/Sources/PlatformUIKitMock
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     - createIntermediateGroups: true
@@ -1289,9 +1217,6 @@ targets:
     templates:
     - ModuleTests
   RemoteNotificationsKit:
-    dependencies:
-    - target: PlatformKit
-    - target: PlatformUIKit
     scheme:
       testTargets:
       - RemoteNotificationsKitTests

@@ -7,6 +7,7 @@ let package = Package(
     platforms: [.iOS(.v14)],
     products: [
         .library(name: "FeatureAuthentication", targets: ["FeatureAuthenticationData", "FeatureAuthenticationDomain", "FeatureAuthenticationUI"]),
+        .library(name: "FeatureAuthenticationDomain", targets: ["FeatureAuthenticationDomain"]),
         .library(name: "FeatureAuthenticationMock", targets: ["FeatureAuthenticationMock"])
     ],
     dependencies: [

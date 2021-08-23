@@ -20,6 +20,9 @@
 @_exported import NetworkKit
 @_exported import Nuke
 @_exported import NukeUI
+@_exported import PhoneNumberKit
+@_exported import PlatformKit
+@_exported import PlatformUIKit
 @_exported import RIBs
 @_exported import RxAnalyticsKit
 @_exported import RxCocoa
