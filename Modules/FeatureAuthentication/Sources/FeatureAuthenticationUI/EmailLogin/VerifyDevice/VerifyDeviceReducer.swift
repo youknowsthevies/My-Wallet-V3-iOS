@@ -145,7 +145,7 @@ let verifyDeviceReducer = Reducer.combine(
                 message: TextState(verbatim: message),
                 dismissButton: .default(
                     TextState(LocalizationConstants.okString),
-                    send: .verifyDeviceFailureAlert(.dismiss)
+                    action: .send(.verifyDeviceFailureAlert(.dismiss))
                 )
             )
             return .none

@@ -160,7 +160,10 @@ final class EmailVerificationReducerTests: XCTestCase {
                 $0.emailVerificationFailedAlert = AlertState(
                     title: TextState(L10n.GenericError.title),
                     message: TextState(L10n.EmailVerification.couldNotLoadVerificationStatusAlertMessage),
-                    primaryButton: AlertState.Button.default(TextState(L10n.GenericError.retryButtonTitle), send: .loadVerificationState),
+                    primaryButton: AlertState.Button.default(
+                        TextState(L10n.GenericError.retryButtonTitle),
+                        action: .send(.loadVerificationState)
+                    ),
                     secondaryButton: AlertState.Button.cancel()
                 )
             },
@@ -176,7 +179,10 @@ final class EmailVerificationReducerTests: XCTestCase {
                 $0.emailVerificationFailedAlert = AlertState(
                     title: TextState(L10n.GenericError.title),
                     message: TextState(L10n.EmailVerification.couldNotLoadVerificationStatusAlertMessage),
-                    primaryButton: AlertState.Button.default(TextState(L10n.GenericError.retryButtonTitle), send: .loadVerificationState),
+                    primaryButton: AlertState.Button.default(
+                        TextState(L10n.GenericError.retryButtonTitle),
+                        action: .send(.loadVerificationState)
+                    ),
                     secondaryButton: AlertState.Button.cancel()
                 )
             },
@@ -356,7 +362,7 @@ final class EmailVerificationReducerTests: XCTestCase {
                     message: TextState(L10n.EditEmail.couldNotUpdateEmailAlertMessage),
                     primaryButton: .default(
                         TextState(L10n.GenericError.retryButtonTitle),
-                        send: .save
+                        action: .send(.save)
                     ),
                     secondaryButton: .cancel()
                 )
@@ -406,7 +412,7 @@ final class EmailVerificationReducerTests: XCTestCase {
                     message: TextState(L10n.EmailVerificationHelp.couldNotSendEmailAlertMessage),
                     primaryButton: .default(
                         TextState(L10n.GenericError.retryButtonTitle),
-                        send: .sendVerificationEmail
+                        action: .send(.sendVerificationEmail)
                     ),
                     secondaryButton: .cancel()
                 )

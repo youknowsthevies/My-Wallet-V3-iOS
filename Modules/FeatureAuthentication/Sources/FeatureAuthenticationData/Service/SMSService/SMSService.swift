@@ -20,7 +20,7 @@ public final class SMSService: SMSServiceAPI {
 
     // MARK: - API
 
-    public func request(isResend: Bool) -> AnyPublisher<Void, SMSServiceError> {
+    public func request() -> AnyPublisher<Void, SMSServiceError> {
         repository.guidPublisher
             .zip(repository.sessionTokenPublisher)
             .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), SMSServiceError> in
@@ -35,8 +35,7 @@ public final class SMSService: SMSServiceAPI {
             .flatMap { [client] credentials -> AnyPublisher<Void, SMSServiceError> in
                 client.requestOTP(
                     sessionToken: credentials.sessionToken,
-                    guid: credentials.guid,
-                    isResend: isResend
+                    guid: credentials.guid
                 )
                 .mapError(SMSServiceError.networkError)
                 .eraseToAnyPublisher()

@@ -19,6 +19,17 @@ extension LocalizationConstants {
                     comment: ""
                 )
             }
+
+            enum GenericNetworkError {
+                static let title = NSLocalizedString(
+                    "Network Error",
+                    comment: ""
+                )
+                static let message = NSLocalizedString(
+                    "We cannot establish a connection with our server.\nPlease try to sign in again.",
+                    comment: ""
+                )
+            }
         }
     }
 

@@ -5,7 +5,7 @@ import Combine
 
 final class MockSMSService: SMSServiceAPI {
 
-    func request(isResend: Bool) -> AnyPublisher<Void, SMSServiceError> {
+    func request() -> AnyPublisher<Void, SMSServiceError> {
         .just(())
     }
 }

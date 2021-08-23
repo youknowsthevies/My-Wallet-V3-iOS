@@ -24,8 +24,8 @@ public final class SMSClient: SMSClientAPI {
 
     // MARK: - API
 
-    public func requestOTP(sessionToken: String, guid: String, isResend: Bool) -> AnyPublisher<Void, NetworkError> {
-        let request = requestBuilder.build(sessionToken: sessionToken, guid: guid, isResend: isResend)
+    public func requestOTP(sessionToken: String, guid: String) -> AnyPublisher<Void, NetworkError> {
+        let request = requestBuilder.build(sessionToken: sessionToken, guid: guid)
         return networkAdapter.perform(
             request: request,
             responseType: EmptyNetworkResponse.self
@@ -61,7 +61,7 @@ extension SMSClient {
 
         // MARK: - API
 
-        func build(sessionToken: String, guid: String, isResend: Bool) -> NetworkRequest {
+        func build(sessionToken: String, guid: String) -> NetworkRequest {
             let pathComponents = self.pathComponents + [guid]
             let headers = [HeaderKey.cookie.rawValue: "SID=\(sessionToken)"]
             let parameters = [
@@ -71,7 +71,7 @@ extension SMSClient {
                 ),
                 URLQueryItem(
                     name: Query.shouldResendCode.rawValue,
-                    value: String(isResend)
+                    value: "true"
                 ),
                 URLQueryItem(
                     name: Query.time.rawValue,
