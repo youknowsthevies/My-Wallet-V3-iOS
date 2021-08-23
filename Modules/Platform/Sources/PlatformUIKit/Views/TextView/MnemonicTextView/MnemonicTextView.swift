@@ -34,7 +34,7 @@ public class MnemonicTextView: UIView {
 
     /// Should be called once upon instantiation
     func setup() {
-        fromNib(named: MnemonicTextView.objectName)
+        fromNib(named: MnemonicTextView.objectName, in: .module)
         textView.textAlignment = .left
         textView.delegate = self
         textView.textContainerInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)

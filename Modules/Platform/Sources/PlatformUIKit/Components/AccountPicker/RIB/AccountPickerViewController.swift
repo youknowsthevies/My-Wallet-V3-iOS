@@ -54,8 +54,8 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
         tableView.alwaysBounceVertical = true
         tableView.register(LinkedBankAccountTableViewCell.self)
         tableView.register(CurrentBalanceTableViewCell.self)
-        tableView.registerNibCell(AccountGroupBalanceTableViewCell.self)
-        tableView.registerNibCell(ButtonsTableViewCell.self)
+        tableView.registerNibCell(AccountGroupBalanceTableViewCell.self, in: .module)
+        tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
     }()
 
     init(shouldOverrideNavigationEffects: Bool) {

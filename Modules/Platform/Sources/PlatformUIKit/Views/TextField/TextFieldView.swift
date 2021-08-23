@@ -80,7 +80,7 @@ public class TextFieldView: UIView {
 
     /// Should be called once upon instantiation
     func setup() {
-        fromNib(named: TextFieldView.objectName)
+        fromNib(named: TextFieldView.objectName, in: .module)
         textField.textAlignment = .left
         titleLabel.font = .main(.medium, 12)
         titleLabel.textColor = .destructive

@@ -39,6 +39,8 @@ public class PrimaryButtonContainer: NibBasedView {
         }
     }
 
+    override public var bundle: Bundle { .module }
+
     // MARK: Private IBOutlets
 
     @IBOutlet fileprivate var activityIndicator: UIActivityIndicatorView!

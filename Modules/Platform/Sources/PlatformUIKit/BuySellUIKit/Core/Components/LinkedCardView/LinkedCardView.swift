@@ -48,7 +48,7 @@ final class LinkedCardView: UIView {
     }
 
     private func setup() {
-        fromNib()
+        fromNib(in: .module)
         clipsToBounds = true
     }
 }

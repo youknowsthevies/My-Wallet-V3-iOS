@@ -55,7 +55,7 @@ final class DigitPadButtonView: UIView {
     }
 
     private func setup() {
-        fromNib()
+        fromNib(in: .module)
         button.titleLabel?.font = .main(.medium, 32)
         backgroundView.clipsToBounds = true
         backgroundColor = .clear

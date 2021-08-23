@@ -66,7 +66,7 @@ public final class AssetPriceView: UIView {
     }
 
     private func setup() {
-        fromNib()
+        fromNib(in: .module)
         setNeedsLayout()
         layoutIfNeeded()
     }

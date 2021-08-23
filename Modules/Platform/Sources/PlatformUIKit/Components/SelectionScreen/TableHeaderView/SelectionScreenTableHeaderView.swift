@@ -49,7 +49,7 @@ public final class SelectionScreenTableHeaderView: UIView {
     }
 
     private func setup() {
-        fromNib()
+        fromNib(in: .module)
         clipsToBounds = true
     }
 }

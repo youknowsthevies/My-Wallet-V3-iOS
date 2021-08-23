@@ -78,7 +78,7 @@ public final class AssetLineChartView: UIView {
     }
 
     private func setup() {
-        fromNib()
+        fromNib(in: .module)
     }
 
     private func setupLineChartView(_ lineChartView: LineChartView) {

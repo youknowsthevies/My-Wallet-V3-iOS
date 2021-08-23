@@ -8,14 +8,14 @@ extension UICollectionView {
         register(cellType, forCellWithReuseIdentifier: cellType.objectName)
     }
 
-    public func registerNibCell(_ type: UICollectionViewCell.Type) {
+    public func registerNibCell(_ type: UICollectionViewCell.Type, in bundle: Bundle) {
         let name = type.objectName
-        register(UINib(nibName: name, bundle: type.bundle), forCellWithReuseIdentifier: name)
+        register(UINib(nibName: name, bundle: bundle), forCellWithReuseIdentifier: name)
     }
 
-    public func registerNibCells(_ types: UICollectionViewCell.Type...) {
+    public func registerNibCells(_ types: UICollectionViewCell.Type..., in bundle: Bundle) {
         for type in types {
-            registerNibCell(type)
+            registerNibCell(type, in: bundle)
         }
     }
 

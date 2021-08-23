@@ -68,7 +68,7 @@ public class SwitchView: UIView {
     }
 
     private func setup() {
-        fromNib()
+        fromNib(in: .module)
         clipsToBounds = true
     }
 }

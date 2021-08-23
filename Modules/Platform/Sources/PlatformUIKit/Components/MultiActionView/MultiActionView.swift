@@ -37,6 +37,6 @@ public final class MultiActionView: UIView {
     }
 
     private func setup() {
-        fromNib()
+        fromNib(in: .module)
     }
 }

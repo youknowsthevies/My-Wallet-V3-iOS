@@ -83,7 +83,7 @@ public final class WalletBalanceView: UIView {
     }
 
     private func setup() {
-        fromNib()
+        fromNib(in: .module)
     }
 
     private func stopShimmering() {

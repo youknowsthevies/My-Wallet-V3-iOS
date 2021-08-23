@@ -7,8 +7,8 @@ import UIKit
 /// The nib is initialized as `contentView` of the owner view.
 extension UIView {
     @discardableResult
-    public func fromNib<T: UIView>(named nibName: String? = nil) -> T? {
-        guard let contentView = Bundle(for: type(of: self)).loadNibNamed(
+    public func fromNib<T: UIView>(named nibName: String? = nil, in bundle: Bundle) -> T? {
+        guard let contentView = bundle.loadNibNamed(
             nibName ?? Self.objectName,
             owner: self,
             options: nil

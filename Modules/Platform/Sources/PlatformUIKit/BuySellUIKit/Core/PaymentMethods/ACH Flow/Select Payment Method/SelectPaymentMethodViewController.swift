@@ -86,7 +86,7 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
     private func setupTableView() {
         tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.registerNibCell(LinkedCardTableViewCell.self)
+        tableView.registerNibCell(LinkedCardTableViewCell.self, in: .module)
         tableView.register(FiatCustodialBalanceTableViewCell.self)
         tableView.register(AddNewPaymentMethodTableViewCell.self)
         tableView.register(LinkedBankTableViewCell.self)

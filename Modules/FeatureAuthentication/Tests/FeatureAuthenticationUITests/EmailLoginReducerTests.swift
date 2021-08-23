@@ -83,6 +83,7 @@ final class EmailLoginReducerTests: XCTestCase {
             }
         )
     }
+
     func test_send_device_verification_email_failure() {
         testStore.assert(
             // should still go to verify device screen if it is a network error

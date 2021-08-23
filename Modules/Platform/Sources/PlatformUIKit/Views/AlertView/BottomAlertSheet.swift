@@ -74,8 +74,7 @@ public class BottomAlertSheet: UIView {
     private var gravityBehavior: UIGravityBehavior!
 
     public class func make(with model: Model) -> BottomAlertSheet {
-        let bundle = Bundle(for: BottomAlertSheet.self)
-        let nib = UINib(nibName: String(describing: BottomAlertSheet.self), bundle: bundle)
+        let nib = UINib(nibName: String(describing: BottomAlertSheet.self), bundle: .module)
         let view = nib.instantiate(withOwner: self, options: nil).first as! BottomAlertSheet
         view.model = model
         return view

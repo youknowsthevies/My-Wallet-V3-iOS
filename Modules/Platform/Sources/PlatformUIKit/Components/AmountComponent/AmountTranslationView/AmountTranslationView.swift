@@ -44,7 +44,7 @@ public final class AmountTranslationView: UIView, AmountViewable {
         swapButton.layer.borderWidth = 1
         swapButton.layer.cornerRadius = 8
         swapButton.layer.borderColor = UIColor.mediumBorder.cgColor
-        swapButton.setImage(UIImage(named: "vertical-swap-icon", in: bundle, with: nil), for: .normal)
+        swapButton.setImage(UIImage(named: "vertical-swap-icon", in: .platformUIKit, with: nil), for: .normal)
         return swapButton
     }()
 

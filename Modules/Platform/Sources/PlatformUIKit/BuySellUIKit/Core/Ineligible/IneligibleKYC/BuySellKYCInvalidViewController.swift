@@ -42,7 +42,7 @@ final class BuySellKYCInvalidViewController: BaseScreenViewController {
         tableView.register(AnnouncementTableViewCell.self)
         tableView.register(BadgeNumberedTableViewCell.self)
         tableView.register(LabelTableViewCell.self)
-        tableView.registerNibCell(ButtonsTableViewCell.self)
+        tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
         tableView.separatorColor = .clear
         tableView.delegate = self
         tableView.dataSource = self

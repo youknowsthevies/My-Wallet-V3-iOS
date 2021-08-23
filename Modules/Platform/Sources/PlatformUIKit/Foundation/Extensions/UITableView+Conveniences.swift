@@ -39,14 +39,14 @@ extension UITableView {
         register(UINib(nibName: name, bundle: bundle), forHeaderFooterViewReuseIdentifier: name)
     }
 
-    public func registerNibCell(_ type: UITableViewCell.Type) {
+    public func registerNibCell(_ type: UITableViewCell.Type, in bundle: Bundle) {
         let name = type.objectName
-        register(UINib(nibName: name, bundle: type.bundle), forCellReuseIdentifier: name)
+        register(UINib(nibName: name, bundle: bundle), forCellReuseIdentifier: name)
     }
 
-    public func registerNibCells(_ types: UITableViewCell.Type...) {
+    public func registerNibCells(_ types: UITableViewCell.Type..., in bundle: Bundle) {
         for type in types {
-            registerNibCell(type)
+            registerNibCell(type, in: bundle)
         }
     }
 

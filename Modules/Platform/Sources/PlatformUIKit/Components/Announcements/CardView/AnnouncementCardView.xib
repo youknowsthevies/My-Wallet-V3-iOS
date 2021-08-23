@@ -37,7 +37,7 @@
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gqc-Aa-cm0" userLabel="Background Image View">
                     <rect key="frame" x="0.0" y="0.0" width="376" height="187"/>
                 </imageView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GCM-a8-OZI" customClass="BadgeImageView" customModule="PlatformUIKit" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GCM-a8-OZI" customClass="BadgeImageView" customModule="PlatformUIKit">
                     <rect key="frame" x="24" y="24" width="40" height="40"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="40" placeholder="YES" id="C3G-1O-yAu"/>

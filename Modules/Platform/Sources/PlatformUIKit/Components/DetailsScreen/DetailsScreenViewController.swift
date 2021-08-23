@@ -91,9 +91,9 @@ public final class DetailsScreenViewController: BaseTableViewController {
         tableView.register(LabelTableViewCell.self)
         tableView.register(TextFieldTableViewCell.self)
         tableView.register(BadgeNumberedTableViewCell.self)
-        tableView.registerNibCell(LineItemTableViewCell.self)
+        tableView.registerNibCell(LineItemTableViewCell.self, in: .module)
         tableView.register(SeparatorTableViewCell.self)
-        tableView.registerNibCell(ButtonsTableViewCell.self)
+        tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
     }
 
     private func setupNavigationBar() {

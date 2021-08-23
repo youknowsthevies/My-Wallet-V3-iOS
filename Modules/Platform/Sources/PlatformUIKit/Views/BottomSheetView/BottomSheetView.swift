@@ -22,8 +22,7 @@ public class BottomSheetView: UIView {
     fileprivate var completion: ((BottomSheetAction) -> Void)?
 
     public class func make(with model: BottomSheet, completion: ((BottomSheetAction) -> Void)?) -> BottomSheetView {
-        let bundle = Bundle(for: BottomSheetView.self)
-        let nib = UINib(nibName: String(describing: BottomSheetView.self), bundle: bundle)
+        let nib = UINib(nibName: String(describing: BottomSheetView.self), bundle: .module)
         let view = nib.instantiate(withOwner: self, options: nil).first as! BottomSheetView
         view.model = model
         view.completion = completion

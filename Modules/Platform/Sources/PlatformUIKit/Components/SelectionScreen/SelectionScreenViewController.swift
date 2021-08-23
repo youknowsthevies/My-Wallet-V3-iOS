@@ -23,7 +23,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
 
     public init(presenter: SelectionScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: SelectionScreenViewController.objectName, bundle: Bundle(for: Self.self))
+        super.init(nibName: SelectionScreenViewController.objectName, bundle: .module)
     }
 
     @available(*, unavailable)

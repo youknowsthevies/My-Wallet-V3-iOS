@@ -11,8 +11,7 @@ extension Storyboardable where Self: UIViewController {
         String(describing: self)
     }
 
-    public static func makeFromStoryboard() -> Self {
-        let bundle = Bundle(for: self)
+    public static func makeFromStoryboard(in bundle: Bundle = Bundle(for: Self.self)) -> Self {
         let storyboard = UIStoryboard(name: defaultStoryboardName, bundle: bundle)
 
         guard let viewController = storyboard.instantiateInitialViewController() as? Self else {

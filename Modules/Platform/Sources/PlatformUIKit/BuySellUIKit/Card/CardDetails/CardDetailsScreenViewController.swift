@@ -109,7 +109,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         tableView.register(TextFieldTableViewCell.self)
         tableView.register(DoubleTextFieldTableViewCell.self)
         tableView.register(NoticeTableViewCell.self)
-        tableView.registerNibCell(ButtonsTableViewCell.self)
+        tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
         tableView.separatorColor = .clear
         tableView.delegate = self
         tableView.dataSource = self

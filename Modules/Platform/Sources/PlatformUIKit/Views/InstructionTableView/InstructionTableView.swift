@@ -30,7 +30,7 @@ public final class InstructionTableView: UITableView {
         estimatedRowHeight = 80
         rowHeight = UITableView.automaticDimension
         allowsSelection = false
-        registerNibCell(InstructionTableViewCell.self)
+        registerNibCell(InstructionTableViewCell.self, in: .module)
         tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 32))
     }
 }

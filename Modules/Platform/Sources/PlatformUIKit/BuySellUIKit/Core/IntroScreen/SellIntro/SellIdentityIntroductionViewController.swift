@@ -40,7 +40,7 @@ final class SellIdentityIntroductionViewController: BaseScreenViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(AnnouncementTableViewCell.self)
         tableView.register(BadgeNumberedTableViewCell.self)
-        tableView.registerNibCell(ButtonsTableViewCell.self)
+        tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
         tableView.separatorColor = .clear
         tableView.delegate = self
         tableView.dataSource = self

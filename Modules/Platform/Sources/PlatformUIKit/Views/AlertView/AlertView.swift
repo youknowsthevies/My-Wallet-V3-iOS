@@ -54,8 +54,7 @@ public class AlertView: UIView {
     /// an action. Also, you shouldn't have to always provide an `AlertAction`
     /// of type `.dismiss`.
     public class func make(with model: AlertModel, completion: ((AlertAction) -> Void)?) -> AlertView {
-        let bundle = Bundle(for: AlertView.self)
-        let nib = UINib(nibName: String(describing: AlertView.self), bundle: bundle)
+        let nib = UINib(nibName: String(describing: AlertView.self), bundle: .module)
         let view = nib.instantiate(withOwner: self, options: nil).first as! AlertView
         view.model = model
         view.completion = completion

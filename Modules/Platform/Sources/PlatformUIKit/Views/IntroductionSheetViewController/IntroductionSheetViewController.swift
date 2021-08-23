@@ -22,8 +22,7 @@ public final class IntroductionSheetViewController: UIViewController {
 
     // TICKET: IOS-2520 - Move Storyboardable Protocol to PlatformUIKit
     public static func make(with viewModel: IntroductionSheetViewModel) -> IntroductionSheetViewController {
-        let bundle = Bundle(for: self)
-        let storyboard = UIStoryboard(name: String(describing: self), bundle: bundle)
+        let storyboard = UIStoryboard(name: String(describing: self), bundle: .module)
         guard let controller = storyboard.instantiateInitialViewController() as? IntroductionSheetViewController else {
             fatalError("\(String(describing: self)) not found.")
         }
