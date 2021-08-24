@@ -11,7 +11,6 @@ import SettingsKit
 import WalletPayloadKit
 import XCTest
 
-@testable import AuthenticationUIKit
 @testable import Blockchain
 @testable import FeatureAuthenticationUI
 

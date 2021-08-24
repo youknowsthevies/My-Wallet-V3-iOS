@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import FeatureAuthenticationDomain
 import Combine
+import FeatureAuthenticationDomain
 
 final class NoOpSessionTokenService: SessionTokenServiceAPI {
 

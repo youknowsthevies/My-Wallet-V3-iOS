@@ -152,6 +152,7 @@ public let welcomeReducer = Reducer.combine(
             case .welcomeScreen, .createWalletScreen, .recoverWalletScreen, .manualLoginScreen:
                 state.emailLoginState = nil
             }
+
             if BuildFlag.isInternal, screenFlow == .manualLoginScreen {
                 state.manualCredentialsState = .init()
             }

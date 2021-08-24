@@ -1,9 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import FeatureAuthenticationDomain
 import ComposableArchitecture
+import FeatureAuthenticationDomain
 import Localization
-import PlatformUIKit
 import SwiftUI
 import UIComponentsKit
 
@@ -15,9 +14,9 @@ public enum SecondPasswordNotice {
         var url: URL? {
             switch self {
             case .loginOnWeb:
-                return URL(string: Constants.Url.loginOnWeb)
+                return URL(string: Constants.HostURL.loginOnWeb)
             case .twoFASupport:
-                return URL(string: Constants.SecondPassword.twoFASupportLink)
+                return URL(string: Constants.SupportURL.SecondPassword.twoFASupport)
             }
         }
     }
@@ -44,7 +43,7 @@ let secondPasswordNoticeReducer = Reducer<
         guard let url = urlContent.url else {
             return .none
         }
-        environment.externalAppOpener.open(url) { _ in }
+        environment.externalAppOpener.open(url)
         return .none
     case .closeButtonTapped:
         return .none
@@ -144,7 +143,7 @@ struct SecondPasswordNoticeView_Previews: PreviewProvider {
                 initialState: .init(),
                 reducer: secondPasswordNoticeReducer,
                 environment: SecondPasswordNotice.Environment(
-                    externalAppOpener: UIApplication.shared
+                    externalAppOpener: PrintAppOpen()
                 )
             )
         )
