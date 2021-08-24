@@ -78,35 +78,71 @@ private struct AccountPickerViewHeader: View {
 struct AccountPickerView_Previews: PreviewProvider {
 
     static let accountPickerRowList: IdentifiedArrayOf<AccountPickerRow> = [
-        AccountPickerRow.AccountGroupRowMockFactory.makeRow(
-            name: "BTC Wallet",
-            description: "Bitcoin",
-            formattedQuote: "$2,302.39",
-            formattedPriceChange: "0.21204887 BTC"
+        AccountPickerRow(
+            kind: .accountGroup(
+                AccountPickerRow.AccountGroupModel(
+                    title: "All Wallets",
+                    description: "Total Balance",
+                    fiatBalance: "$2,302.39",
+                    currencyCode: "USD"
+                )
+            )
         ),
-        AccountPickerRow.AccountGroupRowMockFactory.makeRow(
-            name: "BTC Trading Wallet",
-            description: "Bitcoin",
-            formattedQuote: "$10,093.13",
-            formattedPriceChange: "1.38294910 BTC"
+        AccountPickerRow(kind: .button(AccountPickerRow.ButtonModel(text: "See Balance"))),
+        AccountPickerRow(
+            kind: .singleAccount(
+                AccountPickerRow.SingleAccountModel(
+                    title: "BTC Wallet",
+                    description: "Bitcoin",
+                    pending: "0",
+                    fiatBalance: "$2,302.39",
+                    cryptoBalance: "0.21204887 BTC"
+                )
+            )
         ),
-        AccountPickerRow.AccountGroupRowMockFactory.makeRow(
-            name: "ETH Wallet",
-            description: "Ethereum",
-            formattedQuote: "$807.21",
-            formattedPriceChange: "0.17039384 ETH"
+        AccountPickerRow(
+            kind: .singleAccount(
+                AccountPickerRow.SingleAccountModel(
+                    title: "BTC Trading Wallet",
+                    description: "Bitcoin",
+                    pending: "0",
+                    fiatBalance: "$10,093.13",
+                    cryptoBalance: "1.38294910 BTC"
+                )
+            )
         ),
-        AccountPickerRow.AccountGroupRowMockFactory.makeRow(
-            name: "BCH Wallet",
-            description: "Bitcoin Cash",
-            formattedQuote: "$807.21",
-            formattedPriceChange: "0.00388845 BCH"
+        AccountPickerRow(
+            kind: .singleAccount(
+                AccountPickerRow.SingleAccountModel(
+                    title: "ETH Wallet",
+                    description: "Ethereum",
+                    pending: "0",
+                    fiatBalance: "$807.21",
+                    cryptoBalance: "0.17039384 ETH"
+                )
+            )
         ),
-        AccountPickerRow.AccountGroupRowMockFactory.makeRow(
-            name: "BCH Trading Wallet",
-            description: "Bitcoin Cash",
-            formattedQuote: "$40.30",
-            formattedPriceChange: "0.00004829 BCH"
+        AccountPickerRow(
+            kind: .singleAccount(
+                AccountPickerRow.SingleAccountModel(
+                    title: "BCH Wallet",
+                    description: "Bitcoin Cash",
+                    pending: "0",
+                    fiatBalance: "$807.21",
+                    cryptoBalance: "0.00388845 BCH"
+                )
+            )
+        ),
+        AccountPickerRow(
+            kind: .singleAccount(
+                AccountPickerRow.SingleAccountModel(
+                    title: "BCH Trading Wallet",
+                    description: "Bitcoin Cash",
+                    pending: "0",
+                    fiatBalance: "$40.30",
+                    cryptoBalance: "0.00004829 BCH"
+                )
+            )
         )
     ]
 
