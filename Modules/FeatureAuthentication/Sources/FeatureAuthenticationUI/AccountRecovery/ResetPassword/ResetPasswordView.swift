@@ -109,9 +109,6 @@ struct ResetPasswordView: View {
                 PasswordEyeSymbolButton(isPasswordVisible: $isPasswordVisible)
             }
         )
-        .onChange(of: viewStore.newPassword) { _ in
-            viewStore.send(.validatePasswordStrength)
-        }
     }
 
     private var passwordInstruction: some View {

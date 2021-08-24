@@ -63,6 +63,24 @@ public struct WelcomeView: View {
                 then: EmailLoginView.init(store:)
             )
         }
+        .sheet(isPresented: .constant(viewStore.screenFlow == .restoreWalletScreen)) {
+            IfLetStore(
+                store.scope(
+                    state: \.restoreWalletState,
+                    action: WelcomeAction.restoreWallet
+                ),
+                then: { store in
+                    NavigationView {
+                        SeedPhraseView(context: .importWallet, store: store)
+                            .trailingNavigationButton(.close) {
+                                viewStore.send(.restoreWallet(.closeButtonTapped))
+                            }
+                            .whiteNavigationBarStyle()
+                            .hideBackButtonTitle()
+                    }
+                }
+            )
+        }
         .sheet(isPresented: .constant(viewStore.screenFlow == .manualLoginScreen)) {
             IfLetStore(
                 store.scope(
@@ -171,7 +189,7 @@ public struct WelcomeView: View {
     private var supplementarySection: some View {
         HStack {
             Button(LocalizedString.Button.restoreWallet) {
-                viewStore.send(.presentScreenFlow(.recoverWalletScreen))
+                viewStore.send(.presentScreenFlow(.restoreWalletScreen))
             }
             .font(Font(weight: .semibold, size: Layout.supplmentaryTextFontSize))
             .foregroundColor(.buttonLinkText)

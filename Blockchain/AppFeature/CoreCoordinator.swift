@@ -395,9 +395,11 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .onboarding(.welcomeScreen(.presentScreenFlow(.createWalletScreen))):
         // send `authenticate` action so that we can listen for wallet creation
         return Effect(value: .authenticate)
-    case .onboarding(.welcomeScreen(.presentScreenFlow(.recoverWalletScreen))):
+    // TODO: remove old restore wallet screen when SSO III is ready
+    case .onboarding(.welcomeScreen(.presentScreenFlow(.restoreWalletScreen))):
         // send `authenticate` action so that we can listen for wallet creation or recovery
         return Effect(value: .authenticate)
+    // TODO: remove old restore wallet screen when SSO III is ready
     case .onboarding(.createAccountScreenClosed),
          .onboarding(.recoverWalletScreenClosed):
         // cancel any authentication publishers in case the create wallet is closed

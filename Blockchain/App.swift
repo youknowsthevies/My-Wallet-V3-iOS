@@ -95,6 +95,7 @@ func defineDependencies() {
         DependencyContainer.settingsKit
         DependencyContainer.settingsUIKit
         DependencyContainer.remoteNotificationsKit
+        DependencyContainer.featureAuthenticationDomain
         DependencyContainer.featureAuthenticationData
         #if INTERNAL_BUILD
         DependencyContainer.debugUIKit
