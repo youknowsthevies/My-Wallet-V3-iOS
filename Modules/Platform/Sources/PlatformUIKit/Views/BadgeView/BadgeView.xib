@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -13,7 +13,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BadgeView" customModule="PlatformUIKit" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BadgeView" customModule="PlatformUIKit">
             <connections>
                 <outlet property="accessoryContainer" destination="SzM-TD-gQM" id="y3p-Cf-Poi"/>
                 <outlet property="accessoryContainerAspectRatio" destination="O0e-9k-4TH" id="Udq-Yn-h5C"/>
@@ -33,7 +33,7 @@
                     <subviews>
                         <view contentMode="scaleToFill" horizontalHuggingPriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="SzM-TD-gQM">
                             <rect key="frame" x="8" y="0.0" width="0.0" height="32"/>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="width" priority="999" id="2KQ-jm-kGD"/>
                                 <constraint firstAttribute="width" secondItem="SzM-TD-gQM" secondAttribute="height" priority="750" id="O0e-9k-4TH"/>
@@ -46,7 +46,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
                         <constraint firstItem="kPX-Gh-v3q" firstAttribute="top" secondItem="Bkz-Ve-1ky" secondAttribute="top" priority="999" constant="4" id="DUa-NZ-p9H"/>
                         <constraint firstItem="kPX-Gh-v3q" firstAttribute="centerY" secondItem="Bkz-Ve-1ky" secondAttribute="centerY" id="VKl-dQ-sbC"/>
@@ -59,6 +59,7 @@
                     </constraints>
                 </view>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="D9H-tp-Lhj"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="Bkz-Ve-1ky" firstAttribute="top" secondItem="hF4-yQ-8ar" secondAttribute="top" id="Pah-Kl-Og8"/>
@@ -67,8 +68,12 @@
                 <constraint firstAttribute="bottom" secondItem="Bkz-Ve-1ky" secondAttribute="bottom" id="z6V-lx-X7F"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <viewLayoutGuide key="safeArea" id="D9H-tp-Lhj"/>
             <point key="canvasLocation" x="44.20289855072464" y="-141.62946428571428"/>
         </view>
     </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

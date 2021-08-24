@@ -16,7 +16,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="414" height="79"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1GW-Jm-cvh" customClass="MultiActionView" customModule="Blockchain" customModuleProvider="target">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1GW-Jm-cvh" customClass="MultiActionView" customModule="PlatformUIKit">
                         <rect key="frame" x="16" y="16" width="382" height="47"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>

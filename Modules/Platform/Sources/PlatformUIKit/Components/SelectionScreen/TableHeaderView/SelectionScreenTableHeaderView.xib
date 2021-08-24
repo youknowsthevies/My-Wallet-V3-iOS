@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,7 +12,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SelectionScreenTableHeaderView" customModule="PlatformUIKit" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SelectionScreenTableHeaderView" customModule="PlatformUIKit">
             <connections>
                 <outlet property="titleLabel" destination="R6G-Do-MsI" id="39q-Hy-pFv"/>
             </connections>
@@ -30,6 +29,7 @@
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="iCw-ea-zne"/>
             <constraints>
                 <constraint firstItem="iCw-ea-zne" firstAttribute="trailing" secondItem="R6G-Do-MsI" secondAttribute="trailing" constant="24" id="3cU-RA-9u6"/>
                 <constraint firstItem="iCw-ea-zne" firstAttribute="bottom" secondItem="R6G-Do-MsI" secondAttribute="bottom" constant="16" id="L3S-eH-RfK"/>
@@ -37,7 +37,6 @@
                 <constraint firstItem="R6G-Do-MsI" firstAttribute="leading" secondItem="iCw-ea-zne" secondAttribute="leading" constant="40" id="v6F-Ka-2LA"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <viewLayoutGuide key="safeArea" id="iCw-ea-zne"/>
             <point key="canvasLocation" x="-301.44927536231887" y="-195.87053571428569"/>
         </view>
     </objects>

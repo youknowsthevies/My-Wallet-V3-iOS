@@ -15,7 +15,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AnnouncementCardView" customModule="PlatformUIKit" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AnnouncementCardView" customModule="PlatformUIKit">
             <connections>
                 <outlet property="backgroundImageView" destination="gqc-Aa-cm0" id="xVe-bv-0Rl"/>
                 <outlet property="badgeImageView" destination="GCM-a8-OZI" id="fxC-zB-T2B"/>

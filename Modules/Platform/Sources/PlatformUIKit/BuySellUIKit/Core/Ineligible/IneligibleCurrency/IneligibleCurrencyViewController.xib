@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -16,7 +16,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="IneligibleCurrencyViewController" customModule="BuySellUIKit" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="IneligibleCurrencyViewController" customModule="PlatformUIKit">
             <connections>
                 <outlet property="changeCurrencyButtonView" destination="uhY-eP-z5n" id="TSm-ZN-6Ck"/>
                 <outlet property="descriptionLabel" destination="dQ6-0t-PNm" id="Gwb-IM-bHI"/>
@@ -53,14 +53,14 @@
                         </stackView>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uhY-eP-z5n" customClass="ButtonView" customModule="PlatformUIKit">
                             <rect key="frame" x="0.0" y="566" width="366" height="48"/>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="48" id="LSk-g5-qgd"/>
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A9Q-3i-jEn" customClass="ButtonView" customModule="PlatformUIKit">
                             <rect key="frame" x="0.0" y="638" width="366" height="48"/>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="48" id="u2k-8w-vaD"/>
                             </constraints>
@@ -79,7 +79,8 @@
                     </constraints>
                 </imageView>
             </subviews>
-            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="TOO-tj-L6j" secondAttribute="bottom" constant="16" id="71k-2l-JfU"/>
                 <constraint firstItem="TOO-tj-L6j" firstAttribute="top" secondItem="QGC-Wt-5Qm" secondAttribute="bottom" constant="24" id="85U-NH-44R"/>
@@ -88,8 +89,12 @@
                 <constraint firstItem="QGC-Wt-5Qm" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="40" id="aS5-SF-pHQ"/>
                 <constraint firstItem="QGC-Wt-5Qm" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="mzq-Ux-eJ9"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <point key="canvasLocation" x="139" y="137"/>
         </view>
     </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

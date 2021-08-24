@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="NOG-Ki-nep">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="NOG-Ki-nep">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -24,7 +21,7 @@
         <!--Introduction Sheet View Controller-->
         <scene sceneID="f2N-rj-bM0">
             <objects>
-                <viewController id="NOG-Ki-nep" customClass="IntroductionSheetViewController" customModule="PlatformUIKit" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="NOG-Ki-nep" customClass="IntroductionSheetViewController" customModule="PlatformUIKit" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="lGP-Gv-Y4I">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -56,7 +53,7 @@
                                             </label>
                                         </subviews>
                                     </stackView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9IA-DK-HSH">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9IA-DK-HSH">
                                         <rect key="frame" x="0.0" y="634" width="366" height="48"/>
                                         <color key="backgroundColor" red="0.050000000000000003" green="0.41999999999999998" blue="0.94999999999999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -74,6 +71,7 @@
                                 </constraints>
                             </stackView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="U5n-Vz-Qgg"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="U5n-Vz-Qgg" firstAttribute="bottom" secondItem="uyd-mt-bGs" secondAttribute="bottom" constant="24" id="9OL-ut-Cud"/>
@@ -84,7 +82,6 @@
                             <constraint firstItem="uyd-mt-bGs" firstAttribute="leading" secondItem="lGP-Gv-Y4I" secondAttribute="leading" constant="24" id="rb5-S0-uVS"/>
                             <constraint firstItem="Dpw-OM-OVz" firstAttribute="top" secondItem="U5n-Vz-Qgg" secondAttribute="top" constant="48" id="x0y-lb-SJ3"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="U5n-Vz-Qgg"/>
                     </view>
                     <connections>
                         <outlet property="button" destination="9IA-DK-HSH" id="uiU-TL-fzN"/>
@@ -95,6 +92,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xQx-s5-nAj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="132" y="78"/>
         </scene>
     </scenes>
     <resources>
