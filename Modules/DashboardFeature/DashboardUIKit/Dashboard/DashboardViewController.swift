@@ -89,8 +89,8 @@ public final class DashboardViewController: BaseScreenViewController {
         tableView.register(AnnouncementTableViewCell.self)
         fiatBalanceCellProvider.registerFiatBalanceCell(for: tableView)
         tableView.register(NoticeTableViewCell.self)
-        tableView.registerNibCell(TotalBalanceTableViewCell.self)
-        tableView.registerNibCell(HistoricalBalanceTableViewCell.self)
+        tableView.registerNibCell(TotalBalanceTableViewCell.self, in: TotalBalanceTableViewCell.bundle)
+        tableView.registerNibCell(HistoricalBalanceTableViewCell.self, in: HistoricalBalanceTableViewCell.bundle)
         tableView.separatorColor = .clear
         tableView.delegate = self
         tableView.dataSource = self

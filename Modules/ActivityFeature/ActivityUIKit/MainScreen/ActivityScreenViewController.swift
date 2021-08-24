@@ -123,8 +123,8 @@ public final class ActivityScreenViewController: BaseScreenViewController {
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(SelectionButtonTableViewCell.self)
-        tableView.registerNibCell(ActivityItemTableViewCell.self)
-        tableView.registerNibCell(ActivitySkeletonTableViewCell.self)
+        tableView.registerNibCell(ActivityItemTableViewCell.self, in: ActivityItemTableViewCell.bundle)
+        tableView.registerNibCell(ActivitySkeletonTableViewCell.self, in: ActivitySkeletonTableViewCell.bundle)
 
         let animation = AnimationConfiguration(insertAnimation: .fade, reloadAnimation: .fade, deleteAnimation: .fade)
 

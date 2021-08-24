@@ -13,6 +13,7 @@ import XCTest
 
 @testable import AuthenticationUIKit
 @testable import Blockchain
+@testable import FeatureAuthenticationUI
 
 // swiftlint:disable type_body_length
 final class MainAppReducerTests: XCTestCase {
@@ -50,11 +51,7 @@ final class MainAppReducerTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
 
-        mockSettingsApp = MockBlockchainSettingsApp(
-            enabledCurrenciesService: MockEnabledCurrenciesService(),
-            keychainItemWrapper: MockKeychainItemWrapping(),
-            legacyPasswordProvider: MockLegacyPasswordProvider()
-        )
+        mockSettingsApp = MockBlockchainSettingsApp()
         mockWalletManager = WalletManager(
             wallet: mockWallet,
             appSettings: mockSettingsApp,
@@ -146,7 +143,7 @@ final class MainAppReducerTests: XCTestCase {
 
     func test_syncPinKeyWithICloud() {
         // given
-        mockSettingsApp.mockIsPairedWithWallet = true
+        mockSettingsApp.isPairedWithWallet = true
 
         // method is implementing fireAndForget
         syncPinKeyWithICloud(
@@ -157,7 +154,7 @@ final class MainAppReducerTests: XCTestCase {
         XCTAssertFalse(mockCredentialsStore.synchronizeCalled)
 
         // given
-        mockSettingsApp.mockIsPairedWithWallet = false
+        mockSettingsApp.isPairedWithWallet = false
         mockSettingsApp.guid = "a"
         mockSettingsApp.sharedKey = "b"
 
@@ -170,7 +167,7 @@ final class MainAppReducerTests: XCTestCase {
         XCTAssertFalse(mockCredentialsStore.synchronizeCalled)
 
         // given
-        mockSettingsApp.mockIsPairedWithWallet = false
+        mockSettingsApp.isPairedWithWallet = false
         mockSettingsApp.encryptedPinPassword = "a"
         mockSettingsApp.pinKey = "b"
 
@@ -183,7 +180,7 @@ final class MainAppReducerTests: XCTestCase {
         XCTAssertFalse(mockCredentialsStore.synchronizeCalled)
 
         // given
-        mockSettingsApp.mockIsPairedWithWallet = false
+        mockSettingsApp.isPairedWithWallet = false
         mockSettingsApp.pinKey = nil
         mockSettingsApp.encryptedPinPassword = nil
         mockSettingsApp.guid = nil
