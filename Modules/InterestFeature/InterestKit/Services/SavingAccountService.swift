@@ -8,7 +8,7 @@ import ToolKit
 public protocol SavingAccountServiceAPI: AnyObject, SavingsOverviewAPI {
     func balances(fetch: Bool) -> Single<CustodialAccountBalanceStates>
     func details(for currency: CryptoCurrency) -> Single<ValueCalculationState<SavingsAccountBalanceDetails>>
-    func limits(for currency: CryptoCurrency) -> Single<SavingsAccountLimits?>
+    func limits(for currency: CryptoCurrency) -> Single<InterestLimits?>
 }
 
 final class SavingAccountService: SavingAccountServiceAPI {
@@ -18,6 +18,7 @@ final class SavingAccountService: SavingAccountServiceAPI {
     private let client: SavingsAccountClientAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
+    private let priceService: PriceServiceAPI
     private let cachedValue: CachedValue<SavingsAccountBalanceResponse>
 
     // MARK: - Setup
@@ -25,9 +26,11 @@ final class SavingAccountService: SavingAccountServiceAPI {
     init(
         client: SavingsAccountClientAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve()
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve()
     ) {
         self.client = client
+        self.priceService = priceService
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiersService = kycTiersService
         cachedValue = CachedValue(configuration: .periodic(60))
@@ -38,7 +41,7 @@ final class SavingAccountService: SavingAccountServiceAPI {
 
     // MARK: - SavingAccountServiceAPI
 
-    func limits(for currency: CryptoCurrency) -> Single<SavingsAccountLimits?> {
+    func limits(for currency: CryptoCurrency) -> Single<InterestLimits?> {
         fiatCurrencyService
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) in

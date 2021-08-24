@@ -8,9 +8,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable secure channel
     case secureChannel
 
-    /// Enable the new Pin/OnBoarding which uses ComposableArchitecture
-    case disableNewWelcomeScreen
-
     /// Enabled console logging of network requests for debug builds
     case requestConsoleLogging
 
@@ -35,8 +32,6 @@ public enum InternalFeature: String, CaseIterable {
         case .nonCustodialSell:
             return false
         case .secureChannel:
-            return false
-        case .disableNewWelcomeScreen:
             return false
         case .requestConsoleLogging:
             return false
@@ -63,8 +58,6 @@ extension InternalFeature {
             return "Interest - Deposit and Withdraw"
         case .secureChannel:
             return "Secure Channel"
-        case .disableNewWelcomeScreen:
-            return "Disable New Welcome Screen (SSO)"
         case .requestConsoleLogging:
             return "Enable Network Request Console Logs"
         case .useTransactionsFlowToBuyCrypto:

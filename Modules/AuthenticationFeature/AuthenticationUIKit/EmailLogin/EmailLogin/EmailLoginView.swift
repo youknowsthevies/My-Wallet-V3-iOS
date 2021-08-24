@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import AuthenticationKit
 import ComposableArchitecture
 import Localization
@@ -7,12 +8,24 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-typealias EmailLoginString = LocalizationConstants.AuthenticationKit.EmailLogin
-
 struct EmailLoginView: View {
+
+    private typealias LocalizedString = LocalizationConstants.AuthenticationKit.EmailLogin
+
+    private enum Layout {
+        static let topPadding: CGFloat = 34
+        static let bottomPadding: CGFloat = 34
+        static let leadingPadding: CGFloat = 24
+        static let trailingPadding: CGFloat = 24
+
+        static let navigationTitleFontSize: CGFloat = 20
+        static let navigationTitleTopPadding: CGFloat = 15
+    }
 
     private let store: Store<EmailLoginState, EmailLoginAction>
     @ObservedObject private var viewStore: ViewStore<EmailLoginState, EmailLoginAction>
+
+    @State private var isEmailFieldFirstResponder: Bool = true
 
     init(store: Store<EmailLoginState, EmailLoginAction>) {
         self.store = store
@@ -22,27 +35,20 @@ struct EmailLoginView: View {
     var body: some View {
         NavigationView {
             VStack {
-                FormTextFieldGroup(
-                    title: EmailLoginString.TextFieldTitle.email,
-                    text: viewStore.binding(
-                        get: { $0.emailAddress },
-                        send: { .didChangeEmailAddress($0) }
-                    ),
-                    textPlaceholder: EmailLoginString.TextFieldPlaceholder.email,
-                    error: { _ in !viewStore.isEmailValid && !viewStore.emailAddress.isEmpty },
-                    errorMessage: EmailLoginString.TextFieldError.invalidEmail
-                )
-                .disableAutocorrection(true)
-                .autocapitalization(.none)
-                .padding(EdgeInsets(top: 34, leading: 24, bottom: 20, trailing: 24))
+                emailField
+                    .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.emailGroup)
 
                 Spacer()
 
-                PrimaryButton(title: EmailLoginString.Button._continue) {
-                    viewStore.send(.sendDeviceVerificationEmail)
-                }
-                .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
+                PrimaryButton(
+                    title: LocalizedString.Button._continue,
+                    action: {
+                        viewStore.send(.sendDeviceVerificationEmail)
+                    },
+                    loading: viewStore.binding(get: \.isLoading, send: { _ in .none })
+                )
                 .disabled(!viewStore.isEmailValid)
+                .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.continueButton)
 
                 NavigationLink(
                     destination: IfLetStore(
@@ -59,21 +65,72 @@ struct EmailLoginView: View {
                     label: EmptyView.init
                 )
             }
-            .navigationBarTitle(EmailLoginString.navigationTitle)
+            .padding(
+                EdgeInsets(
+                    top: Layout.topPadding,
+                    leading: Layout.leadingPadding,
+                    bottom: Layout.bottomPadding,
+                    trailing: Layout.trailingPadding
+                )
+            )
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Text(LocalizedString.navigationTitle)
+                        .font(Font(weight: .semibold, size: Layout.navigationTitleFontSize))
+                        .padding(.top, Layout.navigationTitleTopPadding)
+                        .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.loginTitleText)
+                }
+            }
             .trailingNavigationButton(.close) {
                 viewStore.send(.closeButtonTapped)
             }
-            .updateNavigationBarStyle()
+            .whiteNavigationBarStyle()
+            .hideBackButtonTitle()
         }
-        .alert(self.store.scope(state: \.emailLoginFailureAlert), dismiss: .emailLoginFailureAlert(.dismiss))
-        .onDisappear {
-            self.viewStore.send(.didDisappear)
+        .alert(self.store.scope(state: \.emailLoginFailureAlert), dismiss: .alert(.dismiss))
+        .onAppear {
+            viewStore.send(.onAppear)
         }
+    }
+
+    private var emailField: some View {
+        FormTextFieldGroup(
+            text: viewStore.binding(
+                get: { $0.emailAddress },
+                send: { .didChangeEmailAddress($0) }
+            ),
+            isFirstResponder: $isEmailFieldFirstResponder,
+            isError: viewStore.binding(
+                get: { !$0.isEmailValid && !$0.emailAddress.isEmpty },
+                send: .none
+            ),
+            title: LocalizedString.TextFieldTitle.email,
+            configuration: {
+                $0.autocorrectionType = .no
+                $0.autocapitalizationType = .none
+                $0.textContentType = .emailAddress
+                $0.keyboardType = .emailAddress
+                $0.placeholder = LocalizedString.TextFieldPlaceholder.email
+                $0.returnKeyType = .done
+                $0.enablesReturnKeyAutomatically = true
+            },
+            errorMessage: LocalizedString.TextFieldError.invalidEmail,
+            onPaddingTapped: {
+                self.isEmailFieldFirstResponder = true
+            },
+            onReturnTapped: {
+                self.isEmailFieldFirstResponder = false
+                if viewStore.isEmailValid {
+                    viewStore.send(.sendDeviceVerificationEmail)
+                }
+            }
+        )
+        .disabled(viewStore.isLoading)
     }
 }
 
 #if DEBUG
-struct LoginView_Previews: PreviewProvider {
+struct EmailLoginView_Previews: PreviewProvider {
     static var previews: some View {
         EmailLoginView(
             store:
@@ -81,8 +138,12 @@ struct LoginView_Previews: PreviewProvider {
                 initialState: .init(),
                 reducer: emailLoginReducer,
                 environment: .init(
+                    sessionTokenService:
+                    NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),
-                    mainQueue: .main
+                    mainQueue: .main,
+                    errorRecorder: NoOpErrorRecoder(),
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )

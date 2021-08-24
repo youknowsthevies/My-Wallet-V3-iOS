@@ -11,6 +11,7 @@ import SettingsKit
 import WalletPayloadKit
 import XCTest
 
+@testable import AuthenticationUIKit
 @testable import Blockchain
 
 // swiftlint:disable type_body_length
@@ -215,6 +216,73 @@ final class MainAppReducerTests: XCTestCase {
 
         XCTAssertNotNil(testStore.environment.blockchainSettings.sharedKey)
         XCTAssertEqual(testStore.environment.blockchainSettings.sharedKey, "b")
+    }
+
+    func test_trying_to_login_withSecondPassword_account_displays_notice() {
+        mockWallet.mockNeedsSecondPassword = true
+        mockSettingsApp.guid = nil
+        mockSettingsApp.sharedKey = nil
+        mockSettingsApp.isPinSet = false
+
+        testStore.send(.onboarding(.start)) { state in
+            state.onboarding = .init()
+            state.onboarding?.pinState = nil
+            state.onboarding?.welcomeState = .init()
+        }
+
+        testStore.receive(.onboarding(.welcomeScreen(.start))) { state in
+            state.onboarding?.welcomeState?.manualPairingEnabled = true
+        }
+        testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.manualLoginScreen)))) { state in
+            state.onboarding?.welcomeState?.screenFlow = .manualLoginScreen
+            state.onboarding?.welcomeState?.manualCredentialsState = .init()
+        }
+        testStore.send(
+            .onboarding(
+                .welcomeScreen(
+                    .manualPairing(
+                        .walletPairing(
+                            .decryptWalletWithPassword("password")
+                        )
+                    )
+                )
+            )
+        ) { state in
+            state.onboarding?.welcomeState?.manualCredentialsState?.isLoading = true
+        }
+
+        testStore.receive(.onboarding(.welcomeScreen(.requestedToDecryptWallet("password"))))
+        testStore.receive(.fetchWallet("password"))
+        mockSettingsApp.guid = String(repeating: "a", count: 36)
+        mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
+        XCTAssertTrue(mockWallet.fetchCalled)
+        mockWallet.load(
+            withGuid: mockSettingsApp.guid!,
+            sharedKey: mockSettingsApp.sharedKey!,
+            password: "password".passwordPartHash
+        )
+        testStore.receive(.authenticate)
+        mockMainQueue.advance()
+
+        // wallet decryptions still expects the original values
+        let decryption = WalletDecryption(
+            guid: String(repeating: "a", count: 36),
+            sharedKey: String(repeating: "b", count: 36),
+            passwordPartHash: nil
+        )
+        testStore.receive(.didDecryptWallet(decryption))
+        testStore.receive(.authenticated(.success(true)))
+
+        // Assert that both of these values are nil
+        XCTAssertNil(mockSettingsApp.guid)
+        XCTAssertNil(mockSettingsApp.sharedKey)
+
+        testStore.receive(.onboarding(.informSecondPasswordDetected))
+        testStore.receive(.onboarding(.welcomeScreen(.informSecondPasswordDetected))) { state in
+            state.onboarding?.welcomeState?.screenFlow = .welcomeScreen
+            state.onboarding?.welcomeState?.modals = .secondPasswordNoticeScreen
+            state.onboarding?.welcomeState?.secondPasswordNoticeState = .init()
+        }
     }
 
     func test_sending_success_authentication_from_password_required_screen() {
@@ -538,6 +606,41 @@ final class MainAppReducerTests: XCTestCase {
         }
 
         testStore.receive(.onboarding(.passwordScreen(.start)))
+    }
+
+    func test_sending_appForegrounded_while_wallet_not_initialized_and_logged_in_state() {
+        // given
+        mockSettingsApp.guid = String(repeating: "a", count: 36)
+        mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
+        mockSettingsApp.isPinSet = true
+
+        mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(false))
+        testStore.send(.walletInitialized)
+        mockMainQueue.advance()
+        testStore.receive(.walletNeedsUpgrade(false))
+        testStore.receive(.proceedToLoggedIn) { state in
+            state.loggedIn = LoggedIn.State()
+            state.onboarding = nil
+        }
+        testStore.receive(.loggedIn(.start(.none)))
+
+        // when
+        mockWallet.mockIsInitialized = false
+        testStore.send(.appForegrounded)
+
+        // then
+
+        testStore.receive(.loggedIn(.stop))
+        testStore.receive(.requirePin) { state in
+            state.loggedIn = nil
+            state.onboarding = .init()
+        }
+        testStore.receive(.onboarding(.start)) { state in
+            state.onboarding?.pinState = .init()
+        }
+        testStore.receive(.onboarding(.pin(.authenticate))) { state in
+            state.onboarding?.pinState?.authenticate = true
+        }
     }
 
     func test_clearPinIfNeeded_correctly_clears_pin() {

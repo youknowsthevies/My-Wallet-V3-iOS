@@ -5,9 +5,19 @@ import ComposableArchitecture
 // MARK: - Type
 
 public enum TwoFAAction: Equatable {
+    public enum IncorrectTwoFAContext: Equatable {
+        case incorrect
+        case missingCode
+        case none
+
+        var hasError: Bool {
+            self != .none
+        }
+    }
+
     case didChangeTwoFACode(String)
     case didChangeTwoFACodeAttemptsLeft(Int)
-    case incorrectTwoFACodeErrorVisibility(Bool)
+    case incorrectTwoFACodeErrorVisibility(IncorrectTwoFAContext)
     case resendSMSButtonVisibility(Bool)
     case twoFACodeFieldVisibility(Bool)
 }
@@ -23,6 +33,7 @@ struct TwoFAState: Equatable {
     var isTwoFACodeFieldVisible: Bool
     var isResendSMSButtonVisible: Bool
     var isTwoFACodeIncorrect: Bool
+    var twoFACodeIncorrectContext: TwoFAAction.IncorrectTwoFAContext
     var twoFACodeAttemptsLeft: Int
 
     init() {
@@ -31,6 +42,7 @@ struct TwoFAState: Equatable {
         isResendSMSButtonVisible = false
         isTwoFACodeIncorrect = false
         twoFACodeAttemptsLeft = Constants.twoFACodeMaxAttemptsLeft
+        twoFACodeIncorrectContext = .none
     }
 }
 
@@ -45,9 +57,10 @@ let twoFAReducer = Reducer<
         return .none
     case .didChangeTwoFACodeAttemptsLeft(let attemptsLeft):
         state.twoFACodeAttemptsLeft = attemptsLeft
-        return Effect(value: .incorrectTwoFACodeErrorVisibility(true))
-    case .incorrectTwoFACodeErrorVisibility(let isVisible):
-        state.isTwoFACodeIncorrect = isVisible
+        return Effect(value: .incorrectTwoFACodeErrorVisibility(.incorrect))
+    case .incorrectTwoFACodeErrorVisibility(let context):
+        state.twoFACodeIncorrectContext = context
+        state.isTwoFACodeIncorrect = context.hasError
         return .none
     case .resendSMSButtonVisibility(let isVisible):
         state.isResendSMSButtonVisible = isVisible

@@ -6,14 +6,12 @@ extension Color {
 
     public static let borderPrimary = Color(paletteColor: .grey100)
     public static let borderFocused = Color(paletteColor: .blue600)
+    public static let borderSuccess = Color(paletteColor: .green800)
     public static let borderError = Color(paletteColor: .red600)
 
     // MARK: Backgrounds
 
     public static let viewPrimaryBackground = Color(paletteColor: .white)
-    public static let textFieldActiveBackground = Color(paletteColor: .white)
-    public static let textFieldInactiveBackground = Color(paletteColor: .grey100)
-    public static let passwordPeekEyeColor = Color(paletteColor: .grey400)
 
     // MARK: PrimaryButton
 
@@ -25,7 +23,8 @@ extension Color {
     public static let buttonSecondaryBackground = Color(paletteColor: .white)
     public static let buttonSecondaryText = Color(paletteColor: .blue600)
 
-    // MAKR: Links
+    // MARK: Links
+
     public static let buttonLinkText = Color(paletteColor: .blue600)
 
     // MARK: Divider
@@ -39,7 +38,14 @@ extension Color {
     public static let textSubheading = Color(paletteColor: .grey600)
     public static let textBody = Color(paletteColor: .grey900)
     public static let textMuted = Color(paletteColor: .grey400)
+    public static let textError = Color(paletteColor: .red600)
     public static let formField = Color(paletteColor: .greyFade800)
+
+    // MARK: TextField
+
+    public static let textFieldPrefilledAndDisabledBackground = Color(paletteColor: .grey100)
+    public static let textCallOutBackground = Color(paletteColor: .grey000)
+    public static let secureFieldEyeSymbol = Color(paletteColor: .grey400)
 
     // MARK: Badge
 

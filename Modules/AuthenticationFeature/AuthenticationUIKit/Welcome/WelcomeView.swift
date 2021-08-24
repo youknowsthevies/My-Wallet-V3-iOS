@@ -7,9 +7,28 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-typealias WelcomeViewString = LocalizationConstants.AuthenticationKit.Welcome
-
+/// Entry point to Create Wallet/Login/Restore Wallet
 public struct WelcomeView: View {
+
+    private typealias LocalizedString = LocalizationConstants.AuthenticationKit.Welcome
+
+    private enum Layout {
+        static let topPadding: CGFloat = 140
+        static let bottomPadding: CGFloat = 58
+        static let leadingPadding: CGFloat = 24
+        static let trailingPadding: CGFloat = 24
+
+        static let imageSideLength: CGFloat = 64
+        static let imageBottomPadding: CGFloat = 40
+        static let titleFontSize: CGFloat = 24
+        static let titleBottomPadding: CGFloat = 16
+        static let messageFontSize: CGFloat = 16
+        static let messageLineSpacing: CGFloat = 4
+        static let buttonSpacing: CGFloat = 10
+        static let buttonFontSize: CGFloat = 16
+        static let buttonBottomPadding: CGFloat = 20
+        static let supplmentaryTextFontSize: CGFloat = 12
+    }
 
     private let store: Store<WelcomeState, WelcomeAction>
     @ObservedObject private var viewStore: ViewStore<WelcomeState, WelcomeAction>
@@ -21,12 +40,20 @@ public struct WelcomeView: View {
 
     public var body: some View {
         VStack {
-            WelcomeMessageSection()
-                .padding(.top, 140)
+            welcomeMessageSection
             Spacer()
-            WelcomeActionSection(store: store, viewStore: viewStore)
-                .padding(.bottom, 58)
+            buttonSection
+                .padding(.bottom, Layout.buttonBottomPadding)
+            supplementarySection
         }
+        .padding(
+            EdgeInsets(
+                top: Layout.topPadding,
+                leading: Layout.leadingPadding,
+                bottom: Layout.bottomPadding,
+                trailing: Layout.trailingPadding
+            )
+        )
         .sheet(isPresented: .constant(viewStore.screenFlow == .emailLoginScreen)) {
             IfLetStore(
                 store.scope(
@@ -36,105 +63,132 @@ public struct WelcomeView: View {
                 then: EmailLoginView.init(store:)
             )
         }
-        .sheet(isPresented: .constant(viewStore.screenFlow == .guidLoginScreen)) {
+        .sheet(isPresented: .constant(viewStore.screenFlow == .manualLoginScreen)) {
             IfLetStore(
                 store.scope(
-                    state: \.manualPairingState,
+                    state: \.manualCredentialsState,
                     action: WelcomeAction.manualPairing
                 ),
-                then: ManualPairingView.init(store:)
+                then: { store in
+                    NavigationView {
+                        CredentialsView(
+                            context: .manualPairing,
+                            store: store
+                        )
+                        .trailingNavigationButton(.close) {
+                            viewStore.send(.manualPairing(.closeButtonTapped))
+                        }
+                        .whiteNavigationBarStyle()
+                        .navigationTitle(
+                            LocalizedString.Button.manualPairing
+                        )
+                    }
+                }
             )
         }
-    }
-}
-
-private struct WelcomeMessageSection: View {
-    var body: some View {
-        VStack {
-            Image.Logo.blockchain
-                .frame(width: 64, height: 64)
-                .padding(.bottom, 40)
-            Text(WelcomeViewString.title)
-                .font(Font(weight: .semibold, size: 24))
-                .foregroundColor(.textHeading)
-                .padding(.bottom, 16)
-            WelcomeMessageDescription()
-                .font(Font(weight: .medium, size: 16))
-                .lineSpacing(4)
-        }
-        .multilineTextAlignment(.center)
-    }
-}
-
-private struct WelcomeMessageDescription: View {
-    let prefix = Text(WelcomeViewString.Description.prefix)
-        .foregroundColor(.textMuted)
-    let comma = Text(WelcomeViewString.Description.comma)
-        .foregroundColor(.textMuted)
-    let receive = Text(WelcomeViewString.Description.receive)
-        .foregroundColor(.textHeading)
-    let store = Text(WelcomeViewString.Description.store + "\n")
-        .foregroundColor(.textHeading)
-    let and = Text(WelcomeViewString.Description.and)
-        .foregroundColor(.textMuted)
-    let trade = Text(WelcomeViewString.Description.trade)
-        .foregroundColor(.textHeading)
-    let suffix = Text(WelcomeViewString.Description.suffix)
-        .foregroundColor(.textMuted)
-
-    var body: some View {
-        Group {
-            prefix + receive + comma + store + and + trade + suffix
-        }
-    }
-}
-
-private struct WelcomeActionSection: View {
-
-    let store: Store<WelcomeState, WelcomeAction>
-    @ObservedObject var viewStore: ViewStore<WelcomeState, WelcomeAction>
-
-    var body: some View {
-        VStack {
-            VStack(spacing: 10) {
-                PrimaryButton(title: WelcomeViewString.Button.createWallet) {
-                    viewStore.send(.presentScreenFlow(.createWalletScreen))
-                }
-
-                SecondaryButton(title: WelcomeViewString.Button.login) {
-                    viewStore.send(.presentScreenFlow(.emailLoginScreen))
-                }
-
-                if viewStore.manualPairingEnabled {
-                    Divider()
-                    manualPairingButton()
-                }
+        .sheet(
+            isPresented: .constant(viewStore.modals == .secondPasswordNoticeScreen),
+            onDismiss: { viewStore.send(.modalDismissed(.secondPasswordNoticeScreen)) },
+            content: {
+                IfLetStore(
+                    store.scope(
+                        state: \.secondPasswordNoticeState,
+                        action: WelcomeAction.secondPasswordNotice
+                    ),
+                    then: { store in
+                        NavigationView {
+                            SecondPasswordNoticeView(store: store)
+                        }
+                    }
+                )
             }
-            .padding(.bottom, 20)
-
-            HStack {
-                Button(WelcomeViewString.Button.restoreWallet) {
-                    viewStore.send(.presentScreenFlow(.recoverWalletScreen))
-                }
-                .font(Font(weight: .semibold, size: 12))
-                .foregroundColor(.buttonLinkText)
-                Spacer()
-                Text(viewStore.buildVersion)
-                    .font(Font(weight: .medium, size: 12))
-                    .foregroundColor(.textMuted)
-            }
-        }
-        .padding(.leading, 24)
-        .padding(.trailing, 24)
+        )
     }
 
     // MARK: - Private
 
-    private func manualPairingButton() -> some View {
-        Button("Manual Login") {
-            viewStore.send(.presentScreenFlow(.guidLoginScreen))
+    private var welcomeMessageSection: some View {
+        VStack {
+            Image.Logo.blockchain
+                .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
+                .padding(.bottom, Layout.imageBottomPadding)
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.blockchainImage)
+            Text(LocalizedString.title)
+                .font(Font(weight: .semibold, size: Layout.titleFontSize))
+                .foregroundColor(.textHeading)
+                .padding(.bottom, Layout.titleBottomPadding)
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.welcomeTitleText)
+            welcomeMessageDescription
+                .font(Font(weight: .medium, size: Layout.messageFontSize))
+                .lineSpacing(Layout.messageLineSpacing)
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.welcomeMessageText)
         }
-        .font(Font(weight: .semibold, size: 16))
+        .multilineTextAlignment(.center)
+    }
+
+    private var welcomeMessageDescription: some View {
+        Text(LocalizedString.Description.prefix)
+            .foregroundColor(.textMuted) +
+            Text(LocalizedString.Description.send)
+            .foregroundColor(.textHeading) +
+            Text(LocalizedString.Description.comma)
+            .foregroundColor(.textMuted) +
+            Text(LocalizedString.Description.receive)
+            .foregroundColor(.textHeading) +
+            Text(LocalizedString.Description.comma)
+            .foregroundColor(.textMuted) +
+            Text(LocalizedString.Description.store + "\n")
+            .foregroundColor(.textHeading) +
+            Text(LocalizedString.Description.and)
+            .foregroundColor(.textMuted) +
+            Text(LocalizedString.Description.trade)
+            .foregroundColor(.textHeading) +
+            Text(LocalizedString.Description.suffix)
+            .foregroundColor(.textMuted)
+    }
+
+    private var buttonSection: some View {
+        VStack(spacing: Layout.buttonSpacing) {
+            PrimaryButton(title: LocalizedString.Button.createWallet) {
+                viewStore.send(.presentScreenFlow(.createWalletScreen))
+            }
+            .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.createWalletButton)
+            SecondaryButton(title: LocalizedString.Button.login) {
+                viewStore.send(.presentScreenFlow(.emailLoginScreen))
+            }
+            .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.emailLoginButton)
+            if viewStore.manualPairingEnabled {
+                Divider()
+                manualPairingButton()
+                    .accessibility(
+                        identifier: AccessibilityIdentifiers.WelcomeScreen.manualPairingButton
+                    )
+            }
+        }
+        .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.emailLoginButton)
+    }
+
+    private var supplementarySection: some View {
+        HStack {
+            Button(LocalizedString.Button.restoreWallet) {
+                viewStore.send(.presentScreenFlow(.recoverWalletScreen))
+            }
+            .font(Font(weight: .semibold, size: Layout.supplmentaryTextFontSize))
+            .foregroundColor(.buttonLinkText)
+            .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.restoreWalletButton)
+            Spacer()
+            Text(viewStore.buildVersion)
+                .font(Font(weight: .medium, size: Layout.supplmentaryTextFontSize))
+                .foregroundColor(.textMuted)
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.buildVersionText)
+        }
+    }
+
+    private func manualPairingButton() -> some View {
+        Button(LocalizedString.Button.manualPairing) {
+            viewStore.send(.presentScreenFlow(.manualLoginScreen))
+        }
+        .font(Font(weight: .semibold, size: Layout.buttonFontSize))
         .frame(maxWidth: .infinity, minHeight: LayoutConstants.buttonMinHeight)
         .padding(.horizontal)
         .foregroundColor(Color.textSubheading)
@@ -158,6 +212,7 @@ struct WelcomeView_Previews: PreviewProvider {
                 reducer: welcomeReducer,
                 environment: .init(
                     mainQueue: .main,
+                    sessionTokenService: NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlags: NoOpInternalFeatureFlagService(),
                     buildVersionProvider: { "Test version" }

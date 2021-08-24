@@ -48,8 +48,12 @@ enum TransactionFlowDescriptor {
                 return "\(source.fiatCurrency.code) " + LocalizedString.Withdraw.account
             case .deposit:
                 return LocalizedString.Deposit.dailyLimit
+            case .buy:
+                guard let source = state.source, let destination = state.destination else {
+                    return LocalizedString.Buy.title
+                }
+                return "\(LocalizedString.Buy.title) \(destination.currencyType.code) using \(source.label)"
             case .receive,
-                 .buy,
                  .sell,
                  .viewActivity:
                 unimplemented()
@@ -80,8 +84,13 @@ enum TransactionFlowDescriptor {
                 return formatForHeader(moneyValue: state.availableBalance)
             case .deposit:
                 return "\(state.maxDaily.displayString)"
+            case .buy:
+                let prefix = "\(LocalizedString.Buy.title):"
+                guard let destination = state.destination else {
+                    return prefix
+                }
+                return "\(prefix) \(destination.currencyType.code) \(destination.label)"
             case .receive,
-                 .buy,
                  .sell,
                  .viewActivity:
                 unimplemented()
@@ -96,8 +105,9 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Swap.swap
             case .deposit:
                 return LocalizedString.Deposit.linkedBanks
+            case .buy:
+                return LocalizedString.Buy.selectSourceTitle
             case .receive,
-                 .buy,
                  .sell,
                  .send,
                  .viewActivity,
@@ -127,9 +137,10 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.receive
             case .withdraw:
                 return LocalizedString.Withdraw.withdrawTo
+            case .buy:
+                return LocalizedString.Buy.selectDestinationTitle
             case .deposit,
                  .receive,
-                 .buy,
                  .sell,
                  .send,
                  .viewActivity:

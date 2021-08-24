@@ -4,6 +4,7 @@ import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import ToolKit
 import TransactionKit
 
 protocol EnterAmountPageInteractable: Interactable {
@@ -30,7 +31,8 @@ final class EnterAmountPageRouter: ViewableRouter<EnterAmountPageInteractable, E
         interactor.router = self
     }
 
-    func showError() {
+    func showError(_ error: Error) {
+        Logger.shared.error(error)
         alertViewPresenter.error(in: viewController.uiviewController, action: nil)
     }
 

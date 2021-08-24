@@ -122,7 +122,7 @@ final class WithdrawRootInteractor: Interactor,
             } else {
                 self.router?.startWithdraw(
                     sourceAccount: self.sourceAccount,
-                    destination: linkedBanks.count > 1 ? nil : linkedBanks.first
+                    destination: filteredLinkedBanks.count > 1 ? nil : filteredLinkedBanks.first
                 )
             }
         })

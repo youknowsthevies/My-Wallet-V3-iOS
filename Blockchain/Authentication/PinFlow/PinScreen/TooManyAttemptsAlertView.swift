@@ -14,8 +14,8 @@ class TooManyAttemptsAlertViewController: UIViewController {
         view.addSubview(contentView.view)
         addChild(contentView)
         setupConstraints()
-        contentView.rootView.okPressed = {
-            self.dismiss(animated: true, completion: nil)
+        contentView.rootView.okPressed = { [weak self] in
+            self?.dismiss(animated: true, completion: nil)
         }
     }
 
@@ -32,7 +32,7 @@ private struct TooManyAttemptsAlertView: View {
     var okPressed: (() -> Void)?
 
     var body: some View {
-        VStack {
+        VStack(alignment: .center) {
             Text(LocalizationConstants.Pin.tooManyAttemptsTitle)
                 .textStyle(.title)
                 .padding(.bottom, 10)

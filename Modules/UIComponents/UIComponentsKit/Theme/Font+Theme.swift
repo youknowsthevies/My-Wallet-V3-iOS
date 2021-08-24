@@ -47,22 +47,30 @@ extension UIFont {
 extension UIFont {
 
     static func loadCustomFonts() {
-        registerFont(fileName: "\(InterType.regular.rawValue).ttf")
-        registerFont(fileName: "\(InterType.medium.rawValue).ttf")
-        registerFont(fileName: "\(InterType.semibold.rawValue).ttf")
-        registerFont(fileName: "\(InterType.bold.rawValue).ttf")
+        registerFont(fileName: InterType.regular.rawValue)
+        registerFont(fileName: InterType.medium.rawValue)
+        registerFont(fileName: InterType.semibold.rawValue)
+        registerFont(fileName: InterType.bold.rawValue)
     }
 
-    static func registerFont(fileName: String, bundle: Bundle = Bundle.current) {
-        let pathForResourceString = bundle.path(forResource: fileName, ofType: nil)
-        if let fontData = NSData(contentsOfFile: pathForResourceString!), let dataProvider = CGDataProvider(data: fontData) {
-            let fontRef = CGFont(dataProvider)
-            var errorRef: Unmanaged<CFError>?
-            if CTFontManagerRegisterGraphicsFont(fontRef!, &errorRef) == false {
-                print("Failed to register font - register graphics font failed - this font may have already been registered in the main bundle.")
-            }
-        } else {
-            print("Failed to register font - bundle identifier invalid.")
+    static func registerFont(fileName: String, bundle: Bundle = Bundle.safeModuleBundle) {
+        guard let fontURL = bundle.url(forResource: fileName, withExtension: "ttf") else {
+            print("No font named \(fileName).ttf was found in the module bundle")
+            return
         }
+
+        var error: Unmanaged<CFError>?
+        CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, &error)
+        print(error ?? "Successfully registered font: \(fileName)")
+    }
+}
+
+extension Bundle {
+    /// If unit tests are running, returns main Bundle.
+    static var safeModuleBundle: Bundle {
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+            return Bundle.main
+        }
+        return Bundle.module
     }
 }

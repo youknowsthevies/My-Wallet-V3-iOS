@@ -2,7 +2,6 @@
 
 import AuthenticationKit
 import Combine
-import RxSwift
 import ToolKit
 
 public final class SMSService: SMSServiceAPI {
@@ -21,32 +20,7 @@ public final class SMSService: SMSServiceAPI {
 
     // MARK: - API
 
-    public func request() -> Completable {
-        Single
-            .zip(repository.guid, repository.sessionToken)
-            .map(weak: self) { _, credentials -> (guid: String, sessionToken: String) in
-                guard let guid = credentials.0 else {
-                    throw MissingCredentialsError.guid
-                }
-                guard let sessionToken = credentials.1 else {
-                    throw MissingCredentialsError.sessionToken
-                }
-                return (guid, sessionToken)
-            }
-            .flatMapCompletable(weak: self) { (self, credentials) -> Completable in
-                self.client.requestOTP(
-                    sessionToken: credentials.sessionToken,
-                    guid: credentials.guid
-                )
-            }
-    }
-}
-
-// MARK: - SMSServiceCombineAPI
-
-extension SMSService {
-
-    public func requestPublisher() -> AnyPublisher<Void, SMSServiceError> {
+    public func request() -> AnyPublisher<Void, SMSServiceError> {
         repository.guidPublisher
             .zip(repository.sessionTokenPublisher)
             .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), SMSServiceError> in
@@ -59,7 +33,7 @@ extension SMSService {
                 return .just((guid, sessionToken))
             }
             .flatMap { [client] credentials -> AnyPublisher<Void, SMSServiceError> in
-                client.requestOTPPublisher(
+                client.requestOTP(
                     sessionToken: credentials.sessionToken,
                     guid: credentials.guid
                 )

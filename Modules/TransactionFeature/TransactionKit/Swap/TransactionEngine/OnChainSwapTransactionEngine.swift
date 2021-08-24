@@ -180,12 +180,16 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                             .catchError(weak: self) { (self, error) -> Single<TransactionResult> in
                                 self.orderUpdateRepository
                                     .updateOrder(identifier: swapOrder.identifier, success: false)
+                                    .asObservable()
+                                    .ignoreElements()
                                     .catchError { _ in .empty() }
                                     .andThen(.error(error))
                             }
                             .flatMap(weak: self) { (self, result) -> Single<TransactionResult> in
                                 self.orderUpdateRepository
                                     .updateOrder(identifier: swapOrder.identifier, success: true)
+                                    .asObservable()
+                                    .ignoreElements()
                                     .catchError { _ in .empty() }
                                     .andThen(.just(result))
                             }

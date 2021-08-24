@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
-import RxSwift
 import TransactionKit
 
 final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
@@ -23,7 +23,7 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
         currency: CurrencyType,
         networkFee: CurrencyType,
         product: TransactionLimitsProduct
-    ) -> Single<TransactionLimits> {
+    ) -> AnyPublisher<TransactionLimits, NabuNetworkError> {
         client
             .fetchTransactionLimits(
                 currency: currency,
@@ -32,7 +32,5 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
             )
             .map(TransactionLimits.init)
             .eraseToAnyPublisher()
-            .asObservable()
-            .asSingle()
     }
 }

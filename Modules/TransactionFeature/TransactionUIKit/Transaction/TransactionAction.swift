@@ -190,13 +190,14 @@ enum TransactionAction: MviAction {
             newState.errorState = pendingTransaction.validationState.mapToTransactionErrorState
             return newState.withUpdatedBackstack(oldState: oldState)
         case .showSourceSelection:
+            // TODO: If the user is going through `Buy`, the user
+            // is not going back. The target selection screen should be presented modally.
             return oldState
                 .update(keyPath: \.step, value: .selectSource)
                 .update(keyPath: \.isGoingBack, value: true)
         case .showTargetSelection:
             // TODO: If the user is going through `Buy`, the user
             // is not going back. The target selection screen should be presented modally.
-
             return oldState
                 .update(keyPath: \.step, value: .selectTarget)
                 .update(keyPath: \.isGoingBack, value: true)

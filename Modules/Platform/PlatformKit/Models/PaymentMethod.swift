@@ -181,6 +181,21 @@ public struct PaymentMethod: Equatable, Comparable {
     /// for the year
     public let maxAnnual: FiatValue
 
+    /// The `FiatCurrency` supported by the `PaymentMethod`
+    public var fiatCurrency: FiatCurrency {
+        switch type {
+        case .bankAccount(let currency),
+             .bankTransfer(let currency),
+             .funds(let currency):
+            guard let fiat = currency.fiatCurrency else {
+                impossible("Payment method types should use fiat.")
+            }
+            return fiat
+        case .card:
+            return max.currencyType
+        }
+    }
+
     public static func == (lhs: PaymentMethod, rhs: PaymentMethod) -> Bool {
         lhs.type == rhs.type
     }

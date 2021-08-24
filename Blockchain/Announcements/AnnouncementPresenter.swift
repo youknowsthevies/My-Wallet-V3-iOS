@@ -193,8 +193,6 @@ final class AnnouncementPresenter {
                 )
             case .newSwap:
                 announcement = newSwap(using: preliminaryData, reappearanceTimeInterval: metadata.interval)
-            case .sendToDomains:
-                announcement = sendToDomains(hasWalletBalance: preliminaryData.hasAnyWalletBalance)
             case .paxRenaming:
                 announcement = paxRenaming
             }
@@ -377,21 +375,6 @@ extension AnnouncementPresenter {
                     url: "https://support.blockchain.com/hc/en-us/articles/360040777891-USD-Digital-is-now-Paxos-Standard",
                     from: topMostViewController
                 )
-            }
-        )
-    }
-
-    /// Computes Send to Domains announcement for users with any wallet balance
-    private func sendToDomains(hasWalletBalance: Bool) -> Announcement {
-        SendToDomainsAnnouncement(
-            shouldShowSendToDomainsAnnouncement: hasWalletBalance,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
-            action: { [weak self] in
-                guard let self = self else { return }
-                self.hideAnnouncement()
-                self.tabSwapping.switchToSend()
             }
         )
     }

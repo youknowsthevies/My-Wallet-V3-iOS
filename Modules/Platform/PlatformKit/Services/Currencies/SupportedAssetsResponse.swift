@@ -2,15 +2,15 @@
 
 import Foundation
 
-struct SupportedAssetsResponse: Decodable {
-    struct Asset: Decodable {
+struct SupportedAssetsResponse: Codable {
+    struct Asset: Codable {
         let symbol: String // eg BTC
         let name: String // eg Bitcoin
         let precision: Int // eg 18
         let products: [String] // eg ["PrivateKey"]
         let type: AssetType
 
-        struct AssetType: Decodable {
+        struct AssetType: Codable {
             enum Name: String {
                 case coin = "COIN"
                 case erc20 = "ERC20"

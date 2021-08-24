@@ -6,6 +6,7 @@ import PlatformKit
 import PlatformUIKit
 import RIBs
 import RxSwift
+import ToolKit
 import TransactionKit
 
 protocol TransactionFlowInteractable: Interactable,
@@ -31,7 +32,9 @@ public protocol TransactionFlowViewControllable: ViewControllable {
     func pop()
 }
 
-final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>, TransactionFlowRouting {
+typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>
+
+final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRouting {
 
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
@@ -48,6 +51,10 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         self.alertViewPresenter = alertViewPresenter
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
+    }
+
+    func routeToSourceAccountPicker(transactionModel: TransactionModel, action: AssetAction) {
+        showSourceAccountPicker(transactionModel: transactionModel, action: action)
     }
 
     func routeToConfirmation(transactionModel: TransactionModel) {
@@ -75,7 +82,8 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         interactor.listener?.dismissTransactionFlow()
     }
 
-    func showFailure() {
+    func showFailure(error: Error) {
+        Logger.shared.error(error)
         alertViewPresenter.error(in: viewController.uiviewController) { [weak self] in
             self?.closeFlow()
         }
@@ -192,12 +200,18 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         viewController.replaceRoot(viewController: viewControllable, animated: false)
     }
 
-    func routeToPriceInput(source: BlockchainAccount, transactionModel: TransactionModel, action: AssetAction) {
+    func routeToPriceInput(
+        source: BlockchainAccount,
+        destination: TransactionTarget,
+        transactionModel: TransactionModel,
+        action: AssetAction
+    ) {
         guard let source = source as? SingleAccount else { return }
         let builder = EnterAmountPageBuilder(transactionModel: transactionModel)
         let router = builder.build(
             listener: interactor,
             sourceAccount: source,
+            destinationAccount: destination,
             action: action,
             navigationModel: ScreenNavigationModel.EnterAmount.navigation(
                 allowsBackButton: action.allowsBackButton
@@ -205,7 +219,9 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         )
         let viewControllable = router.viewControllable
         attachChild(router)
-        if let childVC = viewController.uiviewController.children.first, childVC is TransactionFlowInitialViewController {
+        if let childVC = viewController.uiviewController.children.first,
+           childVC is TransactionFlowInitialViewController
+        {
             viewController.replaceRoot(viewController: viewControllable, animated: false)
         } else {
             viewController.push(viewController: viewControllable)

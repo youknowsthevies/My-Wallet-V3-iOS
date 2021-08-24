@@ -35,7 +35,8 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     certificatePinner: $0.certificatePinner,
                     siftService: $0.siftService,
                     blurEffectHandler: $0.blurEffectHandler,
-                    backgroundAppHandler: $0.backgroundAppHandler
+                    backgroundAppHandler: $0.backgroundAppHandler,
+                    supportedAssetsRemoteService: $0.supportedAssetsRemoteService
                 )
             }
         ),
@@ -75,30 +76,14 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
 let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, action, environment in
     switch action {
     case .appDelegate(.didFinishLaunching(let window)):
-        guard !newWelcomeScreenIsDisabled() else {
-            return .fireAndForget {
-                environment.appCoordinator.window = window
-                environment.appCoordinator.start()
-            }
-        }
         return .init(value: .core(.start))
     case .appDelegate(.didEnterBackground):
         return .fireAndForget {
             environment.portfolioSyncingService.sync()
         }
     case .appDelegate(.willEnterForeground):
-        guard !newWelcomeScreenIsDisabled() else {
-            return .fireAndForget {
-                handleWillEnterForeground(coordinator: environment.appCoordinator)
-            }
-        }
         return Effect(value: .core(.appForegrounded))
     case .appDelegate(.handleDelayedEnterBackground):
-        guard !newWelcomeScreenIsDisabled() else {
-            return .fireAndForget {
-                delayedApplicationDidEnterBackground(environment: environment)
-            }
-        }
         return .merge(
             .fireAndForget {
                 if environment.walletManager.wallet.isInitialized() {

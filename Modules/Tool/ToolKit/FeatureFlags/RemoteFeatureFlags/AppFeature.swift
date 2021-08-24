@@ -20,9 +20,6 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Secure Channel
     case secureChannel
 
-    /// Custodial only tokens.
-    case custodialOnlyTokens
-
     // MARK: Onboarding (After Login)
 
     /// Shows Email Verification insted of Simple Buy at Login
@@ -65,8 +62,6 @@ extension AppFeature {
             return "secure_channel_ios"
         case .withdrawAndDepositACH:
             return "ach_withdraw_deposit_enabled"
-        case .custodialOnlyTokens:
-            return "custodial_only_tokens"
         case .biometry:
             return nil
         case .showOnboardingAfterSignUp:
@@ -94,8 +89,6 @@ extension AppFeature {
         case .secureChannel:
             return false
         case .withdrawAndDepositACH:
-            return false
-        case .custodialOnlyTokens:
             return false
         case .biometry:
             return false

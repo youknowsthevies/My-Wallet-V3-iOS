@@ -20,9 +20,11 @@ public struct LoadingButton: View {
     public var body: some View {
         ZStack(alignment: .center) {
             if loading {
-                ProgressView()
-                    .frame(minHeight: LayoutConstants.buttonMinHeight)
-                    .disabled(true)
+                Button(action: {}) {
+                    ProgressView()
+                        .frame(minHeight: LayoutConstants.buttonMinHeight)
+                }
+                .disabled(true)
             } else {
                 if icon != nil {
                     Button(action: action, label: {

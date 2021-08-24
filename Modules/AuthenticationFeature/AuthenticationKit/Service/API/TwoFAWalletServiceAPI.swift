@@ -26,10 +26,6 @@ public enum TwoFAWalletServiceError: Error {
     case networkError(NetworkError)
 }
 
-public protocol TwoFAWalletServiceCombineAPI: AnyObject {
-    func sendPublisher(code: String) -> AnyPublisher<Void, TwoFAWalletServiceError>
-}
-
-public protocol TwoFAWalletServiceAPI: TwoFAWalletServiceCombineAPI {
-    func send(code: String) -> Completable
+public protocol TwoFAWalletServiceAPI: AnyObject {
+    func send(code: String) -> AnyPublisher<Void, TwoFAWalletServiceError>
 }

@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import PlatformKit
-import RxSwift
 
 public protocol CustodialTransferRepositoryAPI {
 
@@ -15,7 +15,7 @@ public protocol CustodialTransferRepositoryAPI {
         moneyValue: MoneyValue,
         destination: String,
         memo: String?
-    ) -> Single<CustodialWithdrawalIdentifier>
+    ) -> AnyPublisher<CustodialWithdrawalIdentifier, NabuNetworkError>
 
-    func fees() -> Single<CustodialTransferFee>
+    func fees() -> AnyPublisher<CustodialTransferFee, NabuNetworkError>
 }

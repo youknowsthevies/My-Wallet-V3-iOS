@@ -12,3 +12,14 @@ public protocol AssetModel {
     var logoPngUrl: String? { get }
     var spotColor: String? { get }
 }
+
+extension AssetModel {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(code)
+        hasher.combine(kind)
+    }
+
+    public static func == (lhs: AssetModel, rhs: AssetModel) -> Bool {
+        lhs.code == rhs.code && lhs.kind == rhs.kind
+    }
+}

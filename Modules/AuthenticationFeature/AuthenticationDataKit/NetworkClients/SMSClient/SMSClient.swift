@@ -3,7 +3,6 @@
 import Combine
 import DIKit
 import NetworkKit
-import RxSwift
 
 public final class SMSClient: SMSClientAPI {
 
@@ -24,17 +23,7 @@ public final class SMSClient: SMSClientAPI {
 
     // MARK: - API
 
-    public func requestOTP(sessionToken: String, guid: String) -> Completable {
-        let request = requestBuilder.build(sessionToken: sessionToken, guid: guid)
-        return networkAdapter.perform(request: request)
-    }
-}
-
-// MARK: SMSClientCombineAPI
-
-extension SMSClient {
-
-    public func requestOTPPublisher(sessionToken: String, guid: String) -> AnyPublisher<Void, NetworkError> {
+    public func requestOTP(sessionToken: String, guid: String) -> AnyPublisher<Void, NetworkError> {
         let request = requestBuilder.build(sessionToken: sessionToken, guid: guid)
         return networkAdapter.perform(
             request: request,

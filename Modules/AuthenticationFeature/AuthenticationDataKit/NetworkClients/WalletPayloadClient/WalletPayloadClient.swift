@@ -3,7 +3,6 @@
 import Combine
 import DIKit
 import NetworkKit
-import RxSwift
 import WalletPayloadKit
 
 // TODO: fetch using a `sharedKey`
@@ -154,46 +153,7 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
 
     // MARK: - API
 
-    public func payload(guid: String, identifier: Identifier) -> Single<ClientResponse> {
-        let request = requestBuilder.build(identifier: identifier, guid: guid)
-        return networkAdapter
-            .perform(
-                request: request,
-                responseType: Response.self,
-                errorResponseType: ErrorResponse.self
-            )
-            .mapError(ClientError.init)
-            .mapError { $0 }
-            .flatMap { response -> AnyPublisher<WalletPayloadClient.ClientResponse, Error> in
-                Result { try WalletPayloadClient.ClientResponse(response: response) }
-                    .publisher
-                    .eraseToAnyPublisher()
-            }
-            .asObservable()
-            .take(1)
-            .asSingle()
-    }
-
-    // MARK: - Methods
-
-    private static func responseResult(response: Response) -> Result<ClientResponse, ClientError> {
-        do {
-            let clientResponse = try ClientResponse(response: response)
-            return .success(clientResponse)
-        } catch {
-            guard let clientError = error as? ClientError else {
-                fatalError("Error must be of type ClientError")
-            }
-            return .failure(clientError)
-        }
-    }
-}
-
-// MARK: - WalletPayloadClientCombineAPI
-
-extension WalletPayloadClient {
-
-    public func payloadPublisher(
+    public func payload(
         guid: String,
         identifier: Identifier
     ) -> AnyPublisher<WalletPayloadClient.ClientResponse, WalletPayloadClient.ClientError> {
@@ -211,6 +171,20 @@ extension WalletPayloadClient {
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
+    }
+
+    // MARK: - Methods
+
+    private static func responseResult(response: Response) -> Result<ClientResponse, ClientError> {
+        do {
+            let clientResponse = try ClientResponse(response: response)
+            return .success(clientResponse)
+        } catch {
+            guard let clientError = error as? ClientError else {
+                fatalError("Error must be of type ClientError")
+            }
+            return .failure(clientError)
+        }
     }
 }
 

@@ -29,8 +29,9 @@ struct DisplayBundle {
             return .withdraw(sourceAccount: sourceAccount)
         case .deposit:
             return .deposit(sourceAccount: sourceAccount)
+        case .buy:
+            return .buy(sourceAccount: sourceAccount)
         case .receive,
-             .buy,
              .sell,
              .viewActivity:
             unimplemented()

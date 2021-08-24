@@ -60,12 +60,13 @@ struct AppDelegateEnvironment {
     var siftService: SiftServiceAPI
     var blurEffectHandler: BlurVisualEffectHandler
     var backgroundAppHandler: BackgroundAppHandlerAPI
+    var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
 }
 
 /// The state of the app delegate
 struct AppDelegateState: Equatable {
     var window: UIWindow?
-    /// `true` if a user activiy was handled, such as universal links, otherwise `false`
+    /// `true` if a user activity was handled, such as universal links, otherwise `false`
     var userActivityHandled: Bool = false
     /// `true` if a deep link was handled, otherwise `false`
     var urlHandled: Bool = false
@@ -80,6 +81,11 @@ let appDelegateReducer = Reducer<
         state.window = window
         return .merge(
             migrateAnnouncements(),
+
+            environment.supportedAssetsRemoteService
+                .refreshCustodialAssetsCache()
+                .eraseToEffect()
+                .fireAndForget(),
 
             environment.remoteNotificationAuthorizer
                 .registerForRemoteNotificationsIfAuthorized()

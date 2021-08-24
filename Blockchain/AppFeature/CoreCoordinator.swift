@@ -38,6 +38,7 @@ public enum CoreAppAction: Equatable {
     case proceedToLoggedIn
     case appForegrounded
     case deeplink(DeeplinkOutcome)
+    case requirePin
     // Wallet Related Actions
     case walletInitialized
     case fetchWallet(String)
@@ -136,14 +137,15 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         guard environment.walletManager.wallet.isInitialized() else {
             // do nothing if we're on the authentication state,
             // meaning we either need to register, login or recover
-            guard let onboarding = state.onboarding,
-                  onboarding.welcomeState == nil
-            else {
+            guard state.isLoggedIn else {
                 return .none
             }
-            state.loggedIn = nil
-            state.onboarding = .init()
-            return Effect(value: .onboarding(.start))
+            // We need to send the `stop` action prior we show the pin entry,
+            // this clears any running operation from the logged-in state.
+            return .concatenate(
+                Effect(value: .loggedIn(.stop)),
+                Effect(value: .requirePin)
+            )
         }
         return .none
     case .deeplink(.handleLink(let content)) where content.context == .dynamicLinks:
@@ -204,7 +206,12 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return .none
     case .deeplink(.ignore):
         return .none
+    case .requirePin:
+        state.loggedIn = nil
+        state.onboarding = .init()
+        return Effect(value: .onboarding(.start))
     case .fetchWallet(let password):
+        environment.loadingViewPresenter.showCircular()
         environment.walletManager.wallet.fetch(with: password)
         return Effect(value: .authenticate)
     case .authenticate:
@@ -238,6 +245,16 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // for context the underlying implementation of showing the circular loader
         // relies on attaching the loader to the top window's view!!, this is error-prone and there are cases
         // where the loader would not show above a presented view controller...
+        environment.loadingViewPresenter.hide()
+
+        // skip saving guid and sharedKey if we detect a second password is needed
+        // TODO: Refactor this so that we don't call legacy methods directly
+        if environment.walletManager.wallet.needsSecondPassword(),
+           state.onboarding?.welcomeState != nil
+        {
+            return .cancel(id: WalletCancelations.DecryptId())
+        }
+
         environment.loadingViewPresenter.showCircular()
         environment.blockchainSettings.guid = decryption.guid
         environment.blockchainSettings.sharedKey = decryption.sharedKey
@@ -261,23 +278,44 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         }
         return .merge(
             .cancel(id: WalletCancelations.AuthenticationId()),
-            Effect(value: CoreAppAction.onboarding(
-                .welcomeScreen(
-                    .emailLogin(
-                        .verifyDevice(
-                            .credentials(
-                                .password(.incorrectPasswordErrorVisibility(true))
+            Effect(
+                value: CoreAppAction.onboarding(
+                    .welcomeScreen(
+                        .emailLogin(
+                            .verifyDevice(
+                                .credentials(
+                                    .password(
+                                        .incorrectPasswordErrorVisibility(true)
+                                    )
+                                )
                             )
                         )
                     )
                 )
-            )
             )
         )
     case .authenticated(.failure(let error)):
         state.onboarding?.displayAlert = .walletAuthentication(error)
         return .cancel(id: WalletCancelations.AuthenticationId())
     case .authenticated(.success):
+        // when on authenticated success we need to check if the wallet
+        // requires a second password, if we do then we stop the process
+        // and display a notice to the user
+        // TODO: Refactor this so that we don't call legacy methods directly
+        if environment.walletManager.wallet.needsSecondPassword(),
+           state.onboarding?.welcomeState != nil
+        {
+            // unfortunately during login we store the guid in the settings
+            // we need to reset this if we detect a second password
+            environment.blockchainSettings.guid = nil
+            environment.blockchainSettings.sharedKey = nil
+            return .merge(
+                .cancel(id: WalletCancelations.AuthenticationId()),
+                Effect(
+                    value: .onboarding(.informSecondPasswordDetected)
+                )
+            )
+        }
         // decide if we need to set a pin or not
         guard environment.blockchainSettings.isPinSet else {
             state.onboarding?.hideLegacyScreenIfNeeded()
@@ -310,7 +348,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .cancellable(id: WalletCancelations.InitializationId(), cancelInFlight: false)
             .map { _ in CoreAppAction.walletInitialized }
     case .walletInitialized:
-        // TODO: Handle second password as well
         return environment.walletUpgradeService
             .needsWalletUpgradePublisher
             .receive(on: environment.mainQueue)
@@ -386,10 +423,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             value: .initializeWallet
         )
     case .onboarding(.welcomeScreen(.requestedToDecryptWallet(let password))):
-        return Effect(
-            value: .fetchWallet(password)
-        )
-    case .onboarding(.welcomeScreen(.manualPairing(.authenticate(let password)))):
         return Effect(
             value: .fetchWallet(password)
         )

@@ -7,6 +7,7 @@ import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
+import TransactionKit
 
 protocol AccountAuxiliaryViewInteractorAPI {
     /// The view has been tapped.
@@ -23,11 +24,9 @@ extension AccountAuxiliaryViewInteractorAPI {
     }
 }
 
+private typealias LocalizationIds = LocalizationConstants.Transaction
+
 final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
-
-    // MARK: - Types
-
-    private typealias LocalizationIds = LocalizationConstants.Transaction
 
     // MARK: - State
 
@@ -82,6 +81,15 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
                     imageResource: bank.logoResource,
                     isEnabled: tapEnabled
                 )
+
+            case let linkablePayment as TransactionKit.PaymentAccount:
+                return .init(
+                    title: linkablePayment.label,
+                    subtitle: linkablePayment.paymentMethod.max.displayString,
+                    imageResource: linkablePayment.logoResource,
+                    isEnabled: tapEnabled
+                )
+
             default:
                 unimplemented()
             }

@@ -50,7 +50,12 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
 
     // MARK: - Methods
 
-    func sendGuidReminder(emailAddress: String, captcha: String) -> AnyPublisher<Void, NetworkError> {
+    func sendGuidReminder(
+        sessionToken: String,
+        emailAddress: String,
+        captcha: String
+    ) -> AnyPublisher<Void, NetworkError> {
+        let headers = [HeaderKey.cookie.rawValue: "SID=\(sessionToken)"]
         let parameters = [
             URLQueryItem(
                 name: Parameters.SendGuidReminder.method,
@@ -69,10 +74,12 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
                 value: AuthenticationKeys.googleRecaptchaSiteKey
             )
         ]
+        let data = RequestBuilder.body(from: parameters)
         let request = requestBuilder.post(
             path: Path.wallet,
-            parameters: parameters,
-            contentType: .json
+            body: data,
+            headers: headers,
+            contentType: .formUrlEncoded
         )!
         return networkAdapter.perform(request: request)
     }
@@ -80,7 +87,7 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
     func authorizeApprove(
         sessionToken: String,
         emailCode: String
-    ) -> AnyPublisher<Void, NetworkError> {
+    ) -> AnyPublisher<AuthorizeApproveResponse, NetworkError> {
         let headers = [HeaderKey.cookie.rawValue: "SID=\(sessionToken)"]
         let parameters = [
             URLQueryItem(
@@ -93,14 +100,15 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
             ),
             URLQueryItem(
                 name: Parameters.AuthorizeApprove.token,
-                value: emailCode.addingPercentEncoding(withAllowedCharacters: .urlQueryItemSymbolsAllowed)
+                value: emailCode
             )
         ]
+        let data = RequestBuilder.body(from: parameters)
         let request = requestBuilder.post(
             path: Path.wallet,
-            parameters: parameters,
+            body: data,
             headers: headers,
-            contentType: .json
+            contentType: .formUrlEncoded
         )!
         return networkAdapter.perform(request: request)
     }

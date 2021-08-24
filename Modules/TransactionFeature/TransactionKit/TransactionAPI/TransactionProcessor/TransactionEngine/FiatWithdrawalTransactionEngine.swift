@@ -117,6 +117,8 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
             .flatMapCompletable(weak: self) { (self, address) -> Completable in
                 self.fiatWithdrawRepository
                     .createWithdrawOrder(id: address, amount: pendingTransaction.amount)
+                    .asObservable()
+                    .ignoreElements()
             }
             .flatMapSingle {
                 .just(TransactionResult.unHashed(amount: pendingTransaction.amount))

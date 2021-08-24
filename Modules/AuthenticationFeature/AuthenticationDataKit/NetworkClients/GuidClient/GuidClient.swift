@@ -3,7 +3,6 @@
 import Combine
 import DIKit
 import NetworkKit
-import RxSwift
 
 /// A network client for `GUID`
 public final class GuidClient: GuidClientAPI {
@@ -11,7 +10,7 @@ public final class GuidClient: GuidClientAPI {
     // MARK: - Types
 
     struct Response: Decodable {
-        let guid: String
+        let guid: String?
     }
 
     // MARK: - Properties
@@ -29,20 +28,10 @@ public final class GuidClient: GuidClientAPI {
         self.requestBuilder = GuidRequestBuilder(requestBuilder: requestBuilder)
     }
 
-    /// Fetches the `GUID`
-    public func guid(by sessionToken: String) -> Single<String> {
-        let request = requestBuilder.build(sessionToken: sessionToken)
-        return networkAdpater
-            .perform(request: request, responseType: Response.self)
-            .map(\.guid)
-    }
-}
+    // MARK: - API
 
-// MARK: - GuidClientCombineAPI
-
-extension GuidClient {
-
-    public func guidPublisher(by sessionToken: String) -> AnyPublisher<String, NetworkError> {
+    /// fetches the `GUID`
+    public func guid(by sessionToken: String) -> AnyPublisher<String?, NetworkError> {
         let request = requestBuilder.build(sessionToken: sessionToken)
         return networkAdpater
             .perform(request: request, responseType: Response.self)

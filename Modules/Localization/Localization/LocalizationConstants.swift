@@ -297,18 +297,23 @@ public enum LocalizationConstants {
         )
 
         public static let tooManyAttemptsWarningMessage = NSLocalizedString(
-            "You've made too many failed attempts to log in with your PIN. Please try again in 5 minutes.",
+            "You've made too many failed attempts to log in with your PIN. Please try again in 60 seconds.",
             comment: "Warning essage for alert that tells the user he had too many PIN attempts"
         )
 
-        public static let forgotYourPinTitle = NSLocalizedString(
-            "Forgot your PIN?",
-            comment: "Title for alert that instructs users what to do if they may have forgot their PIN"
+        public static let CannotLoginTitle = NSLocalizedString(
+            "Can't log in?",
+            comment: "Title for alert that instructs users what to do if they cannot log in with their PIN"
         )
 
-        public static let forgotYourPinMessage = NSLocalizedString(
-            "For your security, we've disabled PIN log in for the next 24 hours. To access your wallet now, log in with your Wallet ID & Password",
-            comment: "Alert message that instructs users what to do if they may have forgot their PIN"
+        public static let CannotLoginMessage = NSLocalizedString(
+            "To access your Wallet, please log in on the web.\nBelow is what you'll need.",
+            comment: "Alert message that instructs users what to do if they cannot log in with their PIN"
+        )
+
+        public static let CannotLoginRemarkMessage = NSLocalizedString(
+            "If your account has added security measures like Google Authenticator, please have that ready.",
+            comment: "Remark message that instructs users to prepare any 2FA measures for logging in with web."
         )
 
         public static let tooManyAttemptsLogoutMessage = NSLocalizedString(
@@ -334,11 +339,11 @@ public enum LocalizationConstants {
             comment: "Error message displayed when the entered PIN is incorrect and the user should try to enter the PIN code again."
         )
         public static let backoff = NSLocalizedString(
-            "PIN is currently disabled",
+            "PIN Disabled",
             comment: "Error message displayed when the user entered a PIN in when the PIN function is locked due to exponential backoff retry algorithm."
         )
         public static let tryAgain = NSLocalizedString(
-            "Please try again in",
+            "Try again in",
             comment: "Error message displayed when the user entered wrong PIN or PIN function is locked. Prompts user to try again later"
         )
         public static let seconds = NSLocalizedString(
@@ -383,14 +388,34 @@ public enum LocalizationConstants {
             """, comment: "Error message displayed to the user when their PIN cannot be validated if it is correct."
         )
 
+        public enum WebLoginInstructions {
+            public enum Title {
+                public static let walletIdOrEmail = NSLocalizedString(
+                    "Wallet ID or Email",
+                    comment: "An instruction title for logging in using Wallet ID or Email"
+                )
+                public static let password = NSLocalizedString(
+                    "Your Password",
+                    comment: "An instruction title for logging in using password"
+                )
+            }
+
+            public enum Details {
+                public static let walletIdOrEmail = NSLocalizedString(
+                    "Use your email address or the Wallet ID. Locate your Wallet ID at the bottom of most Blockchain.com emails.",
+                    comment: "An instruction details for logging in using Wallet ID or Email"
+                )
+                public static let password = NSLocalizedString(
+                    "This is the unique password you entered when creating your wallet.",
+                    comment: "An instruction details for logging in using Personal Password"
+                )
+            }
+        }
+
         public enum Button {
-            public static let notNowButton = NSLocalizedString(
-                "Not Now",
-                comment: "A CTA button for not now action"
-            )
-            public static let useMyWalletIdButton = NSLocalizedString(
-                "Use My Wallet ID",
-                comment: "A CTA button for use my wallet ID to login"
+            public static let toWebLogin = NSLocalizedString(
+                "Log In on the Web ->",
+                comment: "A CTA Button to go to login.blockchain.com website"
             )
         }
     }

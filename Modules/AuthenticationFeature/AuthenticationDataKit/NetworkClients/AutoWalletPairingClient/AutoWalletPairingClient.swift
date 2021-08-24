@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import NetworkKit
-import RxSwift
 
 public final class AutoWalletPairingClient: AutoWalletPairingClientAPI {
 
@@ -21,11 +21,14 @@ public final class AutoWalletPairingClient: AutoWalletPairingClientAPI {
         self.requestBuilder = AutoWalletPairingClientRequestBuilder(requestBuilder: requestBuilder)
     }
 
-    public func request(guid: String) -> Single<String> {
+    // MARK: - API
+
+    public func request(guid: String) -> AnyPublisher<String, NetworkError> {
         let request = requestBuilder.build(guid: guid)
         return networkAdapter
             .perform(request: request, responseType: RawServerResponse.self)
             .map(\.data)
+            .eraseToAnyPublisher()
     }
 }
 
@@ -39,9 +42,9 @@ extension AutoWalletPairingClient {
 
         private let pathComponents = ["wallet"]
 
-        private struct Payload: Encodable {
-            let guid: String
-            let method = "pairing-encryption-password"
+        private enum Parameters {
+            static let guid = "guid"
+            static let method = "method"
         }
 
         // MARK: - Builder
@@ -57,11 +60,20 @@ extension AutoWalletPairingClient {
         // MARK: - API
 
         func build(guid: String) -> NetworkRequest {
-            let payload = Payload(guid: guid)
-            let body = ParameterEncoder(payload.dictionary).encoded!
+            let parameters = [
+                URLQueryItem(
+                    name: Parameters.guid,
+                    value: guid
+                ),
+                URLQueryItem(
+                    name: Parameters.method,
+                    value: "pairing-encryption-password"
+                )
+            ]
+            let data = RequestBuilder.body(from: parameters)
             return requestBuilder.post(
                 path: pathComponents,
-                body: body,
+                body: data,
                 contentType: .formUrlEncoded
             )!
         }

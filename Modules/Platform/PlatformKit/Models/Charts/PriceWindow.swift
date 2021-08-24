@@ -57,7 +57,7 @@ extension PriceWindow {
         var components = DateComponents()
         switch self {
         case .all:
-            return cryptoCurrency.maxStartDate
+            return maxStartDate
         case .day:
             components.day = -1
         case .week:
@@ -70,9 +70,17 @@ extension PriceWindow {
         return timeInterval(from: date, with: components, calendar: calendar, cryptoCurrency: cryptoCurrency)
     }
 
-    private func timeInterval(from date: Date, with components: DateComponents, calendar: Calendar, cryptoCurrency: CryptoCurrency) -> TimeInterval {
-        let dateFromComponents = calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? date.timeIntervalSince1970
-        return max(cryptoCurrency.maxStartDate, dateFromComponents)
+    private func timeInterval(
+        from date: Date,
+        with components: DateComponents,
+        calendar: Calendar,
+        cryptoCurrency: CryptoCurrency
+    ) -> TimeInterval {
+        calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? maxStartDate
+    }
+
+    private var maxStartDate: TimeInterval {
+        1438992000 // 8 August 2015 00:00:00 GMT
     }
 }
 

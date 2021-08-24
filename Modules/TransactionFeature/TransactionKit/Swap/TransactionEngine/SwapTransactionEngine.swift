@@ -113,6 +113,8 @@ extension SwapTransactionEngine {
                     networkFee: targetAsset.currency,
                     product: .swap(orderDirection)
                 )
+                .asObservable()
+                .asSingle()
             )
             .map { tiers, limits -> (tiers: KYC.UserTiers, min: FiatValue, max: FiatValue) in
                 // TODO: Convert to `MoneyValuePair` so that
@@ -266,6 +268,8 @@ extension SwapTransactionEngine {
                     sourceCurrencyType: self.sourceAsset,
                     destinationCurrencyType: self.target.currencyType
                 )
+                .asObservable()
+                .asSingle()
                 .flatMap(weak: self) { (self, quote) -> Single<SwapOrder> in
                     let destination = self.orderDirection.requiresDestinationAddress ? destinationAddress : nil
                     let refund = self.orderDirection.requiresRefundAddress ? refundAddress : nil
@@ -277,6 +281,8 @@ extension SwapTransactionEngine {
                             destinationAddress: destination,
                             refundAddress: refund
                         )
+                        .asObservable()
+                        .asSingle()
                 }
         }
         .do(onDispose: { [weak self] in

@@ -98,21 +98,6 @@ extension LocalizationConstants {
 
         // MARK: - One time
 
-        public enum SendToDomains {
-            public static let title = NSLocalizedString(
-                "Introducing Send to Domains",
-                comment: "Send to Domains announcement card title"
-            )
-            public static let description = NSLocalizedString(
-                "You can send money directly to registered Unstoppable and ENS domains. Send crypto to .crypto, .eth, .xyz extensions and many more!",
-                comment: "Send to Domains announcement card description"
-            )
-            public static let ctaButton = NSLocalizedString(
-                "Get Started",
-                comment: "Send to Domains announcement card CTA button title"
-            )
-        }
-
         public enum BlockstackAirdropReceived {
             public static let title = NSLocalizedString(
                 "Your Airdrop has landed",

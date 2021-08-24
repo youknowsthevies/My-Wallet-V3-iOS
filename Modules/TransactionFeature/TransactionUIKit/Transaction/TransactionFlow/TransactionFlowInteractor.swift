@@ -25,13 +25,13 @@ protocol TransactionFlowRouting: Routing {
     /// Show the failure screen. Sometimes an error is thrown when selecting an
     /// account or entering in transaction details. If this error occurs, we should
     /// show a failure screen.
-    func showFailure()
+    func showFailure(error: Error)
 
     /// The back button was tapped.
     func didTapBack()
 
-    /// Show the confirmation screen. This pushes onto the prior screen.
-    func routeToConfirmation(transactionModel: TransactionModel)
+    /// Show the `source` selection screen. This replaces the root.
+    func routeToSourceAccountPicker(transactionModel: TransactionModel, action: AssetAction)
 
     /// Show the target selection screen (currently only used in `Send`).
     /// This pushes onto the prior screen.
@@ -54,10 +54,15 @@ protocol TransactionFlowRouting: Routing {
 
     /// Show the `EnterAmount` screen. This pushes onto the prior screen.
     /// For `Buy` we should set this as the root.
-    func routeToPriceInput(source: BlockchainAccount, transactionModel: TransactionModel, action: AssetAction)
+    func routeToPriceInput(
+        source: BlockchainAccount,
+        destination: TransactionTarget,
+        transactionModel: TransactionModel,
+        action: AssetAction
+    )
 
-    /// Show the `source` selection screen. This replaces the root.
-    func showSourceAccountPicker(transactionModel: TransactionModel, action: AssetAction)
+    /// Show the confirmation screen. This pushes onto the prior screen.
+    func routeToConfirmation(transactionModel: TransactionModel)
 }
 
 protocol TransactionFlowListener: AnyObject {
@@ -259,8 +264,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         listener?.presentKYCTiersScreen()
     }
 
-    func showGenericFailure() {
-        router?.showFailure()
+    func showGenericFailure(error: Error) {
+        router?.showFailure(error: error)
     }
 
     // MARK: - Private Functions
@@ -295,16 +300,21 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         switch newState.step {
         case .initial:
             break
+
         case .enterAmount:
             router?.routeToPriceInput(
                 source: newState.source!,
+                destination: newState.destination!,
                 transactionModel: transactionModel,
                 action: action
             )
+
         case .linkABank:
             router?.presentLinkABank(transactionModel: transactionModel)
+
         case .enterPassword:
             unimplemented()
+
         case .selectTarget:
             /// `TargetSelectionViewController` should only be shown for `SendP2`
             /// and `.send`. Otherwise we should show the account picker to select
@@ -345,23 +355,28 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     action: action
                 )
             }
+
         case .confirmDetail:
             router?.routeToConfirmation(transactionModel: transactionModel)
+
         case .inProgress:
             router?.routeToInProgress(
                 transactionModel: transactionModel,
                 action: action
             )
+
         case .selectSource:
-            router?.showSourceAccountPicker(
+            router?.routeToSourceAccountPicker(
                 transactionModel: transactionModel,
                 action: action
             )
+
         case .enterAddress:
             router?.routeToDestinationAccountPicker(
                 transactionModel: transactionModel,
                 action: action
             )
+
         case .closed:
             transactionModel.destroy()
         }
@@ -393,11 +408,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 target: target,
                 passwordRequired: passwordRequired
             )
-        } else {
-            return .initialiseWithNoSourceOrTargetAccount(
-                action: .deposit,
-                passwordRequired: passwordRequired
-            )
         }
+        return .initialiseWithNoSourceOrTargetAccount(
+            action: .deposit,
+            passwordRequired: passwordRequired
+        )
     }
 }

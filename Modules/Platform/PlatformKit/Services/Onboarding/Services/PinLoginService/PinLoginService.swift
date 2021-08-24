@@ -45,6 +45,8 @@ public final class PinLoginService: PinLoginServiceAPI {
     public func password(from pinDecryptionKey: String) -> Single<String> {
         service
             .requestUsingSharedKey()
+            .asObservable()
+            .ignoreElements()
             .flatMapSingle(weak: self) { (self) -> Single<PasscodePayload> in
                 self.passcodePayload(from: pinDecryptionKey)
             }

@@ -39,6 +39,10 @@ extension DependencyContainer {
 
         factory { NabuAuthenticationClient() as NabuAuthenticationClientAPI }
 
+        factory { SupportedAssetsRemoteService() as SupportedAssetsRemoteServiceAPI }
+
+        factory { SupportedAssetsClient() as SupportedAssetsClientAPI }
+
         // MARK: Exchange
 
         factory { ExchangeAccountsClient() as ExchangeAccountsClientAPI }
@@ -159,9 +163,9 @@ extension DependencyContainer {
             )
         }
 
-        factory { SupportedAssetsLocalFilePathProvider() as SupportedAssetsLocalFilePathProviderAPI }
+        factory { SupportedAssetsFilePathProvider() as SupportedAssetsFilePathProviderAPI }
 
-        factory { SupportedAssetsLocalService() as SupportedAssetsLocalServiceAPI }
+        factory { SupportedAssetsService() as SupportedAssetsServiceAPI }
 
         single { SupportedAssetsRepository() as SupportedAssetsRepositoryAPI }
 

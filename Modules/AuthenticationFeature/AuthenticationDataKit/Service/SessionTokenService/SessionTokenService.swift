@@ -2,7 +2,6 @@
 
 import AuthenticationKit
 import Combine
-import RxSwift
 
 public final class SessionTokenService: SessionTokenServiceAPI {
 
@@ -18,33 +17,13 @@ public final class SessionTokenService: SessionTokenServiceAPI {
         self.repository = repository
     }
 
-    /// Requests a session token for the wallet, if not available already
-    /// and assign it to the repository.
-    public func setupSessionToken() -> Completable {
-        repository.hasSessionToken
-            .flatMapCompletable(weak: self) { (self, hasSessionToken) -> Completable in
-                guard !hasSessionToken else {
-                    return .empty()
-                }
-                return self.client.token
-                    .flatMapCompletable(weak: self) { (self, sessionToken) -> Completable in
-                        self.repository.set(sessionToken: sessionToken)
-                    }
-            }
-    }
-}
-
-// MARK: - SessionTokenServiceCombineAPI
-
-extension SessionTokenService {
-
-    public func setupSessionTokenPublisher() -> AnyPublisher<Void, SessionTokenServiceError> {
+    public func setupSessionToken() -> AnyPublisher<Void, SessionTokenServiceError> {
         repository.hasSessionTokenPublisher
-            .flatMap { [client] hasSessionToken -> AnyPublisher<String?, SessionTokenServiceError> in
+            .flatMap { [repository, client] hasSessionToken -> AnyPublisher<String?, SessionTokenServiceError> in
                 guard !hasSessionToken else {
-                    return .just("")
+                    return repository.sessionToken.asPublisher().ignoreFailure(setFailureType: SessionTokenServiceError.self)
                 }
-                return client.tokenPublisher
+                return client.token
                     .mapError(SessionTokenServiceError.networkError)
                     .eraseToAnyPublisher()
             }

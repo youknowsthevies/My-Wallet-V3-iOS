@@ -16,23 +16,23 @@ extension AnalyticsEvents.New {
         case sendReceiveViewed(type: Type)
         case sendAmountMaxClicked(
             currency: String,
-            fromAccountType: FromAccountType?,
+            fromAccountType: FromAccountType,
             toAccountType: ToAccountType
         )
         case sendFeeRateSelected(
             currency: String,
             feeRate: FeeRate,
-            fromAccountType: FromAccountType?,
+            fromAccountType: FromAccountType,
             toAccountType: ToAccountType
         )
         case sendFromSelected(
             currency: String,
-            fromAccountType: FromAccountType?
+            fromAccountType: FromAccountType
         )
         case sendSubmitted(
             currency: String,
             feeRate: FeeRate,
-            fromAccountType: FromAccountType?,
+            fromAccountType: FromAccountType,
             toAccountType: ToAccountType
         )
 
@@ -50,16 +50,14 @@ extension AnalyticsEvents.New {
             case trading = "TRADING"
             case userKey = "USERKEY"
 
-            public init?(_ account: CryptoAccount) {
+            public init(_ account: CryptoAccount) {
                 switch account {
-                case is CryptoNonCustodialAccount:
-                    self = .userKey
                 case is CryptoInterestAccount:
                     self = .savings
                 case is CryptoTradingAccount:
                     self = .trading
                 default:
-                    return nil
+                    self = .userKey
                 }
             }
         }

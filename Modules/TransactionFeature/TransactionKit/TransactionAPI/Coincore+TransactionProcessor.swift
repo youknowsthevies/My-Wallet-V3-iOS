@@ -25,12 +25,17 @@ extension CoincoreAPI {
                 target: target,
                 action: action
             )
-        case is BankAccount:
+        case is BankAccount where action == .deposit:
             return createFiatDepositProcessor(
                 with: account as! LinkedBankAccount,
                 target: target
             )
-        case is FiatAccount:
+        case is FiatAccount where action == .buy:
+            return createBuyProcessor(
+                with: account,
+                destination: target
+            )
+        case is FiatAccount where action == .withdraw:
             return createFiatWithdrawalProcessor(
                 with: account as! FiatAccount,
                 target: target
@@ -74,7 +79,6 @@ extension CoincoreAPI {
                     )
                 }
         case (is CryptoReceiveAddress, .send):
-
             // `Target` must be a `CryptoReceiveAddress`
             guard let receiveAddress = target as? CryptoReceiveAddress else {
                 fatalError("Expected a receiveAddress: \(target)")
@@ -90,7 +94,6 @@ extension CoincoreAPI {
                 }
 
         case (is CryptoAccount, .send):
-
             // `Target` must be a `CryptoReceiveAddress`
             guard let destination = target as? SingleAccount else {
                 fatalError("Expected a SingleAccount: \(target)")
@@ -124,12 +127,25 @@ extension CoincoreAPI {
         case .send:
             return createTradingProcessorSend(with: account, target: target)
         case .buy:
-            unimplemented("WIP")
+            unimplemented() // not needed
         case .sell:
             unimplemented() // CustodialSellTxEngine
         case .deposit, .receive, .viewActivity, .withdraw:
             unimplemented()
         }
+    }
+
+    private func createBuyProcessor(
+        with source: BlockchainAccount,
+        destination: TransactionTarget
+    ) -> Single<TransactionProcessor> {
+        .just(
+            TransactionProcessor(
+                sourceAccount: source,
+                transactionTarget: destination,
+                engine: BuyTransactionEngine()
+            )
+        )
     }
 
     private func createFiatWithdrawalProcessor(

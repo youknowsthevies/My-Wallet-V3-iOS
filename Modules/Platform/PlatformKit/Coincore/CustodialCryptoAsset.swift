@@ -54,7 +54,10 @@ final class CustodialCryptoAsset: CryptoAsset {
     }
 
     private var exchangeGroup: Single<AccountGroup> {
-        exchangeAccountProvider
+        guard asset.assetModel.products.contains(.mercuryDeposits) else {
+            return .just(CryptoAccountCustodialGroup(asset: asset))
+        }
+        return exchangeAccountProvider
             .account(for: asset)
             .map { [asset] account in
                 CryptoAccountCustodialGroup(asset: asset, account: account)
@@ -71,7 +74,10 @@ final class CustodialCryptoAsset: CryptoAsset {
     }
 
     private var interestGroup: Single<AccountGroup> {
-        .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset)))
+        guard asset.assetModel.products.contains(.interestBalance) else {
+            return .just(CryptoAccountCustodialGroup(asset: asset))
+        }
+        return .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset)))
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {

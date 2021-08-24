@@ -9,6 +9,8 @@ public struct PinStoreResponse: Decodable & Error {
         case success = 0 // Pin retry succeeded
         case deleted = 1 // Pin retry failed and data was deleted from store
         case incorrect = 2 // Incorrect pin
+        case unknown = 3 // Unknown Error
+        case duplicateKey = 4 // Duplicate Key
         case backoff = 5 // PIN is locked due to exponential backoff
     }
 
@@ -57,7 +59,7 @@ extension PinStoreResponse {
         remaining = try values.decodeIfPresent(Int.self, forKey: .remaining)
     }
 
-    public func toPinError(pinLockTime: Int = 0) -> PinError {
+    public func toPinError() -> PinError {
         // First verify that the status code was received
         guard let code = statusCode else {
             return PinError.serverError(LocalizationConstants.Errors.genericError)
@@ -67,14 +69,21 @@ extension PinStoreResponse {
         case .deleted:
             return PinError.tooManyAttempts
         case .incorrect:
+            guard let remaining = remaining else {
+                fatalError("Incorrect PIN should have an remaining field")
+            }
             let message = LocalizationConstants.Pin.incorrect
-            return PinError.incorrectPin(message, pinLockTime)
+            return PinError.incorrectPin(message, remaining, nil)
         case .backoff:
+            guard let remaining = remaining else {
+                fatalError("Backoff should have an remaining field")
+            }
             let message = LocalizationConstants.Pin.backoff
-            return PinError.backoff(message, pinLockTime)
-        case .success:
-            // Should not happen because this is an error response
+            return PinError.backoff(message, remaining, nil)
+        case .duplicateKey, .unknown:
             return PinError.serverError(LocalizationConstants.Errors.genericError)
+        case .success:
+            fatalError("Should not happen because toPinError expects an error response")
         }
     }
 }

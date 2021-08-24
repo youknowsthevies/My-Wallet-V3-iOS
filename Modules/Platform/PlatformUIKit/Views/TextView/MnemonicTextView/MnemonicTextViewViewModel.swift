@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Localization
 import RxCocoa
 import RxRelay
@@ -10,9 +11,11 @@ public struct MnemonicTextViewViewModel {
 
     public enum State: Equatable {
 
-        case complete(value: NSAttributedString)
-
         case valid(value: NSAttributedString)
+
+        case incomplete(value: NSAttributedString)
+
+        case excess(value: NSAttributedString)
 
         case empty
 
@@ -25,20 +28,26 @@ public struct MnemonicTextViewViewModel {
             invalidStyle: Style = .desctructive
         ) {
             switch score {
-            case .complete:
-                self = .complete(value: .init(
-                    input.lowercased(),
-                    font: validStyle.font,
-                    color: validStyle.color
-                )
-                )
-            case .incomplete:
+            case .valid:
                 self = .valid(value: .init(
                     input.lowercased(),
                     font: validStyle.font,
                     color: validStyle.color
                 )
                 )
+            case .incomplete:
+                self = .incomplete(value: .init(
+                    input.lowercased(),
+                    font: validStyle.font,
+                    color: validStyle.color
+                )
+                )
+            case .excess:
+                self = .excess(value: .init(
+                    input.lowercased(),
+                    font: invalidStyle.font,
+                    color: invalidStyle.color
+                ))
             case .invalid(let ranges):
                 let attributed: NSMutableAttributedString = .init(
                     input.lowercased(),
@@ -140,7 +149,9 @@ public struct MnemonicTextViewViewModel {
                 return .init(string: "")
             case .valid(value: let value):
                 return value
-            case .complete(value: let value):
+            case .incomplete(value: let value):
+                return value
+            case .excess(value: let value):
                 return value
             case .invalid(value: let value):
                 return value
@@ -171,11 +182,13 @@ extension MnemonicTextViewViewModel.Style {
 extension MnemonicTextViewViewModel.State {
     public static func == (lhs: MnemonicTextViewViewModel.State, rhs: MnemonicTextViewViewModel.State) -> Bool {
         switch (lhs, rhs) {
-        case (.complete(let left), .complete(value: let right)):
+        case (.valid(let left), .valid(value: let right)):
             return left == right
         case (.invalid(let left), .invalid(let right)):
             return left == right
-        case (.valid(let left), .valid(value: let right)):
+        case (.incomplete(let left), .incomplete(value: let right)):
+            return left == right
+        case (.excess(let left), .excess(value: let right)):
             return left == right
         case (.empty, .empty):
             return true
@@ -188,12 +201,13 @@ extension MnemonicTextViewViewModel.State {
 extension MnemonicValidationScore {
     var tintColor: UIColor {
         switch self {
-        case .complete:
+        case .valid:
             return .normalPassword
         case .incomplete,
              .none:
             return .mediumBorder
-        case .invalid:
+        case .invalid,
+             .excess:
             return .destructive
         }
     }

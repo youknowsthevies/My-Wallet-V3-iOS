@@ -119,6 +119,8 @@ final class FiatDepositTransactionEngine: TransactionEngine {
                         amount: pendingTransaction.amount
                     )
                     .map(\.paymentId)
+                    .asObservable()
+                    .asSingle()
             }
             .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
     }

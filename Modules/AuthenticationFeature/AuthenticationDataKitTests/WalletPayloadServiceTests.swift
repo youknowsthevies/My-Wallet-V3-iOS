@@ -2,11 +2,19 @@
 
 @testable import AuthenticationDataKit
 @testable import AuthenticationKit
+import Combine
 import RxBlocking
-import RxSwift
 import XCTest
 
 class WalletPayloadServiceTests: XCTestCase {
+
+    // TODO: replace with the dedicated method implemented in IOS-4610 for combine related tests
+    private var cancellables: Set<AnyCancellable>!
+
+    override func setUp() {
+        super.setUp()
+        cancellables = []
+    }
 
     /// Tests a valid response to payload fetching that requires 2FA code
     func testValid2FAResponse() throws {
@@ -25,8 +33,31 @@ class WalletPayloadServiceTests: XCTestCase {
             repository: repository
         )
         do {
-            let serviceAuthType = try service.requestUsingSessionToken().toBlocking().first()
+            // TODO: delete these once IOS-4610 is ready
+            let serviceAuthTypePublisher = service.requestUsingSessionToken()
+            var serviceAuthType: WalletAuthenticatorType = .standard
+            var error: WalletPayloadServiceError?
+            let expectation = self.expectation(description: "2FA Response")
+            serviceAuthTypePublisher
+                .sink(
+                    receiveCompletion: { completion in
+                        switch completion {
+                        case .finished:
+                            break
+                        case .failure(let serviceError):
+                            error = serviceError
+                        }
+                        expectation.fulfill()
+                    },
+                    receiveValue: { value in
+                        serviceAuthType = value
+                    }
+                )
+                .store(in: &cancellables)
+            waitForExpectations(timeout: 5)
+
             let repositoryAuthType = try repository.authenticatorType.toBlocking().first()
+            XCTAssertNil(error)
             XCTAssertEqual(repositoryAuthType, serviceAuthType)
             XCTAssertEqual(serviceAuthType, expectedAuthType)
         } catch {
@@ -50,8 +81,31 @@ class WalletPayloadServiceTests: XCTestCase {
             repository: repository
         )
         do {
-            let serviceAuthType = try service.requestUsingSessionToken().toBlocking().first()
+            // TODO: delete these once IOS-4610 is ready
+            let serviceAuthTypePublisher = service.requestUsingSessionToken()
+            var serviceAuthType: WalletAuthenticatorType = .standard
+            var error: WalletPayloadServiceError?
+            let expectation = self.expectation(description: "2FA Response")
+            serviceAuthTypePublisher
+                .sink(
+                    receiveCompletion: { completion in
+                        switch completion {
+                        case .finished:
+                            break
+                        case .failure(let serviceError):
+                            error = serviceError
+                        }
+                        expectation.fulfill()
+                    },
+                    receiveValue: { value in
+                        serviceAuthType = value
+                    }
+                )
+                .store(in: &cancellables)
+            waitForExpectations(timeout: 5)
+
             let repositoryAuthType = try repository.authenticatorType.toBlocking().first()
+            XCTAssertNil(error)
             XCTAssertEqual(repositoryAuthType, serviceAuthType)
             XCTAssertEqual(serviceAuthType, expectedAuthType)
             XCTAssertNotNil(try repository.payload.toBlocking().first())

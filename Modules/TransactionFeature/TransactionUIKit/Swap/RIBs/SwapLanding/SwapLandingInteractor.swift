@@ -96,7 +96,7 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
     }
 
     private lazy var pax: CryptoCurrency = enabledCurrenciesService.allEnabledCryptoCurrencies
-        .first(where: { $0.code == LegacyERC20Code.pax.rawValue })!
+        .first(where: { $0.code == ERC20Code.pax.rawValue })!
     private let accountProviding: BlockchainAccountProviding
     private let eligibilityService: EligibilityServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI

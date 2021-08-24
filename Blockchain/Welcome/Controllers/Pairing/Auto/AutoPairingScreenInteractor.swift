@@ -57,7 +57,10 @@ final class AutoPairingScreenInteractor {
 
     /// Login using pairing data retrieved from parsing the QR code
     private func login(with pairingData: PairingData) {
-        service.pair(using: pairingData)
+        service
+            .pair(using: pairingData)
+            .asObservable()
+            .asSingle()
             .subscribe(
                 onSuccess: walletFetcher.authenticate,
                 onError: errorRelay.accept

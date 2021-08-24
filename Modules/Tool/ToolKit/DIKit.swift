@@ -15,5 +15,7 @@ extension DependencyContainer {
         factory { InternalFeatureFlagService(defaultsProvider: provideInternalUserDefaults) as InternalFeatureFlagServiceAPI }
 
         factory { FeatureFlagsService() as FeatureFlagsServiceAPI }
+
+        factory { FileIO() as FileIOAPI }
     }
 }

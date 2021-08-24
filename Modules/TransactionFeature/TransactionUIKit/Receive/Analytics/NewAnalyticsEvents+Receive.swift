@@ -8,24 +8,22 @@ extension AnalyticsEvents.New {
     public enum Receive: AnalyticsEvent {
         public var type: AnalyticsEventType { .nabu }
 
-        case receiveCurrencySelected(accountType: AccountType?, currency: String)
-        case receiveDetailsCopied(accountType: AccountType?, currency: String)
+        case receiveCurrencySelected(accountType: AccountType, currency: String)
+        case receiveDetailsCopied(accountType: AccountType, currency: String)
 
         public enum AccountType: String, StringRawRepresentable {
             case savings = "SAVINGS"
             case trading = "TRADING"
             case userKey = "USERKEY"
 
-            public init?(_ account: BlockchainAccount?) {
+            public init(_ account: BlockchainAccount?) {
                 switch account {
-                case is CryptoNonCustodialAccount:
-                    self = .userKey
                 case is CryptoInterestAccount:
                     self = .savings
                 case is CryptoTradingAccount:
                     self = .trading
                 default:
-                    return nil
+                    self = .userKey
                 }
             }
         }

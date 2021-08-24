@@ -30,25 +30,16 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         .just(.zero(currency: asset))
     }
 
-    private lazy var isLegacyAsset: Bool = LegacyERC20Code.allCases.map(\.rawValue).contains(erc20Token.code)
-
     var actions: Single<AvailableActions> {
         Single
-            .zip(isFunded, custodialSupport)
-            .map { [erc20Token, isLegacyAsset] isFunded, custodialSupport -> AvailableActions in
+            .zip(isFunded, isPairToFiatAvailable)
+            .map { isFunded, isPairToFiatAvailable -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .receive, .send]
-                if isLegacyAsset {
+                if isPairToFiatAvailable {
                     base.insert(.buy)
-                    if isFunded {
-                        base.insert(.swap)
-                    }
-                } else if let support = custodialSupport.data[erc20Token.code] {
-                    if support.canBuy {
-                        base.insert(.buy)
-                    }
-                    if support.canSwap, isFunded {
-                        base.insert(.swap)
-                    }
+                }
+                if isFunded {
+                    base.insert(.swap)
                 }
                 return base
             }
@@ -88,6 +79,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     private let fiatPriceService: FiatPriceServiceAPI
     private let transactionsService: ERC20HistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
+    private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
 
     init(
         publicKey: String,
@@ -96,7 +88,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         balanceService: ERC20BalanceServiceAPI = resolve(),
         transactionsService: ERC20HistoricalTransactionServiceAPI = resolve(),
         fiatPriceService: FiatPriceServiceAPI = resolve(),
-        swapTransactionsService: SwapActivityServiceAPI = resolve()
+        swapTransactionsService: SwapActivityServiceAPI = resolve(),
+        supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve()
     ) {
         self.publicKey = publicKey
         self.erc20Token = erc20Token
@@ -107,15 +100,18 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         self.transactionsService = transactionsService
         self.swapTransactionsService = swapTransactionsService
         self.fiatPriceService = fiatPriceService
+        self.supportedPairsInteractorService = supportedPairsInteractorService
     }
 
-    private var custodialSupport: Single<CryptoCustodialSupport> {
-        featureFetcher
-            .fetch(for: .custodialOnlyTokens)
-            .map { (data: [String: [String]]) in
-                CryptoCustodialSupport(data: data)
+    private var isPairToFiatAvailable: Single<Bool> {
+        supportedPairsInteractorService
+            .pairs
+            .take(1)
+            .asSingle()
+            .map { [asset] pairs in
+                pairs.cryptoCurrencySet.contains(asset)
             }
-            .catchErrorJustReturn(.empty)
+            .catchErrorJustReturn(false)
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -129,29 +125,9 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
              .withdraw:
             return .just(false)
         case .buy:
-            switch isLegacyAsset {
-            case true:
-                return .just(true)
-            case false:
-                return custodialSupport
-                    .map { [asset] support in
-                        support.data[asset.code]?.canBuy ?? false
-                    }
-            }
+            return isPairToFiatAvailable
         case .swap:
-            switch isLegacyAsset {
-            case true:
-                return isFunded
-            case false:
-                let canSwap = custodialSupport
-                    .map { [asset] support in
-                        support.data[asset.code]?.canSwap ?? false
-                    }
-                return Single.zip(canSwap, isFunded)
-                    .map { canSwap, isFunded in
-                        canSwap && isFunded
-                    }
-            }
+            return isFunded
         }
     }
 

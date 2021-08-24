@@ -20,6 +20,7 @@ public enum Onboarding {
         case walletUpgrade(WalletUpgrade.Action)
         case passwordScreen(PasswordRequired.Action)
         case welcomeScreen(WelcomeAction)
+        case informSecondPasswordDetected
         case forgetWallet
         case createAccountScreenClosed
         case recoverWalletScreenClosed
@@ -153,6 +154,11 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return Effect(value: .welcomeScreen(.start))
         case .passwordScreen:
             return .none
+        case .informSecondPasswordDetected:
+            guard state.welcomeState != nil else {
+                return .none
+            }
+            return Effect(value: .welcomeScreen(.informSecondPasswordDetected))
         }
     }
 )

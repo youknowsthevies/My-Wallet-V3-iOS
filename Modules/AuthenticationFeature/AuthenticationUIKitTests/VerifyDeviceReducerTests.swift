@@ -27,7 +27,9 @@ final class VerifyDeviceReducerTests: XCTestCase {
             environment: .init(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 deviceVerificationService: MockDeviceVerificationService(),
-                errorRecorder: NoOpErrorRecorder()
+                errorRecorder: NoOpErrorRecorder(),
+                externalAppOpener: MockExternalAppOpener(),
+                analyticsRecorder: MockAnalyticsRecorder()
             )
         )
     }
@@ -40,7 +42,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
 
     func test_verify_initial_state_is_correct() {
         let state = VerifyDeviceState(emailAddress: "")
-        XCTAssertNotNil(state.credentialsState)
+        XCTAssertNil(state.credentialsState)
         XCTAssertEqual(state.credentialsContext, .none)
         XCTAssertFalse(state.isCredentialsScreenVisible)
     }
@@ -53,6 +55,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
                 state.credentialsContext = .walletInfo(MockDeviceVerificationService.mockWalletInfo)
             },
             .receive(.setCredentialsScreenVisible(true)) { state in
+                state.credentialsState = .init()
                 state.isCredentialsScreenVisible = true
             }
         )
@@ -67,26 +70,8 @@ final class VerifyDeviceReducerTests: XCTestCase {
         }
 
         testStore.receive(.setCredentialsScreenVisible(true)) { state in
+            state.credentialsState = .init()
             state.isCredentialsScreenVisible = true
         }
     }
-
-    // TODO: Comment for now (wait until error states design are finalised)
-//    func test_receive_invalid_wallet_deeplink_should_show_error() {
-//        let invalidDeeplink = URL(string: "https://login.blockchain.com")!
-//        testStore.assert(
-//            .send(.didReceiveWalletInfoDeeplink(invalidDeeplink)),
-//            .do { self.mockMainQueue.advance() },
-//            .receive(.verifyDeviceFailureAlert(.show(title: "", message: ""))) { state in
-//                state.verifyDeviceFailureAlert = AlertState(
-//                    title: TextState(""),
-//                    message: TextState(""),
-//                    dismissButton: .default(
-//                        TextState(LocalizationConstants.okString),
-//                        send: .verifyDeviceFailureAlert(.dismiss)
-//                    )
-//                )
-//            }
-//        )
-//    }
 }

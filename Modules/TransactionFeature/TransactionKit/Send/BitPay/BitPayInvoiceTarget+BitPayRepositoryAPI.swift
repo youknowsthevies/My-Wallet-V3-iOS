@@ -71,6 +71,8 @@ extension BitPayInvoiceTarget {
                         invoiceId: invoiceId,
                         currency: asset
                     )
+                    .asObservable()
+                    .asSingle()
             }
             .do(onError: { error in
                 Logger.shared.error("\(error)")

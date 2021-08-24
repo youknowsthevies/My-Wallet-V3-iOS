@@ -30,7 +30,7 @@ public struct AppEnvironment {
     var featureFlagsService: FeatureFlagsServiceAPI
     var internalFeatureService: InternalFeatureFlagServiceAPI // TODO: deprecated, use featureFlagsService instead
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
-
+    var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var sharedContainer: SharedContainerUserDefaults
     var analyticsRecorder: AnalyticsEventRecorderAPI
 

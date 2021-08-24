@@ -52,10 +52,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         debugCoordinator.enableDebugMenu(for: window)
         #endif
 
-        guard !newWelcomeScreenIsDisabled() else {
-            viewStore.send(.appDelegate(.didFinishLaunching(window: window)))
-            return true
-        }
         let hostingController = AppHostingController(
             store: store.scope(
                 state: \.coreState,
@@ -112,16 +108,6 @@ func defineDependencies() {
 private func bootstrap() {
     FirebaseApp.configure()
     defineDependencies()
-    #if !INTERNAL_BUILD
-    // Intentionally disable the new welcome screen on prod
-    let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
-    featureFlagService.enable(.disableNewWelcomeScreen)
-    #endif
-}
-
-func newWelcomeScreenIsDisabled() -> Bool {
-    let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
-    return featureFlagService.isEnabled(.disableNewWelcomeScreen)
 }
 
 private func eraseWalletForUITestsIfNeeded() {

@@ -34,11 +34,11 @@ extension LocalizationConstants.SecureChannel {
 
         public enum New {
             public static let title = NSLocalizedString(
-                "New Device Detected",
+                "Log In Request From Web",
                 comment: "Secure Channel - Confirmation Sheet - New Device - title"
             )
             public static let subtitle = NSLocalizedString(
-                "We noticed a login attempt from a device you don’t usually use.",
+                "We noticed a log in attempt from a device you don't usually use.",
                 comment: "Secure Channel - Confirmation Sheet - New Device - subtitle"
             )
         }

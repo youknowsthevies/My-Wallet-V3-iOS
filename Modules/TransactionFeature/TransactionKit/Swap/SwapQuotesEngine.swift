@@ -80,5 +80,7 @@ final class SwapQuotesEngine {
                 sourceCurrencyType: pair.sourceCurrencyType,
                 destinationCurrencyType: pair.destinationCurrencyType
             )
+            .asObservable()
+            .asSingle()
     }
 }

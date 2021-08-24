@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AuthenticationKit
+import Combine
 import DIKit
-import RxSwift
 import ToolKit
 import WalletPayloadKit
 
@@ -53,24 +53,48 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
     /// 6. Returns the password.
     /// - Parameter pairingData: A pairing code comprises GUID and an encrypted shared key.
     /// - Returns: The wallet password - decrypted and ready for usage.
-    public func pair(using pairingData: PairingData) -> Single<String> {
-        walletPairingClient.request(guid: pairingData.guid)
-            .map { KeyDataPair<String, String>(key: $0, data: pairingData.encryptedSharedKey) }
-            .flatMap(weak: self) { (self, keyDataPair) -> Single<String> in
-                self.walletCryptoService.decrypt(pair: keyDataPair, pbkdf2Iterations: WalletCryptoPBKDF2Iterations.autoPair)
-            }
-            .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-            .map(parsingService.parse)
-            .flatMap(weak: self) { (self, pair) in
-                self.walletPayloadService.request(
-                    guid: pairingData.guid,
-                    sharedKey: pair.data
+    public func pair(using pairingData: PairingData) -> AnyPublisher<String, AutoWalletPairingServiceError> {
+        walletPairingClient
+            .request(guid: pairingData.guid)
+            .mapError(AutoWalletPairingServiceError.networkError)
+            .map {
+                KeyDataPair<String, String>(
+                    key: $0,
+                    data: pairingData.encryptedSharedKey
                 )
-                .andThen(.just(pair.key))
             }
+            .flatMap { [walletCryptoService] keyDataPair -> AnyPublisher<String, AutoWalletPairingServiceError> in
+                walletCryptoService.decrypt(pair: keyDataPair, pbkdf2Iterations: WalletCryptoPBKDF2Iterations.autoPair)
+                    .asPublisher()
+                    .mapError(AutoWalletPairingServiceError.walletCryptoServiceError)
+                    .eraseToAnyPublisher()
+            }
+            .map { [parsingService] pairingCode
+                -> Result<KeyDataPair<String, String>, AutoWalletPairingServiceError> in
+                parsingService.parse(pairingCode: pairingCode)
+                    .mapError(AutoWalletPairingServiceError.parsingError)
+            }
+            .flatMap { [walletPayloadService] pairResult
+                -> AnyPublisher<String, AutoWalletPairingServiceError> in
+                switch pairResult {
+                case .success(let pair):
+                    return walletPayloadService.request(
+                        guid: pairingData.guid,
+                        sharedKey: pair.data
+                    )
+                    .map { _ in pair.key }
+                    .mapError(AutoWalletPairingServiceError.walletCryptoServiceError)
+                    .eraseToAnyPublisher()
+                case .failure(let error):
+                    return .failure(error)
+                }
+            }
+            .eraseToAnyPublisher()
     }
 
-    public func encryptionPhrase(using guid: String) -> Single<String> {
+    public func encryptionPhrase(using guid: String) -> AnyPublisher<String, AutoWalletPairingServiceError> {
         walletPairingClient.request(guid: guid)
+            .mapError(AutoWalletPairingServiceError.networkError)
+            .eraseToAnyPublisher()
     }
 }

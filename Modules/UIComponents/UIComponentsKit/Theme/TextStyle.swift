@@ -10,6 +10,8 @@ public struct TextStyle: ViewModifier {
         case subheading
         case body
         case formField
+        case formFieldPlaceholder
+        case link
     }
 
     public let fontStyle: FontStyle
@@ -19,6 +21,7 @@ public struct TextStyle: ViewModifier {
         let fontWeight: FontWeight
         let fontSize: CGFloat
         let lineSpacing: CGFloat
+        let singleLineSpacing: CGFloat
 
         switch fontStyle {
         case .title:
@@ -26,32 +29,49 @@ public struct TextStyle: ViewModifier {
             fontWeight = .semibold
             fontSize = LayoutConstants.Text.FontSize.title
             lineSpacing = LayoutConstants.Text.LineSpacing.title
+            singleLineSpacing = lineSpacing
         case .heading:
             textColor = .textHeading
             fontWeight = .semibold
             fontSize = LayoutConstants.Text.FontSize.heading
             lineSpacing = LayoutConstants.Text.LineSpacing.heading
+            singleLineSpacing = lineSpacing
         case .subheading:
             textColor = .textSubheading
             fontWeight = .medium
             fontSize = LayoutConstants.Text.FontSize.subheading
             lineSpacing = LayoutConstants.Text.LineSpacing.subheading
+            singleLineSpacing = 0
         case .body:
             textColor = .textBody
             fontWeight = .medium
             fontSize = LayoutConstants.Text.FontSize.body
             lineSpacing = LayoutConstants.Text.LineSpacing.body
+            singleLineSpacing = 0
         case .formField:
             textColor = .formField
             fontWeight = .regular
             fontSize = LayoutConstants.Text.FontSize.formField
             lineSpacing = LayoutConstants.Text.LineSpacing.formField
+            singleLineSpacing = lineSpacing
+        case .formFieldPlaceholder:
+            textColor = .textMuted
+            fontWeight = .regular
+            fontSize = LayoutConstants.Text.FontSize.formField
+            lineSpacing = LayoutConstants.Text.LineSpacing.formField
+            singleLineSpacing = lineSpacing
+        case .link:
+            textColor = .buttonLinkText
+            fontWeight = .medium
+            fontSize = LayoutConstants.Text.FontSize.body
+            lineSpacing = LayoutConstants.Text.LineSpacing.body
+            singleLineSpacing = lineSpacing
         }
         return content
             .font(Font(weight: fontWeight, size: fontSize))
             .foregroundColor(textColor)
             .lineSpacing(lineSpacing) // to mimic line height in the designs
-            .padding(.vertical, lineSpacing / 2) // to mimic line height on single line
+            .padding(.bottom, singleLineSpacing / 2) // to mimic line height on single line
     }
 }
 
@@ -62,6 +82,8 @@ extension TextStyle {
     public static let subheading = TextStyle(fontStyle: .subheading)
     public static let body = TextStyle(fontStyle: .body)
     public static let formField = TextStyle(fontStyle: .formField)
+    public static let formFieldPlaceholder = TextStyle(fontStyle: .formFieldPlaceholder)
+    public static let link = TextStyle(fontStyle: .link)
 }
 
 extension View {
@@ -84,10 +106,12 @@ struct TextStyle_Previews: PreviewProvider {
         VStack(alignment: .leading, spacing: 20) {
             Text(shortSentence)
                 .textStyle(.title)
-            Text(shortSentence)
-                .textStyle(.heading)
-            Text(mediumSentence)
-                .textStyle(.subheading)
+            VStack(alignment: .leading) {
+                Text(shortSentence)
+                    .textStyle(.heading)
+                Text(mediumSentence)
+                    .textStyle(.subheading)
+            }
             Text(longSentence)
                 .textStyle(.body)
         }

@@ -5,11 +5,12 @@ import AuthenticationKit
 import ComposableArchitecture
 import DIKit
 import Localization
-import SwiftUI
+import PlatformUIKit
 import ToolKit
-import UIComponentsKit
 
 // MARK: - Type
+
+private typealias CredentialsLocalization = LocalizationConstants.CredentialsForm
 
 public enum CredentialsAction: Equatable {
     public enum AlertAction: Equatable {
@@ -19,24 +20,31 @@ public enum CredentialsAction: Equatable {
 
     public enum WalletPairingAction: Equatable {
         case approveEmailAuthorization
+        case needsEmailAuthorization
         case authenticate
         case authenticateWithTwoFAOrHardwareKey
         case decryptWalletWithPassword(String)
+        case startPolling
         case pollWalletIdentifier
-        case requestSMSCode
+        case handleSMS
+        case resendSMSCode
         case setupSessionToken
     }
 
+    case continueButtonTapped
     case didAppear(context: CredentialsContext)
-    case didDisappear
     case didChangeWalletIdentifier(String)
     case password(PasswordAction)
     case twoFA(TwoFAAction)
     case hardwareKey(HardwareKeyAction)
     case walletPairing(WalletPairingAction)
+    case seedPhrase(SeedPhraseAction)
     case setTwoFAOrHardwareKeyVerified(Bool)
     case accountLockedErrorVisibility(Bool)
-    case credentialsFailureAlert(AlertAction)
+    case setTroubleLoggingInScreenVisible(Bool)
+    case openExternalLink(URL)
+    case alert(AlertAction)
+    case closeButtonTapped
     case none
 }
 
@@ -50,13 +58,16 @@ enum WalletPairingCancelations {
 public enum CredentialsContext: Equatable {
     case walletInfo(WalletInfo)
     case walletIdentifier(email: String)
+    case manualPairing
     case none
 }
 
 struct CredentialsState: Equatable {
-    var passwordState: PasswordState?
+    var isTroubleLoggingInScreenVisible: Bool
+    var passwordState: PasswordState
     var twoFAState: TwoFAState?
     var hardwareKeyState: HardwareKeyState?
+    var seedPhraseState: SeedPhraseState?
     var emailAddress: String
     var walletGuid: String
     var emailCode: String
@@ -64,13 +75,16 @@ struct CredentialsState: Equatable {
     var isAccountLocked: Bool
     var isWalletIdentifierIncorrect: Bool
     var credentialsFailureAlert: AlertState<CredentialsAction>?
+    var isManualPairing: Bool
 
     var isLoading: Bool
 
     init() {
+        isTroubleLoggingInScreenVisible = false
         passwordState = .init()
         twoFAState = .init()
         hardwareKeyState = .init()
+        seedPhraseState = .init()
         emailAddress = ""
         walletGuid = ""
         emailCode = ""
@@ -78,6 +92,7 @@ struct CredentialsState: Equatable {
         isAccountLocked = false
         isWalletIdentifierIncorrect = false
         isLoading = false
+        isManualPairing = false
     }
 }
 
@@ -86,13 +101,14 @@ struct CredentialsEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let pollingQueue: AnySchedulerOf<DispatchQueue>
+    let sessionTokenService: SessionTokenServiceAPI
     let deviceVerificationService: DeviceVerificationServiceAPI
     let emailAuthorizationService: EmailAuthorizationServiceAPI
-    let sessionTokenService: SessionTokenServiceAPI
     let smsService: SMSServiceAPI
     let loginService: LoginServiceAPI
     let wallet: WalletAuthenticationKitWrapper
     let analyticsRecorder: AnalyticsEventRecorderAPI
+    let externalAppOpener: ExternalAppOpener
     let errorRecorder: ErrorRecording
     let walletIdentifierValidator: WalletValidation
 
@@ -102,26 +118,27 @@ struct CredentialsEnvironment {
             label: "com.blockchain.AuthenticationEnvironmentPollingQueue",
             qos: .utility
         ).eraseToAnyScheduler(),
+        sessionTokenService: SessionTokenServiceAPI = resolve(),
         deviceVerificationService: DeviceVerificationServiceAPI,
         emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
-        sessionTokenService: SessionTokenServiceAPI = resolve(),
         smsService: SMSServiceAPI = resolve(),
         loginService: LoginServiceAPI = resolve(),
         wallet: WalletAuthenticationKitWrapper = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        externalAppOpener: ExternalAppOpener = resolve(),
         walletIdentifierValidator: @escaping WalletValidation = identifierValidator,
         errorRecorder: ErrorRecording
     ) {
-
         self.mainQueue = mainQueue
         self.pollingQueue = pollingQueue
+        self.sessionTokenService = sessionTokenService
         self.deviceVerificationService = deviceVerificationService
         self.emailAuthorizationService = emailAuthorizationService
-        self.sessionTokenService = sessionTokenService
         self.smsService = smsService
         self.loginService = loginService
         self.wallet = wallet
         self.analyticsRecorder = analyticsRecorder
+        self.externalAppOpener = externalAppOpener
         self.walletIdentifierValidator = walletIdentifierValidator
         self.errorRecorder = errorRecorder
     }
@@ -129,7 +146,6 @@ struct CredentialsEnvironment {
 
 let credentialsReducer = Reducer.combine(
     passwordReducer
-        .optional()
         .pullback(
             state: \CredentialsState.passwordState,
             action: /CredentialsAction.password,
@@ -149,6 +165,13 @@ let credentialsReducer = Reducer.combine(
             action: /CredentialsAction.hardwareKey,
             environment: { $0 }
         ),
+    seedPhraseReducer
+        .optional()
+        .pullback(
+            state: \CredentialsState.seedPhraseState,
+            action: /CredentialsAction.seedPhrase,
+            environment: { _ in SeedPhraseEnvironment() }
+        ),
     Reducer<
         CredentialsState,
         CredentialsAction,
@@ -156,31 +179,24 @@ let credentialsReducer = Reducer.combine(
     > { state, action, environment in
         switch action {
         case .didAppear(.walletInfo(let info)):
+            state.isTroubleLoggingInScreenVisible = false
             state.emailAddress = info.email
             state.walletGuid = info.guid
             state.emailCode = info.emailCode
-            return Effect(value: .walletPairing(.setupSessionToken))
+            return .none
 
         case .didAppear(.walletIdentifier(let email)):
+            state.isTroubleLoggingInScreenVisible = false
             state.emailAddress = email
+            return .none
+
+        case .didAppear(.manualPairing):
+            state.isTroubleLoggingInScreenVisible = false
+            state.emailAddress = "not available on manual pairing"
+            state.isManualPairing = true
             return Effect(value: .walletPairing(.setupSessionToken))
 
         case .didAppear:
-            return .none
-
-        case .didDisappear:
-            state.emailAddress = ""
-            state.walletGuid = ""
-            state.emailCode = ""
-            state.isTwoFACodeOrHardwareKeyVerified = false
-            state.isAccountLocked = false
-            state.passwordState = nil
-            state.twoFAState = nil
-            state.hardwareKeyState = nil
-            return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
-
-        case .password, .twoFA, .hardwareKey:
-            // handled in respective reducers
             return .none
 
         case .didChangeWalletIdentifier(let guid):
@@ -192,20 +208,36 @@ let credentialsReducer = Reducer.combine(
             state.isWalletIdentifierIncorrect = !environment.walletIdentifierValidator(guid)
             return .none
 
+        case .continueButtonTapped:
+            guard let twoFAState = state.twoFAState,
+                  let hardwareKeyState = state.hardwareKeyState else {
+                fatalError("States should not be nil")
+            }
+            if twoFAState.isTwoFACodeFieldVisible ||
+                hardwareKeyState.isHardwareKeyCodeFieldVisible {
+                return Effect(value: .walletPairing(.authenticateWithTwoFAOrHardwareKey))
+            }
+            return Effect(value: .walletPairing(.authenticate))
+
         case .walletPairing(.approveEmailAuthorization):
             guard !state.emailCode.isEmpty else {
-                fatalError("Email code should not be empty")
+                // we still need to display an alert and poll here,
+                // since we might end up here in case of a deeplink failure
+                return .concatenate(
+                    Effect(
+                        value: .alert(
+                            .show(
+                                title: CredentialsLocalization.Alerts.EmailAuthorizationAlert.title,
+                                message: CredentialsLocalization.Alerts.EmailAuthorizationAlert.message
+                            )
+                        )
+                    ),
+                    Effect(value: .walletPairing(.startPolling))
+                )
             }
             return .merge(
-                // Poll the Guid every 2 seconds
-                Effect
-                    .timer(
-                        id: WalletPairingCancelations.WalletIdentifierPollingTimerId(),
-                        every: 2,
-                        on: environment.pollingQueue
-                    )
-                    .map { _ in .walletPairing(.pollWalletIdentifier) },
                 // Immediately authorize the email
+                Effect(value: .walletPairing(.startPolling)),
                 environment
                     .deviceVerificationService
                     .authorizeLogin(emailCode: state.emailCode)
@@ -215,22 +247,55 @@ let credentialsReducer = Reducer.combine(
                         if case .failure(let error) = result {
                             // If failed, an `Authorize Log In` will be sent to user for manual authorization
                             environment.errorRecorder.error(error)
+                            // we only want to handle `.expiredEmailCode` case, silent other errors...
+                            guard error == .expiredEmailCode else {
+                                return .none
+                            }
+                            return .alert(
+                                .show(
+                                    title: CredentialsLocalization.Alerts.EmailAuthorizationAlert.title,
+                                    message: CredentialsLocalization.Alerts.EmailAuthorizationAlert.message
+                                )
+                            )
                         }
                         return .none
                     }
+            )
+
+        case .walletPairing(.startPolling):
+            // Poll the Guid every 2 seconds
+            return Effect
+                .timer(
+                    id: WalletPairingCancelations.WalletIdentifierPollingTimerId(),
+                    every: 2,
+                    on: environment.pollingQueue
+                )
+                .map { _ in .walletPairing(.pollWalletIdentifier) }
+
+        case .walletPairing(.needsEmailAuthorization):
+            return .concatenate(
+                Effect(
+                    value: .alert(
+                        .show(
+                            title: CredentialsLocalization.Alerts.EmailAuthorizationAlert.title,
+                            message: CredentialsLocalization.Alerts.EmailAuthorizationAlert.message
+                        )
+                    )
+                ),
+                Effect(value: .walletPairing(.startPolling))
             )
 
         case .walletPairing(.authenticate):
             guard !state.walletGuid.isEmpty else {
                 fatalError("GUID should not be empty")
             }
-            guard let passwordState = state.passwordState,
-                  let twoFAState = state.twoFAState,
-                  let hardwareKeyState = state.hardwareKeyState
-            else {
+            guard let twoFAState = state.twoFAState,
+                  let hardwareKeyState = state.hardwareKeyState else {
                 fatalError("States should not be nil")
             }
             state.isLoading = true
+            let password = state.passwordState.password
+            let isManualPairing = state.isManualPairing
             return .merge(
                 // Clear error states
                 Effect(value: .accountLockedErrorVisibility(false)),
@@ -238,26 +303,24 @@ let credentialsReducer = Reducer.combine(
                 .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId()),
                 environment
                     .loginService
-                    .loginPublisher(walletIdentifier: state.walletGuid)
+                    .login(walletIdentifier: state.walletGuid)
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result -> CredentialsAction in
                         switch result {
                         case .success:
-                            return .walletPairing(.decryptWalletWithPassword(passwordState.password))
+                            return .walletPairing(.decryptWalletWithPassword(password))
                         case .failure(let error):
                             switch error {
                             case .twoFactorOTPRequired(let type):
-                                if twoFAState.isTwoFACodeFieldVisible ||
-                                    hardwareKeyState.isHardwareKeyCodeFieldVisible
-                                {
-                                    return .walletPairing(.authenticateWithTwoFAOrHardwareKey)
-                                }
                                 switch type {
                                 case .email:
+                                    if isManualPairing {
+                                        return .walletPairing(.needsEmailAuthorization)
+                                    }
                                     return .walletPairing(.approveEmailAuthorization)
                                 case .sms:
-                                    return .walletPairing(.requestSMSCode)
+                                    return .walletPairing(.handleSMS)
                                 case .google:
                                     return .twoFA(.twoFACodeFieldVisibility(true))
                                 case .yubiKey, .yubikeyMtGox:
@@ -268,9 +331,13 @@ let credentialsReducer = Reducer.combine(
                             case .walletPayloadServiceError(.accountLocked):
                                 return .accountLockedErrorVisibility(true)
                             case .walletPayloadServiceError(let error):
-                                // TODO: Await design for error state
                                 environment.errorRecorder.error(error)
-                                return .credentialsFailureAlert(.show(title: "Wallet Payload Error", message: error.localizedDescription))
+                                return .alert(
+                                    .show(
+                                        title: CredentialsLocalization.Alerts.GenericNetworkError.title,
+                                        message: CredentialsLocalization.Alerts.GenericNetworkError.message
+                                    )
+                                )
                             case .twoFAWalletServiceError:
                                 fatalError("Shouldn't receive TwoFAService errors here")
                             }
@@ -282,20 +349,19 @@ let credentialsReducer = Reducer.combine(
             guard !state.walletGuid.isEmpty else {
                 fatalError("GUID should not be empty")
             }
-            guard let passwordState = state.passwordState,
-                  let twoFAState = state.twoFAState,
+            guard let twoFAState = state.twoFAState,
                   let hardwareKeyState = state.hardwareKeyState
             else {
                 fatalError("States should not be nil")
             }
-            state.isLoading = false
+            state.isLoading = true
             return .merge(
                 // clear error states
                 Effect(value: .hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(false))),
-                Effect(value: .twoFA(.incorrectTwoFACodeErrorVisibility(false))),
+                Effect(value: .twoFA(.incorrectTwoFACodeErrorVisibility(.none))),
                 environment
                     .loginService
-                    .loginPublisher(
+                    .login(
                         walletIdentifier: state.walletGuid,
                         code: twoFAState.twoFACode
                     )
@@ -314,9 +380,14 @@ let credentialsReducer = Reducer.combine(
                                 case .accountLocked:
                                     return .accountLockedErrorVisibility(true)
                                 case .missingCode:
-                                    return .credentialsFailureAlert(.show(title: "Missing 2FA Code", message: error.localizedDescription))
+                                    return .twoFA(.incorrectTwoFACodeErrorVisibility(.missingCode))
                                 default:
-                                    return .credentialsFailureAlert(.show(title: "Two FA Error", message: error.localizedDescription))
+                                    return .alert(
+                                        .show(
+                                            title: CredentialsLocalization.Alerts.GenericNetworkError.title,
+                                            message: CredentialsLocalization.Alerts.GenericNetworkError.message
+                                        )
+                                    )
                                 }
                             case .walletPayloadServiceError:
                                 fatalError("Shouldn't receive WalletPayloadService errors here")
@@ -350,82 +421,180 @@ let credentialsReducer = Reducer.combine(
                     }
             )
 
-        case .walletPairing(.requestSMSCode):
+        case .walletPairing(.handleSMS):
             return .merge(
                 Effect(value: .twoFA(.resendSMSButtonVisibility(true))),
                 Effect(value: .twoFA(.twoFACodeFieldVisibility(true))),
-                environment
-                    .smsService
-                    .requestPublisher()
-                    .receive(on: environment.mainQueue)
-                    .catchToEffect()
-                    .map { result -> CredentialsAction in
-                        if case .failure(let error) = result {
-                            // TODO: Await design for error state
-                            environment.errorRecorder.error(error)
-                            return .credentialsFailureAlert(.show(title: "Send SMS Failed", message: error.localizedDescription))
-                        }
-                        return .none
-                    }
+                Effect(value: .alert(
+                    .show(
+                        title: CredentialsLocalization.Alerts.SMSCode.Success.title,
+                        message: CredentialsLocalization.Alerts.SMSCode.Success.message
+                    )
+                ))
             )
 
-        case .walletPairing(.setupSessionToken):
+        case .walletPairing(.resendSMSCode):
             return environment
-                .sessionTokenService
-                .setupSessionTokenPublisher()
+                .smsService
+                .request()
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .map { result -> CredentialsAction in
                     if case .failure(let error) = result {
-                        // TODO: Await design for error state
                         environment.errorRecorder.error(error)
-                        return .credentialsFailureAlert(.show(title: "Session Token Error", message: error.localizedDescription))
+                        return .alert(
+                            .show(
+                                title: CredentialsLocalization.Alerts.SMSCode.Failure.title,
+                                message: CredentialsLocalization.Alerts.SMSCode.Failure.message
+                            )
+                        )
+                    }
+                    return .alert(
+                        .show(
+                            title: CredentialsLocalization.Alerts.SMSCode.Success.title,
+                            message: CredentialsLocalization.Alerts.SMSCode.Success.message
+                        )
+                    )
+                }
+
+        case .walletPairing(.setupSessionToken):
+            return environment
+                .sessionTokenService
+                .setupSessionToken()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map { result -> CredentialsAction in
+                    if case .failure(let error) = result {
+                        environment.errorRecorder.error(error)
+                        return .alert(
+                            .show(
+                                title: CredentialsLocalization.Alerts.GenericNetworkError.title,
+                                message: CredentialsLocalization.Alerts.GenericNetworkError.message
+                            )
+                        )
                     }
                     return .none
                 }
 
         case .setTwoFAOrHardwareKeyVerified(let isVerified):
-            guard let passwordState = state.passwordState else {
-                fatalError("Password state should not be nil")
-            }
             state.isTwoFACodeOrHardwareKeyVerified = isVerified
             guard isVerified else {
                 return .none
             }
+            state.isLoading = false
+            let password = state.passwordState.password
             return .merge(
-                Effect(value: .twoFA(.twoFACodeFieldVisibility(false))),
-                Effect(value: .hardwareKey(.hardwareKeyCodeFieldVisibility(false))),
-                Effect(value: .walletPairing(.decryptWalletWithPassword(passwordState.password)))
+                Effect(value: .walletPairing(.decryptWalletWithPassword(password)))
             )
 
         case .accountLockedErrorVisibility(let isVisible):
             state.isAccountLocked = isVisible
-            state.isLoading = false
+            state.isLoading = isVisible ? false : state.isLoading
             return .none
 
-        case .credentialsFailureAlert(.show(let title, let message)):
+        case .openExternalLink(let url):
+            environment
+                .externalAppOpener
+                .open(url) { _ in }
+            return .none
+
+        case .alert(.show(let title, let message)):
+            state.isLoading = false
             state.credentialsFailureAlert = AlertState(
                 title: TextState(verbatim: title),
                 message: TextState(verbatim: message),
                 dismissButton: .default(
                     TextState(LocalizationConstants.okString),
-                    send: .credentialsFailureAlert(.dismiss)
+                    send: .alert(.dismiss)
                 )
             )
             return .none
 
-        case .credentialsFailureAlert(.dismiss):
+        case .alert(.dismiss):
             state.credentialsFailureAlert = nil
             return .none
 
+        case .twoFA(.twoFACodeFieldVisibility(let visible)):
+            state.isLoading = visible ? false : state.isLoading
+            return .none
+        case .twoFA(.incorrectTwoFACodeErrorVisibility(let context)):
+            state.isLoading = context.hasError ? false : state.isLoading
+            return .none
+        case .hardwareKey(.hardwareKeyCodeFieldVisibility(let visible)),
+             .hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(let visible)):
+            state.isLoading = visible ? false : state.isLoading
+            return .none
+
+        case .password(.incorrectPasswordErrorVisibility(true)):
+            state.isLoading = false
+            // reset state
+            state.twoFAState = .init()
+            state.hardwareKeyState = .init()
+            return .none
+        case .password(.incorrectPasswordErrorVisibility(false)):
+            state.isLoading = true
+            return .none
+
+        case .setTroubleLoggingInScreenVisible(let visible):
+            state.isTroubleLoggingInScreenVisible = visible
+            return .none
+
+        case .twoFA:
+            return .none
+        case .hardwareKey:
+            return .none
+        case .password:
+            return .none
+        case .seedPhrase:
+            return .none
+        case .closeButtonTapped:
+            return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
         case .none:
             return .none
         }
     }
 )
+.analytics()
 
 // MARK: - Private
 
 private func identifierValidator(_ value: String) -> Bool {
     value.range(of: TextRegex.walletIdentifier.rawValue, options: .regularExpression) != nil
+}
+
+extension Reducer where
+    Action == CredentialsAction,
+    State == CredentialsState,
+    Environment == CredentialsEnvironment
+{
+    /// Helper reducer for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                CredentialsState,
+                CredentialsAction,
+                CredentialsEnvironment
+            > { _, action, environment in
+                switch action {
+                case .continueButtonTapped:
+                    environment.analyticsRecorder.record(
+                        event: .loginPasswordEntered
+                    )
+                    return .none
+                case .walletPairing(.authenticateWithTwoFAOrHardwareKey):
+                    environment.analyticsRecorder.record(
+                        event: .loginTwoStepVerificationEntered
+                    )
+                    return .none
+                case .twoFA(.didChangeTwoFACodeAttemptsLeft):
+                    environment.analyticsRecorder.record(
+                        event: .loginTwoStepVerificationDenied
+                    )
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
+    }
 }

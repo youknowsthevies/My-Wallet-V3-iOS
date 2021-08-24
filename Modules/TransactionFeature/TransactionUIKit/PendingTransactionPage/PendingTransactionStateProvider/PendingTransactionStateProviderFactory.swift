@@ -14,6 +14,8 @@ final class PendingTransctionStateProviderFactory {
             return SendPendingTransactionStateProvider()
         case .swap:
             return SwapPendingTransactionStateProvider()
+        case .buy:
+            return BuyPendingTransactionStateProvider()
         default:
             unimplemented()
         }

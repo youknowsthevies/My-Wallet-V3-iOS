@@ -9,6 +9,9 @@ extension LocalizationConstants {
 }
 
 extension LocalizationConstants.AuthenticationKit {
+
+    // MARK: - Welcome
+
     public enum Welcome {
         public enum Description {
             public static let prefix = NSLocalizedString(
@@ -54,6 +57,10 @@ extension LocalizationConstants.AuthenticationKit {
                 "Log In",
                 comment: "Welcome screen: login CTA button"
             )
+            public static let manualPairing = NSLocalizedString(
+                "Manual Login",
+                comment: "Welcome screen: manual pairing CTA button"
+            )
             public static let restoreWallet = NSLocalizedString(
                 "Restore Wallet",
                 comment: "Welcome screen: restore wallet CTA button"
@@ -66,10 +73,16 @@ extension LocalizationConstants.AuthenticationKit {
         )
     }
 
+    // MARK: - Email Login
+
     public enum EmailLogin {
         public static let navigationTitle = NSLocalizedString(
-            "Login",
+            "Log In",
             comment: "Login screen: login form title"
+        )
+        public static let manualPairingTitle = NSLocalizedString(
+            "Manual Pairing Login",
+            comment: "Manual Pairing screen: title"
         )
         public enum VerifyDevice {
             public static let title = NSLocalizedString(
@@ -136,6 +149,10 @@ extension LocalizationConstants.AuthenticationKit {
             public static let invalidEmail = NSLocalizedString(
                 "Invalid Email",
                 comment: "Login screen: invalid email error"
+            )
+            public static let incorrectWalletIdentifier = NSLocalizedString(
+                "Incorrect Wallet Identifier",
+                comment: "Manual Login screen: incorrect wallet identifier"
             )
             public static let incorrectPassword = NSLocalizedString(
                 "Incorrect Password",
@@ -205,6 +222,222 @@ extension LocalizationConstants.AuthenticationKit {
             public static let resendSMS = NSLocalizedString(
                 "Resend SMS",
                 comment: "Login screen: resend SMS for 2FA CTA button"
+            )
+        }
+    }
+
+    // MARK: - Import Wallet
+
+    public enum ImportWallet {
+        public static let importWalletTitle = NSLocalizedString(
+            "Import Your Wallet?",
+            comment: "Import Wallet Screen: title"
+        )
+        public static let importWalletMessage = NSLocalizedString(
+            "There’s no account associated with the seed phrase you entered. You can import and manage your wallet instead.",
+            comment: "Import Wallet Screen: message"
+        )
+        public enum Button {
+            public static let importWallet = NSLocalizedString(
+                "Import Wallet",
+                comment: "Import Wallet screen: import wallet CTA button"
+            )
+            public static let goBack = NSLocalizedString(
+                "Go Back",
+                comment: "Import Wallet screen: go back CTA button"
+            )
+        }
+    }
+
+    // MARK: - Create Account
+
+    public enum CreateAccount {
+        public static let navigationTitle = NSLocalizedString(
+            "Create Account",
+            comment: "Create Account screen: navigation title"
+        )
+        public enum TextFieldTitle {
+            public static let email = NSLocalizedString(
+                "Email",
+                comment: "Create Account screen: email text field"
+            )
+            public static let password = NSLocalizedString(
+                "Password",
+                comment: "Create Account screen: password text field"
+            )
+            public static let confirmPassword = NSLocalizedString(
+                "Confirm New Password",
+                comment: "Create Account screen: confirm password text field"
+            )
+        }
+
+        public enum TextFieldPlaceholder {
+            public static let email = NSLocalizedString(
+                "your@email.com",
+                comment: "Create Account screen: email text field placeholder"
+            )
+            public static let password = NSLocalizedString(
+                "Enter a password",
+                comment: "Create Account screen: password text field placeholder"
+            )
+        }
+
+        public enum TextFieldError {
+            public static let invalidEmail = NSLocalizedString(
+                "Invalid Email",
+                comment: "Create Account screen: invalid email error"
+            )
+            public static let confirmPasswordNotMatch = NSLocalizedString(
+                "Passwords don't match",
+                comment: "Create Account screen: passwords do not match error"
+            )
+        }
+
+        public static let agreementPrompt = NSLocalizedString(
+            "By creating a wallet you agree to Blockchain’s",
+            comment: "Create Account screen: agreement prompt footnote"
+        )
+        public static let termsOfServiceLink = NSLocalizedString(
+            "Terms of Services",
+            comment: "Create Account screen: terms of service link"
+        )
+        public static let and = NSLocalizedString(
+            "and",
+            comment: "Create Account screen: and (connective)"
+        )
+        public static let privacyPolicyLink = NSLocalizedString(
+            "Privacy Policy",
+            comment: "Create Account screen: privacy policy link"
+        )
+        public static let createAccountButton = NSLocalizedString(
+            "Create Account",
+            comment: "Create Account screen: create account CTA button"
+        )
+    }
+
+    // MARK: - Seed Phrase
+
+    public enum SeedPhrase {
+        public enum NavigationTitle {
+            public static let troubleLoggingIn = NSLocalizedString(
+                "Trouble Logging In",
+                comment: "Seed phrase screen: trouble logging in navigation title"
+            )
+            public static let importWallet = NSLocalizedString(
+                "Import Wallet",
+                comment: "Seed phrase screen: import wallet navigation title"
+            )
+        }
+
+        public static let instruction = NSLocalizedString(
+            "Enter your twelve word Secret Private Key Recovery Phrase to log in. Separate each word with a space.",
+            comment: "Seed phrase screen: main instruction"
+        )
+        public static let placeholder = NSLocalizedString(
+            "Enter recovery phrase",
+            comment: "Seed phrase screen: text field placeholder"
+        )
+        public static let invalidPhrase = NSLocalizedString(
+            "Invalid recovery phrase",
+            comment: "Seed phrase screen: invalid seed phrase error state"
+        )
+        public static let resetAccountPrompt = NSLocalizedString(
+            "Can’t find your phrase?",
+            comment: "Seed phrase screen: prompt for reset account if user lost their seed phrase"
+        )
+        public static let resetAccountLink = NSLocalizedString(
+            "Reset Account",
+            comment: "Seed phrase screen: link for reset account"
+        )
+        public static let loginInButton = NSLocalizedString(
+            "Log In",
+            comment: "Seed phrase screen: login CTA button"
+        )
+    }
+
+    // MARK: - Reset Account Warning
+
+    public enum ResetAccountWarning {
+        public enum Title {
+            public static let resetAccount = NSLocalizedString(
+                "Reset Your Account?",
+                comment: "Reset Account Warning: title"
+            )
+            public static let lostFund = NSLocalizedString(
+                "Resetting Account May Result In\nLost Funds",
+                comment: "Lost Fund Warning: title"
+            )
+        }
+
+        public enum Message {
+            public static let resetAccount = NSLocalizedString(
+                "Resetting will restore your Trading, Interest, and Exchange accounts.",
+                comment: "Reset account warning: message"
+            )
+            public static let lostFund = NSLocalizedString(
+                "This means that if you lose your recovery phrase, you will lose access to your Private Key Wallet funds. You can always restore your Private Key Wallet funds later if you find your recovery phrase.",
+                comment: "Lost fund warning: message"
+            )
+        }
+
+        public enum Button {
+            public static let continueReset = NSLocalizedString(
+                "Continue to Reset",
+                comment: "Continue to reset CTA Button"
+            )
+            public static let retryRecoveryPhrase = NSLocalizedString(
+                "Retry Recovery Phrase",
+                comment: "Retry Recovery Phrase CTA Button"
+            )
+            public static let resetAccount = NSLocalizedString(
+                "Reset Account",
+                comment: "Reset Account CTA Button"
+            )
+            public static let goBack = NSLocalizedString(
+                "Go Back",
+                comment: "Go Back CTA Button"
+            )
+        }
+    }
+
+    // MARK: - Reset Password
+
+    public enum ResetPassword {
+        public static let navigationTitle = NSLocalizedString(
+            "Reset Password?",
+            comment: "Reset password screen: navigation title"
+        )
+        public static let message = NSLocalizedString(
+            "Would you like to reset your password? You can always do this later in Settings.",
+            comment: "Reset password screen: main message"
+        )
+        public enum TextFieldTitle {
+            public static let newPassword = NSLocalizedString(
+                "New Password",
+                comment: "Reset password screen: new password text field"
+            )
+            public static let confirmNewPassword = NSLocalizedString(
+                "Confirm New Password",
+                comment: "Reset password screen: confirm new password text field"
+            )
+        }
+
+        public static let confirmPasswordNotMatch = NSLocalizedString(
+            "Passwords don't match",
+            comment: "Reset password screen: passwords do not match error"
+        )
+        public static let securityCallOut = NSLocalizedString(
+            "For your security, you may have to re-verify your identity before accessing your trading or interest account.",
+            comment: "Seed phrase screen: callout message for the security measure"
+        )
+        public enum Button {
+            public static let skip = NSLocalizedString(
+                "Skip",
+                comment: "Reset password screen: skip button"
+            )
+            public static let resetPassword = NSLocalizedString(
+                "Reset Password",
+                comment: "Reset password screen: reset password button"
             )
         }
     }

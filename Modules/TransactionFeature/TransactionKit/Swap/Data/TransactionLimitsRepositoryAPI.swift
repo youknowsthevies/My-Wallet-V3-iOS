@@ -1,9 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
 import PlatformKit
-import RxSwift
-import ToolKit
 
 public protocol TransactionLimitsRepositoryAPI {
 
@@ -11,5 +9,5 @@ public protocol TransactionLimitsRepositoryAPI {
         currency: CurrencyType,
         networkFee: CurrencyType,
         product: TransactionLimitsProduct
-    ) -> Single<TransactionLimits>
+    ) -> AnyPublisher<TransactionLimits, NabuNetworkError>
 }

@@ -2,7 +2,6 @@
 
 import AuthenticationKit
 import Combine
-import RxSwift
 
 public final class WalletPayloadService: WalletPayloadServiceAPI {
 
@@ -30,101 +29,8 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
 
     // MARK: - API
 
-    public func requestUsingSessionToken() -> Single<WalletAuthenticatorType> {
-        Single
-            .zip(repository.guid, repository.sessionToken)
-            .flatMap(weak: self) { (self, credentials) -> Single<WalletAuthenticatorType> in
-                guard let guid = credentials.0 else {
-                    throw MissingCredentialsError.guid
-                }
-                guard let sessionToken = credentials.1 else {
-                    throw MissingCredentialsError.sessionToken
-                }
-                return self.request(guid: guid, sessionToken: sessionToken)
-            }
-    }
-
-    public func requestUsingSharedKey() -> Completable {
-        Single
-            .zip(repository.guid, repository.sharedKey)
-            .flatMapCompletable(weak: self) { (self, credentials) -> Completable in
-                guard let guid = credentials.0 else {
-                    throw MissingCredentialsError.guid
-                }
-                guard let sharedKey = credentials.1 else {
-                    throw MissingCredentialsError.sharedKey
-                }
-                return self.request(guid: guid, sharedKey: sharedKey)
-            }
-    }
-
-    /// Performs the request using given parameters: guid and shared-key
-    public func request(guid: String, sharedKey: String) -> Completable {
-        client
-            .payload(guid: guid, identifier: .sharedKey(sharedKey))
-            .flatMap(weak: self) { (self, response) -> Single<WalletPayloadClient.ClientResponse> in
-                self.cacheWalletData(from: response)
-            }
-            .asCompletable()
-    }
-
-    /// Performs the request using cached GUID and session-token
-    private func request(guid: String, sessionToken: String) -> Single<WalletAuthenticatorType> {
-        client
-            .payload(guid: guid, identifier: .sessionToken(sessionToken))
-            .flatMap(weak: self) { (self, response) -> Single<WalletPayloadClient.ClientResponse> in
-                self.cacheWalletData(from: response)
-            }
-            .map(weak: self) { _, response -> WalletAuthenticatorType in
-                guard let type = WalletAuthenticatorType(rawValue: response.authType) else {
-                    throw WalletPayloadServiceError.unsupported2FAType
-                }
-                return type
-            }
-            .catchError { error -> Single<WalletAuthenticatorType> in
-                switch error {
-                case WalletPayloadClient.ClientError.emailAuthorizationRequired:
-                    return .just(.email)
-                case WalletPayloadClient.ClientError.accountLocked:
-                    throw WalletPayloadServiceError.accountLocked
-                case WalletPayloadClient.ClientError.message(let message):
-                    throw WalletPayloadServiceError.message(message)
-                default:
-                    throw error
-                }
-            }
-    }
-
-    /// Used to cache the client response
-    private func cacheWalletData(from clientResponse: WalletPayloadClient.ClientResponse) -> Single<WalletPayloadClient.ClientResponse> {
-        Completable
-            .zip(
-                repository.set(guid: clientResponse.guid),
-                repository.set(language: clientResponse.language),
-                repository.set(syncPubKeys: clientResponse.shouldSyncPubkeys)
-            )
-            .flatMap(weak: self) { (self) -> Completable in
-                guard let type = WalletAuthenticatorType(rawValue: clientResponse.authType) else {
-                    throw WalletPayloadServiceError.unsupported2FAType
-                }
-                return self.repository.set(authenticatorType: type)
-            }
-            .flatMap(weak: self) { (self) -> Completable in
-                if let rawPayload = clientResponse.payload?.stringRepresentation, !rawPayload.isEmpty {
-                    return self.repository.set(payload: rawPayload)
-                }
-                return .empty()
-            }
-            .andThen(Single.just(clientResponse))
-    }
-}
-
-// MARK: WalletPayloadServiceCombineAPI
-
-extension WalletPayloadService {
-
-    public func requestUsingSessionTokenPublisher() -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> {
-        let requestPublisher = self.requestPublisher(guid:sessionToken:)
+    public func requestUsingSessionToken() -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> {
+        let request = request(guid:sessionToken:)
         return repository.guidPublisher
             .zip(repository.sessionTokenPublisher)
             .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), WalletPayloadServiceError> in
@@ -137,13 +43,13 @@ extension WalletPayloadService {
                 return .just((guid, sessionToken))
             }
             .flatMap { credentials -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
-                requestPublisher(credentials.guid, credentials.sessionToken)
+                request(credentials.guid, credentials.sessionToken)
             }
             .eraseToAnyPublisher()
     }
 
-    public func requestUsingSharedKeyPublisher() -> AnyPublisher<Void, WalletPayloadServiceError> {
-        let requestPublisher = self.requestPublisher(guid:sharedKey:)
+    public func requestUsingSharedKey() -> AnyPublisher<Void, WalletPayloadServiceError> {
+        let request = request(guid:sharedKey:)
         return repository.guidPublisher
             .zip(repository.sharedKeyPublisher)
             .flatMap { credentials -> AnyPublisher<(guid: String, sharedKey: String), WalletPayloadServiceError> in
@@ -156,30 +62,30 @@ extension WalletPayloadService {
                 return .just((guid, sharedKey))
             }
             .flatMap { credentials -> AnyPublisher<Void, WalletPayloadServiceError> in
-                requestPublisher(credentials.guid, credentials.sharedKey)
+                request(credentials.guid, credentials.sharedKey)
             }
             .eraseToAnyPublisher()
     }
 
-    public func requestPublisher(guid: String, sharedKey: String) -> AnyPublisher<Void, WalletPayloadServiceError> {
-        let cacheWalletDataPublisher = self.cacheWalletDataPublisher(from:)
+    public func request(guid: String, sharedKey: String) -> AnyPublisher<Void, WalletPayloadServiceError> {
+        let cacheWalletData = cacheWalletData(from:)
         return client
-            .payloadPublisher(guid: guid, identifier: .sharedKey(sharedKey))
+            .payload(guid: guid, identifier: .sharedKey(sharedKey))
             .mapError(WalletPayloadServiceError.init)
             .flatMap { response -> AnyPublisher<Void, WalletPayloadServiceError> in
-                cacheWalletDataPublisher(response)
+                cacheWalletData(response)
                     .mapToVoid()
             }
             .eraseToAnyPublisher()
     }
 
-    public func requestPublisher(guid: String, sessionToken: String) -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> {
-        let cacheWalletDataPublisher = self.cacheWalletDataPublisher(from:)
+    public func request(guid: String, sessionToken: String) -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> {
+        let cacheWalletData = cacheWalletData(from:)
         return client
-            .payloadPublisher(guid: guid, identifier: .sessionToken(sessionToken))
+            .payload(guid: guid, identifier: .sessionToken(sessionToken))
             .mapError(WalletPayloadServiceError.init)
             .flatMap { response -> AnyPublisher<WalletPayloadClient.ClientResponse, WalletPayloadServiceError> in
-                cacheWalletDataPublisher(response)
+                cacheWalletData(response)
             }
             .flatMap { response -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
                 guard let type = WalletAuthenticatorType(rawValue: response.authType) else {
@@ -198,7 +104,7 @@ extension WalletPayloadService {
             .eraseToAnyPublisher()
     }
 
-    public func cacheWalletDataPublisher(
+    public func cacheWalletData(
         from clientResponse: WalletPayloadClient.ClientResponse
     ) -> AnyPublisher<WalletPayloadClient.ClientResponse, WalletPayloadServiceError> {
         repository.setPublisher(guid: clientResponse.guid)

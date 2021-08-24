@@ -20,5 +20,7 @@ extension DependencyContainer {
                 priceService: DIKit.resolve()
             )
         }
+
+        factory { PaymentAccountsService() as TransactionKit.PaymentAccountsServiceAPI }
     }
 }

@@ -63,6 +63,8 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
     private func qrCode(guid: String) -> Single<String> {
         autoPairingService
             .encryptionPhrase(using: guid)
+            .asObservable()
+            .asSingle()
             .flatMap(weak: self) { (self, encryptionPhrase) -> Single<String> in
                 self.encrypteWalletData(with: encryptionPhrase)
             }

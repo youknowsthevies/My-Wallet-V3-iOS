@@ -12,6 +12,12 @@ class MockWallet: Wallet {
         mockIsInitialized
     }
 
+    var mockNeedsSecondPassword = false
+
+    override func needsSecondPassword() -> Bool {
+        mockNeedsSecondPassword
+    }
+
     var guid: String = ""
     var sharedKey: String?
     private var password: String?

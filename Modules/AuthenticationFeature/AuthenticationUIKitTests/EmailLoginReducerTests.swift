@@ -24,8 +24,11 @@ final class EmailLoginReducerTests: XCTestCase {
             initialState: .init(),
             reducer: emailLoginReducer,
             environment: .init(
+                sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
-                mainQueue: mockMainQueue.eraseToAnyScheduler()
+                mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                errorRecorder: MockErrorRecorder(),
+                analyticsRecorder: MockAnalyticsRecorder()
             )
         )
     }
@@ -38,18 +41,19 @@ final class EmailLoginReducerTests: XCTestCase {
 
     func test_verify_initial_state_is_correct() {
         let state = EmailLoginState()
-        XCTAssertNotNil(state.verifyDeviceState)
+        XCTAssertNil(state.verifyDeviceState)
         XCTAssertEqual(state.emailAddress, "")
         XCTAssertFalse(state.isEmailValid)
         XCTAssertFalse(state.isVerifyDeviceScreenVisible)
     }
 
-    func test_disappear_will_reset_state() {
-        testStore.send(.didDisappear) { state in
-            XCTAssertEqual(state.emailAddress, "")
-            XCTAssertFalse(state.isEmailValid)
-            XCTAssertFalse(state.isVerifyDeviceScreenVisible)
-        }
+    func test_on_appear_should_setup_session_token() {
+        testStore.assert(
+            .send(.onAppear),
+            .receive(.setupSessionToken),
+            .do { self.mockMainQueue.advance() },
+            .receive(.none)
+        )
     }
 
     func test_send_device_verification_email_success() {
@@ -59,50 +63,69 @@ final class EmailLoginReducerTests: XCTestCase {
                 state.emailAddress = validEmail
                 state.isEmailValid = true
             },
-            .send(.sendDeviceVerificationEmail),
+            .send(.sendDeviceVerificationEmail) { state in
+                state.isLoading = true
+                state.verifyDeviceState?.sendEmailButtonIsLoading = true
+            },
             .do { self.mockMainQueue.advance() },
             .receive(.didSendDeviceVerificationEmail(.success(.noValue))) { state in
-                state.verifyDeviceState = .init(emailAddress: validEmail)
+                state.isLoading = false
+                state.verifyDeviceState?.sendEmailButtonIsLoading = false
             },
             .receive(.setVerifyDeviceScreenVisible(true)) { state in
+                state.verifyDeviceState = .init(emailAddress: validEmail)
                 state.isVerifyDeviceScreenVisible = true
             }
         )
     }
-    // TODO: Comment for now (wait until error states design are finalised)
-//    func test_send_device_verification_email_failure() {
-//        testStore.assert(
-//            // should still go to verify device screen if it is a network error
-//            .send(.didSendDeviceVerificationEmail(.failure(.networkError(.authentication(MockError.unknown))))),
-//            .receive(.setVerifyDeviceScreenVisible(true)) { state in
-//                state.isVerifyDeviceScreenVisible = true
-//            },
-//
-//            // should not go to verify device screen if it is a missing session token error
-//            .send(.didSendDeviceVerificationEmail(.failure(.missingSessionToken))),
-//            .receive(.emailLoginFailureAlert(.show(title: "", message: ""))) { state in
-//                state.emailLoginFailureAlert = AlertState(
-//                    title: TextState(""),
-//                    message: TextState(""),
-//                    dismissButton: .default(
-//                        TextState(LocalizationConstants.okString),
-//                        send: .emailLoginFailureAlert(.dismiss)
-//                    )
-//                )
-//            },
-//
-//            // should not go to verify device screen if it is a recaptcha error
-//            .send(.didSendDeviceVerificationEmail(.failure(.recaptchaError(.unknownError)))),
-//            .receive(.emailLoginFailureAlert(.show(title: "", message: ""))) { state in
-//                state.emailLoginFailureAlert = AlertState(
-//                    title: TextState(""),
-//                    message: TextState(""),
-//                    dismissButton: .default(
-//                        TextState(LocalizationConstants.okString),
-//                        send: .emailLoginFailureAlert(.dismiss)
-//                    )
-//                )
-//            }
-//        )
-//    }
+    func test_send_device_verification_email_failure() {
+        testStore.assert(
+            // should still go to verify device screen if it is a network error
+            .send(.didSendDeviceVerificationEmail(.failure(.networkError(.authentication(MockError.unknown))))),
+            .receive(.setVerifyDeviceScreenVisible(true)) { state in
+                state.verifyDeviceState = .init(emailAddress: "")
+                state.isVerifyDeviceScreenVisible = true
+            },
+
+            // should not go to verify device screen if it is a missing session token error
+            .send(.didSendDeviceVerificationEmail(.failure(.missingSessionToken))),
+            .receive(
+                .alert(
+                    .show(
+                        title: LocalizationConstants.EmailLogin.Alerts.SignInError.title,
+                        message: LocalizationConstants.EmailLogin.Alerts.SignInError.message
+                    )
+                )
+            ) { state in
+                state.emailLoginFailureAlert = AlertState(
+                    title: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.title),
+                    message: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.message),
+                    dismissButton: .default(
+                        TextState(LocalizationConstants.continueString),
+                        send: .alert(.dismiss)
+                    )
+                )
+            },
+
+            // should not go to verify device screen if it is a recaptcha error
+            .send(.didSendDeviceVerificationEmail(.failure(.recaptchaError(.unknownError)))),
+            .receive(
+                .alert(
+                    .show(
+                        title: LocalizationConstants.EmailLogin.Alerts.SignInError.title,
+                        message: LocalizationConstants.EmailLogin.Alerts.SignInError.message
+                    )
+                )
+            ) { state in
+                state.emailLoginFailureAlert = AlertState(
+                    title: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.title),
+                    message: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.message),
+                    dismissButton: .default(
+                        TextState(LocalizationConstants.continueString),
+                        send: .alert(.dismiss)
+                    )
+                )
+            }
+        )
+    }
 }

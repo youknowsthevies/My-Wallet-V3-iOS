@@ -10,38 +10,60 @@ import UIComponentsKit
 
 struct VerifyDeviceView: View {
 
+    private typealias LocalizedString = LocalizationConstants.AuthenticationKit.EmailLogin
+
+    private enum Layout {
+        static let bottomPadding: CGFloat = 34
+        static let leadingPadding: CGFloat = 24
+        static let trailingPadding: CGFloat = 24
+
+        static let imageSideLength: CGFloat = 72
+        static let imageBottomPadding: CGFloat = 16
+        static let descriptionFontSize: CGFloat = 16
+        static let descriptionLineSpacing: CGFloat = 4
+        static let buttonSpacing: CGFloat = 10
+    }
+
     private let store: Store<VerifyDeviceState, VerifyDeviceAction>
+    private var showOpenMailAppButton: Bool
     @ObservedObject private var viewStore: ViewStore<VerifyDeviceState, VerifyDeviceAction>
 
     init(store: Store<VerifyDeviceState, VerifyDeviceAction>) {
         self.store = store
         viewStore = ViewStore(store)
+
+        if let mailAppURL = URL(string: UIApplication.mailAppURLString),
+           UIApplication.shared.canOpenURL(mailAppURL)
+        {
+            showOpenMailAppButton = true
+        } else {
+            showOpenMailAppButton = false
+        }
     }
 
     var body: some View {
         VStack {
-            Image.CircleIcon.verifyDevice
-                .frame(width: 72, height: 72)
+            VStack {
+                Spacer()
+                Image.CircleIcon.verifyDevice
+                    .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
+                    .padding(.bottom, Layout.imageBottomPadding)
+                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceImage)
 
-            Text(EmailLoginString.VerifyDevice.title)
-                .textStyle(.title)
-                .padding(.top, 16)
+                Text(LocalizedString.VerifyDevice.title)
+                    .textStyle(.title)
+                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceTitleText)
 
-            Text(EmailLoginString.VerifyDevice.description)
-                .font(Font(weight: .medium, size: 16))
-                .foregroundColor(.textSubheading)
-                .lineSpacing(4)
-
-            Spacer()
-
-            SecondaryButton(title: EmailLoginString.Button.sendAgain) {
-                viewStore.send(.sendDeviceVerificationEmail)
+                Text(LocalizedString.VerifyDevice.description)
+                    .font(Font(weight: .medium, size: Layout.descriptionFontSize))
+                    .foregroundColor(.textSubheading)
+                    .lineSpacing(Layout.descriptionLineSpacing)
+                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceDescriptionText)
+                Spacer()
             }
-            .padding(.bottom, 10)
+            .multilineTextAlignment(.center)
 
-            PrimaryButton(title: EmailLoginString.Button.openEmail) {
-                UIApplication.shared.openMailApplication()
-            }
+            buttonSection
 
             NavigationLink(
                 destination: IfLetStore(
@@ -60,12 +82,37 @@ struct VerifyDeviceView: View {
                 label: EmptyView.init
             )
         }
-        .multilineTextAlignment(.center)
-        .padding(EdgeInsets(top: 247, leading: 24, bottom: 58, trailing: 24))
-        .onDisappear {
-            viewStore.send(.didDisappear)
-        }
+        .padding(
+            EdgeInsets(
+                top: 0,
+                leading: Layout.leadingPadding,
+                bottom: Layout.bottomPadding,
+                trailing: Layout.trailingPadding
+            )
+        )
+        .navigationBarTitleDisplayMode(.inline)
+        .hideBackButtonTitle()
         .alert(self.store.scope(state: \.verifyDeviceFailureAlert), dismiss: .verifyDeviceFailureAlert(.dismiss))
+    }
+
+    private var buttonSection: some View {
+        VStack(spacing: Layout.buttonSpacing) {
+            SecondaryButton(
+                title: LocalizedString.Button.sendAgain,
+                action: {
+                    viewStore.send(.sendDeviceVerificationEmail)
+                },
+                loading: viewStore.binding(get: \.sendEmailButtonIsLoading, send: .none)
+            )
+            .disabled(viewStore.sendEmailButtonIsLoading)
+            .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.sendAgainButton)
+            if showOpenMailAppButton {
+                PrimaryButton(title: LocalizedString.Button.openEmail) {
+                    viewStore.send(.openMailApp)
+                }
+                .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.openMailAppButton)
+            }
+        }
     }
 }
 

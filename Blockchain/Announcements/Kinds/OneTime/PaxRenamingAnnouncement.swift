@@ -59,7 +59,7 @@ final class PaxRenamingAnnouncement: OneTimeAnnouncement & ActionableAnnouncemen
         !isDismissed
     }
 
-    let type = AnnouncementType.sendToDomains
+    let type = AnnouncementType.paxRenaming
     let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction

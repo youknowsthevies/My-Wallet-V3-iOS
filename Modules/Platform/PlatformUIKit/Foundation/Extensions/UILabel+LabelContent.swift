@@ -11,6 +11,7 @@ extension UILabel {
                 font: font,
                 color: textColor,
                 alignment: textAlignment,
+                lineSpacing: 1,
                 accessibility: accessibility
             )
         }
@@ -18,6 +19,9 @@ extension UILabel {
             text = newValue.text
             font = newValue.font
             textColor = newValue.color
+            let attrString = NSMutableAttributedString(string: newValue.text)
+            attrString.add(lineSpacing: newValue.lineSpacing)
+            attributedText = attrString
             textAlignment = newValue.alignment
             accessibility = newValue.accessibility.copy(label: newValue.text)
         }

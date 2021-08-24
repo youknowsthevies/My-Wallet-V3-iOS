@@ -3,7 +3,6 @@
 @testable import AuthenticationDataKit
 import Combine
 import Foundation
-import RxSwift
 
 final class MockWalletPayloadClient: WalletPayloadClientAPI {
 
@@ -14,22 +13,6 @@ final class MockWalletPayloadClient: WalletPayloadClientAPI {
     }
 
     func payload(
-        guid: String,
-        identifier: WalletPayloadClient.Identifier
-    ) -> Single<WalletPayloadClient.ClientResponse> {
-        switch result {
-        case .success(let response):
-            do {
-                return .just(try WalletPayloadClient.ClientResponse(response: response))
-            } catch {
-                return .error(error)
-            }
-        case .failure(let response):
-            return .error(response)
-        }
-    }
-
-    func payloadPublisher(
         guid: String,
         identifier: WalletPayloadClient.Identifier
     ) -> AnyPublisher<WalletPayloadClient.ClientResponse, WalletPayloadClient.ClientError> {

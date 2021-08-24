@@ -34,10 +34,10 @@ final class SideMenuCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        title.textColor = #colorLiteral(red: 0.51, green: 0.55, blue: 0.62, alpha: 1)
-        title.highlightedTextColor = #colorLiteral(red: 0.51, green: 0.55, blue: 0.62, alpha: 1)
+        title.textColor = #colorLiteral(red: 0.5960784314, green: 0.631372549, blue: 0.6980392157, alpha: 1)
+        title.highlightedTextColor = #colorLiteral(red: 0.5960784314, green: 0.631372549, blue: 0.6980392157, alpha: 1)
         title.font = .main(.medium, DevicePresenter.type != .superCompact ? 17 : 14)
-        icon.tintColor = #colorLiteral(red: 0.51, green: 0.55, blue: 0.62, alpha: 1)
+        icon.tintColor = #colorLiteral(red: 0.5960784314, green: 0.631372549, blue: 0.6980392157, alpha: 1)
         newContainerView.layer.cornerRadius = 4.0
         newContainerView.backgroundColor = .primaryButton
         newLabel.text = LocalizationConstants.SideMenu.new

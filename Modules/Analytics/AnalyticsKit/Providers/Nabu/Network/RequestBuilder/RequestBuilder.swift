@@ -7,8 +7,8 @@ protocol RequestBuilderAPI {
 }
 
 class RequestBuilder: RequestBuilderAPI {
-    let basePath: String
-    let userAgent: String
+    private let basePath: String
+    private let userAgent: String
 
     init(basePath: String, userAgent: String) {
         self.basePath = basePath

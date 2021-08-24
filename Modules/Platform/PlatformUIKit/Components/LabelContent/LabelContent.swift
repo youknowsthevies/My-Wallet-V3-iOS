@@ -16,6 +16,7 @@ public struct LabelContent: Equatable {
     let font: UIFont
     let color: Color
     let alignment: NSTextAlignment
+    let lineSpacing: CGFloat
     let accessibility: Accessibility
 
     public init(
@@ -23,12 +24,14 @@ public struct LabelContent: Equatable {
         font: UIFont = .main(.regular, 12),
         color: UIColor = .clear,
         alignment: NSTextAlignment = .natural,
+        lineSpacing: CGFloat = 1,
         accessibility: Accessibility = .none
     ) {
         self.text = text
         self.font = font
         self.color = color
         self.alignment = alignment
+        self.lineSpacing = lineSpacing
         self.accessibility = accessibility
     }
 

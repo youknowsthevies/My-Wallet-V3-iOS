@@ -154,10 +154,6 @@ extension DependencyContainer {
         factory { AuthenticationCoordinator.shared as WalletPairingFetcherAPI }
 
         factory { () -> AuthenticationCoordinating in
-            guard !newWelcomeScreenIsDisabled() else {
-                let coordinator: AuthenticationCoordinator = DIKit.resolve()
-                return coordinator as AuthenticationCoordinating
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveAuthenticationCoordinating() as AuthenticationCoordinating
         }
@@ -200,112 +196,69 @@ extension DependencyContainer {
         single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
 
         factory { () -> CurrencyRouting & TabSwapping in
-            guard !newWelcomeScreenIsDisabled() else {
-                return AppCoordinator.shared as CurrencyRouting & TabSwapping
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveCurrencyRoutingAndTabSwapping() as CurrencyRouting & TabSwapping
         }
 
         factory { () -> CurrencyRouting in
-            guard !newWelcomeScreenIsDisabled() else {
-                return AppCoordinator.shared as CurrencyRouting
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveCurrencyRouting() as CurrencyRouting
         }
 
         factory { () -> TabSwapping in
-            guard !newWelcomeScreenIsDisabled() else {
-                return AppCoordinator.shared as TabSwapping
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveTabSwapping() as TabSwapping
         }
 
         factory { () -> AppCoordinating in
-            guard !newWelcomeScreenIsDisabled() else {
-                return AppCoordinator.shared as AppCoordinating
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveAppCoordinating() as AppCoordinating
         }
 
         factory { () -> DashboardUIKit.WalletOperationsRouting in
-            guard !newWelcomeScreenIsDisabled() else {
-                return AppCoordinator.shared as DashboardUIKit.WalletOperationsRouting
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveWalletOperationsRouting() as DashboardUIKit.WalletOperationsRouting
         }
 
         factory { () -> BackupFlowStarterAPI in
-            guard !newWelcomeScreenIsDisabled() else {
-                return AppCoordinator.shared as BackupFlowStarterAPI
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveBackupFlowStarter() as BackupFlowStarterAPI
         }
 
         factory { () -> CashIdentityVerificationAnnouncementRouting in
-            guard !newWelcomeScreenIsDisabled() else {
-                return AppCoordinator.shared as CashIdentityVerificationAnnouncementRouting
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveCashIdentityVerificationAnnouncementRouting()
                 as CashIdentityVerificationAnnouncementRouting
         }
 
         factory { () -> InterestIdentityVerificationAnnouncementRouting in
-            guard !newWelcomeScreenIsDisabled() else {
-                return AppCoordinator.shared as InterestIdentityVerificationAnnouncementRouting
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveInterestIdentityVerificationAnnouncementRouting()
                 as InterestIdentityVerificationAnnouncementRouting
         }
 
         factory { () -> SettingsStarterAPI in
-            guard !newWelcomeScreenIsDisabled() else {
-                return AppCoordinator.shared as SettingsStarterAPI
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveSettingsStarter() as SettingsStarterAPI
         }
 
         factory { () -> TabControllerManagerProvider in
-            guard !newWelcomeScreenIsDisabled() else {
-                let app: AppCoordinator = DIKit.resolve()
-                return app as TabControllerManagerProvider
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveTabControllerProvider() as TabControllerManagerProvider
         }
 
         factory { () -> DrawerRouting in
-            guard !newWelcomeScreenIsDisabled() else {
-                let app: AppCoordinator = DIKit.resolve()
-                return app as DrawerRouting
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveDrawerRouting() as DrawerRouting
         }
 
         factory { () -> LoggedInReloadAPI in
-            guard !newWelcomeScreenIsDisabled() else {
-                let app: AppCoordinator = DIKit.resolve()
-                return app as LoggedInReloadAPI
-            }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveLoggedInReload() as LoggedInReloadAPI
         }
 
         factory { () -> ClearOnLogoutAPI in
-            guard !newWelcomeScreenIsDisabled() else {
-                let app: AppCoordinator = DIKit.resolve()
-                return app as ClearOnLogoutAPI
-            }
-            return EmptyClearOnLogout()
+            EmptyClearOnLogout()
         }
 
         // MARK: - WalletManager

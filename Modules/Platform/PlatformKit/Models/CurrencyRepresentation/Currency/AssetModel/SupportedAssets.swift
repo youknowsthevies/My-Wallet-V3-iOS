@@ -13,10 +13,12 @@ struct SupportedAssets {
             .enumerated()
             .compactMap { index, asset -> AssetModel? in
                 switch asset.type.name {
+                // TODO: IOS-5091: remove sortIndex, cryptocurrencies should not have an order,
+                // but accounts should be sorted by balance.
                 case SupportedAssetsResponse.Asset.AssetType.Name.coin.rawValue:
-                    return CoinAssetModel(assetResponse: asset, sortIndex: index)
+                    return CoinAssetModel(assetResponse: asset, sortIndex: 10 + index)
                 case SupportedAssetsResponse.Asset.AssetType.Name.erc20.rawValue:
-                    return ERC20AssetModel(assetResponse: asset, sortIndex: index)
+                    return ERC20AssetModel(assetResponse: asset, sortIndex: 1000 + index)
                 case SupportedAssetsResponse.Asset.AssetType.Name.fiat.rawValue:
                     return FiatAssetModel(assetResponse: asset)
                 default:

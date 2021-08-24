@@ -105,7 +105,10 @@ final class CreateWalletInteractor: RegisterWalletScreenInteracting {
             return .failure(InternetReachability.ErrorType.internetUnreachable)
         }
 
-        analyticsRecorder.record(event: AnalyticsEvents.Onboarding.walletCreation)
+        analyticsRecorder.record(events: [
+            AnalyticsEvents.Onboarding.walletCreation,
+            AnalyticsEvents.New.Onboarding.walletSignedUp
+        ])
 
         walletManager.wallet.loadJS()
         return .success(())
