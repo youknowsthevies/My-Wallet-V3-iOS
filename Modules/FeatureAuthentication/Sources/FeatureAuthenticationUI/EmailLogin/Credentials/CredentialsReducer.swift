@@ -209,11 +209,13 @@ let credentialsReducer = Reducer.combine(
 
         case .continueButtonTapped:
             guard let twoFAState = state.twoFAState,
-                  let hardwareKeyState = state.hardwareKeyState else {
+                  let hardwareKeyState = state.hardwareKeyState
+            else {
                 fatalError("States should not be nil")
             }
             if twoFAState.isTwoFACodeFieldVisible ||
-                hardwareKeyState.isHardwareKeyCodeFieldVisible {
+                hardwareKeyState.isHardwareKeyCodeFieldVisible
+            {
                 return Effect(value: .walletPairing(.authenticateWithTwoFAOrHardwareKey))
             }
             return Effect(value: .walletPairing(.authenticate))
@@ -289,7 +291,8 @@ let credentialsReducer = Reducer.combine(
                 fatalError("GUID should not be empty")
             }
             guard let twoFAState = state.twoFAState,
-                  let hardwareKeyState = state.hardwareKeyState else {
+                  let hardwareKeyState = state.hardwareKeyState else
+            {
                 fatalError("States should not be nil")
             }
             state.isLoading = true

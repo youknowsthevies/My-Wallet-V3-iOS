@@ -4,6 +4,7 @@ import ComposableArchitecture
 import FeatureAuthenticationDomain
 import Localization
 import SwiftUI
+import ToolKit
 import UIComponentsKit
 
 public enum SecondPasswordNotice {
