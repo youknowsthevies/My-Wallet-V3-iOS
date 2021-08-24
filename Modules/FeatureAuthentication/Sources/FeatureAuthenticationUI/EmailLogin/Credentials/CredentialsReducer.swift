@@ -291,8 +291,8 @@ let credentialsReducer = Reducer.combine(
                 fatalError("GUID should not be empty")
             }
             guard let twoFAState = state.twoFAState,
-                  let hardwareKeyState = state.hardwareKeyState else
-            {
+                  let hardwareKeyState = state.hardwareKeyState
+            else {
                 fatalError("States should not be nil")
             }
             state.isLoading = true
