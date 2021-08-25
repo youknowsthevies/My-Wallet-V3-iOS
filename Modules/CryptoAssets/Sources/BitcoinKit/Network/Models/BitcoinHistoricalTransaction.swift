@@ -134,6 +134,11 @@ public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTran
     }
 
     public func apply(latestBlockHeight: Int) {
-        confirmations = (latestBlockHeight - (blockHeight ?? latestBlockHeight)) + 1
+        guard let blockHeight = blockHeight else {
+            confirmations = 0
+            return
+        }
+
+        confirmations = (latestBlockHeight - blockHeight) + 1
     }
 }
