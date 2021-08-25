@@ -760,6 +760,11 @@ targets:
     - package: RIBs
     - package: RxCombine
     - package: RxDataSources
+      product: Differentiator
+    - package: RxDataSources
+      product: RxDataSources
+    - package: RxSwift
+      product: RxCocoa
     - package: RxSwift
       product: RxCocoa
     - package: RxSwift

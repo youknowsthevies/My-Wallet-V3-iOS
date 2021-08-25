@@ -38,7 +38,7 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
 
     public init(
         cryptoCurrency: CryptoCurrency,
-        fiatCurrency: FiatCurrency,
+        fiatCurrencyService: FiatCurrencyServiceAPI,
         historicalFiatPriceService: HistoricalFiatPriceServiceAPI
     ) {
         self.cryptoCurrency = cryptoCurrency
@@ -60,7 +60,7 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
 
         interactor = AssetLineChartTableViewCellInteractor(
             cryptoCurrency: cryptoCurrency,
-            fiatCurrency: fiatCurrency,
+            fiatCurrencyService: fiatCurrencyService,
             historicalFiatPriceService: historicalFiatPriceService,
             lineChartView: lineChartView
         )

@@ -35,14 +35,13 @@ final class DashboardDetailsScreenInteractor {
     }
 
     let priceServiceAPI: HistoricalFiatPriceServiceAPI
+    let fiatCurrencyService: FiatCurrencyServiceAPI
 
     // MARK: - Private Properties
 
     private let blockchainAccountFetcher: BlockchainAccountFetching
-
     private let currency: CryptoCurrency
     private let savingsAccountService: InterestAccountOverviewAPI
-    private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let recoveryPhraseStatus: RecoveryPhraseStatusProviding
     private let coincore: CoincoreAPI
 
@@ -53,7 +52,7 @@ final class DashboardDetailsScreenInteractor {
         coincore: CoincoreAPI = resolve(),
         savingsAccountService: InterestAccountOverviewAPI = resolve(),
         blockchainAccountFetcher: BlockchainAccountFetching = resolve(),
-        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         exchangeAPI: PairExchangeServiceAPI
     ) {
         self.coincore = coincore

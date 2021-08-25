@@ -381,20 +381,6 @@ extension DependencyContainer {
             return completeSettingsService
         }
 
-        // MARK: - DataProvider
-
-        single { DataProvider() as DataProviding }
-
-        factory { () -> ExchangeProviding in
-            let provider: DataProviding = DIKit.resolve()
-            return provider.exchange
-        }
-
-        factory { () -> HistoricalFiatPriceProviding in
-            let provider: DataProviding = DIKit.resolve()
-            return provider.historicalPrices
-        }
-
         // MARK: - BlockchainDataRepository
 
         factory { BlockchainDataRepository.shared as DataRepositoryAPI }

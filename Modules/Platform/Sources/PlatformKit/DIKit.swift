@@ -225,6 +225,14 @@ extension DependencyContainer {
         // MARK: - KYC
 
         factory { KYCTierUpdatePollingService() as KYCTierUpdatePollingServiceAPI }
+
+        // MARK: - ExchangeProvider
+
+        single { ExchangeProvider() as ExchangeProviding }
+
+        // MARK: - HistoricalFiatPriceProvider
+
+        single { HistoricalFiatPriceProvider() as HistoricalFiatPriceProviding }
     }
 
     // MARK: - BuySellKit Module

@@ -7,198 +7,60 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
-public protocol AnnouncementPresenting {
-
-    var announcement: Driver<AnnouncementDisplayAction> { get }
-
-    func refresh()
-}
-
-/// A wrapper for `BlockchainAccount` so we can use it with `DashboardItemDisplayAction`.
-struct BlockchainAccountWrapper: Equatable {
-    let account: BlockchainAccount
-
-    init(account: BlockchainAccount) {
-        self.account = account
-    }
-
-    static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.account.identifier == rhs.account.identifier
-    }
-}
-
-/// This enum aggregates possible action types that can be done in the dashboard
-enum DashboardCollectionAction {
-
-    /// Any action related to announcement
-    case announcement(AnnouncementDisplayAction)
-
-    /// Any action related to notice about the wallet state
-    case notice(DashboardItemDisplayAction<NoticeViewModel>)
-
-    /// Any action related to the custodial fiat balances
-    case fiatBalance(DashboardItemDisplayAction<CurrencyViewPresenter>)
-
-    case actionScreen(DashboardItemDisplayAction<BlockchainAccountWrapper>)
-}
-
-enum DashboardItemState {
-    case hidden
-    case visible(index: Int)
-
-    var isVisible: Bool {
-        switch self {
-        case .visible:
-            return true
-        case .hidden:
-            return false
-        }
-    }
-}
-
 final class DashboardScreenPresenter {
 
-    // MARK: - Types
+    // MARK: - Internal Properties
 
-    enum AnnouncementArrangement {
-
-        /// Announcement card should show at the top of the dashboard
-        case top
-
-        /// Announcement card should show at the bottom of the dashboard
-        case bottom
-
-        /// Announcement card should not show at all
-        case none
-    }
-
-    enum CellType: Hashable {
-        case announcement
-        case fiatCustodialBalances
-        case totalBalance
-        case notice
-        case crypto(CryptoCurrency)
-    }
-
-    // MARK: - Exposed Properties
-
-    /// The dashboard action
-    var action: Signal<DashboardCollectionAction> {
-        actionRelay.asSignal()
-    }
-
-    /// Returns the total count of cells
-    var cellCount: Int {
-        cellArrangement.count
-    }
-
-    /// Returns the ordered cell types
-    var cellArrangement: [CellType] {
-        var cellTypes: [CellType] = []
-        cellTypes += [.totalBalance]
-
-        if shouldShowNotice {
-            cellTypes.append(.notice)
-        }
-
-        if shouldShowBalanceCollectionView {
-            cellTypes.append(.fiatCustodialBalances)
-        }
-
-        let assetCells: [CellType] = interactor
-            .enabledCryptoCurrencies
-            .map { .crypto($0) }
-        assetCells.forEach { cellTypes.append($0) }
-
-        switch announcementCardArrangement {
-        case .top: // Prepend
-            cellTypes = [.announcement] + cellTypes
-        case .bottom: // Append
-            cellTypes += [.announcement]
-        case .none:
-            break
-        }
-
-        return cellTypes
-    }
-
-    private var firstAssetCellIndex: Int {
-        let firstCrypto = historicalBalanceCellPresenters[0].cryptoCurrency
-        let firstCryptoCellType = CellType.crypto(firstCrypto)
-        return indexByCellType[firstCryptoCellType]!
-    }
-
-    var announcementCellIndex: Int? {
-        indexByCellType[.announcement]
-    }
-
-    var indexByCellType: [CellType: Int] {
-        var indexByCellType: [CellType: Int] = [:]
-        for (index, cellType) in cellArrangement.enumerated() {
-            indexByCellType[cellType] = index
-        }
-        return indexByCellType
-    }
-
-    // MARK: - Announcement
-
-    /// `true` in case a card announcement should show
-    var announcementCardArrangement: AnnouncementArrangement {
-        guard let announcementCardViewModel = announcementCardViewModel else {
-            return .none
-        }
-        switch announcementCardViewModel.priority {
-        case .high:
-            return .top
-        case .low:
-            return .bottom
-        }
-    }
-
-    var cardState = DashboardItemState.hidden
-    private(set) var announcementCardViewModel: AnnouncementCardViewModel!
-    private let announcementPresenter: AnnouncementPresenting
-
-    // MARK: - Balances
-
-    let totalBalancePresenter: TotalBalanceViewPresenter
-
-    private var shouldShowBalanceCollectionView: Bool {
-        fiatBalanceCollectionViewPresenter != nil
-    }
-
-    var fiatBalanceState = DashboardItemState.hidden
-    private(set) var fiatBalanceCollectionViewPresenter: CurrencyViewPresenter!
     let fiatBalancePresenter: DashboardFiatBalancesPresenter
-
-    // MARK: - Notice
-
-    /// Returns `true` if the notice cell should be visible
-    private var shouldShowNotice: Bool {
-        noticeViewModel != nil
+    let totalBalancePresenter: TotalBalanceViewPresenter
+    private(set) lazy var router: DashboardRouter = .init()
+    private(set) var announcementCardViewModel: AnnouncementCardViewModel!
+    private(set) var fiatBalanceCollectionViewPresenter: CurrencyViewPresenter!
+    private(set) var noticeViewModel: NoticeViewModel!
+    var sections: Observable<[DashboardViewModel]> {
+        sectionsRelay.asObservable()
     }
 
-    /// Presenter for wallet notice
-    var noticeState = DashboardItemState.hidden
-    private(set) var noticeViewModel: NoticeViewModel!
-    private let noticePresenter: DashboardNoticePresenter
-
-    // MARK: - Historical Balances
-
-    private let historicalBalanceCellPresenters: [HistoricalBalanceCellPresenter]
-
-    // MARK: - Interactor
-
-    private let drawerRouter: DrawerRouting
-    private let interactor: DashboardScreenInteractor
-
-    // MARK: - Accessors
+    // MARK: - Private Properties
 
     private let accountFetcher: BlockchainAccountFetching
-    private let actionRelay = PublishRelay<DashboardCollectionAction>()
+    private let announcementPresenter: AnnouncementPresenting
     private let disposeBag = DisposeBag()
+    private let drawerRouter: DrawerRouting
+    private let historicalBalanceCellPresenters: [HistoricalBalanceCellPresenter]
+    private let interactor: DashboardScreenInteractor
+    private let noticePresenter: DashboardNoticePresenter
+    private let reloadRelay = BehaviorRelay<Void>(value: ())
+    private let sectionsRelay: BehaviorRelay<[DashboardViewModel]> = .init(value: [])
 
-    // MARK: - Setup
+    private var cellArrangement: [DashboardCellType] {
+        var items: [DashboardCellType] = [.totalBalance]
+
+        if noticeViewModel != nil {
+            items.append(.notice)
+        }
+
+        if fiatBalanceCollectionViewPresenter != nil {
+            items.append(.fiatCustodialBalances)
+        }
+
+        interactor
+            .enabledCryptoCurrencies
+            .map { DashboardCellType.crypto($0) }
+            .forEach { items.append($0) }
+
+        switch announcementCardViewModel?.priority {
+        case .high: // Prepend
+            items.insert(.announcement, at: 0)
+        case .low: // Append
+            items.append(.announcement)
+        case nil:
+            break
+        }
+        return items
+    }
+
+    // MARK: - Init
 
     init(
         interactor: DashboardScreenInteractor = DashboardScreenInteractor(),
@@ -225,9 +87,11 @@ final class DashboardScreenPresenter {
         )
     }
 
+    // MARK: - Setup
+
     /// Should be called once the view is loaded
     func setup() {
-        // Bind announcements
+        // Bind announcements.
         announcementPresenter.announcement
             .do(onNext: { action in
                 switch action {
@@ -239,12 +103,12 @@ final class DashboardScreenPresenter {
                     break
                 }
             })
-            .map { .announcement($0) }
             .asObservable()
-            .bindAndCatch(to: actionRelay)
+            .mapToVoid()
+            .bindAndCatch(to: reloadRelay)
             .disposed(by: disposeBag)
 
-        // Bind notices
+        // Bind notices.
         noticePresenter.action
             .do(onNext: { action in
                 switch action {
@@ -254,11 +118,12 @@ final class DashboardScreenPresenter {
                     self.noticeViewModel = viewModel
                 }
             })
-            .map { .notice($0) }
             .asObservable()
-            .bindAndCatch(to: actionRelay)
+            .mapToVoid()
+            .bindAndCatch(to: reloadRelay)
             .disposed(by: disposeBag)
 
+        // Bind fiat balances.
         fiatBalancePresenter.action
             .do(onNext: { action in
                 switch action {
@@ -268,33 +133,39 @@ final class DashboardScreenPresenter {
                     self.fiatBalanceCollectionViewPresenter = presenter
                 }
             })
-            .map { .fiatBalance($0) }
             .asObservable()
-            .bindAndCatch(to: actionRelay)
+            .mapToVoid()
+            .bindAndCatch(to: reloadRelay)
             .disposed(by: disposeBag)
 
+        // Bind fiat balances details.
         fiatBalancePresenter
             .tap
             .asObservable()
-            .flatMapLatest(weak: self) { (self, item) in
-                switch item {
-                case .hide:
-                    return .just(.hide)
-                case .show(let currencyType):
-                    return self.accountFetcher.account(for: currencyType, accountType: .nonCustodial)
-                        .map { account -> DashboardItemDisplayAction<BlockchainAccountWrapper> in
-                            .show(.init(account: account))
-                        }
-                        .asObservable()
-                }
+            .compactMap(\.viewModel)
+            .flatMapLatest { [accountFetcher] currencyType in
+                accountFetcher
+                    .account(for: currencyType, accountType: .nonCustodial)
+                    .asObservable()
             }
-            .map { .actionScreen($0) }
-            .bindAndCatch(to: actionRelay)
+            .bind { [router] account in
+                router.showWalletActionScreen(for: account)
+            }
+            .disposed(by: disposeBag)
+
+        // Bind fiat balances details.
+        reloadRelay
+            .throttle(.milliseconds(250), scheduler: MainScheduler.asyncInstance)
+            .map(weak: self) { (self, _) in
+                self.cellArrangement
+            }
+            .map(DashboardViewModel.init)
+            .map { [$0] }
+            .bind(to: sectionsRelay)
             .disposed(by: disposeBag)
     }
 
-    /// Should be called each time the dashboard view shows
-    /// to trigger dashboard re-render
+    /// Should be called when user pulls-to-refresh.
     func refresh() {
         interactor.refresh()
         announcementPresenter.refresh()

@@ -9,7 +9,7 @@ import RxSwift
 import ToolKit
 
 /// This enum aggregates possible action types that can be done in the dashboard
-enum DashboadDetailsAction {
+enum DashboardDetailsAction {
     case routeTo(BlockchainAccount)
 }
 
@@ -18,7 +18,7 @@ final class DashboardDetailsScreenPresenter {
     // MARK: - Types
 
     private typealias AccessilbityId = Accessibility.Identifier.DashboardDetails
-    private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
+    private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell.Description
 
     enum CellType: Hashable {
         case balance(BlockchainAccount)
@@ -107,7 +107,7 @@ final class DashboardDetailsScreenPresenter {
     }
 
     /// The dashboard action
-    var action: Signal<DashboadDetailsAction> {
+    var action: Signal<DashboardDetailsAction> {
         actionRelay.asSignal()
     }
 
@@ -155,7 +155,7 @@ final class DashboardDetailsScreenPresenter {
 
     private unowned let router: DashboardRouter
     private let interactor: DashboardDetailsScreenInteractor
-    private let actionRelay = PublishRelay<DashboadDetailsAction>()
+    private let actionRelay = PublishRelay<DashboardDetailsAction>()
     private let scrollingEnabledRelay = BehaviorRelay(value: false)
     private let disposeBag = DisposeBag()
 
@@ -164,7 +164,6 @@ final class DashboardDetailsScreenPresenter {
     init(
         using interactor: DashboardDetailsScreenInteractor,
         with currency: CryptoCurrency,
-        fiatCurrency: FiatCurrency,
         router: DashboardRouter
     ) {
         self.router = router
@@ -173,7 +172,7 @@ final class DashboardDetailsScreenPresenter {
 
         lineChartCellPresenter = AssetLineChartTableViewCellPresenter(
             cryptoCurrency: currency,
-            fiatCurrency: fiatCurrency,
+            fiatCurrencyService: interactor.fiatCurrencyService,
             historicalFiatPriceService: interactor.priceServiceAPI
         )
 
@@ -182,7 +181,7 @@ final class DashboardDetailsScreenPresenter {
             .disposed(by: disposeBag)
 
         presenterSelectionRelay
-            .compactMap { cellType -> DashboadDetailsAction? in
+            .compactMap { cellType -> DashboardDetailsAction? in
                 switch cellType {
                 case .balance(let account):
                     return .routeTo(account)
@@ -272,14 +271,13 @@ final class DashboardDetailsScreenPresenter {
     }
 
     private func balanceCellPresenter(account: BlockchainAccount) -> CurrentBalanceCellPresenter {
-
         let descriptionValue: () -> Observable<String> = { [weak self] in
             guard let self = self else { return .empty() }
             switch account {
             case is CryptoInterestAccount:
                 return self.interactor
                     .rate
-                    .map { "\(LocalizedString.Description.savingsPrefix) \($0)\(LocalizedString.Description.savingsSuffix)" }
+                    .map { "\(LocalizedString.savingsPrefix) \($0)\(LocalizedString.savingsSuffix)" }
                     .asObservable()
             default:
                 return .just(account.currencyType.name)

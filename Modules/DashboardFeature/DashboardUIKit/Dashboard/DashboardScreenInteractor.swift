@@ -9,21 +9,20 @@ import RxSwift
 
 final class DashboardScreenInteractor {
 
-    // MARK: - Services
+    // MARK: - Properties
 
+    let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    let fiatBalancesInteractor: DashboardFiatBalancesInteractor
+    let historicalBalanceInteractors: [HistoricalBalanceCellInteractor]
     let historicalProvider: HistoricalFiatPriceProviding
     let reactiveWallet: ReactiveWalletAPI
     let userPropertyInteractor: AnalyticsUserPropertyInteracting
-
-    let historicalBalanceInteractors: [HistoricalBalanceCellInteractor]
-    let fiatBalancesInteractor: DashboardFiatBalancesInteractor
-    let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
     var enabledCryptoCurrencies: [CryptoCurrency] {
         enabledCurrenciesService.allEnabledCryptoCurrencies
     }
 
-    // MARK: - Private Accessors
+    // MARK: - Private Properties
 
     private let disposeBag = DisposeBag()
 
