@@ -41,21 +41,10 @@ schemeTemplates:
       targets:
       - name: ActivityKitTests
         randomExecutionOrder: true
-      - name: BitcoinKitTests
-        randomExecutionOrder: true
-      - name: BitcoinChainKitTests
-        randomExecutionOrder: true
-      - name: BitcoinCashKitTests
         randomExecutionOrder: true
       - name: DashboardKitTests
         randomExecutionOrder: true
       - name: DashboardUIKitTests
-        randomExecutionOrder: true
-      - name: ERC20KitTests
-        randomExecutionOrder: true
-      - name: EthereumKitTests
-        randomExecutionOrder: true
-      - name: StellarKitTests
         randomExecutionOrder: true
       - name: OnboardingKitTests
         randomExecutionOrder: true
@@ -275,22 +264,22 @@ targetTemplates:
       SWIFT_INSTALL_OBJC_HEADER: NO
 packages:
   ComposableArchitecture:
-    url: https://github.com/pointfreeco/swift-composable-architecture
+    url: git@github.com:pointfreeco/swift-composable-architecture.git
     version: 0.24.0
   CombineExt:
-    url: https://github.com/CombineCommunity/CombineExt.git
+    url: git@github.com:CombineCommunity/CombineExt.git
     version: 1.3.0
   Lottie:
-    url: https://github.com/airbnb/lottie-ios.git
+    url: git@github.com:airbnb/lottie-ios.git
     version: 3.2.1
   Nuke:
-    url: https://github.com/kean/Nuke
+    url: git@github.com:kean/Nuke.git
     from: 10.3.1
   NukeUI:
-    url: https://github.com/kean/NukeUI
+    url: git@github.com:kean/NukeUI.git
     from: 0.6.5
   Mockingbird:
-    url: https://github.com/birdrides/mockingbird
+    url: git@github.com:birdrides/mockingbird.git
     version: 0.16.0
   UIComponents:
     path: Modules/UIComponents
@@ -346,14 +335,10 @@ packages:
     path: Modules/FeatureKYC
   FeatureTransaction:
     path: Modules/FeatureTransaction
+  CryptoAssets:
+    path: Modules/CryptoAssets
 targets:
   ActivityKit:
-    dependencies:
-    - target: BitcoinCashKit
-    - target: BitcoinKit
-    - target: ERC20Kit
-    - target: EthereumKit
-    - target: StellarKit
     scheme:
       testTargets:
       - ActivityKitTests
@@ -402,78 +387,6 @@ targets:
       path: Modules/Tool/Sources/ToolKitMock
     templateAttributes:
       featureName: ActivityFeature
-    templates:
-    - ModuleTests
-  BitcoinCashKit:
-    dependencies:
-    - target: BitcoinChainKit
-    scheme:
-      testTargets:
-      - BitcoinCashKitTests
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - Module
-  BitcoinCashKitTests:
-    dependencies:
-    - target: BitcoinCashKit
-    sources:
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - ModuleTests
-  BitcoinChainKit:
-    scheme:
-      testTargets:
-      - BitcoinChainKitTests
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - Module
-  BitcoinChainKitTests:
-    dependencies:
-    - target: BitcoinChainKit
-    sources:
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - ModuleTests
-  BitcoinKit:
-    dependencies:
-    - target: BitcoinChainKit
-    scheme:
-      testTargets:
-      - BitcoinKitTests
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - Module
-  BitcoinKitTests:
-    dependencies:
-    - target: BitcoinKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/BitcoinKit
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    templateAttributes:
-      featureName: CryptoAssets
     templates:
     - ModuleTests
   Blockchain:
@@ -527,19 +440,12 @@ targets:
     - framework: Carthage/Build/Promises.xcframework
       embed: false
     - framework: Carthage/Build/Sift.xcframework
-    - framework: Carthage/Build/stellarsdk.xcframework
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: TodayExtension
     - target: InterestKit
     - target: InterestDataKit
     - target: InterestUIKit
-    - target: StellarKit
-    - target: EthereumKit
-    - target: ERC20Kit
-    - target: BitcoinKit
-    - target: BitcoinCashKit
-    - target: BitcoinChainKit
     - target: ActivityKit
     - target: ActivityUIKit
     - target: DashboardKit
@@ -729,6 +635,18 @@ targets:
     - package: CommonCrypto
       product: CommonCryptoKit
     - package: ComposableArchitecture
+    - package: CryptoAssets
+      product: BitcoinKit
+    - package: CryptoAssets
+      product: BitcoinChainKit
+    - package: CryptoAssets
+      product: BitcoinCashKit
+    - package: CryptoAssets
+      product: EthereumKit
+    - package: CryptoAssets
+      product: ERC20Kit
+    - package: CryptoAssets
+      product: StellarKit
     - package: DIKit
     - package: FeatureAccountPicker
     - package: FeatureTransaction
@@ -781,58 +699,6 @@ targets:
     templates:
     - Module
     - UIModule
-  ERC20Kit:
-    dependencies:
-    - target: EthereumKit
-    scheme:
-      testTargets:
-      - ERC20KitTests
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - Module
-  ERC20KitTests:
-    dependencies:
-    - target: ERC20Kit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/EthereumKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/ERC20Kit
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - ModuleTests
-  EthereumKit:
-    scheme:
-      testTargets:
-      - EthereumKitTests
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - Module
-  EthereumKitTests:
-    dependencies:
-    - target: EthereumKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/EthereumKit
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - ModuleTests
   InterestKit:
     scheme:
       testTargets:
@@ -1000,30 +866,6 @@ targets:
       - path: scripts/fix-snapshot-host-app.sh 
         name: "[blockchain] Copy Swift Package Manager Generated Bundles"
     type: application
-  StellarKit:
-    dependencies:
-    - framework: Carthage/Build/stellarsdk.xcframework
-    scheme:
-      testTargets:
-      - StellarKitTests
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - Module
-  StellarKitTests:
-    dependencies:
-    - target: StellarKit
-    sources:
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformKitMock
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/StellarKit
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - ModuleTests
   TodayExtension:
     dependencies:
     - sdk: NotificationCenter.framework

@@ -33,8 +33,8 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "swift-composable-architecture", url: "git@github.com:pointfreeco/swift-composable-architecture.git", from: "0.24.0"),
-        .package(name: "Nuke", url: "https://github.com/kean/Nuke", from: "10.3.1"),
-        .package(name: "NukeUI", url: "https://github.com/kean/NukeUI", from: "0.6.5"),
+        .package(name: "Nuke", url: "git@github.com:kean/Nuke.git", from: "10.3.1"),
+        .package(name: "NukeUI", url: "git@github.com:kean/NukeUI.git", from: "0.6.5"),
         .package(name: "BigInt", url: "git@github.com:attaswift/BigInt.git", from: "5.2.1"),
         .package(name: "DIKit", url: "git@github.com:jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
         .package(name: "RxSwift", url: "git@github.com:ReactiveX/RxSwift.git", from: "5.1.3"),

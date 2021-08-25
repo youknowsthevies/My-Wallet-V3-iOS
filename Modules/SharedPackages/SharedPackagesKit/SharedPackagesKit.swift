@@ -4,12 +4,17 @@
 
 @_exported import AnalyticsKit
 @_exported import BigInt
+@_exported import BitcoinCashKit
+@_exported import BitcoinChainKit
+@_exported import BitcoinKit
 @_exported import CombineExt
 @_exported import CommonCryptoKit
 @_exported import ComposableArchitecture
 @_exported import CryptoSwift
 @_exported import Differentiator
 @_exported import DIKit
+@_exported import ERC20Kit
+@_exported import EthereumKit
 @_exported import FeatureAccountPickerUI
 @_exported import FeatureAuthenticationData
 @_exported import FeatureAuthenticationDomain
@@ -35,6 +40,7 @@
 @_exported import RxDataSources
 @_exported import RxRelay
 @_exported import RxSwift
+@_exported import StellarKit
 @_exported import SwiftProtobuf
 @_exported import ToolKit
 @_exported import UIComponentsKit
