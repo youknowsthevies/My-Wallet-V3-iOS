@@ -63,12 +63,15 @@ final class SwapQuotesEngine {
             .asObservable()
             .flatMap(weak: self) { (self, quote) -> Observable<OrderQuotePayload> in
                 let delay = Int(quote.expiresAt.timeIntervalSince(quote.createdAt))
-                return Observable
-                    .timer(.seconds(delay), period: .seconds(delay), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
-                    .flatMap(weak: self) { (self, _: Int) -> Observable<OrderQuotePayload> in
-                        self.fetchQuote(direction: direction, pair: pair).asObservable()
-                    }
-                    .startWith(quote)
+                return Observable.timer(
+                    .seconds(delay),
+                    period: .seconds(delay),
+                    scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
+                )
+                .flatMap(weak: self) { (self, _: Int) -> Observable<OrderQuotePayload> in
+                    self.fetchQuote(direction: direction, pair: pair).asObservable()
+                }
+                .startWith(quote)
             }
             .takeUntil(stopSubject)
     }

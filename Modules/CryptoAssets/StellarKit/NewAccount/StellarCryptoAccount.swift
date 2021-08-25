@@ -113,10 +113,10 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
              .buy:
             return .just(true)
         case .deposit,
-             .sell,
              .withdraw:
             return .just(false)
-        case .swap:
+        case .swap,
+             .sell:
             return isFunded
         }
     }

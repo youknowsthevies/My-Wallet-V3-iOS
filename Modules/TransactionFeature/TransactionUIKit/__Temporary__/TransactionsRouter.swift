@@ -14,13 +14,18 @@ import UIComponentsKit
 /// Represents all types of transactions the user can perform
 public enum TransactionFlowAction: Equatable {
 
-    /// Performs a buy. If `CrytoAccount` is `nil`, the users will be presented with a crypto currency selector.
+    /// Performs a buy. If `CryptoAccount` is `nil`, the users will be presented with a crypto currency selector.
     case buy(CryptoAccount?)
+    /// Performs a sell. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
+    case sell(CryptoAccount?)
 
     public static func == (lhs: TransactionFlowAction, rhs: TransactionFlowAction) -> Bool {
         switch (lhs, rhs) {
-        case (.buy(let lhsAccount), .buy(let rhsAccount)):
+        case (.buy(let lhsAccount), .buy(let rhsAccount)),
+             (.sell(let lhsAccount), .sell(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
+        default:
+            return false
         }
     }
 }
@@ -50,7 +55,9 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
 
     private let featureFlagsService: InternalFeatureFlagServiceAPI
     private let legacyBuyPresenter: LegacyBuyFlowPresenter
+    private var sellRouter: LegacySellRouter?
     private let buyFlowBuilder: BuyFlowBuildable
+    private let sellFlowBuilder: SellFlowBuilder
 
     // Since RIBs need to be attached to something but we're not, the router in use needs to be retained.
     private var currentRIBRouter: RIBs.Routing?
@@ -58,11 +65,13 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     init(
         featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
         legacyBuyPresenter: LegacyBuyFlowPresenter = .init(),
-        buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder()
+        buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(),
+        sellFlowBuilder: SellFlowBuilder = SellFlowBuilder()
     ) {
         self.featureFlagsService = featureFlagsService
         self.legacyBuyPresenter = legacyBuyPresenter
         self.buyFlowBuilder = buyFlowBuilder
+        self.sellFlowBuilder = sellFlowBuilder
     }
 
     func presentTransactionFlow(
@@ -72,9 +81,16 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         switch action {
         case .buy(let cryptoAccount):
             if featureFlagsService.isEnabled(.useTransactionsFlowToBuyCrypto) {
-                return presentTransactionFlow(with: cryptoAccount, from: presenter)
+                return presentNewTransactionFlow(.buy(cryptoAccount), from: presenter)
+            } else {
+                return presentLegacyTransactionFlow(.buy(cryptoAccount), from: presenter)
             }
-            return presentLegacyTransactionFlow(toBuy: cryptoAccount?.asset, from: presenter)
+        case .sell(let cryptoAccount):
+            if featureFlagsService.isEnabled(.useTransactionsFlowToSellCrypto) {
+                return presentNewTransactionFlow(.sell(cryptoAccount), from: presenter)
+            } else {
+                return presentLegacyTransactionFlow(.sell(cryptoAccount), from: presenter)
+            }
         }
     }
 }
@@ -94,36 +110,62 @@ extension TransactionsRouter {
 
 extension TransactionsRouter {
 
-    private func presentTransactionFlow(
-        with cryptoAccount: CryptoAccount?,
+    private func presentNewTransactionFlow(
+        _ action: TransactionFlowAction,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
-        let listener = BuyFlowListener()
-        let interactor = BuyFlowInteractor()
-        let router = buyFlowBuilder.build(with: listener, interactor: interactor)
-        router.start(with: cryptoAccount, from: presenter)
-        mimicRIBAttachment(router: router)
-        return listener.publisher
+
+        switch action {
+        case .buy(let cryptoAccount):
+            let listener = BuyFlowListener()
+            let interactor = BuyFlowInteractor()
+            let router = buyFlowBuilder.build(with: listener, interactor: interactor)
+            router.start(with: cryptoAccount, from: presenter)
+            mimicRIBAttachment(router: router)
+            return listener.publisher
+        case .sell(let cryptoAccount):
+            let listener = SellFlowListener()
+            let interactor = SellFlowInteractor()
+            let router = sellFlowBuilder.build(with: listener, interactor: interactor)
+            router.start(with: cryptoAccount, from: presenter)
+            mimicRIBAttachment(router: router)
+            return listener.publisher
+        }
     }
 
     private func presentLegacyTransactionFlow(
-        toBuy cryptoCurrency: CryptoCurrency?,
+        _ action: TransactionFlowAction,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
-        // NOTE: right now the user locale is used to determine the fiat currency to use here but eventually we'll ask the user to provide that like we do for simple buy (IOS-4819)
-        let fiatCurrency: FiatCurrency = .locale
+        switch action {
+        case .buy(let cryptoAccount):
+            // NOTE: right now the user locale is used to determine the fiat currency to use here but eventually we'll ask the user to provide that like we do for simple buy (IOS-4819)
+            let fiatCurrency: FiatCurrency = .locale
 
-        guard let cryptoCurrency = cryptoCurrency else {
-            return legacyBuyPresenter.presentBuyFlowWithTargetCurrencySelectionIfNecessary(
+            guard let cryptoAccount = cryptoAccount else {
+                return legacyBuyPresenter.presentBuyFlowWithTargetCurrencySelectionIfNecessary(
+                    from: presenter,
+                    using: fiatCurrency
+                )
+            }
+            return legacyBuyPresenter.presentBuyScreen(
                 from: presenter,
-                using: fiatCurrency
+                targetCurrency: cryptoAccount.asset,
+                sourceCurrency: fiatCurrency
             )
+        case .sell:
+            let accountSelectionService = AccountSelectionService()
+            let interactor = SellRouterInteractor(
+                accountSelectionService: accountSelectionService
+            )
+            let builder = PlatformUIKit.SellBuilder(
+                accountSelectionService: accountSelectionService,
+                routerInteractor: interactor
+            )
+            sellRouter = PlatformUIKit.LegacySellRouter(builder: builder)
+            sellRouter?.load()
+            return .just(.abandoned)
         }
-        return legacyBuyPresenter.presentBuyScreen(
-            from: presenter,
-            targetCurrency: cryptoCurrency,
-            sourceCurrency: fiatCurrency
-        )
     }
 }
 
@@ -218,7 +260,9 @@ class LegacyBuyFlowPresenter {
         return publisher.eraseToAnyPublisher()
     }
 
-    private func presentSimpleBuyScreen(from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
+    private func presentSimpleBuyScreen(
+        from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never>
+    {
         // This is just levereging the existing buy flow, which isn't great but is getting replaced buy the new `Transactions` implementation
         presentBuyScreen(
             from: presenter,

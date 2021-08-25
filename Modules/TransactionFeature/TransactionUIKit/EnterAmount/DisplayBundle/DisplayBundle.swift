@@ -31,8 +31,9 @@ struct DisplayBundle {
             return .deposit(sourceAccount: sourceAccount)
         case .buy:
             return .buy(sourceAccount: sourceAccount)
+        case .sell:
+            return .sell(sourceAccount: sourceAccount)
         case .receive,
-             .sell,
              .viewActivity:
             unimplemented()
         }

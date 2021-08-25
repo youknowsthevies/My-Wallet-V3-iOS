@@ -111,6 +111,8 @@ extension CoincoreAPI {
                         engine: factory.build(requiresSecondPassword: requiresSecondPassword)
                     )
                 }
+        case (_, .sell):
+            unimplemented()
         default:
             unimplemented()
         }
@@ -129,7 +131,7 @@ extension CoincoreAPI {
         case .buy:
             unimplemented("This should not be needed as the Buy engine should process the transaction")
         case .sell:
-            unimplemented("CustodialSellTxEngine processes the transation")
+            return createTradingProcessorSell(with: account, target: target)
         case .deposit, .receive, .viewActivity, .withdraw:
             unimplemented()
         }
@@ -210,5 +212,19 @@ extension CoincoreAPI {
                     engine: TradingToOnChainTransactionEngine()
                 )
             }
+    }
+
+    private func createTradingProcessorSell(
+        with account: CryptoAccount,
+        target: TransactionTarget
+    ) -> Single<TransactionProcessor> {
+        unimplemented()
+    }
+
+    private func createOnChainProcessorSell(
+        with account: CryptoAccount,
+        target: TransactionTarget
+    ) -> Single<TransactionProcessor> {
+        unimplemented()
     }
 }

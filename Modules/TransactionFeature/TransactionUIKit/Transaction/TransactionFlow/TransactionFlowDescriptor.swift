@@ -53,8 +53,12 @@ enum TransactionFlowDescriptor {
                     return LocalizedString.Buy.title
                 }
                 return "\(LocalizedString.Buy.title) \(destination.currencyType.code) using \(source.label)"
+            case .sell:
+                return [
+                    LocalizedString.Sell.headerTitlePrefix,
+                    state.source?.label
+                ].compactMap { $0 }.joined(separator: " ")
             case .receive,
-                 .sell,
                  .viewActivity:
                 unimplemented()
             }
@@ -90,8 +94,12 @@ enum TransactionFlowDescriptor {
                     return prefix
                 }
                 return "\(prefix) \(destination.currencyType.code) \(destination.label)"
+            case .sell:
+                return [
+                    LocalizedString.Sell.headerSubtitlePrefix,
+                    state.destination?.label
+                ].compactMap { $0 }.joined(separator: " ")
             case .receive,
-                 .sell,
                  .viewActivity:
                 unimplemented()
             }
@@ -107,8 +115,9 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Deposit.linkedBanks
             case .buy:
                 return LocalizedString.Buy.selectSourceTitle
+            case .sell:
+                return LocalizedString.Sell.selectSourceTitle
             case .receive,
-                 .sell,
                  .send,
                  .viewActivity,
                  .withdraw:
@@ -120,11 +129,12 @@ enum TransactionFlowDescriptor {
             switch action {
             case .swap:
                 return LocalizedString.Swap.sourceAccountPicketSubtitle
+            case .sell:
+                return LocalizedString.Sell.selectSourceSubtitle
             case .withdraw,
                  .deposit,
                  .receive,
                  .buy,
-                 .sell,
                  .send,
                  .viewActivity:
                 return ""
@@ -139,9 +149,10 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Withdraw.withdrawTo
             case .buy:
                 return LocalizedString.Buy.selectDestinationTitle
+            case .sell:
+                return LocalizedString.Sell.title
             case .deposit,
                  .receive,
-                 .sell,
                  .send,
                  .viewActivity:
                 return ""
@@ -152,10 +163,11 @@ enum TransactionFlowDescriptor {
             switch action {
             case .swap:
                 return LocalizedString.Swap.destinationAccountPicketSubtitle
+            case .sell:
+                return LocalizedString.Sell.selectDestinationTitle
             case .deposit,
                  .receive,
                  .buy,
-                 .sell,
                  .send,
                  .viewActivity,
                  .withdraw:

@@ -54,6 +54,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         let amountViewPresenting: AmountViewPresenting
         switch action {
         case .swap,
+             .sell,
              .send:
             guard let crypto = sourceAccount.currencyType.cryptoCurrency else {
                 fatalError("Expected a crypto as a source account.")
@@ -108,7 +109,6 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             )
 
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
-
         default:
             unimplemented()
         }

@@ -143,22 +143,16 @@ extension LoggedInHostingController {
     func handleBuyCrypto(account: CryptoAccount?) {
         let presenter = topMostViewController ?? self
         transactionsAdapter.presentTransactionFlow(to: .buy(account), from: presenter) { result in
-            Logger.shared.info("[AppCoordinator] Transaction Flow completed with result '\(result)'")
+            Logger.shared.info("[AppCoordinator] Buy Transaction Flow completed with result '\(result)'")
         }
     }
 
     /// Starts Sell Crypto flow
-    @objc func handleSellCrypto() {
-        let accountSelectionService = AccountSelectionService()
-        let interactor = SellRouterInteractor(
-            accountSelectionService: accountSelectionService
-        )
-        let builder = PlatformUIKit.SellBuilder(
-            accountSelectionService: accountSelectionService,
-            routerInteractor: interactor
-        )
-        sellRouter = PlatformUIKit.SellRouter(builder: builder)
-        sellRouter?.load()
+    func handleSellCrypto(account: CryptoAccount? = nil) {
+        let presenter = topMostViewController ?? self
+        transactionsAdapter.presentTransactionFlow(to: .sell(account), from: presenter) { result in
+            Logger.shared.info("[AppCoordinator] Sell Transaction Flow completed with result '\(result)'")
+        }
     }
 
     func startSimpleBuyAtLogin() {

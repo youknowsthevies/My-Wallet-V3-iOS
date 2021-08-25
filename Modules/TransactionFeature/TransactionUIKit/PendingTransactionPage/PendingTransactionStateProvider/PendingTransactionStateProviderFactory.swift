@@ -3,7 +3,7 @@
 import PlatformKit
 import ToolKit
 
-final class PendingTransctionStateProviderFactory {
+enum PendingTransctionStateProviderFactory {
     static func pendingTransactionStateProvider(action: AssetAction) -> PendingTransactionStateProviding {
         switch action {
         case .withdraw:
@@ -16,6 +16,8 @@ final class PendingTransctionStateProviderFactory {
             return SwapPendingTransactionStateProvider()
         case .buy:
             return BuyPendingTransactionStateProvider()
+        case .sell:
+            return SellPendingTransactionStateProvider()
         default:
             unimplemented()
         }

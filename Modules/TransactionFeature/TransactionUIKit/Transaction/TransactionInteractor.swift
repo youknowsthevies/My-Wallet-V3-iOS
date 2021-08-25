@@ -108,37 +108,39 @@ final class TransactionInteractor {
     }
 
     func getAvailableSourceAccounts(action: AssetAction) -> Single<[SingleAccount]> {
+        let allEligibleCryptoAccounts = coincore.allAccounts
+            .map(\.accounts)
+            .flatMapFilter(
+                action: action,
+                failSequence: false,
+                onError: { [errorRecorder] account, error in
+                    let error: Error = .loadingFailed(
+                        account: account,
+                        action: action,
+                        error: String(describing: error)
+                    )
+                    errorRecorder.error(error)
+                }
+            )
+            .map { accounts in
+                accounts.compactMap { account in
+                    account as? CryptoAccount
+                }
+            }
         switch action {
         case .buy:
             // TODO: check the new limits API to understand whether passing asset and amount is really required
             return fetchPaymentAccounts(for: .coin(.bitcoin), amount: nil)
         case .swap:
             let tradingPairs = availablePairsService.availableTradingPairs
-            let allAccounts = coincore.allAccounts
-                .map(\.accounts)
-                .flatMapFilter(
-                    action: action,
-                    failSequence: false,
-                    onError: { [errorRecorder] account, error in
-                        let error: Error = .loadingFailed(
-                            account: account,
-                            action: action,
-                            error: String(describing: error)
-                        )
-                        errorRecorder.error(error)
-                    }
-                )
-                .map { accounts in
-                    accounts.compactMap { account in
-                        account as? CryptoAccount
-                    }
-                }
-            return Single.zip(allAccounts, tradingPairs)
+            return Single.zip(allEligibleCryptoAccounts, tradingPairs)
                 .map { (allAccounts: [CryptoAccount], tradingPairs: [OrderPair]) -> [CryptoAccount] in
                     allAccounts.filter { account -> Bool in
                         account.isAvailableToSwapFrom(tradingPairs: tradingPairs)
                     }
                 }
+        case .sell:
+            return allEligibleCryptoAccounts.map { $0.map { $0 as SingleAccount } }
         case .deposit:
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         default:
@@ -167,8 +169,15 @@ final class TransactionInteractor {
                 .cryptoAccounts(supporting: .buy)
                 .asSingle()
                 .map { $0 }
+        case .sell:
+            return coincore.allAccounts
+                .map(\.accounts)
+                .map {
+                    $0.compactMap { account in
+                        account as? FiatAccount
+                    }
+                }
         case .receive,
-             .sell,
              .viewActivity:
             unimplemented()
         }

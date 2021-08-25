@@ -36,7 +36,6 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 
     var settingsRouterAPI: SettingsRouterAPI?
     var buyRouter: PlatformUIKit.RouterAPI?
-    var sellRouter: PlatformUIKit.SellRouter?
     var backupRouter: DashboardUIKit.BackupRouterAPI?
     var pinRouter: PinRouter?
 

@@ -539,8 +539,7 @@ extension AssetAction {
 
     fileprivate var supportsTopAccountsView: Bool {
         switch self {
-        case .buy,
-             .sell:
+        case .buy:
             return true
         default:
             return false

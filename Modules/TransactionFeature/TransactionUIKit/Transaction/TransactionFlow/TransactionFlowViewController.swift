@@ -16,7 +16,10 @@ protocol TransactionFlowPresentable: Presentable {
 
 final class TransactionFlowInitialViewController: BaseScreenViewController {}
 
-final class TransactionFlowViewController: UINavigationController, TransactionFlowPresentable, TransactionFlowViewControllable {
+final class TransactionFlowViewController: UINavigationController,
+    TransactionFlowPresentable,
+    TransactionFlowViewControllable
+{
 
     weak var listener: TransactionFlowPresentableListener?
 

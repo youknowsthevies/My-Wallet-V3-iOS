@@ -57,7 +57,6 @@ import WalletPayloadKit
     @Inject var airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
     private var buyRouter: PlatformUIKit.RouterAPI!
-    private var sellRouter: PlatformUIKit.SellRouter!
     private var backupRouter: DashboardUIKit.BackupRouterAPI?
 
     // MARK: - UIViewController Properties
@@ -486,17 +485,10 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 
     /// Starts Sell Crypto flow
-    @objc func handleSellCrypto() {
-        let accountSelectionService = AccountSelectionService()
-        let interactor = SellRouterInteractor(
-            accountSelectionService: accountSelectionService
-        )
-        let builder = PlatformUIKit.SellBuilder(
-            accountSelectionService: accountSelectionService,
-            routerInteractor: interactor
-        )
-        sellRouter = PlatformUIKit.SellRouter(builder: builder)
-        sellRouter.load()
+    func handleSellCrypto(account: CryptoAccount? = nil) {
+        transactionsAdapter.presentTransactionFlow(to: .sell(account), from: topMostViewController) { result in
+            Logger.shared.info("[AppCoordinator] Sell Flow completed with result '\(result)'")
+        }
     }
 
     func startSimpleBuyAtLogin() {

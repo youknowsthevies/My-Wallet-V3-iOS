@@ -89,7 +89,13 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
                     imageResource: linkablePayment.logoResource,
                     isEnabled: tapEnabled
                 )
-
+            case let fiatAccount as FiatAccount:
+                return .init(
+                    title: fiatAccount.label,
+                    subtitle: "",
+                    imageResource: fiatAccount.logoResource,
+                    isEnabled: tapEnabled
+                )
             default:
                 unimplemented()
             }

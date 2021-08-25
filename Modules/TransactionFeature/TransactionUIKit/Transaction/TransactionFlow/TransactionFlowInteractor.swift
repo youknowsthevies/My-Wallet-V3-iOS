@@ -87,6 +87,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     weak var router: TransactionFlowRouting?
     weak var listener: TransactionFlowListener?
+
     private var initialStep: Bool = true
     private let transactionModel: TransactionModel
     private let action: AssetAction // TODO: this should be removed and taken from TransactionModel
