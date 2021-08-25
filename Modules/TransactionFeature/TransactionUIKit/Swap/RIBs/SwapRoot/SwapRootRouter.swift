@@ -2,8 +2,8 @@
 
 import AnalyticsKit
 import DIKit
-import KYCKit
-import KYCUIKit
+import FeatureKYCDomain
+import FeatureKYCUI
 import PlatformKit
 import PlatformUIKit
 import RIBs

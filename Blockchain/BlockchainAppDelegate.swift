@@ -11,10 +11,10 @@ import DIKit
 import EthereumKit
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
+import FeatureKYCDomain
+import FeatureKYCUI
 import Firebase
 import FirebaseDynamicLinks
-import KYCKit
-import KYCUIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit

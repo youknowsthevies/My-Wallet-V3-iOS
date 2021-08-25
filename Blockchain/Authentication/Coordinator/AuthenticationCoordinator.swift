@@ -5,7 +5,7 @@ import BitcoinKit
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
-import KYCUIKit
+import FeatureKYCUI
 import OnboardingUIKit
 import PlatformKit
 import PlatformUIKit

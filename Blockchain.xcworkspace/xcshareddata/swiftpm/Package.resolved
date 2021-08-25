@@ -191,6 +191,15 @@
         }
       },
       {
+        "package": "Veriff",
+        "repositoryURL": "git@github.com:Veriff/veriff-ios-spm.git",
+        "state": {
+          "branch": null,
+          "revision": "c5b656b1d1fbc25ff448162539db20a824c9e42f",
+          "version": "4.3.1"
+        }
+      },
+      {
         "package": "WalletCore",
         "repositoryURL": "git@github.com:oliveratkinson-bc/wallet-core.git",
         "state": {

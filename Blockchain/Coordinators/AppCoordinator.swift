@@ -4,9 +4,9 @@ import AnalyticsKit
 import Combine
 import DashboardUIKit
 import DIKit
+import FeatureKYCUI
 import InterestKit
 import InterestUIKit
-import KYCUIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift

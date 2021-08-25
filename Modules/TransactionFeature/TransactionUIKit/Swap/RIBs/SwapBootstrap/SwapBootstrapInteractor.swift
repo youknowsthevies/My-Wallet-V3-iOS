@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import KYCKit
-import KYCUIKit
+import FeatureKYCDomain
+import FeatureKYCUI
 import RIBs
 import RxSwift
 

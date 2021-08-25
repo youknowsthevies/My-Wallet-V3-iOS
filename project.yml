@@ -61,10 +61,6 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: StellarKitTests
         randomExecutionOrder: true
-      - name: KYCKitTests
-        randomExecutionOrder: true
-      - name: KYCUIKitTests
-        randomExecutionOrder: true
       - name: OnboardingKitTests
         randomExecutionOrder: true
       - name: OnboardingUIKitTests
@@ -350,6 +346,8 @@ packages:
     path: Modules/FeatureAuthentication
   Platform:
     path: Modules/Platform
+  FeatureKYC:
+    path: Modules/FeatureKYC
 targets:
   ActivityKit:
     dependencies:
@@ -535,7 +533,6 @@ targets:
       embed: false
     - framework: Carthage/Build/Sift.xcframework
     - framework: Carthage/Build/stellarsdk.xcframework
-    - framework: Carthage/Build/Veriff.xcframework
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: TodayExtension
@@ -555,8 +552,6 @@ targets:
     - target: ActivityUIKit
     - target: DashboardKit
     - target: DashboardUIKit
-    - target: KYCKit
-    - target: KYCUIKit
     - target: OnboardingKit
     - target: OnboardingUIKit
     - target: DebugUIKit
@@ -686,9 +681,9 @@ targets:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/RemoteNotificationsKit
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/KYCKit
+      path: Modules/FeatureKYC/Sources/FeatureKYCDomainMock
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/KYCUIKit
+      path: Modules/FeatureKYC/Sources/FeatureKYCUIMock
     - createIntermediateGroups: true
       path: Modules/Analytics/Sources/AnalyticsKitMock
     - createIntermediateGroups: true
@@ -747,6 +742,7 @@ targets:
     - package: FeatureAccountPicker
     - package: HDWallet
       product: HDWalletKit
+    - package: FeatureKYC
     - package: Localization
     - package: Lottie
     - package: Network
@@ -921,67 +917,8 @@ targets:
       featureName: InterestFeature
     templates:
     - ModuleTests
-  KYCKit:
-    scheme:
-      testTargets:
-      - KYCKitTests
-    templateAttributes:
-      featureName: KYCFeature
-    templates:
-    - Module
-  KYCKitTests:
-    dependencies:
-    - target: KYCKit
-    sources:
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    templateAttributes:
-      featureName: KYCFeature
-    templates:
-    - ModuleTests
-  KYCUIKit:
-    dependencies:
-    - framework: Carthage/Build/Veriff.xcframework
-    - target: KYCKit
-    scheme:
-      testTargets:
-      - KYCUIKitTests
-    templateAttributes:
-      featureName: KYCFeature
-    templates:
-    - Module
-    - UIModule
-  KYCUIKitTests:
-    dependencies:
-    - target: KYCUIKit
-    - target: SnapshotTestsHostApp # required for snapshot tests
-    settings:
-      TEST_HOST: "$(BUILT_PRODUCTS_DIR)/SnapshotTestsHostApp.app/SnapshotTestsHostApp" # required for snapshot tests
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/KYCKit
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformUIKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    - createIntermediateGroups: true
-      path: Modules/Analytics/Sources/AnalyticsKitMock
-    templateAttributes:
-      featureName: KYCFeature
-    templates:
-    - ModuleTests
   OnboardingDemo:
     dependencies:
-    - target: KYCKit
-    - target: KYCUIKit
     - target: OnboardingKit
     - target: OnboardingUIKit
     - target: SharedPackagesKit
@@ -1034,8 +971,6 @@ targets:
     scheme:
       testTargets:
         - SettingsKitTests
-    dependencies:
-    - target: KYCKit
     templateAttributes:
       featureName: SettingsFeature
     templates:
@@ -1054,8 +989,6 @@ targets:
       featureName: SettingsFeature
   SettingsUIKit:
     dependencies:
-      - target: KYCKit
-      - target: KYCUIKit
       - target: SettingsKit
     scheme:
       testTargets:
@@ -1191,8 +1124,6 @@ targets:
       testTargets:
       - TransactionUIKitTests
     dependencies:
-    - target: KYCKit
-    - target: KYCUIKit
     - target: TransactionKit
     templateAttributes:
       featureName: TransactionFeature

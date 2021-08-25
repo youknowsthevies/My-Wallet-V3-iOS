@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import KYCUIKit
+import FeatureKYCUI
 import Localization
 import PlatformUIKit
 import RIBs

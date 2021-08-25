@@ -1,17 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import KYCKit
-import KYCUIKit
+import FeatureKYCDomain
+import FeatureKYCUI
 import OnboardingUIKit
 import SwiftUI
 import UIKit
 
 final class DemoKYCAdapter: OnboardingUIKit.EmailVerificationRouterAPI {
 
-    let router: KYCUIKit.Routing = {
+    let router: FeatureKYCUI.Routing = {
         let mockEmailVerificationService = MockEmailVerificationService()
-        return KYCUIKit.Router(
+        return FeatureKYCUI.Router(
             emailVerificationService: mockEmailVerificationService,
             openMailApp: { completion in
                 mockEmailVerificationService.stubbedVerificationStatus = .verified
@@ -33,7 +33,7 @@ final class DemoKYCAdapter: OnboardingUIKit.EmailVerificationRouterAPI {
     }
 }
 
-private final class MockEmailVerificationService: KYCKit.EmailVerificationServiceAPI {
+private final class MockEmailVerificationService: FeatureKYCDomain.EmailVerificationServiceAPI {
 
     fileprivate var stubbedVerificationStatus: EmailVerificationResponse.Status = .unverified
 

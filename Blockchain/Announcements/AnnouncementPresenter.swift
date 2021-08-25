@@ -3,7 +3,7 @@
 import AnalyticsKit
 import DashboardUIKit
 import DIKit
-import KYCKit
+import FeatureKYCDomain
 import PlatformKit
 import PlatformUIKit
 import RxCocoa

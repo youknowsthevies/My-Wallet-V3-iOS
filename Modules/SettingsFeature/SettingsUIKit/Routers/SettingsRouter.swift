@@ -3,8 +3,8 @@
 import AnalyticsKit
 import DIKit
 import FeatureAuthenticationDomain
-import KYCKit
-import KYCUIKit
+import FeatureKYCDomain
+import FeatureKYCUI
 import Localization
 import PlatformKit
 import PlatformUIKit

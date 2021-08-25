@@ -14,6 +14,8 @@
 @_exported import FeatureAuthenticationData
 @_exported import FeatureAuthenticationDomain
 @_exported import FeatureAuthenticationUI
+@_exported import FeatureKYCDomain
+@_exported import FeatureKYCUI
 @_exported import HDWalletKit
 @_exported import Localization
 @_exported import Lottie

@@ -89,8 +89,8 @@ func defineDependencies() {
         DependencyContainer.buySellKit
         DependencyContainer.activityKit
         DependencyContainer.activityUIKit
-        DependencyContainer.kycKit
-        DependencyContainer.kycUIKit
+        DependencyContainer.featureKYCDomain
+        DependencyContainer.featureKYCUI
         DependencyContainer.blockchain
         DependencyContainer.settingsKit
         DependencyContainer.settingsUIKit

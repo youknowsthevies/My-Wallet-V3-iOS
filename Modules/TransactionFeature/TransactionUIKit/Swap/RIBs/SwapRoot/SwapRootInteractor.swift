@@ -2,7 +2,7 @@
 
 import AnalyticsKit
 import DIKit
-import KYCUIKit
+import FeatureKYCUI
 import PlatformKit
 import PlatformUIKit
 import RIBs

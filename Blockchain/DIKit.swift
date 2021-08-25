@@ -11,8 +11,8 @@ import ERC20Kit
 import EthereumKit
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
-import KYCKit
-import KYCUIKit
+import FeatureKYCDomain
+import FeatureKYCUI
 import NetworkKit
 import OnboardingKit
 import OnboardingUIKit
@@ -459,10 +459,10 @@ extension DependencyContainer {
 
         // MARK: KYC Module
 
-        factory { () -> KYCUIKit.Routing in
-            let emailVerificationService: KYCKit.EmailVerificationServiceAPI = DIKit.resolve()
+        factory { () -> FeatureKYCUI.Routing in
+            let emailVerificationService: FeatureKYCDomain.EmailVerificationServiceAPI = DIKit.resolve()
             let externalAppOpener: ExternalAppOpener = DIKit.resolve()
-            return KYCUIKit.Router(
+            return FeatureKYCUI.Router(
                 analyticsRecorder: DIKit.resolve(),
                 legacyRouter: DIKit.resolve(),
                 kycService: DIKit.resolve(),
@@ -471,7 +471,7 @@ extension DependencyContainer {
             )
         }
 
-        factory { () -> KYCKit.EmailVerificationAPI in
+        factory { () -> FeatureKYCDomain.EmailVerificationAPI in
             EmailVerificationAdapter(settingsService: DIKit.resolve())
         }
 
