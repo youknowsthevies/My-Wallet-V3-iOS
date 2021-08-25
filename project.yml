@@ -333,7 +333,7 @@ packages:
     path: Modules/CommonCrypto
   WalletCore:
     url: git@github.com:oliveratkinson-bc/wallet-core.git
-    revision: ef1483ce58db6c51dff8d06d5cd2de3804d65522
+    revision: 44bf856ce6cea5d804c2182804e8659dc59fc82a
   Localization:
     path: Modules/Localization
   WalletPayload:
