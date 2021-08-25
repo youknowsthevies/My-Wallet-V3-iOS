@@ -2,11 +2,11 @@
 
 import BigInt
 import DIKit
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import stellarsdk
 import ToolKit
-import TransactionKit
 
 final class StellarTransactionDispatcher {
 

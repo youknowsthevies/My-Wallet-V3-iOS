@@ -2,9 +2,9 @@
 
 @testable import Blockchain
 import Combine
+import FeatureTransactionUI
 import OnboardingUIKit
 import ToolKit
-import TransactionUIKit
 import XCTest
 
 final class TransactionsAdapterTests: XCTestCase {
@@ -71,7 +71,7 @@ final class TransactionsAdapterTests: XCTestCase {
     }
 }
 
-final class MockTransactionsRouter: TransactionUIKit.TransactionsRouterAPI {
+final class MockTransactionsRouter: FeatureTransactionUI.TransactionsRouterAPI {
 
     struct RecordedInvocations {
         var presentTransactionFlow: [(action: TransactionFlowAction, presenter: UIViewController)] = []

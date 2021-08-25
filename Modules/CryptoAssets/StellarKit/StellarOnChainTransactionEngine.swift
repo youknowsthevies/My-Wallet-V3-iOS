@@ -1,11 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import stellarsdk
 import ToolKit
-import TransactionKit
 
 final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 

@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import ToolKit
-import TransactionKit
 
 public struct BitcoinChainTransactionProposal<Token: BitcoinChainToken> {
     public let destination: BitcoinChainReceiveAddress<Token>

@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import stellarsdk
-import TransactionKit
 
 final class StellarCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
 

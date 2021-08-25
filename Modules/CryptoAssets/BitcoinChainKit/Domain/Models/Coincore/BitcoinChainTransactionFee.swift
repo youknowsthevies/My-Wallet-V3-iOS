@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
-import TransactionKit
 
 public struct BitcoinChainTransactionFee<Token: BitcoinChainToken>: TransactionFee, Decodable {
     public static var cryptoType: HasPathComponent {

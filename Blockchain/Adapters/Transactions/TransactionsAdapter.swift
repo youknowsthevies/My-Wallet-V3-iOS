@@ -2,8 +2,8 @@
 
 import Combine
 import DIKit
+import FeatureTransactionUI
 import PlatformKit
-import TransactionUIKit
 
 /// Represents all types of transactions the user can perform.
 enum TransactionType: Equatable {
@@ -85,10 +85,10 @@ extension TransactionResult {
 
 final class TransactionsAdapter: TransactionsAdapterAPI {
 
-    private let router: TransactionUIKit.TransactionsRouterAPI
+    private let router: FeatureTransactionUI.TransactionsRouterAPI
     private var cancellables = Set<AnyCancellable>()
 
-    init(router: TransactionUIKit.TransactionsRouterAPI = resolve()) {
+    init(router: FeatureTransactionUI.TransactionsRouterAPI = resolve()) {
         self.router = router
     }
 

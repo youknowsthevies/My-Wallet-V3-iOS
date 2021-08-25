@@ -2,9 +2,9 @@
 
 import BigInt
 import DIKit
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
-import TransactionKit
 
 public protocol EthereumTransactionDispatcherAPI {
     func send(transaction: EthereumTransactionCandidate, secondPassword: String) -> Single<EthereumTransactionPublished>

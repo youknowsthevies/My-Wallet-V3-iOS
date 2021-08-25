@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import ToolKit
-import TransactionKit
 import WalletCore
 
 final class BitcoinChainExternalAssetAddressFactory: CryptoReceiveAddressFactory {

@@ -3,10 +3,10 @@
 import BigInt
 import DIKit
 import EthereumKit
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import ToolKit
-import TransactionKit
 
 final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
 

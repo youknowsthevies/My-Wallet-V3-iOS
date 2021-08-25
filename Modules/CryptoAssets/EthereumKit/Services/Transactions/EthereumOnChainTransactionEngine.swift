@@ -2,10 +2,10 @@
 
 import BigInt
 import DIKit
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import ToolKit
-import TransactionKit
 
 final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 

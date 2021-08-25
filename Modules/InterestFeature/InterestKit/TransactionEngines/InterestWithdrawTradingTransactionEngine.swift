@@ -2,10 +2,10 @@
 
 import CombineExt
 import DIKit
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import ToolKit
-import TransactionKit
 
 public final class InterestWithdrawTradingTransationEngine: InterestTransactionEngine {
 

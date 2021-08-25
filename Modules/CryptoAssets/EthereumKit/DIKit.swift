@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureTransactionDomain
 import PlatformKit
-import TransactionKit
 
 extension DependencyContainer {
 

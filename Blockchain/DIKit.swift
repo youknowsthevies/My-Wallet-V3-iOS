@@ -13,6 +13,8 @@ import FeatureAuthenticationData
 import FeatureAuthenticationDomain
 import FeatureKYCDomain
 import FeatureKYCUI
+import FeatureTransactionDomain
+import FeatureTransactionUI
 import NetworkKit
 import OnboardingKit
 import OnboardingUIKit
@@ -23,8 +25,6 @@ import SettingsKit
 import SettingsUIKit
 import StellarKit
 import ToolKit
-import TransactionKit
-import TransactionUIKit
 import WalletPayloadKit
 
 // MARK: - Settings Dependencies
@@ -504,7 +504,7 @@ extension DependencyContainer {
             KYCAdapter()
         }
 
-        factory { () -> TransactionUIKit.KYCSDDServiceAPI in
+        factory { () -> FeatureTransactionUI.KYCSDDServiceAPI in
             TransactionsKYCAdapter()
         }
 

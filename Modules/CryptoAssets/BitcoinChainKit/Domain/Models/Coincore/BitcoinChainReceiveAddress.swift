@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
-import TransactionKit
 
 public struct BitcoinChainReceiveAddress<Token: BitcoinChainToken>: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
 

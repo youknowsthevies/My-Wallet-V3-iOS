@@ -13,6 +13,8 @@ import FeatureAuthenticationData
 import FeatureAuthenticationDomain
 import FeatureKYCDomain
 import FeatureKYCUI
+import FeatureTransactionData
+import FeatureTransactionUI
 import Firebase
 import FirebaseDynamicLinks
 import NetworkKit
@@ -23,8 +25,6 @@ import RIBs
 import RxSwift
 import SettingsKit
 import ToolKit
-import TransactionDataKit
-import TransactionUIKit
 import WalletPayloadKit
 
 @available(*, deprecated, message: "This is being replaced by newer AppDelegate @see App.swift file")

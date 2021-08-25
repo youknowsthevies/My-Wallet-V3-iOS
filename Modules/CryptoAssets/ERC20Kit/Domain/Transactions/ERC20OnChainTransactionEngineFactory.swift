@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureTransactionDomain
 import PlatformKit
-import TransactionKit
 
 final class ERC20OnChainTransactionEngineFactory: OnChainTransactionEngineFactory {
 

@@ -2,9 +2,9 @@
 
 import BigInt
 import DIKit
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
-import TransactionKit
 
 public protocol EthereumTransactionBuildingServiceAPI {
     func buildTransaction(

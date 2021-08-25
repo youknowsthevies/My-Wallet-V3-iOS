@@ -55,10 +55,6 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: EthereumKitTests
         randomExecutionOrder: true
-      - name: TransactionKitTests
-        randomExecutionOrder: true
-      - name: TransactionUIKitTests
-        randomExecutionOrder: true
       - name: StellarKitTests
         randomExecutionOrder: true
       - name: OnboardingKitTests
@@ -348,6 +344,8 @@ packages:
     path: Modules/Platform
   FeatureKYC:
     path: Modules/FeatureKYC
+  FeatureTransaction:
+    path: Modules/FeatureTransaction
 targets:
   ActivityKit:
     dependencies:
@@ -431,8 +429,6 @@ targets:
     templates:
     - ModuleTests
   BitcoinChainKit:
-    dependencies:
-    - target: TransactionKit
     scheme:
       testTargets:
       - BitcoinChainKitTests
@@ -457,7 +453,6 @@ targets:
   BitcoinKit:
     dependencies:
     - target: BitcoinChainKit
-    - target: TransactionKit
     scheme:
       testTargets:
       - BitcoinKitTests
@@ -539,9 +534,6 @@ targets:
     - target: InterestKit
     - target: InterestDataKit
     - target: InterestUIKit
-    - target: TransactionKit
-    - target: TransactionDataKit
-    - target: TransactionUIKit
     - target: StellarKit
     - target: EthereumKit
     - target: ERC20Kit
@@ -709,7 +701,6 @@ targets:
   DashboardUIKit:
     dependencies:
     - target: DashboardKit
-    - target: TransactionUIKit
     scheme:
       testTargets:
       - DashboardUIKitTests
@@ -740,6 +731,7 @@ targets:
     - package: ComposableArchitecture
     - package: DIKit
     - package: FeatureAccountPicker
+    - package: FeatureTransaction
     - package: HDWallet
       product: HDWalletKit
     - package: FeatureKYC
@@ -792,7 +784,6 @@ targets:
   ERC20Kit:
     dependencies:
     - target: EthereumKit
-    - target: TransactionKit
     scheme:
       testTargets:
       - ERC20KitTests
@@ -819,8 +810,6 @@ targets:
     templates:
     - ModuleTests
   EthereumKit:
-    dependencies:
-    - target: TransactionKit
     scheme:
       testTargets:
       - EthereumKitTests
@@ -845,8 +834,6 @@ targets:
     templates:
     - ModuleTests
   InterestKit:
-    dependencies:
-    - target: TransactionKit
     scheme:
       testTargets:
       - InterestKitTests
@@ -1015,7 +1002,6 @@ targets:
     type: application
   StellarKit:
     dependencies:
-    - target: TransactionKit
     - framework: Carthage/Build/stellarsdk.xcframework
     scheme:
       testTargets:
@@ -1073,85 +1059,6 @@ targets:
     sources:
     - TodayExtension
     type: app-extension
-  TransactionKit:
-    scheme:
-      testTargets:
-      - TransactionKitTests
-    templateAttributes:
-      featureName: TransactionFeature
-    templates:
-    - Module
-  TransactionKitTests:
-    dependencies:
-    - target: TransactionKit
-    sources:
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/TransactionKit
-    templateAttributes:
-      featureName: TransactionFeature
-    templates:
-    - ModuleTests
-  TransactionDataKit:
-    dependencies:
-    - target: TransactionKit
-    scheme:
-      testTargets:
-      - TransactionDataKitTests
-    templateAttributes:
-      featureName: TransactionFeature
-    templates:
-      - Module
-  TransactionDataKitTests:
-    dependencies:
-    - target: TransactionDataKit
-    sources:
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    templateAttributes:
-      featureName: TransactionFeature
-    templates:
-    - ModuleTests
-  TransactionUIKit:
-    scheme:
-      testTargets:
-      - TransactionUIKitTests
-    dependencies:
-    - target: TransactionKit
-    templateAttributes:
-      featureName: TransactionFeature
-    templates:
-    - Module
-    - UIModule
-  TransactionUIKitTests:
-    dependencies:
-    - target: TransactionUIKit
-    sources:
-    - createIntermediateGroups: true
-      path: Modules/Analytics/Sources/AnalyticsKitMock
-    - createIntermediateGroups: true
-      path: Modules/Network/Sources/NetworkKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformKitMock
-    - createIntermediateGroups: true
-      path: Modules/Platform/Sources/PlatformUIKitMock
-    - createIntermediateGroups: true
-      path: Modules/Tool/Sources/ToolKitMock
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/TransactionKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/TransactionUIKit
-    templateAttributes:
-      featureName: TransactionFeature
-    templates:
-    - ModuleTests
   RemoteNotificationsKit:
     scheme:
       testTargets:

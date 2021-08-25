@@ -83,9 +83,9 @@ func defineDependencies() {
         DependencyContainer.bitcoinKit
         DependencyContainer.bitcoinCashKit
         DependencyContainer.stellarKit
-        DependencyContainer.transactionKit
-        DependencyContainer.transactionDataKit
-        DependencyContainer.transactionUIKit
+        DependencyContainer.featureTransactionData
+        DependencyContainer.featureTransactionDomain
+        DependencyContainer.featureTransactionUI
         DependencyContainer.buySellKit
         DependencyContainer.activityKit
         DependencyContainer.activityUIKit

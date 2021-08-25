@@ -2,12 +2,12 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureTransactionUI
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
-import TransactionUIKit
 
 public protocol BackupRouterAPI {
     var completionRelay: PublishRelay<Void> { get }

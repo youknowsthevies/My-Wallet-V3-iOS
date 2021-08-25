@@ -4,14 +4,14 @@ import ActivityUIKit
 import AnalyticsKit
 import DashboardUIKit
 import DIKit
+import FeatureTransactionDomain
+import FeatureTransactionUI
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
 import RxSwift
 import ToolKit
-import TransactionKit
-import TransactionUIKit
 
 final class TabControllerManager: NSObject {
 

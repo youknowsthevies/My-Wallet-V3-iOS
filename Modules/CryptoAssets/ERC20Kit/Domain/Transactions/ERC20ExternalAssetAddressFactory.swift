@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import EthereumKit
+import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
-import TransactionKit
 
 final class ERC20ExternalAssetAddressFactory: CryptoReceiveAddressFactory {
 
