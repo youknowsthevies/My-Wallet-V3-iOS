@@ -105,7 +105,7 @@
         "repositoryURL": "git@github.com:oliveratkinson-bc/wallet-core.git",
         "state": {
           "branch": "blockchain/swift-package-manager",
-          "revision": "b71f88aa2f3087a8c1ecd00371f16970b8cbbec3",
+          "revision": "44bf856ce6cea5d804c2182804e8659dc59fc82a",
           "version": null
         }
       },
