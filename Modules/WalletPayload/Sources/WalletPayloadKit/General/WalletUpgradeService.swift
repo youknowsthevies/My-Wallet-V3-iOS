@@ -26,6 +26,10 @@ final class WalletUpgradeService: WalletUpgradeServicing {
 
     // MARK: Types
 
+    enum WalletError: Error {
+        case walletNotInitialized
+    }
+
     enum PayloadVersion: String {
         case v3
         case v4
@@ -33,15 +37,18 @@ final class WalletUpgradeService: WalletUpgradeServicing {
 
     // MARK: Private Properties
 
+    private let errorRecorder: ErrorRecording
     private let walletUpgradeJSService: WalletUpgradeJSServicing
     private let wallet: WalletUpgradingAPI
 
     // MARK: Init
 
     init(
+        errorRecorder: ErrorRecording = resolve(),
         wallet: WalletUpgradingAPI = resolve(),
         walletUpgradeJSService: WalletUpgradeJSServicing = resolve()
     ) {
+        self.errorRecorder = errorRecorder
         self.wallet = wallet
         self.walletUpgradeJSService = walletUpgradeJSService
     }
@@ -50,14 +57,16 @@ final class WalletUpgradeService: WalletUpgradeServicing {
 
     var needsWalletUpgrade: Single<Bool> {
         guard wallet.isInitialized else {
-            fatalError("Wallet is not initialized yet.")
+            errorRecorder.error(WalletError.walletNotInitialized)
+            return .just(false)
         }
         return necessaryUpgrades.map(\.isEmpty).map(!)
     }
 
     var needsWalletUpgradePublisher: AnyPublisher<Bool, Error> {
         guard wallet.isInitialized else {
-            fatalError("Wallet is not initialized yet.")
+            errorRecorder.error(WalletError.walletNotInitialized)
+            return .just(false)
         }
         return necessaryUpgrades
             .map(\.isEmpty)
