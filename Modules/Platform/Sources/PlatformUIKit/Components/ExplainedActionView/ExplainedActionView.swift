@@ -100,7 +100,7 @@ public final class ExplainedActionView: UIView {
         contentStackView.spacing = 8
 
         disclosureImageView.contentMode = .scaleAspectFit
-        disclosureImageView.image = UIImage(named: "icon-disclosure-small", in: bundle, compatibleWith: .none)
+        disclosureImageView.image = UIImage(named: "icon-disclosure-small", in: .module, compatibleWith: .none)
     }
 
     @available(*, unavailable)

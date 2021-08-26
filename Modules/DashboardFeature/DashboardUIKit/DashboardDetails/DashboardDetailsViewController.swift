@@ -28,7 +28,7 @@ final class DashboardDetailsViewController: BaseScreenViewController {
         self.presenter = presenter
         super.init(
             nibName: DashboardDetailsViewController.objectName,
-            bundle: DashboardDetailsViewController.bundle
+            bundle: Bundle(for: DashboardDetailsViewController.self)
         )
     }
 

@@ -24,7 +24,7 @@ final class TransferCancellationViewController: UIViewController {
 
     init(presenter: TransferCancellationScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: TransferCancellationViewController.objectName, bundle: Self.bundle)
+        super.init(nibName: TransferCancellationViewController.objectName, bundle: .module)
     }
 
     @available(*, unavailable)

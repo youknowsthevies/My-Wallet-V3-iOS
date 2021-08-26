@@ -30,14 +30,14 @@ class LinkBankViaPartnerView: UIView {
         // Static content
         blockchainLogo.translatesAutoresizingMaskIntoConstraints = false
         blockchainLogo.contentMode = .center
-        blockchainLogo.image = UIImage(named: "link-bank-splash-bc-icon", in: bundle, compatibleWith: nil)
+        blockchainLogo.image = UIImage(named: "link-bank-splash-bc-icon", in: .module, compatibleWith: nil)
         bankIcon.translatesAutoresizingMaskIntoConstraints = false
         bankIcon.contentMode = .center
-        bankIcon.image = UIImage(named: "link-bank-splash-bank-icon", in: bundle, compatibleWith: nil)
+        bankIcon.image = UIImage(named: "link-bank-splash-bank-icon", in: .module, compatibleWith: nil)
         line.backgroundColor = Color.darkBlueBackground
 
         partnerBackgroundImageView.contentMode = .center
-        partnerBackgroundImageView.image = UIImage(named: "splash-screen-partner-bg", in: bundle, compatibleWith: nil)
+        partnerBackgroundImageView.image = UIImage(named: "splash-screen-partner-bg", in: .module, compatibleWith: nil)
         partnerBackgroundImageView.translatesAutoresizingMaskIntoConstraints = false
 
         partnerImageView.contentMode = .center

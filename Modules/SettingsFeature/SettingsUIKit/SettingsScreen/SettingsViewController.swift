@@ -74,11 +74,11 @@ final class SettingsViewController: BaseScreenViewController {
         tableView.estimatedSectionHeaderHeight = 70
         tableView.sectionHeaderHeight = UITableView.automaticDimension
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.registerNibCell(SwitchTableViewCell.self, in: SwitchTableViewCell.bundle)
-        tableView.registerNibCell(ClipboardTableViewCell.self, in: ClipboardTableViewCell.bundle)
+        tableView.registerNibCell(SwitchTableViewCell.self, in: Bundle(for: SwitchTableViewCell.self))
+        tableView.registerNibCell(ClipboardTableViewCell.self, in: Bundle(for: ClipboardTableViewCell.self))
         tableView.registerNibCell(BadgeTableViewCell.self, in: .platformUIKit)
-        tableView.registerNibCell(PlainTableViewCell.self, in: PlainTableViewCell.bundle)
-        tableView.registerNibCell(AddPaymentMethodTableViewCell.self, in: AddPaymentMethodTableViewCell.bundle)
+        tableView.registerNibCell(PlainTableViewCell.self, in: Bundle(for: PlainTableViewCell.self))
+        tableView.registerNibCell(AddPaymentMethodTableViewCell.self, in: Bundle(for: AddPaymentMethodTableViewCell.self))
         tableView.register(LinkedBankTableViewCell.self)
         tableView.registerNibCell(LinkedCardTableViewCell.self, in: .platformUIKit)
         tableView.register(SettingsSkeletonTableViewCell.self)
