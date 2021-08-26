@@ -574,6 +574,14 @@ public enum LocalizationConstants {
             "Home",
             comment: "Dashboard screen: title label"
         )
+        public static let portfolio = NSLocalizedString(
+            "Portfolio",
+            comment: "Dashboard screen: Portfolio tab"
+        )
+        public static let prices = NSLocalizedString(
+            "Prices",
+            comment: "Dashboard screen: Prices tab"
+        )
     }
 
     public enum CustodyWalletInformation {

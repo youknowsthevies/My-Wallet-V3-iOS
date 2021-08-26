@@ -63,7 +63,8 @@ final class TabControllerManager: NSObject {
 
     func showDashboard() {
         if dashboardNavigationController == nil {
-            dashboardNavigationController = UINavigationController(rootViewController: DashboardViewController())
+            let builder = DashboardScreenBuilder()
+            dashboardNavigationController = UINavigationController(rootViewController: builder.build())
         }
         tabViewController.setActiveViewController(
             dashboardNavigationController,

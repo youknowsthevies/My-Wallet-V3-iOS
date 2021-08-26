@@ -10,10 +10,6 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
 
     // MARK: - AssetLineChartTableViewCellPresenting
 
-    var priceWindowPresenter: MultiActionViewPresenting {
-        DefaultActionViewPresenter(using: priceWindowItems)
-    }
-
     let presenterContainer: AssetLineChartPresenterContainer
 
     let lineChartView: LineChartView
@@ -21,6 +17,13 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
     var window: Signal<PriceWindow> {
         windowRelay.asSignal()
     }
+
+    private(set) lazy var priceWindowPresenter: MultiActionViewPresenting = MultiActionViewPresenter(
+        segmentedViewModel: .default(
+            items: priceWindowItems,
+            defaultSelectedSegmentIndex: 1
+        )
+    )
 
     public var isScrollEnabled: Driver<Bool> {
         scrollingEnabledRelay.asDriver()

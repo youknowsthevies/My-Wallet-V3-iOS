@@ -24,6 +24,9 @@ public enum InternalFeature: String, CaseIterable {
     /// - Note: Old manual guid login screen is used only for internal builds
     case disableGUIDLogin
 
+    /// Enable split dashboard screen.
+    case splitDashboard
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -39,6 +42,8 @@ public enum InternalFeature: String, CaseIterable {
             return false
         case .disableGUIDLogin:
             return false
+        case .splitDashboard:
+            return true
         }
     }
 }
@@ -64,6 +69,8 @@ extension InternalFeature {
             return "Sell: Uses Transactions Flow to Sell Crypto"
         case .disableGUIDLogin:
             return "Disable manual (guid) login option"
+        case .splitDashboard:
+            return "Split Dashboard Screen"
         }
     }
 }

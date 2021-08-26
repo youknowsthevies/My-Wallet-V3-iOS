@@ -27,13 +27,6 @@ public final class DashboardViewController: BaseScreenViewController {
 
     // MARK: - Setup
 
-    public convenience init() {
-        self.init(
-            fiatBalanceCellProvider: resolve(),
-            presenter: DashboardScreenPresenter()
-        )
-    }
-
     init(
         fiatBalanceCellProvider: FiatBalanceCellProviding,
         presenter: DashboardScreenPresenter
