@@ -11,10 +11,10 @@ let package = Package(
         .library(name: "FeatureAuthenticationMock", targets: ["FeatureAuthenticationMock"])
     ],
     dependencies: [
-        .package(name: "Zxcvbn", url: "git@github.com:oliveratkinson-bc/zxcvbn-ios.git", .branch("swift-package-manager")),
-        .package(name: "DIKit", url: "git@github.com:jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
-        .package(name: "swift-composable-architecture", url: "git@github.com:pointfreeco/swift-composable-architecture.git", from: "0.18.0"),
-        .package(name: "RxSwift", url: "git@github.com:ReactiveX/RxSwift.git", from: "5.1.3"),
+        .package(name: "Zxcvbn", url: "https://github.com/oliveratkinson-bc/zxcvbn-ios.git", .branch("swift-package-manager")),
+        .package(name: "DIKit", url: "https://github.com/jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
+        .package(name: "swift-composable-architecture", url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.18.0"),
+        .package(name: "RxSwift", url: "https://github.com/ReactiveX/RxSwift.git", from: "5.1.3"),
         .package(path: "../Analytics"),
         .package(path: "../HDWallet"),
         .package(path: "../Localization"),

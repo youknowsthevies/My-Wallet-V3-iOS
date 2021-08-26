@@ -23,10 +23,14 @@ let package = Package(
         .library(name: "StellarKitMock", targets: ["StellarKitMock"])
     ],
     dependencies: [
-        .package(name: "BigInt", url: "git@github.com:attaswift/BigInt.git", from: "5.2.1"),
-        .package(name: "DIKit", url: "git@github.com:jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
-        .package(name: "RxSwift", url: "git@github.com:ReactiveX/RxSwift.git", from: "5.1.3"),
-        .package(name: "stellarsdk", url: "git@github.com:oliveratkinson-bc/stellar-ios-mac-sdk.git", .branch("blockchain/swift-package-manager")),
+        .package(name: "BigInt", url: "https://github.com/attaswift/BigInt.git", from: "5.2.1"),
+        .package(name: "DIKit", url: "https://github.com/jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
+        .package(name: "RxSwift", url: "https://github.com/ReactiveX/RxSwift.git", from: "5.1.3"),
+        .package(
+            name: "stellarsdk",
+            url: "https://github.com/oliveratkinson-bc/stellar-ios-mac-sdk.git",
+            .branch("blockchain/swift-package-manager")
+        ),
         .package(path: "../Platform"),
         .package(path: "../FeatureTransaction"),
         .package(path: "../Test"),

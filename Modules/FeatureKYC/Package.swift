@@ -13,12 +13,12 @@ let package = Package(
         .library(name: "FeatureKYCMock", targets: ["FeatureKYCDomainMock", "FeatureKYCUIMock"])
     ],
     dependencies: [
-        .package(name: "swift-composable-architecture", url: "git@github.com:pointfreeco/swift-composable-architecture.git", from: "0.24.0"),
-        .package(name: "BigInt", url: "git@github.com:attaswift/BigInt.git", from: "5.2.1"),
-        .package(name: "DIKit", url: "git@github.com:jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
-        .package(name: "RxSwift", url: "git@github.com:ReactiveX/RxSwift.git", from: "5.1.3"),
-        .package(name: "Veriff", url: "git@github.com:Veriff/veriff-ios-spm.git", .exact("4.3.1")),
-        .package(name: "RxCombine", url: "git@github.com:paulo-bc/RxCombine.git", from: "1.6.2"),
+        .package(name: "swift-composable-architecture", url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.24.0"),
+        .package(name: "BigInt", url: "https://github.com/attaswift/BigInt.git", from: "5.2.1"),
+        .package(name: "DIKit", url: "https://github.com/jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
+        .package(name: "RxSwift", url: "https://github.com/ReactiveX/RxSwift.git", from: "5.1.3"),
+        .package(name: "Veriff", url: "https://github.com/Veriff/veriff-ios-spm.git", .exact("4.3.1")),
+        .package(name: "RxCombine", url: "https://github.com/paulo-bc/RxCombine.git", from: "1.6.2"),
         .package(path: "../Analytics"),
         .package(path: "../Localization"),
         .package(path: "../Network"),

@@ -10,8 +10,8 @@ let package = Package(
         .library(name: "WalletPayloadKitMock", targets: ["WalletPayloadKitMock"])
     ],
     dependencies: [
-        .package(url: "git@github.com:ReactiveX/RxSwift.git", from: "5.1.3"),
-        .package(url: "git@github.com:jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "5.1.3"),
+        .package(url: "https://github.com/jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
         .package(path: "../Localization"),
         .package(path: "../CommonCrypto"),
         .package(path: "../Tool")

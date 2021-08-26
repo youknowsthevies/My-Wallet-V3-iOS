@@ -16,9 +16,9 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "git@github.com:jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
-        .package(url: "git@github.com:paulo-bc/RxCombine.git", from: "1.6.2"),
-        .package(url: "git@github.com:ReactiveX/RxSwift.git", from: "5.1.3"),
+        .package(url: "https://github.com/jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
+        .package(url: "https://github.com/paulo-bc/RxCombine.git", from: "1.6.2"),
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "5.1.3"),
         .package(name: "Analytics", path: "../Analytics"),
         .package(name: "Test", path: "../Test"),
         .package(name: "Tool", path: "../Tool")

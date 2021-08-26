@@ -3,7 +3,7 @@
     "pins": [
       {
         "package": "BigInt",
-        "repositoryURL": "git@github.com:attaswift/BigInt.git",
+        "repositoryURL": "https://github.com/attaswift/BigInt.git",
         "state": {
           "branch": null,
           "revision": "889a1ecacd73ccc189c5cb29288048f186c44ed9",
@@ -12,7 +12,7 @@
       },
       {
         "package": "Charts",
-        "repositoryURL": "git@github.com:danielgindi/Charts.git",
+        "repositoryURL": "https://github.com/danielgindi/Charts.git",
         "state": {
           "branch": null,
           "revision": "66546404a6739173b8e436ab6bc1f2897cd08594",
@@ -48,7 +48,7 @@
       },
       {
         "package": "DIKit",
-        "repositoryURL": "git@github.com:jackpooleybc/DIKit.git",
+        "repositoryURL": "https://github.com/jackpooleybc/DIKit.git",
         "state": {
           "branch": "safe-property-wrappers",
           "revision": "1d20369ab59d123b4d0bf85dffbe045f4f405ec1",
@@ -66,7 +66,7 @@
       },
       {
         "package": "PhoneNumberKit",
-        "repositoryURL": "git@github.com:marmelroy/PhoneNumberKit.git",
+        "repositoryURL": "https://github.com/marmelroy/PhoneNumberKit.git",
         "state": {
           "branch": null,
           "revision": "1ef0431b971f69c48ca5eb4cdba07f2c5da54c35",
@@ -75,7 +75,7 @@
       },
       {
         "package": "RIBs",
-        "repositoryURL": "git@github.com:paulo-bc/RIBs.git",
+        "repositoryURL": "https://github.com/paulo-bc/RIBs.git",
         "state": {
           "branch": null,
           "revision": "6cad1e953d9b60ab177a963dd63715806ed0d192",
@@ -84,7 +84,7 @@
       },
       {
         "package": "RxCombine",
-        "repositoryURL": "git@github.com:paulo-bc/RxCombine.git",
+        "repositoryURL": "https://github.com/paulo-bc/RxCombine.git",
         "state": {
           "branch": null,
           "revision": "0762454fba26dcf315aaa7ac5ed5fbdecd50fef2",
@@ -93,7 +93,7 @@
       },
       {
         "package": "RxDataSources",
-        "repositoryURL": "git@github.com:RxSwiftCommunity/RxDataSources.git",
+        "repositoryURL": "https://github.com/RxSwiftCommunity/RxDataSources.git",
         "state": {
           "branch": null,
           "revision": "a18cee01c9ee55f04d0c7eb15c77a96c3648c88e",
@@ -102,7 +102,7 @@
       },
       {
         "package": "RxSwift",
-        "repositoryURL": "git@github.com:ReactiveX/RxSwift.git",
+        "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
         "state": {
           "branch": null,
           "revision": "cec68169a048a079f461ba203fe85636548d7a89",
@@ -156,7 +156,7 @@
       },
       {
         "package": "Veriff",
-        "repositoryURL": "git@github.com:Veriff/veriff-ios-spm.git",
+        "repositoryURL": "https://github.com/Veriff/veriff-ios-spm.git",
         "state": {
           "branch": null,
           "revision": "c5b656b1d1fbc25ff448162539db20a824c9e42f",
@@ -165,7 +165,7 @@
       },
       {
         "package": "WalletCore",
-        "repositoryURL": "git@github.com:oliveratkinson-bc/wallet-core.git",
+        "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
         "state": {
           "branch": null,
           "revision": "ef1483ce58db6c51dff8d06d5cd2de3804d65522",
@@ -183,7 +183,7 @@
       },
       {
         "package": "Zxcvbn",
-        "repositoryURL": "git@github.com:oliveratkinson-bc/zxcvbn-ios.git",
+        "repositoryURL": "https://github.com/oliveratkinson-bc/zxcvbn-ios.git",
         "state": {
           "branch": "swift-package-manager",
           "revision": "c0db9d5278bbc07b28937278406cc042e4bebf68",
