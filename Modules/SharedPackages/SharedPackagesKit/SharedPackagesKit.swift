@@ -21,6 +21,7 @@
 @_exported import FeatureAuthenticationUI
 @_exported import FeatureKYCDomain
 @_exported import FeatureKYCUI
+@_exported import FeatureTourUI
 @_exported import FeatureTransactionData
 @_exported import FeatureTransactionDomain
 @_exported import FeatureTransactionUI

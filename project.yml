@@ -285,6 +285,8 @@ packages:
     path: Modules/UIComponents
   FeatureAccountPicker:
     path: Modules/FeatureAccountPicker
+  FeatureTour:
+    path: Modules/FeatureTour
   DIKit:
     url: git@github.com:jackpooleybc/DIKit.git
     branch: safe-property-wrappers
@@ -649,6 +651,7 @@ targets:
       product: StellarKit
     - package: DIKit
     - package: FeatureAccountPicker
+    - package: FeatureTour
     - package: FeatureTransaction
     - package: HDWallet
       product: HDWalletKit
