@@ -8,7 +8,7 @@ public protocol UpdateWalletInformationClientAPI: AnyObject {
 
     func updateWalletInfo(
         jwtToken: String
-    ) -> AnyPublisher<EmptyNetworkResponse, NabuNetworkError>
+    ) -> AnyPublisher<Void, NabuNetworkError>
 }
 
 final class UpdateWalletInformationClient: UpdateWalletInformationClientAPI {
@@ -34,7 +34,7 @@ final class UpdateWalletInformationClient: UpdateWalletInformationClientAPI {
 
     func updateWalletInfo(
         jwtToken: String
-    ) -> AnyPublisher<EmptyNetworkResponse, NabuNetworkError> {
+    ) -> AnyPublisher<Void, NabuNetworkError> {
         let payload = JWTPayload(jwt: jwtToken)
         let request = requestBuilder.put(
             path: Path.updateWalletInfo,

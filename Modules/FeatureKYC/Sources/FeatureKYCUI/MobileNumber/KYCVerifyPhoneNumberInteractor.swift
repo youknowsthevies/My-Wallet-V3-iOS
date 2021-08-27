@@ -53,6 +53,6 @@ class KYCVerifyPhoneNumberInteractor {
     }
 
     private func updateWalletInfo() -> Completable {
-        walletSync.sync()
+        walletSync.sync().asSingle().asCompletable()
     }
 }

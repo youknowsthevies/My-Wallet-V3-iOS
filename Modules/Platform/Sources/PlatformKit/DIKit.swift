@@ -35,9 +35,11 @@ extension DependencyContainer {
 
         factory { KYCClient() as KYCClientAPI }
 
-        factory { UserCreationClient() as UserCreationClientAPI }
+        factory { NabuUserCreationClient() as NabuUserCreationClientAPI }
 
-        factory { NabuAuthenticationClient() as NabuAuthenticationClientAPI }
+        factory { NabuSessionTokenClient() as NabuSessionTokenClientAPI }
+
+        factory { NabuResetUserClient() as NabuResetUserClientAPI }
 
         factory { SupportedAssetsRemoteService() as SupportedAssetsRemoteServiceAPI }
 

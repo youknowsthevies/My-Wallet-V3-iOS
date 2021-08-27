@@ -4,12 +4,12 @@ import Combine
 import DIKit
 import NetworkKit
 
-public protocol UserCreationClientAPI: AnyObject {
+public protocol NabuUserCreationClientAPI: AnyObject {
 
     func createUser(for jwtToken: String) -> AnyPublisher<NabuOfflineTokenResponse, NetworkError>
 }
 
-final class UserCreationClient: UserCreationClientAPI {
+final class NabuUserCreationClient: NabuUserCreationClientAPI {
 
     // MARK: - Types
 

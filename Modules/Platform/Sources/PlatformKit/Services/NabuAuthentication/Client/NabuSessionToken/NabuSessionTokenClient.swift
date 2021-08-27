@@ -4,23 +4,18 @@ import Combine
 import DIKit
 import NetworkKit
 
-public protocol NabuAuthenticationClientAPI: AnyObject {
+public protocol NabuSessionTokenClientAPI: AnyObject {
 
-    func sessionTokenPublisher(
+    func sessionToken(
         for guid: String,
         userToken: String,
         userIdentifier: String,
         deviceId: String,
         email: String
     ) -> AnyPublisher<NabuSessionTokenResponse, NetworkError>
-
-    func recoverUserPublisher(
-        offlineToken: NabuOfflineTokenResponse,
-        jwt: String
-    ) -> AnyPublisher<Void, NetworkError>
 }
 
-final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
+final class NabuSessionTokenClient: NabuSessionTokenClientAPI {
 
     // MARK: - Types
 
@@ -30,10 +25,6 @@ final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
 
     private enum Path {
         static let auth = ["auth"]
-
-        static func recover(userId: String) -> [String] {
-            ["users", "recover", userId]
-        }
     }
 
     // MARK: - Properties
@@ -51,7 +42,7 @@ final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
         self.requestBuilder = requestBuilder
     }
 
-    func sessionTokenPublisher(
+    func sessionToken(
         for guid: String,
         userToken: String,
         userIdentifier: String,
@@ -78,22 +69,5 @@ final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
             headers: headers
         )!
         return networkAdapter.perform(request: request)
-    }
-
-    func recoverUserPublisher(
-        offlineToken: NabuOfflineTokenResponse,
-        jwt: String
-    ) -> AnyPublisher<Void, NetworkError> {
-        let request = requestBuilder.post(
-            path: Path.recover(userId: offlineToken.userId),
-            body: try? JWTPayload(jwt: jwt).encode(),
-            headers: [HttpHeaderField.authorization: "Bearer \(offlineToken.token)"]
-        )!
-        return networkAdapter
-            .perform(
-                request: request,
-                responseType: EmptyNetworkResponse.self
-            )
-            .mapToVoid()
     }
 }

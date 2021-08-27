@@ -6,7 +6,7 @@ import FeatureAuthenticationDomain
 import ToolKit
 
 public enum JWTServiceError: Error {
-    case failedToRetrieveCredentials(Error)
+    case failedToRetrieveCredentials(MissingCredentialsError)
     case failedToRetrieveJWTToken
 }
 
@@ -19,13 +19,12 @@ final class JWTService: JWTServiceAPI {
 
     var token: AnyPublisher<String, JWTServiceError> {
         let client = self.client
-        return credentialsRepository.credentials
-            .asObservable()
-            .publisher
-            .eraseToAnyPublisher()
+        return credentialsRepository
+            .credentialsPublisher
             .mapError(JWTServiceError.failedToRetrieveCredentials)
             .flatMap { [client] guid, sharedKey -> AnyPublisher<String, JWTServiceError> in
-                client.requestJWT(guid: guid, sharedKey: sharedKey)
+                client
+                    .requestJWT(guid: guid, sharedKey: sharedKey)
                     .replaceError(with: JWTServiceError.failedToRetrieveJWTToken)
             }
             .eraseToAnyPublisher()

@@ -2,17 +2,16 @@
 
 import Combine
 import NetworkKit
-import ToolKit
 
 @testable import PlatformKit
 
-final class UserCreationClientMock: UserCreationClientAPI {
+final class NabuUserCreationClientMock: NabuUserCreationClientAPI {
 
     var expectedResult: Result<NabuOfflineTokenResponse, NetworkError>!
 
     func createUser(
         for jwtToken: String
     ) -> AnyPublisher<NabuOfflineTokenResponse, NetworkError> {
-        expectedResult.publisher
+        expectedResult.publisher.eraseToAnyPublisher()
     }
 }

@@ -3,7 +3,6 @@
 import Combine
 import DIKit
 import NetworkKit
-import RxSwift
 
 protocol JWTClientAPI: AnyObject {
 
