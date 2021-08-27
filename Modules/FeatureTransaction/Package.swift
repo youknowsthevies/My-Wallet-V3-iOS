@@ -32,7 +32,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(name: "swift-composable-architecture", url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.24.0"),
+        .package(name: "swift-composable-architecture", url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.24.0"),
         .package(name: "Nuke", url: "https://github.com/kean/Nuke.git", from: "10.3.1"),
         .package(name: "NukeUI", url: "https://github.com/kean/NukeUI.git", from: "0.6.5"),
         .package(name: "BigInt", url: "https://github.com/attaswift/BigInt.git", from: "5.2.1"),

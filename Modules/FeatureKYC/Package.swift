@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "FeatureKYCMock", targets: ["FeatureKYCDomainMock", "FeatureKYCUIMock"])
     ],
     dependencies: [
-        .package(name: "swift-composable-architecture", url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "0.24.0"),
+        .package(name: "swift-composable-architecture", url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.24.0"),
         .package(name: "BigInt", url: "https://github.com/attaswift/BigInt.git", from: "5.2.1"),
         .package(name: "DIKit", url: "https://github.com/jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
         .package(name: "RxSwift", url: "https://github.com/ReactiveX/RxSwift.git", from: "5.1.3"),

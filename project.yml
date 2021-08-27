@@ -264,10 +264,10 @@ targetTemplates:
       SWIFT_INSTALL_OBJC_HEADER: NO
 packages:
   SnapshotTesting:
-    url: https://github.com/pointfreeco/swift-snapshot-testing.git
+    url: https://github.com/pointfreeco/swift-snapshot-testing
     version: 1.9.0
   ComposableArchitecture:
-    url: https://github.com/pointfreeco/swift-composable-architecture.git
+    url: https://github.com/pointfreeco/swift-composable-architecture
     version: 0.24.0
   CombineExt:
     url: https://github.com/CombineCommunity/CombineExt.git
