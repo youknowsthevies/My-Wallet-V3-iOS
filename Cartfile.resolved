@@ -5,4 +5,3 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseDynamicLinksBinar
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.json" "8.5.0"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json" "8.5.0"
 github "SiftScience/sift-ios" "v2.0.1"
-github "Soneso/stellar-ios-mac-sdk" "1.9.9"

@@ -109,8 +109,8 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
             trailingButtonStyle: .close
         )
         // static content
-        topBackgroundImageView.image = UIImage(named: "link-bank-splash-top-bg", in: bundle, compatibleWith: nil)
-        topImageView.image = UIImage(named: "splash-screen-bank-icon", in: bundle, compatibleWith: nil)
+        topBackgroundImageView.image = UIImage(named: "link-bank-splash-top-bg", in: .module, compatibleWith: nil)
+        topImageView.image = UIImage(named: "splash-screen-bank-icon", in: .module, compatibleWith: nil)
 
         view.addSubview(topBackgroundImageView)
 

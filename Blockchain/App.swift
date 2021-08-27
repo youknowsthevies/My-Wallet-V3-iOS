@@ -1,12 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
-import DebugUIKit
 import DIKit
+import FeatureDebugUI
+import FeatureInterestData
+import FeatureSettingsDomain
 import Firebase
-import InterestDataKit
 import PlatformKit
-import SettingsKit
 import ToolKit
 import UIKit
 
@@ -87,18 +87,18 @@ func defineDependencies() {
         DependencyContainer.featureTransactionDomain
         DependencyContainer.featureTransactionUI
         DependencyContainer.buySellKit
-        DependencyContainer.activityKit
-        DependencyContainer.activityUIKit
+        DependencyContainer.featureActivityDomain
+        DependencyContainer.featureActivityUI
         DependencyContainer.featureKYCDomain
         DependencyContainer.featureKYCUI
         DependencyContainer.blockchain
-        DependencyContainer.settingsKit
-        DependencyContainer.settingsUIKit
+        DependencyContainer.featureSettingsDomain
+        DependencyContainer.featureSettingsUI
         DependencyContainer.remoteNotificationsKit
         DependencyContainer.featureAuthenticationDomain
         DependencyContainer.featureAuthenticationData
         #if INTERNAL_BUILD
-        DependencyContainer.debugUIKit
+        DependencyContainer.featureDebugUI
         #endif
     })
 }

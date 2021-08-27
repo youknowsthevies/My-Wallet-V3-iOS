@@ -6,30 +6,37 @@ let package = Package(
     name: "CryptoAssets",
     platforms: [.iOS(.v14)],
     products: [
-        //        .library( // Unsure where AlgorandReceiveAddress comes from?
-//            name: "AlgorandKit",
-//            targets: ["AlgorandKit"]
-//        ),
         .library(name: "BitcoinCashKit", targets: ["BitcoinCashKit"]),
         .library(name: "BitcoinChainKit", targets: ["BitcoinChainKit"]),
         .library(name: "BitcoinKit", targets: ["BitcoinKit"]),
         .library(name: "EthereumKit", targets: ["EthereumKit"]),
         .library(name: "ERC20Kit", targets: ["ERC20Kit"]),
         .library(name: "StellarKit", targets: ["StellarKit"]),
-
         .library(name: "BitcoinKitMock", targets: ["BitcoinKitMock"]),
         .library(name: "EthereumKitMock", targets: ["EthereumKitMock"]),
         .library(name: "ERC20KitMock", targets: ["ERC20KitMock"]),
         .library(name: "StellarKitMock", targets: ["StellarKitMock"])
     ],
     dependencies: [
-        .package(name: "BigInt", url: "https://github.com/attaswift/BigInt.git", from: "5.2.1"),
-        .package(name: "DIKit", url: "https://github.com/jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
-        .package(name: "RxSwift", url: "https://github.com/ReactiveX/RxSwift.git", from: "5.1.3"),
+        .package(
+            name: "BigInt",
+            url: "https://github.com/attaswift/BigInt.git",
+            from: "5.2.1"
+        ),
+        .package(
+            name: "DIKit",
+            url: "https://github.com/jackpooleybc/DIKit.git",
+            .branch("safe-property-wrappers")
+        ),
+        .package(
+            name: "RxSwift",
+            url: "https://github.com/ReactiveX/RxSwift.git",
+            from: "5.1.3"
+        ),
         .package(
             name: "stellarsdk",
-            url: "https://github.com/oliveratkinson-bc/stellar-ios-mac-sdk.git",
-            .branch("blockchain/swift-package-manager")
+            url: "https://github.com/Soneso/stellar-ios-mac-sdk.git",
+            .exact("2.0.2")
         ),
         .package(path: "../Platform"),
         .package(path: "../FeatureTransaction"),
@@ -40,7 +47,12 @@ let package = Package(
         .target(
             name: "BitcoinCashKit",
             dependencies: [
-                .target(name: "BitcoinChainKit")
+                .target(name: "BitcoinChainKit"),
+                .product(name: "BigInt", package: "BigInt"),
+                .product(name: "DIKit", package: "DIKit"),
+                .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .target(
@@ -48,22 +60,30 @@ let package = Package(
             dependencies: [
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .target(
             name: "BitcoinKit",
             dependencies: [
-                .target(name: "BitcoinChainKit")
+                .target(name: "BitcoinChainKit"),
+                .product(name: "BigInt", package: "BigInt"),
+                .product(name: "DIKit", package: "DIKit"),
+                .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .target(
             name: "ERC20Kit",
             dependencies: [
-                .target(name: "EthereumKit")
+                .target(name: "EthereumKit"),
+                .product(name: "BigInt", package: "BigInt"),
+                .product(name: "DIKit", package: "DIKit"),
+                .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .target(
@@ -71,31 +91,24 @@ let package = Package(
             dependencies: [
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .target(
             name: "StellarKit",
             dependencies: [
-                .product(name: "stellarsdk", package: "stellarsdk"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
+                .product(name: "stellarsdk", package: "stellarsdk"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
-//        .target(
-//            name: "AlgorandKit",
-//            dependencies: [
-//                .product(name: "PlatformKit", package: "Platform"),
-//                .product(name: "RxSwift", package: "RxSwift"),
-//            ]
-//        )
         .target(
             name: "BitcoinKitMock",
             dependencies: [
@@ -123,26 +136,32 @@ let package = Package(
         .testTarget(
             name: "BitcoinCashKitTests",
             dependencies: [
-                .target(name: "BitcoinCashKit")
+                .target(name: "BitcoinCashKit"),
+                .product(name: "TestKit", package: "Test")
             ]
         ),
         .testTarget(
             name: "BitcoinChainKitTests",
             dependencies: [
-                .target(name: "BitcoinChainKit")
+                .target(name: "BitcoinChainKit"),
+                .product(name: "TestKit", package: "Test")
             ]
         ),
         .testTarget(
             name: "BitcoinKitTests",
             dependencies: [
                 .target(name: "BitcoinKit"),
+                .target(name: "BitcoinKitMock"),
                 .product(name: "TestKit", package: "Test")
             ]
         ),
         .testTarget(
             name: "ERC20KitTests",
             dependencies: [
-                .target(name: "ERC20Kit")
+                .target(name: "ERC20Kit"),
+                .target(name: "ERC20KitMock"),
+                .product(name: "PlatformKitMock", package: "Platform"),
+                .product(name: "TestKit", package: "Test")
             ]
         ),
         .testTarget(
@@ -156,7 +175,10 @@ let package = Package(
         .testTarget(
             name: "StellarKitTests",
             dependencies: [
-                .target(name: "StellarKit")
+                .target(name: "StellarKit"),
+                .target(name: "StellarKitMock"),
+                .product(name: "PlatformKitMock", package: "Platform"),
+                .product(name: "TestKit", package: "Test")
             ]
         )
     ]

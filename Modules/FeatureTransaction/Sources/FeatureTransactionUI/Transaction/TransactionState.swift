@@ -234,10 +234,10 @@ extension TransactionState {
     var transactionErrorDescription: String {
         switch errorState {
         case .none:
-            #if INTERNAL_BUILD
-            Logger.shared.error("Unsupported API error thrown or an internal error thrown")
-            fatalError("Please map to appropriate error code.")
-            #endif
+            if BuildFlag.isInternal {
+                Logger.shared.error("Unsupported API error thrown or an internal error thrown")
+                fatalError("Please map to appropriate error code.")
+            }
             return LocalizationIds.unknownError
         case .addressIsContract:
             return LocalizationIds.addressIsContract

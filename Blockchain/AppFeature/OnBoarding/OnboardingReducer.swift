@@ -4,9 +4,9 @@ import Combine
 import ComposableArchitecture
 import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
+import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
-import SettingsKit
 import ToolKit
 
 public enum Onboarding {

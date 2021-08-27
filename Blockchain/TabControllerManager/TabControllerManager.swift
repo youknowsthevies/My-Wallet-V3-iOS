@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import ActivityUIKit
 import AnalyticsKit
-import DashboardUIKit
 import DIKit
+import FeatureActivityUI
+import FeatureDashboardUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import NetworkKit

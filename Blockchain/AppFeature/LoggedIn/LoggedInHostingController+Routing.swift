@@ -1,11 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DashboardUIKit
 import DIKit
+import FeatureDashboardUI
+import FeatureSettingsUI
 import PlatformKit
 import PlatformUIKit
-import SettingsUIKit
 import ToolKit
 
 // Provides necessary methods for several protocols and tab swapping
@@ -50,7 +50,7 @@ extension LoggedInHostingController {
     }
 
     func startBackupFlow() {
-        let router: DashboardUIKit.BackupRouterAPI = resolve()
+        let router: FeatureDashboardUI.BackupRouterAPI = resolve()
         backupRouter = router
         router.start()
     }

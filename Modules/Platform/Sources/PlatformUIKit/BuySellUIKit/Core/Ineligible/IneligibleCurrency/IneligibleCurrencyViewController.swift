@@ -21,7 +21,7 @@ final class IneligibleCurrencyViewController: UIViewController {
 
     init(presenter: IneligibleCurrencyScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: IneligibleCurrencyViewController.objectName, bundle: Self.bundle)
+        super.init(nibName: IneligibleCurrencyViewController.objectName, bundle: .module)
     }
 
     @available(*, unavailable)

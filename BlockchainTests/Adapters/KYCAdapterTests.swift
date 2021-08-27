@@ -3,7 +3,7 @@
 @testable import Blockchain
 import Combine
 import FeatureKYCUI
-import OnboardingUIKit
+import FeatureOnboardingUI
 import PlatformKit
 import PlatformUIKit
 import XCTest
@@ -128,7 +128,7 @@ final class KYCAdapterTests: XCTestCase {
         XCTAssertEqual(error, .kycStepFailed)
     }
 
-    // MARK: - OnboardingUIKit.EmailVerificationRouterAPI
+    // MARK: - FeatureOnboardingUI.EmailVerificationRouterAPI
 
     func test_maps_emailVerification_error_to_complete_for_onboarding() {
         // GIVEN: Email Verification fails

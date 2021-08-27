@@ -4,10 +4,10 @@ import BitcoinCashKit
 import BitcoinKit
 import Combine
 import DIKit
+import FeatureSettingsDomain
 import NetworkKit
 import PlatformKit
 import RxSwift
-import SettingsKit
 
 protocol ExchangeAccountRepositoryAPI {
     var hasLinkedExchangeAccount: Single<Bool> { get }

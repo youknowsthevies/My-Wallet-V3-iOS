@@ -1,18 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import ActivityKit
-import ActivityUIKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
 import Combine
-import DebugUIKit
 import DIKit
 import EthereumKit
+import FeatureActivityDomain
+import FeatureActivityUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
+import FeatureDebugUI
 import FeatureKYCDomain
 import FeatureKYCUI
+import FeatureSettingsDomain
 import FeatureTransactionData
 import FeatureTransactionUI
 import Firebase
@@ -23,7 +24,6 @@ import PlatformUIKit
 import RemoteNotificationsKit
 import RIBs
 import RxSwift
-import SettingsKit
 import ToolKit
 import WalletPayloadKit
 

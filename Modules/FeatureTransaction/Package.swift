@@ -32,14 +32,46 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(name: "swift-composable-architecture", url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.24.0"),
-        .package(name: "Nuke", url: "https://github.com/kean/Nuke.git", from: "10.3.1"),
-        .package(name: "NukeUI", url: "https://github.com/kean/NukeUI.git", from: "0.6.5"),
-        .package(name: "BigInt", url: "https://github.com/attaswift/BigInt.git", from: "5.2.1"),
-        .package(name: "DIKit", url: "https://github.com/jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
-        .package(name: "RxSwift", url: "https://github.com/ReactiveX/RxSwift.git", from: "5.1.3"),
-        .package(name: "RxDataSources", url: "https://github.com/RxSwiftCommunity/RxDataSources.git", from: "4.0.1"),
-        .package(name: "RIBs", url: "https://github.com/paulo-bc/RIBs.git", from: "0.10.2"),
+        .package(
+            name: "swift-composable-architecture",
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
+            from: "0.24.0"
+        ),
+        .package(
+            name: "Nuke",
+            url: "https://github.com/kean/Nuke.git",
+            from: "10.3.1"
+        ),
+        .package(
+            name: "NukeUI",
+            url: "https://github.com/kean/NukeUI.git",
+            from: "0.6.5"
+        ),
+        .package(
+            name: "BigInt",
+            url: "https://github.com/attaswift/BigInt.git",
+            from: "5.2.1"
+        ),
+        .package(
+            name: "DIKit",
+            url: "https://github.com/jackpooleybc/DIKit.git",
+            .branch("safe-property-wrappers")
+        ),
+        .package(
+            name: "RxSwift",
+            url: "https://github.com/ReactiveX/RxSwift.git",
+            from: "5.1.3"
+        ),
+        .package(
+            name: "RxDataSources",
+            url: "https://github.com/RxSwiftCommunity/RxDataSources.git",
+            from: "4.0.1"
+        ),
+        .package(
+            name: "RIBs",
+            url: "https://github.com/paulo-bc/RIBs.git",
+            from: "0.10.2"
+        ),
         .package(path: "../Analytics"),
         .package(path: "../FeatureKYC"),
         .package(path: "../Localization"),
@@ -113,6 +145,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureTransactionDomain"),
                 .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "PlatformKit", package: "Platform")
             ]

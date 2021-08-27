@@ -2,10 +2,10 @@
 
 import DIKit
 import FeatureKYCDomain
+import FeatureSettingsDomain
 import FirebaseAnalytics
 import PlatformKit
 import PlatformUIKit
-import SettingsKit
 import ToolKit
 
 final class DeepLinkHandler: DeepLinkHandling {

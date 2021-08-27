@@ -4,7 +4,7 @@ import Combine
 import DIKit
 import FeatureKYCDomain
 import FeatureKYCUI
-import OnboardingUIKit
+import FeatureOnboardingUI
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -116,7 +116,7 @@ extension KYCAdapter: PlatformUIKit.KYCRouting {
     }
 }
 
-// MARK: - OnboardingUIKit.EmailVerificationRouterAPI
+// MARK: - FeatureOnboardingUI.EmailVerificationRouterAPI
 
 extension OnboardingResult {
 
@@ -130,7 +130,7 @@ extension OnboardingResult {
     }
 }
 
-extension KYCAdapter: OnboardingUIKit.EmailVerificationRouterAPI {
+extension KYCAdapter: FeatureOnboardingUI.EmailVerificationRouterAPI {
 
     func presentEmailVerification(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
         router.presentEmailVerificationIfNeeded(from: presenter)

@@ -18,7 +18,7 @@ public final class InfoScreenViewController: BaseScreenViewController {
 
     public init(presenter: InfoScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: InfoScreenViewController.objectName, bundle: Self.bundle)
+        super.init(nibName: InfoScreenViewController.objectName, bundle: .module)
     }
 
     @available(*, unavailable)

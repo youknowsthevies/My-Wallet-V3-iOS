@@ -5,6 +5,7 @@ import ComposableArchitecture
 @testable import FeatureKYCDomainMock
 @testable import FeatureKYCUI
 @testable import FeatureKYCUIMock
+import SnapshotTesting
 import SwiftUI
 import TestKit
 import XCTest

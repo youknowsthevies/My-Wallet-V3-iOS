@@ -5,10 +5,10 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureAuthenticationUI
+import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
-import SettingsKit
 import ToolKit
 import UIKit
 import WalletPayloadKit

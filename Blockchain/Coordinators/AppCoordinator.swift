@@ -2,16 +2,16 @@
 
 import AnalyticsKit
 import Combine
-import DashboardUIKit
 import DIKit
+import FeatureDashboardUI
+import FeatureInterestDomain
+import FeatureInterestUI
 import FeatureKYCUI
-import InterestKit
-import InterestUIKit
+import FeatureSettingsDomain
+import FeatureSettingsUI
 import PlatformKit
 import PlatformUIKit
 import RxSwift
-import SettingsKit
-import SettingsUIKit
 import ToolKit
 import WalletPayloadKit
 
@@ -57,7 +57,7 @@ import WalletPayloadKit
     @Inject var airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
     private var buyRouter: PlatformUIKit.RouterAPI!
-    private var backupRouter: DashboardUIKit.BackupRouterAPI?
+    private var backupRouter: FeatureDashboardUI.BackupRouterAPI?
 
     // MARK: - UIViewController Properties
 
@@ -368,7 +368,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 
     func startBackupFlow() {
-        let router: DashboardUIKit.BackupRouterAPI = resolve()
+        let router: FeatureDashboardUI.BackupRouterAPI = resolve()
         backupRouter = router
         router.start()
     }

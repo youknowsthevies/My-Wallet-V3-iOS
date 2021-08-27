@@ -27,7 +27,7 @@ final class BuyIntroScreenViewController: BaseScreenViewController {
 
     init(presenter: BuyIntroScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: BuyIntroScreenViewController.objectName, bundle: Self.bundle)
+        super.init(nibName: BuyIntroScreenViewController.objectName, bundle: .module)
     }
 
     @available(*, unavailable)

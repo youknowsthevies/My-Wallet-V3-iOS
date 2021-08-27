@@ -6,12 +6,12 @@ import PlatformKit
 import RxSwift
 
 class EthereumKeyPairDeriverMock: KeyPairDeriverAPI {
-    var deriveResult: Result<EthereumKeyPair, Error> = .success(
+    var deriveResult: Result<EthereumKeyPair, HDWalletError> = .success(
         MockEthereumWalletTestData.keyPair
     )
     var lastMnemonic: String?
 
-    func derive(input: EthereumKeyDerivationInput) -> Result<EthereumKeyPair, Error> {
+    func derive(input: EthereumKeyDerivationInput) -> Result<EthereumKeyPair, HDWalletError> {
         lastMnemonic = input.mnemonic
         return deriveResult
     }

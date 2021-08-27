@@ -6,13 +6,13 @@ import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import FeatureKYCUI
-import OnboardingUIKit
+import FeatureOnboardingUI
+import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
 import RxRelay
 import RxSwift
-import SettingsKit
 import ToolKit
 
 extension AuthenticationCoordinator {
@@ -59,7 +59,7 @@ extension AuthenticationCoordinator {
 
     private let deepLinkRouter: DeepLinkRouting
 
-    private let onboardingRouter: OnboardingUIKit.OnboardingRouterAPI
+    private let onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
 
     private var exchangeRepository: ExchangeAccountRepositoryAPI!
@@ -94,7 +94,7 @@ extension AuthenticationCoordinator {
         loadingViewPresenter: LoadingViewPresenting = resolve(),
         dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
         deepLinkRouter: DeepLinkRouting = resolve(),
-        onboardingRouter: OnboardingUIKit.OnboardingRouterAPI = resolve(),
+        onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         remoteNotificationServiceContainer: RemoteNotificationServiceContaining = resolve()
     ) {
