@@ -103,10 +103,9 @@ public let welcomeReducer = Reducer.combine(
             action: /WelcomeAction.emailLogin,
             environment: {
                 EmailLoginEnvironment(
-                    sessionTokenService:
-                    $0.sessionTokenService,
-                    deviceVerificationService: $0.deviceVerificationService,
                     mainQueue: $0.mainQueue,
+                    sessionTokenService: $0.sessionTokenService,
+                    deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder
                 )
@@ -130,8 +129,10 @@ public let welcomeReducer = Reducer.combine(
             action: /WelcomeAction.manualPairing,
             environment: {
                 CredentialsEnvironment(
+                    mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
-                    errorRecorder: $0.errorRecorder
+                    errorRecorder: $0.errorRecorder,
+                    analyticsRecorder: $0.analyticsRecorder
                 )
             }
         ),

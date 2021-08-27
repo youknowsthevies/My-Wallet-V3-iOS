@@ -276,6 +276,22 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             state.onboarding?.displayAlert = .walletAuthentication(error)
             return .cancel(id: WalletCancelations.AuthenticationId())
         }
+        if state.onboarding?.welcomeState?.screenFlow == .manualLoginScreen {
+            return .merge(
+                .cancel(id: WalletCancelations.AuthenticationId()),
+                Effect(
+                    value: CoreAppAction.onboarding(
+                        .welcomeScreen(
+                            .manualPairing(
+                                .password(
+                                    .showIncorrectPasswordError(true)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        }
         return .merge(
             .cancel(id: WalletCancelations.AuthenticationId()),
             Effect(
@@ -285,7 +301,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                             .verifyDevice(
                                 .credentials(
                                     .password(
-                                        .incorrectPasswordErrorVisibility(true)
+                                        .showIncorrectPasswordError(true)
                                     )
                                 )
                             )

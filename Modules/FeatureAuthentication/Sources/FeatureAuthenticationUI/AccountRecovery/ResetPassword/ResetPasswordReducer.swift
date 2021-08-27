@@ -48,7 +48,7 @@ struct ResetPasswordEnvironment {
     let externalAppOpener: ExternalAppOpener
 
     init(
-        mainQueue: AnySchedulerOf<DispatchQueue> = .main,
+        mainQueue: AnySchedulerOf<DispatchQueue>,
         passwordValidator: PasswordValidatorAPI = resolve(),
         externalAppOpener: ExternalAppOpener = resolve()
     ) {

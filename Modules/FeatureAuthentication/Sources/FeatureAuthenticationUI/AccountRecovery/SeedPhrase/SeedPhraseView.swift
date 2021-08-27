@@ -248,7 +248,9 @@ struct SeedPhraseView_Previews: PreviewProvider {
             store: .init(
                 initialState: .init(),
                 reducer: seedPhraseReducer,
-                environment: .init()
+                environment: .init(
+                    mainQueue: .main
+                )
             )
         )
     }

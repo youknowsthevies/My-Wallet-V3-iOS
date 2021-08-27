@@ -49,10 +49,6 @@ extension AnnouncementPresenter: DashboardUIKit.AnnouncementPresenting {}
 
 extension SettingsUIKit.BackupFundsRouter: DashboardUIKit.BackupRouterAPI {}
 
-// MARK: - FeatureAuthentication Dependencies
-
-extension Wallet: WalletFeatureAuthenticationDomainWrapper {}
-
 // MARK: - AnalyticsKit Dependencies
 
 extension BlockchainSettings.App: AnalyticsKit.GuidRepositoryAPI {}
@@ -150,8 +146,6 @@ extension DependencyContainer {
         // MARK: - AuthenticationCoordinator
 
         single { AuthenticationCoordinator() }
-
-        factory { AuthenticationCoordinator.shared as WalletPairingFetcherAPI }
 
         factory { () -> AuthenticationCoordinating in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -563,11 +557,6 @@ extension DependencyContainer {
         factory { RecaptchaClient(siteKey: AuthenticationKeys.googleRecaptchaSiteKey) }
 
         factory { GoogleRecaptchaService() as GoogleRecaptchaServiceAPI }
-
-        factory { () -> WalletFeatureAuthenticationDomainWrapper in
-            let manager: WalletManager = DIKit.resolve()
-            return manager.wallet as WalletFeatureAuthenticationDomainWrapper
-        }
 
         // MARK: Analytics
 

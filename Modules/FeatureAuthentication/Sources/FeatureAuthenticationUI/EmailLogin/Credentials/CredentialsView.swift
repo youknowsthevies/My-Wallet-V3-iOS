@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import FeatureAuthenticationDomain
 import Localization
@@ -141,7 +142,7 @@ struct CredentialsView: View {
             PrimaryButton(
                 title: LocalizedString.Button._continue,
                 action: {
-                    if viewStore.isTwoFACodeOrHardwareKeyVerified {
+                    if viewStore.isTwoFactorOTPVerified {
                         viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState.password)))
                     } else {
                         viewStore.send(.continueButtonTapped)
@@ -149,7 +150,7 @@ struct CredentialsView: View {
                 },
                 loading: viewStore.binding(get: \.isLoading, send: .none)
             )
-            .disabled(viewStore.walletGuid.isEmpty)
+            .disabled(viewStore.walletPairingState.walletGuid.isEmpty)
 
             NavigationLink(
                 destination: IfLetStore(
@@ -200,11 +201,11 @@ struct CredentialsView: View {
 
     private func emailTextfield(info: WalletInfo) -> some View {
         FormTextFieldGroup(
-            text: .constant(viewStore.emailAddress),
+            text: .constant(viewStore.walletPairingState.emailAddress),
             isFirstResponder: .constant(false),
             isError: .constant(false),
             title: LocalizedString.TextFieldTitle.email,
-            footnote: LocalizedString.TextFieldFootnote.wallet + viewStore.walletGuid,
+            footnote: LocalizedString.TextFieldFootnote.wallet + viewStore.walletPairingState.walletGuid,
             isPrefilledAndDisabled: true
         )
         .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.emailGuidGroup)
@@ -213,7 +214,7 @@ struct CredentialsView: View {
     private func walletIdentifierTextfield() -> some View {
         FormTextFieldGroup(
             text: viewStore.binding(
-                get: { $0.walletGuid },
+                get: { $0.walletPairingState.walletGuid },
                 send: { .didChangeWalletIdentifier($0) }
             ),
             isFirstResponder: $isWalletIdentifierFirstResponder,
@@ -222,7 +223,7 @@ struct CredentialsView: View {
                 send: .none
             ),
             title: LocalizedString.TextFieldTitle.walletIdentifier,
-            footnote: LocalizedString.TextFieldFootnote.email + viewStore.emailAddress,
+            footnote: LocalizedString.TextFieldFootnote.email + viewStore.walletPairingState.emailAddress,
             configuration: {
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
@@ -367,8 +368,10 @@ struct PasswordLoginView_Previews: PreviewProvider {
                 initialState: .init(),
                 reducer: credentialsReducer,
                 environment: .init(
+                    mainQueue: .main,
                     deviceVerificationService: NoOpDeviceVerificationService(),
-                    errorRecorder: NoOpErrorRecorder()
+                    errorRecorder: NoOpErrorRecorder(),
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )

@@ -58,7 +58,7 @@ struct SeedPhraseEnvironment {
     let validator: SeedPhraseValidatorAPI
 
     init(
-        mainQueue: AnySchedulerOf<DispatchQueue> = .main,
+        mainQueue: AnySchedulerOf<DispatchQueue>,
         validator: SeedPhraseValidatorAPI = resolve()
     ) {
         self.mainQueue = mainQueue
@@ -93,7 +93,11 @@ let seedPhraseReducer = Reducer.combine(
         .pullback(
             state: \SeedPhraseState.resetPasswordState,
             action: /SeedPhraseAction.resetPassword,
-            environment: { _ in ResetPasswordEnvironment() }
+            environment: {
+                ResetPasswordEnvironment(
+                    mainQueue: $0.mainQueue
+                )
+            }
         ),
     Reducer<
         SeedPhraseState,
