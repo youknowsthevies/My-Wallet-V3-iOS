@@ -179,9 +179,10 @@ extension AuthenticationCoordinator {
         remoteNotificationAuthorizer.requestAuthorizationIfNeeded()
             .subscribe()
             .disposed(by: bag)
+
         coincore.initialize()
             .subscribe()
-            .disposed(by: bag)
+            .store(in: &cancellables)
 
         NotificationCenter.default.post(name: .login, object: nil)
         analyticsRecoder.record(event: AnalyticsEvents.New.Navigation.signedIn)

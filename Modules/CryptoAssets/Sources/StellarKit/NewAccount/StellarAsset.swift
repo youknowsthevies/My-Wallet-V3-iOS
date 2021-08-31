@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RxSwift
@@ -8,9 +9,11 @@ import ToolKit
 
 final class StellarAsset: CryptoAsset {
 
+    // MARK: - Properties
+
     let asset: CryptoCurrency = .coin(.stellar)
 
-    var defaultAccount: Single<SingleAccount> {
+    var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
         Single.just(())
             .observeOn(MainScheduler.asyncInstance)
             .flatMap(weak: self) { (self, _) -> Maybe<StellarWalletAccount> in
@@ -25,15 +28,44 @@ final class StellarAsset: CryptoAsset {
                 return account
             }
             .map { account -> SingleAccount in
-                StellarCryptoAccount(publicKey: account.publicKey, label: account.label, hdAccountIndex: account.index)
+                StellarCryptoAccount(
+                    publicKey: account.publicKey,
+                    label: account.label,
+                    hdAccountIndex: account.index
+                )
             }
+            .asObservable()
+            .asPublisher()
+            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
+            .eraseToAnyPublisher()
     }
 
-    let kycTiersService: KYCTiersServiceAPI
+    var canTransactToCustodial: AnyPublisher<Bool, Never> {
+        cryptoAssetRepository.canTransactToCustodial
+    }
+
+    // MARK: - Private properties
+
+    private lazy var cryptoAssetRepository: CryptoAssetRepositoryAPI = {
+        CryptoAssetRepository(
+            asset: asset,
+            errorRecorder: errorRecorder,
+            kycTiersService: kycTiersService,
+            defaultAccountProvider: { [defaultAccount] in
+                defaultAccount
+            },
+            exchangeAccountsProvider: exchangeAccountProvider,
+            addressFactory: addressFactory
+        )
+    }()
+
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let accountRepository: StellarWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
     private let addressFactory: StellarCryptoReceiveAddressFactory
+    private let kycTiersService: KYCTiersServiceAPI
+
+    // MARK: - Setup
 
     init(
         accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
@@ -49,85 +81,23 @@ final class StellarAsset: CryptoAsset {
         self.addressFactory = addressFactory
     }
 
-    func initialize() -> Completable {
-        // Run wallet renaming procedure on initialization.
-        nonCustodialGroup.map(\.accounts)
-            .flatMapCompletable(weak: self) { (self, accounts) -> Completable in
-                self.upgradeLegacyLabels(accounts: accounts)
+    // MARK: - Public methods
+
+    func initialize() -> AnyPublisher<Void, AssetError> {
+        cryptoAssetRepository.nonCustodialGroup
+            .map(\.accounts)
+            .flatMap { [upgradeLegacyLabels] accounts in
+                upgradeLegacyLabels(accounts)
             }
-            .onErrorComplete()
+            .mapError()
+            .eraseToAnyPublisher()
     }
 
-    func parse(address: String) -> Single<ReceiveAddress?> {
-        let result = try? addressFactory
-            .makeExternalAssetAddress(
-                asset: .coin(.stellar),
-                address: address,
-                label: address,
-                onTxCompleted: { _ in Completable.empty() }
-            )
-            .get()
-        return .just(result)
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
+        cryptoAssetRepository.accountGroup(filter: filter)
     }
 
-    func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
-        switch filter {
-        case .all:
-            return allAccountsGroup
-        case .custodial:
-            return custodialGroup
-        case .interest:
-            return interestGroup
-        case .nonCustodial:
-            return nonCustodialGroup
-        case .exchange:
-            return exchangeGroup
-        }
-    }
-
-    // MARK: - Helpers
-
-    private var allAccountsGroup: Single<AccountGroup> {
-        Single
-            .zip([
-                nonCustodialGroup,
-                custodialGroup,
-                interestGroup,
-                exchangeGroup
-            ])
-            .flatMapAllAccountGroup()
-    }
-
-    private var custodialGroup: Single<AccountGroup> {
-        .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoTradingAccount(asset: asset)))
-    }
-
-    private var interestGroup: Single<AccountGroup> {
-        guard asset.assetModel.products.contains(.interestBalance) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset)))
-    }
-
-    private var exchangeGroup: Single<AccountGroup> {
-        guard asset.assetModel.products.contains(.mercuryDeposits) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return exchangeAccountProvider
-            .account(for: asset)
-            .map { [asset] account in
-                CryptoAccountCustodialGroup(asset: asset, account: account)
-            }
-            .catchErrorJustReturn(CryptoAccountCustodialGroup(asset: asset))
-    }
-
-    private var nonCustodialGroup: Single<AccountGroup> {
-        let asset = self.asset
-        return defaultAccount
-            .map { account -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: [account])
-            }
-            .recordErrors(on: errorRecorder)
-            .catchErrorJustReturn(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
+    func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
+        cryptoAssetRepository.parse(address: address)
     }
 }

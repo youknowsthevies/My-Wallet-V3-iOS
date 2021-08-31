@@ -68,7 +68,12 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
                 Single.zip(
                     cryptoAssets
                         .map { asset -> Single<SingleAccount?> in
-                            asset.defaultAccount.optional().catchErrorJustReturn(nil)
+                            asset.defaultAccount
+                                .optional()
+                                .replaceError(with: nil)
+                                .eraseToAnyPublisher()
+                                .asObservable()
+                                .asSingle()
                         }
                 )
             }

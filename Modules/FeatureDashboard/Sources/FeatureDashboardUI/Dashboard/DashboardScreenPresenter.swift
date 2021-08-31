@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -89,6 +90,8 @@ final class DashboardScreenPresenter {
         let cryptoStreams: [Observable<CryptoCurrency?>] = coincore.cryptoAssets
             .map { asset -> Observable<CryptoCurrency?> in
                 asset.accountGroup(filter: .all)
+                    .asObservable()
+                    .asSingle()
                     .flatMap { group -> Single<Bool> in
                         group.balance.map(\.isPositive)
                     }

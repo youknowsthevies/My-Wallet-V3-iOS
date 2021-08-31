@@ -126,7 +126,7 @@ let loggedInReducer = Reducer<
                 .requestAuthorizationIfNeededPublisher()
                 .catchToEffect()
                 .fireAndForget(),
-            environment.coincore.initializePublisher()
+            environment.coincore.initialize()
                 .catchToEffect()
                 .fireAndForget(),
             .fireAndForget {

@@ -109,6 +109,7 @@ final class TransactionInteractor {
 
     func getAvailableSourceAccounts(action: AssetAction) -> Single<[SingleAccount]> {
         let allEligibleCryptoAccounts = coincore.allAccounts
+            .eraseError()
             .map(\.accounts)
             .flatMapFilter(
                 action: action,
@@ -127,6 +128,8 @@ final class TransactionInteractor {
                     account as? CryptoAccount
                 }
             }
+            .asObservable()
+            .asSingle()
         switch action {
         case .buy:
             // TODO: check the new limits API to understand whether passing asset and amount is really required
@@ -177,6 +180,8 @@ final class TransactionInteractor {
                         account as? FiatAccount
                     }
                 }
+                .asObservable()
+                .asSingle()
         case .receive,
              .viewActivity:
             unimplemented()
@@ -235,6 +240,8 @@ final class TransactionInteractor {
                 sourceAccount: sourceAccount,
                 action: .send
             )
+            .asObservable()
+            .asSingle()
     }
 
     private func swapTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
@@ -243,6 +250,8 @@ final class TransactionInteractor {
                 sourceAccount: sourceAccount,
                 action: .swap
             )
+            .asObservable()
+            .asSingle()
         let tradingPairs = availablePairsService.availableTradingPairs
         let isEligible = swapEligibilityService.isEligible
         return Single.zip(transactionTargets, tradingPairs, isEligible)

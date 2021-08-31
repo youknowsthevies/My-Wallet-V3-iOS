@@ -5,7 +5,7 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-class StellarCryptoAccount: CryptoNonCustodialAccount {
+final class StellarCryptoAccount: CryptoNonCustodialAccount {
 
     private(set) lazy var identifier: AnyHashable = "StellarCryptoAccount.\(publicKey)"
     let label: String

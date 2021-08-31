@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import CombineExt
 import DIKit
 import EthereumKit
 import PlatformKit
@@ -8,28 +10,59 @@ import ToolKit
 
 final class ERC20Asset: CryptoAsset {
 
+    // MARK: - Properties
+
     let asset: CryptoCurrency
 
-    var defaultAccount: Single<SingleAccount> {
-        walletAccountBridge.wallets
-            .map(\.first)
-            .map { wallet -> EthereumWalletAccount in
-                guard let wallet = wallet else {
-                    throw CryptoAssetError.noDefaultAccount
-                }
-                return wallet
-            }
-            .map { [erc20Token] wallet -> SingleAccount in
-                ERC20CryptoAccount(publicKey: wallet.publicKey, erc20Token: erc20Token)
-            }
+    var canTransactToCustodial: AnyPublisher<Bool, Never> {
+        cryptoAssetRepository.canTransactToCustodial
     }
 
-    let kycTiersService: KYCTiersServiceAPI
+    // MARK: - Private properties
+
+    var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
+        walletAccountBridge.wallets
+            .asPublisher()
+            .map(\.first)
+            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
+            .flatMap { wallet -> AnyPublisher<EthereumWalletAccount, CryptoAssetError> in
+                guard let wallet = wallet else {
+                    return .failure(.noDefaultAccount)
+                }
+                return .just(wallet)
+            }
+            .map { [erc20Token] wallet -> SingleAccount in
+                ERC20CryptoAccount(
+                    publicKey: wallet.publicKey,
+                    erc20Token: erc20Token
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+
+    // MARK: - Private properties
+
+    private lazy var cryptoAssetRepository: CryptoAssetRepositoryAPI = {
+        CryptoAssetRepository(
+            asset: asset,
+            errorRecorder: errorRecorder,
+            kycTiersService: kycTiersService,
+            defaultAccountProvider: { [defaultAccount] in
+                defaultAccount
+            },
+            exchangeAccountsProvider: exchangeAccountProvider,
+            addressFactory: addressFactory
+        )
+    }()
+
     private let addressFactory: ERC20ExternalAssetAddressFactory
     private let erc20Token: ERC20AssetModel
+    private let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let walletAccountBridge: EthereumWalletAccountBridgeAPI
     private let errorRecorder: ErrorRecording
+
+    // MARK: - Setup
 
     init(
         erc20Token: ERC20AssetModel,
@@ -48,80 +81,17 @@ final class ERC20Asset: CryptoAsset {
         self.kycTiersService = kycTiersService
     }
 
-    func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
-        switch filter {
-        case .all:
-            return allAccountsGroup
-        case .custodial:
-            return custodialGroup
-        case .interest:
-            return interestGroup
-        case .nonCustodial:
-            return nonCustodialGroup
-        case .exchange:
-            return exchangeGroup
-        }
+    // MARK: - Asset
+
+    func initialize() -> AnyPublisher<Void, AssetError> {
+        .empty()
     }
 
-    func parse(address: String) -> Single<ReceiveAddress?> {
-        let receiveAddress = try? addressFactory
-            .makeExternalAssetAddress(
-                asset: asset,
-                address: address,
-                label: address,
-                onTxCompleted: { _ in Completable.empty() }
-            )
-            .get()
-        return .just(receiveAddress)
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
+        cryptoAssetRepository.accountGroup(filter: filter)
     }
 
-    // MARK: - Helpers
-
-    private var allAccountsGroup: Single<AccountGroup> {
-        Single
-            .zip([
-                nonCustodialGroup,
-                custodialGroup,
-                interestGroup,
-                exchangeGroup
-            ])
-            .flatMapAllAccountGroup()
-    }
-
-    private var custodialGroup: Single<AccountGroup> {
-        .just(
-            CryptoAccountCustodialGroup(asset: asset, account: CryptoTradingAccount(asset: asset))
-        )
-    }
-
-    private var interestGroup: Single<AccountGroup> {
-        guard asset.assetModel.products.contains(.interestBalance) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset)))
-    }
-
-    private var exchangeGroup: Single<AccountGroup> {
-        guard asset.assetModel.products.contains(.mercuryDeposits) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return exchangeAccountProvider
-            .account(for: asset)
-            .map { [asset] account in
-                CryptoAccountCustodialGroup(asset: asset, account: account)
-            }
-            .catchErrorJustReturn(CryptoAccountCustodialGroup(asset: asset))
-    }
-
-    private var nonCustodialGroup: Single<AccountGroup> {
-        walletAccountBridge.wallets
-            .map { [erc20Token] wallets -> [SingleAccount] in
-                wallets.map { ERC20CryptoAccount(publicKey: $0.publicKey, erc20Token: erc20Token) }
-            }
-            .map { [asset] accounts -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
-            }
-            .recordErrors(on: errorRecorder)
-            .catchErrorJustReturn(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
+    func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
+        cryptoAssetRepository.parse(address: address)
     }
 }

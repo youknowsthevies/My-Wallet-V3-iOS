@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import CombineExt
 import DIKit
 import PlatformKit
 import RxSwift
@@ -7,11 +9,14 @@ import ToolKit
 
 final class EthereumAsset: CryptoAsset {
 
+    // MARK: - Properties
+
     let asset: CryptoCurrency = .coin(.ethereum)
 
-    var defaultAccount: Single<SingleAccount> {
+    var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
         repository
-            .defaultAccount
+            .defaultAccountPublisher
+            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .map { account -> SingleAccount in
                 EthereumCryptoAccount(
                     publicKey: account.publicKey,
@@ -19,13 +24,35 @@ final class EthereumAsset: CryptoAsset {
                     hdAccountIndex: account.index
                 )
             }
+            .eraseToAnyPublisher()
     }
 
-    let kycTiersService: KYCTiersServiceAPI
+    var canTransactToCustodial: AnyPublisher<Bool, Never> {
+        cryptoAssetRepository.canTransactToCustodial
+    }
+
+    // MARK: - Private properties
+
+    private lazy var cryptoAssetRepository: CryptoAssetRepositoryAPI = {
+        CryptoAssetRepository(
+            asset: asset,
+            errorRecorder: errorRecorder,
+            kycTiersService: kycTiersService,
+            defaultAccountProvider: { [defaultAccount] in
+                defaultAccount
+            },
+            exchangeAccountsProvider: exchangeAccountProvider,
+            addressFactory: addressFactory
+        )
+    }()
+
     private let addressFactory: EthereumExternalAssetAddressFactory
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: EthereumWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
+    private let kycTiersService: KYCTiersServiceAPI
+
+    // MARK: - Setup
 
     init(
         repository: EthereumWalletAccountRepositoryAPI = resolve(),
@@ -41,85 +68,24 @@ final class EthereumAsset: CryptoAsset {
         self.kycTiersService = kycTiersService
     }
 
-    func initialize() -> Completable {
+    // MARK: - Methods
+
+    func initialize() -> AnyPublisher<Void, AssetError> {
         // Run wallet renaming procedure on initialization.
-        nonCustodialGroup.map(\.accounts)
-            .flatMapCompletable(weak: self) { (self, accounts) -> Completable in
-                self.upgradeLegacyLabels(accounts: accounts)
+        cryptoAssetRepository.nonCustodialGroup
+            .map(\.accounts)
+            .flatMap { [upgradeLegacyLabels] accounts in
+                upgradeLegacyLabels(accounts)
             }
-            .onErrorComplete()
+            .mapError()
+            .eraseToAnyPublisher()
     }
 
-    func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
-        switch filter {
-        case .all:
-            return allAccountsGroup
-        case .custodial:
-            return custodialGroup
-        case .interest:
-            return interestGroup
-        case .nonCustodial:
-            return nonCustodialGroup
-        case .exchange:
-            return exchangeGroup
-        }
+    func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
+        cryptoAssetRepository.accountGroup(filter: filter)
     }
 
-    func parse(address: String) -> Single<ReceiveAddress?> {
-        let receiveAddress = try? addressFactory
-            .makeExternalAssetAddress(
-                asset: asset,
-                address: address,
-                label: address,
-                onTxCompleted: { _ in .empty() }
-            )
-            .get()
-        return .just(receiveAddress)
-    }
-
-    // MARK: - Helpers
-
-    private var allAccountsGroup: Single<AccountGroup> {
-        Single
-            .zip([
-                nonCustodialGroup,
-                custodialGroup,
-                interestGroup,
-                exchangeGroup
-            ])
-            .flatMapAllAccountGroup()
-    }
-
-    private var custodialGroup: Single<AccountGroup> {
-        .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoTradingAccount(asset: asset)))
-    }
-
-    private var exchangeGroup: Single<AccountGroup> {
-        guard asset.assetModel.products.contains(.mercuryDeposits) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return exchangeAccountProvider
-            .account(for: asset)
-            .map { [asset] account in
-                CryptoAccountCustodialGroup(asset: asset, account: account)
-            }
-            .catchErrorJustReturn(CryptoAccountCustodialGroup(asset: asset))
-    }
-
-    private var interestGroup: Single<AccountGroup> {
-        guard asset.assetModel.products.contains(.interestBalance) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset)))
-    }
-
-    private var nonCustodialGroup: Single<AccountGroup> {
-        let asset = self.asset
-        return defaultAccount
-            .map { account -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: [account])
-            }
-            .recordErrors(on: errorRecorder)
-            .catchErrorJustReturn(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
+    func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
+        cryptoAssetRepository.parse(address: address)
     }
 }

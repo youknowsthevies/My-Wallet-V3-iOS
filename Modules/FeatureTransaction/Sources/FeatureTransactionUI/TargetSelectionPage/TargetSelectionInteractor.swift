@@ -39,6 +39,8 @@ final class TargetSelectionInteractor {
             return Single.just(sourceAccount)
                 .flatMap(weak: self) { (self, account) -> Single<[SingleAccount]> in
                     self.coincore.getTransactionTargets(sourceAccount: account, action: action)
+                        .asObservable()
+                        .asSingle()
                 }
         case .deposit:
             return linkedBanksFactory.nonWireTransferBanks.map { $0.map { $0 as SingleAccount } }
@@ -59,6 +61,8 @@ final class TargetSelectionInteractor {
         let asset = coincore[crypto.asset]
         return asset
             .parse(address: address)
+            .asObservable()
+            .asSingle()
             .flatMap(weak: self) { (self, validatedAddress) -> Single<Result<ReceiveAddress, Error>> in
                 guard let validatedAddress = validatedAddress else {
                     return self.validate(domainName: address, currency: crypto.asset)

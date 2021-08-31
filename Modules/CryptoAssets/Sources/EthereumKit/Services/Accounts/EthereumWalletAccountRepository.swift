@@ -1,9 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
+
+enum WalletAccountRepositoryError: Error {
+    case failedToFetchAccount(Error)
+}
 
 protocol EthereumWalletAccountRepositoryAPI {
 
@@ -12,7 +17,20 @@ protocol EthereumWalletAccountRepositoryAPI {
     var activeAccounts: Single<[EthereumWalletAccount]> { get }
 }
 
+extension EthereumWalletAccountRepositoryAPI {
+
+    var defaultAccountPublisher: AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> {
+        defaultAccount.asPublisher()
+            .mapError(WalletAccountRepositoryError.failedToFetchAccount)
+            .eraseToAnyPublisher()
+    }
+}
+
 final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, KeyPairProviderAPI {
+
+    enum RepositoryError: Error {
+        case failedToFetchAccount(Error)
+    }
 
     typealias KeyPair = EthereumKeyPair
     typealias Account = EthereumWalletAccount
