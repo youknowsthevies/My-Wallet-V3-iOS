@@ -126,9 +126,10 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         case .buy:
             return isPairToFiatAvailable
         case .sell:
-            return Single.zip(isPairToFiatAvailable, isFunded).map {
-                $0.0 && $0.1
-            }
+            return .just(false)
+//            return Single.zip(isPairToFiatAvailable, isFunded).map {
+//                $0.0 && $0.1
+//            }
         case .swap:
             return isFunded
         }
