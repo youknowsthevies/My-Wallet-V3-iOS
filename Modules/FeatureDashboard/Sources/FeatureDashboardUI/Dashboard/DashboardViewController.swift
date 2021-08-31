@@ -23,7 +23,6 @@ public final class DashboardViewController: BaseScreenViewController {
     private let fiatBalanceCellProvider: FiatBalanceCellProviding
     private let presenter: DashboardScreenPresenter
     private let tableView = UITableView()
-    private var refreshControl: UIRefreshControl!
 
     // MARK: - Setup
 
@@ -50,7 +49,7 @@ public final class DashboardViewController: BaseScreenViewController {
         setupTableView()
         presenter.setup()
         tableView.reloadData()
-        presenter.refresh()
+        presenter.refreshRelay.accept(())
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -83,10 +82,18 @@ public final class DashboardViewController: BaseScreenViewController {
         tableView.registerNibCell(HistoricalBalanceTableViewCell.self, in: .module)
         tableView.separatorColor = .clear
 
-        refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        tableView.addSubview(refreshControl)
+        let refreshControl = UIRefreshControl()
         tableView.refreshControl = refreshControl
+        refreshControl.rx
+            .controlEvent(.valueChanged)
+            .bind(to: presenter.refreshRelay)
+            .disposed(by: disposeBag)
+        refreshControl.rx
+            .controlEvent(.valueChanged)
+            .map { false }
+            .bind(to: refreshControl.rx.isRefreshing)
+            .disposed(by: disposeBag)
+
         let dataSource = RxDataSource(
             animationConfiguration: .init(insertAnimation: .fade, reloadAnimation: .fade, deleteAnimation: .fade),
             configureCell: { [weak self] _, _, indexPath, item in
@@ -94,16 +101,18 @@ public final class DashboardViewController: BaseScreenViewController {
                 let cell: UITableViewCell
 
                 switch item {
-                case .announcement:
-                    cell = self.announcementCell(for: indexPath)
-                case .fiatCustodialBalances:
-                    cell = self.fiatCustodialBalancesCell(for: indexPath)
-                case .totalBalance:
-                    cell = self.balanceCell(for: indexPath)
-                case .crypto(let currency):
-                    cell = self.assetCell(for: indexPath, currency: currency)
-                case .notice:
-                    cell = self.noticeCell(for: indexPath)
+                case .announcement(let model):
+                    cell = self.announcementCell(for: indexPath, model: model)
+                case .fiatCustodialBalances(let presenter):
+                    cell = self.fiatCustodialBalancesCell(for: indexPath, presenter: presenter)
+                case .totalBalance(let presenter):
+                    cell = self.balanceCell(for: indexPath, presenter: presenter)
+                case .crypto(let presenter):
+                    cell = self.assetCell(for: indexPath, presenter: presenter)
+                case .cryptoSkeleton:
+                    cell = self.assetCell(for: indexPath, presenter: nil)
+                case .notice(let model):
+                    cell = self.noticeCell(for: indexPath, model: model)
                 }
                 cell.selectionStyle = .none
                 return cell
@@ -116,10 +125,11 @@ public final class DashboardViewController: BaseScreenViewController {
                 case .announcement,
                      .notice,
                      .totalBalance,
+                     .cryptoSkeleton,
                      .fiatCustodialBalances:
                     break
-                case .crypto(let currency):
-                    self.presenter.router.showDetailsScreen(for: currency)
+                case .crypto(let presenter):
+                    self.presenter.router.showDetailsScreen(for: presenter.cryptoCurrency)
                 }
             }
             .disposed(by: disposeBag)
@@ -136,44 +146,40 @@ public final class DashboardViewController: BaseScreenViewController {
         presenter.navigationBarLeadingButtonPressed()
     }
 
-    // MARK: - UITableView Refresh
-
-    @objc private func refresh() {
-        presenter.refresh()
-        refreshControl.endRefreshing()
-    }
-
     // MARK: - Cells
 
-    private func fiatCustodialBalancesCell(for indexPath: IndexPath) -> UITableViewCell {
+    private func fiatCustodialBalancesCell(
+        for indexPath: IndexPath,
+        presenter: CurrencyViewPresenter
+    ) -> UITableViewCell {
         fiatBalanceCellProvider.dequeueReusableFiatBalanceCell(
             for: tableView,
             indexPath: indexPath,
-            presenter: presenter.fiatBalanceCollectionViewPresenter
+            presenter: presenter
         )
     }
 
-    private func announcementCell(for indexPath: IndexPath) -> UITableViewCell {
+    private func announcementCell(for indexPath: IndexPath, model: AnnouncementCardViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(AnnouncementTableViewCell.self, for: indexPath)
-        cell.viewModel = presenter.announcementCardViewModel
+        cell.viewModel = model
         return cell
     }
 
-    private func balanceCell(for indexPath: IndexPath) -> UITableViewCell {
+    private func balanceCell(for indexPath: IndexPath, presenter: TotalBalanceViewPresenter) -> UITableViewCell {
         let cell = tableView.dequeue(TotalBalanceTableViewCell.self, for: indexPath)
-        cell.presenter = presenter.totalBalancePresenter
+        cell.presenter = presenter
         return cell
     }
 
-    private func assetCell(for indexPath: IndexPath, currency: CryptoCurrency) -> UITableViewCell {
+    private func assetCell(for indexPath: IndexPath, presenter: HistoricalBalanceCellPresenter?) -> UITableViewCell {
         let cell = tableView.dequeue(HistoricalBalanceTableViewCell.self, for: indexPath)
-        cell.presenter = presenter.historicalBalancePresenter(by: currency)
+        cell.presenter = presenter
         return cell
     }
 
-    private func noticeCell(for indexPath: IndexPath) -> UITableViewCell {
+    private func noticeCell(for indexPath: IndexPath, model: NoticeViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(NoticeTableViewCell.self, for: indexPath)
-        cell.viewModel = presenter.noticeViewModel
+        cell.viewModel = model
         return cell
     }
 }

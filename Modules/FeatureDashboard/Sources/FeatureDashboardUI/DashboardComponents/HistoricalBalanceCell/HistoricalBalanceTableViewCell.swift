@@ -20,6 +20,8 @@ final class HistoricalBalanceTableViewCell: UITableViewCell {
                 assetSparklineView.presenter = nil
                 assetPriceView.presenter = nil
                 assetBalanceView.presenter = nil
+                assetImageView.set(nil)
+                assetTitleLabel.content = .empty
             }
         }
     }

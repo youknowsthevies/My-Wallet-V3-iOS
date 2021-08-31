@@ -6,17 +6,65 @@ import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import ToolKit
 
 final class DashboardScreenPresenter {
 
+    struct Model {
+        let historicalBalanceCellPresenters: [HistoricalBalanceCellPresenter]
+        let totalBalancePresenter: TotalBalanceViewPresenter
+        var announcementCardViewModel: AnnouncementCardViewModel?
+        var noticeViewModel: NoticeViewModel?
+        var fiatBalanceCollectionViewPresenter: CurrencyViewPresenter?
+        var cryptoCurrencies: [CryptoCurrency: Bool] = [:]
+
+        var cellArrangement: [DashboardCellType] {
+            var items: [DashboardCellType] = [.totalBalance(totalBalancePresenter)]
+
+            if let noticeViewModel = noticeViewModel {
+                items.append(.notice(noticeViewModel))
+            }
+
+            if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
+                items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
+            }
+
+            let enabledCryptoCurrencies = cryptoCurrencies
+                .filter(\.value)
+                .map(\.key)
+                .sorted()
+            enabledCryptoCurrencies
+                .compactMap { cryptoCurrency in
+                    historicalBalanceCellPresenters.first(where: { $0.cryptoCurrency == cryptoCurrency })
+                }
+                .map(DashboardCellType.crypto)
+                .forEach { items.append($0) }
+
+            if enabledCryptoCurrencies.isEmpty {
+                Array(1...7)
+                    .map(DashboardCellType.cryptoSkeleton)
+                    .forEach { items.append($0) }
+            }
+
+            if let announcementCardViewModel = announcementCardViewModel {
+                switch announcementCardViewModel.priority {
+                case .high: // Prepend
+                    items.insert(.announcement(announcementCardViewModel), at: 0)
+                case .low: // Append
+                    items.append(.announcement(announcementCardViewModel))
+                }
+            }
+            return items
+        }
+    }
+
     // MARK: - Internal Properties
 
+    /// Should be triggered when user pulls-to-refresh.
+    let refreshRelay = BehaviorRelay<Void>(value: ())
     let fiatBalancePresenter: DashboardFiatBalancesPresenter
-    let totalBalancePresenter: TotalBalanceViewPresenter
+    var model: Model
     private(set) lazy var router: DashboardRouter = .init()
-    private(set) var announcementCardViewModel: AnnouncementCardViewModel!
-    private(set) var fiatBalanceCollectionViewPresenter: CurrencyViewPresenter!
-    private(set) var noticeViewModel: NoticeViewModel!
     var sections: Observable<[DashboardViewModel]> {
         sectionsRelay.asObservable()
     }
@@ -27,37 +75,33 @@ final class DashboardScreenPresenter {
     private let announcementPresenter: AnnouncementPresenting
     private let disposeBag = DisposeBag()
     private let drawerRouter: DrawerRouting
-    private let historicalBalanceCellPresenters: [HistoricalBalanceCellPresenter]
     private let interactor: DashboardScreenInteractor
+    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let noticePresenter: DashboardNoticePresenter
-    private let reloadRelay = BehaviorRelay<Void>(value: ())
+    private let reloadRelay: PublishRelay<Void> = .init()
     private let sectionsRelay: BehaviorRelay<[DashboardViewModel]> = .init(value: [])
+    private let coincore: CoincoreAPI
 
-    private var cellArrangement: [DashboardCellType] {
-        var items: [DashboardCellType] = [.totalBalance]
-
-        if noticeViewModel != nil {
-            items.append(.notice)
+    private var cryptoCurrencies: Observable<CryptoCurrency> {
+        guard internalFeatureFlagService.isEnabled(.splitDashboard) else {
+            return .from(interactor.enabledCryptoCurrencies, scheduler: MainScheduler.asyncInstance)
         }
-
-        if fiatBalanceCollectionViewPresenter != nil {
-            items.append(.fiatCustodialBalances)
-        }
-
-        interactor
-            .enabledCryptoCurrencies
-            .map { DashboardCellType.crypto($0) }
-            .forEach { items.append($0) }
-
-        switch announcementCardViewModel?.priority {
-        case .high: // Prepend
-            items.insert(.announcement, at: 0)
-        case .low: // Append
-            items.append(.announcement)
-        case nil:
-            break
-        }
-        return items
+        let cryptoStreams: [Observable<CryptoCurrency?>] = coincore.cryptoAssets
+            .map { asset -> Observable<CryptoCurrency?> in
+                asset.accountGroup(filter: .all)
+                    .flatMap { group -> Single<Bool> in
+                        group.balance.map(\.isPositive)
+                    }
+                    .map { hasBalance -> CryptoCurrency? in
+                        hasBalance ? asset.asset : nil
+                    }
+                    .asObservable()
+                    .startWith(nil)
+                    .catchErrorJustReturn(nil)
+            }
+        return Observable
+            .merge(cryptoStreams)
+            .compactMap { $0 }
     }
 
     // MARK: - Init
@@ -68,22 +112,29 @@ final class DashboardScreenPresenter {
         drawerRouter: DrawerRouting = resolve(),
         announcementPresenter: AnnouncementPresenting = resolve(),
         coincore: CoincoreAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve()
     ) {
         self.accountFetcher = accountFetcher
-        self.interactor = interactor
-        self.drawerRouter = drawerRouter
         self.announcementPresenter = announcementPresenter
-        totalBalancePresenter = TotalBalanceViewPresenter(
+        self.coincore = coincore
+        self.drawerRouter = drawerRouter
+        self.interactor = interactor
+        self.internalFeatureFlagService = internalFeatureFlagService
+        noticePresenter = DashboardNoticePresenter()
+        fiatBalancePresenter = DashboardFiatBalancesPresenter(
+            interactor: interactor.fiatBalancesInteractor
+        )
+        let totalBalancePresenter = TotalBalanceViewPresenter(
             coincore: coincore,
             fiatCurrencyService: fiatCurrencyService
         )
-        noticePresenter = DashboardNoticePresenter()
-        historicalBalanceCellPresenters = interactor
+        let historicalBalanceCellPresenters = interactor
             .historicalBalanceInteractors
-            .map { .init(interactor: $0) }
-        fiatBalancePresenter = DashboardFiatBalancesPresenter(
-            interactor: interactor.fiatBalancesInteractor
+            .map(HistoricalBalanceCellPresenter.init)
+        model = Model(
+            historicalBalanceCellPresenters: historicalBalanceCellPresenters,
+            totalBalancePresenter: totalBalancePresenter
         )
     }
 
@@ -93,12 +144,12 @@ final class DashboardScreenPresenter {
     func setup() {
         // Bind announcements.
         announcementPresenter.announcement
-            .do(onNext: { action in
+            .do(onNext: { [weak self] action in
                 switch action {
                 case .hide:
-                    self.announcementCardViewModel = nil
+                    self?.model.announcementCardViewModel = nil
                 case .show(let viewModel):
-                    self.announcementCardViewModel = viewModel
+                    self?.model.announcementCardViewModel = viewModel
                 case .none:
                     break
                 }
@@ -113,9 +164,9 @@ final class DashboardScreenPresenter {
             .do(onNext: { action in
                 switch action {
                 case .hide:
-                    self.noticeViewModel = nil
+                    self.model.noticeViewModel = nil
                 case .show(let viewModel):
-                    self.noticeViewModel = viewModel
+                    self.model.noticeViewModel = viewModel
                 }
             })
             .asObservable()
@@ -128,9 +179,9 @@ final class DashboardScreenPresenter {
             .do(onNext: { action in
                 switch action {
                 case .hide:
-                    self.fiatBalanceCollectionViewPresenter = nil
+                    self.model.fiatBalanceCollectionViewPresenter = nil
                 case .show(let presenter):
-                    self.fiatBalanceCollectionViewPresenter = presenter
+                    self.model.fiatBalanceCollectionViewPresenter = presenter
                 }
             })
             .asObservable()
@@ -153,30 +204,39 @@ final class DashboardScreenPresenter {
             }
             .disposed(by: disposeBag)
 
-        // Bind fiat balances details.
         reloadRelay
+            .startWith(())
             .throttle(.milliseconds(250), scheduler: MainScheduler.asyncInstance)
             .map(weak: self) { (self, _) in
-                self.cellArrangement
+                self.model.cellArrangement
             }
             .map(DashboardViewModel.init)
             .map { [$0] }
             .bind(to: sectionsRelay)
             .disposed(by: disposeBag)
-    }
 
-    /// Should be called when user pulls-to-refresh.
-    func refresh() {
-        interactor.refresh()
-        announcementPresenter.refresh()
-        noticePresenter.refresh()
-        fiatBalancePresenter.refresh()
-        totalBalancePresenter.refresh()
-    }
+        refreshRelay
+            .throttle(.milliseconds(500), scheduler: MainScheduler.asyncInstance)
+            .bind { [weak self] _ in
+                self?.interactor.refresh()
+                self?.announcementPresenter.refresh()
+                self?.noticePresenter.refresh()
+                self?.fiatBalancePresenter.refresh()
+                self?.model.totalBalancePresenter.refresh()
+            }
+            .disposed(by: disposeBag)
 
-    /// Given the cell index, returns the historical balance presenter
-    func historicalBalancePresenter(by cryptoCurrency: CryptoCurrency) -> HistoricalBalanceCellPresenter {
-        historicalBalanceCellPresenters.first { $0.cryptoCurrency == cryptoCurrency }!
+        refreshRelay
+            .throttle(.milliseconds(500), scheduler: MainScheduler.asyncInstance)
+            .flatMapLatest(weak: self) { (self, _) in
+                self.cryptoCurrencies
+            }
+            .do(onNext: { [weak self] cryptoCurrency in
+                self?.model.cryptoCurrencies[cryptoCurrency] = true
+            })
+            .mapToVoid()
+            .bindAndCatch(to: reloadRelay)
+            .disposed(by: disposeBag)
     }
 
     // MARK: - Navigation
