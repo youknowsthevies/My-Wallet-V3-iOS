@@ -3,27 +3,27 @@
 import Foundation
 import RxDataSources
 
-struct DashboardViewModel: AnimatableSectionModelType {
+struct PortfolioViewModel: AnimatableSectionModelType {
 
     // MARK: - Types
 
-    typealias Item = DashboardCellType
+    typealias Item = PortfolioCellType
     typealias Identity = String
 
     // MARK: - Static Properties
 
-    static var empty: DashboardViewModel { .init(items: []) }
+    static var empty: PortfolioViewModel { .init(items: []) }
 
     // MARK: - Properties
 
     let items: [Item]
     var identity: Identity {
-        "DashboardViewModel"
+        "PortfolioViewModel"
     }
 
     // MARK: - Init
 
-    init(original: DashboardViewModel, items: [Item]) {
+    init(original: PortfolioViewModel, items: [Item]) {
         self.items = items
     }
 

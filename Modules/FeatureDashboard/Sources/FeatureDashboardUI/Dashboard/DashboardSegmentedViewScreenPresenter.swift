@@ -34,7 +34,7 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
     private(set) lazy var items: [SegmentedViewScreenItem] = [
         SegmentedViewScreenItem(
             title: LocalizedString.portfolio,
-            viewController: DashboardViewController(
+            viewController: PortfolioViewController(
                 fiatBalanceCellProvider: fiatBalanceCellProvider,
                 presenter: dashboardScreenPresenter
             )
@@ -49,7 +49,7 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
 
     // MARK: - Private Properties
 
-    private let dashboardScreenPresenter: DashboardScreenPresenter
+    private let dashboardScreenPresenter: PortfolioScreenPresenter
     private let fiatBalanceCellProvider: FiatBalanceCellProviding
     private let drawerRouter: DrawerRouting
     private let disposeBag = DisposeBag()
@@ -59,7 +59,7 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
     init(
         drawerRouter: DrawerRouting,
         fiatBalanceCellProvider: FiatBalanceCellProviding,
-        dashboardScreenPresenter: DashboardScreenPresenter
+        dashboardScreenPresenter: PortfolioScreenPresenter
     ) {
         self.drawerRouter = drawerRouter
         self.fiatBalanceCellProvider = fiatBalanceCellProvider

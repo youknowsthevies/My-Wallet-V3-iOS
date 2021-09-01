@@ -5,11 +5,10 @@ import PlatformKit
 import PlatformUIKit
 import RxDataSources
 
-enum DashboardCellType: Hashable {
+enum PortfolioCellType: Hashable {
     case announcement(AnnouncementCardViewModel)
     case fiatCustodialBalances(CurrencyViewPresenter)
     case totalBalance(TotalBalanceViewPresenter)
-    case notice(NoticeViewModel)
     case crypto(HistoricalBalanceCellPresenter)
     case cryptoSkeleton(Int)
 
@@ -17,12 +16,12 @@ enum DashboardCellType: Hashable {
         hasher.combine(identity)
     }
 
-    static func == (_ lhs: DashboardCellType, _ rhs: DashboardCellType) -> Bool {
+    static func == (_ lhs: PortfolioCellType, _ rhs: PortfolioCellType) -> Bool {
         lhs.identity == rhs.identity
     }
 }
 
-extension DashboardCellType: IdentifiableType {
+extension PortfolioCellType: IdentifiableType {
     var identity: AnyHashable {
         switch self {
         case .announcement(let model):
@@ -35,8 +34,6 @@ extension DashboardCellType: IdentifiableType {
             return "crypto-\(presenter.cryptoCurrency.code)"
         case .fiatCustodialBalances:
             return "fiatCustodialBalances"
-        case .notice:
-            return "notice"
         case .totalBalance:
             return "totalBalance"
         }

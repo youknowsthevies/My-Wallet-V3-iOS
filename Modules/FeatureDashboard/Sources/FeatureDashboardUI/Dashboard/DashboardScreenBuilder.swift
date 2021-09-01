@@ -33,7 +33,7 @@ public final class DashboardScreenBuilder {
                 )
             )
         case false:
-            return DashboardViewController(
+            return PortfolioViewController(
                 fiatBalanceCellProvider: fiatBalanceCellProvider,
                 presenter: .init()
             )

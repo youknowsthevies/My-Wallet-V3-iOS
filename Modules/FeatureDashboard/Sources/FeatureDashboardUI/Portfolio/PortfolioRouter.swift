@@ -6,7 +6,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class DashboardRouter {
+final class PortfolioRouter {
 
     private let accountsRouter: AccountsRouting
     private let disposeBag = DisposeBag()
@@ -28,26 +28,15 @@ final class DashboardRouter {
     }
 
     func showDetailsScreen(for currency: CryptoCurrency) {
-        // TODO: Move away from the routing layer - phase II of saving
-        let detailsInteractor = DashboardDetailsScreenInteractor(
+        let builder = AssetDetailsBuilder(
+            accountsRouter: accountsRouter,
             currency: currency,
-            exchangeAPI: exchangeProviding[currency]
+            exchangeProviding: exchangeProviding
         )
-        let detailsPresenter = DashboardDetailsScreenPresenter(
-            using: detailsInteractor,
-            with: currency,
-            router: self
+        let controller = builder.build()
+        navigationRouter.present(
+            viewController: controller,
+            using: .modalOverTopMost
         )
-        detailsPresenter.action
-            .emit(onNext: { [accountsRouter] action in
-                switch action {
-                case .routeTo(let account):
-                    accountsRouter.route(to: account)
-                }
-            })
-            .disposed(by: disposeBag)
-
-        let controller = DashboardDetailsViewController(using: detailsPresenter)
-        navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
 }

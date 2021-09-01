@@ -17,7 +17,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
     typealias LocalizationIds = LocalizationConstants.DashboardDetails
     typealias CellType = WalletActionCellType
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
     var sections: Observable<[WalletActionItemsSectionViewModel]> {
         sectionsRelay

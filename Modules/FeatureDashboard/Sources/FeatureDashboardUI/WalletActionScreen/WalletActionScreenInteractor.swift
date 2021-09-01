@@ -4,25 +4,25 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 
-public protocol WalletActionScreenInteracting: AnyObject {
+protocol WalletActionScreenInteracting: AnyObject {
     var currency: CurrencyType { get }
     var accountType: SingleAccountType { get }
     var availableActions: Single<AvailableActions> { get }
     var balanceCellInteractor: CurrentBalanceCellInteracting { get }
 }
 
-public final class WalletActionScreenInteractor: WalletActionScreenInteracting {
+final class WalletActionScreenInteractor: WalletActionScreenInteracting {
 
-    public var availableActions: Single<AvailableActions> {
+    var availableActions: Single<AvailableActions> {
         account.actions
     }
 
-    public var accountType: SingleAccountType {
+    var accountType: SingleAccountType {
         balanceCellInteractor.accountType
     }
 
-    public let currency: CurrencyType
-    public let balanceCellInteractor: CurrentBalanceCellInteracting
+    let currency: CurrencyType
+    let balanceCellInteractor: CurrentBalanceCellInteracting
 
     // MARK: - Private Properties
 
@@ -30,7 +30,7 @@ public final class WalletActionScreenInteractor: WalletActionScreenInteracting {
 
     // MARK: - Init
 
-    public init(account: BlockchainAccount) {
+    init(account: BlockchainAccount) {
         self.account = account
         currency = account.currencyType
         balanceCellInteractor = CurrentBalanceCellInteractor(

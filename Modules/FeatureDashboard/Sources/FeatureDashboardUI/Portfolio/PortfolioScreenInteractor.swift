@@ -7,7 +7,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class DashboardScreenInteractor {
+final class PortfolioScreenInteractor {
 
     // MARK: - Properties
 

@@ -9,22 +9,17 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class DashboardScreenPresenter {
+final class PortfolioScreenPresenter {
 
     struct Model {
         let historicalBalanceCellPresenters: [HistoricalBalanceCellPresenter]
         let totalBalancePresenter: TotalBalanceViewPresenter
         var announcementCardViewModel: AnnouncementCardViewModel?
-        var noticeViewModel: NoticeViewModel?
         var fiatBalanceCollectionViewPresenter: CurrencyViewPresenter?
         var cryptoCurrencies: [CryptoCurrency: Bool] = [:]
 
-        var cellArrangement: [DashboardCellType] {
-            var items: [DashboardCellType] = [.totalBalance(totalBalancePresenter)]
-
-            if let noticeViewModel = noticeViewModel {
-                items.append(.notice(noticeViewModel))
-            }
+        var cellArrangement: [PortfolioCellType] {
+            var items: [PortfolioCellType] = [.totalBalance(totalBalancePresenter)]
 
             if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
@@ -38,12 +33,12 @@ final class DashboardScreenPresenter {
                 .compactMap { cryptoCurrency in
                     historicalBalanceCellPresenters.first(where: { $0.cryptoCurrency == cryptoCurrency })
                 }
-                .map(DashboardCellType.crypto)
+                .map(PortfolioCellType.crypto)
                 .forEach { items.append($0) }
 
             if enabledCryptoCurrencies.isEmpty {
                 Array(1...7)
-                    .map(DashboardCellType.cryptoSkeleton)
+                    .map(PortfolioCellType.cryptoSkeleton)
                     .forEach { items.append($0) }
             }
 
@@ -65,8 +60,8 @@ final class DashboardScreenPresenter {
     let refreshRelay = BehaviorRelay<Void>(value: ())
     let fiatBalancePresenter: DashboardFiatBalancesPresenter
     var model: Model
-    private(set) lazy var router: DashboardRouter = .init()
-    var sections: Observable<[DashboardViewModel]> {
+    private(set) lazy var router: PortfolioRouter = .init()
+    var sections: Observable<[PortfolioViewModel]> {
         sectionsRelay.asObservable()
     }
 
@@ -76,11 +71,10 @@ final class DashboardScreenPresenter {
     private let announcementPresenter: AnnouncementPresenting
     private let disposeBag = DisposeBag()
     private let drawerRouter: DrawerRouting
-    private let interactor: DashboardScreenInteractor
+    private let interactor: PortfolioScreenInteractor
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
-    private let noticePresenter: DashboardNoticePresenter
     private let reloadRelay: PublishRelay<Void> = .init()
-    private let sectionsRelay: BehaviorRelay<[DashboardViewModel]> = .init(value: [])
+    private let sectionsRelay: BehaviorRelay<[PortfolioViewModel]> = .init(value: [])
     private let coincore: CoincoreAPI
 
     private var cryptoCurrencies: Observable<CryptoCurrency> {
@@ -110,7 +104,7 @@ final class DashboardScreenPresenter {
     // MARK: - Init
 
     init(
-        interactor: DashboardScreenInteractor = DashboardScreenInteractor(),
+        interactor: PortfolioScreenInteractor = PortfolioScreenInteractor(),
         accountFetcher: BlockchainAccountFetching = resolve(),
         drawerRouter: DrawerRouting = resolve(),
         announcementPresenter: AnnouncementPresenting = resolve(),
@@ -124,7 +118,6 @@ final class DashboardScreenPresenter {
         self.drawerRouter = drawerRouter
         self.interactor = interactor
         self.internalFeatureFlagService = internalFeatureFlagService
-        noticePresenter = DashboardNoticePresenter()
         fiatBalancePresenter = DashboardFiatBalancesPresenter(
             interactor: interactor.fiatBalancesInteractor
         )
@@ -155,21 +148,6 @@ final class DashboardScreenPresenter {
                     self?.model.announcementCardViewModel = viewModel
                 case .none:
                     break
-                }
-            })
-            .asObservable()
-            .mapToVoid()
-            .bindAndCatch(to: reloadRelay)
-            .disposed(by: disposeBag)
-
-        // Bind notices.
-        noticePresenter.action
-            .do(onNext: { action in
-                switch action {
-                case .hide:
-                    self.model.noticeViewModel = nil
-                case .show(let viewModel):
-                    self.model.noticeViewModel = viewModel
                 }
             })
             .asObservable()
@@ -213,7 +191,7 @@ final class DashboardScreenPresenter {
             .map(weak: self) { (self, _) in
                 self.model.cellArrangement
             }
-            .map(DashboardViewModel.init)
+            .map(PortfolioViewModel.init)
             .map { [$0] }
             .bind(to: sectionsRelay)
             .disposed(by: disposeBag)
@@ -223,7 +201,6 @@ final class DashboardScreenPresenter {
             .bind { [weak self] _ in
                 self?.interactor.refresh()
                 self?.announcementPresenter.refresh()
-                self?.noticePresenter.refresh()
                 self?.fiatBalancePresenter.refresh()
                 self?.model.totalBalancePresenter.refresh()
             }

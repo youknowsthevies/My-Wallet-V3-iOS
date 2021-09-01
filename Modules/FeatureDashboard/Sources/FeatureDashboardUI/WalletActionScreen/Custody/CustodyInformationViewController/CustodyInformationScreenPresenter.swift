@@ -40,7 +40,7 @@ final class CustodyInformationScreenPresenter {
 
     private typealias LocalizationID = LocalizationConstants.CustodyWalletInformation
 
-    // MARK: - Public Properites
+    // MARK: - Properties
 
     var description: LabelContent {
         .init(

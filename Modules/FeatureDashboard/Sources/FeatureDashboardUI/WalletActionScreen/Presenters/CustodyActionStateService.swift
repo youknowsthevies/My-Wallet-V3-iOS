@@ -8,46 +8,46 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public protocol CustodyActionStateReceiverServiceAPI: AnyObject {
+protocol CustodyActionStateReceiverServiceAPI: AnyObject {
 
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<RoutingAction<CustodyActionState>> { get }
 }
 
-public protocol CustodySwapEmitterAPI: AnyObject {
+protocol CustodySwapEmitterAPI: AnyObject {
     var swapRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodyActivityEmitterAPI: AnyObject {
+protocol CustodyActivityEmitterAPI: AnyObject {
     var activityRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodyDepositEmitterAPI: AnyObject {
+protocol CustodyDepositEmitterAPI: AnyObject {
     var depositRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodyWithdrawEmitterAPI: AnyObject {
+protocol CustodyWithdrawEmitterAPI: AnyObject {
     var withdrawRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodyBuyEmitterAPI: AnyObject {
+protocol CustodyBuyEmitterAPI: AnyObject {
     var buyRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodySendEmitterAPI: AnyObject {
+protocol CustodySendEmitterAPI: AnyObject {
     var sendRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodyReceiveEmitterAPI: AnyObject {
+protocol CustodyReceiveEmitterAPI: AnyObject {
     var receiveRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodySellEmitterAPI: AnyObject {
+protocol CustodySellEmitterAPI: AnyObject {
     var sellRelay: PublishRelay<Void> { get }
 }
 
-public typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServiceAPI &
+typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServiceAPI &
     RoutingNextStateEmitterAPI &
     CustodyActivityEmitterAPI &
     CustodyBuyEmitterAPI &
@@ -59,13 +59,13 @@ public typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServic
     CustodySendEmitterAPI &
     CustodyReceiveEmitterAPI
 
-public final class CustodyActionStateService: CustodyActionStateServiceAPI {
-    public typealias State = CustodyActionState
-    public typealias Action = RoutingAction<State>
+final class CustodyActionStateService: CustodyActionStateServiceAPI {
+    typealias State = CustodyActionState
+    typealias Action = RoutingAction<State>
 
     // MARK: - Types
 
-    public struct States {
+    struct States {
 
         /// The actual state of the flow
         let current: State
@@ -109,29 +109,29 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
         cacheSuite.bool(forKey: Constant.introScreenShown)
     }
 
-    public var states: Observable<States> {
+    var states: Observable<States> {
         statesRelay.asObservable()
     }
 
-    public var currentState: Observable<CustodyActionStateService.State> {
+    var currentState: Observable<State> {
         states.map(\.current)
     }
 
-    public var action: Observable<Action> {
+    var action: Observable<Action> {
         actionRelay
             .observeOn(MainScheduler.instance)
     }
 
-    public let nextRelay = PublishRelay<Void>()
-    public let previousRelay = PublishRelay<Void>()
-    public let activityRelay = PublishRelay<Void>()
-    public let depositRelay = PublishRelay<Void>()
-    public let sellRelay = PublishRelay<Void>()
-    public let buyRelay = PublishRelay<Void>()
-    public let withdrawRelay = PublishRelay<Void>()
-    public let swapRelay = PublishRelay<Void>()
-    public let sendRelay = PublishRelay<Void>()
-    public let receiveRelay = PublishRelay<Void>()
+    let nextRelay = PublishRelay<Void>()
+    let previousRelay = PublishRelay<Void>()
+    let activityRelay = PublishRelay<Void>()
+    let depositRelay = PublishRelay<Void>()
+    let sellRelay = PublishRelay<Void>()
+    let buyRelay = PublishRelay<Void>()
+    let withdrawRelay = PublishRelay<Void>()
+    let swapRelay = PublishRelay<Void>()
+    let sendRelay = PublishRelay<Void>()
+    let receiveRelay = PublishRelay<Void>()
 
     private let statesRelay = BehaviorRelay<States>(value: .start)
     private let actionRelay = PublishRelay<Action>()
@@ -142,7 +142,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
 
     // MARK: - Setup
 
-    public init(
+    init(
         cacheSuite: CacheSuite = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
         recoveryStatusProviding: RecoveryPhraseStatusProviding

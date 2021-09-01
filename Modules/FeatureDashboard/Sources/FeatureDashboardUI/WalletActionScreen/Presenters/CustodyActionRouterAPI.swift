@@ -5,7 +5,7 @@ import RxRelay
 import RxSwift
 
 public protocol CustodyActionRouterAPI: AnyObject {
-    func next(to state: CustodyActionStateService.State)
+    func next(to state: CustodyActionState)
     func previous()
     func start(with account: BlockchainAccount)
 

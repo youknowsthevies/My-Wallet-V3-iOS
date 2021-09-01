@@ -11,24 +11,24 @@ import RxSwift
 import ToolKit
 
 /// A view controller that displays the dashboard
-public final class DashboardViewController: BaseScreenViewController {
+final class PortfolioViewController: BaseScreenViewController {
 
     // MARK: - Private Types
 
-    private typealias RxDataSource = RxTableViewSectionedAnimatedDataSource<DashboardViewModel>
+    private typealias RxDataSource = RxTableViewSectionedAnimatedDataSource<PortfolioViewModel>
 
     // MARK: - Private Properties
 
     private let disposeBag = DisposeBag()
     private let fiatBalanceCellProvider: FiatBalanceCellProviding
-    private let presenter: DashboardScreenPresenter
+    private let presenter: PortfolioScreenPresenter
     private let tableView = UITableView()
 
     // MARK: - Setup
 
     init(
         fiatBalanceCellProvider: FiatBalanceCellProviding,
-        presenter: DashboardScreenPresenter
+        presenter: PortfolioScreenPresenter
     ) {
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.presenter = presenter
@@ -42,7 +42,7 @@ public final class DashboardViewController: BaseScreenViewController {
 
     // MARK: - Lifecycle
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupNavigationBar()
@@ -52,7 +52,7 @@ public final class DashboardViewController: BaseScreenViewController {
         presenter.refreshRelay.accept(())
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isTranslucent = false
     }
@@ -77,7 +77,6 @@ public final class DashboardViewController: BaseScreenViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(AnnouncementTableViewCell.self)
         fiatBalanceCellProvider.registerFiatBalanceCell(for: tableView)
-        tableView.register(NoticeTableViewCell.self)
         tableView.registerNibCell(TotalBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(HistoricalBalanceTableViewCell.self, in: .module)
         tableView.separatorColor = .clear
@@ -111,19 +110,16 @@ public final class DashboardViewController: BaseScreenViewController {
                     cell = self.assetCell(for: indexPath, presenter: presenter)
                 case .cryptoSkeleton:
                     cell = self.assetCell(for: indexPath, presenter: nil)
-                case .notice(let model):
-                    cell = self.noticeCell(for: indexPath, model: model)
                 }
                 cell.selectionStyle = .none
                 return cell
             }
         )
 
-        tableView.rx.modelSelected(DashboardCellType.self)
+        tableView.rx.modelSelected(PortfolioCellType.self)
             .bindAndCatch(weak: self) { (self, model) in
                 switch model {
                 case .announcement,
-                     .notice,
                      .totalBalance,
                      .cryptoSkeleton,
                      .fiatCustodialBalances:
@@ -142,7 +138,7 @@ public final class DashboardViewController: BaseScreenViewController {
 
     // MARK: - Navigation
 
-    override public func navigationBarLeadingButtonPressed() {
+    override func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonPressed()
     }
 
@@ -174,12 +170,6 @@ public final class DashboardViewController: BaseScreenViewController {
     private func assetCell(for indexPath: IndexPath, presenter: HistoricalBalanceCellPresenter?) -> UITableViewCell {
         let cell = tableView.dequeue(HistoricalBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
-        return cell
-    }
-
-    private func noticeCell(for indexPath: IndexPath, model: NoticeViewModel) -> UITableViewCell {
-        let cell = tableView.dequeue(NoticeTableViewCell.self, for: indexPath)
-        cell.viewModel = model
         return cell
     }
 }

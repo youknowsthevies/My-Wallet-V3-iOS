@@ -6,7 +6,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class DashboardDetailsViewController: BaseScreenViewController {
+final class AssetDetailsViewController: BaseScreenViewController {
 
     // MARK: - Private Properties
 
@@ -14,22 +14,19 @@ final class DashboardDetailsViewController: BaseScreenViewController {
 
     // MARK: - IBOutlets
 
-    @IBOutlet private var tableView: SelfSizingTableView!
+    private let tableView: UITableView = .init()
     /// A reload relay that debounces its stream before calling table view to reload its data.
     private let reloadRelay = PublishRelay<Void>()
 
     // MARK: - Injected
 
-    private let presenter: DashboardDetailsScreenPresenter
+    private let presenter: AssetDetailsScreenPresenter
 
     // MARK: - Setup
 
-    init(using presenter: DashboardDetailsScreenPresenter) {
+    init(using presenter: AssetDetailsScreenPresenter) {
         self.presenter = presenter
-        super.init(
-            nibName: DashboardDetailsViewController.objectName,
-            bundle: .module
-        )
+        super.init(nibName: nil, bundle: nil)
     }
 
     @available(*, unavailable)
@@ -56,20 +53,30 @@ final class DashboardDetailsViewController: BaseScreenViewController {
     // MARK: - Setup
 
     private func setupTableView() {
+        view.addSubview(tableView)
+        tableView.layoutToSuperview(.leading, .trailing, .top, .bottom)
+
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 312
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.separatorColor = .clear
+
         tableView.registerNibCell(MultiActionTableViewCell.self, in: .platformUIKit)
         tableView.registerNibCell(PriceAlertTableViewCell.self, in: .platformUIKit)
         tableView.registerNibCell(AssetLineChartTableViewCell.self, in: .platformUIKit)
         tableView.register(CurrentBalanceTableViewCell.self)
-        tableView.separatorColor = .clear
 
-        presenter.isScrollEnabled
+        tableView.dataSource = self
+        tableView.delegate = self
+
+        presenter
+            .isScrollEnabled
             .drive(tableView.rx.isScrollEnabled)
             .disposed(by: disposeBag)
 
-        tableView.rx.itemSelected
+        tableView
+            .rx
+            .itemSelected
             .map(\.row)
             .map(weak: self) { (self, row) in
                 self.presenter.cellArrangement[row]
@@ -78,6 +85,7 @@ final class DashboardDetailsViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
 
         reloadRelay
+            .startWith(())
             .debounce(.milliseconds(500), scheduler: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] _ in
                 self?.tableView.reloadData()
@@ -96,7 +104,7 @@ final class DashboardDetailsViewController: BaseScreenViewController {
 
     // MARK: - Actions
 
-    private func execute(action: DashboardDetailsScreenPresenter.PresentationAction) {
+    private func execute(action: AssetDetailsScreenPresenter.PresentationAction) {
         switch action {
         case .show:
             reloadRelay.accept(())
@@ -106,7 +114,7 @@ final class DashboardDetailsViewController: BaseScreenViewController {
 
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
-extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSource {
+extension AssetDetailsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(
         _ tableView: UITableView,
         numberOfRowsInSection section: Int

@@ -2,7 +2,6 @@
 
 import PlatformUIKit
 
-/// Notice display action
 enum DashboardItemDisplayAction<ItemViewModel: Equatable>: Equatable {
 
     /// No statement should be presented

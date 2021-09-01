@@ -5,7 +5,7 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 
-final class DashboardDetailsScreenInteractor {
+final class AssetDetailsScreenInteractor {
 
     // MARK: - Public Properties
 

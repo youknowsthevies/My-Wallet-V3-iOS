@@ -9,15 +9,15 @@ import RxSwift
 import ToolKit
 
 /// This enum aggregates possible action types that can be done in the dashboard
-enum DashboardDetailsAction {
+enum AssetDetailsAction {
     case routeTo(BlockchainAccount)
 }
 
-final class DashboardDetailsScreenPresenter {
+final class AssetDetailsScreenPresenter {
 
     // MARK: - Types
 
-    private typealias AccessilbityId = Accessibility.Identifier.DashboardDetails
+    private typealias AccessibilityId = Accessibility.Identifier.DashboardDetails
     private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell.Description
 
     enum CellType: Hashable {
@@ -106,11 +106,6 @@ final class DashboardDetailsScreenPresenter {
         savingsBalanceStateRelay.value.visible
     }
 
-    /// The dashboard action
-    var action: Signal<DashboardDetailsAction> {
-        actionRelay.asSignal()
-    }
-
     /// Returns the total count of cells
     var cellCount: Int {
         cellArrangement.count
@@ -153,20 +148,19 @@ final class DashboardDetailsScreenPresenter {
     private let tradingBalanceStateRelay = BehaviorRelay<BalancePresentationState>(value: .hidden)
     private let savingsBalanceStateRelay = BehaviorRelay<BalancePresentationState>(value: .hidden)
 
-    private unowned let router: DashboardRouter
-    private let interactor: DashboardDetailsScreenInteractor
-    private let actionRelay = PublishRelay<DashboardDetailsAction>()
+    private let accountsRouter: AccountsRouting
+    private let interactor: AssetDetailsScreenInteractor
     private let scrollingEnabledRelay = BehaviorRelay(value: false)
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
     init(
-        using interactor: DashboardDetailsScreenInteractor,
-        with currency: CryptoCurrency,
-        router: DashboardRouter
+        accountsRouter: AccountsRouting,
+        using interactor: AssetDetailsScreenInteractor,
+        with currency: CryptoCurrency
     ) {
-        self.router = router
+        self.accountsRouter = accountsRouter
         self.currency = currency
         self.interactor = interactor
 
@@ -181,15 +175,18 @@ final class DashboardDetailsScreenPresenter {
             .disposed(by: disposeBag)
 
         presenterSelectionRelay
-            .compactMap { cellType -> DashboardDetailsAction? in
+            .compactMap { cellType -> BlockchainAccount? in
                 switch cellType {
                 case .balance(let account):
-                    return .routeTo(account)
-                case .chart, .priceAlert:
+                    return account
+                case .chart,
+                     .priceAlert:
                     return nil
                 }
             }
-            .bindAndCatch(to: actionRelay)
+            .bind { [accountsRouter] blockchainAccount in
+                accountsRouter.route(to: blockchainAccount)
+            }
             .disposed(by: disposeBag)
     }
 
@@ -288,12 +285,12 @@ final class DashboardDetailsScreenPresenter {
             interactor: CurrentBalanceCellInteractor(account: account),
             descriptionValue: descriptionValue,
             currency: .crypto(currency),
-            titleAccessibilitySuffix: "\(AccessilbityId.CurrentBalanceCell.titleValue)",
-            descriptionAccessibilitySuffix: "\(AccessilbityId.CurrentBalanceCell.descriptionValue)",
-            pendingAccessibilitySuffix: "\(AccessilbityId.CurrentBalanceCell.pendingValue)",
+            titleAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.titleValue)",
+            descriptionAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.descriptionValue)",
+            pendingAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.pendingValue)",
             descriptors: .default(
-                cryptoAccessiblitySuffix: "\(AccessilbityId.CurrentBalanceCell.cryptoValue).\(currency.code)",
-                fiatAccessiblitySuffix: "\(AccessilbityId.CurrentBalanceCell.fiatValue).\(currency.code)"
+                cryptoAccessiblitySuffix: "\(AccessibilityId.CurrentBalanceCell.cryptoValue).\(currency.code)",
+                fiatAccessiblitySuffix: "\(AccessibilityId.CurrentBalanceCell.fiatValue).\(currency.code)"
             )
         )
     }

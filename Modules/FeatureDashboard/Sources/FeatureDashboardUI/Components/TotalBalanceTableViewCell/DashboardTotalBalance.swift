@@ -4,7 +4,7 @@ import Charts
 import PlatformKit
 import PlatformUIKit
 
-struct DashboardTotalBalance {
+enum DashboardTotalBalance {
     enum State {
         typealias Interaction = LoadingState<Value.Interaction>
         typealias Presentation = LoadingState<Value.Presentation>

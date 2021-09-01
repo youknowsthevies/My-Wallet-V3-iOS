@@ -131,7 +131,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         stateService.nextRelay.accept(())
     }
 
-    public func next(to state: CustodyActionStateService.State) {
+    public func next(to state: CustodyActionState) {
         switch state {
         case .start:
             showWalletActionSheet()
