@@ -58,6 +58,7 @@ final class SettingsViewController: BaseScreenViewController {
             leadingButtonStyle: presenter.leadingButton,
             trailingButtonStyle: presenter.trailingButton
         )
+        trailingButtonStyle = .close
     }
 
     private func setupTableView() {
