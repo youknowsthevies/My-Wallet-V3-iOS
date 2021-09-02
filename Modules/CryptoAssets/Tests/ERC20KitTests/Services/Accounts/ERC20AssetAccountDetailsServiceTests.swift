@@ -2,7 +2,6 @@
 
 @testable import ERC20Kit
 @testable import ERC20KitMock
-@testable import EthereumKit
 import PlatformKit
 @testable import PlatformKitMock
 import RxSwift
@@ -11,31 +10,22 @@ import XCTest
 
 class ERC20AccountDetailsServiceAPITests: XCTestCase {
 
-    var subject: ERC20AccountDetailsService!
-    var scheduler: TestScheduler!
-    var bridge: ERC20EthereumWalletBridgeMock!
-    var accountClient: ERC20AccountAPIClientMock!
-    var disposeBag: DisposeBag!
-    let pax = CryptoCurrency.erc20(.mock(name: "ERC20 1", sortIndex: 0))
+    private var scheduler: TestScheduler!
+    private var subject: ERC20AccountDetailsService!
+
+    private let currency: CryptoCurrency = .erc20(.mock(name: "ERC20 1", sortIndex: 0))
 
     override func setUp() {
         super.setUp()
 
         scheduler = TestScheduler(initialClock: 0)
-        disposeBag = DisposeBag()
-        bridge = ERC20EthereumWalletBridgeMock(cryptoCurrency: pax)
-        accountClient = ERC20AccountAPIClientMock(cryptoCurrency: pax)
-        subject = ERC20AccountDetailsService(
-            with: bridge,
-            service: ERC20BalanceService(with: bridge, accountClient: accountClient)
-        )
+        let bridge = ERC20EthereumWalletBridgeMock(cryptoCurrency: currency)
+        let service = ERC20BalanceServiceMock(cryptoCurrency: currency)
+        subject = ERC20AccountDetailsService(with: bridge, service: service)
     }
 
     override func tearDown() {
         scheduler = nil
-        disposeBag = nil
-        bridge = nil
-        accountClient = nil
         subject = nil
 
         super.tearDown()
@@ -44,7 +34,7 @@ class ERC20AccountDetailsServiceAPITests: XCTestCase {
     func test_fetch_asset_account_details() {
         // Arrange
         let accountDetailsObservable = subject
-            .accountDetails(cryptoCurrency: pax)
+            .accountDetails(cryptoCurrency: currency)
             .asObservable()
 
         // Act
@@ -58,9 +48,9 @@ class ERC20AccountDetailsServiceAPITests: XCTestCase {
                 ERC20AssetAccountDetails(
                     account: ERC20AssetAccount(
                         accountAddress: "0x0000000000000000000000000000000000000000",
-                        name: "My \(pax.name) Wallet"
+                        name: "My \(currency.name) Wallet"
                     ),
-                    balance: CryptoValue.create(major: "2.0", currency: pax)!
+                    balance: .create(major: 2, currency: currency)
                 )
             ),
             .completed(200)

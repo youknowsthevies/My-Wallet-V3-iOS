@@ -23,6 +23,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     var balance: Single<MoneyValue> {
         balanceService
             .balance(for: EthereumAddress(address: publicKey)!, cryptoCurrency: asset)
+            .asSingle()
             .moneyValue
     }
 

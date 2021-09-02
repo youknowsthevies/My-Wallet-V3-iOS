@@ -2,6 +2,7 @@
 
 import ComposableArchitecture
 import DIKit
+import ERC20DataKit
 import FeatureDebugUI
 import FeatureInterestData
 import FeatureSettingsDomain
@@ -79,6 +80,7 @@ func defineDependencies() {
         DependencyContainer.platformUIKit
         DependencyContainer.ethereumKit
         DependencyContainer.erc20Kit
+        DependencyContainer.erc20DataKit
         DependencyContainer.bitcoinChainKit
         DependencyContainer.bitcoinKit
         DependencyContainer.bitcoinCashKit

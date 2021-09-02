@@ -1,12 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import EthereumKit
+import Foundation
 import NetworkKit
-import PlatformKit
 import RxSwift
 
 final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
+
+    // MARK: - Private Types
 
     private enum EndpointV2 {
         private static func base() -> [String] { ["eth"] }
@@ -18,10 +19,6 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
             ["v2", "eth", "data", "account"]
         }
 
-        static func summary(for address: String, contractAddress: String) -> [String] {
-            account + [address, "token", contractAddress, "summary"]
-        }
-
         static func transactions(for address: String, contractAddress: String) -> [String] {
             account + [address, "token", contractAddress, "transfers"]
         }
@@ -31,8 +28,13 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
         }
     }
 
+    // MARK: - Private Properties
+
     private let networkAdapter: NetworkAdapterAPI
+
     private let requestBuilder: RequestBuilder
+
+    // MARK: - Setup
 
     init(
         networkAdapter: NetworkAdapterAPI = resolve(),
@@ -42,7 +44,11 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
         self.requestBuilder = requestBuilder
     }
 
-    func fetchTransactions(from address: String, page: String?, contractAddress: String) -> Single<ERC20TransfersResponse> {
+    func fetchTransactions(
+        from address: String,
+        page: String?,
+        contractAddress: String
+    ) -> Single<ERC20TransfersResponse> {
         var parameters: [URLQueryItem] = []
         if let page = page, !page.isEmpty {
             parameters.append(URLQueryItem(name: "page", value: page))
@@ -54,12 +60,6 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
 
     func isContract(address: String) -> Single<ERC20IsContractResponse> {
         let path = EndpointV2.isContract(with: address)
-        let request = requestBuilder.get(path: path)!
-        return networkAdapter.perform(request: request)
-    }
-
-    func fetchAccountSummary(from address: String, contractAddress: String) -> Single<ERC20AccountSummaryResponse> {
-        let path = EndpointV2.summary(for: address, contractAddress: contractAddress)
         let request = requestBuilder.get(path: path)!
         return networkAdapter.perform(request: request)
     }

@@ -11,6 +11,7 @@ let package = Package(
         .library(name: "BitcoinKit", targets: ["BitcoinKit"]),
         .library(name: "EthereumKit", targets: ["EthereumKit"]),
         .library(name: "ERC20Kit", targets: ["ERC20Kit"]),
+        .library(name: "ERC20DataKit", targets: ["ERC20DataKit"]),
         .library(name: "StellarKit", targets: ["StellarKit"]),
         .library(name: "BitcoinKitMock", targets: ["BitcoinKitMock"]),
         .library(name: "EthereumKitMock", targets: ["EthereumKitMock"]),
@@ -38,6 +39,7 @@ let package = Package(
             url: "https://github.com/Soneso/stellar-ios-mac-sdk.git",
             .exact("2.0.2")
         ),
+        .package(path: "../Network"),
         .package(path: "../Platform"),
         .package(path: "../FeatureTransaction"),
         .package(path: "../Test"),
@@ -73,6 +75,16 @@ let package = Package(
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "ToolKit", package: "Tool")
+            ]
+        ),
+        .target(
+            name: "ERC20DataKit",
+            dependencies: [
+                .product(name: "DIKit", package: "DIKit"),
+                .target(name: "ERC20Kit"),
+                .product(name: "NetworkKit", package: "Network"),
+                .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
@@ -116,6 +128,12 @@ let package = Package(
             ]
         ),
         .target(
+            name: "ERC20DataKitMock",
+            dependencies: [
+                .target(name: "ERC20DataKit")
+            ]
+        ),
+        .target(
             name: "ERC20KitMock",
             dependencies: [
                 .target(name: "ERC20Kit")
@@ -124,7 +142,8 @@ let package = Package(
         .target(
             name: "EthereumKitMock",
             dependencies: [
-                .target(name: "EthereumKit")
+                .target(name: "EthereumKit"),
+                .product(name: "TestKit", package: "Test")
             ]
         ),
         .target(
@@ -153,6 +172,20 @@ let package = Package(
                 .target(name: "BitcoinKit"),
                 .target(name: "BitcoinKitMock"),
                 .product(name: "TestKit", package: "Test")
+            ]
+        ),
+        .testTarget(
+            name: "ERC20DataKitTests",
+            dependencies: [
+                .target(name: "ERC20DataKit"),
+                .target(name: "ERC20DataKitMock"),
+                .target(name: "ERC20Kit"),
+                .target(name: "ERC20KitMock"),
+                .target(name: "EthereumKit"),
+                .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "PlatformKitMock", package: "Platform"),
+                .product(name: "TestKit", package: "Test"),
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .testTarget(

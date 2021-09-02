@@ -36,23 +36,23 @@ final class OnboardingRouterTests: XCTestCase {
 
     func test_skipsEmailVerification_if_feature_is_disabled() throws {
         let featureFlagPublisher = mockFeatureFlagService.disable(.remote(.showEmailVerificationInOnboarding))
-        wait(for: featureFlagPublisher)
+        XCTAssertPublisherCompletion(featureFlagPublisher)
         let routingResultPublisher = router.presentOnboarding(from: UIViewController())
-        wait(for: routingResultPublisher)
+        XCTAssertPublisherCompletion(routingResultPublisher)
         XCTAssertEqual(mockEmailVerificationRouter.recordedInvocations.presentEmailVerification.count, 0)
     }
 
     func test_routesToEmailVerification_if_feature_is_enabled() throws {
         let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
-        wait(for: featureFlagPublisher)
+        XCTAssertPublisherCompletion(featureFlagPublisher)
         let routingResultPublisher = router.presentOnboarding(from: UIViewController())
-        wait(for: routingResultPublisher)
+        XCTAssertPublisherCompletion(routingResultPublisher)
         XCTAssertEqual(mockEmailVerificationRouter.recordedInvocations.presentEmailVerification.count, 1)
     }
 
     func test_completesOnboarding_when_emailVerifcation_is_abandoned() throws {
         let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
-        wait(for: featureFlagPublisher)
+        XCTAssertPublisherCompletion(featureFlagPublisher)
         mockEmailVerificationRouter.stubbedResults.presentEmailVerification = .just(.abandoned)
         let mockViewController = MockViewController()
 
@@ -68,10 +68,11 @@ final class OnboardingRouterTests: XCTestCase {
         XCTAssertEqual(onboardingResult, .abandoned)
         XCTAssertEqual(mockBuyCryptoRouter.recordedInvocations.presentBuyFlow.count, 0)
     }
+
     // IOS-5189
 //    func test_dismissesEmailVerification_when_emailVerifcation_is_complete() throws {
 //        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
-//        wait(for: featureFlagPublisher)
+//        XCTAssertPublisherCompletion(featureFlagPublisher)
 //        mockEmailVerificationRouter.stubbedResults.presentEmailVerification = .just(.completed)
 //        let mockViewController = MockViewController()
 //
@@ -95,7 +96,7 @@ final class OnboardingRouterTests: XCTestCase {
 //
 //    func test_presents_buyFlow_after_emailVerification() throws {
 //        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
-//        wait(for: featureFlagPublisher)
+//        XCTAssertPublisherCompletion(featureFlagPublisher)
 //        mockEmailVerificationRouter.stubbedResults.presentEmailVerification = .just(.completed)
 //        let mockViewController = MockViewController()
 //
@@ -123,7 +124,7 @@ final class OnboardingRouterTests: XCTestCase {
 //
 //    func test_completes_when_buyFlow_is_complete() throws {
 //        let featureFlagPublisher = mockFeatureFlagService.enable(.remote(.showEmailVerificationInOnboarding))
-//        wait(for: featureFlagPublisher)
+//        XCTAssertPublisherCompletion(featureFlagPublisher)
 //        mockEmailVerificationRouter.stubbedResults.presentEmailVerification = .just(.completed)
 //        mockBuyCryptoRouter.stubbedResults.presentBuyFlow = .just(.completed)
 //        let mockViewController = MockViewController()

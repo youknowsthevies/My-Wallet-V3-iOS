@@ -27,6 +27,7 @@ final class ERC20AccountDetailsService: ERC20AccountDetailsServiceAPI {
             .flatMap(weak: self) { (self, address) -> Single<(address: EthereumAddress, balance: CryptoValue)> in
                 self.service.balance(for: address, cryptoCurrency: cryptoCurrency)
                     .map { (address, $0) }
+                    .asSingle()
             }
             .map { (address: EthereumAddress, balance: CryptoValue) -> ERC20AssetAccountDetails in
                 ERC20AssetAccountDetails(
