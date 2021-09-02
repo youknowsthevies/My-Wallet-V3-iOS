@@ -17,8 +17,8 @@ final class AssetDetailsScreenPresenter {
 
     // MARK: - Types
 
-    private typealias AccessibilityId = Accessibility.Identifier.DashboardDetails
-    private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell.Description
+    private typealias AccessibilityId = Accessibility.Identifier.AssetDetails
+    private typealias LocalizedString = LocalizationConstants.Dashboard.BalanceCell.Description
 
     enum CellType: Hashable {
         case balance(BlockchainAccount)

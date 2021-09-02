@@ -11,6 +11,7 @@ enum PortfolioCellType: Hashable {
     case totalBalance(TotalBalanceViewPresenter)
     case crypto(HistoricalBalanceCellPresenter)
     case cryptoSkeleton(Int)
+    case emptyState
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(identity)
@@ -36,6 +37,8 @@ extension PortfolioCellType: IdentifiableType {
             return "fiatCustodialBalances"
         case .totalBalance:
             return "totalBalance"
+        case .emptyState:
+            return "emptyState"
         }
     }
 }

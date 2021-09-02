@@ -2,7 +2,6 @@
 
 import AnalyticsKit
 import DIKit
-import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -13,8 +12,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
 
     // MARK: - Types
 
-    typealias AccessibilityId = Accessibility.Identifier.WalletActionSheet
-    typealias LocalizationIds = LocalizationConstants.DashboardDetails
+    typealias AccessibilityId = Accessibility.Identifier
     typealias CellType = WalletActionCellType
 
     // MARK: - Properties
@@ -75,12 +73,12 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
             interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
             currency: interactor.currency,
-            titleAccessibilitySuffix: "\(Accessibility.Identifier.DashboardDetails.CurrentBalanceCell.titleValue)",
-            descriptionAccessibilitySuffix: "\(Accessibility.Identifier.DashboardDetails.CurrentBalanceCell.descriptionValue)",
-            pendingAccessibilitySuffix: "\(Accessibility.Identifier.DashboardDetails.CurrentBalanceCell.pendingValue)",
+            titleAccessibilitySuffix: "\(AccessibilityId.AssetDetails.CurrentBalanceCell.titleValue)",
+            descriptionAccessibilitySuffix: "\(AccessibilityId.AssetDetails.CurrentBalanceCell.descriptionValue)",
+            pendingAccessibilitySuffix: "\(AccessibilityId.AssetDetails.CurrentBalanceCell.pendingValue)",
             descriptors: .default(
-                cryptoAccessiblitySuffix: "\(AccessibilityId.NonCustodial.cryptoValue)",
-                fiatAccessiblitySuffix: "\(AccessibilityId.NonCustodial.fiatValue)"
+                cryptoAccessiblitySuffix: "\(AccessibilityId.WalletActionSheet.NonCustodial.cryptoValue)",
+                fiatAccessiblitySuffix: "\(AccessibilityId.WalletActionSheet.NonCustodial.fiatValue)"
             )
         )
 

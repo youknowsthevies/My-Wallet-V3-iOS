@@ -10,7 +10,7 @@ final class TotalBalanceViewPresenter {
     // MARK: - Properties
 
     let titleContent = LabelContent(
-        text: LocalizationConstants.Dashboard.Balance.totalBalance,
+        text: LocalizationConstants.Dashboard.Portfolio.totalBalance,
         font: .main(.medium, 16),
         color: .mutedText,
         accessibility: .id(Accessibility.Identifier.Dashboard.TotalBalanceCell.titleLabel)

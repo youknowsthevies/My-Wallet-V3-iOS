@@ -11,37 +11,74 @@ import ToolKit
 
 final class PortfolioScreenPresenter {
 
+    // MARK: - Types
+
+    private typealias CurrencyBalance = (currency: CryptoCurrency, hasBalance: Bool)
+
     struct Model {
         let historicalBalanceCellPresenters: [HistoricalBalanceCellPresenter]
         let totalBalancePresenter: TotalBalanceViewPresenter
         var announcementCardViewModel: AnnouncementCardViewModel?
         var fiatBalanceCollectionViewPresenter: CurrencyViewPresenter?
-        var cryptoCurrencies: [CryptoCurrency: Bool] = [:]
+        var cryptoCurrencies: [CryptoCurrency: LoadingState<Bool>]
 
         var cellArrangement: [PortfolioCellType] {
-            var items: [PortfolioCellType] = [.totalBalance(totalBalancePresenter)]
+            let emptyCryptoCurrencies = cryptoCurrencies
+                .filter { $0.value.value == true }
+                .map(\.key)
+                .isEmpty
 
+            switch (emptyCryptoCurrencies, cryptoCurrencies.contains(where: \.value.isLoading)) {
+            case (false, _):
+                return loadedArrangement
+            case (true, false):
+                return emptyStateArrangement
+            case (true, true):
+                return loadingArrangement
+            }
+        }
+
+        private var emptyStateArrangement: [PortfolioCellType] {
+            guard fiatBalanceCollectionViewPresenter == nil else {
+                return loadedArrangement
+            }
+            return addingAnnouncement(items: [.emptyState])
+        }
+
+        private var loadedArrangement: [PortfolioCellType] {
+            var items: [PortfolioCellType] = [
+                .totalBalance(totalBalancePresenter)
+            ]
             if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
             }
-
-            let enabledCryptoCurrencies = cryptoCurrencies
-                .filter(\.value)
+            cryptoCurrencies
+                .filter { $0.value.value == true }
                 .map(\.key)
                 .sorted()
-            enabledCryptoCurrencies
                 .compactMap { cryptoCurrency in
                     historicalBalanceCellPresenters.first(where: { $0.cryptoCurrency == cryptoCurrency })
                 }
                 .map(PortfolioCellType.crypto)
                 .forEach { items.append($0) }
+            return addingAnnouncement(items: items)
+        }
 
-            if enabledCryptoCurrencies.isEmpty {
-                Array(1...7)
-                    .map(PortfolioCellType.cryptoSkeleton)
-                    .forEach { items.append($0) }
+        private var loadingArrangement: [PortfolioCellType] {
+            var items: [PortfolioCellType] = [
+                .totalBalance(totalBalancePresenter)
+            ]
+            if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
+                items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
             }
+            Array(1...3)
+                .map(PortfolioCellType.cryptoSkeleton)
+                .forEach { items.append($0) }
+            return addingAnnouncement(items: items)
+        }
 
+        private func addingAnnouncement(items: [PortfolioCellType]) -> [PortfolioCellType] {
+            var items = items
             if let announcementCardViewModel = announcementCardViewModel {
                 switch announcementCardViewModel.priority {
                 case .high: // Prepend
@@ -77,24 +114,27 @@ final class PortfolioScreenPresenter {
     private let sectionsRelay: BehaviorRelay<[PortfolioViewModel]> = .init(value: [])
     private let coincore: CoincoreAPI
 
-    private var cryptoCurrencies: Observable<CryptoCurrency> {
+    private var cryptoCurrencies: Observable<CurrencyBalance> {
         guard internalFeatureFlagService.isEnabled(.splitDashboard) else {
-            return .from(interactor.enabledCryptoCurrencies, scheduler: MainScheduler.asyncInstance)
+            return
+                Observable<CryptoCurrency>
+                    .from(interactor.enabledCryptoCurrencies, scheduler: MainScheduler.asyncInstance)
+                    .map { (currency: $0, hasBalance: true) }
         }
-        let cryptoStreams: [Observable<CryptoCurrency?>] = coincore.cryptoAssets
-            .map { asset -> Observable<CryptoCurrency?> in
-                asset.accountGroup(filter: .all)
+        let cryptoStreams: [Observable<CurrencyBalance>] = coincore.cryptoAssets
+            .map { asset -> Observable<CurrencyBalance> in
+                let currency = asset.asset
+                return asset.accountGroup(filter: .all)
                     .asObservable()
                     .asSingle()
                     .flatMap { group -> Single<Bool> in
                         group.balance.map(\.isPositive)
                     }
-                    .map { hasBalance -> CryptoCurrency? in
-                        hasBalance ? asset.asset : nil
+                    .map { hasBalance -> CurrencyBalance in
+                        (currency, hasBalance)
                     }
                     .asObservable()
-                    .startWith(nil)
-                    .catchErrorJustReturn(nil)
+                    .catchErrorJustReturn((currency, false))
             }
         return Observable
             .merge(cryptoStreams)
@@ -128,9 +168,14 @@ final class PortfolioScreenPresenter {
         let historicalBalanceCellPresenters = interactor
             .historicalBalanceInteractors
             .map(HistoricalBalanceCellPresenter.init)
+        let enabledCryptoCurrencies = interactor.enabledCryptoCurrencies
+            .reduce(into: [CryptoCurrency: LoadingState<Bool>]()) { result, cryptoCurrency in
+                result[cryptoCurrency] = .loading
+            }
         model = Model(
             historicalBalanceCellPresenters: historicalBalanceCellPresenters,
-            totalBalancePresenter: totalBalancePresenter
+            totalBalancePresenter: totalBalancePresenter,
+            cryptoCurrencies: enabledCryptoCurrencies
         )
     }
 
@@ -211,9 +256,11 @@ final class PortfolioScreenPresenter {
             .flatMapLatest(weak: self) { (self, _) in
                 self.cryptoCurrencies
             }
-            .do(onNext: { [weak self] cryptoCurrency in
-                self?.model.cryptoCurrencies[cryptoCurrency] = true
-            })
+            .do(
+                onNext: { [weak self] data in
+                    self?.model.cryptoCurrencies[data.currency] = .loaded(next: data.hasBalance)
+                }
+            )
             .mapToVoid()
             .bindAndCatch(to: reloadRelay)
             .disposed(by: disposeBag)

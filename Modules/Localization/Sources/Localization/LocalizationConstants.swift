@@ -435,51 +435,6 @@ public enum LocalizationConstants {
         )
     }
 
-    public enum Dashboard {
-        public enum Balance {
-            public static let totalBalance = NSLocalizedString(
-                "Total Balance",
-                comment: "Dashboard: total balance component - title"
-            )
-            public static let notice = NSLocalizedString(
-                "You have a pending {swap/buy/sell} order that may impact your total balance.",
-                comment: "Dashboard: balance notice"
-            )
-            public static let lockboxNotice = NSLocalizedString(
-                "The Total Balance shown on this device does not include your linked Lockbox.",
-                comment: "Dashboard: lockbox notice"
-            )
-        }
-
-        public static let chartsError = NSLocalizedString(
-            "An error occurred while retrieving the latest chart data. Please try again later.",
-            comment: "The error message for when the method fetchChartDataForAsset fails."
-        )
-        public static let bitcoinPrice = NSLocalizedString(
-            "Bitcoin Price",
-            comment: "The title of the Bitcoin price chart on the dashboard."
-        )
-        public static let etherPrice = NSLocalizedString(
-            "Ether Price",
-            comment: "The title of the Ethereum price chart on the dashboard."
-        )
-        public static let bitcoinCashPrice = NSLocalizedString(
-            "Bitcoin Cash Price",
-            comment: "The title of the Bitcoin Cash price chart on the dashboard."
-        )
-        public static let stellarPrice = NSLocalizedString(
-            "Stellar Price",
-            comment: "The title of the Stellar price chart on the dashboard."
-        )
-        public static let seeCharts = NSLocalizedString(
-            "See Charts",
-            comment: "The title of the action button in the price preview views."
-        )
-        public static let activity = NSLocalizedString("Activity", comment: "Activity tab item")
-        public static let send = NSLocalizedString("Send", comment: "Send tab item")
-        public static let request = NSLocalizedString("Request", comment: "request tab item")
-    }
-
     public enum VersionUpdate {
         public static let versionPrefix = NSLocalizedString(
             "v",

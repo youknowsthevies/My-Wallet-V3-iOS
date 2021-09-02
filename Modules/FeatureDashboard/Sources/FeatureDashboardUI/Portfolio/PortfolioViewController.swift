@@ -110,6 +110,8 @@ final class PortfolioViewController: BaseScreenViewController {
                     cell = self.assetCell(for: indexPath, presenter: presenter)
                 case .cryptoSkeleton:
                     cell = self.assetCell(for: indexPath, presenter: nil)
+                case .emptyState:
+                    cell = self.emptyStateCell(for: indexPath)
                 }
                 cell.selectionStyle = .none
                 return cell
@@ -122,7 +124,8 @@ final class PortfolioViewController: BaseScreenViewController {
                 case .announcement,
                      .totalBalance,
                      .cryptoSkeleton,
-                     .fiatCustodialBalances:
+                     .fiatCustodialBalances,
+                     .emptyState:
                     break
                 case .crypto(let presenter):
                     self.presenter.router.showDetailsScreen(for: presenter.cryptoCurrency)
@@ -171,5 +174,9 @@ final class PortfolioViewController: BaseScreenViewController {
         let cell = tableView.dequeue(HistoricalBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
+    }
+
+    private func emptyStateCell(for indexPath: IndexPath) -> UITableViewCell {
+        PortfolioEmptyStateTableViewCell()
     }
 }
