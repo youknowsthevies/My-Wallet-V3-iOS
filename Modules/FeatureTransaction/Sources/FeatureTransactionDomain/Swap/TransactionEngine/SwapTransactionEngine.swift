@@ -128,6 +128,7 @@ extension SwapTransactionEngine {
                         for: self.sourceAsset,
                         in: fiatCurrency
                     )
+                    .asSingle()
                     .map(\.moneyValue)
                     .map { $0.fiatValue ?? .zero(currency: fiatCurrency) }
                     .map { quote -> (KYC.UserTiers, MoneyValue, MoneyValue) in
@@ -298,6 +299,7 @@ extension SwapTransactionEngine {
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
                     .price(for: self.sourceAsset, in: fiatCurrency)
+                    .asSingle()
                     .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
             }
@@ -309,6 +311,7 @@ extension SwapTransactionEngine {
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
                     .price(for: self.target.currencyType, in: fiatCurrency)
+                    .asSingle()
                     .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: self.target.currencyType), quote: $0) }
             }

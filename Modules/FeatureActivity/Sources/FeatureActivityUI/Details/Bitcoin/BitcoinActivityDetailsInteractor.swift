@@ -46,6 +46,7 @@ final class BitcoinActivityDetailsInteractor {
             in: fiatCurrency,
             at: date
         )
+        .asSingle()
     }
 
     func details(identifier: String, createdAt: Date) -> Observable<BitcoinActivityDetailsViewModel> {

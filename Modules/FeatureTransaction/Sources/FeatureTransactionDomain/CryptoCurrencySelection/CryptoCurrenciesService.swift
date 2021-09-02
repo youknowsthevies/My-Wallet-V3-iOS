@@ -92,7 +92,6 @@ internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
                     data.pairs.map { pair -> AnyPublisher<CryptoCurrencyQuote, CryptoCurrenciesServiceError> in
                         // Step 2a: Fetch latest quote as the historical data doesn't provide enough info
                         priceService.price(for: pair.cryptoCurrency, in: pair.fiatCurrency)
-                            .asPublisher()
                             .zip(
                                 // Step 2b: Fetch also the historical prices to get the price change delta
                                 priceService
@@ -101,7 +100,6 @@ internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
                                         of: pair.cryptoCurrency,
                                         in: pair.fiatCurrency
                                     )
-                                    .asPublisher()
                             )
                             .mapError(CryptoCurrenciesServiceError.other)
                             .map { quote, historicalPriceSeries in

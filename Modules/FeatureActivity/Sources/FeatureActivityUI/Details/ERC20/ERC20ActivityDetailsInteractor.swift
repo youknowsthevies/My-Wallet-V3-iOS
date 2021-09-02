@@ -64,5 +64,6 @@ final class ERC20ActivityDetailsInteractor {
             in: fiatCurrency,
             at: date
         )
+        .asSingle()
     }
 }

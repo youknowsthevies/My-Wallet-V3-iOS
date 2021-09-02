@@ -72,5 +72,6 @@ final class EthereumActivityDetailsInteractor {
             in: fiatCurrency,
             at: date
         )
+        .asSingle()
     }
 }

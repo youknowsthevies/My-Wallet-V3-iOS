@@ -207,6 +207,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                                     cryptoCurrency: currency,
                                     usesFiatAsBase: activeInput == .fiat
                                 )
+                                .asSingle()
                                 .map { pair -> AmountInteractorState in
                                     switch state {
                                     case .tooHigh:

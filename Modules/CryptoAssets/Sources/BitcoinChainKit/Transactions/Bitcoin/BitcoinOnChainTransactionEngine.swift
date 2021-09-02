@@ -354,6 +354,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
                     .price(for: self.sourceCryptoAccount.currencyType, in: fiatCurrency)
+                    .asSingle()
                     .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: self.sourceCryptoAccount.currencyType), quote: $0) }
             }

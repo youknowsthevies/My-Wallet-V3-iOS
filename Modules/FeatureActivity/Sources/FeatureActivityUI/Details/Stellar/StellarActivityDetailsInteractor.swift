@@ -59,5 +59,6 @@ final class StellarActivityDetailsInteractor {
             in: fiatCurrency,
             at: date
         )
+        .asSingle()
     }
 }

@@ -258,6 +258,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                                     cryptoCurrency: sourceAccountCurrency.cryptoCurrency!,
                                     usesFiatAsBase: activeInput == .fiat
                                 )
+                                .asSingle()
                                 .map { pair -> AmountInteractorState in
                                     switch state {
                                     case .tooLow:

@@ -59,5 +59,6 @@ final class BitcoinCashActivityDetailsInteractor {
             in: fiatCurrency,
             at: date
         )
+        .asSingle()
     }
 }
