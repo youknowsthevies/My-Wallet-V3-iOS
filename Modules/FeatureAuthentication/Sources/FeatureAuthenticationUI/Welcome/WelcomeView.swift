@@ -54,15 +54,23 @@ public struct WelcomeView: View {
                 trailing: Layout.trailingPadding
             )
         )
-        .sheet(isPresented: .constant(viewStore.screenFlow == .emailLoginScreen)) {
-            IfLetStore(
-                store.scope(
-                    state: \.emailLoginState,
-                    action: WelcomeAction.emailLogin
-                ),
-                then: EmailLoginView.init(store:)
-            )
-        }
+        .sheet(
+            isPresented: .constant(
+                viewStore.screenFlow == .emailLoginScreen
+            ),
+            onDismiss: {
+                viewStore.send(.presentScreenFlow(.welcomeScreen))
+            },
+            content: {
+                IfLetStore(
+                    store.scope(
+                        state: \.emailLoginState,
+                        action: WelcomeAction.emailLogin
+                    ),
+                    then: EmailLoginView.init(store:)
+                )
+            }
+        )
         .sheet(isPresented: .constant(viewStore.screenFlow == .restoreWalletScreen)) {
             IfLetStore(
                 store.scope(
