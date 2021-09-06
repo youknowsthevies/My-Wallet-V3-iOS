@@ -69,7 +69,7 @@ extension InterestTransactionEngine {
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: self.sourceAsset, in: fiatCurrency)
+                    .price(of: self.sourceAsset, in: fiatCurrency)
                     .asSingle()
                     .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }

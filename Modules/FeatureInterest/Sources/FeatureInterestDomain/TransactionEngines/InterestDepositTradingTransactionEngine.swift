@@ -45,7 +45,7 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
         minimumDepositLimits
             .flatMap { [priceService, sourceAsset] fiatValue -> Single<(FiatValue, FiatValue)> in
                 let quote = priceService
-                    .price(for: sourceAsset, in: fiatValue.currency)
+                    .price(of: sourceAsset, in: fiatValue.currency)
                     .asSingle()
                     .map(\.moneyValue)
                     .map { $0.fiatValue ?? .zero(currency: fiatValue.currencyType) }

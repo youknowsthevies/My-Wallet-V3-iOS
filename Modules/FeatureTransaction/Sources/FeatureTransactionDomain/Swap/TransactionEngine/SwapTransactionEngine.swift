@@ -125,7 +125,7 @@ extension SwapTransactionEngine {
                 let (tiers, min, max) = values
                 return self.priceService
                     .price(
-                        for: self.sourceAsset,
+                        of: self.sourceAsset,
                         in: fiatCurrency
                     )
                     .asSingle()
@@ -298,7 +298,7 @@ extension SwapTransactionEngine {
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: self.sourceAsset, in: fiatCurrency)
+                    .price(of: self.sourceAsset, in: fiatCurrency)
                     .asSingle()
                     .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
@@ -310,7 +310,7 @@ extension SwapTransactionEngine {
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: self.target.currencyType, in: fiatCurrency)
+                    .price(of: self.target.currencyType, in: fiatCurrency)
                     .asSingle()
                     .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: self.target.currencyType), quote: $0) }

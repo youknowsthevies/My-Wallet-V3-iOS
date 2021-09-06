@@ -345,7 +345,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .fiatCurrency
             .flatMap(weak: self) { [sourceAsset] (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: sourceAsset, in: fiatCurrency)
+                    .price(of: sourceAsset, in: fiatCurrency)
                     .asSingle()
                     .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
@@ -358,7 +358,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: CurrencyType.crypto(.coin(.ethereum)), in: fiatCurrency)
+                    .price(of: CurrencyType.crypto(.coin(.ethereum)), in: fiatCurrency)
                     .asSingle()
                     .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: .crypto(.coin(.ethereum))), quote: $0) }

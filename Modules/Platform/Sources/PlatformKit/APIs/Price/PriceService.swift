@@ -8,8 +8,8 @@ import ToolKit
 
 public protocol PriceServiceAPI {
     func moneyValuePair(fiatValue: FiatValue, cryptoCurrency: CryptoCurrency, usesFiatAsBase: Bool) -> AnyPublisher<MoneyValuePair, NetworkError>
-    func price(for baseCurrency: Currency, in quoteCurrency: Currency) -> AnyPublisher<PriceQuoteAtTime, NetworkError>
-    func price(for baseCurrency: Currency, in quoteCurrency: Currency, at date: Date?) -> AnyPublisher<PriceQuoteAtTime, NetworkError>
+    func price(of baseCurrency: Currency, in quoteCurrency: Currency) -> AnyPublisher<PriceQuoteAtTime, NetworkError>
+    func price(of baseCurrency: Currency, in quoteCurrency: Currency, at date: Date?) -> AnyPublisher<PriceQuoteAtTime, NetworkError>
     func priceSeries(
         of baseCurrency: CryptoCurrency,
         in quoteCurrency: FiatCurrency,
@@ -36,7 +36,7 @@ public class PriceService: PriceServiceAPI {
         cryptoCurrency: CryptoCurrency,
         usesFiatAsBase: Bool
     ) -> AnyPublisher<MoneyValuePair, NetworkError> {
-        price(for: cryptoCurrency, in: fiatValue.currency)
+        price(of: cryptoCurrency, in: fiatValue.currency)
             .map(\.moneyValue)
             .map { $0.fiatValue ?? .zero(currency: fiatValue.currencyType) }
             .map { MoneyValuePair(
@@ -50,14 +50,14 @@ public class PriceService: PriceServiceAPI {
     }
 
     public func price(
-        for baseCurrency: Currency,
+        of baseCurrency: Currency,
         in quoteCurrency: Currency
     ) -> AnyPublisher<PriceQuoteAtTime, NetworkError> {
-        price(for: baseCurrency, in: quoteCurrency, at: nil)
+        price(of: baseCurrency, in: quoteCurrency, at: nil)
     }
 
     public func price(
-        for baseCurrency: Currency,
+        of baseCurrency: Currency,
         in quoteCurrency: Currency,
         at date: Date? = nil
     ) -> AnyPublisher<PriceQuoteAtTime, NetworkError> {
@@ -70,7 +70,7 @@ public class PriceService: PriceServiceAPI {
             )
         }
         if baseCurrency.isFiatCurrency, quoteCurrency.isFiatCurrency {
-            return price(for: FiatCurrency(code: baseCurrency.code)!, in: FiatCurrency(code: quoteCurrency.code)!, at: date)
+            return price(of: FiatCurrency(code: baseCurrency.code)!, in: FiatCurrency(code: quoteCurrency.code)!, at: date)
         }
 
         var timestamp: UInt64?
@@ -78,7 +78,7 @@ public class PriceService: PriceServiceAPI {
             timestamp = UInt64(date.timeIntervalSince1970)
         }
         return client
-            .price(for: baseCurrency.code, in: quoteCurrency.code, at: timestamp)
+            .price(of: baseCurrency.code, in: quoteCurrency.code, at: timestamp)
             .compactMap { try? PriceQuoteAtTime(response: $0, currency: quoteCurrency) }
             .eraseToAnyPublisher()
     }
@@ -94,9 +94,9 @@ public class PriceService: PriceServiceAPI {
         }
         let conversionCurrency = CryptoCurrency.coin(.bitcoin)
         let basePrice = client
-            .price(for: conversionCurrency.code, in: baseCurrency.code, at: timestamp)
+            .price(of: conversionCurrency.code, in: baseCurrency.code, at: timestamp)
         let quotePrice = client
-            .price(for: conversionCurrency.code, in: quoteCurrency.code, at: timestamp)
+            .price(of: conversionCurrency.code, in: quoteCurrency.code, at: timestamp)
 
         return basePrice
             .zip(quotePrice)

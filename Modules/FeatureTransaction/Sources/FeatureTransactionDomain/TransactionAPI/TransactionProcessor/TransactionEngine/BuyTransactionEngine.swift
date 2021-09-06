@@ -137,7 +137,7 @@ final class BuyTransactionEngine: TransactionEngine {
     }
 
     private func fetchExchangeRate(from source: CurrencyType, to target: CurrencyType) -> Observable<MoneyValuePair> {
-        priceService.price(for: source, in: target)
+        priceService.price(of: source, in: target)
             .asObservable()
             .map(\.moneyValue)
             .map { quote in

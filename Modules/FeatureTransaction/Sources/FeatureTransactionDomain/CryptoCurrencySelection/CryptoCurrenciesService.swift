@@ -91,7 +91,7 @@ internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
                 Publishers.MergeMany(
                     data.pairs.map { pair -> AnyPublisher<CryptoCurrencyQuote, CryptoCurrenciesServiceError> in
                         // Step 2a: Fetch latest quote as the historical data doesn't provide enough info
-                        priceService.price(for: pair.cryptoCurrency, in: pair.fiatCurrency)
+                        priceService.price(of: pair.cryptoCurrency, in: pair.fiatCurrency)
                             .zip(
                                 // Step 2b: Fetch also the historical prices to get the price change delta
                                 priceService

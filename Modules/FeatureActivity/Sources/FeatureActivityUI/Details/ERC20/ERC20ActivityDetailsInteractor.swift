@@ -60,7 +60,7 @@ final class ERC20ActivityDetailsInteractor {
 
     private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
         priceService.price(
-            for: cryptoCurrency,
+            of: cryptoCurrency,
             in: fiatCurrency,
             at: date
         )

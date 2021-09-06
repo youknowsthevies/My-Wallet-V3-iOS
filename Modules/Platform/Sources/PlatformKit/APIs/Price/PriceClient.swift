@@ -29,7 +29,7 @@ public protocol PriceClientAPI {
     /// - parameter timestamp: The Unix Time timestamp of required moment. A nil value gets the current price.
     /// - returns:A `Combine.Publisher` streaming a `PriceQuoteAtTimeResponse` on success, or a `NetworkError` on failure.
     func price(
-        for baseCurrencyCode: String,
+        of baseCurrencyCode: String,
         in quoteCurrencyCode: String,
         at timestamp: UInt64?
     ) -> AnyPublisher<PriceQuoteAtTimeResponse, NetworkError>
@@ -114,7 +114,7 @@ final class PriceClient: PriceClientAPI {
     }
 
     func price(
-        for baseCurrencyCode: String,
+        of baseCurrencyCode: String,
         in quoteCurrencyCode: String,
         at timestamp: UInt64?
     ) -> AnyPublisher<PriceQuoteAtTimeResponse, NetworkError> {

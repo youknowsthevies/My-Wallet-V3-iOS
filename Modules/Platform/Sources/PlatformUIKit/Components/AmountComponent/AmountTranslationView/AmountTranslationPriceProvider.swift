@@ -20,7 +20,7 @@ public final class AmountTranslationPriceProvider: AmountTranslationPriceProvidi
 
     public func pairFromCryptoInput(cryptoCurrency: CryptoCurrency, fiatCurrency: FiatCurrency, amount: String) -> Single<MoneyValuePair> {
         priceService
-            .price(for: cryptoCurrency, in: fiatCurrency)
+            .price(of: cryptoCurrency, in: fiatCurrency)
             .asSingle()
             .map { exchangeRate in
                 let amount = amount.isEmpty ? "0" : amount
