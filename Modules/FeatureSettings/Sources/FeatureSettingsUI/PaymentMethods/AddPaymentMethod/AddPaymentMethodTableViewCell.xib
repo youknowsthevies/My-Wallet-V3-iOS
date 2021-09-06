@@ -22,7 +22,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rdp-Q0-CKc" customClass="BadgeImageView" customModule="PlatformUIKit">
-                        <rect key="frame" x="26" y="34.5" width="28" height="28"/>
+                        <rect key="frame" x="16" y="34.5" width="28" height="28"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="28" id="xdK-Ev-2lp"/>
@@ -30,7 +30,7 @@
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add a Card" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eQg-kC-6xG">
-                        <rect key="frame" x="70" y="16" width="304" height="65"/>
+                        <rect key="frame" x="60" y="16" width="314" height="65"/>
                         <fontDescription key="fontDescription" name="Inter-Medium" family="Inter" pointSize="16"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -47,7 +47,7 @@
                     <constraint firstItem="eQg-kC-6xG" firstAttribute="top" secondItem="Rku-zh-Kv1" secondAttribute="top" constant="16" id="74s-Zg-DCG"/>
                     <constraint firstAttribute="trailing" secondItem="mga-It-Qo3" secondAttribute="trailing" constant="16" id="Lpa-GM-Hce"/>
                     <constraint firstItem="rdp-Q0-CKc" firstAttribute="centerY" secondItem="Rku-zh-Kv1" secondAttribute="centerY" id="RAG-up-CwA"/>
-                    <constraint firstItem="rdp-Q0-CKc" firstAttribute="leading" secondItem="Rku-zh-Kv1" secondAttribute="leading" constant="26" id="TE6-wA-D17"/>
+                    <constraint firstItem="rdp-Q0-CKc" firstAttribute="leading" secondItem="Rku-zh-Kv1" secondAttribute="leading" constant="16" id="TE6-wA-D17"/>
                     <constraint firstItem="mga-It-Qo3" firstAttribute="centerY" secondItem="eQg-kC-6xG" secondAttribute="centerY" id="ZKC-zn-LkA"/>
                     <constraint firstItem="eQg-kC-6xG" firstAttribute="leading" secondItem="rdp-Q0-CKc" secondAttribute="trailing" constant="16" id="lm4-3Q-luU"/>
                     <constraint firstItem="mga-It-Qo3" firstAttribute="leading" secondItem="eQg-kC-6xG" secondAttribute="trailing" constant="4" id="olf-d5-rXG"/>

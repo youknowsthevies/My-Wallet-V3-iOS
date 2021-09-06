@@ -17,7 +17,7 @@ public protocol NetworkResponseHandlerAPI {
 }
 
 extension Data {
-    fileprivate func unescapedJSONString() throws -> String {
+    private func unescapedJSONString() throws -> String {
         let object = try JSONSerialization.jsonObject(with: self, options: .allowFragments)
         let unescapedData = try JSONSerialization.data(withJSONObject: object, options: .withoutEscapingSlashes)
         guard let string = String(data: unescapedData, encoding: .utf8) else {
