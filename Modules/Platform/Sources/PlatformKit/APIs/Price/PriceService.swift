@@ -84,7 +84,7 @@ public class PriceService: PriceServiceAPI {
     }
 
     private func price(
-        for baseCurrency: FiatCurrency,
+        of baseCurrency: FiatCurrency,
         in quoteCurrency: FiatCurrency,
         at date: Date? = nil
     ) -> AnyPublisher<PriceQuoteAtTime, NetworkError> {
