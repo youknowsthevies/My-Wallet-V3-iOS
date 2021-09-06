@@ -54,6 +54,7 @@ final class FiatPriceService: FiatPriceServiceAPI {
         }
         return priceService
             .price(for: cryptoCurrency.currency, in: fiatCurrency.currency, at: date)
+            .asSingle()
             .map(\.moneyValue)
             .do(onSuccess: { [weak self] price in
                 self?.cache.mutate { value in

@@ -1,4 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
+import AnalyticsKit
 import Combine
 import DIKit
 import NetworkKit
@@ -69,6 +71,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
 
     private let client: KYCClientAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscription())
     private let semaphore = DispatchSemaphore(value: 1)
     private let scheduler = SerialDispatchQueueScheduler(qos: .default)
@@ -77,10 +80,12 @@ final class KYCTiersService: KYCTiersServiceAPI {
 
     init(
         client: KYCClientAPI = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve()
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.client = client
         self.featureFlagsService = featureFlagsService
+        self.analyticsRecorder = analyticsRecorder
         cachedTiers.setFetch(weak: self) { (self) in
             self.client.tiers()
         }
@@ -135,6 +140,11 @@ final class KYCTiersService: KYCTiersServiceAPI {
                     .replaceError(with: false)
                     .eraseToAnyPublisher()
             }
+            .handleEvents(receiveOutput: { [analyticsRecorder] isSDDEligible in
+                if isSDDEligible {
+                    analyticsRecorder.record(event: SDDAnalytics.userIsSddEligible)
+                }
+            })
             .eraseToAnyPublisher()
     }
 
@@ -177,6 +187,11 @@ final class KYCTiersService: KYCTiersServiceAPI {
                     .map(\.verified)
                     .eraseToAnyPublisher()
             }
+            .handleEvents(receiveOutput: { [analyticsRecorder] isSDDEligible in
+                if isSDDEligible {
+                    analyticsRecorder.record(event: SDDAnalytics.userIsSddEligible)
+                }
+            })
             .eraseToAnyPublisher()
     }
 
@@ -197,5 +212,20 @@ final class KYCTiersService: KYCTiersServiceAPI {
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
+    }
+}
+
+/// Temporary legacy SDD analytics events definition. To be removed after dropping Firebase analytics.
+enum SDDAnalytics: AnalyticsEvent {
+    var type: AnalyticsEventType { .firebase }
+
+    case userIsSddEligible
+
+    var name: String {
+        "user_is_sdd_eligible"
+    }
+
+    var params: [String: Any]? {
+        nil
     }
 }
