@@ -341,6 +341,10 @@ extension LocalizationConstants.FeatureAuthentication {
             "Enter your twelve word Secret Private Key Recovery Phrase to log in. Separate each word with a space.",
             comment: "Seed phrase screen: main instruction"
         )
+        public static let importWalletInstruction = NSLocalizedString(
+            "Enter your twelve word Secret Private Key Recovery Phrase (Seed Phrase) to import wallet. Separate each word with a space.",
+            comment: "Seed phrase screen: import wallet main instruction"
+        )
         public static let placeholder = NSLocalizedString(
             "Enter recovery phrase",
             comment: "Seed phrase screen: text field placeholder"

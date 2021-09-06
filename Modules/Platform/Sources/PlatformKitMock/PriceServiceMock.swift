@@ -1,7 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import NetworkKit
 import PlatformKit
-import RxSwift
 
 final class PriceServiceMock: PriceServiceAPI {
     var moneyValuePair: MoneyValuePair!
@@ -12,15 +13,15 @@ final class PriceServiceMock: PriceServiceAPI {
         base fiatValue: FiatValue,
         cryptoCurrency: CryptoCurrency,
         usesFiatAsBase: Bool
-    ) -> Single<MoneyValuePair> {
+    ) -> AnyPublisher<MoneyValuePair, NetworkError> {
         .just(moneyValuePair)
     }
 
-    func price(for baseCurrency: Currency, in quoteCurrency: Currency) -> Single<PriceQuoteAtTime> {
+    func price(for baseCurrency: Currency, in quoteCurrency: Currency) -> AnyPublisher<PriceQuoteAtTime, NetworkError> {
         .just(priceQuoteAtTime)
     }
 
-    func price(for baseCurrency: Currency, in quoteCurrency: Currency, at date: Date?) -> Single<PriceQuoteAtTime> {
+    func price(for baseCurrency: Currency, in quoteCurrency: Currency, at date: Date?) -> AnyPublisher<PriceQuoteAtTime, NetworkError> {
         .just(priceQuoteAtTime)
     }
 
@@ -28,7 +29,7 @@ final class PriceServiceMock: PriceServiceAPI {
         within window: PriceWindow,
         of baseCurrency: CryptoCurrency,
         in quoteCurrency: FiatCurrency
-    ) -> Single<HistoricalPriceSeries> {
+    ) -> AnyPublisher<HistoricalPriceSeries, NetworkError> {
         .just(historicalPriceSeries)
     }
 }
