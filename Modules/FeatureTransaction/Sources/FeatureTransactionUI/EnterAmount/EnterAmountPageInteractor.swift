@@ -107,14 +107,14 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     .take(1)
                     .asSingle()
                     .map { state in
-                        if let fiat = amount.fiatValue, !state.allowFiatInput {
+                        if let fiatValue = amount.fiatValue, !state.allowFiatInput {
                             // Fiat Input but state does not allow fiat
                             guard let sourceToFiatPair = state.sourceToFiatPair else {
                                 return MoneyValue.zero(currency: state.asset)
                             }
                             return MoneyValuePair(
-                                fiat: fiat,
-                                priceInFiat: sourceToFiatPair.quote.fiatValue!,
+                                fiatValue: fiatValue,
+                                exchangeRate: sourceToFiatPair.quote.fiatValue!,
                                 cryptoCurrency: state.asset.cryptoCurrency!,
                                 usesFiatAsBase: true
                             ).quote

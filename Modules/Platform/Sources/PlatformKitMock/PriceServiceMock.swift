@@ -10,7 +10,7 @@ final class PriceServiceMock: PriceServiceAPI {
     var priceQuoteAtTime: PriceQuoteAtTime!
 
     func moneyValuePair(
-        base fiatValue: FiatValue,
+        fiatValue: FiatValue,
         cryptoCurrency: CryptoCurrency,
         usesFiatAsBase: Bool
     ) -> AnyPublisher<MoneyValuePair, NetworkError> {
@@ -26,9 +26,9 @@ final class PriceServiceMock: PriceServiceAPI {
     }
 
     func priceSeries(
-        within window: PriceWindow,
         of baseCurrency: CryptoCurrency,
-        in quoteCurrency: FiatCurrency
+        in quoteCurrency: FiatCurrency,
+        within window: PriceWindow
     ) -> AnyPublisher<HistoricalPriceSeries, NetworkError> {
         .just(historicalPriceSeries)
     }

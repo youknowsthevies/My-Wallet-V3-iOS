@@ -96,9 +96,9 @@ internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
                                 // Step 2b: Fetch also the historical prices to get the price change delta
                                 priceService
                                     .priceSeries(
-                                        within: .day(.oneHour),
                                         of: pair.cryptoCurrency,
-                                        in: pair.fiatCurrency
+                                        in: pair.fiatCurrency,
+                                        within: .day(.oneHour)
                                     )
                             )
                             .mapError(CryptoCurrenciesServiceError.other)

@@ -58,7 +58,7 @@ public final class AssetLineChartInteractor: AssetLineChartInteracting {
             .fiatCurrencyObservable
             .flatMap { [priceService] fiatCurrency in
                 priceService
-                    .priceSeries(within: window, of: cryptoCurrency, in: fiatCurrency)
+                    .priceSeries(of: cryptoCurrency, in: fiatCurrency, within: window)
                     .asObservable()
             }
             .map { .init(delta: $0.delta, currency: cryptoCurrency, prices: $0.prices) }

@@ -203,7 +203,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                              .tooLow(min: let fiatValue):
                             return self.priceService
                                 .moneyValuePair(
-                                    base: fiatValue,
+                                    fiatValue: fiatValue,
                                     cryptoCurrency: currency,
                                     usesFiatAsBase: activeInput == .fiat
                                 )

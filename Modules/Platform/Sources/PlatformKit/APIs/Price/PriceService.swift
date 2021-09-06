@@ -7,13 +7,13 @@ import NetworkKit
 import ToolKit
 
 public protocol PriceServiceAPI {
-    func moneyValuePair(base fiatValue: FiatValue, cryptoCurrency: CryptoCurrency, usesFiatAsBase: Bool) -> AnyPublisher<MoneyValuePair, NetworkError>
+    func moneyValuePair(fiatValue: FiatValue, cryptoCurrency: CryptoCurrency, usesFiatAsBase: Bool) -> AnyPublisher<MoneyValuePair, NetworkError>
     func price(for baseCurrency: Currency, in quoteCurrency: Currency) -> AnyPublisher<PriceQuoteAtTime, NetworkError>
     func price(for baseCurrency: Currency, in quoteCurrency: Currency, at date: Date?) -> AnyPublisher<PriceQuoteAtTime, NetworkError>
     func priceSeries(
-        within window: PriceWindow,
         of baseCurrency: CryptoCurrency,
-        in quoteCurrency: FiatCurrency
+        in quoteCurrency: FiatCurrency,
+        within window: PriceWindow
     ) -> AnyPublisher<HistoricalPriceSeries, NetworkError>
 }
 
@@ -32,7 +32,7 @@ public class PriceService: PriceServiceAPI {
     }
 
     public func moneyValuePair(
-        base fiatValue: FiatValue,
+        fiatValue: FiatValue,
         cryptoCurrency: CryptoCurrency,
         usesFiatAsBase: Bool
     ) -> AnyPublisher<MoneyValuePair, NetworkError> {
@@ -40,8 +40,8 @@ public class PriceService: PriceServiceAPI {
             .map(\.moneyValue)
             .map { $0.fiatValue ?? .zero(currency: fiatValue.currencyType) }
             .map { MoneyValuePair(
-                fiat: fiatValue,
-                priceInFiat: $0,
+                fiatValue: fiatValue,
+                exchangeRate: $0,
                 cryptoCurrency: cryptoCurrency,
                 usesFiatAsBase: usesFiatAsBase
             )
@@ -111,9 +111,9 @@ public class PriceService: PriceServiceAPI {
     }
 
     public func priceSeries(
-        within window: PriceWindow,
         of baseCurrency: CryptoCurrency,
-        in quoteCurrency: FiatCurrency
+        in quoteCurrency: FiatCurrency,
+        within window: PriceWindow
     ) -> AnyPublisher<HistoricalPriceSeries, NetworkError> {
         let start: TimeInterval = window.timeIntervalSince1970(
             cryptoCurrency: baseCurrency,
