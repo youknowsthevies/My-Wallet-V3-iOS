@@ -211,7 +211,6 @@ public class TextFieldView: UIView {
     }
 
     private func textFieldGainedFocus() {
-        textField.becomeFirstResponder()
         if let scrollView = scrollView {
             let frameInScrollView = convert(frame, to: scrollView)
             scrollView.scrollRectToVisible(frameInScrollView, animated: true)
