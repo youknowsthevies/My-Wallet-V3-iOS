@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import NetworkKit
@@ -29,7 +30,10 @@ final class RemoteNotificationNetworkService {
 
     // MARK: - Setup
 
-    init(url: String = BlockchainAPI.shared.pushNotificationsUrl, networkAdapter: NetworkAdapterAPI = resolve()) {
+    init(
+        url: String = BlockchainAPI.shared.pushNotificationsUrl,
+        networkAdapter: NetworkAdapterAPI = resolve()
+    ) {
         self.url = url
         self.networkAdapter = networkAdapter
     }
@@ -44,9 +48,17 @@ extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
         sharedKeyProvider: SharedKeyRepositoryAPI,
         guidProvider: GuidRepositoryAPI
     ) -> Single<Void> {
-        registrationRequest(with: token, sharedKeyProvider: sharedKeyProvider, guidProvider: guidProvider)
+
+        func performRequest(
+            request: NetworkRequest
+        ) -> AnyPublisher<RegistrationResponseData, NetworkError> {
+            networkAdapter.perform(request: request)
+        }
+
+        return registrationRequest(with: token, sharedKeyProvider: sharedKeyProvider, guidProvider: guidProvider)
             .flatMap(weak: self) { (self, request) -> Single<RegistrationResponseData> in
-                self.networkAdapter.perform(request: request)
+                performRequest(request: request)
+                    .asSingle()
             }
             .map { response -> Void in
                 guard response.success
@@ -66,13 +78,19 @@ extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
                 guidProvider.guid
             )
             .map { credentials -> RemoteNotificationTokenQueryParametersBuilder in
-                guard let guid: String = credentials.1, let sharedKey: String = credentials.0 else {
+                guard let guid: String = credentials.1,
+                      let sharedKey: String = credentials.0
+                else {
                     throw PushNotificationError.missingCredentials
                 }
                 guard !guid.isEmpty, !sharedKey.isEmpty else {
                     throw PushNotificationError.emptyCredentials
                 }
-                let builder = try RemoteNotificationTokenQueryParametersBuilder(guid: guid, sharedKey: sharedKey, token: token)
+                let builder = try RemoteNotificationTokenQueryParametersBuilder(
+                    guid: guid,
+                    sharedKey: sharedKey,
+                    token: token
+                )
                 return builder
             }
             .map { builder -> Data in

@@ -6,13 +6,13 @@ import RxSwift
 
 class TransactionClientAPIMock: TransactionClientAPI {
     var latestBlockValue: Single<LatestBlockResponse> = Single.error(EthereumAPIClientMockError.mockError)
-    var latestBlock: Single<LatestBlockResponse> {
+    var latestBlock: AnyPublisher<LatestBlockResponse, NetworkError> {
         latestBlockValue
     }
 
     var transactionValue: Single<EthereumHistoricalTransactionResponse> = .error(EthereumAPIClientMockError.mockError)
 
-    func transaction(with hash: String) -> Single<EthereumHistoricalTransactionResponse> {
+    func transaction(with hash: String) -> AnyPublisher<EthereumHistoricalTransactionResponse, NetworkError> {
         transactionValue
     }
 

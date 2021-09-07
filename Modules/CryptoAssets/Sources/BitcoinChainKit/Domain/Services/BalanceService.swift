@@ -37,6 +37,7 @@ final class BalanceService: BalanceServiceAPI {
                 BitcoinChainBalances(response: response, coin: coin)
             }
             .map(\.total)
+            .asSingle()
     }
 }
 

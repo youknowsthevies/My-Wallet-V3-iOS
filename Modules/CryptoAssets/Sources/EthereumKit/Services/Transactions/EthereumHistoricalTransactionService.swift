@@ -93,6 +93,7 @@ final class EthereumHistoricalTransactionService: EthereumHistoricalTransactionS
                             latestBlock: tuple.1
                         )
                     }
+                    .asSingle()
             }
     }
 
@@ -109,6 +110,7 @@ final class EthereumHistoricalTransactionService: EthereumHistoricalTransactionS
     private func fetch(account: EthereumAssetAccount, latestBlock: Int) -> Single<[EthereumHistoricalTransaction]> {
         client
             .transactions(for: account.accountAddress)
+            .asSingle()
             .map(weak: self) { (self, response) -> [EthereumHistoricalTransaction] in
                 self.transactions(
                     from: account.accountAddress,
@@ -119,7 +121,9 @@ final class EthereumHistoricalTransactionService: EthereumHistoricalTransactionS
     }
 
     private func fetchLatestBlock() -> Single<Int> {
-        client.latestBlock.map(\.number)
+        client.latestBlock
+            .map(\.number)
+            .asSingle()
     }
 
     private func transactions(

@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import Foundation
 import NetworkKit
-import RxSwift
 
 final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
 
@@ -48,7 +48,7 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
         from address: String,
         page: String?,
         contractAddress: String
-    ) -> Single<ERC20TransfersResponse> {
+    ) -> AnyPublisher<ERC20TransfersResponse, NetworkError> {
         var parameters: [URLQueryItem] = []
         if let page = page, !page.isEmpty {
             parameters.append(URLQueryItem(name: "page", value: page))
@@ -58,7 +58,9 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    func isContract(address: String) -> Single<ERC20IsContractResponse> {
+    func isContract(
+        address: String
+    ) -> AnyPublisher<ERC20IsContractResponse, NetworkError> {
         let path = EndpointV2.isContract(with: address)
         let request = requestBuilder.get(path: path)!
         return networkAdapter.perform(request: request)

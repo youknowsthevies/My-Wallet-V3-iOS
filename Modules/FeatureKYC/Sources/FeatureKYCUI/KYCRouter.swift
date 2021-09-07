@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import FeatureKYCDomain
 import Localization
@@ -591,20 +592,14 @@ final class KYCRouter: KYCRouterAPI {
         }
     }
 
-    private func post(tier: KYC.Tier) -> Single<KYC.UserTiers> {
+    private func post(tier: KYC.Tier) -> AnyPublisher<KYC.UserTiers, NabuNetworkError> {
         let body = KYCTierPostBody(selectedTier: tier)
-        guard let request = requestBuilder.post(
+        let request = requestBuilder.post(
             path: ["kyc", "tiers"],
             body: try? JSONEncoder().encode(body),
             authenticated: true
-        ) else {
-            return .error(RequestBuilder.Error.buildingRequest)
-        }
-        return networkAdapter
-            .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
-            )
+        )!
+        return networkAdapter.perform(request: request)
     }
 
     @discardableResult private func presentInNavigationController(

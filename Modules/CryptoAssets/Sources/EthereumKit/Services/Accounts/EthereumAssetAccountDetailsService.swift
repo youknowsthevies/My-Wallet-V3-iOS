@@ -50,6 +50,7 @@ class EthereumAccountDetailsService: EthereumAccountDetailsServiceAPI {
                             nonce: details.nonce
                         )
                     }
+                    .asSingle()
             }
     }
 }

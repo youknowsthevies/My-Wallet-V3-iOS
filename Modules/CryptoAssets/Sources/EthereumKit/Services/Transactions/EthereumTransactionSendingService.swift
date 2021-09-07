@@ -41,14 +41,20 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
         self.transactionEncoder = transactionEncoder
     }
 
-    func send(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished> {
+    func send(
+        transaction: EthereumTransactionCandidate,
+        keyPair: EthereumKeyPair
+    ) -> Single<EthereumTransactionPublished> {
         finalise(transaction: transaction, keyPair: keyPair)
             .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
                 self.publish(transaction: transaction)
             }
     }
 
-    private func finalise(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionFinalised> {
+    private func finalise(
+        transaction: EthereumTransactionCandidate,
+        keyPair: EthereumKeyPair
+    ) -> Single<EthereumTransactionFinalised> {
         accountDetailsService.accountDetails()
             .map(\.nonce)
             .flatMap(weak: self) { (self, nonce) -> Single<EthereumTransactionCandidateCosted> in
@@ -62,8 +68,11 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
             }
     }
 
-    private func publish(transaction: EthereumTransactionFinalised) -> Single<EthereumTransactionPublished> {
+    private func publish(
+        transaction: EthereumTransactionFinalised
+    ) -> Single<EthereumTransactionPublished> {
         client.push(transaction: transaction)
+            .asSingle()
             .flatMap { response in
                 let publishedTransaction = try EthereumTransactionPublished(
                     finalisedTransaction: transaction,

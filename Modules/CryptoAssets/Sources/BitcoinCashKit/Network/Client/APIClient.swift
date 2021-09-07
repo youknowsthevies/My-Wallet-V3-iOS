@@ -1,10 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinChainKit
+import Combine
 import DIKit
-import NetworkKit
+import NetworkError
 import PlatformKit
-import RxSwift
 
 enum APIClientError: Error {
     case unknown
@@ -12,8 +12,9 @@ enum APIClientError: Error {
 
 protocol APIClientAPI {
 
-    func multiAddress(for wallets: [XPub]) -> Single<BitcoinCashMultiAddressResponse>
-    func balances(for wallets: [XPub]) -> Single<BitcoinCashBalanceResponse>
+    func multiAddress(for wallets: [XPub]) -> AnyPublisher<BitcoinCashMultiAddressResponse, NetworkError>
+
+    func balances(for wallets: [XPub]) -> AnyPublisher<BitcoinCashBalanceResponse, NetworkError>
 }
 
 final class APIClient: APIClientAPI {
@@ -28,11 +29,15 @@ final class APIClient: APIClientAPI {
 
     // MARK: - APIClientAPI
 
-    func multiAddress(for wallets: [XPub]) -> Single<BitcoinCashMultiAddressResponse> {
+    func multiAddress(
+        for wallets: [XPub]
+    ) -> AnyPublisher<BitcoinCashMultiAddressResponse, NetworkError> {
         client.multiAddress(for: wallets)
     }
 
-    func balances(for wallets: [XPub]) -> Single<BitcoinCashBalanceResponse> {
+    func balances(
+        for wallets: [XPub]
+    ) -> AnyPublisher<BitcoinCashBalanceResponse, NetworkError> {
         client.balances(for: wallets)
     }
 }

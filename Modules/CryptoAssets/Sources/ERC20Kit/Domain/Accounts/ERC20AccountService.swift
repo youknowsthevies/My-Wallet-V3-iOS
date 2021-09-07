@@ -30,6 +30,7 @@ final class ERC20AccountService: ERC20AccountServiceAPI {
             return accountClient
                 .isContract(address: address)
                 .map(\.contract)
+                .asSingle()
                 .do(onSuccess: { [weak self] isContractAddress in
                     self?.addresses.mutate { addresses in
                         addresses[address] = isContractAddress

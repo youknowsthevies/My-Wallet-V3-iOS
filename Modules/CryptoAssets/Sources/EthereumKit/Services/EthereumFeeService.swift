@@ -24,6 +24,7 @@ final class EthereumFeeService: EthereumFeeServiceAPI {
                     gasLimitContract: response.gasLimitContract
                 )
             }
+            .asSingle()
             .catchErrorJustReturn(.default)
     }
 

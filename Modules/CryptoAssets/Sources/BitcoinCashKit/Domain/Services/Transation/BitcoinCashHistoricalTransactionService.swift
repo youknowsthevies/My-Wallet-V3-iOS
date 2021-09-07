@@ -30,6 +30,7 @@ final class BitcoinCashHistoricalTransactionService: BitcoinCashHistoricalTransa
             return client
                 .multiAddress(for: publicKeys)
                 .map(\.transactions)
+                .asSingle()
                 .do(onSuccess: { [cache] transactions in
                     cache.set(transactions, forKey: publicKeys)
                 })

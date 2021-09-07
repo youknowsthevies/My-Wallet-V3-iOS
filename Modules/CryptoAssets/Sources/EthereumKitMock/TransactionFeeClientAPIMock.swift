@@ -15,7 +15,7 @@ class TransactionFeeClientAPIMock: TransactionFeeClientAPI {
         )
     )
 
-    func fees(cryptoCurrency: CryptoCurrency) -> Single<TransactionFeeResponse> {
+    func fees(cryptoCurrency: CryptoCurrency) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
         underlyingFees
     }
 }
