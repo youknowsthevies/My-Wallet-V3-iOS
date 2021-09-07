@@ -38,6 +38,11 @@ let package = Package(
             from: "0.24.0"
         ),
         .package(
+            name: "swift-algorithms",
+            url: "https://github.com/apple/swift-algorithms.git",
+            from: "0.2.1"
+        ),
+        .package(
             name: "Nuke",
             url: "https://github.com/kean/Nuke.git",
             from: "10.3.1"
@@ -84,6 +89,7 @@ let package = Package(
         .target(
             name: "FeatureTransactionDomain",
             dependencies: [
+                .product(name: "Algorithms", package: "swift-algorithms"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "Localization", package: "Localization"),

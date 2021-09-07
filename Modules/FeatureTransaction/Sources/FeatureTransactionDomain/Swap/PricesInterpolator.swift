@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Algorithms
 import BigInt
 import PlatformKit
-import RxSwift
 import ToolKit
 
 final class PricesInterpolator {
@@ -14,30 +14,33 @@ final class PricesInterpolator {
     }
 
     func rate(amount: BigInt) -> BigInt {
-        prices
-            .enumerated()
-            .compactMap { index, priceTier -> BigInt? in
-                guard index != prices.count - 1 else {
-                    return BigInt(stringLiteral: priceTier.price)
-                }
-
-                let next = prices[index + 1]
-                let volume = BigInt(stringLiteral: priceTier.volume)
-                let price = BigInt(stringLiteral: priceTier.price)
-                let nextVolume = BigInt(stringLiteral: next.volume)
-                let nextPrice = BigInt(stringLiteral: next.price)
-
-                if volume < amount, amount <= nextVolume {
-                    return LinearInterpolator
-                        .interpolate(
-                            x: [volume, nextVolume],
-                            y: [price, nextPrice],
-                            xi: amount
-                        )
-                } else {
+        let tier = prices
+            .lazy
+            .adjacentPairs()
+            .compactMap { tier, next -> BigInt? in
+                let current = (
+                    volume: BigInt(tier.volume)!,
+                    price: BigInt(tier.price)!
+                )
+                let next = (
+                    volume: BigInt(next.volume)!,
+                    price: BigInt(next.price)!
+                )
+                guard current.volume < amount, amount <= next.volume else {
                     return nil
                 }
-            }
-            .first ?? .zero
+                guard current.price != .zero else {
+                    return next.price
+                }
+                return LinearInterpolator
+                    .interpolate(
+                        x: [current.volume, next.volume],
+                        y: [current.price, next.price],
+                        xi: amount
+                    )
+            }.first
+        return tier
+            ?? prices.last.flatMap { BigInt($0.price) }
+            ?? .zero
     }
 }
