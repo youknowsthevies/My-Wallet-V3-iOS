@@ -126,7 +126,11 @@ public final class ActivityScreenViewController: BaseScreenViewController {
         tableView.registerNibCell(ActivityItemTableViewCell.self, in: .module)
         tableView.registerNibCell(ActivitySkeletonTableViewCell.self, in: .module)
 
-        let animation = AnimationConfiguration(insertAnimation: .fade, reloadAnimation: .fade, deleteAnimation: .fade)
+        let animation = AnimationConfiguration(
+            insertAnimation: .automatic,
+            reloadAnimation: .automatic,
+            deleteAnimation: .automatic
+        )
 
         let dataSource = RxDataSource(
             animationConfiguration: animation,

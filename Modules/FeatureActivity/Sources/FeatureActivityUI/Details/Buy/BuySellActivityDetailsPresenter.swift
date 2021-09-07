@@ -48,6 +48,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let orderIDPresenter: LineItemCellPresenting
     private let dateCreatedPresenter: LineItemCellPresenting
+    private let exchangeRatePresenter: LineItemCellPresenting
     private let totalCostPresenter: LineItemCellPresenting
     private let totalPresenter: LineItemCellPresenting
     private let sendingToPresenter: LineItemCellPresenting
@@ -74,7 +75,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .card:
             paymentMethod = LocalizedLineItem.creditOrDebitCard
         case .funds:
-            paymentMethod = "\(LocalizedLineItem.Funds.prefix) \(event.inputValue.currencyCode) \(LocalizedLineItem.Funds.suffix)"
+            paymentMethod = "\(event.inputValue.currencyCode) \(LocalizedLineItem.Funds.suffix)"
         }
         let date = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
 
@@ -82,6 +83,14 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
         dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+        let exchangeRate = MoneyValuePair(
+            base: event.inputValue,
+            quote: event.outputValue
+        ).inverseQuote.quote
+        let exchangeRateString = "\(exchangeRate.displayString) / \(event.outputValue.currencyCode)"
+        exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
         totalCostPresenter = TransactionalLineItem.totalCost(event.inputValue.displayString).defaultPresenter(
@@ -113,11 +122,20 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         )
         badgesModel.badgesRelay.accept([statusBadge])
         let description = event.status.localizedDescription
+        let badgeType: BadgeAsset.Value.Interaction.BadgeItem.BadgeType
+        switch event.status {
+        case .pending:
+            badgeType = .default(accessibilitySuffix: description)
+        case .finished:
+            badgeType = .verified
+        default:
+            badgeType = .destructive
+        }
         statusBadge.interactor.stateRelay.accept(
             .loaded(
                 next: .init(
-                    type: event.status == .failed ? .destructive : .default(accessibilitySuffix: description),
-                    description: event.status.localizedDescription
+                    type: badgeType,
+                    description: description
                 )
             )
         )
@@ -136,6 +154,8 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 .lineItem(orderIDPresenter),
                 .separator,
                 .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(exchangeRatePresenter),
                 .separator,
                 .lineItem(totalCostPresenter),
                 .separator,
@@ -187,14 +207,11 @@ extension BuySellActivityItemEvent.EventStatus {
         switch self {
         case .pending:
             return LocalizedString.pending
-        case .cancelled:
-            return LocalizedString.cancelled
-        case .failed:
-            return LocalizedString.failed
-        case .expired:
-            return LocalizedString.expired
         case .finished:
-            return LocalizedString.finished
+            return LocalizedString.completed
+        // Recurring buy only.
+        default:
+            return LocalizedString.failed
         }
     }
 }
