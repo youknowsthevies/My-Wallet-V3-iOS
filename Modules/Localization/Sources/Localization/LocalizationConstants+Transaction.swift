@@ -37,7 +37,17 @@ extension LocalizationConstants {
             }
         }
 
-        public enum Sell {}
+        public enum Sell {
+            public enum Completion {
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
+            }
+
+            public enum AmountPresenter {
+                public enum LimitView {}
+            }
+        }
 
         public enum Withdraw {
             public enum Completion {
@@ -109,6 +119,17 @@ extension LocalizationConstants.Transaction.Swap.AmountPresenter.LimitView {
     public static let useMax = NSLocalizedString(
         "You can swap up to %@",
         comment: "You can swap up to"
+    )
+}
+
+extension LocalizationConstants.Transaction.Sell.AmountPresenter.LimitView {
+    public static let useMin = NSLocalizedString(
+        "The minimum sell is %@",
+        comment: "The minimum sell is"
+    )
+    public static let useMax = NSLocalizedString(
+        "You can sell up to %@",
+        comment: "You can sell up to"
     )
 }
 
@@ -506,7 +527,7 @@ extension LocalizationConstants.Transaction.Send.Completion.Pending {
 extension LocalizationConstants.Transaction.Send.Completion.Success {
     public static let title = NSLocalizedString(
         "%@ Sent",
-        comment: "Swap Complete"
+        comment: "Send Complete"
     )
     public static let description = NSLocalizedString(
         "Your %@ has been successfully sent.",
@@ -615,6 +636,73 @@ extension LocalizationConstants.Transaction.Swap.Completion.Failure {
         comment: ""
     )
 }
+
+// MARK: - Sell
+
+extension LocalizationConstants.Transaction.Sell.Completion.Success {
+    public static let title = NSLocalizedString(
+        "Sell Complete",
+        comment: "Sell Complete"
+    )
+    public static let description = NSLocalizedString(
+        "Your %@ is now available in your Wallet.",
+        comment: "Your %@ is now available in your Wallet."
+    )
+    public static let action = NSLocalizedString(
+        "OK",
+        comment: "OK"
+    )
+}
+
+extension LocalizationConstants.Transaction.Sell.Completion.Pending {
+    public static let title = NSLocalizedString(
+        "Selling %@ for %@",
+        comment: "Selling %@ for %@"
+    )
+    public static let description = NSLocalizedString(
+        "We're completing your sell now.",
+        comment: "We're completing your sell now."
+    )
+}
+
+extension LocalizationConstants.Transaction.Sell.Completion.Failure {
+    public static let title = NSLocalizedString(
+        "Oops! Something Went Wrong.",
+        comment: "Oops! Something Went Wrong."
+    )
+
+    public static let description = NSLocalizedString(
+        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+    )
+
+    public static let action = NSLocalizedString(
+        "OK",
+        comment: "OK"
+    )
+
+    public static let insufficientFundsForFees = NSLocalizedString(
+        "Not enough %@ in your wallet to sell with current network fees.",
+        comment: ""
+    )
+
+    public static let underMinLimit = NSLocalizedString(
+        "Minimum sell of %@ required.",
+        comment: ""
+    )
+
+    public static let overGoldTierLimit = NSLocalizedString(
+        "You can sell up to %1$s today.",
+        comment: ""
+    )
+
+    public static let overSilverTierLimit = NSLocalizedString(
+        "Please upgrade your profile to sell this amount.",
+        comment: ""
+    )
+}
+
+// MARK: - Confirmation
 
 extension LocalizationConstants.Transaction.Confirmation.Error {
     public static let title = NSLocalizedString("Error", comment: "Error")

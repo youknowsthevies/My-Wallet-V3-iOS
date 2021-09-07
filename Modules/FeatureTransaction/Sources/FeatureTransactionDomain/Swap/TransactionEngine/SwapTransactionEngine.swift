@@ -376,7 +376,7 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransa
     ///    it passes a `nabuError` which contains the raw nabu error
     /// - Parameter initialValue: The current `PendingTransaction` to be updated
     /// - Returns: An `Single<PendingTransaction>` with updated `validationState`
-    func handleSwapPendingOrdersError(initialValue: PendingTransaction) -> Single<PendingTransaction> {
+    func handlePendingOrdersError(initialValue: PendingTransaction) -> Single<PendingTransaction> {
         catchError { error -> Single<PendingTransaction> in
             guard let networkError = error as? NabuNetworkError else {
                 throw error

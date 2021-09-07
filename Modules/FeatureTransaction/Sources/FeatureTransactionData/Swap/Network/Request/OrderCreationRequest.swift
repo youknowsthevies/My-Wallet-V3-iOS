@@ -11,6 +11,8 @@ struct OrderCreationRequest: Encodable {
     let destinationAddress: String?
     // Only for `ON_CHAIN` & `FROM_USERKEY` directions
     let refundAddress: String?
+    // Only for selling
+    let ccy: String?
 
     private enum CodingKeys: CodingKey {
         case direction
@@ -18,6 +20,7 @@ struct OrderCreationRequest: Encodable {
         case volume
         case destinationAddress
         case refundAddress
+        case ccy
     }
 
     func encode(to encoder: Encoder) throws {
@@ -28,6 +31,7 @@ struct OrderCreationRequest: Encodable {
         try container.encode(quoteId, forKey: .quoteId)
         try container.encodeIfPresent(destinationAddress, forKey: .destinationAddress)
         try container.encodeIfPresent(refundAddress, forKey: .refundAddress)
+        try container.encodeIfPresent(ccy, forKey: .ccy)
     }
 }
 

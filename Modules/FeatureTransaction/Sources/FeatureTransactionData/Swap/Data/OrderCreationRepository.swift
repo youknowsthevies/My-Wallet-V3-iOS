@@ -37,6 +37,23 @@ final class OrderCreationRepository: OrderCreationRepositoryAPI {
             .map(SwapOrder.init)
             .eraseToAnyPublisher()
     }
+
+    func createOrder(
+        direction: OrderDirection,
+        quoteIdentifier: String,
+        volume: MoneyValue,
+        ccy: String?
+    ) -> AnyPublisher<SellOrder, NabuNetworkError> {
+        client
+            .create(
+                direction: direction,
+                quoteIdentifier: quoteIdentifier,
+                volume: volume,
+                ccy: ccy
+            )
+            .map(SellOrder.init)
+            .eraseToAnyPublisher()
+    }
 }
 
 extension SwapOrder {
@@ -46,6 +63,17 @@ extension SwapOrder {
             identifier: response.identifier,
             state: response.status,
             depositAddress: response.kind.depositAddress
+        )
+    }
+}
+
+extension SellOrder {
+
+    fileprivate init(response: SwapActivityItemEvent) {
+        self.init(
+            identifier: response.identifier,
+            state: response.status,
+            ccy: response.pair.outputCurrencyType.code
         )
     }
 }

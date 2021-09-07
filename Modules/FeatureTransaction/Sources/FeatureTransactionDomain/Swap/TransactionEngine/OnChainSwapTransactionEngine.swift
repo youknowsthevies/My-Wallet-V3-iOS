@@ -137,7 +137,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                             pendingTx
                                 .update(selectedFeeLevel: self.defaultFeeLevel(pendingTransaction: pendingTx))
                         }
-                        .handleSwapPendingOrdersError(initialValue: fallback)
+                        .handlePendingOrdersError(initialValue: fallback)
                     }
             }
     }

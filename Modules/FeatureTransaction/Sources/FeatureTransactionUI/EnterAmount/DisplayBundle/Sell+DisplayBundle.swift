@@ -17,8 +17,8 @@ extension DisplayBundle {
             amountDisplayBundle: .init(
                 events: nil,
                 strings: .init(
-                    useMin: LocalizedString.Swap.AmountPresenter.LimitView.useMin,
-                    useMax: LocalizedString.Swap.AmountPresenter.LimitView.useMax
+                    useMin: LocalizationConstants.Transaction.Sell.AmountPresenter.LimitView.useMin,
+                    useMax: LocalizationConstants.Transaction.Sell.AmountPresenter.LimitView.useMax
                 ),
                 accessibilityIdentifiers: .init()
             )

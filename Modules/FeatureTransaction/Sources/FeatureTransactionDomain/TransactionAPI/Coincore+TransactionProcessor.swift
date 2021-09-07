@@ -218,13 +218,12 @@ extension CoincoreAPI {
         with account: CryptoAccount,
         target: TransactionTarget
     ) -> Single<TransactionProcessor> {
-        unimplemented()
-    }
-
-    private func createOnChainProcessorSell(
-        with account: CryptoAccount,
-        target: TransactionTarget
-    ) -> Single<TransactionProcessor> {
-        unimplemented()
+        .just(
+            TransactionProcessor(
+                sourceAccount: account,
+                transactionTarget: target as! FiatAccount,
+                engine: TradingSellTransactionEngine(quotesEngine: SwapQuotesEngine())
+            )
+        )
     }
 }

@@ -66,7 +66,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
                     pricedQuote: pricedQuote,
                     fiatCurrency: fiatCurrency
                 )
-                .handleSwapPendingOrdersError(initialValue: pendingTransaction)
+                .handlePendingOrdersError(initialValue: pendingTransaction)
             }
     }
 

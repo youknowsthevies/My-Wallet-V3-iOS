@@ -285,6 +285,34 @@ extension TransactionConfirmation.Model {
         }
     }
 
+    public struct SellSourceValue: TransactionConfirmationModelable {
+        public let cryptoValue: CryptoValue
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizationConstants.Transaction.sell, cryptoValue.displayString)
+        }
+    }
+
+    public struct SellDestinationValue: TransactionConfirmationModelable {
+        public let fiatValue: FiatValue
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizationConstants.Transaction.receive, fiatValue.displayString)
+        }
+    }
+
+    public struct SellExchangeRateValue: TransactionConfirmationModelable {
+        public let baseValue: MoneyValue
+        public let resultValue: MoneyValue
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizedString.exchangeRate, "\(baseValue.displayString) = \(resultValue.displayString)")
+        }
+    }
+
     public struct SendDestinationValue: TransactionConfirmationModelable {
         public let value: MoneyValue
         public let type: TransactionConfirmation.Kind = .readOnly

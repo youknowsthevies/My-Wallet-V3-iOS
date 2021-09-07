@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import NetworkKit
 import PlatformKit
 import ToolKit
 
@@ -36,7 +37,7 @@ public protocol CombineTransactionEngine: AnyObject {
         pendingTransaction: PendingTransaction
     ) -> AnyPublisher<PendingTransaction, Error>
 
-    func doBuildConfirmations(pendingTransaction: PendingTransaction) -> AnyPublisher<PendingTransaction, Error>
+    func doBuildConfirmations(pendingTransaction: PendingTransaction) -> AnyPublisher<PendingTransaction, NabuNetworkError>
 
     /// Implementation interface:
     /// Call this first to initialise the processor. Construct and initialise a pendingTx object.

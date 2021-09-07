@@ -217,8 +217,11 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 .catchErrorJustReturn(false)
         case .buy:
             return isPairToFiatAvailable
-        case .sell,
-             .swap:
+        case .sell:
+            return Single.zip(isPairToFiatAvailable, isFunded).map {
+                $0.0 && $0.1
+            }
+        case .swap:
             return balance
                 .map(\.isPositive)
                 .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in

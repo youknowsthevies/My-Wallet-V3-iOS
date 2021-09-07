@@ -21,6 +21,9 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case swapDestinationValue(TransactionConfirmation.Model.SwapDestinationValue)
     case swapExchangeRate(TransactionConfirmation.Model.SwapExchangeRate)
     case swapSourceValue(TransactionConfirmation.Model.SwapSourceValue)
+    case sellSourceValue(TransactionConfirmation.Model.SellSourceValue)
+    case sellDestinationValue(TransactionConfirmation.Model.SellDestinationValue)
+    case sellExchangeRateValue(TransactionConfirmation.Model.SellExchangeRateValue)
     case total(TransactionConfirmation.Model.Total)
 
     public var type: TransactionConfirmation.Kind {
@@ -60,6 +63,12 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .swapSourceValue(let value):
             return value.type
         case .total(let value):
+            return value.type
+        case .sellSourceValue(let value):
+            return value.type
+        case .sellDestinationValue(let value):
+            return value.type
+        case .sellExchangeRateValue(let value):
             return value.type
         }
     }
@@ -101,6 +110,12 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .swapSourceValue(let value):
             return value.formatted
         case .total(let value):
+            return value.formatted
+        case .sellSourceValue(let value):
+            return value.formatted
+        case .sellDestinationValue(let value):
+            return value.formatted
+        case .sellExchangeRateValue(let value):
             return value.formatted
         }
     }

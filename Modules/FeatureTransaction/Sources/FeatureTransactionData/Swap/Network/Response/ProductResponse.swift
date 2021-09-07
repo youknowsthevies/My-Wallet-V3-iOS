@@ -4,6 +4,7 @@ import FeatureTransactionDomain
 
 enum ProductResponse: String, Codable {
     case brokerage = "BROKERAGE"
+    case simplebuy = "SIMPLEBUY"
 }
 
 extension ProductType {
@@ -12,6 +13,8 @@ extension ProductType {
         switch response {
         case .brokerage:
             self = .brokerage
+        case .simplebuy:
+            self = .simplebuy
         }
     }
 }

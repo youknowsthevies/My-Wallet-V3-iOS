@@ -2,4 +2,5 @@
 
 public enum ProductType: String {
     case brokerage = "BROKERAGE"
+    case simplebuy = "SIMPLEBUY"
 }
