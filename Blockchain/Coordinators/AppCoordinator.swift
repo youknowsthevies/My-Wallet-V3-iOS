@@ -71,7 +71,10 @@ import WalletPayloadKit
 
     // MARK: NSObject
 
-    override init() {
+    init(
+        tiersService: KYCTiersServiceAPI = resolve(),
+        eligibilityService: EligibilityServiceAPI = resolve()
+    ) {
         super.init()
         walletManager.accountInfoAndExchangeRatesDelegate = self
         walletManager.backupDelegate = self

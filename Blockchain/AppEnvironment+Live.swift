@@ -28,6 +28,7 @@ extension AppEnvironment {
             internalFeatureService: resolve(),
             fiatCurrencySettingsService: resolve(),
             supportedAssetsRemoteService: resolve(),
+            customerSupportChatService: resolve(),
             sharedContainer: .default,
             analyticsRecorder: resolve(),
             coincore: resolve(),

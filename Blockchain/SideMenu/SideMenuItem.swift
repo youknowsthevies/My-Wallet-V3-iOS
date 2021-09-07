@@ -113,7 +113,7 @@ extension SideMenuItem {
         case .settings:
             return "menu-icon-settings"
         case .support:
-            return "menu-icon-help"
+            return "menu-icon-chat"
         case .webLogin:
             return "menu-icon-pair-web-wallet"
         case .lockbox:

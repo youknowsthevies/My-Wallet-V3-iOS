@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
+import Combine
 import RxSwift
 
 /// Types adopting the `FeatureConfiguratorAPI` should provide a way to initialize and configure a

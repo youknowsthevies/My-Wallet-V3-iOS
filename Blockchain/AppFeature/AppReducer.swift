@@ -34,6 +34,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     remoteNotificationTokenReceiver: $0.remoteNotificationServiceContainer.tokenReceiver,
                     certificatePinner: $0.certificatePinner,
                     siftService: $0.siftService,
+                    customerSupportChatService: $0.customerSupportChatService,
                     blurEffectHandler: $0.blurEffectHandler,
                     backgroundAppHandler: $0.backgroundAppHandler,
                     supportedAssetsRemoteService: $0.supportedAssetsRemoteService

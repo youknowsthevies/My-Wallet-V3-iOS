@@ -26,6 +26,8 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 
     weak var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController?
 
+    @LazyInject var featureFlagService: FeatureFlagsServiceAPI
+    @LazyInject var customerSupportChatRouter: CustomerSupportChatRouterAPI
     @LazyInject var alertViewPresenter: AlertViewPresenterAPI
     @LazyInject var secureChannelRouter: SecureChannelRouting
     @LazyInject var coincore: CoincoreAPI
@@ -34,6 +36,8 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 
     private let onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI
 
+    var tiersService: KYCTiersServiceAPI
+    var simpleBuyEligiblityService: EligibilityServiceAPI
     var settingsRouterAPI: SettingsRouterAPI?
     var buyRouter: PlatformUIKit.RouterAPI?
     var backupRouter: FeatureDashboardUI.BackupRouterAPI?
@@ -43,9 +47,13 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 
     init(
         store: Store<LoggedIn.State, LoggedIn.Action>,
-        onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI = resolve()
+        onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI = resolve(),
+        tiersService: KYCTiersServiceAPI = resolve(),
+        eligibilityService: EligibilityServiceAPI = resolve()
     ) {
         self.store = store
+        self.tiersService = tiersService
+        simpleBuyEligiblityService = eligibilityService
         viewStore = ViewStore(store)
         self.onboardingRouter = onboardingRouter
         super.init(nibName: nil, bundle: nil)

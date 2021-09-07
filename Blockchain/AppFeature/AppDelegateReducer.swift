@@ -58,6 +58,7 @@ struct AppDelegateEnvironment {
     var remoteNotificationTokenReceiver: RemoteNotificationDeviceTokenReceiving
     var certificatePinner: CertificatePinnerAPI
     var siftService: SiftServiceAPI
+    var customerSupportChatService: CustomerSupportChatServiceAPI
     var blurEffectHandler: BlurVisualEffectHandler
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
@@ -92,6 +93,8 @@ let appDelegateReducer = Reducer<
                 .fireAndForget(),
 
             applyGlobalNavigationAppearance(using: .lightContent()),
+
+            initializeCustomerChatSupport(using: environment.customerSupportChatService),
 
             applyCertificatePinning(using: environment.certificatePinner),
 
@@ -157,6 +160,12 @@ let appDelegateReducer = Reducer<
 }
 
 // MARK: - Effect Methods
+
+private func initializeCustomerChatSupport(using service: CustomerSupportChatServiceAPI) -> AppDelegateEffect {
+    Effect.fireAndForget {
+        service.initializeWithAcccountKey(CustomerSupportChatConfiguration.apiKey)
+    }
+}
 
 private func applyBlurFilter(handler: BlurVisualEffectHandler, on window: UIWindow?) -> AppDelegateEffect {
     guard let view = window else {

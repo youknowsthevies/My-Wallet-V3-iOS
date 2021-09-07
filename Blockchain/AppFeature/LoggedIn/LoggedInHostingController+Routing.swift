@@ -94,6 +94,46 @@ extension LoggedInHostingController {
     }
 
     func handleSupport() {
+        Publishers.Zip(
+            featureFlagService.isEnabled(.remote(.customerSupportChat)),
+            simpleBuyEligiblityService
+                .isEligiblePublisher
+        )
+        .receive(on: DispatchQueue.main)
+        .sink(receiveValue: { [weak self] isSupported, isEligible in
+            guard let self = self else { return }
+            guard isEligible, isSupported else {
+                self.showLegacySupportAlert()
+                return
+            }
+            self.showCustomerChatSupportIfSupported()
+        })
+        .store(in: &cancellables)
+    }
+
+    private func showCustomerChatSupportIfSupported() {
+        tiersService
+            .fetchTiersPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { [weak self] completion in
+                switch completion {
+                case .failure(let error):
+                    Logger.shared.error("Error fetching tiers: \(error)")
+                    self?.showLegacySupportAlert()
+                case .finished:
+                    break
+                }
+            }, receiveValue: { [customerSupportChatRouter] tiers in
+                guard tiers.isTier2Approved else {
+                    self.showLegacySupportAlert()
+                    return
+                }
+                customerSupportChatRouter.start()
+            })
+            .store(in: &cancellables)
+    }
+
+    private func showLegacySupportAlert() {
         let title = String(format: LocalizationConstants.openArg, Constants.Url.blockchainSupport)
         let alert = UIAlertController(
             title: title,

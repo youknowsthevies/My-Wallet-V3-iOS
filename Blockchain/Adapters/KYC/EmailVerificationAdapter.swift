@@ -51,6 +51,8 @@ final class EmailVerificationAdapter {
                     return .unauthenticated
                 case .networkError(let error):
                     return .networkError(error)
+                case .unknown(let error):
+                    return .unknown(error)
                 }
             }
             .eraseToAnyPublisher()

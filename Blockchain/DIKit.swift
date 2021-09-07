@@ -114,6 +114,12 @@ extension DependencyContainer {
 
         factory { SiftService() as SiftServiceAPI }
 
+        factory { CustomerSupportChatClient() as CustomerSupportChatClientAPI }
+
+        factory { CustomerSupportChatService() as CustomerSupportChatServiceAPI }
+
+        factory { CustomerSupportChatRouter() as CustomerSupportChatRouterAPI }
+
         single { SecondPasswordPrompter() as SecondPasswordPromptable }
 
         single { SecondPasswordStore() as SecondPasswordStorable }

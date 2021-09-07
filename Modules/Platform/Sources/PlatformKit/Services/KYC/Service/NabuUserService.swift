@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import CombineExt
 import DIKit
 import RxSwift
 import ToolKit
@@ -7,12 +9,22 @@ import ToolKit
 public protocol NabuUserServiceAPI: AnyObject {
     var user: Single<NabuUser> { get }
 
+    var userPublisher: AnyPublisher<NabuUser, Never> { get }
+
     func fetchUser() -> Single<NabuUser>
+
+    func fetchUserPublisher() -> AnyPublisher<NabuUser, Never>
 }
 
 final class NabuUserService: NabuUserServiceAPI {
 
     // MARK: - Exposed Properties
+
+    var userPublisher: AnyPublisher<NabuUser, Never> {
+        user
+            .asPublisher()
+            .ignoreFailure()
+    }
 
     var user: Single<NabuUser> {
         Single.create(weak: self) { (self, observer) -> Disposable in
@@ -62,6 +74,13 @@ final class NabuUserService: NabuUserServiceAPI {
                     }
                 )
         }
+    }
+
+    func fetchUserPublisher() -> AnyPublisher<NabuUser, Never> {
+        cachedUser
+            .fetchValue
+            .asPublisher()
+            .ignoreFailure()
     }
 
     func fetchUser() -> Single<NabuUser> {

@@ -672,7 +672,7 @@ public enum LocalizationConstants {
             comment: "Item displayed on the side menu of the app for when the user wants to view their wallet settings."
         )
         public static let support = NSLocalizedString(
-            "Support",
+            "Contact Support",
             comment: "Item displayed on the side menu of the app for when the user wants to contact support."
         )
         public static let new = NSLocalizedString(
