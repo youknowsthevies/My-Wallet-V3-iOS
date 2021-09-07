@@ -14,5 +14,7 @@ final class LocationUpdateService {
 
     func update(address: UserAddress) -> Completable {
         client.updateAddress(userAddress: address)
+            .asObservable()
+            .ignoreElements()
     }
 }

@@ -14,5 +14,6 @@ final class KYCStateSelectionInteractor {
 
     func fetchState(for country: CountryData) -> Single<[KYCState]> {
         client.listOfStates(in: country.code)
+            .asSingle()
     }
 }

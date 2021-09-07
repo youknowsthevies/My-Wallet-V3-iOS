@@ -87,7 +87,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
         self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
         cachedTiers.setFetch(weak: self) { (self) in
-            self.client.tiers()
+            self.client.tiers().asSingle()
         }
     }
 

@@ -16,6 +16,7 @@ final class VeriffService {
     /// Creates VeriffCredentials
     func createCredentials() -> Single<VeriffCredentials> {
         client.credentialsForVeriff()
+            .asSingle()
     }
 
     /// Submits the Veriff applicantId to Blockchain to complete KYC processing.
@@ -25,5 +26,7 @@ final class VeriffService {
     /// - Returns: a Completable
     func submitVerification(applicantId: String) -> Completable {
         client.submitToVeriffForVerification(applicantId: applicantId)
+            .asObservable()
+            .ignoreElements()
     }
 }

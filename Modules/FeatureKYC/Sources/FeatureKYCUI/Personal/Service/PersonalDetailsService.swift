@@ -15,5 +15,7 @@ final class PersonalDetailsService {
 
     func update(firstName: String?, lastName: String?, birthday: Date?) -> Completable {
         client.updatePersonalDetails(firstName: firstName, lastName: lastName, birthday: birthday)
+            .asObservable()
+            .ignoreElements()
     }
 }

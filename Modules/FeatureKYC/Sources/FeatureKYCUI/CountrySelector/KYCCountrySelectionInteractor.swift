@@ -45,6 +45,8 @@ class KYCCountrySelectionInteractor {
                     notifyWhenAvailable: shouldBeNotifiedWhenAvailable ?? false,
                     jwtToken: jwtToken
                 )
+                .asObservable()
+                .ignoreElements()
             }
             .subscribe()
     }

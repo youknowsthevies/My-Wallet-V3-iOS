@@ -164,6 +164,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                     return .none
                 }
             }
+            .asSingle()
             .do(onError: { [weak self] error in
                 self?.analyticsRecorder.record(
                     event: CardUpdateEvent.sbCardEverypayFailure(data: String(describing: error))

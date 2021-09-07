@@ -55,6 +55,7 @@ class KYCVerifyIdentityInteractor {
 
         return client
             .supportedDocuments(for: countryCode)
+            .asSingle()
             .map(\.documentTypes)
             .do(onSuccess: { [weak self] types in
                 self?.cache[countryCode] = types
