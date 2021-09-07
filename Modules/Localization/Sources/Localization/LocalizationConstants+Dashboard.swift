@@ -7,6 +7,7 @@ extension LocalizationConstants {
         public enum AssetDetails {}
         public enum BalanceCell {}
         public enum Portfolio {}
+        public enum Prices {}
     }
 }
 
@@ -58,4 +59,11 @@ extension LocalizationConstants.Dashboard.Portfolio {
             comment: "Dashboard: Empty State - cta"
         )
     }
+}
+
+extension LocalizationConstants.Dashboard.Prices {
+    public static let noResults = NSLocalizedString(
+        "No Results",
+        comment: "Dashboard: Prices - no results when filtering."
+    )
 }

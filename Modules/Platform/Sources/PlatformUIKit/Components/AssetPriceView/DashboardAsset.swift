@@ -68,16 +68,16 @@ public enum DashboardAsset {
                 }
 
                 /// The `Time` for the given `AssetPrice`
-                let time: Time
+                public let time: Time
 
                 /// The asset price in localized fiat currency
-                let fiatValue: FiatValue
+                public let fiatValue: FiatValue
 
                 /// Percentage of change since a certain time
-                let changePercentage: Double
+                public let changePercentage: Double
 
                 /// The change in fiat value
-                let fiatChange: FiatValue
+                public let fiatChange: FiatValue
 
                 public init(time: Time, fiatValue: FiatValue, changePercentage: Double, fiatChange: FiatValue) {
                     self.time = time
