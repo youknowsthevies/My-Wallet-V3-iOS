@@ -159,12 +159,9 @@ public class Router: Routing {
         // step 1: check email verification status and present email verification flow if email is unverified.
         presentEmailVerificationIfNeeded(from: presenter)
             // step 2: check KYC status and present KYC flow if user is not verified.
-            .flatMap { [presentKYCIfNeeded] result -> AnyPublisher<FlowResult, RouterError> in
-                // step 3: if the email is verified, move onto the KYC flow
-                guard case .completed = result else {
-                    return .just(result)
-                }
-                return presentKYCIfNeeded(presenter, requiredTier)
+            .flatMap { [presentKYCIfNeeded] _ -> AnyPublisher<FlowResult, RouterError> in
+                // Even if the user skips emai verification, move on to KYC
+                presentKYCIfNeeded(presenter, requiredTier)
             }
             .eraseToAnyPublisher()
     }
@@ -215,26 +212,27 @@ public class Router: Routing {
             return .just(.completed)
         }
 
-        // NOTE: By guarding against Tier 1 we ensure SDD checks are performed since the Tiers API doesn't provide Tier 3 info.
-        guard requiredTier > .tier1 else {
-            return Deferred { [routeToKYC] in
-                Future<FlowResult, RouterError> { futureCompletion in
-                    routeToKYC(presenter, requiredTier) { result in
-                        futureCompletion(.success(result))
-                    }
-                }
-            }
-            .eraseToAnyPublisher()
-        }
-
         // step 1: check KYC status.
         return kycService
             .fetchTiersPublisher()
             .receive(on: DispatchQueue.main)
             .mapError { _ in RouterError.kycStepFailed }
             .flatMap { [routeToKYC] userTiers -> AnyPublisher<FlowResult, RouterError> in
+                // step 2a: Route to KYC if the current user's tier is less than Tier 2.
+                // NOTE: By guarding against Tier 1 we ensure SDD checks are performed for Tier 1 users to determine whether they are Tier 3.
+                guard userTiers.latestApprovedTier > .tier1 else {
+                    return Deferred { [routeToKYC] in
+                        Future<FlowResult, RouterError> { futureCompletion in
+                            routeToKYC(presenter, requiredTier) { result in
+                                futureCompletion(.success(result))
+                            }
+                        }
+                    }
+                    .eraseToAnyPublisher()
+                }
+
                 // step 2a: if the current user's tier is greater or equal than the required tier, complete.
-                guard userTiers.latestTier < requiredTier else {
+                guard userTiers.latestApprovedTier < requiredTier else {
                     return .just(.completed)
                 }
                 // step 2b: else present the kyc flow

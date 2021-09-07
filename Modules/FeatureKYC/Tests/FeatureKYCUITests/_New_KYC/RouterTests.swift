@@ -20,15 +20,19 @@ final class RouterTests: XCTestCase {
     private var router: FeatureKYCUI.Router!
     private var mockExternalAppOpener: MockExternalAppOpener!
     private var mockEmailVerificationService: MockEmailVerificationService!
+    private var mockKYCTiersService: MockKYCTiersService!
+    private var mockLegacyKYCRouter: MockLegacyKYCRouter!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockExternalAppOpener = MockExternalAppOpener()
         mockEmailVerificationService = MockEmailVerificationService()
+        mockKYCTiersService = MockKYCTiersService()
+        mockLegacyKYCRouter = MockLegacyKYCRouter()
         router = .init(
             analyticsRecorder: MockAnalyticsRecorder(),
-            legacyRouter: MockLegacyKYCRouter(),
-            kycService: MockKYCTiersService(),
+            legacyRouter: mockLegacyKYCRouter,
+            kycService: mockKYCTiersService,
             emailVerificationService: mockEmailVerificationService,
             openMailApp: mockExternalAppOpener.openMailApp
         )
@@ -38,27 +42,33 @@ final class RouterTests: XCTestCase {
         router = nil
         mockExternalAppOpener = nil
         mockEmailVerificationService = nil
+        mockKYCTiersService = nil
+        mockLegacyKYCRouter = nil
         try super.tearDownWithError()
     }
 
     func test_routesTo_emailVerification() throws {
         let viewController = MockViewController()
-        router.routeToEmailVerification(from: viewController, emailAddress: "test@example.com", flowCompletion: { _ in })
+        router.routeToEmailVerification(
+            from: viewController,
+            emailAddress: "test@example.com",
+            flowCompletion: { _ in }
+        )
         let presentedViewController = viewController.recordedInvocations.presentViewController.first
         XCTAssertNotNil(presentedViewController as? UIHostingController<EmailVerificationView>)
     }
 
     func test_calls_back_to_passedIn_completionBlock() throws {
         var didCallCompletionBlock = false
-        let environment = router.buildEmailVerificationEnvironment(emailAddress: "test@example.com", flowCompletion: { _ in
+        let environment = router.buildEmailVerificationEnvironment(emailAddress: "test@example.com") { _ in
             didCallCompletionBlock = true
-        })
+        }
         environment.flowCompletionCallback?(.completed)
         XCTAssertTrue(didCallCompletionBlock)
     }
 
     func test_uses_extenalAppOpener_to_openMailApp() throws {
-        let environment = router.buildEmailVerificationEnvironment(emailAddress: "test@example.com", flowCompletion: { _ in })
+        let environment = router.buildEmailVerificationEnvironment(emailAddress: "test@example.com") { _ in }
         var valueReceived = false
         let e = expectation(description: "Wait for publisher to send value")
         let cancellable = environment.openMailApp()
@@ -84,7 +94,9 @@ final class RouterTests: XCTestCase {
         // WHEN: The router is asked to present the kyc flow if needed
         let mockViewController = MockViewController()
         var error: FeatureKYCUI.RouterError?
-        let publisher: AnyPublisher<FlowResult, FeatureKYCUI.RouterError> = router.presentEmailVerificationIfNeeded(from: mockViewController)
+        let publisher: AnyPublisher<FlowResult, FeatureKYCUI.RouterError> = router.presentEmailVerificationIfNeeded(
+            from: mockViewController
+        )
         let cancellable = publisher.sink(
             receiveCompletion: { completion in
                 if case .failure(let theError) = completion {
@@ -112,7 +124,9 @@ final class RouterTests: XCTestCase {
 
         // WHEN: The router is asked to present the kyc flow if needed
         let mockViewController = MockViewController()
-        let publisher: AnyPublisher<FlowResult, FeatureKYCUI.RouterError> = router.presentEmailVerificationIfNeeded(from: mockViewController)
+        let publisher: AnyPublisher<FlowResult, FeatureKYCUI.RouterError> = router.presentEmailVerificationIfNeeded(
+            from: mockViewController
+        )
         let cancellable = publisher.sink(
             receiveCompletion: { _ in
                 e.fulfill()
@@ -157,7 +171,9 @@ final class RouterTests: XCTestCase {
 
         // WHEN: The router is asked to present the kyc flow if needed
         let mockViewController = MockViewController()
-        let publisher: AnyPublisher<FlowResult, FeatureKYCUI.RouterError> = router.presentEmailVerificationIfNeeded(from: mockViewController)
+        let publisher: AnyPublisher<FlowResult, FeatureKYCUI.RouterError> = router.presentEmailVerificationIfNeeded(
+            from: mockViewController
+        )
         let cancellable = publisher.sink(
             receiveCompletion: { _ in
                 e.fulfill()
@@ -170,6 +186,148 @@ final class RouterTests: XCTestCase {
 
         // THEN: the email verification flow is not presented
         XCTAssertEqual(mockViewController.recordedInvocations.presentViewController.count, 0)
+        cancellable.cancel()
+    }
+
+    func test_presentsKYCIfNeeded_does_not_present_KYC_if_user_is_tier_2_when_tier_0_required() throws {
+        // GIVEN: The user is Tier 2
+        mockKYCTiersService.stubbedResponses.fetchTiers = .just(.tier2Approved)
+        // WHEN: The router is asked to present the KYC Flow if needed for Tier 0
+        let mockViewController = MockViewController()
+        let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier0)
+        // THEN: The flow should not be presented and the request complete
+        XCTAssertPublisherValues(publisher, .completed)
+    }
+
+    func test_presentsKYCIfNeeded_does_not_present_KYC_if_user_is_tier_2_when_tier_1_required() throws {
+        // GIVEN: The user is Tier 2
+        mockKYCTiersService.stubbedResponses.fetchTiers = .just(.tier2Approved)
+        // WHEN: The router is asked to present the KYC Flow if needed for Tier 1
+        let mockViewController = MockViewController()
+        let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier1)
+        // THEN: The flow should not be presented and the request complete
+        XCTAssertPublisherValues(publisher, .completed)
+    }
+
+    func test_presentsKYCIfNeeded_does_not_present_KYC_if_user_is_tier_2_when_tier_2_required() throws {
+        // GIVEN: The user is Tier 2
+        mockKYCTiersService.stubbedResponses.fetchTiers = .just(.tier2Approved)
+        // WHEN: The router is asked to present the KYC Flow if needed for Tier 2
+        let mockViewController = MockViewController()
+        let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier2)
+        // THEN: The flow should not be presented and the request complete
+        XCTAssertPublisherValues(publisher, .completed)
+    }
+
+    func test_presentsKYCIfNeeded_does_not_present_KYC_if_user_is_tier0_when_tier_0_required() throws {
+        // GIVEN: The user is Tier 0
+        mockKYCTiersService.stubbedResponses.fetchTiers = .just(.tier0)
+        // WHEN: The router is asked to present the KYC Flow if needed for Tier 0
+        let mockViewController = MockViewController()
+        let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier0)
+        // THEN: The flow should not be presented and the request complete
+        XCTAssertPublisherValues(publisher, .completed)
+    }
+
+    func test_presentsKYCIfNeeded_does_not_present_KYC_if_user_is_tier_1_when_tier_0_required() throws {
+        // GIVEN: The user is Tier 1
+        mockKYCTiersService.stubbedResponses.fetchTiers = .just(.tier1Approved)
+        // WHEN: The router is asked to present the KYC Flow if needed for Tier 0
+        let mockViewController = MockViewController()
+        let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier0)
+        // THEN: The flow should not be presented and the request complete
+        XCTAssertPublisherValues(publisher, .completed)
+    }
+
+    func test_presentsKYCIfNeeded_presents_KYC_if_user_is_tier_0_when_tier_1_required() throws {
+        // GIVEN: The user is Tier 0
+        mockKYCTiersService.stubbedResponses.fetchTiers = .just(.tier0)
+        // WHEN: The router is asked to present the KYC Flow if needed for Tier 1
+        let mockViewController = MockViewController()
+        let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier1)
+        // sink so that the publisher starts the routine
+        let cancellable = publisher.sink { _ in
+            // no-op
+        } receiveValue: { _ in
+            // no-op
+        }
+        // THEN: The KYC Flow should be presented
+        let e = expectation(description: "Wait for KYC Flow to be presented")
+        DispatchQueue.main.asyncAfter(deadline: .now(), execute: e.fulfill)
+        wait(for: [e], timeout: 1)
+        XCTAssertEqual(mockLegacyKYCRouter.recordedInvocations.start.count, 1)
+        let requestData = mockLegacyKYCRouter.recordedInvocations.start.first
+        XCTAssertEqual(requestData?.tier, .tier1)
+        // clean the publisher's data
+        cancellable.cancel()
+    }
+
+    func test_presentsKYCIfNeeded_presents_KYC_if_user_is_tier_0_when_tier_2_required() throws {
+        // GIVEN: The user is Tier 0
+        mockKYCTiersService.stubbedResponses.fetchTiers = .just(.tier0)
+        // WHEN: The router is asked to present the KYC Flow if needed for Tier 2
+        let mockViewController = MockViewController()
+        let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier2)
+        // sink so that the publisher starts the routine
+        let cancellable = publisher.sink { _ in
+            // no-op
+        } receiveValue: { _ in
+            // no-op
+        }
+        // THEN: The KYC Flow should be presented
+        let e = expectation(description: "Wait for KYC Flow to be presented")
+        DispatchQueue.main.asyncAfter(deadline: .now(), execute: e.fulfill)
+        wait(for: [e], timeout: 1)
+        XCTAssertEqual(mockLegacyKYCRouter.recordedInvocations.start.count, 1)
+        let requestData = mockLegacyKYCRouter.recordedInvocations.start.first
+        XCTAssertEqual(requestData?.tier, .tier2)
+        // clean the publisher's data
+        cancellable.cancel()
+    }
+
+    func test_presentsKYCIfNeeded_presents_KYC_if_user_is_tier_1_when_tier_1_required() throws {
+        // GIVEN: The user is Tier 1
+        mockKYCTiersService.stubbedResponses.fetchTiers = .just(.tier1Approved)
+        // WHEN: The router is asked to present the KYC Flow if needed for Tier 2
+        let mockViewController = MockViewController()
+        let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier2)
+        // sink so that the publisher starts the routine
+        let cancellable = publisher.sink { _ in
+            // no-op
+        } receiveValue: { _ in
+            // no-op
+        }
+        // THEN: The KYC Flow should be presented (because a Tier 1 user could be promoted to Tier 3)
+        let e = expectation(description: "Wait for KYC Flow to be presented")
+        DispatchQueue.main.asyncAfter(deadline: .now(), execute: e.fulfill)
+        wait(for: [e], timeout: 1)
+        XCTAssertEqual(mockLegacyKYCRouter.recordedInvocations.start.count, 1)
+        let requestData = mockLegacyKYCRouter.recordedInvocations.start.first
+        XCTAssertEqual(requestData?.tier, .tier2)
+        // clean the publisher's data
+        cancellable.cancel()
+    }
+
+    func test_presentsKYCIfNeeded__presents_KYC_if_user_is_tier_1_when_tier_2_required() throws {
+        // GIVEN: The user is Tier 1
+        mockKYCTiersService.stubbedResponses.fetchTiers = .just(.tier1Approved)
+        // WHEN: The router is asked to present the KYC Flow if needed for Tier 1
+        let mockViewController = MockViewController()
+        let publisher = router.presentKYCIfNeeded(from: mockViewController, requiredTier: .tier1)
+        // sink so that the publisher starts the routine
+        let cancellable = publisher.sink { _ in
+            // no-op
+        } receiveValue: { _ in
+            // no-op
+        }
+        // THEN: The KYC Flow should be presented
+        let e = expectation(description: "Wait for KYC Flow to be presented")
+        DispatchQueue.main.asyncAfter(deadline: .now(), execute: e.fulfill)
+        wait(for: [e], timeout: 1)
+        XCTAssertEqual(mockLegacyKYCRouter.recordedInvocations.start.count, 1)
+        let requestData = mockLegacyKYCRouter.recordedInvocations.start.first
+        XCTAssertEqual(requestData?.tier, .tier1)
+        // clean the publisher's data
         cancellable.cancel()
     }
 }
