@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/attaswift/BigInt.git",
         "state": {
           "branch": null,
-          "revision": "889a1ecacd73ccc189c5cb29288048f186c44ed9",
-          "version": "5.2.1"
+          "revision": "0ed110f7555c34ff468e72e1686e59721f2b0da6",
+          "version": "5.3.0"
         }
       },
       {
@@ -66,20 +66,20 @@
       },
       {
         "package": "Nuke",
-        "repositoryURL": "https://github.com/kean/Nuke",
+        "repositoryURL": "https://github.com/kean/Nuke.git",
         "state": {
           "branch": null,
-          "revision": "c0b32b0d7154afceb3fc08b199492f125ff4267e",
-          "version": "10.3.3"
+          "revision": "0db18dd34998cca18e9a28bcee136f84518007a0",
+          "version": "10.4.1"
         }
       },
       {
         "package": "NukeUI",
-        "repositoryURL": "https://github.com/kean/NukeUI",
+        "repositoryURL": "https://github.com/kean/NukeUI.git",
         "state": {
           "branch": null,
-          "revision": "41a4d68121a0b1000202528e791209ae7432db52",
-          "version": "0.6.7"
+          "revision": "0130ce2c1d140a426ced903a9abd68b4b8bf9790",
+          "version": "0.6.8"
         }
       },
       {
@@ -129,11 +129,11 @@
       },
       {
         "package": "stellarsdk",
-        "repositoryURL": "https://github.com/oliveratkinson-bc/stellar-ios-mac-sdk.git",
+        "repositoryURL": "https://github.com/Soneso/stellar-ios-mac-sdk.git",
         "state": {
-          "branch": "blockchain/swift-package-manager",
-          "revision": "09830aa2244d553d6f3dff27cc99dd9181e2dab4",
-          "version": null
+          "branch": null,
+          "revision": "c2f7a48391555fcac70b55dd728051ba50b059dd",
+          "version": "2.0.2"
         }
       },
       {
@@ -159,8 +159,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "68664c144e0d49d2fff1f45081f1bb57203b88fd",
-          "version": "0.25.1"
+          "revision": "60dc8067185b3e1fb29237f5a4548bff005b0fec",
+          "version": "0.26.0"
         }
       },
       {
@@ -177,8 +177,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-identified-collections",
         "state": {
           "branch": null,
-          "revision": "edececbdb56b07e9402f2f3f5b907d220a28b4ea",
-          "version": "0.1.1"
+          "revision": "04502c882077cd838d380d05b127db9a6e48d8da",
+          "version": "0.2.0"
         }
       },
       {
@@ -195,8 +195,8 @@
         "repositoryURL": "https://github.com/Veriff/veriff-ios-spm.git",
         "state": {
           "branch": null,
-          "revision": "38a62635b141eea9d7090522e0f58145526aec36",
-          "version": "4.15.0"
+          "revision": "c5b656b1d1fbc25ff448162539db20a824c9e42f",
+          "version": "4.3.1"
         }
       },
       {

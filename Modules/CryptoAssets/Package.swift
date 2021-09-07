@@ -212,6 +212,9 @@ let package = Package(
                 .target(name: "StellarKitMock"),
                 .product(name: "PlatformKitMock", package: "Platform"),
                 .product(name: "TestKit", package: "Test")
+            ],
+            resources: [
+                .copy("account_response.json")
             ]
         )
     ]
