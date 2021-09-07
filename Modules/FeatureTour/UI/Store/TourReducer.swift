@@ -4,7 +4,7 @@ import ComposableArchitecture
 
 let tourReducer = Reducer<TourState, TourAction, TourEnvironment> { _, action, _ in
     switch action {
-    case .tourDidAppear:
+    case .createAccount:
         return .none
     }
 }

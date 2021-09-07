@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import Localization
 import SwiftUI
+import UIComponentsKit
 
 public struct TourView: View {
 
@@ -22,63 +24,77 @@ public struct TourView: View {
     }
 
     public var body: some View {
-        WithViewStore(self.store) { _ in
-            TabView {
-                BrokerageView()
-                EarnView()
-                KeysView()
-                PricesView()
+        WithViewStore(self.store) { viewStore in
+            ZStack {
+                makeTabView()
+                makeFixedView(viewStore)
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
+            .background(AnimatedGradient().ignoresSafeArea(.all))
         }
     }
 }
 
-private struct BrokerageView: View {
+extension TourView {
 
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.red)
-                .contentShape(Rectangle())
-            Text("Brokerage")
+    public enum Carousel {
+        case brokerage
+        case earn
+        case keys
+
+        @ViewBuilder public func makeView() -> some View {
+            switch self {
+            case .brokerage:
+                makeCarouselView(
+                    image: Image("bitcoin_perspective", bundle: Bundle.featureTour),
+                    text: LocalizationConstants.Tour.carouselBrokerageScreenMessage
+                )
+            case .earn:
+                makeCarouselView(
+                    image: Image("rocket", bundle: Bundle.featureTour),
+                    text: LocalizationConstants.Tour.carouselEarnScreenMessage
+                )
+            case .keys:
+                makeCarouselView(
+                    image: Image("lock", bundle: Bundle.featureTour),
+                    text: LocalizationConstants.Tour.carouselKeysScreenMessage
+                )
+            }
+        }
+
+        @ViewBuilder private func makeCarouselView(image: Image?, text: String) -> some View {
+            VStack(spacing: 25) {
+                if let image = image {
+                    image
+                }
+                Text(text)
+                    .multilineTextAlignment(.center)
+                    .frame(width: 200.0)
+                    .textStyle(.title)
+            }
+            .padding(.bottom, 112)
         }
     }
-}
 
-private struct EarnView: View {
-
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.purple)
-                .contentShape(Rectangle())
-            Text("Earn")
+    @ViewBuilder private func makeTabView() -> some View {
+        TabView {
+            Carousel.brokerage.makeView()
+            Carousel.earn.makeView()
+            Carousel.keys.makeView()
         }
+        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
     }
-}
 
-private struct KeysView: View {
-
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.green)
-                .contentShape(Rectangle())
-            Text("Keys")
+    @ViewBuilder private func makeFixedView(_ viewStore: ViewStore<TourState, TourAction>) -> some View {
+        VStack(spacing: 16) {
+            Image("logo-blockchain-black", bundle: Bundle.featureTour)
+            Spacer()
+            PrimaryButton(title: LocalizationConstants.Tour.createAccountButtonTitle) {
+                viewStore.send(.createAccount)
+            }
         }
-    }
-}
-
-private struct PricesView: View {
-
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.pink)
-                .contentShape(Rectangle())
-            Text("Prices")
-        }
+        .padding(.top)
+        .padding(.bottom, 60)
+        .padding(.horizontal, 24)
     }
 }
 
