@@ -33,7 +33,8 @@ public enum CredentialsAction: Equatable {
 
 public enum CredentialsContext: Equatable {
     case walletInfo(WalletInfo)
-    case walletIdentifier(email: String)
+    /// pre-fill guid if present (from the deeplink)
+    case walletIdentifier(guid: String?)
     case manualPairing
     case none
 }
@@ -56,24 +57,36 @@ struct CredentialsState: Equatable {
     var credentialsFailureAlert: AlertState<CredentialsAction>?
     var isLoading: Bool
 
-    init() {
-        walletPairingState = .init()
-        passwordState = .init()
-        twoFAState = nil
-        hardwareKeyState = nil
-        seedPhraseState = nil
-        isManualPairing = false
-        isTroubleLoggingInScreenVisible = false
-        isTwoFactorOTPVerified = false
-        isWalletIdentifierIncorrect = false
-        isAccountLocked = false
-        isLoading = false
+    init(
+        walletPairingState: WalletPairingState = .init(),
+        passwordState: PasswordState = .init(),
+        twoFAState: TwoFAState? = nil,
+        hardwareKeyState: HardwareKeyState? = nil,
+        seedPhraseState: SeedPhraseState? = nil,
+        isManualPairing: Bool = false,
+        isTroubleLoggingInScreenVisible: Bool = false,
+        isTwoFactorOTPVerified: Bool = false,
+        isWalletIdentifierIncorrect: Bool = false,
+        isAccountLocked: Bool = false,
+        credentialsFailureAlert: AlertState<CredentialsAction>? = nil,
+        isLoading: Bool = false
+    ) {
+        self.walletPairingState = walletPairingState
+        self.passwordState = passwordState
+        self.twoFAState = twoFAState
+        self.hardwareKeyState = hardwareKeyState
+        self.seedPhraseState = seedPhraseState
+        self.isManualPairing = isManualPairing
+        self.isTroubleLoggingInScreenVisible = isTroubleLoggingInScreenVisible
+        self.isTwoFactorOTPVerified = isTwoFactorOTPVerified
+        self.isWalletIdentifierIncorrect = isWalletIdentifierIncorrect
+        self.isAccountLocked = isAccountLocked
+        self.credentialsFailureAlert = credentialsFailureAlert
+        self.isLoading = isLoading
     }
 }
 
 struct CredentialsEnvironment {
-    typealias WalletValidation = (String) -> Bool
-
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let pollingQueue: AnySchedulerOf<DispatchQueue>
     let sessionTokenService: SessionTokenServiceAPI
@@ -84,7 +97,7 @@ struct CredentialsEnvironment {
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let externalAppOpener: ExternalAppOpener
     let errorRecorder: ErrorRecording
-    let walletIdentifierValidator: WalletValidation
+    let walletIdentifierValidator: (String) -> Bool
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
@@ -100,7 +113,7 @@ struct CredentialsEnvironment {
         errorRecorder: ErrorRecording,
         externalAppOpener: ExternalAppOpener = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI,
-        walletIdentifierValidator: @escaping WalletValidation = identifierValidator
+        walletIdentifierValidator: @escaping (String) -> Bool = TextValidation.walletIdentifierValidator
     ) {
         self.mainQueue = mainQueue
         self.pollingQueue = pollingQueue
@@ -192,14 +205,14 @@ let credentialsReducer = Reducer.combine(
 
         case .didAppear(.walletInfo(let info)):
             state.isTroubleLoggingInScreenVisible = false
-            state.walletPairingState.emailAddress = info.email
+            state.walletPairingState.emailAddress = info.email ?? ""
             state.walletPairingState.walletGuid = info.guid
             state.walletPairingState.emailCode = info.emailCode
             return .none
 
-        case .didAppear(.walletIdentifier(let email)):
+        case .didAppear(.walletIdentifier(let guid)):
             state.isTroubleLoggingInScreenVisible = false
-            state.walletPairingState.emailAddress = email
+            state.walletPairingState.walletGuid = guid ?? ""
             return .none
 
         case .didAppear(.manualPairing):
@@ -334,10 +347,6 @@ let credentialsReducer = Reducer.combine(
 .analytics()
 
 // MARK: - Private Methods
-
-private func identifierValidator(_ value: String) -> Bool {
-    value.range(of: TextRegex.walletIdentifier.rawValue, options: .regularExpression) != nil
-}
 
 private func clearErrorStates(
     _ state: CredentialsState

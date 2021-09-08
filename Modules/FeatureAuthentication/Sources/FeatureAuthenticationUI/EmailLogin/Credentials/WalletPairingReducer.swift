@@ -35,15 +35,20 @@ enum WalletPairingCancelations {
 
 struct WalletPairingState: Equatable {
     var emailAddress: String
-    var emailCode: String
+    var emailCode: String?
     var walletGuid: String
     var password: String
 
-    init() {
-        emailAddress = ""
-        emailCode = ""
-        walletGuid = ""
-        password = ""
+    init(
+        emailAddress: String = "",
+        emailCode: String? = nil,
+        walletGuid: String = "",
+        password: String = ""
+    ) {
+        self.emailAddress = emailAddress
+        self.emailCode = emailCode
+        self.walletGuid = walletGuid
+        self.password = password
     }
 }
 
@@ -130,14 +135,14 @@ private func approveEmailAuthorization(
     _ state: WalletPairingState,
     _ environment: WalletPairingEnvironment
 ) -> Effect<WalletPairingAction, Never> {
-    guard !state.emailCode.isEmpty else {
+    guard let emailCode = state.emailCode else {
         // we still need to display an alert and poll here,
         // since we might end up here in case of a deeplink failure
         return Effect(value: .needsEmailAuthorization)
     }
     return environment
         .deviceVerificationService
-        .authorizeLogin(emailCode: state.emailCode)
+        .authorizeLogin(emailCode: emailCode)
         .receive(on: environment.mainQueue)
         .catchToEffect()
         .map { result -> WalletPairingAction in

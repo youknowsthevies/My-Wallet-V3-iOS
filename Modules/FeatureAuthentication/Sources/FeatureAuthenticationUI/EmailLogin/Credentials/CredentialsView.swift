@@ -223,8 +223,8 @@ struct CredentialsView: View {
                 send: .none
             ),
             title: LocalizedString.TextFieldTitle.walletIdentifier,
-            footnote: LocalizedString.TextFieldFootnote.email + viewStore.walletPairingState.emailAddress,
             configuration: {
+                $0.adjustsFontSizeToFitWidth = true
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
                 $0.textContentType = .username
