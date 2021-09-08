@@ -33,7 +33,8 @@ let package = Package(
         ),
         .package(name: "Analytics", path: "../Analytics"),
         .package(name: "Test", path: "../Test"),
-        .package(name: "Tool", path: "../Tool")
+        .package(name: "Tool", path: "../Tool"),
+        .package(name: "NetworkErrors", path: "../NetworkErrors")
     ],
     targets: [
         .target(
@@ -43,7 +44,8 @@ let package = Package(
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "RxCombine", package: "RxCombine"),
-                .product(name: "DIKit", package: "DIKit")
+                .product(name: "DIKit", package: "DIKit"),
+                .product(name: "NetworkError", package: "NetworkErrors")
             ]
         ),
         .target(

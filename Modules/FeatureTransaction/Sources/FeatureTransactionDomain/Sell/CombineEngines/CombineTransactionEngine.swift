@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NetworkKit
+import NabuNetworkError
 import PlatformKit
 import ToolKit
 
@@ -26,18 +26,23 @@ public protocol CombineTransactionEngine: AnyObject {
     var transactionExchangeRatePair: AnyPublisher<MoneyValuePair, Error> { get }
 
     func assertInputsValid()
+
     func start(
         sourceAccount: BlockchainAccount,
         transactionTarget: TransactionTarget,
         askForRefreshConfirmation: @escaping AskForRefreshConfirmation
     )
+
     func stop(pendingTransaction: PendingTransaction)
+
     func restart(
         transactionTarget: TransactionTarget,
         pendingTransaction: PendingTransaction
     ) -> AnyPublisher<PendingTransaction, Error>
 
-    func doBuildConfirmations(pendingTransaction: PendingTransaction) -> AnyPublisher<PendingTransaction, NabuNetworkError>
+    func doBuildConfirmations(
+        pendingTransaction: PendingTransaction
+    ) -> AnyPublisher<PendingTransaction, NabuNetworkError>
 
     /// Implementation interface:
     /// Call this first to initialise the processor. Construct and initialise a pendingTx object.
@@ -46,7 +51,10 @@ public protocol CombineTransactionEngine: AnyObject {
     /// Update the transaction with a new amount. This method should check balances, calculate fees and
     /// Return a new PendingTx with the state updated for the UI to update. The pending Tx will
     /// be passed to validate after this call.
-    func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> AnyPublisher<PendingTransaction, Error>
+    func update(
+        amount: MoneyValue,
+        pendingTransaction: PendingTransaction
+    ) -> AnyPublisher<PendingTransaction, Error>
 
     /// Process any `TransactionConfirmation` updates, if required. The default just replaces the option and returns
     /// the updated pendingTx. Subclasses may want to, eg, update amounts on fee changes etc
@@ -57,11 +65,15 @@ public protocol CombineTransactionEngine: AnyObject {
 
     /// Check the tx is complete, well formed and possible. If it is, set pendingTx to CAN_EXECUTE
     /// Else set it to the appropriate error, and then return the updated PendingTx
-    func validateAmount(pendingTransaction: PendingTransaction) -> AnyPublisher<PendingTransaction, Error>
+    func validateAmount(
+        pendingTransaction: PendingTransaction
+    ) -> AnyPublisher<PendingTransaction, Error>
 
     /// Check the tx is complete, well formed and possible. If it is, set pendingTx to CAN_EXECUTE
     /// Else set it to the appropriate error, and then return the updated PendingTx
-    func doValidateAll(pendingTransaction: PendingTransaction) -> AnyPublisher<PendingTransaction, Error>
+    func doValidateAll(
+        pendingTransaction: PendingTransaction
+    ) -> AnyPublisher<PendingTransaction, Error>
 
     /// Execute the transaction, it will have been validated before this is called, so the expectation
     /// is that it will succeed.
@@ -73,10 +85,14 @@ public protocol CombineTransactionEngine: AnyObject {
 
     /// Action to be executed once the transaction has been executed, it will have been validated before this is called, so the expectation
     /// is that it will succeed.
-    func doPostExecute(transactionResult: TransactionResult) -> AnyPublisher<Void, Error>
+    func doPostExecute(
+        transactionResult: TransactionResult
+    ) -> AnyPublisher<Void, Error>
 
     /// Action to be executed when confirmations have been built and we want to start checking for updates on them
-    func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> AnyPublisher<PendingTransaction, Error>
+    func startConfirmationsUpdate(
+        pendingTransaction: PendingTransaction
+    ) -> AnyPublisher<PendingTransaction, Error>
 
     /// Update the selected fee level of this Tx.
     /// This should check & update balances etc.
@@ -87,7 +103,9 @@ public protocol CombineTransactionEngine: AnyObject {
         customFeeAmount: MoneyValue
     ) -> AnyPublisher<PendingTransaction, Error>
 
-    func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> AnyPublisher<PendingTransaction, Error>
+    func doRefreshConfirmations(
+        pendingTransaction: PendingTransaction
+    ) -> AnyPublisher<PendingTransaction, Error>
 }
 
 extension CombineTransactionEngine {

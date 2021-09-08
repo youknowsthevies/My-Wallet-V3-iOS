@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NetworkKit
+import NetworkError
 import PlatformKit
 import ToolKit
 

@@ -2,6 +2,7 @@
 
 import FeatureTransactionDomain
 import Localization
+import NabuNetworkError
 import PlatformKit
 import ToolKit
 

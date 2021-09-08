@@ -3,7 +3,7 @@
 import Combine
 import DIKit
 import FeatureTransactionDomain
-import NetworkKit
+import NetworkError
 
 final class BlockchainNameResolutionRepository: BlockchainNameResolutionRepositoryAPI {
 

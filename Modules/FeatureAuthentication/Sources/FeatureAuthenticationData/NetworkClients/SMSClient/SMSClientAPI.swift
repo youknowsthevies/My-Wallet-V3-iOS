@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NetworkKit
+import NetworkError
 
 /// Client API for SMS
 public protocol SMSClientAPI: AnyObject {

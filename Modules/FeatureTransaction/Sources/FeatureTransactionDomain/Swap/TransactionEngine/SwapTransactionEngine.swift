@@ -2,7 +2,7 @@
 
 import BigInt
 import DIKit
-import NetworkKit
+import NabuNetworkError
 import PlatformKit
 import RxSwift
 import ToolKit

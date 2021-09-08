@@ -297,6 +297,8 @@ packages:
     path: Modules/Localization
   Network:
     path: Modules/Network
+  NetworkErrors:
+    path: Modules/NetworkErrors
   Platform:
     path: Modules/Platform
   RemoteNotifications:
@@ -380,7 +382,7 @@ targets:
       - package: ComposableArchitecture
       - package: DIKit
       - package: Nuke
-      - package: NukeUI   
+      - package: NukeUI
       - package: RIBs
       - package: RxCombine
       - package: RxDataSources
@@ -419,6 +421,8 @@ targets:
         product: Localization
       - package: Network
         product: NetworkKit
+      - package: NetworkErrors
+        product: NetworkErrors
       - package: Platform
         product: PlatformKit
       - package: Platform
@@ -431,7 +435,7 @@ targets:
         product: UIComponents
       - package: WalletPayload
         product: WalletPayloadKit
-        
+
       - target: TodayExtension
     platform: iOS
     postBuildScripts:
@@ -552,6 +556,8 @@ targets:
     - createIntermediateGroups: true
       path: Modules/Tool/Sources/ToolKitMock
     - createIntermediateGroups: true
+      path: Modules/NetworkErrors/Sources/NabuNetworkErrorMock
+    - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
     - createIntermediateGroups: true
       path: Modules/Platform/Sources/PlatformKitMock
@@ -589,7 +595,7 @@ targets:
     sources:
     - path: SnapshotTestsHostApp
     postBuildScripts:
-      - path: scripts/fix-snapshot-host-app.sh 
+      - path: scripts/fix-snapshot-host-app.sh
         name: "[blockchain] Copy Swift Package Manager Generated Bundles"
     type: application
   TodayExtension:
@@ -616,6 +622,9 @@ targets:
         product: PlatformUIKit
       - package: Tool
         product: ToolKit
+
+      - package: NetworkErrors
+        product: NetworkErrors
     platform: iOS
     scheme: {}
     settings:

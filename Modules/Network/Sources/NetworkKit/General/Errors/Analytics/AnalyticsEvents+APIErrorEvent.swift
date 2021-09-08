@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import NetworkError
 
 enum APIErrorEvent: AnalyticsEvent {
     case payloadError(ErrorDetails?)

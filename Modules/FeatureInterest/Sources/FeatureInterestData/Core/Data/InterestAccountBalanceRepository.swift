@@ -4,11 +4,10 @@ import Combine
 import CombineExt
 import DIKit
 import FeatureInterestDomain
-import NetworkKit
 import PlatformKit
 import RxSwift
 
-public final class InterestAccountBalanceRepository: InterestAccountBalanceRepositoryAPI {
+final class InterestAccountBalanceRepository: InterestAccountBalanceRepositoryAPI {
 
     private let client: InterestAccountBalanceClientAPI
 
@@ -16,10 +15,9 @@ public final class InterestAccountBalanceRepository: InterestAccountBalanceRepos
         self.client = client
     }
 
-    public func fetchInterestAccountBalanceStates(
-        _ fiatCurrency: FiatCurrency)
-        -> AnyPublisher<InterestAccountBalances, InterestAccountBalanceRepositoryError>
-    {
+    func fetchInterestAccountBalanceStates(
+        _ fiatCurrency: FiatCurrency
+    ) -> AnyPublisher<InterestAccountBalances, InterestAccountBalanceRepositoryError> {
         client
             .fetchBalanceWithFiatCurrency(fiatCurrency)
             .replaceNil(with: InterestAccountBalanceResponse.empty)

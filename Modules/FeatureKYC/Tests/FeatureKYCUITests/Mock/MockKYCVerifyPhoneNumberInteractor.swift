@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import FeatureKYCUI
-import NetworkKit
+import NetworkError
 import PlatformKit
 import RxSwift
 

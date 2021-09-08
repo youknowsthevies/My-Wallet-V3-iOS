@@ -2,7 +2,6 @@
 
 import Combine
 import DIKit
-import NetworkKit
 import ToolKit
 
 public enum WalletNabuSynchronizerServiceError: Error {

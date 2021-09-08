@@ -2,7 +2,7 @@
 
 import Combine
 import FeatureAuthenticationDomain
-import NetworkKit
+import NetworkError
 import RxSwift
 
 public enum EmailSettingsServiceError: Error {

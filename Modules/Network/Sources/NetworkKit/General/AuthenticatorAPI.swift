@@ -2,6 +2,8 @@
 
 import Combine
 
+import NetworkError
+
 public typealias NetworkResponsePublisher =
     (String) -> AnyPublisher<ServerResponse, NetworkError>
 

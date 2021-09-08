@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NetworkKit
+import NabuNetworkError
 import RxSwift
 import ToolKit
 

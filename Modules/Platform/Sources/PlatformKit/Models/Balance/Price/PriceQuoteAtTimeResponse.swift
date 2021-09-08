@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import NetworkKit
+import Foundation
 
 /// Model for a quoted price by the Service-Price endpoint in fiat for a single asset type.
 public struct PriceQuoteAtTimeResponse: Decodable, Equatable {

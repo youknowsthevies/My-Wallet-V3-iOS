@@ -6,7 +6,6 @@ import FeatureActivityUI
 import FeatureDashboardUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
-import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RIBs

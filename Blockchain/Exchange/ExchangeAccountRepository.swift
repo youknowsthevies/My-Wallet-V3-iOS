@@ -5,7 +5,6 @@ import BitcoinKit
 import Combine
 import DIKit
 import FeatureSettingsDomain
-import NetworkKit
 import PlatformKit
 import RxSwift
 

@@ -3,10 +3,11 @@
 import Combine
 import DIKit
 import FeatureInterestDomain
+import NabuNetworkError
 import PlatformKit
 import ToolKit
 
-public final class InterestAccountRateRepository: InterestAccountRateRepositoryAPI {
+final class InterestAccountRateRepository: InterestAccountRateRepositoryAPI {
 
     // MARK: - Private Properties
 
@@ -22,7 +23,7 @@ public final class InterestAccountRateRepository: InterestAccountRateRepositoryA
 
     // MARK: - InterestAccountLimitsRepositoryAPI
 
-    public func fetchInteretAccountRateForCryptoCurrency(
+    func fetchInteretAccountRateForCryptoCurrency(
         _ currency: CryptoCurrency
     ) -> AnyPublisher<InterestAccountRate, InterestAccountRateError> {
         client

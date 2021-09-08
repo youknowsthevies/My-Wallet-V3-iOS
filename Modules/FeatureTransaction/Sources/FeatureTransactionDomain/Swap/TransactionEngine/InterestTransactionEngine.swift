@@ -2,7 +2,6 @@
 
 import BigInt
 import DIKit
-import NetworkKit
 import PlatformKit
 import RxSwift
 import ToolKit

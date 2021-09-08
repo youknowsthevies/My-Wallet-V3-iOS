@@ -81,6 +81,7 @@ let package = Package(
         .package(path: "../FeatureKYC"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
+        .package(path: "../NetworkErrors"),
         .package(path: "../Platform"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents")
@@ -93,7 +94,8 @@ let package = Package(
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "Localization", package: "Localization"),
-                .product(name: "NetworkKit", package: "Network"),
+                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool")

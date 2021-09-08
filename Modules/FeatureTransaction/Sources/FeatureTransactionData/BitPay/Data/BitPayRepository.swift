@@ -3,7 +3,7 @@
 import Combine
 import DIKit
 import FeatureTransactionDomain
-import NetworkKit
+import NetworkError
 import PlatformKit
 
 final class BitPayRepository: BitPayRepositoryAPI {

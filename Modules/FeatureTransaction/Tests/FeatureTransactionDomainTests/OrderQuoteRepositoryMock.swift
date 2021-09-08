@@ -2,6 +2,7 @@
 
 import Combine
 @testable import FeatureTransactionDomain
+import NabuNetworkError
 import PlatformKit
 
 final class OrderQuoteRepositoryMock: FeatureTransactionDomain.OrderQuoteRepositoryAPI {

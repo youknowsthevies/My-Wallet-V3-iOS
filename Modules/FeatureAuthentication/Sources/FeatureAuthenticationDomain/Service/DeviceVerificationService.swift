@@ -3,7 +3,6 @@
 import Combine
 import DIKit
 import Foundation
-import NetworkKit
 
 public final class DeviceVerificationService: DeviceVerificationServiceAPI {
 

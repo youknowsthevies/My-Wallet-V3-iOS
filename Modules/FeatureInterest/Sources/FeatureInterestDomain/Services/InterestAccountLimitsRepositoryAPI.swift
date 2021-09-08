@@ -1,10 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import NabuNetworkError
 import PlatformKit
 
 public enum InterestAccountLimitsError: Error {
-    case networkError(Error)
+    case networkError(NabuNetworkError)
     case interestAccountLimitsUnavailable
 }
 

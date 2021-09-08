@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NetworkKit
+import NetworkError
 
 public struct DomainResolution {
     let currency: String

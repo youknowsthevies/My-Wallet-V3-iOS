@@ -7,7 +7,7 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-class TradingSellTransactionEngine: SellTransactionEngine {
+final class TradingSellTransactionEngine: SellTransactionEngine {
 
     var requireSecondPassword: Bool = false
 

@@ -6,7 +6,7 @@ import FeatureInterestDomain
 import PlatformKit
 import ToolKit
 
-public final class InterestAccountLimitsRepository: InterestAccountLimitsRepositoryAPI {
+final class InterestAccountLimitsRepository: InterestAccountLimitsRepositoryAPI {
 
     // MARK: - Private Properties
 
@@ -25,7 +25,7 @@ public final class InterestAccountLimitsRepository: InterestAccountLimitsReposit
 
     // MARK: - InterestAccountLimitsRepositoryAPI
 
-    public func fetchInterestAccountLimitsForAllAssets(
+    func fetchInterestAccountLimitsForAllAssets(
         _ fiatCurrency: FiatCurrency
     ) -> AnyPublisher<[InterestAccountLimits], InterestAccountLimitsError> {
         let enabledCryptoCurrencies = enabledCurrenciesService
@@ -46,20 +46,20 @@ public final class InterestAccountLimitsRepository: InterestAccountLimitsReposit
             .eraseToAnyPublisher()
     }
 
-    public func fetchInterestAccountLimitsForCryptoCurrency(
+    func fetchInterestAccountLimitsForCryptoCurrency(
         _ cryptoCurrency: CryptoCurrency,
         fiatCurrency: FiatCurrency
     ) -> AnyPublisher<InterestAccountLimits, InterestAccountLimitsError> {
         fetchInterestAccountLimitsForAllAssets(fiatCurrency)
-            .tryMap { interestAccountLimits -> InterestAccountLimits in
+            .flatMap { interestAccountLimits
+                -> AnyPublisher<InterestAccountLimits, InterestAccountLimitsError> in
                 let limit = interestAccountLimits
                     .first(where: { $0.cryptoCurrency == cryptoCurrency })
                 guard let limit = limit else {
-                    throw InterestAccountLimitsError.interestAccountLimitsUnavailable
+                    return .failure(.interestAccountLimitsUnavailable)
                 }
-                return limit
+                return .just(limit)
             }
-            .mapError(InterestAccountLimitsError.networkError)
             .eraseToAnyPublisher()
     }
 }

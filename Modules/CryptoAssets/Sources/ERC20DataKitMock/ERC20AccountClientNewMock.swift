@@ -2,7 +2,7 @@
 
 import Combine
 @testable import ERC20DataKit
-import NetworkKit
+import NetworkError
 import PlatformKit
 
 final class ERC20AccountClientNewMock: ERC20AccountClientAPINew {

@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import PlatformKit
+import NabuNetworkError
 
 protocol InterestAccountEligibilityClientAPI: AnyObject {
     func fetchInterestAccountEligibilityResponse()

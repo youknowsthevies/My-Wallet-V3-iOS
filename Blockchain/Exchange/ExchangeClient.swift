@@ -3,6 +3,7 @@
 import BitcoinCashKit
 import DIKit
 import FeatureSettingsDomain
+import NabuNetworkError
 import NetworkKit
 import PlatformKit
 import RxSwift

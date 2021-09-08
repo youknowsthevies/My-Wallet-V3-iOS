@@ -2,7 +2,7 @@
 
 import Combine
 import EthereumKit
-import NetworkKit
+import NetworkError
 import ToolKit
 
 /// An ERC-20 token accounts repository error.

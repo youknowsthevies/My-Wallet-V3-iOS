@@ -3,9 +3,16 @@
 import BigInt
 import Combine
 import DIKit
+import NabuNetworkError
 import PlatformKit
 
 final class SellQuotesEngine {
+
+    // MARK: - Constants
+
+    private enum Constants {
+        static let retryCount = 3
+    }
 
     // MARK: - Private Properties
 
@@ -65,26 +72,22 @@ final class SellQuotesEngine {
             .retry(Constants.retryCount)
             .eraseToAnyPublisher()
 
-        return quotePublisher.flatMap { [weak self] quote -> AnyPublisher<OrderQuotePayload, NabuNetworkError> in
-            guard let self = self else { return Empty().eraseToAnyPublisher() }
-            let stopSubject = self.stopSubject
-            return Timer.publish(
-                every: quote.expiresAt.timeIntervalSince(quote.createdAt),
-                on: .current,
-                in: .default
-            )
-            .autoconnect()
-            .flatMap { _ in quotePublisher }
-            .prepend(quote)
-            .prefix(untilOutputFrom: stopSubject)
+        return quotePublisher
+            .flatMap { [weak self] quote -> AnyPublisher<OrderQuotePayload, NabuNetworkError> in
+                guard let self = self else { return Empty().eraseToAnyPublisher() }
+                let stopSubject = self.stopSubject
+                return Timer
+                    .publish(
+                        every: quote.expiresAt.timeIntervalSince(quote.createdAt),
+                        on: .current,
+                        in: .default
+                    )
+                    .autoconnect()
+                    .flatMap { _ in quotePublisher }
+                    .prepend(quote)
+                    .prefix(untilOutputFrom: stopSubject)
+                    .eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
-        }
-        .eraseToAnyPublisher()
-    }
-
-    // MARK: - Constants
-
-    private enum Constants {
-        static let retryCount = 3
     }
 }

@@ -2,7 +2,6 @@
 
 import BigInt
 import EthereumKit
-import NetworkKit
 import PlatformKit
 import RxSwift
 

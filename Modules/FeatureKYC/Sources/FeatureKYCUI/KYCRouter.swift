@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import FeatureKYCDomain
 import Localization
+import NabuNetworkError
 import NetworkKit
 import PlatformKit
 import PlatformUIKit

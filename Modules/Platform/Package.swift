@@ -66,6 +66,7 @@ let package = Package(
         .package(path: "../FeatureAuthentication"),
         .package(path: "../CommonCrypto"),
         .package(path: "../Localization"),
+        .package(path: "../NetworkErrors"),
         .package(path: "../Network"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
@@ -85,6 +86,8 @@ let package = Package(
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "Localization", package: "Localization"),
+                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
@@ -113,7 +116,8 @@ let package = Package(
         .target(
             name: "PlatformKitMock",
             dependencies: [
-                .target(name: "PlatformKit")
+                .target(name: "PlatformKit"),
+                .product(name: "NabuNetworkErrorMock", package: "NetworkErrors")
             ]
         ),
         .target(
@@ -129,6 +133,7 @@ let package = Package(
             dependencies: [
                 .target(name: "PlatformKit"),
                 .target(name: "PlatformKitMock"),
+                .product(name: "NabuNetworkErrorMock", package: "NetworkErrors"),
                 .product(name: "NetworkKitMock", package: "Network"),
                 .product(name: "ToolKitMock", package: "Tool"),
                 .product(name: "TestKit", package: "Test")

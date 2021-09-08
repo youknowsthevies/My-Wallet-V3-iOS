@@ -3,7 +3,8 @@
 import AnalyticsKit
 import Combine
 import DIKit
-import NetworkKit
+import NabuNetworkError
+import NetworkError
 import RxSwift
 import ToolKit
 

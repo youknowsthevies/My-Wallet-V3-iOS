@@ -2,7 +2,6 @@
 
 import DIKit
 import EthereumKit
-import NetworkKit
 import PlatformKit
 import RxSwift
 import ToolKit

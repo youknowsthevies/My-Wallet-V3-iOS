@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
+import Foundation
+import NabuNetworkError
 
 extension NabuNetworkError {
-    static let mockError: NabuNetworkError = .nabuError(
+
+    public static let mockError: NabuNetworkError = .nabuError(
         NabuError(
             id: UUID().uuidString,
             code: .badMethod,

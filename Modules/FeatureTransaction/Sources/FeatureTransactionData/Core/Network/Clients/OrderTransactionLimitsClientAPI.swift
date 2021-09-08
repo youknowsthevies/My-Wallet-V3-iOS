@@ -2,6 +2,7 @@
 
 import Combine
 import FeatureTransactionDomain
+import NabuNetworkError
 import PlatformKit
 
 protocol OrderTransactionLimitsClientAPI {

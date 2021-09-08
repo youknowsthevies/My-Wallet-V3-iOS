@@ -66,7 +66,7 @@
       },
       {
         "package": "Nuke",
-        "repositoryURL": "https://github.com/kean/Nuke",
+        "repositoryURL": "https://github.com/kean/Nuke.git",
         "state": {
           "branch": null,
           "revision": "c0b32b0d7154afceb3fc08b199492f125ff4267e",
@@ -75,7 +75,7 @@
       },
       {
         "package": "NukeUI",
-        "repositoryURL": "https://github.com/kean/NukeUI",
+        "repositoryURL": "https://github.com/kean/NukeUI.git",
         "state": {
           "branch": null,
           "revision": "41a4d68121a0b1000202528e791209ae7432db52",
@@ -186,8 +186,8 @@
         "repositoryURL": "https://github.com/Veriff/veriff-ios-spm.git",
         "state": {
           "branch": null,
-          "revision": "38a62635b141eea9d7090522e0f58145526aec36",
-          "version": "4.15.0"
+          "revision": "c5b656b1d1fbc25ff448162539db20a824c9e42f",
+          "version": "4.3.1"
         }
       },
       {
