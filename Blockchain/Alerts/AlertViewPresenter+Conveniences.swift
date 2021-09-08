@@ -53,66 +53,6 @@ extension AlertViewPresenter {
         )
     }
 
-    // MARK: - 2FA alert
-
-    /// Displays 2FA alert according to type
-    func notify2FA(
-        type: WalletAuthenticatorType,
-        title: String,
-        message: String,
-        in viewController: UIViewController? = nil,
-        resendAction: (() -> Void)? = nil,
-        cancel: @escaping (() -> Void),
-        verifyAction: @escaping (String) -> Void
-    ) {
-        Execution.MainQueue.dispatch { [weak self] in
-            guard let self = self else { return }
-            let alert = UIAlertController(
-                title: title,
-                message: message,
-                preferredStyle: .alert
-            )
-            var alertTextField: UITextField!
-            alert.addTextField { textField in
-                alertTextField = textField
-                textField.autocorrectionType = .no
-                textField.spellCheckingType = .no
-                textField.autocapitalizationType = .none
-                textField.returnKeyType = .done
-            }
-            // Resend action applicable only for SMS
-            if type == .sms {
-                let resendAction = UIAlertAction(
-                    title: LocalizationConstants.Onboarding.ManualPairingScreen.TwoFAAlert.resendButton,
-                    style: .default
-                ) { _ in
-                    resendAction?()
-                }
-                alert.addAction(resendAction)
-            }
-            let verifyAction = UIAlertAction(
-                title: LocalizationConstants.Onboarding.ManualPairingScreen.TwoFAAlert.verifyButton,
-                style: .default
-            ) { _ in
-                verifyAction(alertTextField.text ?? "")
-            }
-            alert.addAction(verifyAction)
-            alertTextField.rx
-                .text
-                .orEmpty
-                .map { !$0.isEmpty }
-                .bindAndCatch(to: verifyAction.rx.isEnabled)
-                .disposed(by: self.disposeBag)
-
-            let cancelAction = UIAlertAction(title: LocalizationConstants.cancel, style: .cancel) { _ in
-                cancel()
-            }
-            alert.addAction(cancelAction)
-
-            self.standardNotify(alert: alert, in: viewController)
-        }
-    }
-
     /// Shows the site maintenance error message from `walletOptions` if any.
     ///
     /// - Parameter walletOptions: the WalletOptions

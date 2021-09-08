@@ -6,11 +6,13 @@ import ERC20DataKit
 import FeatureDebugUI
 import FeatureInterestData
 import FeatureSettingsDomain
+import FeatureTransactionData
 import Firebase
 import PlatformKit
 import ToolKit
 import UIKit
 
+@UIApplicationMain
 final class AppDelegate: NSObject, UIApplicationDelegate {
     @LazyInject(tag: DebugScreenContext.tag) var debugCoordinator: DebugCoordinating
 

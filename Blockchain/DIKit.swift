@@ -28,10 +28,6 @@ import WalletPayloadKit
 
 // MARK: - Settings Dependencies
 
-extension AuthenticationCoordinator: FeatureSettingsUI.AuthenticationCoordinating {}
-
-extension AppCoordinator: FeatureSettingsUI.AppCoordinating {}
-
 extension ExchangeCoordinator: FeatureSettingsUI.ExchangeCoordinating {}
 
 extension UIApplication: FeatureSettingsUI.AppStoreOpening {}
@@ -39,8 +35,6 @@ extension UIApplication: FeatureSettingsUI.AppStoreOpening {}
 extension Wallet: WalletRecoveryVerifing {}
 
 // MARK: - Dashboard Dependencies
-
-extension AppCoordinator: FeatureDashboardUI.WalletOperationsRouting {}
 
 extension AnalyticsUserPropertyInteractor: FeatureDashboardUI.AnalyticsUserPropertyInteracting {}
 
@@ -68,13 +62,6 @@ extension DependencyContainer {
         factory { () -> OnboardingSettingsAPI in
             let settings: OnboardingSettings = DIKit.resolve()
             return settings as OnboardingSettingsAPI
-        }
-
-        single { OnboardingRouter() }
-
-        factory { () -> OnboardingRouterStateProviding in
-            let router: OnboardingRouter = DIKit.resolve()
-            return router as OnboardingRouterStateProviding
         }
 
         single { () -> BackgroundAppHandlerAPI in
@@ -114,6 +101,18 @@ extension DependencyContainer {
 
         factory { SiftService() as SiftServiceAPI }
 
+        single { SecondPasswordHelper() }
+
+        factory { () -> SecondPasswordHelperAPI in
+            let helper: SecondPasswordHelper = DIKit.resolve()
+            return helper as SecondPasswordHelperAPI
+        }
+
+        factory { () -> SecondPasswordPresenterHelper in
+            let helper: SecondPasswordHelper = DIKit.resolve()
+            return helper as SecondPasswordPresenterHelper
+        }
+
         factory { CustomerSupportChatClient() as CustomerSupportChatClientAPI }
 
         factory { CustomerSupportChatService() as CustomerSupportChatServiceAPI }
@@ -149,8 +148,6 @@ extension DependencyContainer {
         }
 
         // MARK: - AuthenticationCoordinator
-
-        single { AuthenticationCoordinator() }
 
         factory { () -> AuthenticationCoordinating in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -189,8 +186,6 @@ extension DependencyContainer {
         factory { WithdrawalRouter() as WithdrawalRouting }
 
         // MARK: - AppCoordinator
-
-        single { AppCoordinator() }
 
         single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
 

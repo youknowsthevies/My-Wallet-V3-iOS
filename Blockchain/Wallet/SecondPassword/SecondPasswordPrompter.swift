@@ -15,10 +15,15 @@ protocol SecondPasswordPromptable: AnyObject {
 final class SecondPasswordPrompter: SecondPasswordPromptable {
 
     private let secondPasswordStore: SecondPasswordStorable
+    private let secondPasswordPrompterHelper: SecondPasswordHelperAPI
     @LazyInject private var walletManager: WalletManager
 
-    init(secondPasswordStore: SecondPasswordStorable = resolve()) {
+    init(
+        secondPasswordStore: SecondPasswordStorable = resolve(),
+        secondPasswordPrompterHelper: SecondPasswordHelperAPI = resolve()
+    ) {
         self.secondPasswordStore = secondPasswordStore
+        self.secondPasswordPrompterHelper = secondPasswordPrompterHelper
     }
 
     func secondPasswordIfNeeded(type: PasswordScreenType) -> Single<String?> {
@@ -36,7 +41,7 @@ final class SecondPasswordPrompter: SecondPasswordPromptable {
 
     private func promptForSecondPassword(type: PasswordScreenType) -> Single<String> {
         Single.create { [weak self] observer -> Disposable in
-            AuthenticationCoordinator.shared
+            self?.secondPasswordPrompterHelper
                 .showPasswordScreen(
                     type: type,
                     confirmHandler: { [weak self] secondPassword in

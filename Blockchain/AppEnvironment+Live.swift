@@ -13,7 +13,6 @@ extension AppEnvironment {
             loadingViewPresenter: resolve(),
             onboardingSettings: resolve(),
             blurEffectHandler: .init(),
-            appCoordinator: .shared,
             cacheSuite: resolve(),
             remoteNotificationServiceContainer: resolve(),
             certificatePinner: resolve(),

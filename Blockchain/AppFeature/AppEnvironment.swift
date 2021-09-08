@@ -16,7 +16,6 @@ public struct AppEnvironment {
     var loadingViewPresenter: LoadingViewPresenting
     var onboardingSettings: OnboardingSettings
     var blurEffectHandler: BlurVisualEffectHandler
-    var appCoordinator: AppCoordinator
     var cacheSuite: CacheSuite
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
     var certificatePinner: CertificatePinnerAPI

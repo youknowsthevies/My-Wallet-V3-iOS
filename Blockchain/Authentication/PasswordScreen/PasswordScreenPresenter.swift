@@ -36,9 +36,8 @@ final class PasswordScreenPresenter {
 
     // MARK: - Injected
 
-    // TODO: Remove dependency
-    private let authenticationCoordinator: AuthenticationCoordinator
     private let interactor: PasswordScreenInteracting
+    private var presenterHelper: SecondPasswordPresenterHelper
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
     private let confirmHandler: ConfirmHandler
@@ -53,15 +52,15 @@ final class PasswordScreenPresenter {
     // MARK: - Setup
 
     init(
-        authenticationCoordinator: AuthenticationCoordinator = .shared,
         alertPresenter: AlertViewPresenter = .shared,
+        presenterHelper: SecondPasswordPresenterHelper = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         interactor: PasswordScreenInteracting,
         confirmHandler: @escaping ConfirmHandler,
         dismissHandler: @escaping DismissHandler
     ) {
-        self.authenticationCoordinator = authenticationCoordinator
         self.alertPresenter = alertPresenter
+        self.presenterHelper = presenterHelper
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
         self.confirmHandler = confirmHandler
@@ -129,11 +128,11 @@ final class PasswordScreenPresenter {
     }
 
     func viewDidDisappear() {
-        authenticationCoordinator.isShowingSecondPasswordScreen = false
+        presenterHelper.isShowingSecondPasswordScreen = false
     }
 
     func viewWillAppear() {
+        presenterHelper.isShowingSecondPasswordScreen = true
         analyticsRecorder.record(event: AnalyticsEvents.Onboarding.loginSecondPasswordViewed)
-        authenticationCoordinator.isShowingSecondPasswordScreen = true
     }
 }
