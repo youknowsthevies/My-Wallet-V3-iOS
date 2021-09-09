@@ -87,6 +87,8 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
             }
             .flatMapCompletable(weak: self) { (self, receiveAddresses) in
                 self.clientAPI.syncDepositAddress(accounts: receiveAddresses)
+                    .asObservable()
+                    .ignoreElements()
             }
     }
 }

@@ -56,7 +56,7 @@ extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
         }
 
         return registrationRequest(with: token, sharedKeyProvider: sharedKeyProvider, guidProvider: guidProvider)
-            .flatMap(weak: self) { (self, request) -> Single<RegistrationResponseData> in
+            .flatMap(weak: self) { _, request -> Single<RegistrationResponseData> in
                 performRequest(request: request)
                     .asSingle()
             }

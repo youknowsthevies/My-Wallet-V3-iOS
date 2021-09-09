@@ -1,11 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 @testable import EthereumKit
+import NetworkError
 import PlatformKit
-import RxSwift
 
 class TransactionFeeClientAPIMock: TransactionFeeClientAPI {
-    var underlyingFees: Single<TransactionFeeResponse> = .just(
+    var underlyingFees: AnyPublisher<TransactionFeeResponse, NetworkError> = .just(
         .init(
             gasLimit: 10,
             gasLimitContract: 10,
@@ -15,7 +16,9 @@ class TransactionFeeClientAPIMock: TransactionFeeClientAPI {
         )
     )
 
-    func fees(cryptoCurrency: CryptoCurrency) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
+    func fees(
+        cryptoCurrency: CryptoCurrency
+    ) -> AnyPublisher<TransactionFeeResponse, NetworkError> {
         underlyingFees
     }
 }

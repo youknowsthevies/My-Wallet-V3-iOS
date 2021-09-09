@@ -2,29 +2,41 @@
 
 import BitcoinChainKit
 @testable import BitcoinKit
+import Combine
 import Foundation
-import RxSwift
+import NetworkError
+import ToolKit
 
 enum TestAPIClientError: Error {
     case testError
 }
 
 class APIClientMock: BitcoinKit.APIClientAPI {
-    var underlyingMultiAddress: Single<BitcoinMultiAddressResponse> = .error(TestAPIClientError.testError)
 
-    func multiAddress(for addresses: [XPub]) -> Single<BitcoinMultiAddressResponse> {
+    var underlyingMultiAddress: AnyPublisher<BitcoinMultiAddressResponse, NetworkError> =
+        .failure(.authentication(TestAPIClientError.testError))
+
+    func multiAddress(
+        for addresses: [XPub]
+    ) -> AnyPublisher<BitcoinMultiAddressResponse, NetworkError> {
         underlyingMultiAddress
     }
 
-    var underlyingBalances: Single<BitcoinBalanceResponse> = .error(TestAPIClientError.testError)
+    var underlyingBalances: AnyPublisher<BitcoinBalanceResponse, NetworkError> =
+        .failure(.authentication(TestAPIClientError.testError))
 
-    func balances(for addresses: [XPub]) -> Single<BitcoinBalanceResponse> {
+    func balances(
+        for addresses: [XPub]
+    ) -> AnyPublisher<BitcoinBalanceResponse, NetworkError> {
         underlyingBalances
     }
 
-    var underlyingUnspentOutputs: Single<UnspentOutputsResponse> = .error(TestAPIClientError.testError)
+    var underlyingUnspentOutputs: AnyPublisher<UnspentOutputsResponse, NetworkError> =
+        .failure(.authentication(TestAPIClientError.testError))
 
-    func unspentOutputs(for addresses: [XPub]) -> Single<UnspentOutputsResponse> {
+    func unspentOutputs(
+        for addresses: [XPub]
+    ) -> AnyPublisher<UnspentOutputsResponse, NetworkError> {
         underlyingUnspentOutputs
     }
 }

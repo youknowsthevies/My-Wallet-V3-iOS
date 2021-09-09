@@ -33,7 +33,7 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     }
 
     var exchangeLinkID: Single<LinkID> {
-        client.linkID
+        client.linkID.asSingle()
     }
 
     var exchangeURL: Single<URL> {
@@ -65,6 +65,8 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
 
     func linkToExistingExchangeUser(linkID: LinkID) -> Completable {
         client.linkToExistingExchangeUser(linkID: linkID)
+            .asObservable()
+            .ignoreElements()
     }
 
     private func percentEscapeString(_ stringToEscape: String) -> String {

@@ -1,13 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import NabuNetworkError
 import NetworkKit
 import PlatformKit
-import RxSwift
 
 protocol AirdropCenterClientAPI: AnyObject {
-    var campaigns: Single<AirdropCampaigns> { get }
+    var campaigns: AnyPublisher<AirdropCampaigns, NabuNetworkError> { get }
 }
 
 // TODO: Move into `PlatformKit` when IOS-2724 is merged
@@ -15,21 +15,12 @@ final class AirdropCenterClient: AirdropCenterClientAPI {
 
     // MARK: - Properties
 
-    var campaigns: Single<AirdropCampaigns> {
-        let endpoint = URL.endpoint(
-            URL(string: BlockchainAPI.shared.retailCoreUrl)!,
-            pathComponents: pathComponents,
-            queryParameters: nil
-        )!
-        let request = NetworkRequest(
-            endpoint: endpoint,
-            method: .get,
+    var campaigns: AnyPublisher<AirdropCampaigns, NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: pathComponents,
             authenticated: true
-        )
-        return networkAdapter.perform(
-            request: request,
-            errorResponseType: NabuNetworkError.self
-        )
+        )!
+        return networkAdapter.perform(request: request)
     }
 
     private let pathComponents = ["users", "user-campaigns"]
