@@ -52,7 +52,7 @@ extension Path {
 
     /// Check if this path is a swift package
     fileprivate func containsSwiftPackage() throws -> Bool {
-        try isDirectory && children().map(\.lastComponent).contains("Package.swift")
+        try isDirectory && children().lazy.map(\.lastComponent).contains("Package.swift")
     }
 
     /// The name of the folder the swift package is in
@@ -70,9 +70,7 @@ extension Path {
         let package = try packageDump(path: module)
         return package.targets
             .filter { $0.type == "test" }
-            .reduce(into: []) { result, target in
-                result.append(target.name)
-            }
+            .map(\.name)
     }
 }
 
@@ -116,10 +114,10 @@ private func testableReferences(in modules: Path) throws -> [XCScheme.TestableRe
 }
 
 do {
-    let path = try Path("Blockchain.xcodeproj")
+    let path = Path("Blockchain.xcodeproj")
     let xcodeproj = try XcodeProj(path: path)
 
-    let modules = try Path("Modules")
+    let modules = Path("Modules")
     let testableReferences = try testableReferences(in: modules)
 
     xcodeproj.sharedData?.schemes
