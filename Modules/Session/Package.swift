@@ -8,9 +8,6 @@ let package = Package(
     products: [
         .library(name: "Session", targets: ["Session"])
     ],
-    dependencies: [
-
-    ],
     targets: [
         .target(name: "Session", dependencies: []),
         .testTarget(name: "SessionTests", dependencies: ["Session"])
