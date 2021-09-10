@@ -103,12 +103,8 @@ private func testableReferences(in modules: Path) throws -> [XCScheme.TestableRe
                     buildableReference: reference
                 )
 
-                if ["WalletPayload", "Tool"].contains(module) {
-                    print("Skipping \(module): \(target)")
-                } else {
-                    print("Found \(module): \(target)")
-                    result.append(testableReference)
-                }
+                print("Found \(module): \(target)")
+                result.append(testableReference)
             }
         }
 }

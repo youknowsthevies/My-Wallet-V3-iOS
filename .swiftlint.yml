@@ -141,6 +141,7 @@ excluded:
   - Modules/*/.build/
   - Modules/*/*.generated.swift
   - SourcePackages/
+  - scripts/*/.build/
 file_length:
   warning: 600
   error: 800
