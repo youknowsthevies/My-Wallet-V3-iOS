@@ -278,7 +278,9 @@ class InMemoryCacheTests: XCTestCase {
 
     // MARK: - Stream
 
-    func test_stream_updates() {
+    /// NOTE: This test is flaky and it's temporarily disabled
+    func test_stream_updates() throws {
+        try XCTSkipIf(true)
         // GIVEN: a key with no value associated
         // Also streams the initial value.
         let expectedValues: [CacheValue<Int>] = [
@@ -395,7 +397,9 @@ class InMemoryCacheTests: XCTestCase {
         streamAssertion()
     }
 
-    func test_stream_uniqueKeyConcurrent() {
+    /// NOTE: This test is flaky and it's temporarily disabled
+    func test_stream_uniqueKeyConcurrent() throws {
+        try XCTSkipIf(true)
         // GIVEN: a range of keys with no values associated
         // Also streams the initial value.
         let perStreamValues: [CacheValue<Int>] = [.absent] + (0..<streamIterationsConcurrent).map(CacheValue.present)
