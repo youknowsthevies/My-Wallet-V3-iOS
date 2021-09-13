@@ -7,6 +7,7 @@ import BitcoinKit
 import DIKit
 import ERC20Kit
 import EthereumKit
+import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
 import FeatureDashboardUI
@@ -30,7 +31,7 @@ import WalletPayloadKit
 
 extension ExchangeCoordinator: FeatureSettingsUI.ExchangeCoordinating {}
 
-extension UIApplication: FeatureSettingsUI.AppStoreOpening {}
+extension UIApplication: PlatformKit.AppStoreOpening {}
 
 extension Wallet: WalletRecoveryVerifing {}
 
@@ -59,18 +60,11 @@ extension DependencyContainer {
 
         single { OnboardingSettings() }
 
+        single { InternetReachability() as InternetReachabilityAPI }
+
         factory { () -> OnboardingSettingsAPI in
             let settings: OnboardingSettings = DIKit.resolve()
             return settings as OnboardingSettingsAPI
-        }
-
-        single { () -> BackgroundAppHandlerAPI in
-            let timer = BackgroundTaskTimer(
-                invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(
-                    identifier: UIBackgroundTaskIdentifier.invalid
-                )
-            )
-            return BackgroundAppHandler(backgroundTaskTimer: timer)
         }
 
         factory { AirdropRouter() as AirdropRouterAPI }
@@ -126,7 +120,11 @@ extension DependencyContainer {
         single { () -> AppDeeplinkHandlerAPI in
             let appSettings: BlockchainSettings.App = DIKit.resolve()
             let isPinSet: () -> Bool = { appSettings.isPinSet }
-            let deeplinkHandler = CoreDeeplinkHandler(isPinSet: isPinSet)
+            let deeplinkHandler = CoreDeeplinkHandler(
+                markBitpayUrl: { BitpayService.shared.contentRelay.accept($0) },
+                isBitPayURL: BitPayLinkRouter.isBitPayURL,
+                isPinSet: isPinSet
+            )
             let blockchainHandler = BlockchainLinksHandler(
                 validHosts: BlockchainLinks.validLinks,
                 validRoutes: BlockchainLinks.validRoutes
@@ -259,9 +257,9 @@ extension DependencyContainer {
 
         single { WalletManager() }
 
-        factory { () -> WalletManagerReactiveAPI in
+        factory { () -> WalletManagerAPI in
             let manager: WalletManager = DIKit.resolve()
-            return manager
+            return manager as WalletManagerAPI
         }
 
         factory { () -> MnemonicAccessAPI in

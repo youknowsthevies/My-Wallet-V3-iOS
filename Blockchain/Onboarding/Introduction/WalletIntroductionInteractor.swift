@@ -2,6 +2,7 @@
 
 import DIKit
 import Foundation
+import PlatformKit
 import RxSwift
 
 protocol WalletIntroductionInteracting {

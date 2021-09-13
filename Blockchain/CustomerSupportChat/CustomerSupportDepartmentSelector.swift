@@ -2,6 +2,7 @@
 
 import Combine
 import Localization
+import PlatformUIKit
 import SwiftUI
 
 struct CustomerSupportDepartmentSelector: View {

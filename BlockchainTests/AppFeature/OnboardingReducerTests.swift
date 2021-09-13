@@ -9,12 +9,11 @@ import RxSwift
 import XCTest
 
 @testable import Blockchain
+@testable import FeatureAppUI
 @testable import FeatureAuthenticationUI
 
 class OnboardingReducerTests: XCTestCase {
 
-    var mockWalletManager: WalletManager!
-    var mockWallet: MockWallet!
     var settingsApp: MockBlockchainSettingsApp!
     var mockAlertPresenter: MockAlertViewPresenter!
     var mockInternalFeatureFlags: InternalFeatureFlagServiceMock!
@@ -23,13 +22,8 @@ class OnboardingReducerTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        mockWallet = MockWallet()
         settingsApp = MockBlockchainSettingsApp()
-        mockWalletManager = WalletManager(
-            wallet: mockWallet,
-            appSettings: settingsApp,
-            reactiveWallet: MockReactiveWallet()
-        )
+
         mockInternalFeatureFlags = InternalFeatureFlagServiceMock()
         mockAlertPresenter = MockAlertViewPresenter()
         mockQueue = DispatchQueue.test
@@ -39,7 +33,6 @@ class OnboardingReducerTests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
-        mockWallet = nil
         settingsApp = nil
         mockAlertPresenter = nil
         mockQueue = nil
@@ -59,7 +52,6 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
@@ -87,7 +79,6 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
@@ -117,7 +108,6 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
@@ -145,7 +135,6 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
@@ -175,7 +164,6 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
@@ -207,7 +195,6 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
@@ -246,7 +233,6 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,

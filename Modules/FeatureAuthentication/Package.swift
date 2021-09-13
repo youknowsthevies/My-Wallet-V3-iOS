@@ -11,6 +11,10 @@ let package = Package(
             targets: ["FeatureAuthenticationData", "FeatureAuthenticationDomain", "FeatureAuthenticationUI"]
         ),
         .library(
+            name: "FeatureAuthenticationUI",
+            targets: ["FeatureAuthenticationUI"]
+        ),
+        .library(
             name: "FeatureAuthenticationDomain",
             targets: ["FeatureAuthenticationDomain"]
         ),

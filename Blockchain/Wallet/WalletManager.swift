@@ -14,7 +14,7 @@ import WalletPayloadKit
  Manager object for operations to the Blockchain Wallet.
  */
 @objc
-class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
+class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider, WalletManagerAPI {
 
     @Inject static var shared: WalletManager
 
@@ -145,6 +145,40 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
         }
         currencySymbols["code"] = fiatCode
         latestMultiAddressResponse?.symbol_local = CurrencySymbol(dict: currencySymbols)
+    }
+}
+
+extension WalletManager {
+    func loadWalletJS() {
+        wallet.loadJS()
+    }
+
+    func fetch(with password: String) {
+        wallet.fetch(with: password)
+    }
+
+    func walletIsInitialized() -> Bool {
+        wallet.isInitialized()
+    }
+
+    func walletNeedsSecondPassword() -> Bool {
+        wallet.needsSecondPassword()
+    }
+
+    func walletGetHistoryForAllAssets() {
+        wallet.getHistoryForAllAssets()
+    }
+
+    func newWallet(password: String, email: String) {
+        wallet.newAccount(password, email: email)
+    }
+
+    func load(with guid: String, sharedKey: String, password: String) {
+        wallet.load(withGuid: guid, sharedKey: sharedKey, password: password)
+    }
+
+    func markWalletAsNew() {
+        wallet.isNew = true
     }
 }
 

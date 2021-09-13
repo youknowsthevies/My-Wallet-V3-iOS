@@ -7,6 +7,7 @@ import CommonUISDK
 import DIKit
 import Localization
 import MessagingSDK
+import PlatformKit
 import PlatformUIKit
 import ToolKit
 

@@ -8,14 +8,6 @@ import FeatureSettingsDomain
 import PlatformKit
 import RxSwift
 
-protocol ExchangeAccountRepositoryAPI {
-    var hasLinkedExchangeAccount: Single<Bool> { get }
-
-    func syncDepositAddresses() -> Completable
-    func syncDepositAddressesIfLinked() -> Completable
-    func syncDepositAddressesIfLinkedPublisher() -> AnyPublisher<Void, Error>
-}
-
 enum ExchangeLinkingAPIError: Error {
     case noLinkID
     case unknown

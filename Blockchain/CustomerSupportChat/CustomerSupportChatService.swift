@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import PlatformKit
+import PlatformUIKit
 import ToolKit
 
 final class CustomerSupportChatService: CustomerSupportChatServiceAPI {

@@ -270,6 +270,8 @@ packages:
     path: Modules/CommonCrypto
   CryptoAssets:
     path: Modules/CryptoAssets
+  FeatureApp:
+    path: Modules/FeatureApp
   FeatureAccountPicker:
     path: Modules/FeatureAccountPicker
   FeatureActivity:
@@ -365,6 +367,7 @@ targets:
       - embed: false
         framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
 
+      - package: FeatureApp
       - package: FeatureAccountPicker
       - package: FeatureActivity
       - package: FeatureAuthentication

@@ -9,28 +9,19 @@ import RxSwift
 import XCTest
 
 @testable import Blockchain
+@testable import FeatureAppUI
 
 class PinReducerTests: XCTestCase {
 
-    var mockWalletManager: WalletManager!
-    var mockWallet: MockWallet!
     var settingsApp: MockBlockchainSettingsApp!
 
     override func setUp() {
         super.setUp()
-        mockWallet = MockWallet()
         settingsApp = MockBlockchainSettingsApp()
-        mockWalletManager = WalletManager(
-            wallet: mockWallet!,
-            appSettings: settingsApp,
-            reactiveWallet: MockReactiveWallet()
-        )
     }
 
     override func tearDown() {
-        mockWallet = nil
         settingsApp = nil
-        mockWalletManager = nil
         super.tearDown()
     }
 
@@ -45,7 +36,6 @@ class PinReducerTests: XCTestCase {
             initialState: PinCore.State(),
             reducer: pinReducer,
             environment: PinCore.Environment(
-                walletManager: mockWalletManager,
                 appSettings: settingsApp,
                 alertPresenter: MockAlertViewPresenter()
             )

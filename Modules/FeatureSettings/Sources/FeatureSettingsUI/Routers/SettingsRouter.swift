@@ -29,10 +29,6 @@ public protocol ExchangeCoordinating: AnyObject {
     func start(from viewController: UIViewController)
 }
 
-public protocol AppStoreOpening: AnyObject {
-    func openAppStore()
-}
-
 final class SettingsRouter: SettingsRouterAPI {
 
     typealias AnalyticsEvent = AnalyticsEvents.Settings
