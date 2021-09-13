@@ -352,6 +352,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             Effect(value: .initializeWallet)
         )
     case .setupPin:
+        environment.loadingViewPresenter.hide()
         state.onboarding?.pinState = .init()
         state.onboarding?.passwordScreen = nil
         return Effect(value: CoreAppAction.onboarding(.pin(.create)))
