@@ -58,6 +58,7 @@ open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorA
         amountTranslationInteractor = AmountTranslationInteractor(
             fiatCurrencyService: fiatCurrencyService,
             cryptoCurrencyService: cryptoCurrencySelectionService,
+            priceProvider: AmountTranslationPriceProvider(),
             defaultCryptoCurrency: .coin(.bitcoin),
             initialActiveInput: initialActiveInput
         )

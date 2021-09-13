@@ -302,3 +302,9 @@ extension SwapActivityItemEvent.Amounts: Equatable {
             lhs.withdrawalFee == rhs.withdrawalFee
     }
 }
+
+extension SwapActivityItemEvent {
+    public var ccy: String {
+        pair.outputCurrencyType.code
+    }
+}

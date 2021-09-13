@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
@@ -143,7 +145,43 @@ final class TransactionInteractor {
                     }
                 }
         case .sell:
-            return allEligibleCryptoAccounts.map { $0.map { $0 as SingleAccount } }
+            return coincore.allAccounts
+                .eraseError()
+                .map(\.accounts)
+                .flatMapFilter(
+                    action: .buy,
+                    failSequence: false,
+                    onError: { [errorRecorder] account, error in
+                        let error: Error = .loadingFailed(
+                            account: account,
+                            action: action,
+                            error: String(describing: error)
+                        )
+                        errorRecorder.error(error)
+                    }
+                )
+                .map { accounts in
+                    accounts.compactMap { account in
+                        account as? CryptoAccount
+                    }
+                }
+                .flatMap { accounts in
+                    Publishers.MergeMany(
+                        accounts.map { account in
+                            Publishers.Zip(
+                                account.isFunded.asPublisher(),
+                                account.actionableBalance.asPublisher()
+                            )
+                            .compactMap { isFunded, actionableBalance in
+                                isFunded && actionableBalance.amount > BigInt(0) ? account : nil
+                            }
+                            .eraseToAnyPublisher()
+                        }
+                    )
+                    .collect()
+                }
+                .eraseToAnyPublisher()
+                .asSingle()
         case .deposit:
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         default:

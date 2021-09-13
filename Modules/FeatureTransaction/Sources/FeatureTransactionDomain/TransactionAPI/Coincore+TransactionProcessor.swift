@@ -112,7 +112,19 @@ extension CoincoreAPI {
                     )
                 }
         case (_, .sell):
-            unimplemented()
+            return account
+                .requireSecondPassword
+                .map { requiresSecondPassword -> TransactionProcessor in
+                    .init(
+                        sourceAccount: account,
+                        transactionTarget: target,
+                        engine: NonCustodialSellTransactionEngine(
+                            quotesEngine: SwapQuotesEngine(),
+                            requireSecondPassword: requiresSecondPassword,
+                            onChainEngine: factory.build(requiresSecondPassword: requiresSecondPassword)
+                        )
+                    )
+                }
         default:
             unimplemented()
         }

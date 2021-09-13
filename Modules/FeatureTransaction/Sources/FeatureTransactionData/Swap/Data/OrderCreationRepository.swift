@@ -74,7 +74,8 @@ extension SellOrder {
         self.init(
             identifier: response.identifier,
             state: response.status,
-            ccy: response.pair.outputCurrencyType.code
+            ccy: response.ccy,
+            depositAddress: response.kind.depositAddress
         )
     }
 }

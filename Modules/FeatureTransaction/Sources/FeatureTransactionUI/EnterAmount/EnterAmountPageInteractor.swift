@@ -549,7 +549,6 @@ extension AssetAction {
     fileprivate var supportsBottomAccountsView: Bool {
         switch self {
         case .buy,
-             .sell,
              .deposit,
              .withdraw:
             return true
