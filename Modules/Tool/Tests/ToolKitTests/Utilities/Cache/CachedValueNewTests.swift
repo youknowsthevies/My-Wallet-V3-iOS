@@ -238,7 +238,8 @@ class CachedValueNewTests: XCTestCase {
 
     // MARK: - Get Performance
 
-    func test_get_singleKeyPerformance() {
+    func test_get_singleKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for _ in 0..<getsPerformance {
                 subject.get(key: 0)
@@ -248,7 +249,8 @@ class CachedValueNewTests: XCTestCase {
         }
     }
 
-    func test_get_overlappingKeyPerformance() {
+    func test_get_overlappingKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<getsPerformance {
                 subject.get(key: i % getsOverlapIndexPerformance)
@@ -258,7 +260,8 @@ class CachedValueNewTests: XCTestCase {
         }
     }
 
-    func test_get_uniqueKeyPerformance() {
+    func test_get_uniqueKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<getsPerformance {
                 subject.get(key: i)
@@ -483,7 +486,8 @@ class CachedValueNewTests: XCTestCase {
 
     // MARK: - Stream Performance
 
-    func test_stream_singleKeyPerformance() {
+    func test_stream_singleKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for _ in 0..<streamsPerformance {
                 subject.stream(key: 0)
@@ -493,7 +497,8 @@ class CachedValueNewTests: XCTestCase {
         }
     }
 
-    func test_stream_overlappingKeyPerformance() {
+    func test_stream_overlappingKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<streamsPerformance {
                 subject.stream(key: i % streamsOverlapIndexPerformance)
@@ -503,7 +508,8 @@ class CachedValueNewTests: XCTestCase {
         }
     }
 
-    func test_stream_uniqueKeyPerformance() {
+    func test_stream_uniqueKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<streamsPerformance {
                 subject.stream(key: i)

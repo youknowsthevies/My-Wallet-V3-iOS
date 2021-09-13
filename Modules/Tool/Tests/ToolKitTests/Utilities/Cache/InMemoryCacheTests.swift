@@ -246,7 +246,8 @@ class InMemoryCacheTests: XCTestCase {
 
     // MARK: - Get Performance
 
-    func test_get_singleKeyPerformance() {
+    func test_get_singleKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for _ in 0..<getsPerformance {
                 subject.get(key: 0)
@@ -256,7 +257,8 @@ class InMemoryCacheTests: XCTestCase {
         }
     }
 
-    func test_get_overlappingKeyPerformance() {
+    func test_get_overlappingKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<getsPerformance {
                 subject.get(key: i % getsOverlapIndexPerformance)
@@ -266,7 +268,8 @@ class InMemoryCacheTests: XCTestCase {
         }
     }
 
-    func test_get_uniqueKeyPerformance() {
+    func test_get_uniqueKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<getsPerformance {
                 subject.get(key: i)
@@ -442,7 +445,8 @@ class InMemoryCacheTests: XCTestCase {
 
     // MARK: - Stream Performance
 
-    func test_stream_singleKeyPerformance() {
+    func test_stream_singleKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for _ in 0..<streamsPerformance {
                 subject.stream(key: 0)
@@ -458,7 +462,8 @@ class InMemoryCacheTests: XCTestCase {
         }
     }
 
-    func test_stream_overlappingKeyPerformance() {
+    func test_stream_overlappingKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<streamsPerformance {
                 subject.stream(key: i % streamsOverlapIndexPerformance)
@@ -474,7 +479,8 @@ class InMemoryCacheTests: XCTestCase {
         }
     }
 
-    func test_stream_uniqueKeyPerformance() {
+    func test_stream_uniqueKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<streamsPerformance {
                 subject.stream(key: i)
@@ -678,7 +684,8 @@ class InMemoryCacheTests: XCTestCase {
 
     // MARK: - Set Performance
 
-    func test_set_singleKeyPerformance() {
+    func test_set_singleKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<setsPerformance {
                 subject.set(i, for: 0)
@@ -688,7 +695,8 @@ class InMemoryCacheTests: XCTestCase {
         }
     }
 
-    func test_set_overlappingKeyPerformance() {
+    func test_set_overlappingKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<setsPerformance {
                 subject.set(i, for: i % setsOverlapIndexPerformance)
@@ -698,7 +706,8 @@ class InMemoryCacheTests: XCTestCase {
         }
     }
 
-    func test_set_uniqueKeyPerformance() {
+    func test_set_uniqueKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<setsPerformance {
                 subject.set(i, for: i)
@@ -849,7 +858,8 @@ class InMemoryCacheTests: XCTestCase {
 
     // MARK: - Remove Performance
 
-    func test_remove_singleKeyPerformance() {
+    func test_remove_singleKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for _ in 0..<removesPerformance {
                 subject.remove(key: 0)
@@ -859,7 +869,8 @@ class InMemoryCacheTests: XCTestCase {
         }
     }
 
-    func test_remove_overlappingKeyPerformance() {
+    func test_remove_overlappingKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<removesPerformance {
                 subject.remove(key: i % removesOverlapIndexPerformance)
@@ -869,7 +880,8 @@ class InMemoryCacheTests: XCTestCase {
         }
     }
 
-    func test_remove_uniqueKeyPerformance() {
+    func test_remove_uniqueKeyPerformance() throws {
+        try XCTSkipIf(true)
         measure {
             for i in 0..<removesPerformance {
                 subject.remove(key: i)
