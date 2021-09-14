@@ -23,7 +23,10 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
         let container = try decoder.singleValueContainer()
         let stringValue = try container.decode(String.self)
         guard let cryptoCurrency = CryptoCurrency(code: stringValue) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Unsupported currency \(stringValue)")
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Unsupported currency \(stringValue)"
+            )
         }
         self = cryptoCurrency
     }
@@ -77,7 +80,7 @@ extension CryptoCurrency {
         }
     }
 
-    public var symbol: String { code }
+    public var displaySymbol: String { displayCode }
 
     public var code: String {
         switch self {
@@ -91,9 +94,9 @@ extension CryptoCurrency {
     public var displayCode: String {
         switch self {
         case .coin(let model):
-            return model.code
+            return model.displayCode
         case .erc20(let model):
-            return model.code
+            return model.displayCode
         }
     }
 

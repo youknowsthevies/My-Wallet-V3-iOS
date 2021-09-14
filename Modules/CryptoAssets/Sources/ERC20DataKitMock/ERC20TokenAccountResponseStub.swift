@@ -11,7 +11,7 @@ extension ERC20TokenAccountResponse {
     static func stubbed(cryptoCurrency: CryptoCurrency) -> ERC20TokenAccountResponse {
         .init(
             balance: CryptoValue.create(major: 2, currency: cryptoCurrency).amount.string(unitDecimals: 0),
-            tokenSymbol: cryptoCurrency.symbol
+            tokenSymbol: cryptoCurrency.code
         )
     }
 }

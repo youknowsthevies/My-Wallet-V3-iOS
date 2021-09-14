@@ -86,7 +86,7 @@ public final class AmountLabelViewPresenter {
                 AmountLabelContent(
                     input: input,
                     currencyCode: currency.displayCode,
-                    currencySymbol: currency.symbol,
+                    currencySymbol: currency.displaySymbol,
                     hasFocus: hasFocus
                 )
             }

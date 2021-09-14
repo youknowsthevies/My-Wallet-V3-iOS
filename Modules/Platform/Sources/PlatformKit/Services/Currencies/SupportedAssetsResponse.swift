@@ -5,6 +5,7 @@ import Foundation
 struct SupportedAssetsResponse: Codable {
     struct Asset: Codable {
         let symbol: String // eg BTC
+        let displaySymbol: String? // eg BTC
         let name: String // eg Bitcoin
         let precision: Int // eg 18
         let products: [String] // eg ["PrivateKey"]

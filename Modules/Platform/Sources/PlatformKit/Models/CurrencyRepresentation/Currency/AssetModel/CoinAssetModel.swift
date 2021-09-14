@@ -5,6 +5,7 @@ import Foundation
 /// A Level 1 coin AssetModel.
 public struct CoinAssetModel: AssetModel, Hashable {
     public let code: String
+    public let displayCode: String
     public let kind: AssetModelType = .coin
     public let name: String
     public let precision: Int
@@ -19,6 +20,7 @@ public struct CoinAssetModel: AssetModel, Hashable {
     init?(assetResponse: SupportedAssetsResponse.Asset, sortIndex: Int) {
         precondition(assetResponse.type.name == SupportedAssetsResponse.Asset.AssetType.Name.coin.rawValue)
         code = assetResponse.symbol
+        displayCode = assetResponse.displaySymbol ?? assetResponse.symbol
         name = assetResponse.name
         logoPngUrl = assetResponse.type.logoPngUrl
         spotColor = assetResponse.type.spotColor
@@ -30,6 +32,7 @@ public struct CoinAssetModel: AssetModel, Hashable {
 
     init(
         code: String,
+        displayCode: String,
         name: String,
         precision: Int,
         products: [AssetModelProduct],
@@ -39,6 +42,7 @@ public struct CoinAssetModel: AssetModel, Hashable {
         sortIndex: Int
     ) {
         self.code = code
+        self.displayCode = displayCode
         self.name = name
         self.precision = precision
         self.products = products
@@ -51,6 +55,7 @@ public struct CoinAssetModel: AssetModel, Hashable {
     func with(products: [AssetModelProduct]) -> CoinAssetModel {
         CoinAssetModel(
             code: code,
+            displayCode: displayCode,
             name: name,
             precision: precision,
             products: products,
@@ -67,6 +72,7 @@ extension CoinAssetModel {
     public static var bitcoin: CoinAssetModel {
         CoinAssetModel(
             code: "BTC",
+            displayCode: "BTC",
             name: "Bitcoin",
             precision: 8,
             products: AssetModelProduct.allCases,
@@ -80,6 +86,7 @@ extension CoinAssetModel {
     public static var bitcoinCash: CoinAssetModel {
         CoinAssetModel(
             code: "BCH",
+            displayCode: "BCH",
             name: "Bitcoin Cash",
             precision: 8,
             products: AssetModelProduct.allCases,
@@ -93,6 +100,7 @@ extension CoinAssetModel {
     public static var ethereum: CoinAssetModel {
         CoinAssetModel(
             code: "ETH",
+            displayCode: "ETH",
             name: "Ethereum",
             precision: 18,
             products: AssetModelProduct.allCases,
@@ -106,6 +114,7 @@ extension CoinAssetModel {
     public static var stellar: CoinAssetModel {
         CoinAssetModel(
             code: "XLM",
+            displayCode: "XLM",
             name: "Stellar",
             precision: 7,
             products: AssetModelProduct.allCases,

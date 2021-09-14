@@ -8,6 +8,7 @@ final class MoneyValueConvertTests: XCTestCase {
     var mockCoin6Precision: CoinAssetModel {
         CoinAssetModel(
             code: "MOCK",
+            displayCode: "MOCK",
             name: "Mock Coin",
             precision: 6,
             products: [],

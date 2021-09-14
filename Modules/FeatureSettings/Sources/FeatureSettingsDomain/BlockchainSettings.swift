@@ -173,17 +173,6 @@ public final class BlockchainSettings: NSObject {
             }
         }
 
-        @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
-        @objc
-        public var fiatCurrencySymbol: String {
-            fiatCurrency.symbol
-        }
-
-        @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
-        public var fiatCurrency: FiatCurrency {
-            FiatCurrency(code: fiatSettings.legacyCurrency?.code ?? "USD")!
-        }
-
         /// The first 5 characters of SHA256 hash of the user's password
         public var passwordPartHash: String? {
             get {

@@ -953,15 +953,17 @@ extension FiatCurrency {
     public var displayCode: String { code }
 
     /// The symbol of the currency. e.g $, £, €
-    public var symbol: String {
-        let locale = NSLocale.current as NSLocale
-        return locale.displayName(forKey: .currencySymbol, value: code) ?? ""
+    public var displaySymbol: String {
+        currentLocale.displayName(forKey: .currencySymbol, value: code) ?? ""
     }
 
     /// The name of the currency. e.g US Dollar, Euro, Great British Pound
     public var name: String {
-        let locale = NSLocale.current as NSLocale
-        return locale.localizedString(forCurrencyCode: code) ?? ""
+        currentLocale.localizedString(forCurrencyCode: code) ?? ""
+    }
+
+    private var currentLocale: NSLocale {
+        NSLocale.current as NSLocale
     }
 
     /// The number of decimal places as specified in `ISO 4217`

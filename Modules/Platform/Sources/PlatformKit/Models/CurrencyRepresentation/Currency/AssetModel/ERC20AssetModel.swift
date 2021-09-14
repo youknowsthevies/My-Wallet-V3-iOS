@@ -7,6 +7,7 @@ public struct ERC20AssetModel: AssetModel, Hashable {
     public static let typeTag: AnyHashable = AssetModelType.erc20
 
     public let code: String
+    public let displayCode: String
     /// 0x prefixed contract address for ERC20 types, nil otherwise
     public let erc20Address: String
     public let kind: AssetModelType = .erc20
@@ -28,6 +29,7 @@ public struct ERC20AssetModel: AssetModel, Hashable {
         self.erc20Address = erc20Address
         logoPngUrl = assetResponse.type.logoPngUrl
         code = assetResponse.symbol
+        displayCode = assetResponse.displaySymbol ?? assetResponse.symbol
         name = assetResponse.name
         precision = assetResponse.precision
         products = assetResponse.products.compactMap(AssetModelProduct.init)
@@ -37,6 +39,7 @@ public struct ERC20AssetModel: AssetModel, Hashable {
 
     init(
         code: String,
+        displayCode: String,
         erc20Address: String,
         logoPngUrl: String?,
         name: String,
@@ -46,6 +49,7 @@ public struct ERC20AssetModel: AssetModel, Hashable {
         sortIndex: Int
     ) {
         self.code = code
+        self.displayCode = displayCode
         self.erc20Address = erc20Address
         self.logoPngUrl = logoPngUrl
         self.name = name
@@ -58,6 +62,7 @@ public struct ERC20AssetModel: AssetModel, Hashable {
     func with(products: [AssetModelProduct]) -> ERC20AssetModel {
         ERC20AssetModel(
             code: code,
+            displayCode: displayCode,
             erc20Address: erc20Address,
             logoPngUrl: logoPngUrl,
             name: name,

@@ -36,7 +36,7 @@ final class PreferredCurrencyBadgeInteractor: DefaultBadgeAssetInteractor {
                 guard let fiatCurrency = fiatCurrency else {
                     return nil
                 }
-                let title = "\(fiatCurrency.name) (\(fiatCurrency.symbol))"
+                let title = "\(fiatCurrency.name) (\(fiatCurrency.displaySymbol))"
                 return BadgeItem(
                     type: .default(accessibilitySuffix: title),
                     description: title

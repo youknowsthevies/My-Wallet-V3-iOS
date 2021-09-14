@@ -16,7 +16,7 @@ public protocol Money: CustomDebugStringConvertible {
     var currencyCode: String { get }
 
     /// The currency symbol (e.g. `£`, `$`)
-    var symbol: String { get }
+    var displaySymbol: String { get }
 
     /// Returns `true` if the value is exactly `0`
     var isZero: Bool { get }
@@ -97,8 +97,8 @@ extension Money {
         currency.code
     }
 
-    public var symbol: String {
-        currency.symbol
+    public var displaySymbol: String {
+        currency.displaySymbol
     }
 
     public var isZero: Bool {

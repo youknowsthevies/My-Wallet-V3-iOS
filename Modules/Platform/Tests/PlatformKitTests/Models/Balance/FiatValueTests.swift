@@ -39,10 +39,10 @@ class FiatValueTests: XCTestCase {
 
     func testSymbol() {
         let usdValue = FiatValue.zero(currencyCode: "USD")!
-        XCTAssertEqual("$", usdValue.symbol)
+        XCTAssertEqual("$", usdValue.displaySymbol)
 
         let eurValue = FiatValue.zero(currencyCode: "EUR")!
-        XCTAssertEqual("€", eurValue.symbol)
+        XCTAssertEqual("€", eurValue.displaySymbol)
     }
 
     func testIsZero() {

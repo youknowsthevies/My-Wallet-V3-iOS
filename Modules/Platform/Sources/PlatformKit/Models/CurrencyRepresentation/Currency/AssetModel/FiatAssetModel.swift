@@ -7,6 +7,7 @@ struct FiatAssetModel: AssetModel, Hashable {
     let spotColor: String? = nil
     let name: String
     let code: String
+    let displayCode: String
     let precision: Int
     let kind: AssetModelType = .fiat
     let products: [AssetModelProduct]
@@ -14,6 +15,7 @@ struct FiatAssetModel: AssetModel, Hashable {
 
     init?(assetResponse: SupportedAssetsResponse.Asset) {
         code = assetResponse.symbol
+        displayCode = assetResponse.displaySymbol ?? assetResponse.symbol
         name = assetResponse.name
         precision = assetResponse.precision
         products = assetResponse.products.compactMap(AssetModelProduct.init)

@@ -5,6 +5,7 @@ import Foundation
 /// A Model describing an Asset (crypto or fiat).
 public protocol AssetModel {
     var code: String { get }
+    var displayCode: String { get }
     var kind: AssetModelType { get }
     var name: String { get }
     var precision: Int { get }
