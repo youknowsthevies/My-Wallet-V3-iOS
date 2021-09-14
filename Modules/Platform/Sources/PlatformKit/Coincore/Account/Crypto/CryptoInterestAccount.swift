@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import Localization
 import RxSwift
@@ -69,25 +70,14 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         .just(false)
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                priceService.price(of: asset, in: fiatCurrency).asSingle(),
-                balance
-            )
-            .map { fiatPrice, balance in
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: asset, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
-    }
-
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                priceService.price(of: asset, in: fiatCurrency, at: time).asSingle(),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
-            }
+            .eraseToAnyPublisher()
     }
 }

@@ -4,7 +4,9 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-public final class AssetPriceViewInteractor: AssetPriceViewInteracting {
+/// Implementation of `AssetPriceViewInteracting` that streams a State based on the given
+/// HistoricalFiatPriceService state.
+public final class AssetPriceViewHistoricalInteractor: AssetPriceViewInteracting {
 
     public typealias InteractionState = DashboardAsset.State.AssetPrice.Interaction
 

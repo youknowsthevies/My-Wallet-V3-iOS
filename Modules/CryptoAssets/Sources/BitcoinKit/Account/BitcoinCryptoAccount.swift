@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinChainKit
+import Combine
 import DIKit
 import Localization
 import PlatformKit
@@ -127,26 +128,15 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                priceService.price(of: asset, in: fiatCurrency).asSingle(),
-                balance
-            )
-            .map { fiatPrice, balance in
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: asset, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
-    }
-
-    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                priceService.price(of: asset, in: fiatCurrency, at: time).asSingle(),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
-            }
+            .eraseToAnyPublisher()
     }
 
     func updateLabel(_ newLabel: String) -> Completable {

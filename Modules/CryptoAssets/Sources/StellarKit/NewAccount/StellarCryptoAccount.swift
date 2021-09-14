@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RxSwift
@@ -121,29 +122,18 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                priceService.price(of: asset, in: fiatCurrency).asSingle(),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
-            }
-    }
-
     func updateLabel(_ newLabel: String) -> Completable {
         bridge.update(accountIndex: hdAccountIndex, label: newLabel)
     }
 
-    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                priceService.price(of: asset, in: fiatCurrency, at: time).asSingle(),
-                balance
-            )
-            .map { fiatPrice, balance in
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: asset, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
+            .eraseToAnyPublisher()
     }
 }

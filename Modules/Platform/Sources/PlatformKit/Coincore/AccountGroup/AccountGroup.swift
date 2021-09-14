@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import CombineExt
 import RxSwift
 import ToolKit
 
@@ -45,54 +46,29 @@ extension AccountGroup {
         return type
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        let balances: [Single<MoneyValue>] = accounts
+    public func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error> {
+        accounts
             .map { account in
-                account
-                    .fiatBalance(fiatCurrency: fiatCurrency)
+                account.fiatBalance(fiatCurrency: fiatCurrency, at: time)
             }
-        return Single.zip(balances)
-            .map { balances in
+            .zip()
+            .tryMap { balances in
                 try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
             }
+            .eraseToAnyPublisher()
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValue> {
-        let balances: [Single<MoneyValue>] = accounts
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        accounts
             .map { account in
-                account
-                    .fiatBalance(fiatCurrency: fiatCurrency, at: time)
+                account.balancePair(fiatCurrency: fiatCurrency, at: time)
+                    .replaceError(with: MoneyValuePair.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
             }
-        return Single.zip(balances)
-            .map { balances in
-                try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
+            .zip()
+            .tryMap { [currencyType] balancePairs in
+                try balancePairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency), +)
             }
-    }
-
-    public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        let balancePairs: [Single<MoneyValuePair>] = accounts
-            .map { account in
-                account
-                    .balancePair(fiatCurrency: fiatCurrency)
-                    .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
-            }
-        return Single.zip(balancePairs)
-            .map { [currencyType] pairs -> MoneyValuePair in
-                try pairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency), +)
-            }
-    }
-
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
-        let balancePairs: [Single<MoneyValuePair>] = accounts
-            .map { account in
-                account
-                    .balancePair(fiatCurrency: fiatCurrency, at: time)
-                    .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
-            }
-        return Single.zip(balancePairs)
-            .map { [currencyType] pairs -> MoneyValuePair in
-                try pairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency), +)
-            }
+            .eraseToAnyPublisher()
     }
 
     public func includes(account: BlockchainAccount) -> Bool {

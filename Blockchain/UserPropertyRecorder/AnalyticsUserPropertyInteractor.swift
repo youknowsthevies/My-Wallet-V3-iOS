@@ -42,12 +42,11 @@ final class AnalyticsUserPropertyInteractor {
         let balances: [Single<(asset: CryptoCurrency, moneyValue: MoneyValue?)>] = coincore.cryptoAssets
             .map { asset in
                 asset.accountGroup(filter: .all)
-                    .asObservable()
-                    .asSingle()
-                    .flatMap { accountGroup -> Single<MoneyValue> in
+                    .flatMap { accountGroup in
                         // We want to record the fiat balance analytics event always in USD.
                         accountGroup.fiatBalance(fiatCurrency: .USD)
                     }
+                    .asSingle()
                     .optional()
                     .catchErrorJustReturn(nil)
                     .map { (asset: asset.asset, moneyValue: $0) }

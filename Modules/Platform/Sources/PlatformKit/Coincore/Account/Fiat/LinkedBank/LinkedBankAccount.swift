@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxSwift
 import ToolKit
@@ -108,11 +109,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
 
     // MARK: - BlockchainAccount
 
-    public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
-    }
-
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
     }
 

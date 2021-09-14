@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -55,11 +56,7 @@ public struct PaymentAccount: FiatAccount {
         .just(true)
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        balancePair(fiatCurrency: fiatCurrency, at: .now)
-    }
-
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
         .just(
             .zero(
                 baseCurrency: fiatCurrency.currency,

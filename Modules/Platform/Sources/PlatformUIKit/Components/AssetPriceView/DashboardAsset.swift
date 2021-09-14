@@ -74,19 +74,26 @@ public enum DashboardAsset {
                 public let time: Time
 
                 /// The asset price in fiat.
-                public let fiatValue: FiatValue
+                public let fiatValue: MoneyValue
 
                 /// Percentage of change since a certain time
                 public let changePercentage: Double
 
                 /// The change in fiat value
-                public let fiatChange: FiatValue
+                public let fiatChange: MoneyValue
 
-                public init(time: Time, fiatValue: FiatValue, changePercentage: Double, fiatChange: FiatValue) {
+                public init(time: Time, fiatValue: MoneyValue, changePercentage: Double, fiatChange: MoneyValue) {
                     self.time = time
                     self.fiatValue = fiatValue
                     self.changePercentage = changePercentage
                     self.fiatChange = fiatChange
+                }
+
+                public init(time: Time, fiatValue: FiatValue, changePercentage: Double, fiatChange: FiatValue) {
+                    self.time = time
+                    self.fiatValue = fiatValue.moneyValue
+                    self.changePercentage = changePercentage
+                    self.fiatChange = fiatChange.moneyValue
                 }
             }
         }

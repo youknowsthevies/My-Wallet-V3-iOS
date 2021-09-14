@@ -11,7 +11,6 @@ final class TodayViewInteractor {
 
     // MARK: - Services
 
-    let historicalProvider: HistoricalFiatPriceProviding
     let container: SharedContainerUserDefaults
 
     var isBalanceSyncingEnabled: Bool {
@@ -19,35 +18,41 @@ final class TodayViewInteractor {
     }
 
     var assetInteractors: Observable<[TodayExtensionCellInteractor]> {
-        let values: [TodayExtensionCellInteractor] = enabledCurrenciesService.allEnabledCryptoCurrencies
-            .map {
-                AssetPriceCellInteractor(
-                    cryptoCurrency: $0,
-                    historicalFiatPriceServiceAPI: historicalProvider[$0]
-                )
-            }
-            .map { .assetPrice($0) }
-        return Observable.just(values)
+        .just(
+            assetPriceCellInteractors
+                .map(TodayExtensionCellInteractor.assetPrice)
+        )
     }
 
     var portfolioInteractor: Observable<TodayExtensionCellInteractor?> {
-        Observable.just(container.portfolio)
-            .map { portfolio in
-                guard let value = portfolio else { return nil }
-                return .portfolio(.init(portfolio: value))
-            }
+        .just(
+            container.portfolio
+                .flatMap(PortfolioCellInteractor.init)
+                .flatMap(TodayExtensionCellInteractor.portfolio)
+        )
     }
 
+    private let assetPriceCellInteractors: [AssetPriceCellInteractor]
+    private let priceService: PriceServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let disposeBag = DisposeBag()
 
     init(
-        historicalProvider: HistoricalFiatPriceProviding = resolve(),
+        priceService: PriceServiceAPI = resolve(),
         container: SharedContainerUserDefaults = .default,
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.container = container
-        self.historicalProvider = historicalProvider
+        assetPriceCellInteractors = enabledCurrenciesService.allEnabledCryptoCurrencies
+            .map { cryptoCurrency in
+                AssetPriceCellInteractor(
+                    cryptoCurrency: cryptoCurrency,
+                    priceService: priceService,
+                    fiatCurrencyService: fiatCurrencyService
+                )
+            }
+        self.priceService = priceService
         self.enabledCurrenciesService = enabledCurrenciesService
     }
 
@@ -83,6 +88,8 @@ final class TodayViewInteractor {
     }
 
     func refresh() {
-        historicalProvider.refresh(window: .day(.oneHour))
+        assetPriceCellInteractors.forEach { interactor in
+            interactor.priceViewInteractor.refresh()
+        }
     }
 }

@@ -6,7 +6,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-// TODO: IOS-4611: (paulo) Move file out of 'TodayExtension' folder.
+/// Provides a state of `PortfolioBalanceChange` indicating the total balance change.
 public protocol PortfolioBalanceChangeProviding {
     var changeObservable: Observable<ValueCalculationState<PortfolioBalanceChange>> { get }
 }
@@ -50,30 +50,29 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
     }()
 
     private func fetch(accountGroup: AccountGroup, fiatCurrency: FiatCurrency) -> Single<PortfolioBalanceChange> {
-        Single.zip(
-            accountGroup.fiatBalance(fiatCurrency: fiatCurrency),
-            accountGroup.fiatBalance(fiatCurrency: fiatCurrency, at: .oneDay)
-        )
-        .map { currentBalance, previousBalance in
-            let percentage: Decimal // in range [0...1]
-            let change = try currentBalance - previousBalance
-            if currentBalance.isZero {
-                percentage = 0
-            } else {
-                // `zero` shouldn't be possible but is handled in any case
-                // in a way that would not throw
-                if previousBalance.isZero || previousBalance.isNegative {
+        accountGroup.fiatBalance(fiatCurrency: fiatCurrency)
+            .zip(accountGroup.fiatBalance(fiatCurrency: fiatCurrency, at: .oneDay))
+            .tryMap { currentBalance, previousBalance in
+                let percentage: Decimal // in range [0...1]
+                let change = try currentBalance - previousBalance
+                if currentBalance.isZero {
                     percentage = 0
                 } else {
-                    percentage = try change.percentage(of: previousBalance)
+                    // `zero` shouldn't be possible but is handled in any case
+                    // in a way that would not throw
+                    if previousBalance.isZero || previousBalance.isNegative {
+                        percentage = 0
+                    } else {
+                        percentage = try change.percentage(of: previousBalance)
+                    }
                 }
+                return PortfolioBalanceChange(
+                    balance: currentBalance,
+                    changePercentage: percentage.doubleValue,
+                    change: change
+                )
             }
-            return PortfolioBalanceChange(
-                balance: currentBalance,
-                changePercentage: percentage.doubleValue,
-                change: change
-            )
-        }
+            .asSingle()
     }
 
     private let coincore: CoincoreAPI

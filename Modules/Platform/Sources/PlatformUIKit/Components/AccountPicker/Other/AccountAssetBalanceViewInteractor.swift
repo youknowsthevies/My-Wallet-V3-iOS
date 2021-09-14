@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RxRelay
@@ -29,17 +30,17 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
 
     // MARK: - Setup
 
-    private func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
+    private func balancePair(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValuePair, Error> {
         switch account {
         case .account(let account):
             return account.balancePair(fiatCurrency: fiatCurrency)
         case .asset(let cryptoAsset):
-            return cryptoAsset.accountGroup(filter: .all)
-                .asObservable()
-                .asSingle()
+            return cryptoAsset
+                .accountGroup(filter: .all)
                 .flatMap { accountGroup in
                     accountGroup.balancePair(fiatCurrency: fiatCurrency)
                 }
+                .eraseToAnyPublisher()
         }
     }
 

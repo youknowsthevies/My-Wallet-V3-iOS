@@ -29,7 +29,7 @@ final class HistoricalBalanceCellInteractor {
             priceService: historicalFiatPriceService,
             cryptoCurrency: cryptoCurrency
         )
-        priceInteractor = AssetPriceViewInteractor(
+        priceInteractor = AssetPriceViewHistoricalInteractor(
             historicalPriceProvider: historicalFiatPriceService
         )
         balanceInteractor = AccountAssetBalanceViewInteractor(

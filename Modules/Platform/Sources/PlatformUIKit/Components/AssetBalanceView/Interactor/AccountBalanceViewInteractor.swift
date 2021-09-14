@@ -27,7 +27,7 @@ public final class AccountBalanceViewInteractor: AssetBalanceViewInteracting {
 
     private func stateSingle(fiatCurrency: FiatCurrency) -> Single<InteractionState> {
         Single.zip(
-            account.balancePair(fiatCurrency: fiatCurrency),
+            account.balancePair(fiatCurrency: fiatCurrency).asSingle(),
             account.pendingBalance
         )
         .map { balancePair, pendingBalance in

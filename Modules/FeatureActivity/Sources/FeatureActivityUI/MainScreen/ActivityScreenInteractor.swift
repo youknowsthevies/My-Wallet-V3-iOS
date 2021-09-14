@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureActivityDomain
 import PlatformKit
@@ -29,6 +30,7 @@ final class ActivityScreenInteractor {
             .combineLatest(fiatCurrency, selectedData)
             .flatMap { (fiatCurrency: FiatCurrency, account: BlockchainAccount) in
                 account.fiatBalance(fiatCurrency: fiatCurrency)
+                    .asObservable()
                     .compactMap(\.fiatValue)
                     .catchErrorJustReturn(.zero(currency: fiatCurrency))
             }
@@ -47,7 +49,7 @@ final class ActivityScreenInteractor {
                 case .invalid(let error):
                     return error == .empty
                 case .value(let values):
-                    return values.count == 0
+                    return values.isEmpty
                 case .calculating:
                     return false
                 }
