@@ -87,8 +87,6 @@ extension DependencyContainer {
 
         factory { ExchangeClient() as ExchangeClientAPI }
 
-        factory { LockboxRepository() as LockboxRepositoryAPI }
-
         factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
 
         single { TradeLimitsService() as TradeLimitsAPI }

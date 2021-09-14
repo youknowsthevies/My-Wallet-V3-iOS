@@ -270,8 +270,6 @@ extension LoggedInHostingController: SideMenuViewControllerDelegate {
             handleExchange()
         case .secureChannel:
             handleSecureChannel()
-        case .lockbox:
-            break
         }
     }
 

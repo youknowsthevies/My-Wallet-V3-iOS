@@ -23,7 +23,6 @@
 #define DICTIONARY_KEY_CURRENCY @"currency"
 
 NSString * const kAccountInvitations = @"invited";
-NSString * const kLockboxInvitation = @"lockbox";
 
 @interface Wallet ()
 
@@ -831,17 +830,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getDefaultAccountLabelledAddressesCount()"] toNumber] intValue];
 }
 
-- (BOOL)isLockboxEnabled
-{
-    if ([self.accountInfo objectForKey:kAccountInvitations]) {
-        NSDictionary *invitations = [self.accountInfo objectForKey:kAccountInvitations];
-        BOOL enabled = [[invitations objectForKey:kLockboxInvitation] boolValue];
-        return enabled;
-    } else {
-        return NO;
-    }
-}
-
 - (NSString *)getMobileMessage
 {
     if ([self isInitialized]) {
@@ -851,17 +839,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     return nil;
-}
-
-# pragma mark - Lockbox
-
-- (NSArray *_Nonnull)getLockboxDevices
-{
-    if (!self.isInitialized) {
-        return [[NSArray alloc] init];
-    }
-    JSValue *devicesJsValue = [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.lockbox.devices()"];
-    return [devicesJsValue toArray];
 }
 
 #pragma mark - XLM

@@ -90,7 +90,6 @@ extension AnalyticsEvents {
         case sideNavWebLogin
         case sideNavSecureChannel
         case sideNavAirdropCenter
-        case sideNavLockbox
         case sideNavExchange
         case sideNavInterest
 
@@ -122,9 +121,6 @@ extension AnalyticsEvents {
             // Menu - airdrop center clicked
             case .sideNavAirdropCenter:
                 return "side_nav_airdrop_center"
-            // Menu - lockbox clicked
-            case .sideNavLockbox:
-                return "side_nav_lockbox"
             // Menu - exchange clicked
             case .sideNavExchange:
                 return "side_nav_exchange"

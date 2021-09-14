@@ -146,7 +146,6 @@
 
 # pragma mark - Settings
 
-- (BOOL)isLockboxEnabled;
 - (NSString *)getMobileMessage;
 - (void)getAccountInfoAndExchangeRates;
 
@@ -155,10 +154,6 @@
 - (NSString *)fromBitcoinCash:(NSString *)address;
 - (uint64_t)getBchBalance;
 - (NSString *)bitcoinCashExchangeRate;
-
-# pragma mark - Lockbox
-
-- (nonnull NSArray *)getLockboxDevices;
 
 # pragma mark - Stellar
 
