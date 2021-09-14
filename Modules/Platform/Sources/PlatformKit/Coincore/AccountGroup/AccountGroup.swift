@@ -57,11 +57,11 @@ extension AccountGroup {
             }
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValue> {
+    public func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValue> {
         let balances: [Single<MoneyValue>] = accounts
             .map { account in
                 account
-                    .fiatBalance(fiatCurrency: fiatCurrency, at: date)
+                    .fiatBalance(fiatCurrency: fiatCurrency, at: time)
             }
         return Single.zip(balances)
             .map { balances in
@@ -82,11 +82,11 @@ extension AccountGroup {
             }
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
         let balancePairs: [Single<MoneyValuePair>] = accounts
             .map { account in
                 account
-                    .balancePair(fiatCurrency: fiatCurrency, at: date)
+                    .balancePair(fiatCurrency: fiatCurrency, at: time)
                     .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
             }
         return Single.zip(balancePairs)

@@ -140,7 +140,7 @@ final class FiatCustodialAccount: FiatAccount {
             }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
         balancePair(fiatCurrency: fiatCurrency)
     }
 }

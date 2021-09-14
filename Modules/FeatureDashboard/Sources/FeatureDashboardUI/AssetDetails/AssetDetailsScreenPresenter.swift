@@ -167,7 +167,7 @@ final class AssetDetailsScreenPresenter {
         lineChartCellPresenter = AssetLineChartTableViewCellPresenter(
             cryptoCurrency: currency,
             fiatCurrencyService: interactor.fiatCurrencyService,
-            historicalFiatPriceService: interactor.priceServiceAPI
+            historicalFiatPriceService: interactor.historicalFiatPriceService
         )
 
         lineChartCellPresenter.isScrollEnabled

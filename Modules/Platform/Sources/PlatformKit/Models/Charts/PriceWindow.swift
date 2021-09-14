@@ -53,7 +53,7 @@ extension PriceWindow {
         }
     }
 
-    func timeIntervalSince1970(cryptoCurrency: CryptoCurrency, calendar: Calendar, date: Date) -> TimeInterval {
+    public func timeIntervalSince1970(cryptoCurrency: CryptoCurrency, calendar: Calendar, date: Date) -> TimeInterval {
         var components = DateComponents()
         switch self {
         case .all:

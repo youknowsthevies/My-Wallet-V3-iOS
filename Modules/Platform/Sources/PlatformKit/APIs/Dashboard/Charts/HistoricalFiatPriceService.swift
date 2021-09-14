@@ -64,34 +64,39 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     /// The associated asset
     private let cryptoCurrency: CryptoCurrency
 
-    private lazy var setup: Void = {
-        let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
+    private let scheduler: SchedulerType
 
-        let historicalPrices = Observable
-            .combineLatest(fiatCurrencyService.fiatCurrencyObservable, fetchTriggerRelay)
+    private lazy var setup: Void = {
+        let historicalPrices: Observable<(HistoricalPriceSeries, PriceWindow)> = Observable
+            .combineLatest(
+                fiatCurrencyService.fiatCurrencyObservable,
+                fetchTriggerRelay.startWith(.day(.oneHour))
+            )
             .throttle(.milliseconds(100), scheduler: scheduler)
-            .map { ($0.0, $0.1) }
-            .flatMapLatest(weak: self) { (self, tuple) -> Observable<(HistoricalPriceSeries, String, PriceWindow)> in
-                let fiatCurrency = tuple.0
-                let window = tuple.1
-                let prices = self.priceService.priceSeries(
-                    of: self.cryptoCurrency,
+            .flatMapLatest { [priceService, cryptoCurrency] fiatCurrency, window
+                -> Observable<(HistoricalPriceSeries, PriceWindow)> in
+                let prices = priceService.priceSeries(
+                    of: cryptoCurrency,
                     in: fiatCurrency,
                     within: window
                 )
-                .asObservable()
-                return Observable.zip(prices, Observable.just(fiatCurrency.code), Observable.just(window))
+                return Observable
+                    .zip(prices.asObservable(), Observable.just(window))
             }
-            .map { ($0.0, $0.2) }
             .subscribeOn(scheduler)
             .observeOn(scheduler)
-            .share(replay: 1)
 
         Observable
             .combineLatest(latestPrice, historicalPrices)
-            .map {
-                .value(HistoricalFiatPriceResponse(prices: $0.1.0, fiatValue: $0.0, priceWindow: $0.1.1))
+            .map { latestPrice, historicalPrices -> HistoricalFiatPriceResponse in
+                let (priceSeries, priceWindow) = historicalPrices
+                return HistoricalFiatPriceResponse(
+                    prices: priceSeries,
+                    fiatValue: latestPrice,
+                    priceWindow: priceWindow
+                )
             }
+            .map(CalculationState.value)
             .startWith(.calculating)
             .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)
@@ -102,8 +107,10 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
         cryptoCurrency: CryptoCurrency,
         exchangeAPI: PairExchangeServiceAPI,
         priceService: PriceServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI
+        fiatCurrencyService: FiatCurrencyServiceAPI,
+        scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)
     ) {
+        self.scheduler = scheduler
         self.exchangeAPI = exchangeAPI
         self.cryptoCurrency = cryptoCurrency
         self.priceService = priceService

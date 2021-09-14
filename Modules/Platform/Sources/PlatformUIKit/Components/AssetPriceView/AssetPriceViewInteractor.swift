@@ -16,6 +16,8 @@ public final class AssetPriceViewInteractor: AssetPriceViewInteracting {
             .observeOn(MainScheduler.instance)
     }
 
+    public func refresh() {}
+
     // MARK: - Private Accessors
 
     private lazy var setup: Void = {

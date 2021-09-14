@@ -43,13 +43,13 @@ public protocol BlockchainAccount: Account {
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue>
 
     /// The balance of this account exchanged to the given fiat currency.
-    func fiatBalance(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValue>
+    func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValue>
 
     /// The balance of this account exchanged to the given fiat currency.
     func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair>
 
     /// The balance of this account exchanged to the given fiat currency.
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair>
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair>
 
     /// Checks if this account can execute the given action.
     func can(perform action: AssetAction) -> Single<Bool>
@@ -78,8 +78,8 @@ extension BlockchainAccount {
         balancePair(fiatCurrency: fiatCurrency).map(\.quote)
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValue> {
-        balancePair(fiatCurrency: fiatCurrency, at: date).map(\.quote)
+    public func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValue> {
+        balancePair(fiatCurrency: fiatCurrency, at: time).map(\.quote)
     }
 }
 

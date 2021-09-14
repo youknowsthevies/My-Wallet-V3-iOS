@@ -30,6 +30,9 @@ public enum DashboardAsset {
                 /// Time unit. Can be further customized in future
                 /// Each value currently refers to 1 unit
                 public enum Time {
+
+                    private typealias LocalizedString = LocalizationConstants.TimeUnit
+
                     case hours(Int)
                     case days(Int)
                     case weeks(Int)
@@ -41,28 +44,28 @@ public enum DashboardAsset {
                     var string: String {
                         switch self {
                         case .hours(let number):
-                            let time = number > 1 ? LocalizationConstants.TimeUnit.Plural.hours : LocalizationConstants.TimeUnit.Singular.hour
+                            let time = number > 1 ? LocalizedString.Plural.hours : LocalizedString.Singular.hour
                             return "\(number) \(time)"
                         case .days(let number):
-                            let time = number > 1 ? LocalizationConstants.TimeUnit.Plural.days : LocalizationConstants.TimeUnit.Singular.day
+                            let time = number > 1 ? LocalizedString.Plural.days : LocalizedString.Singular.day
                             return "\(number) \(time)"
                         case .weeks(let number):
-                            let time = number > 1 ? LocalizationConstants.TimeUnit.Plural.weeks : LocalizationConstants.TimeUnit.Singular.week
+                            let time = number > 1 ? LocalizedString.Plural.weeks : LocalizedString.Singular.week
                             return "\(number) \(time)"
                         case .months(let number):
-                            let time = number > 1 ? LocalizationConstants.TimeUnit.Plural.months : LocalizationConstants.TimeUnit.Singular.month
+                            let time = number > 1 ? LocalizedString.Plural.months : LocalizedString.Singular.month
                             return "\(number) \(time)"
                         case .years(let number):
                             switch number > 1 {
                             case true:
-                                return LocalizationConstants.TimeUnit.Plural.allTime
+                                return LocalizedString.Plural.allTime
                             case false:
-                                return "\(number) \(LocalizationConstants.TimeUnit.Singular.year)"
+                                return "\(number) \(LocalizedString.Singular.year)"
                             }
                         case .timestamp(let date):
                             return DateFormatter.medium.string(from: date)
                         case .all:
-                            return LocalizationConstants.TimeUnit.Plural.allTime
+                            return LocalizedString.Plural.allTime
                         }
                     }
                 }
@@ -70,7 +73,7 @@ public enum DashboardAsset {
                 /// The `Time` for the given `AssetPrice`
                 public let time: Time
 
-                /// The asset price in localized fiat currency
+                /// The asset price in fiat.
                 public let fiatValue: FiatValue
 
                 /// Percentage of change since a certain time

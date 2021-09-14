@@ -57,7 +57,7 @@ final class BitcoinCashActivityDetailsInteractor {
         priceService.price(
             of: CurrencyType.crypto(.coin(.bitcoinCash)),
             in: fiatCurrency,
-            at: date
+            at: .time(date)
         )
         .asSingle()
     }

@@ -7,9 +7,3 @@ public protocol AssetPriceViewInteracting: AnyObject {
 
     func refresh()
 }
-
-extension AssetPriceViewInteracting {
-    public func refresh() {
-        // no-op
-    }
-}

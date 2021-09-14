@@ -56,10 +56,10 @@ public struct PaymentAccount: FiatAccount {
     }
 
     public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        balancePair(fiatCurrency: fiatCurrency, at: Date())
+        balancePair(fiatCurrency: fiatCurrency, at: .now)
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
         .just(
             .zero(
                 baseCurrency: fiatCurrency.currency,

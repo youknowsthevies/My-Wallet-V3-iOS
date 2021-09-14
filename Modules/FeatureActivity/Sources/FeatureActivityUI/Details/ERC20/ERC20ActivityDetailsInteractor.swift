@@ -62,7 +62,7 @@ final class ERC20ActivityDetailsInteractor {
         priceService.price(
             of: cryptoCurrency,
             in: fiatCurrency,
-            at: date
+            at: .time(date)
         )
         .asSingle()
     }

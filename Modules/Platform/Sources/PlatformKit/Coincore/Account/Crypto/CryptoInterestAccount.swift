@@ -47,7 +47,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         .just([])
     }
 
-    private let fiatPriceService: FiatPriceServiceAPI
+    private let priceService: PriceServiceAPI
     private let balanceService: InterestAccountOverviewAPI
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset)
@@ -55,14 +55,14 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
 
     public init(
         asset: CryptoCurrency,
-        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
         balanceService: InterestAccountOverviewAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve()
     ) {
         label = asset.defaultInterestWalletName
         self.asset = asset
         self.balanceService = balanceService
-        self.fiatPriceService = fiatPriceService
+        self.priceService = priceService
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
@@ -72,22 +72,22 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
         Single
             .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
+                priceService.price(of: asset, in: fiatCurrency).asSingle(),
                 balance
             )
             .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
         Single
             .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
+                priceService.price(of: asset, in: fiatCurrency, at: time).asSingle(),
                 balance
             )
             .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
     }
 }

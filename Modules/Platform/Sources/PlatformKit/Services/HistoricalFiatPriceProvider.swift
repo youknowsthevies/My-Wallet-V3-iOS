@@ -10,9 +10,9 @@ public protocol HistoricalFiatPriceProviding: AnyObject {
     func refresh(window: PriceWindow)
 }
 
-public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
+final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
 
-    public subscript(currency: CryptoCurrency) -> HistoricalFiatPriceServiceAPI {
+    subscript(currency: CryptoCurrency) -> HistoricalFiatPriceServiceAPI {
         services[currency]!
     }
 
@@ -22,7 +22,7 @@ public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
 
     // MARK: - Setup
 
-    public init(
+    init(
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         exchangeProvider: ExchangeProviding = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
@@ -36,11 +36,9 @@ public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
                     fiatCurrencyService: fiatCurrencyService
                 )
             }
-
-        refresh()
     }
 
-    public func refresh(window: PriceWindow = .day(.oneHour)) {
+    func refresh(window: PriceWindow) {
         services.values.forEach { service in
             service.fetchTriggerRelay.accept(window)
         }

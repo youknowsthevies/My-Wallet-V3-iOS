@@ -9,7 +9,7 @@ import FeatureInterestData
 import FeatureSettingsDomain
 import FeatureTransactionData
 import Firebase
-import PlatformKit
+import PlatformDataKit
 import ToolKit
 import UIKit
 
@@ -81,6 +81,7 @@ func defineDependencies() {
         DependencyContainer.networkKit
         DependencyContainer.walletPayloadKit
         DependencyContainer.platformKit
+        DependencyContainer.platformDataKit
         DependencyContainer.interestKit
         DependencyContainer.interestDataKit
         DependencyContainer.platformUIKit

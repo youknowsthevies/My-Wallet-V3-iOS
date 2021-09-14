@@ -6,6 +6,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+// TODO: IOS-4611: (paulo) Move file out of 'TodayExtension' folder.
 public protocol PortfolioBalanceChangeProviding {
     var changeObservable: Observable<ValueCalculationState<PortfolioBalanceChange>> { get }
 }
@@ -48,14 +49,10 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
             .disposed(by: disposeBag)
     }()
 
-    private var date24hAgo: Date {
-        Date().addingTimeInterval(-24 * 60 * 60)
-    }
-
     private func fetch(accountGroup: AccountGroup, fiatCurrency: FiatCurrency) -> Single<PortfolioBalanceChange> {
         Single.zip(
             accountGroup.fiatBalance(fiatCurrency: fiatCurrency),
-            accountGroup.fiatBalance(fiatCurrency: fiatCurrency, at: date24hAgo)
+            accountGroup.fiatBalance(fiatCurrency: fiatCurrency, at: .oneDay)
         )
         .map { currentBalance, previousBalance in
             let percentage: Decimal // in range [0...1]

@@ -7,6 +7,7 @@ let package = Package(
     platforms: [.iOS(.v14)],
     products: [
         .library(name: "PlatformKit", targets: ["PlatformKit"]),
+        .library(name: "PlatformDataKit", targets: ["PlatformDataKit"]),
         .library(name: "PlatformUIKit", targets: ["PlatformUIKit"]),
         .library(name: "PlatformKitMock", targets: ["PlatformKitMock"]),
         .library(name: "PlatformUIKitMock", targets: ["PlatformUIKitMock"])
@@ -94,6 +95,18 @@ let package = Package(
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json")
+            ]
+        ),
+        .target(
+            name: "PlatformDataKit",
+            dependencies: [
+                .target(name: "PlatformKit"),
+                .product(name: "BigInt", package: "BigInt"),
+                .product(name: "DIKit", package: "DIKit"),
+                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "NetworkKit", package: "Network"),
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .target(

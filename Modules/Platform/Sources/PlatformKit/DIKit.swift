@@ -27,8 +27,6 @@ extension DependencyContainer {
 
         factory { GeneralInformationClient() as GeneralInformationClientAPI }
 
-        factory { PriceClient() as PriceClientAPI }
-
         factory { UpdateWalletInformationClient() as UpdateWalletInformationClientAPI }
 
         factory { JWTClient() as JWTClientAPI }
@@ -170,8 +168,6 @@ extension DependencyContainer {
         factory { SupportedAssetsService() as SupportedAssetsServiceAPI }
 
         single { SupportedAssetsRepository() as SupportedAssetsRepositoryAPI }
-
-        single { FiatPriceService() as FiatPriceServiceAPI }
 
         single { ReactiveWallet() as ReactiveWalletAPI }
 

@@ -78,4 +78,9 @@ final class PricesTableViewCell: UITableViewCell {
         subtitleLabel.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: Design.textToBadgeImage)
         subtitleLabel.layout(edge: .top, to: .centerY, of: contentView, offset: Design.textOffCenter)
     }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        presenter = nil
+    }
 }

@@ -13,22 +13,22 @@ final class PriceServiceMock: PriceServiceAPI {
         fiatValue: FiatValue,
         cryptoCurrency: CryptoCurrency,
         usesFiatAsBase: Bool
-    ) -> AnyPublisher<MoneyValuePair, NetworkError> {
+    ) -> AnyPublisher<MoneyValuePair, PriceServiceError> {
         .just(moneyValuePair)
     }
 
     func price(
-        of baseCurrency: Currency,
-        in quoteCurrency: Currency
-    ) -> AnyPublisher<PriceQuoteAtTime, NetworkError> {
+        of base: Currency,
+        in quote: Currency
+    ) -> AnyPublisher<PriceQuoteAtTime, PriceServiceError> {
         .just(priceQuoteAtTime)
     }
 
     func price(
-        of baseCurrency: Currency,
-        in quoteCurrency: Currency,
-        at date: Date?
-    ) -> AnyPublisher<PriceQuoteAtTime, NetworkError> {
+        of base: Currency,
+        in quote: Currency,
+        at time: PriceTime
+    ) -> AnyPublisher<PriceQuoteAtTime, PriceServiceError> {
         .just(priceQuoteAtTime)
     }
 
@@ -36,7 +36,7 @@ final class PriceServiceMock: PriceServiceAPI {
         of baseCurrency: CryptoCurrency,
         in quoteCurrency: FiatCurrency,
         within window: PriceWindow
-    ) -> AnyPublisher<HistoricalPriceSeries, NetworkError> {
+    ) -> AnyPublisher<HistoricalPriceSeries, PriceServiceError> {
         .just(historicalPriceSeries)
     }
 }

@@ -25,7 +25,7 @@ public enum AssetLineChart {
             let currency: CryptoCurrency
 
             /// Prices for the dataset
-            let prices: [PriceQuoteAtTimeResponse]
+            let prices: [PriceQuoteAtTime]
         }
 
         /// A presentation value
@@ -42,8 +42,11 @@ public enum AssetLineChart {
             init(value: Interaction) {
                 debugDescription = value.currency.displayCode
                 color = value.delta >= 0 ? .positivePrice : .negativePrice
-                points = value.prices.enumerated().map {
-                    CGPoint(x: Double($0.offset), y: $0.element.price.doubleValue)
+                points = value.prices.enumerated().map { offset, element in
+                    CGPoint(
+                        x: Double(offset),
+                        y: element.moneyValue.displayMajorValue.doubleValue
+                    )
                 }
             }
         }

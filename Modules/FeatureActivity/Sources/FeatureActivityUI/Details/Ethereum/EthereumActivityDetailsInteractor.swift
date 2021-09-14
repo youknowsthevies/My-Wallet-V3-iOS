@@ -70,7 +70,7 @@ final class EthereumActivityDetailsInteractor {
         priceService.price(
             of: CurrencyType.crypto(.coin(.ethereum)),
             in: fiatCurrency,
-            at: date
+            at: .time(date)
         )
         .asSingle()
     }

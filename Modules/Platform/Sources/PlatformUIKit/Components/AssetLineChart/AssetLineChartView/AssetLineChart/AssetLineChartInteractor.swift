@@ -27,10 +27,10 @@ public final class AssetLineChartInteractor: AssetLineChartInteracting {
     // MARK: - Private Accessors
 
     private lazy var setup: Void = {
-        window.emit(onNext: { [weak self] priceWindow in
-            guard let self = self else { return }
-            self.loadHistoricalPrices(within: priceWindow)
-        })
+        window
+            .emit(onNext: { [weak self] priceWindow in
+                self?.loadHistoricalPrices(within: priceWindow)
+            })
             .disposed(by: disposeBag)
     }()
 
@@ -53,16 +53,21 @@ public final class AssetLineChartInteractor: AssetLineChartInteracting {
     }
 
     private func loadHistoricalPrices(within window: PriceWindow) {
-        let cryptoCurrency = self.cryptoCurrency
         fiatCurrencyService
             .fiatCurrencyObservable
-            .flatMap { [priceService] fiatCurrency in
+            .flatMap { [priceService, cryptoCurrency] fiatCurrency in
                 priceService
                     .priceSeries(of: cryptoCurrency, in: fiatCurrency, within: window)
                     .asObservable()
             }
-            .map { .init(delta: $0.delta, currency: cryptoCurrency, prices: $0.prices) }
-            .map { .loaded(next: $0) }
+            .map { [cryptoCurrency] priceSeries in
+                AssetLineChart.Value.Interaction(
+                    delta: priceSeries.delta,
+                    currency: cryptoCurrency,
+                    prices: priceSeries.prices
+                )
+            }
+            .map(AssetLineChart.State.Interaction.loaded)
             .startWith(.loading)
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: stateRelay)

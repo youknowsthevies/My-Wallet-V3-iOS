@@ -16,13 +16,14 @@ final class PortfolioScreenPresenter {
     private typealias CurrencyBalance = (currency: CryptoCurrency, hasBalance: Bool)
 
     struct Model {
-        let historicalBalanceCellPresenters: [HistoricalBalanceCellPresenter]
         let totalBalancePresenter: TotalBalanceViewPresenter
         var announcementCardViewModel: AnnouncementCardViewModel?
         var fiatBalanceCollectionViewPresenter: CurrencyViewPresenter?
         var cryptoCurrencies: [CryptoCurrency: LoadingState<Bool>]
 
-        var cellArrangement: [PortfolioCellType] {
+        func cellArrangement(
+            interactor: (CryptoCurrency) -> HistoricalBalanceCellInteractor?
+        ) -> [PortfolioCellType] {
             let emptyCryptoCurrencies = cryptoCurrencies
                 .filter { $0.value.value == true }
                 .map(\.key)
@@ -30,34 +31,42 @@ final class PortfolioScreenPresenter {
 
             switch (emptyCryptoCurrencies, cryptoCurrencies.contains(where: \.value.isLoading)) {
             case (false, _):
-                return loadedArrangement
+                return loadedArrangement(interactor: interactor)
             case (true, false):
-                return emptyStateArrangement
+                return emptyStateArrangement(interactor: interactor)
             case (true, true):
                 return loadingArrangement
             }
         }
 
-        private var emptyStateArrangement: [PortfolioCellType] {
+        private func emptyStateArrangement(
+            interactor: (CryptoCurrency) -> HistoricalBalanceCellInteractor?
+        ) -> [PortfolioCellType] {
             guard fiatBalanceCollectionViewPresenter == nil else {
-                return loadedArrangement
+                return loadedArrangement(interactor: interactor)
             }
             return addingAnnouncement(items: [.emptyState])
         }
 
-        private var loadedArrangement: [PortfolioCellType] {
+        private func loadedArrangement(
+            interactor: (CryptoCurrency) -> HistoricalBalanceCellInteractor?
+        ) -> [PortfolioCellType] {
             var items: [PortfolioCellType] = [
                 .totalBalance(totalBalancePresenter)
             ]
             if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
             }
+
             cryptoCurrencies
                 .filter { $0.value.value == true }
                 .map(\.key)
                 .sorted()
                 .compactMap { cryptoCurrency in
-                    historicalBalanceCellPresenters.first(where: { $0.cryptoCurrency == cryptoCurrency })
+                    guard let interactor = interactor(cryptoCurrency) else {
+                        return nil
+                    }
+                    return HistoricalBalanceCellPresenter(interactor: interactor)
                 }
                 .map(PortfolioCellType.crypto)
                 .forEach { items.append($0) }
@@ -116,10 +125,9 @@ final class PortfolioScreenPresenter {
 
     private var cryptoCurrencies: Observable<CurrencyBalance> {
         guard internalFeatureFlagService.isEnabled(.splitDashboard) else {
-            return
-                Observable<CryptoCurrency>
-                    .from(interactor.enabledCryptoCurrencies, scheduler: MainScheduler.asyncInstance)
-                    .map { (currency: $0, hasBalance: true) }
+            return Observable<CryptoCurrency>
+                .from(interactor.enabledCryptoCurrencies, scheduler: MainScheduler.asyncInstance)
+                .map { (currency: $0, hasBalance: true) }
         }
         let cryptoStreams: [Observable<CurrencyBalance>] = coincore.cryptoAssets
             .map { asset -> Observable<CurrencyBalance> in
@@ -165,18 +173,21 @@ final class PortfolioScreenPresenter {
             coincore: coincore,
             fiatCurrencyService: fiatCurrencyService
         )
-        let historicalBalanceCellPresenters = interactor
-            .historicalBalanceInteractors
-            .map(HistoricalBalanceCellPresenter.init)
         let enabledCryptoCurrencies = interactor.enabledCryptoCurrencies
             .reduce(into: [CryptoCurrency: LoadingState<Bool>]()) { result, cryptoCurrency in
                 result[cryptoCurrency] = .loading
             }
         model = Model(
-            historicalBalanceCellPresenters: historicalBalanceCellPresenters,
             totalBalancePresenter: totalBalancePresenter,
             cryptoCurrencies: enabledCryptoCurrencies
         )
+    }
+
+    // MARK: - Navigation
+
+    /// Should be invoked upon tapping navigation bar leading button
+    func navigationBarLeadingButtonPressed() {
+        drawerRouter.toggleSideMenu()
     }
 
     // MARK: - Setup
@@ -234,7 +245,9 @@ final class PortfolioScreenPresenter {
             .startWith(())
             .throttle(.milliseconds(250), scheduler: MainScheduler.asyncInstance)
             .map(weak: self) { (self, _) in
-                self.model.cellArrangement
+                self.model.cellArrangement { cryptoCurrency in
+                    self.interactor.historicalBalanceCellInteractor(for: cryptoCurrency)
+                }
             }
             .map(PortfolioViewModel.init)
             .map { [$0] }
@@ -244,10 +257,7 @@ final class PortfolioScreenPresenter {
         refreshRelay
             .throttle(.milliseconds(500), scheduler: MainScheduler.asyncInstance)
             .bind { [weak self] _ in
-                self?.interactor.refresh()
-                self?.announcementPresenter.refresh()
-                self?.fiatBalancePresenter.refresh()
-                self?.model.totalBalancePresenter.refresh()
+                self?.didRefresh()
             }
             .disposed(by: disposeBag)
 
@@ -266,10 +276,12 @@ final class PortfolioScreenPresenter {
             .disposed(by: disposeBag)
     }
 
-    // MARK: - Navigation
+    // MARK: - Private Methods
 
-    /// Should be invoked upon tapping navigation bar leading button
-    func navigationBarLeadingButtonPressed() {
-        drawerRouter.toggleSideMenu()
+    private func didRefresh() {
+        interactor.refresh()
+        announcementPresenter.refresh()
+        fiatBalancePresenter.refresh()
+        model.totalBalancePresenter.refresh()
     }
 }

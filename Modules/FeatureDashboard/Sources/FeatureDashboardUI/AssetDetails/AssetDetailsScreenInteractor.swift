@@ -34,7 +34,7 @@ final class AssetDetailsScreenInteractor {
             .rate(for: currency)
     }
 
-    let priceServiceAPI: HistoricalFiatPriceServiceAPI
+    let historicalFiatPriceService: HistoricalFiatPriceServiceAPI
     let fiatCurrencyService: FiatCurrencyServiceAPI
 
     // MARK: - Private Properties
@@ -59,15 +59,13 @@ final class AssetDetailsScreenInteractor {
         self.blockchainAccountFetcher = blockchainAccountFetcher
         self.currency = currency
         self.savingsAccountService = savingsAccountService
-        priceServiceAPI = HistoricalFiatPriceService(
+        historicalFiatPriceService = HistoricalFiatPriceService(
             cryptoCurrency: currency,
             exchangeAPI: exchangeAPI,
             fiatCurrencyService: fiatCurrencyService
         )
         recoveryPhraseStatus = resolve()
         self.fiatCurrencyService = fiatCurrencyService
-
-        priceServiceAPI.fetchTriggerRelay.accept(.week(.oneHour))
     }
 
     func refresh() {

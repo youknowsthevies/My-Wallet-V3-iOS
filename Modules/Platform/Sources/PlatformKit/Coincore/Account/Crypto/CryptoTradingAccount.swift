@@ -142,7 +142,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let custodialPendingDepositService: CustodialPendingDepositServiceAPI
     private let eligibilityService: EligibilityServiceAPI
     private let errorRecorder: ErrorRecording
-    private let fiatPriceService: FiatPriceServiceAPI
+    private let priceService: PriceServiceAPI
     private let featureFetcher: FeatureFetching
     private let kycTiersService: KYCTiersServiceAPI
     private let ordersActivity: OrdersActivityServiceAPI
@@ -161,7 +161,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         buySellActivity: BuySellActivityItemEventServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         featureFetcher: FeatureFetching = resolve(),
-        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve(),
         custodialAddressService: CustodialAddressServiceAPI = resolve(),
@@ -175,7 +175,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.ordersActivity = ordersActivity
         self.swapActivity = swapActivity
         self.buySellActivity = buySellActivity
-        self.fiatPriceService = fiatPriceService
+        self.priceService = priceService
         self.balanceService = balanceService
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
         self.custodialAddressService = custodialAddressService
@@ -251,22 +251,22 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
         Single
             .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
+                priceService.price(of: asset, in: fiatCurrency).asSingle(),
                 balance
             )
             .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
         Single
             .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
+                priceService.price(of: asset, in: fiatCurrency, at: time).asSingle(),
                 balance
             )
             .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
     }
 }

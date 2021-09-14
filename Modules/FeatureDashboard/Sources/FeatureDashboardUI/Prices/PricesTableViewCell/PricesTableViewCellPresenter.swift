@@ -15,12 +15,12 @@ final class PricesTableViewCellPresenter {
     }
 
     private let subtitleRelay = BehaviorRelay<NSAttributedString?>(value: nil)
-    private let interactor: AssetPriceViewInteractor
+    private let interactor: AssetPriceViewInteracting
     private let disposeBag: DisposeBag = .init()
 
     init(
         cryptoCurrency: CryptoCurrency,
-        interactor: AssetPriceViewInteractor
+        interactor: AssetPriceViewInteracting
     ) {
         imageViewModel = ImageViewContent(
             imageResource: cryptoCurrency.logoResource,

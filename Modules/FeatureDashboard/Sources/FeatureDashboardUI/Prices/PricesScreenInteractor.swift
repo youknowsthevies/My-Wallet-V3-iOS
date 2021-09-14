@@ -11,9 +11,6 @@ final class PricesScreenInteractor {
 
     // MARK: - Properties
 
-    let enabledCurrenciesService: EnabledCurrenciesServiceAPI
-    let priceInteractors: [CryptoCurrency: AssetPriceViewInteractor]
-
     var enabledCryptoCurrencies: [CryptoCurrency] {
         enabledCurrenciesService.allEnabledCryptoCurrencies
     }
@@ -21,7 +18,11 @@ final class PricesScreenInteractor {
     // MARK: - Private Properties
 
     private let disposeBag = DisposeBag()
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let historicalProvider: HistoricalFiatPriceProviding
+    private let priceInteractors: [CryptoCurrency: AssetPriceViewInteractor]
+
+    // MARK: - Init
 
     init(
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
@@ -37,7 +38,16 @@ final class PricesScreenInteractor {
             }
     }
 
+    // MARK: - Methods
+
+    func assetPriceViewInteractor(
+        for currency: CryptoCurrency
+    ) -> AssetPriceViewInteracting? {
+        priceInteractors[currency]
+    }
+
     func refresh() {
+        // TODO: IOS-4611: (paulo) Prices should not use historicalProvider.
         historicalProvider.refresh(window: .day(.oneHour))
     }
 }

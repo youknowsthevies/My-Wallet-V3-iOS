@@ -11,12 +11,7 @@ final class PortfolioScreenInteractor {
 
     // MARK: - Properties
 
-    let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     let fiatBalancesInteractor: DashboardFiatBalancesInteractor
-    let historicalBalanceInteractors: [HistoricalBalanceCellInteractor]
-    let historicalProvider: HistoricalFiatPriceProviding
-    let reactiveWallet: ReactiveWalletAPI
-    let userPropertyInteractor: AnalyticsUserPropertyInteracting
 
     var enabledCryptoCurrencies: [CryptoCurrency] {
         enabledCurrenciesService.allEnabledCryptoCurrencies
@@ -24,7 +19,16 @@ final class PortfolioScreenInteractor {
 
     // MARK: - Private Properties
 
+    private let coincore: CoincoreAPI
     private let disposeBag = DisposeBag()
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let historicalProvider: HistoricalFiatPriceProviding
+    private let reactiveWallet: ReactiveWalletAPI
+    private let userPropertyInteractor: AnalyticsUserPropertyInteracting
+    private var historicalBalanceCellInteractors: [CryptoCurrency: HistoricalBalanceCellInteractor] = [:]
+
+    // MARK: - Init
 
     init(
         historicalProvider: HistoricalFiatPriceProviding = resolve(),
@@ -34,18 +38,12 @@ final class PortfolioScreenInteractor {
         coincore: CoincoreAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
+        self.coincore = coincore
+        self.enabledCurrenciesService = enabledCurrenciesService
+        self.fiatCurrencyService = fiatCurrencyService
         self.historicalProvider = historicalProvider
         self.reactiveWallet = reactiveWallet
-        self.enabledCurrenciesService = enabledCurrenciesService
         self.userPropertyInteractor = userPropertyInteractor
-        historicalBalanceInteractors = coincore.cryptoAssets.map { cryptoAsset in
-            HistoricalBalanceCellInteractor(
-                cryptoAsset: cryptoAsset,
-                historicalFiatPriceService: historicalProvider[cryptoAsset.asset],
-                fiatCurrencyService: fiatCurrencyService
-            )
-        }
-
         fiatBalancesInteractor = DashboardFiatBalancesInteractor(fiatBalancesInteractor: resolve())
 
         NotificationCenter.when(.walletInitialized) { [weak self] _ in
@@ -53,21 +51,39 @@ final class PortfolioScreenInteractor {
         }
     }
 
+    // MARK: - Methods
+
+    func historicalBalanceCellInteractor(
+        for cryptoCurrency: CryptoCurrency
+    ) -> HistoricalBalanceCellInteractor? {
+        if let interactor = historicalBalanceCellInteractors[cryptoCurrency] {
+            return interactor
+        }
+        let cryptoAsset = coincore[cryptoCurrency]
+        let interactor = HistoricalBalanceCellInteractor(
+            cryptoAsset: cryptoAsset,
+            historicalFiatPriceService: historicalProvider[cryptoAsset.asset],
+            fiatCurrencyService: fiatCurrencyService
+        )
+        historicalBalanceCellInteractors[cryptoCurrency] = interactor
+        return interactor
+    }
+
     func refresh() {
         reactiveWallet.waitUntilInitializedSingle
             .subscribe(onSuccess: { [weak self] _ in
-                guard let self = self else { return }
-
-                for interactor in self.historicalBalanceInteractors {
-                    interactor.refresh()
-                }
-
-                // Refresh dashboard interaction layer
-                self.historicalProvider.refresh(window: .day(.oneHour))
-
-                // Record user properties once wallet is initialized
-                self.userPropertyInteractor.record()
+                self?.refreshAfterReactiveWallet()
             })
             .disposed(by: disposeBag)
+    }
+
+    // MARK: - Private Methods
+
+    private func refreshAfterReactiveWallet() {
+        for interactor in historicalBalanceCellInteractors.values {
+            interactor.refresh()
+        }
+        // Record user properties once wallet is initialized
+        userPropertyInteractor.record()
     }
 }

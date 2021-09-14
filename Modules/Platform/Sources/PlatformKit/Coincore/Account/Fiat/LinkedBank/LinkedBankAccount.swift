@@ -112,7 +112,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
     }
 

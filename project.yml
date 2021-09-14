@@ -428,6 +428,8 @@ targets:
       - package: Platform
         product: PlatformKit
       - package: Platform
+        product: PlatformDataKit
+      - package: Platform
         product: PlatformUIKit
       - package: RemoteNotifications
         product: RemoteNotificationsKit
@@ -586,6 +588,8 @@ targets:
       - package: Platform
         product: PlatformKit
       - package: Platform
+        product: PlatformDataKit
+      - package: Platform
         product: PlatformUIKit
     platform: iOS
     sources:
@@ -620,6 +624,8 @@ targets:
         product: Localization
       - package: Platform
         product: PlatformKit
+      - package: Platform
+        product: PlatformDataKit
       - package: Platform
         product: PlatformUIKit
       - package: Tool

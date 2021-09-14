@@ -3,24 +3,35 @@
 import Foundation
 
 public struct HistoricalPriceSeries {
-    public let currency: CryptoCurrency
 
+    public let currency: CryptoCurrency
     /// The difference in percentage between the latest price to the first price
     public let delta: Double
     public let deltaPercentage: Double
-    public let prices: [PriceQuoteAtTimeResponse]
+    public let prices: [PriceQuoteAtTime]
     public let fiatChange: Decimal
 
-    public init(currency: CryptoCurrency, prices: [PriceQuoteAtTimeResponse]) {
-        self.currency = currency
-        self.prices = prices
+    public init(currency: CryptoCurrency, prices: [PriceQuoteAtTime]) {
         if let first = prices.first, let latest = prices.last {
-            fiatChange = latest.price - first.price
-            delta = fiatChange.doubleValue / first.price.doubleValue
+            let fiatChange = latest.moneyValue.displayMajorValue - first.moneyValue.displayMajorValue
+            let delta = fiatChange.doubleValue / first.moneyValue.displayMajorValue.doubleValue
+            self.init(currency: currency, delta: delta, deltaPercentage: delta * 100, prices: prices, fiatChange: fiatChange)
         } else {
-            fiatChange = 0
-            delta = 0
+            self.init(currency: currency, delta: 0, deltaPercentage: 0, prices: [], fiatChange: 0)
         }
-        deltaPercentage = delta * 100
+    }
+
+    private init(
+        currency: CryptoCurrency,
+        delta: Double,
+        deltaPercentage: Double,
+        prices: [PriceQuoteAtTime],
+        fiatChange: Decimal
+    ) {
+        self.currency = currency
+        self.delta = delta
+        self.deltaPercentage = deltaPercentage
+        self.prices = prices
+        self.fiatChange = fiatChange
     }
 }

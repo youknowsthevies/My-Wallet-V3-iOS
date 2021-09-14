@@ -74,7 +74,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     private let hdAccountIndex: Int
     private let bridge: StellarWalletBridgeAPI
     private let accountDetailsService: StellarAccountDetailsServiceAPI
-    private let fiatPriceService: FiatPriceServiceAPI
+    private let priceService: PriceServiceAPI
     private let accountCache: CachedValue<StellarAccountDetails>
     private let operationsService: StellarHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
@@ -87,7 +87,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         operationsService: StellarHistoricalTransactionServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         accountDetailsService: StellarAccountDetailsServiceAPI = resolve(),
-        fiatPriceService: FiatPriceServiceAPI = resolve()
+        priceService: PriceServiceAPI = resolve()
     ) {
         let asset = CryptoCurrency.coin(.stellar)
         self.asset = asset
@@ -98,7 +98,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         self.accountDetailsService = accountDetailsService
         self.swapTransactionsService = swapTransactionsService
         self.operationsService = operationsService
-        self.fiatPriceService = fiatPriceService
+        self.priceService = priceService
         accountCache = .init(configuration: .init(refreshType: .periodic(seconds: 20)))
         accountCache.setFetch(weak: self) { (self) -> Single<StellarAccountDetails> in
             self.accountDetailsService.accountDetails(for: publicKey)
@@ -124,11 +124,11 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
         Single
             .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
+                priceService.price(of: asset, in: fiatCurrency).asSingle(),
                 balance
             )
             .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
     }
 
@@ -136,14 +136,14 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         bridge.update(accountIndex: hdAccountIndex, label: newLabel)
     }
 
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> Single<MoneyValuePair> {
         Single
             .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
+                priceService.price(of: asset, in: fiatCurrency, at: time).asSingle(),
                 balance
             )
             .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
     }
 }

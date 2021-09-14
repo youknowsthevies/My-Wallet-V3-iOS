@@ -27,7 +27,7 @@ public final class AssetPriceView: UIView {
                 .disposed(by: disposeBag)
 
             presenter.state
-                .map(\.isLoading)
+                .filter(\.isLoading)
                 .mapToVoid()
                 .bind { [weak self] in
                     self?.startShimmering()
@@ -35,7 +35,7 @@ public final class AssetPriceView: UIView {
                 .disposed(by: disposeBag)
 
             presenter.state
-                .filter { $0.isLoading == false }
+                .filter { !$0.isLoading }
                 .mapToVoid()
                 .bind { [weak self] in
                     self?.stopShimmering()
@@ -46,9 +46,9 @@ public final class AssetPriceView: UIView {
 
     // MARK: - IBOutlet Properties
 
-    @IBOutlet fileprivate var priceLabel: UILabel!
-    @IBOutlet fileprivate var changeLabel: UILabel!
-    @IBOutlet fileprivate var stackView: UIStackView!
+    fileprivate let priceLabel = UILabel(frame: .zero)
+    fileprivate let changeLabel = UILabel(frame: .zero)
+    private let stackView = UIStackView(frame: .zero)
 
     fileprivate var priceLabelShimmeringView: ShimmeringView!
     fileprivate var changeLabelShimmeringView: ShimmeringView!
@@ -66,7 +66,22 @@ public final class AssetPriceView: UIView {
     }
 
     private func setup() {
-        fromNib(in: .module)
+        priceLabel.frame = .init(origin: .zero, size: frame.size)
+        changeLabel.frame = .init(origin: .zero, size: frame.size)
+        stackView.frame = .init(origin: .zero, size: frame.size)
+        stackView.axis = .vertical
+        stackView.distribution = .fillProportionally
+        stackView.spacing = 4
+        priceLabel.text = " "
+        changeLabel.text = " "
+        priceLabel.contentHuggingPriority = (.required, .required)
+        priceLabel.contentCompressionResistancePriority = (.required, .required)
+        changeLabel.contentHuggingPriority = (.required, UILayoutPriority(251))
+        changeLabel.contentCompressionResistancePriority = (.required, .defaultHigh)
+        addSubview(stackView)
+        stackView.layoutToSuperview(.leading, .trailing, .top, .bottom)
+        stackView.addArrangedSubview(priceLabel)
+        stackView.addArrangedSubview(changeLabel)
         setNeedsLayout()
         layoutIfNeeded()
     }
