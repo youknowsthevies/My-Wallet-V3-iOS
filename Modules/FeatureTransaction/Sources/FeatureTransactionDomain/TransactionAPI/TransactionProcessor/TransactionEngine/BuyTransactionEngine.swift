@@ -37,7 +37,7 @@ final class BuyTransactionEngine: TransactionEngine {
     var askForRefreshConfirmation: (AskForRefreshConfirmation)! // TODO: use this
 
     func assertInputsValid() {
-        assert(sourceAccount is FeatureTransactionDomain.PaymentAccount)
+        assert(sourceAccount is FeatureTransactionDomain.PaymentMethodAccount)
         assert(transactionTarget is CryptoAccount)
     }
 
@@ -105,7 +105,7 @@ final class BuyTransactionEngine: TransactionEngine {
     // MARK: - Helpers
 
     private func makeTransaction(amount: MoneyValue? = nil) -> Single<PendingTransaction> {
-        guard let paymentAccount = sourceAccount as? FeatureTransactionDomain.PaymentAccount,
+        guard let paymentAccount = sourceAccount as? FeatureTransactionDomain.PaymentMethodAccount,
               let fiatCurrency = paymentAccount.currencyType.fiatCurrency
         else {
             return .error(TransactionValidationFailure(state: .optionInvalid))

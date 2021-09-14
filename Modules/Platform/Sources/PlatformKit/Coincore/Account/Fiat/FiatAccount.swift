@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import RxSwift
 
 public protocol FiatAccount: SingleAccount {
@@ -8,8 +9,30 @@ public protocol FiatAccount: SingleAccount {
 }
 
 extension FiatAccount {
+
     public var currencyType: CurrencyType {
         fiatCurrency.currency
+    }
+
+    public var pendingBalance: Single<MoneyValue> {
+        balance
+    }
+
+    public var actionableBalance: Single<MoneyValue> {
+        balance
+    }
+
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        .just(
+            .zero(
+                baseCurrency: fiatCurrency.currency,
+                quoteCurrency: fiatCurrency.currency
+            )
+        )
+    }
+
+    public var receiveAddress: Single<ReceiveAddress> {
+        .error(ReceiveAddressError.notSupported)
     }
 
     public var requireSecondPassword: Single<Bool> {

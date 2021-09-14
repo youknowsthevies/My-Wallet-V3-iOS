@@ -82,7 +82,7 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
                     isEnabled: tapEnabled
                 )
 
-            case let linkablePayment as FeatureTransactionDomain.PaymentAccount:
+            case let linkablePayment as FeatureTransactionDomain.PaymentMethodAccount:
                 return .init(
                     title: linkablePayment.label,
                     subtitle: linkablePayment.paymentMethod.max.displayString,

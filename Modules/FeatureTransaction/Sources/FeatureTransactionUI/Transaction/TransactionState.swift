@@ -344,9 +344,13 @@ enum TransactionFlowStep: Equatable {
     case selectTarget
     case enterAmount
     case kycChecks
+    case validateSource
     case confirmDetail
     case inProgress
     case closed
+}
+
+extension TransactionFlowStep {
 
     var addToBackStack: Bool {
         switch self {
@@ -361,7 +365,28 @@ enum TransactionFlowStep: Equatable {
              .inProgress,
              .initial,
              .kycChecks,
+             .validateSource,
              .linkABank:
+            return false
+        }
+    }
+
+    /// Returning `true` indicates that the flow gets automatically dismissed. This is usually the case for independent modal flows.
+    var goingBackSkipsNavigation: Bool {
+        switch self {
+        case .kycChecks,
+             .linkABank:
+            return true
+        case .closed,
+             .confirmDetail,
+             .enterAddress,
+             .enterAmount,
+             .enterPassword,
+             .inProgress,
+             .initial,
+             .selectSource,
+             .selectTarget,
+             .validateSource:
             return false
         }
     }

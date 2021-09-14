@@ -70,11 +70,19 @@ final class TransactionModel {
 
         case .bankAccountLinked(let action):
             return processSourceAccountsListUpdate(action: action)
+
         case .bankAccountLinkedFromSource(let source, let action):
-            return processTargetAccountsListUpdate(fromAccount: source, action: action)
+            switch action {
+            case .buy:
+                return nil
+            default:
+                return processTargetAccountsListUpdate(fromAccount: source, action: action)
+            }
+
         case .showBankLinkingFlow,
              .bankLinkingFlowDismissed:
             return nil
+
         case .initialiseWithSourceAccount(let action, let sourceAccount, _):
             return processTargetAccountsListUpdate(fromAccount: sourceAccount, action: action)
         case .targetAccountSelected(let destinationAccount):
@@ -101,6 +109,8 @@ final class TransactionModel {
         case .pendingTransactionUpdated:
             return nil
         case .performKYCChecks:
+            return nil
+        case .validateSourceAccount:
             return nil
         case .prepareTransaction:
             return nil

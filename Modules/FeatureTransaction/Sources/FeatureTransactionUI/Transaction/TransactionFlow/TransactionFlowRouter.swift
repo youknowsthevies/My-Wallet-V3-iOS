@@ -210,12 +210,13 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         linkBankFlowRouter = router
         router.startFlow()
             .withLatestFrom(transactionModel.state) { ($0, $1) }
+            .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [topMostViewControllerProvider] effect, state in
+                topMostViewControllerProvider
+                    .topMostViewController?
+                    .dismiss(animated: true, completion: nil)
                 switch effect {
                 case .closeFlow:
-                    topMostViewControllerProvider
-                        .topMostViewController?
-                        .dismiss(animated: true, completion: nil)
                     transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
                 case .bankLinked:
                     if let source = state.source {
@@ -275,7 +276,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             ),
             action: action
         )
-        let button: ButtonViewModel? = action == .deposit ? .secondary(with: LocalizationConstants.addNew) : nil
+        let button: ButtonViewModel? = action.supportsAddingSourceAccounts ? .secondary(with: LocalizationConstants.addNew) : nil
         return builder.build(
             listener: .listener(interactor),
             navigationModel: ScreenNavigationModel.AccountPicker.modal(
@@ -308,5 +309,24 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle)),
             buttonViewModel: button
         )
+    }
+}
+
+extension AssetAction {
+
+    var supportsAddingSourceAccounts: Bool {
+        switch self {
+        case .buy,
+             .deposit:
+            return true
+
+        case .sell,
+             .withdraw,
+             .receive,
+             .send,
+             .swap,
+             .viewActivity:
+            return false
+        }
     }
 }

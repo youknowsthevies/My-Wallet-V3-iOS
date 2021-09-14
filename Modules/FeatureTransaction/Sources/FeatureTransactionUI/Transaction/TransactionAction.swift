@@ -34,6 +34,7 @@ enum TransactionAction: MviAction {
     case updateAmount(MoneyValue) // Anytime the amount changes
     case pendingTransactionUpdated(PendingTransaction)
     case performKYCChecks
+    case validateSourceAccount // e.g. Give an opportunity to link a payment method
     case prepareTransaction // When continue button is tapped on enter amount screen
     case executeTransaction
     case updateTransactionComplete(TransactionResult)
@@ -69,18 +70,25 @@ extension TransactionAction {
             return newState.withUpdatedBackstack(oldState: oldState)
         case .updateFeeLevelAndAmount:
             return oldState
+
         case .showBankLinkingFlow:
-            var newState = oldState
-            newState.step = .linkABank
-            return newState.withUpdatedBackstack(oldState: oldState)
-        case .bankAccountLinkedFromSource:
-            var newState = oldState
-            newState.step = .selectTarget
-            return newState.withUpdatedBackstack(oldState: oldState)
-        case .bankAccountLinked:
-            var newState = oldState
-            newState.step = .selectTarget
-            return newState.withUpdatedBackstack(oldState: oldState)
+            return oldState.stateForMovingForward(to: .linkABank)
+
+        case .bankAccountLinkedFromSource,
+             .bankAccountLinked:
+            switch oldState.action {
+            case .buy:
+                return oldState.stateForMovingOneStepBack()
+
+            case .deposit, .withdraw:
+                var newState = oldState
+                newState.step = .selectTarget
+                return newState.withUpdatedBackstack(oldState: oldState)
+
+            default:
+                unimplemented()
+            }
+
         case .bankLinkingFlowDismissed(let action):
             var newState = oldState
             switch action {
@@ -88,6 +96,8 @@ extension TransactionAction {
                 newState.step = .selectTarget
             case .deposit:
                 newState.step = .selectSource
+            case .buy:
+                newState = oldState.stateForMovingOneStepBack()
             default:
                 unimplemented()
             }
@@ -241,13 +251,10 @@ extension TransactionAction {
                 .withUpdatedBackstack(oldState: oldState)
 
         case .performKYCChecks:
-            return oldState
-                // KYC is shown and dismissed by a separate module so not for us to dismiss the modal
-                .update(keyPath: \.step, value: .kycChecks)
-                // Ensure this is threated as a step forward (although it won't be added to the back stack)
-                .update(keyPath: \.isGoingBack, value: false)
-                // Ensure the previoust step is in the back step
-                .withUpdatedBackstack(oldState: oldState)
+            return oldState.stateForMovingForward(to: .kycChecks)
+
+        case .validateSourceAccount:
+            return oldState.stateForMovingForward(to: .validateSource)
 
         case .prepareTransaction:
             var newState = oldState
@@ -279,14 +286,10 @@ extension TransactionAction {
             var newState = oldState
             newState.step = .closed
             return newState
+
         case .returnToPreviousStep:
-            var stepsBackStack = oldState.stepsBackStack
-            let previousStep = stepsBackStack.popLast() ?? .initial
-            return oldState
-                .update(keyPath: \.stepsBackStack, value: stepsBackStack)
-                .update(keyPath: \.step, value: previousStep)
-                .update(keyPath: \.isGoingBack, value: true)
-                .update(keyPath: \.errorState, value: .none)
+            return oldState.stateForMovingOneStepBack()
+
         case .modifyTransactionConfirmation:
             return oldState
         case .invalidateTransaction:
@@ -354,7 +357,26 @@ enum FatalTransactionError: Error, Equatable {
 
 extension TransactionState {
 
-    func withUpdatedBackstack(oldState: TransactionState) -> TransactionState {
+    fileprivate func stateForMovingForward(to nextStep: TransactionFlowStep) -> TransactionState {
+        var newStepsBackStack = stepsBackStack
+        if step.addToBackStack {
+            newStepsBackStack.append(step)
+        }
+        return update(keyPath: \.isGoingBack, value: false)
+            .update(keyPath: \.step, value: nextStep)
+            .update(keyPath: \.stepsBackStack, value: newStepsBackStack)
+    }
+
+    fileprivate func stateForMovingOneStepBack() -> TransactionState {
+        var stepsBackStack = stepsBackStack
+        let previousStep = stepsBackStack.popLast() ?? .initial
+        return update(keyPath: \.stepsBackStack, value: stepsBackStack)
+            .update(keyPath: \.step, value: previousStep)
+            .update(keyPath: \.isGoingBack, value: true)
+            .update(keyPath: \.errorState, value: .none)
+    }
+
+    fileprivate func withUpdatedBackstack(oldState: TransactionState) -> TransactionState {
         if !isGoingBack, oldState.step != step, oldState.step.addToBackStack {
             var newState = self
             var newStack = oldState.stepsBackStack

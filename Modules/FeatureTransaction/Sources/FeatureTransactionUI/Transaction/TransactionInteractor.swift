@@ -104,7 +104,7 @@ final class TransactionInteractor {
     func fetchPaymentAccounts(for currency: CryptoCurrency, amount: MoneyValue?) -> Single<[SingleAccount]> {
         let amount = amount ?? .zero(currency: currency)
         return paymentMethodsService
-            .fetchPaymentAccounts(for: currency, amount: amount)
+            .fetchPaymentMethodAccounts(for: currency, amount: amount)
             .map { $0 }
             .asSingle()
     }
@@ -134,7 +134,7 @@ final class TransactionInteractor {
             .asSingle()
         switch action {
         case .buy:
-            // TODO: check the new limits API to understand whether passing asset and amount is really required
+            // TODO: the new limits API will require an amount
             return fetchPaymentAccounts(for: .coin(.bitcoin), amount: nil)
         case .swap:
             let tradingPairs = availablePairsService.availableTradingPairs
@@ -207,7 +207,7 @@ final class TransactionInteractor {
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         case .buy:
             return coincore
-                .cryptoAccounts(supporting: .buy)
+                .cryptoAccounts(supporting: .buy, filter: .custodial)
                 .asSingle()
                 .map { $0 }
         case .sell:

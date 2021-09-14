@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -8,7 +7,7 @@ import ToolKit
 // TODO: replace this with an AccountGroup
 
 /// A type that represents a payment method as a `BlockchainAccount`.
-public struct PaymentAccount: FiatAccount {
+public struct PaymentMethodAccount: FiatAccount {
 
     public let paymentMethod: PaymentMethod
     public let linkedAccount: FiatAccount?
@@ -40,40 +39,19 @@ public struct PaymentAccount: FiatAccount {
         linkedAccount?.label ?? paymentMethod.type.rawType.rawValue
     }
 
-    public var balance: Single<MoneyValue> {
-        .just(paymentMethod.max.moneyValue)
+    public var isFunded: Single<Bool> {
+        .just(true)
     }
 
-    public var pendingBalance: Single<MoneyValue> {
-        .just(.zero(currency: fiatCurrency))
+    public var balance: Single<MoneyValue> {
+        .just(paymentMethod.max.moneyValue)
     }
 
     public var actions: Single<AvailableActions> {
         .just([.buy])
     }
 
-    public var isFunded: Single<Bool> {
-        .just(true)
-    }
-
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
-        .just(
-            .zero(
-                baseCurrency: fiatCurrency.currency,
-                quoteCurrency: fiatCurrency.currency
-            )
-        )
-    }
-
     public func can(perform action: AssetAction) -> Single<Bool> {
         .just(action == .buy)
-    }
-
-    public var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
-    }
-
-    public var actionableBalance: Single<MoneyValue> {
-        .just(paymentMethod.max.moneyValue)
     }
 }
