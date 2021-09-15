@@ -41,9 +41,9 @@ let package = Package(
         .target(
             name: "FeatureTourUI",
             dependencies: [
-                "FeatureTourDomain",
-                "Localization",
-                "UIComponents",
+                .target(name: "FeatureTourDomain"),
+                .product(name: "Localization", package: "Localization"),
+                .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
             path: "UI"
@@ -51,10 +51,10 @@ let package = Package(
         .testTarget(
             name: "FeatureTourTests",
             dependencies: [
-                "FeatureTourData",
-                "FeatureTourDomain",
-                "FeatureTourUI",
-                "SnapshotTesting",
+                .target(name: "FeatureTourData"),
+                .target(name: "FeatureTourDomain"),
+                .target(name: "FeatureTourUI"),
+                .product(name: "SnapshotTesting", package: "SnapshotTesting"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
             path: "Tests",

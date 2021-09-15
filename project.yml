@@ -290,6 +290,8 @@ packages:
     path: Modules/FeatureOnboarding
   FeatureSettings:
     path: Modules/FeatureSettings
+  FeatureTour:
+    path: Modules/FeatureTour
   FeatureTransaction:
     path: Modules/FeatureTransaction
   HDWallet:
@@ -377,6 +379,7 @@ targets:
       - package: FeatureKYC
       - package: FeatureOnboarding
       - package: FeatureSettings
+      - package: FeatureTour
       - package: FeatureTransaction
 
       - package: BigInt

@@ -25,11 +25,17 @@ public struct TourView: View {
 
     public var body: some View {
         WithViewStore(self.store) { viewStore in
-            ZStack {
-                makeTabView()
-                makeFixedView(viewStore)
+            VStack {
+                Image("logo-blockchain-black", bundle: Bundle.featureTour)
+                    .padding(.top)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 20)
+                ZStack {
+                    makeTabView()
+                    makeButtonsView(viewStore)
+                }
+                .background(AnimatedGradient().ignoresSafeArea(.all))
             }
-            .background(AnimatedGradient().ignoresSafeArea(.all))
         }
     }
 }
@@ -40,6 +46,7 @@ extension TourView {
         case brokerage
         case earn
         case keys
+        case prices
 
         @ViewBuilder public func makeView() -> some View {
             switch self {
@@ -58,6 +65,8 @@ extension TourView {
                     image: Image("lock", bundle: Bundle.featureTour),
                     text: LocalizationConstants.Tour.carouselKeysScreenMessage
                 )
+            case .prices:
+                PriceListFactory.makePriceList()
             }
         }
 
@@ -80,13 +89,13 @@ extension TourView {
             Carousel.brokerage.makeView()
             Carousel.earn.makeView()
             Carousel.keys.makeView()
+            Carousel.prices.makeView()
         }
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
     }
 
-    @ViewBuilder private func makeFixedView(_ viewStore: ViewStore<TourState, TourAction>) -> some View {
+    @ViewBuilder private func makeButtonsView(_ viewStore: ViewStore<TourState, TourAction>) -> some View {
         VStack(spacing: 16) {
-            Image("logo-blockchain-black", bundle: Bundle.featureTour)
             Spacer()
             PrimaryButton(title: LocalizationConstants.Tour.createAccountButtonTitle) {
                 viewStore.send(.createAccount)

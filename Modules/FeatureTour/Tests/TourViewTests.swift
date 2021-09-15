@@ -18,5 +18,8 @@ class TourViewTests: XCTestCase {
 
         let keysView = TourView.Carousel.keys.makeView()
         assertSnapshot(matching: keysView, as: .image(layout: .device(config: .iPhone8)))
+
+        let pricesView = TourView.Carousel.prices.makeView()
+        assertSnapshot(matching: pricesView, as: .image(layout: .device(config: .iPhone8)))
     }
 }

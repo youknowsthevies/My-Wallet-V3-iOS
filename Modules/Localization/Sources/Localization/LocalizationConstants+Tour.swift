@@ -26,5 +26,15 @@ extension LocalizationConstants {
             "Create an Account",
             comment: "Title of the button the user can tap when they want to create an account"
         )
+
+        public static let carouselPricesScreenTitle = NSLocalizedString(
+            "Never Miss a Crypto Moment.",
+            comment: "Title text that appears in the Prices view inside the onboarding tour"
+        )
+
+        public static let carouselPricesScreenLivePrices = NSLocalizedString(
+            "Live Prices",
+            comment: "Message that appears as a header of the prices list on the Prices screen inside the onboarding tour"
+        )
     }
 }
