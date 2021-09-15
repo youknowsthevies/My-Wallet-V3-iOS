@@ -9,14 +9,15 @@ public final class LinkedBankAccountCellPresenter {
 
     // MARK: - Public Properties
 
+    public let account: LinkedBankAccount
     let badgeImageViewModel: Driver<BadgeImageViewModel>
     let title: Driver<LabelContent>
     let description: Driver<LabelContent>
-    let multiBadgeViewModel: Driver<MultiBadgeViewModel>
+    public let multiBadgeViewModel: Driver<MultiBadgeViewModel>
 
     // MARK: - Private Properties
 
-    private static let multiBadgeInsets: UIEdgeInsets = .init(
+    static let multiBadgeInsets: UIEdgeInsets = .init(
         top: 0,
         left: 72,
         bottom: 0,
@@ -27,6 +28,8 @@ public final class LinkedBankAccountCellPresenter {
     // MARK: - Init
 
     public init(account: LinkedBankAccount, action: AssetAction) {
+        self.account = account
+
         multiBadgeViewModel = badgeFactory
             .badge(account: account, action: action)
             .map {

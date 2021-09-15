@@ -2,6 +2,7 @@
 
 import RxCocoa
 import RxSwift
+import SwiftUI
 import UIKit
 
 class MultiBadgeView: UIView {
@@ -27,28 +28,30 @@ class MultiBadgeView: UIView {
             guard let model = model else { return }
             model
                 .badges
-                .drive(onNext: { [weak self] models in
-                    self?.stackView.removeSubviews()
-                    models.forEach { self?.add($0) }
-                    self?.stackView.addArrangedSubview(UIView())
-                })
+                .drive(weak: self) { (self, models) in
+                    self.stackView.removeSubviews()
+                    models.forEach { self.add($0) }
+                    self.stackView.addArrangedSubview(UIView())
+                }
                 .disposed(by: disposeBag)
 
             model
                 .layoutMargins
-                .drive(onNext: { [weak self] layoutMargins in
-                    self?.horizontalConstraints?.leading.constant = layoutMargins.left
-                    self?.horizontalConstraints?.trailing.constant = -layoutMargins.right
-                    self?.verticalConstraints?.leading.constant = layoutMargins.top
-                    self?.verticalConstraints?.trailing.constant = -layoutMargins.bottom
-                })
+                .drive(weak: self) { (self, layoutMargins) in
+                    self.horizontalConstraints?.leading.constant = layoutMargins.left
+                    self.horizontalConstraints?.trailing.constant = -layoutMargins.right
+                    self.verticalConstraints?.leading.constant = layoutMargins.top
+                    self.verticalConstraints?.trailing.constant = -layoutMargins.bottom
+                    self.invalidateIntrinsicContentSize()
+                }
                 .disposed(by: disposeBag)
 
             model
                 .height
-                .drive(onNext: { [weak self] height in
-                    self?.heightConstraint?.constant = height
-                })
+                .drive(weak: self) { (self, height) in
+                    self.heightConstraint?.constant = height
+                    self.invalidateIntrinsicContentSize()
+                }
                 .disposed(by: disposeBag)
         }
     }
@@ -63,6 +66,11 @@ class MultiBadgeView: UIView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
+    }
+
+    override var intrinsicContentSize: CGSize {
+        let margins = verticalConstraints?.leading.constant ?? 0 + -(verticalConstraints?.trailing.constant ?? 0)
+        return CGSize(width: UIView.noIntrinsicMetric, height: heightConstraint.constant + margins)
     }
 
     // MARK: Private Methods
@@ -94,5 +102,34 @@ extension Reactive where Base: MultiBadgeView {
         Binder(base) { view, model in
             view.model = model
         }
+    }
+}
+
+// MARK: - SwiftUI
+
+public struct MultiBadgeViewRepresentable: View, UIViewRepresentable {
+    let viewModel: Driver<MultiBadgeViewModel>
+    let disposeBag = DisposeBag()
+
+    public init(viewModel: Driver<MultiBadgeViewModel>) {
+        self.viewModel = viewModel
+    }
+
+    public func makeUIView(context: Context) -> some UIView {
+        let view = MultiBadgeView()
+        viewModel
+            .drive(view.rx.viewModel)
+            .disposed(by: disposeBag)
+        view.model.visibility
+            .drive(weak: view) { view, visibility in
+                view.isHidden = visibility.isHidden
+            }
+            .disposed(by: disposeBag)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }
+
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+        // Do nothing
     }
 }

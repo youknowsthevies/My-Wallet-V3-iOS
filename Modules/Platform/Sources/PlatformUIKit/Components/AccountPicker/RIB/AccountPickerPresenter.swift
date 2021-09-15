@@ -6,7 +6,7 @@ import RIBs
 import RxCocoa
 import RxSwift
 
-protocol AccountPickerPresentable: Presentable {
+public protocol AccountPickerPresentable: Presentable {
 
     /// An optional button that is displayed at the bottom of the
     /// account picker screen.
@@ -17,11 +17,11 @@ protocol AccountPickerPresentable: Presentable {
     func connect(state: Driver<AccountPickerInteractor.State>) -> Driver<AccountPickerInteractor.Effects>
 }
 
-final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, AccountPickerPresentable {
+public final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, AccountPickerPresentable {
 
     // MARK: - Public Properties
 
-    let button: ButtonViewModel?
+    public let button: ButtonViewModel?
 
     // MARK: - Private Properties
 
@@ -47,7 +47,7 @@ final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, Ac
 
     // MARK: - Methods
 
-    func connect(state: Driver<AccountPickerInteractor.State>) -> Driver<AccountPickerInteractor.Effects> {
+    public func connect(state: Driver<AccountPickerInteractor.State>) -> Driver<AccountPickerInteractor.Effects> {
         let action = self.action
         let sections = state.map(\.interactors)
             .map { items -> [AccountPickerCellItem] in
@@ -74,9 +74,9 @@ final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, Ac
 }
 
 extension AccountPickerPresenter {
-    struct State {
-        var headerModel: AccountPickerHeaderType
-        var navigationModel: ScreenNavigationModel
-        var sections: [AccountPickerSectionViewModel]
+    public struct State {
+        public var headerModel: AccountPickerHeaderType
+        public var navigationModel: ScreenNavigationModel
+        public var sections: [AccountPickerSectionViewModel]
     }
 }

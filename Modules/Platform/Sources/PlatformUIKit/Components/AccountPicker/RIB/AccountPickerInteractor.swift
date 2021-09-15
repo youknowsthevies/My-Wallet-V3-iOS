@@ -12,7 +12,7 @@ public protocol AccountPickerRouting: ViewableRouting {
     // Declare methods the interactor can invoke to manage sub-tree via the router.
 }
 
-final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresentable>, AccountPickerInteractable {
+public final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresentable>, AccountPickerInteractable {
 
     // MARK: - Properties
 
@@ -46,7 +46,7 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
 
     // MARK: - Methods
 
-    override func didBecomeActive() {
+    override public func didBecomeActive() {
         super.didBecomeActive()
 
         let button = presenter.button
@@ -99,12 +99,12 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
 }
 
 extension AccountPickerInteractor {
-    struct State {
+    public struct State {
         static let empty = State(interactors: [])
         let interactors: [AccountPickerCellItem.Interactor]
     }
 
-    enum Effects {
+    public enum Effects {
         case select(BlockchainAccount)
         case back
         case closed
@@ -125,7 +125,9 @@ extension BlockchainAccount {
             let accountGroup = self as! AccountGroup
             return .accountGroup(
                 accountGroup,
-                AccountGroupBalanceCellInteractor(balanceViewInteractor: WalletBalanceViewInteractor(account: accountGroup))
+                AccountGroupBalanceCellInteractor(
+                    balanceViewInteractor: WalletBalanceViewInteractor(account: accountGroup)
+                )
             )
         default:
             impossible()

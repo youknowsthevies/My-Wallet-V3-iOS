@@ -2,6 +2,7 @@
 
 import RxCocoa
 import RxSwift
+import SwiftUI
 import UIKit
 
 public final class BadgeImageView: UIView {
@@ -156,5 +157,29 @@ extension Reactive where Base: BadgeImageView {
         Binder(base) { view, viewModel in
             view.viewModel = viewModel
         }
+    }
+}
+
+// MARK: - SwiftUI
+
+public struct BadgeImageViewRepresentable: View, UIViewRepresentable {
+    let viewModel: BadgeImageViewModel
+    let size: CGFloat
+
+    public init(viewModel: BadgeImageViewModel, size: CGFloat) {
+        self.viewModel = viewModel
+        self.size = size
+    }
+
+    public func makeUIView(context: Context) -> BadgeImageView {
+        let view = BadgeImageView()
+        view.viewModel = viewModel
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layout(size: .edge(size))
+        return view
+    }
+
+    public func updateUIView(_ uiView: BadgeImageView, context: Context) {
+        // Do nothing
     }
 }

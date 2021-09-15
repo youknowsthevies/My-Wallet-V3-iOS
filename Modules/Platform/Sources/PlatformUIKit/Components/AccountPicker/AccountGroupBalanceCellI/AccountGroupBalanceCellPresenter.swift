@@ -5,7 +5,7 @@ import PlatformKit
 import RxCocoa
 import RxSwift
 
-final class AccountGroupBalanceCellPresenter {
+public final class AccountGroupBalanceCellPresenter {
 
     typealias AccessibilityId = Accessibility.Identifier.Activity.WalletBalance
 
@@ -38,12 +38,12 @@ final class AccountGroupBalanceCellPresenter {
     }
 
     let accessibility: Accessibility = .id(AccessibilityId.cell)
-    let badgeImageViewModel: BadgeImageViewModel
-    let walletBalanceViewPresenter: WalletBalanceViewPresenter
+    public let badgeImageViewModel: BadgeImageViewModel
+    public let walletBalanceViewPresenter: WalletBalanceViewPresenter
 
     // MARK: - Private Properties
 
-    private let account: AccountGroup
+    public let account: AccountGroup
     private let interactor: AccountGroupBalanceCellInteractor
     private let imageViewVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
 

@@ -581,5 +581,15 @@ extension DependencyContainer {
                 nabuAnalyticsServiceProvider
             ])
         }
+
+        // MARK: Account Picker
+
+        factory {
+            #if INTERNAL_BUILD
+            FeatureAccountPickerControllableAdapter() as AccountPickerViewControllable
+            #else
+            AccountPickerViewController() as AccountPickerViewControllable
+            #endif
+        }
     }
 }

@@ -48,17 +48,17 @@ public enum AssetBalanceViewModel {
             // MARK: - Properties
 
             /// The balance in fiat
-            let fiatBalance: LabelContent
+            public let fiatBalance: LabelContent
 
             /// The balance in crypto
-            let cryptoBalance: LabelContent
+            public let cryptoBalance: LabelContent
 
             /// The visibility state of the `Pending` balance
             let pendingBalanceVisibility: Visibility
 
             /// The pending balance in crypto. This value is `.none`
             /// should the user's pending balance be `.zero`
-            let pendingBalance: LabelContent
+            public let pendingBalance: LabelContent
 
             /// Descriptors that allows customized content and style
             public struct Descriptors {
