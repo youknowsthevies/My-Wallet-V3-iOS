@@ -18,12 +18,19 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case networkFee(TransactionConfirmation.Model.NetworkFee)
     case sendDestinationValue(TransactionConfirmation.Model.SendDestinationValue)
     case source(TransactionConfirmation.Model.Source)
+
     case swapDestinationValue(TransactionConfirmation.Model.SwapDestinationValue)
     case swapExchangeRate(TransactionConfirmation.Model.SwapExchangeRate)
     case swapSourceValue(TransactionConfirmation.Model.SwapSourceValue)
+
     case sellSourceValue(TransactionConfirmation.Model.SellSourceValue)
     case sellDestinationValue(TransactionConfirmation.Model.SellDestinationValue)
     case sellExchangeRateValue(TransactionConfirmation.Model.SellExchangeRateValue)
+
+    case buyCryptoValue(TransactionConfirmation.Model.BuyCryptoValue)
+    case buyExchangeRateValue(TransactionConfirmation.Model.BuyExchangeRateValue)
+    case buyPaymentMethod(TransactionConfirmation.Model.BuyPaymentMethodValue)
+
     case total(TransactionConfirmation.Model.Total)
 
     public var type: TransactionConfirmation.Kind {
@@ -69,6 +76,12 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .sellDestinationValue(let value):
             return value.type
         case .sellExchangeRateValue(let value):
+            return value.type
+        case .buyExchangeRateValue(let value):
+            return value.type
+        case .buyCryptoValue(let value):
+            return value.type
+        case .buyPaymentMethod(let value):
             return value.type
         }
     }
@@ -116,6 +129,12 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .sellDestinationValue(let value):
             return value.formatted
         case .sellExchangeRateValue(let value):
+            return value.formatted
+        case .buyExchangeRateValue(let value):
+            return value.formatted
+        case .buyCryptoValue(let value):
+            return value.formatted
+        case .buyPaymentMethod(let value):
             return value.formatted
         }
     }

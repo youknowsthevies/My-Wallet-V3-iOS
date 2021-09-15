@@ -313,6 +313,34 @@ extension TransactionConfirmation.Model {
         }
     }
 
+    public struct BuyCryptoValue: TransactionConfirmationModelable {
+        public let baseValue: CryptoValue
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizedString.buy, baseValue.displayString)
+        }
+    }
+
+    public struct BuyExchangeRateValue: TransactionConfirmationModelable {
+        public let baseValue: MoneyValue
+        public let code: String
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (String(format: LocalizedString.price, code), baseValue.displayString)
+        }
+    }
+
+    public struct BuyPaymentMethodValue: TransactionConfirmationModelable {
+        public let name: String
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizedString.paymentMethod, name)
+        }
+    }
+
     public struct SendDestinationValue: TransactionConfirmationModelable {
         public let value: MoneyValue
         public let type: TransactionConfirmation.Kind = .readOnly

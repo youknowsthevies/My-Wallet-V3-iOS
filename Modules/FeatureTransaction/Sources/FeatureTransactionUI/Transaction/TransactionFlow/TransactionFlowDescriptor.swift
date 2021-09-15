@@ -206,11 +206,11 @@ enum TransactionFlowDescriptor {
     static func confirmDisclaimerVisibility(action: AssetAction) -> Bool {
         switch action {
         case .swap,
-             .withdraw:
+             .withdraw,
+             .buy:
             return true
         case .deposit,
              .receive,
-             .buy,
              .sell,
              .send,
              .viewActivity:
@@ -224,9 +224,10 @@ enum TransactionFlowDescriptor {
             return LocalizedString.Swap.confirmationDisclaimer
         case .withdraw:
             return LocalizedString.Withdraw.confirmationDisclaimer
+        case .buy:
+            return LocalizedString.Buy.confirmationDisclaimer
         case .deposit,
              .receive,
-             .buy,
              .sell,
              .send,
              .viewActivity:

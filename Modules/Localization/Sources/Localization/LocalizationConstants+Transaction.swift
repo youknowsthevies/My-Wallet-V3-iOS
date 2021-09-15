@@ -375,6 +375,10 @@ extension LocalizationConstants.Transaction.Buy {
         "Select a Crypto Currency",
         comment: "Title of screen to select the Crypto Currency to Buy"
     )
+    public static let confirmationDisclaimer = NSLocalizedString(
+        "Your final amount might change due to market activity. Your funds will be available to Sell, Swap or Withdraw instantly.",
+        comment: ""
+    )
 }
 
 extension LocalizationConstants.Transaction.Sell {
@@ -753,6 +757,14 @@ extension LocalizationConstants.Transaction.Confirmation.Error {
 }
 
 extension LocalizationConstants.Transaction.Confirmation {
+    public static let buy = NSLocalizedString(
+        "Buy",
+        comment: "Buy"
+    )
+    public static let paymentMethod = NSLocalizedString(
+        "Payment Method",
+        comment: "Payment Method"
+    )
     public static let price = NSLocalizedString(
         "%@ Price",
         comment: "%@ Price"

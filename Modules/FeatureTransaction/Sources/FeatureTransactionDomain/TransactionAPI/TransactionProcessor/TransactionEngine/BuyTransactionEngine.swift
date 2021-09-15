@@ -19,14 +19,13 @@ final class BuyTransactionEngine: TransactionEngine {
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
-        fetchExchangeRate(from: transactionTarget.currencyType, to: sourceAccount.currencyType)
+        transactionExchangeRatePair
             .map { quote in
                 TransactionMoneyValuePairs(
                     source: quote,
                     destination: quote.inverseQuote
                 )
             }
-            .share(replay: 1, scope: .whileConnected)
     }
 
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
@@ -71,19 +70,25 @@ final class BuyTransactionEngine: TransactionEngine {
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        // TODO: imeplement the correct confirmations
-        do {
-            let confirmations: [TransactionConfirmation] = [
-                .source(.init(value: sourceAccount.label)),
-                .destination(.init(value: transactionTarget.label)),
-                .transactionFee(.init(fee: pendingTransaction.feeAmount)),
-                .total(.init(total: try pendingTransaction.amount + pendingTransaction.feeAmount))
-            ]
-            let pendingTransaction = pendingTransaction.update(confirmations: confirmations)
-            return .just(pendingTransaction)
-        } catch {
-            return .error(error)
-        }
+        transactionExchangeRatePair.asSingle()
+            .flatMap { [sourceAccount] moneyPair in
+
+                let cryptoValue = try pendingTransaction.amount.convert(
+                    using: moneyPair.inverseQuote.quote
+                ).cryptoValue!
+
+                var confirmations: [TransactionConfirmation] = [
+                    .buyCryptoValue(.init(baseValue: cryptoValue)),
+                    .buyExchangeRateValue(.init(baseValue: moneyPair.quote, code: moneyPair.base.code)),
+                    .buyPaymentMethod(.init(name: sourceAccount?.label ?? "")),
+                    .transactionFee(.init(fee: pendingTransaction.feeAmount)),
+                    .total(.init(total: try pendingTransaction.amount + pendingTransaction.feeAmount))
+                ]
+                if let customFeeAmount = pendingTransaction.customFeeAmount {
+                    confirmations.append(.transactionFee(.init(fee: customFeeAmount)))
+                }
+                return Single.just(pendingTransaction.update(confirmations: confirmations))
+            }
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
