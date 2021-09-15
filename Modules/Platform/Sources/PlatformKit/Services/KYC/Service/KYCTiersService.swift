@@ -155,35 +155,25 @@ final class KYCTiersService: KYCTiersServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    func checkSimplifiedDueDiligenceVerification(for tier: KYC.Tier, pollUntilComplete: Bool) -> AnyPublisher<Bool, Never> {
+    func checkSimplifiedDueDiligenceVerification(
+        for tier: KYC.Tier,
+        pollUntilComplete: Bool
+    ) -> AnyPublisher<Bool, Never> {
         guard tier != .tier2 else {
             // Tier 2 (Gold) verified users should be treated as SDD verified
             return .just(true)
         }
 
-        let timeout = Date(timeIntervalSinceNow: .minutes(2))
-        func pollingPublisher() -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> {
-            // Poll the API every 5 seconds until `taskComplete` is `true` or an error is returned from the upstream until timeout.
-            // This should only take a couple of seconds in reality.
-            client.checkSimplifiedDueDiligenceVerification()
-                .flatMap { [pollingPublisher] result -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> in
-                    let shouldRetry = pollUntilComplete && !result.taskComplete && Date() < timeout
-                    guard shouldRetry else {
-                        return .just(result)
-                    }
-                    return pollingPublisher()
-                        .delay(for: 5, scheduler: DispatchQueue.global(qos: .userInitiated))
-                        .eraseToAnyPublisher()
-                }
-                .eraseToAnyPublisher()
-        }
-
         return featureFlagsService.isEnabled(.remote(.sddEnabled))
-            .flatMap { [pollingPublisher] sddEnabled -> AnyPublisher<Bool, Never> in
+            .flatMap { [client] sddEnabled -> AnyPublisher<Bool, Never> in
                 guard sddEnabled else {
                     return .just(false)
                 }
-                return pollingPublisher()
+                return client
+                    .checkSimplifiedDueDiligenceVerification()
+                    .startPolling(until: { response in
+                        response.taskComplete || !pollUntilComplete
+                    })
                     .replaceError(with: SimplifiedDueDiligenceVerificationResponse(verified: false, taskComplete: true))
                     .map(\.verified)
                     .eraseToAnyPublisher()
