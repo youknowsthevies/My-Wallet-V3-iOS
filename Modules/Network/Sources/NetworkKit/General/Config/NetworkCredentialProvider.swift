@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import ToolKit
 
 /// A `NetworkCredentialProvider` allows access to credential values stored outside this module.
 protocol NetworkCredentialProviderAPI {
@@ -34,7 +35,7 @@ class NetworkCredentialProvider: NetworkCredentialProviderAPI {
             case swiftyBeaverAppKey = "SWIFTY_BEAVER_APP_KEY"
         }
 
-        private static let infoDictionary = Bundle.main.infoDictionary
+        private static let infoDictionary = MainBundleProvider.mainBundle.infoDictionary
 
         static func value(for key: Key) -> String! {
             infoDictionary?[key.rawValue] as? String

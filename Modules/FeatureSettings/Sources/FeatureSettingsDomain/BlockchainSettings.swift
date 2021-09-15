@@ -398,7 +398,7 @@ public final class BlockchainSettings: NSObject {
 
         /// - Warning: Calling This function will remove **ALL** settings in the application.
         public func clear() {
-            UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+            UserDefaults.standard.removePersistentDomain(forName: MainBundleProvider.mainBundle.bundleIdentifier!)
             Logger.shared.info("Application settings have been cleared.")
         }
 

@@ -2,11 +2,9 @@
 
 import DIKit
 import NotificationCenter
-import PlatformKit
 import PlatformUIKit
 import RxDataSources
 import RxSwift
-import ToolKit
 import UIKit
 
 @objc(TodayViewController)
@@ -18,22 +16,13 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
     // MARK: - Private Properties
 
-    private static var setupDependencies: Void = {
-        DependencyContainer.defined(by: modules {
-            DependencyContainer.today
-            DependencyContainer.toolKit
-            DependencyContainer.networkKit
-            DependencyContainer.platformKit
-        })
-    }()
-
     private let tableView: SelfSizingTableView
-    private let presenter: TodayViewPresenter
+    private let presenter: TodayViewPresenting
     private let disposeBag = DisposeBag()
 
     init() {
-        _ = Self.setupDependencies
-        presenter = TodayViewPresenter()
+        _ = DependencyContainer.setupDependencies
+        presenter = TodayViewPresenter(interactor: TodayViewInteractor())
         tableView = SelfSizingTableView()
         super.init(nibName: nil, bundle: nil)
     }
@@ -89,14 +78,13 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
     func widgetPerformUpdate(completionHandler: @escaping (NCUpdateResult) -> Void) {
         presenter.refresh()
-        let exchangeProvider: ExchangeProviding = resolve()
-        exchangeProvider.refresh()
         completionHandler(NCUpdateResult.newData)
     }
 
     func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
         if activeDisplayMode == .expanded {
             preferredContentSize = tableView.intrinsicContentSize
+            presenter.refresh()
         } else {
             preferredContentSize = maxSize
         }

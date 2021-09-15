@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import NetworkKit
+import ToolKit
 import XCTest
 
 class ConfigTests: XCTestCase {
@@ -9,7 +10,7 @@ class ConfigTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        configInfoDictionary = Bundle.main.infoDictionary
+        configInfoDictionary = MainBundleProvider.mainBundle.infoDictionary
     }
 
     func testAllKeysPresentAndNotEmpty() {

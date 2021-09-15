@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import ToolKit
 
 enum CustomerSupportChatConfiguration {
 
@@ -18,7 +19,7 @@ enum CustomerSupportChatConfiguration {
     private static let key = "zenDeskAccountKey"
 
     private static var infoDictionary: [String: Any] {
-        guard let infoDictionary = Bundle.main.infoDictionary else {
+        guard let infoDictionary = MainBundleProvider.mainBundle.infoDictionary else {
             return [:]
         }
         return infoDictionary

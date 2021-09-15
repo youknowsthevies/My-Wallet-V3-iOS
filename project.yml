@@ -612,6 +612,8 @@ targets:
       - sdk: NotificationCenter.framework
 
       - package: DIKit
+      - package: RxCombine
+        product: RxCombine
       - package: RxDataSources
         product: RxDataSources
       - package: RxSwift
@@ -634,6 +636,8 @@ targets:
       - package: Tool
         product: ToolKit
 
+      - package: Network
+        product: NetworkKit
       - package: NetworkErrors
         product: NetworkErrors
     platform: iOS

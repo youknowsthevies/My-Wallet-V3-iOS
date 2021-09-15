@@ -39,7 +39,7 @@ final class PinScreenPresenter {
 
     var trailingButton: Screen.Style.TrailingButton {
         var hash = ""
-        if let info = Bundle.main.infoDictionary {
+        if let info = MainBundleProvider.mainBundle.infoDictionary {
             hash = (info[Constants.commitHash] as? String ?? "")
         }
         var title = "v\(Bundle.applicationVersion ?? "")"

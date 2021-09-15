@@ -2,10 +2,12 @@
 
 import AnalyticsKit
 import DIKit
+import NetworkKit
+import PlatformDataKit
 import PlatformKit
 import PlatformUIKit
-import RxRelay
 import ToolKit
+import UIKit
 
 extension DependencyContainer {
 
@@ -21,10 +23,15 @@ extension DependencyContainer {
 
         factory { ErrorRecorderMock() as ErrorRecording }
     }
-}
 
-extension UIDevice: DeviceInfo {
-    public var uuidString: String {
-        UIDevice.current.identifierForVendor?.uuidString ?? ""
-    }
+    static var setupDependencies: Void = {
+        DependencyContainer.defined(by: modules {
+            DependencyContainer.today
+            DependencyContainer.toolKit
+            DependencyContainer.networkKit
+            DependencyContainer.platformDataKit
+            DependencyContainer.platformKit
+            DependencyContainer.platformUIKit
+        })
+    }()
 }

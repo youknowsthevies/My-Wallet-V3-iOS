@@ -55,17 +55,11 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
         [.USD]
     }
 
-    private let featureFlagService: InternalFeatureFlagServiceAPI
-    private let featureConfigurator: FeatureConfiguring
     private let repository: SupportedAssetsRepositoryAPI
 
     init(
-        featureFlagService: InternalFeatureFlagServiceAPI = resolve(),
-        featureConfigurator: FeatureConfiguring = resolve(),
         repository: SupportedAssetsRepositoryAPI = resolve()
     ) {
-        self.featureFlagService = featureFlagService
-        self.featureConfigurator = featureConfigurator
         self.repository = repository
     }
 }

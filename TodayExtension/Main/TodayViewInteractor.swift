@@ -2,12 +2,22 @@
 
 import DIKit
 import LocalAuthentication
+import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class TodayViewInteractor {
+protocol TodayViewInteracting {
+
+    var assetInteractors: Observable<[TodayExtensionCellInteractor]> { get }
+    var isBalanceSyncingEnabled: Bool { get }
+    var portfolioInteractor: Observable<TodayExtensionCellInteractor?> { get }
+
+    func refresh()
+}
+
+final class TodayViewInteractor: TodayViewInteracting {
 
     // MARK: - Services
 
@@ -33,9 +43,6 @@ final class TodayViewInteractor {
     }
 
     private let assetPriceCellInteractors: [AssetPriceCellInteractor]
-    private let priceService: PriceServiceAPI
-    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
-    private let disposeBag = DisposeBag()
 
     init(
         priceService: PriceServiceAPI = resolve(),
@@ -52,8 +59,6 @@ final class TodayViewInteractor {
                     fiatCurrencyService: fiatCurrencyService
                 )
             }
-        self.priceService = priceService
-        self.enabledCurrenciesService = enabledCurrenciesService
     }
 
     /// Returns the supported device biometrics, regardless if currently configured in app

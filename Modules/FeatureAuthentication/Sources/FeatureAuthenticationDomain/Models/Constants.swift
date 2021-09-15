@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import ToolKit
 
 public enum Constants {
 
@@ -47,7 +48,7 @@ private enum InfoDictionaryHelper {
         case blockchainUrl = "BLOCKCHAIN_URL"
     }
 
-    private static let infoDictionary = Bundle.main.infoDictionary
+    private static let infoDictionary = MainBundleProvider.mainBundle.infoDictionary
 
     static func value(for key: Key) -> String! {
         infoDictionary?[key.rawValue] as? String

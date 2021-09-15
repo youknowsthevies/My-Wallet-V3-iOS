@@ -5,7 +5,16 @@ import RxDataSources
 import RxRelay
 import RxSwift
 
-final class TodayViewPresenter {
+protocol TodayViewPresenting {
+
+    var sectionObservable: Observable<[TodayExtensionSectionViewModel]> { get }
+    var numberOfSections: Int { get }
+
+    func refresh()
+    func viewModel(for section: Int) -> TodayExtensionSectionHeaderViewModel
+}
+
+final class TodayViewPresenter: TodayViewPresenting {
 
     // MARK: - Public Properties
 
@@ -61,12 +70,12 @@ final class TodayViewPresenter {
 
     private let assetCellsRelay = BehaviorRelay<[TodayExtensionCellViewModel]>(value: [])
     private let portfolioCellRelay = BehaviorRelay<TodayExtensionCellViewModel?>(value: nil)
-    private let interactor: TodayViewInteractor
+    private let interactor: TodayViewInteracting
     private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
-    init(interactor: TodayViewInteractor = TodayViewInteractor()) {
+    init(interactor: TodayViewInteracting) {
         self.interactor = interactor
     }
 
