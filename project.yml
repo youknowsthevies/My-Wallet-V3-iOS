@@ -239,7 +239,7 @@ packages:
     from: 0.6.5
   Mockingbird:
     url: https://github.com/birdrides/mockingbird.git
-    version: 0.16.0
+    version: 0.18.1
   DIKit:
     url: https://github.com/jackpooleybc/DIKit.git
     branch: safe-property-wrappers

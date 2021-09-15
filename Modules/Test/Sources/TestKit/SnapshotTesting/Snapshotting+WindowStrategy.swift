@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(UIKit)
+
 import SnapshotTesting
 import SwiftUI
 import UIKit
@@ -110,3 +112,5 @@ extension Snapshotting where Value: View, Format == UIImage {
         }
     }
 }
+
+#endif

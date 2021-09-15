@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "Analytics",
-    platforms: [.iOS(.v14)],
+    platforms: [.iOS(.v14), .macOS(.v11)],
     products: [
         .library(
             name: "AnalyticsKit",
@@ -33,7 +33,7 @@ let package = Package(
         .package(
             name: "Mockingbird",
             url: "https://github.com/birdrides/mockingbird.git",
-            from: "0.16.0"
+            from: "0.18.1"
         )
     ],
     targets: [

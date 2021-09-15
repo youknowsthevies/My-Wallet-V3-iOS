@@ -3,7 +3,9 @@
 import Combine
 import CombineExt
 import Foundation
+#if canImport(UIKit)
 import UIKit
+#endif
 
 public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
 
@@ -83,6 +85,7 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
             let batchFull = self.$events
                 .filter { $0.count >= self.batchSize }
 
+            #if canImport(UIKit)
             let enteredBackground = self.notificationCenter
                 .publisher(for: UIApplication.willResignActiveNotification)
                 .withLatestFrom(self.$events)
@@ -109,6 +112,7 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
                 .receive(on: queue)
                 .sink(receiveValue: self.send)
                 .store(in: &self.cancellables)
+            #endif
         }
     }
 
