@@ -339,6 +339,8 @@ enum TransactionFlowStep: Equatable {
     case initial
     case enterPassword
     case selectSource
+    case linkPaymentMethod
+    case linkACard
     case linkABank
     case enterAddress
     case selectTarget
@@ -366,6 +368,8 @@ extension TransactionFlowStep {
              .initial,
              .kycChecks,
              .validateSource,
+             .linkPaymentMethod,
+             .linkACard,
              .linkABank:
             return false
         }
@@ -375,6 +379,8 @@ extension TransactionFlowStep {
     var goingBackSkipsNavigation: Bool {
         switch self {
         case .kycChecks,
+             .linkPaymentMethod,
+             .linkACard,
              .linkABank:
             return true
         case .closed,

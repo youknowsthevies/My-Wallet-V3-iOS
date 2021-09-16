@@ -68,6 +68,15 @@ final class TransactionModel {
         case .availableDestinationAccountsListUpdated:
             return processAvailableDestinationAccountsListUpdated(state: previousState)
 
+        case .showAddAccountFlow:
+            return nil
+
+        case .showCardLinkingFlow:
+            return nil
+
+        case .cardLinkingFlowCompleted:
+            return processCardLinkingCompletion(state: previousState)
+
         case .bankAccountLinked(let action):
             return processSourceAccountsListUpdate(action: action)
 
@@ -347,5 +356,14 @@ final class TransactionModel {
                 })
         }
         return nil
+    }
+
+    private func processCardLinkingCompletion(state: TransactionState) -> Disposable? {
+        switch state.action {
+        case .buy:
+            return processSourceAccountsListUpdate(action: state.action)
+        default:
+            return nil
+        }
     }
 }

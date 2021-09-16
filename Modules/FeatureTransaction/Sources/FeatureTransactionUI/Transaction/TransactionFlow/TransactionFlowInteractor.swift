@@ -52,6 +52,12 @@ protocol TransactionFlowRouting: Routing {
     /// Present the destination account picker modally over the current screen
     func presentDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
 
+    /// Present the payment method linking flow modally over the current screen
+    func presentLinkPaymentMethod(transactionModel: TransactionModel)
+
+    /// Present the card linking flow modally over the current screen
+    func presentLinkACard(transactionModel: TransactionModel)
+
     /// Present the bank linking flow modally over the current screen
     func presentLinkABank(transactionModel: TransactionModel)
 
@@ -202,7 +208,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func didSelectActionButton() {
-        transactionModel.process(action: .showBankLinkingFlow)
+        transactionModel.process(action: .showAddAccountFlow)
     }
 
     func didSelect(blockchainAccount: BlockchainAccount) {
@@ -345,6 +351,12 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 transactionModel: transactionModel,
                 action: action
             )
+
+        case .linkPaymentMethod:
+            router?.presentLinkPaymentMethod(transactionModel: transactionModel)
+
+        case .linkACard:
+            router?.presentLinkACard(transactionModel: transactionModel)
 
         case .linkABank:
             router?.presentLinkABank(transactionModel: transactionModel)
@@ -513,7 +525,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             // TODO: Is this right? Check with Alex
             transactionModel.process(action: .prepareTransaction)
         case .card:
-            unimplemented("Will be implemented in IOS-4883")
+            transactionModel.process(action: .showCardLinkingFlow)
         case .funds:
             // Nothing to link, move on to the next step
             transactionModel.process(action: .prepareTransaction)

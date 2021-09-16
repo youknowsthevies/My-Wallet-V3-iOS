@@ -3,6 +3,8 @@
 import PlatformKit
 import RxSwift
 
+/// A `BlockchainAccount` that represents a credit or debit card.
+/// Instances of this class are intented to be used as a source for a Buy transaction.
 public struct CreditCardAccount: FiatAccount {
 
     public let isDefault: Bool = false

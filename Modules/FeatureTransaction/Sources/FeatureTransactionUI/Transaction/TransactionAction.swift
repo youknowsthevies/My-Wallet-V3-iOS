@@ -23,6 +23,9 @@ enum TransactionAction: MviAction {
         passwordRequired: Bool
     )
     case initialiseWithTargetAndNoSource(action: AssetAction, target: TransactionTarget, passwordRequired: Bool)
+    case showAddAccountFlow
+    case showCardLinkingFlow
+    case cardLinkingFlowCompleted
     case bankLinkingFlowDismissed(AssetAction)
     case showBankLinkingFlow
     case bankAccountLinkedFromSource(BlockchainAccount, AssetAction)
@@ -70,6 +73,22 @@ extension TransactionAction {
             return newState.withUpdatedBackstack(oldState: oldState)
         case .updateFeeLevelAndAmount:
             return oldState
+
+        case .showAddAccountFlow:
+            switch oldState.action {
+            case .buy:
+                return oldState.stateForMovingForward(to: .linkPaymentMethod)
+            case .withdraw, .deposit:
+                return TransactionAction.showBankLinkingFlow.reduce(oldState: oldState)
+            default:
+                unimplemented()
+            }
+
+        case .showCardLinkingFlow:
+            return oldState.stateForMovingForward(to: .linkACard)
+
+        case .cardLinkingFlowCompleted:
+            return oldState.stateForMovingOneStepBack()
 
         case .showBankLinkingFlow:
             return oldState.stateForMovingForward(to: .linkABank)

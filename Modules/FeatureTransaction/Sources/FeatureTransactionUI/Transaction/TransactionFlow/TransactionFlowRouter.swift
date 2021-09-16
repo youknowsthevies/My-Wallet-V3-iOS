@@ -36,8 +36,11 @@ typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable
 
 final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRouting {
 
+    private var paymentMethodLinker: PaymentMethodLinkerAPI
+    private var cardLinker: CardLinkerAPI
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
+
     private let disposeBag = DisposeBag()
     private var linkBankFlowRouter: LinkBankFlowStarter?
 
@@ -48,9 +51,13 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     init(
         interactor: TransactionFlowInteractable,
         viewController: TransactionFlowViewControllable,
+        paymentMethodLinker: PaymentMethodLinkerAPI = resolve(),
+        cardLinker: CardLinkerAPI = resolve(),
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve()
     ) {
+        self.paymentMethodLinker = paymentMethodLinker
+        self.cardLinker = cardLinker
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
         super.init(interactor: interactor, viewController: viewController)
@@ -98,8 +105,10 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             return
         }
         guard let child = children.last else { return }
-        top.dismiss(animated: true, completion: nil)
-        detachChild(child)
+        top.dismiss(animated: true) { [weak self] in
+            // Detatch child in completion block to avoid false-positive leak checks
+            self?.detachChild(child)
+        }
     }
 
     func didTapBack() {
@@ -202,6 +211,41 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         let viewControllable = router.viewControllable
         attachChild(router)
         viewController.replaceRoot(viewController: viewControllable, animated: false)
+    }
+
+    func presentLinkPaymentMethod(transactionModel: TransactionModel) {
+        let presenter = viewController.uiviewController.topMostViewController ?? viewController.uiviewController
+        paymentMethodLinker.presentAccountLinkingFlow(from: presenter) { result in
+            presenter.dismiss(animated: true) {
+                switch result {
+                case .abandoned:
+                    transactionModel.process(action: .returnToPreviousStep)
+                case .completed(let paymentMethod) where paymentMethod.type.isCard:
+                    transactionModel.process(action: .showCardLinkingFlow)
+                case .completed(let paymentMethod) where paymentMethod.type.isBankAccount:
+                    transactionModel.process(action: .showBankLinkingFlow)
+                case .completed(let paymentMethod) where paymentMethod.type.isBankTransfer:
+                    // TODO: IOS-5300 Show wiring instructions instead
+                    transactionModel.process(action: .showBankLinkingFlow)
+                default:
+                    unimplemented("TODO")
+                }
+            }
+        }
+    }
+
+    func presentLinkACard(transactionModel: TransactionModel) {
+        let presenter = viewController.uiviewController.topMostViewController ?? viewController.uiviewController
+        cardLinker.presentCardLinkingFlow(from: presenter) { [transactionModel] result in
+            presenter.dismiss(animated: true) {
+                switch result {
+                case .abandoned:
+                    transactionModel.process(action: .returnToPreviousStep)
+                case .completed:
+                    transactionModel.process(action: .cardLinkingFlowCompleted)
+                }
+            }
+        }
     }
 
     func presentLinkABank(transactionModel: TransactionModel) {
