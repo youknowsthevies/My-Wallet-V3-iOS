@@ -75,7 +75,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .card:
             paymentMethod = LocalizedLineItem.creditOrDebitCard
         case .funds:
-            paymentMethod = "\(event.inputValue.currencyCode) \(LocalizedLineItem.Funds.suffix)"
+            paymentMethod = "\(event.inputValue.code) \(LocalizedLineItem.Funds.suffix)"
         }
         let date = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
 
@@ -89,7 +89,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             base: event.inputValue,
             quote: event.outputValue
         ).inverseQuote.quote
-        let exchangeRateString = "\(exchangeRate.displayString) / \(event.outputValue.currencyCode)"
+        let exchangeRateString = "\(exchangeRate.displayString) / \(event.outputValue.code)"
         exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )

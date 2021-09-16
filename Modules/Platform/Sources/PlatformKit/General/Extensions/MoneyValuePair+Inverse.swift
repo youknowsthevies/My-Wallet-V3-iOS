@@ -2,8 +2,9 @@
 
 extension MoneyValuePair {
 
-    /// Returns a new `MoneyValuePair` instance intended to get the inverse FX quote from an existing quote.
-    /// This means that given a FX quote like 1 BTC = 50,000 USD, this will return a new quote => 1 USD  = 1 / 50,000 BTC.
+    /// Returns the inversed money value pair.
+    ///
+    /// For a pair with base `1 BTC` and quote `50,000 USD`, this will return a pair with base `1 USD` and quote `1 / 50,000 BTC`.
     public var inverseQuote: MoneyValuePair {
         // `try`s are disabled here as this operation can never fail.
         // If it failed, it would be a developer error and thus it's better to crash.

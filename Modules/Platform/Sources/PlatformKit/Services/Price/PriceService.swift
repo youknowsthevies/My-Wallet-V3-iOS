@@ -6,8 +6,13 @@ import Foundation
 import NetworkError
 import ToolKit
 
+/// A price service error.
 public enum PriceServiceError: Error {
+
+    /// The requested price is missing,
     case missingPrice
+
+    /// A network error ocurred.
     case networkError(NetworkError)
 }
 
@@ -16,7 +21,7 @@ public protocol PriceServiceAPI {
     /// Gets the money value pair of the given fiat value and crypto currency.
     ///
     /// - Parameters:
-    ///  - fiatValue: The fiat value to use in the pair.
+    ///  - fiatValue:      The fiat value to use in the pair.
     ///  - cryptoCurrency: The crypto currency to use in the pair.
     ///  - usesFiatAsBase: Whether the base of the pair will be the fiat value or the crypto value.
     ///
@@ -30,7 +35,7 @@ public protocol PriceServiceAPI {
     /// Gets the quoted price of the given base `Currency` in the given quote `Currency`, at the current time.
     ///
     /// - Parameters:
-    ///  - base: The currency to get the price of.
+    ///  - base:  The currency to get the price of.
     ///  - quote: The currency to get the price in.
     ///
     /// - Returns: A publisher that emits a `PriceQuoteAtTime` on success, or a `PriceServiceError` on failure.
@@ -42,9 +47,9 @@ public protocol PriceServiceAPI {
     /// Gets the quoted price of the given base `Currency` in the given quote `Currency`, at the given time.
     ///
     /// - Parameters:
-    ///  - base: The currency to get the price of.
+    ///  - base:  The currency to get the price of.
     ///  - quote: The currency to get the price in.
-    ///  - time: The time to get the price at. A value of `nil` will default to the current time.
+    ///  - time:  The time to get the price at. A value of `nil` will default to the current time.
     ///
     /// - Returns: A publisher that emits a `PriceQuoteAtTime` on success, or a `PriceServiceError` on failure.
     func price(
@@ -55,14 +60,14 @@ public protocol PriceServiceAPI {
 
     /// Gets the historical price series of the given `CryptoCurrency`-`FiatCurrency` pair, within the given price window.
     /// - Parameters:
-    ///  - baseCurrency: The crypto currency to get the price series of.
-    ///  - quoteCurrency: The fiat currency to get the price in.
+    ///  - base:   The crypto currency to get the price series of.
+    ///  - quote:  The fiat currency to get the price in.
     ///  - window: The price window to get the price in.
     ///
     /// - Returns: A publisher that emits a `HistoricalPriceSeries` on success, or a `PriceServiceError` on failure.
     func priceSeries(
-        of baseCurrency: CryptoCurrency,
-        in quoteCurrency: FiatCurrency,
+        of base: CryptoCurrency,
+        in quote: FiatCurrency,
         within window: PriceWindow
     ) -> AnyPublisher<HistoricalPriceSeries, PriceServiceError>
 }
@@ -76,6 +81,11 @@ final class PriceService: PriceServiceAPI {
 
     // MARK: - Setup
 
+    /// Creates a price service.
+    ///
+    /// - Parameters:
+    ///   - repository:               A price repository.
+    ///   - enabledCurrenciesService: An enabled currencies service.
     init(
         repository: PriceRepositoryAPI = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
@@ -83,6 +93,8 @@ final class PriceService: PriceServiceAPI {
         self.repository = repository
         self.enabledCurrenciesService = enabledCurrenciesService
     }
+
+    // MARK: - Internal Methods
 
     func moneyValuePair(
         fiatValue: FiatValue,
@@ -146,12 +158,12 @@ final class PriceService: PriceServiceAPI {
     }
 
     func priceSeries(
-        of baseCurrency: CryptoCurrency,
-        in quoteCurrency: FiatCurrency,
+        of base: CryptoCurrency,
+        in quote: FiatCurrency,
         within window: PriceWindow
     ) -> AnyPublisher<HistoricalPriceSeries, PriceServiceError> {
         repository
-            .priceSeries(of: baseCurrency, in: quoteCurrency, within: window)
+            .priceSeries(of: base, in: quote, within: window)
             .mapError(PriceServiceError.networkError)
             .eraseToAnyPublisher()
     }

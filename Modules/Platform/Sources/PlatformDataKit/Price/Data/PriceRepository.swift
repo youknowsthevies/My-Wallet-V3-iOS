@@ -29,7 +29,7 @@ final class PriceRepository: PriceRepositoryAPI {
         indexMultiCachedValue = CachedValueNew(
             cache: inMemoryCache,
             fetch: { key in
-                client.price(bases: key.base, quote: key.quote, time: key.time.timestamp)
+                client.price(of: key.base, in: key.quote, time: key.time.timestamp)
             }
         )
     }
@@ -64,7 +64,6 @@ final class PriceRepository: PriceRepositoryAPI {
         within window: PriceWindow
     ) -> AnyPublisher<HistoricalPriceSeries, NetworkError> {
         let start: TimeInterval = window.timeIntervalSince1970(
-            cryptoCurrency: base,
             calendar: .current,
             date: Date()
         )

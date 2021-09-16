@@ -1,23 +1,32 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-/// `HistoricalFiatPriceResponse` is only used with `HistoricalFiatPriceServiceAPI`.
+/// A `HistoricalFiatPriceService` response, representing the current price and the historical price series in fiat, for one crypto currency, in a given price window.
 public struct HistoricalFiatPriceResponse {
 
-    /// The prices for the given `PriceWindow`
-    public let historicalPrices: HistoricalPriceSeries
+    // MARK: - Public Properties
 
-    /// The current `FiatValue` of the CryptoCurrency. This is **not** the `.last`
-    /// value in `HistoricalPriceSeries`. This is fetched separately from a different service.
+    /// The current price in fiat of the crypto currency associated with `historicalPrices`.
+    ///
+    /// This is **not** the `.last` value in `historicalPrices`, but rather is fetched separately from a different service.
     public let currentFiatValue: FiatValue
 
-    /// The `PriceWindow`
+    /// The historical price series of the associated crypto currency.
+    public let historicalPrices: HistoricalPriceSeries
+
+    /// The price window associated with `historicalPrices`.
     public let priceWindow: PriceWindow
 
-    // MARK: - Init
+    // MARK: - Setup
 
-    public init(prices: HistoricalPriceSeries, fiatValue: FiatValue, priceWindow: PriceWindow) {
-        historicalPrices = prices
+    /// Creates a historical fiat price response.
+    ///
+    /// - Parameters:
+    ///   - fiatValue:   The current price in fiat of the crypto currency associated with `prices`.
+    ///   - prices:      A historical price series.
+    ///   - priceWindow: A price window associated with `prices`.
+    public init(fiatValue: FiatValue, prices: HistoricalPriceSeries, priceWindow: PriceWindow) {
         currentFiatValue = fiatValue
+        historicalPrices = prices
         self.priceWindow = priceWindow
     }
 }

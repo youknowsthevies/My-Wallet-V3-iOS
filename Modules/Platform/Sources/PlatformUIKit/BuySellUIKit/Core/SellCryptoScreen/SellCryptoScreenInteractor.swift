@@ -172,8 +172,8 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                 self.analyticsRecorder.record(event:
                     AnalyticsEvents.New.Sell.sellAmountMaxClicked(
                         fromAccountType: .init(self.data.source),
-                        inputCurrency: crypto.currencyCode,
-                        outputCurrency: fiat.currencyCode
+                        inputCurrency: crypto.code,
+                        outputCurrency: fiat.code
                     )
                 )
                 let data = CandidateOrderDetails.sell(

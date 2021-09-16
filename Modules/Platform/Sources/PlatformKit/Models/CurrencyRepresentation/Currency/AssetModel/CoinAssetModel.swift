@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
-
-/// A Level 1 coin AssetModel.
+/// A coin asset.
 public struct CoinAssetModel: AssetModel, Hashable {
+
+    // MARK: - Public Properties
+
     public let code: String
     public let displayCode: String
     public let kind: AssetModelType = .coin
@@ -12,24 +13,50 @@ public struct CoinAssetModel: AssetModel, Hashable {
     public let products: [AssetModelProduct]
     public let logoPngUrl: String?
     public let spotColor: String?
-    public let minimumOnChainConfirmations: Int
-    let sortIndex: Int
 
+    /// The minimum number of on-chain confirmations.
+    public let minimumOnChainConfirmations: Int
+
+    /// The uniquely identifying tag.
     public var typeTag: AnyHashable { "\(kind).\(code)" }
 
-    init?(assetResponse: SupportedAssetsResponse.Asset, sortIndex: Int) {
+    // MARK: - Internal Properties
+
+    /// Temporary sorting index, while full dynamic asset migration is in progress.
+    let sortIndex: Int
+
+    // MARK: - Setup
+
+    /// Creates a coin asset.
+    ///
+    /// - Parameters:
+    ///   - assetResponse: A supported coin asset response.
+    ///   - sortIndex:     A sorting index.
+    init(assetResponse: SupportedAssetsResponse.Asset, sortIndex: Int) {
         precondition(assetResponse.type.name == SupportedAssetsResponse.Asset.AssetType.Name.coin.rawValue)
         code = assetResponse.symbol
         displayCode = assetResponse.displaySymbol ?? assetResponse.symbol
         name = assetResponse.name
-        logoPngUrl = assetResponse.type.logoPngUrl
-        spotColor = assetResponse.type.spotColor
         precision = assetResponse.precision
         products = assetResponse.products.compactMap(AssetModelProduct.init)
+        logoPngUrl = assetResponse.type.logoPngUrl
+        spotColor = assetResponse.type.spotColor
         minimumOnChainConfirmations = assetResponse.type.minimumOnChainConfirmations!
         self.sortIndex = sortIndex
     }
 
+    /// Creates a coin asset.
+    ///
+    /// - Parameters:
+    ///   - code:                        A code.
+    ///   - displayCode:                 A display code.
+    ///   - name:                        A name.
+    ///   - precision:                   A precision.
+    ///   - producs:                     A list of supported products.
+    ///   - logoPngUrl:                  A URL to a logo.
+    ///   - spotColor:                   A spot color.
+    ///   - minimumOnChainConfirmations: A minimum number of on-chain confirmations.
+    ///   - sortIndex:                   A sorting index.
     init(
         code: String,
         displayCode: String,
@@ -52,6 +79,11 @@ public struct CoinAssetModel: AssetModel, Hashable {
         self.sortIndex = sortIndex
     }
 
+    // MARK: - Internal Methods
+
+    /// Creates a new coin asset by replacing the current list of supported asset products.
+    ///
+    /// - Parameter products: A list of supported asset products.
     func with(products: [AssetModelProduct]) -> CoinAssetModel {
         CoinAssetModel(
             code: code,

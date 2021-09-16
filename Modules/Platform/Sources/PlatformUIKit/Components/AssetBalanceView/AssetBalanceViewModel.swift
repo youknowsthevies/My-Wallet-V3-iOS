@@ -106,7 +106,7 @@ public enum AssetBalanceViewModel {
                     font: descriptors.fiatFont,
                     color: descriptors.fiatTextColor,
                     alignment: textAlignment,
-                    accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
+                    accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.code)
                 )
 
                 if value.cryptoValue == value.fiatValue {
@@ -117,7 +117,7 @@ public enum AssetBalanceViewModel {
                         font: descriptors.cryptoFont,
                         color: descriptors.cryptoTextColor,
                         alignment: textAlignment,
-                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
+                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.code)
                     )
                 }
                 pendingBalanceVisibility = value.pendingValue.isZero ? .hidden : .visible
@@ -126,7 +126,7 @@ public enum AssetBalanceViewModel {
                     font: descriptors.cryptoFont,
                     color: descriptors.pendingTextColor,
                     alignment: textAlignment,
-                    accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
+                    accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.code)
                 )
             }
         }

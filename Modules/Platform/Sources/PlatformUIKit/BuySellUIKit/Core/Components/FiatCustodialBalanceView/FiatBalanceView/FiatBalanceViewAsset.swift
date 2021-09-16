@@ -91,7 +91,7 @@ public enum FiatBalanceViewAsset {
                             font: descriptors.quoteFiatFont,
                             color: descriptors.quoteFiatTextColor,
                             alignment: .right,
-                            accessibility: .id("\(descriptors.quoteFiatAccessibility.id!)\(value.quote.currency.code)")
+                            accessibility: .id("\(descriptors.quoteFiatAccessibility.id!)\(value.quote.code)")
                         )
                     )
                     baseFont = descriptors.baseFiatFont
@@ -107,7 +107,7 @@ public enum FiatBalanceViewAsset {
                     font: baseFont,
                     color: baseColor,
                     alignment: .right,
-                    accessibility: .id("\(descriptors.baseFiatAccessibility.id.printable)\(value.base.currency.code)")
+                    accessibility: .id("\(descriptors.baseFiatAccessibility.id.printable)\(value.base.code)")
                 )
             }
         }

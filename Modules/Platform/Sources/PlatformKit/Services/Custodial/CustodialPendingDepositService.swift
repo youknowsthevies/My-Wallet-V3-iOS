@@ -19,7 +19,7 @@ struct CreatePendingDepositRequestBody: Encodable {
         transactionHash: String,
         product: String
     ) {
-        currency = value.currencyCode
+        currency = value.code
         amount = value.value.amount.description
         depositAddress = destination
         txHash = transactionHash

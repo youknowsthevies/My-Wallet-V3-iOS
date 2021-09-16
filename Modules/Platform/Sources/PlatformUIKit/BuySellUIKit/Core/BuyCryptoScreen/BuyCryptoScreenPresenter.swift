@@ -268,7 +268,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             }
             .map { payload -> String in
                 let tuple: (fiat: FiatValue, crypto: CryptoCurrency) = payload
-                return "1 \(tuple.crypto.displayCode) = \(tuple.fiat.displayString) \(tuple.fiat.currencyCode)"
+                return "1 \(tuple.crypto.displayCode) = \(tuple.fiat.displayString) \(tuple.fiat.code)"
             }
             .catchError { _ -> Observable<String?> in
                 .just(nil)

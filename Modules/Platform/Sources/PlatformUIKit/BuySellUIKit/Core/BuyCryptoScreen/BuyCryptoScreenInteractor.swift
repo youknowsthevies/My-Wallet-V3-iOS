@@ -308,7 +308,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     return .empty(currency: currency)
                 }
 
-                if fiat.amount.isZero {
+                if fiat.isZero {
                     return .empty(currency: currency)
                 } else if try fiat > maxFiatValue {
                     return .tooHigh(max: maxFiatValue)

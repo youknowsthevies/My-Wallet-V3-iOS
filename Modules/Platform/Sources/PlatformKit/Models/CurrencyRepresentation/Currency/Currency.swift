@@ -2,26 +2,48 @@
 
 import DIKit
 
+/// A currency error.
 public enum CurrencyError: Error {
+
+    /// Unknown currency code.
     case unknownCurrency
 }
 
 public protocol Currency {
-    /// The maximum  `maxDisplayableDecimalPlaces` between all possible currencies.
-    static var maxDisplayableDecimalPlaces: Int { get }
+
+    /// The maximum display precision between all the possible currencies.
+    static var maxDisplayPrecision: Int { get }
+
+    /// The currency name (e.g. `US Dollar`, `Bitcoin`, etc.).
     var name: String { get }
+
+    /// The currency code (e.g. `USD`, `BTC`, etc.).
     var code: String { get }
+
+    /// The currency display code (e.g. `USD`, `BTC`, etc.).
     var displayCode: String { get }
-    /// The currency symbol (e.g. `$`, `BTC`.).
+
+    /// The currency symbol (e.g. `$`, `BTC`, etc.).
     var displaySymbol: String { get }
-    var maxDecimalPlaces: Int { get }
-    var maxDisplayableDecimalPlaces: Int { get }
+
+    /// The currency precision.
+    var precision: Int { get }
+
+    /// The currency display precision (shorter than or equal to `precision`).
+    var displayPrecision: Int { get }
+
+    /// Whether the currency is a fiat currency.
     var isFiatCurrency: Bool { get }
+
+    /// Whether the currency is a crypto currency.
     var isCryptoCurrency: Bool { get }
+
+    /// Self wrapper for `CurrencyType`.
     var currency: CurrencyType { get }
 }
 
 extension Currency {
+
     public var isFiatCurrency: Bool {
         self is FiatCurrency
     }
@@ -31,30 +53,58 @@ extension Currency {
     }
 }
 
-public enum CurrencyType: Equatable, Hashable {
+public enum CurrencyType: Hashable {
+
+    /// A fiat currency.
     case fiat(FiatCurrency)
+
+    /// A crypto currency.
     case crypto(CryptoCurrency)
 
-    /// Instantiate a Currency type from a currency code (e.g. `EUR`, `BTC`)
-    /// - Parameter code: a currency code, in the case of fiat any ISO 4217 code, for crypto any supported crypto
-    /// - Throws: if the value is not a know fiat or crypto
+    /// Creates a currency type.
+    ///
+    /// - Parameters:
+    ///   - code:                     A currency code.
+    ///   - enabledCurrenciesService: An enabled currencies service.
+    ///
+    /// - Throws: A `CurrencyError.unknownCurrency` if `code` is invalid.
     public init(code: String, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) throws {
-        if let cryptoCurrency = enabledCurrenciesService.allEnabledCryptoCurrencies.first(where: { $0.code == code }) {
+        if let cryptoCurrency = CryptoCurrency(code: code, enabledCurrenciesService: enabledCurrenciesService) {
             self = .crypto(cryptoCurrency)
             return
         }
+
         if let fiatCurrency = FiatCurrency(code: code) {
             self = .fiat(fiatCurrency)
             return
         }
+
         throw CurrencyError.unknownCurrency
+    }
+
+    public static func == (lhs: CurrencyType, rhs: FiatCurrency) -> Bool {
+        switch lhs {
+        case crypto:
+            return false
+        case fiat(let lhs):
+            return lhs == rhs
+        }
+    }
+
+    public static func == (lhs: CurrencyType, rhs: CryptoCurrency) -> Bool {
+        switch lhs {
+        case crypto(let lhs):
+            return lhs == rhs
+        case fiat:
+            return false
+        }
     }
 }
 
 extension CurrencyType: Currency {
 
-    public static let maxDisplayableDecimalPlaces: Int = {
-        max(FiatCurrency.maxDisplayableDecimalPlaces, CryptoCurrency.maxDisplayableDecimalPlaces)
+    public static let maxDisplayPrecision: Int = {
+        max(FiatCurrency.maxDisplayPrecision, CryptoCurrency.maxDisplayPrecision)
     }()
 
     public var name: String {
@@ -75,15 +125,6 @@ extension CurrencyType: Currency {
         }
     }
 
-    public var displaySymbol: String {
-        switch self {
-        case .crypto(let cryptoCurrency):
-            return cryptoCurrency.displaySymbol
-        case .fiat(let fiatCurrency):
-            return fiatCurrency.displaySymbol
-        }
-    }
-
     public var displayCode: String {
         switch self {
         case .crypto(let cryptoCurrency):
@@ -93,40 +134,54 @@ extension CurrencyType: Currency {
         }
     }
 
-    public var maxDecimalPlaces: Int {
+    public var displaySymbol: String {
         switch self {
         case .crypto(let cryptoCurrency):
-            return cryptoCurrency.maxDecimalPlaces
+            return cryptoCurrency.displaySymbol
         case .fiat(let fiatCurrency):
-            return fiatCurrency.maxDecimalPlaces
+            return fiatCurrency.displaySymbol
         }
     }
 
-    public var maxDisplayableDecimalPlaces: Int {
+    public var precision: Int {
         switch self {
         case .crypto(let cryptoCurrency):
-            return cryptoCurrency.maxDisplayableDecimalPlaces
+            return cryptoCurrency.precision
         case .fiat(let fiatCurrency):
-            return fiatCurrency.maxDisplayableDecimalPlaces
+            return fiatCurrency.precision
+        }
+    }
+
+    public var displayPrecision: Int {
+        switch self {
+        case .crypto(let cryptoCurrency):
+            return cryptoCurrency.displayPrecision
+        case .fiat(let fiatCurrency):
+            return fiatCurrency.displayPrecision
+        }
+    }
+
+    public var isFiatCurrency: Bool {
+        switch self {
+        case .crypto:
+            return false
+        case .fiat:
+            return true
+        }
+    }
+
+    public var isCryptoCurrency: Bool {
+        switch self {
+        case .crypto:
+            return true
+        case .fiat:
+            return false
         }
     }
 
     public var currency: CurrencyType { self }
 
-    public var isFiatCurrency: Bool {
-        guard case .fiat = self else {
-            return false
-        }
-        return true
-    }
-
-    public var isCryptoCurrency: Bool {
-        guard case .crypto = self else {
-            return false
-        }
-        return true
-    }
-
+    /// The crypto currency, or `nil` if not a crypto currency.
     public var cryptoCurrency: CryptoCurrency? {
         switch self {
         case .crypto(let cryptoCurrency):
@@ -136,6 +191,7 @@ extension CurrencyType: Currency {
         }
     }
 
+    /// The fiat currency, or `nil` if not a fiat currency.
     public var fiatCurrency: FiatCurrency? {
         switch self {
         case .crypto:
@@ -167,15 +223,5 @@ extension CryptoValue {
 extension FiatValue {
     public var currency: CurrencyType {
         currencyType.currency
-    }
-}
-
-extension CurrencyType {
-    public static func == (lhs: CurrencyType, rhs: FiatCurrency) -> Bool {
-        lhs.code == rhs.code
-    }
-
-    public static func == (lhs: CurrencyType, rhs: CryptoCurrency) -> Bool {
-        lhs.code == rhs.code
     }
 }

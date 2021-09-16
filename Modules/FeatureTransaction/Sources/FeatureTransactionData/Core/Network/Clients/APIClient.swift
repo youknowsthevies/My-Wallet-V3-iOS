@@ -245,7 +245,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
     ) -> AnyPublisher<BankTranferPaymentResponse, NabuNetworkError> {
         let model = BankTransferPaymentRequest(
             amountMinor: amount.minorString,
-            currency: amount.currencyCode,
+            currency: amount.code,
             attributes: nil
         )
         let request = retailRequestBuilder.post(
@@ -260,7 +260,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
         let body = WithdrawRequestBody(
             beneficiary: id,
-            currency: amount.currencyCode,
+            currency: amount.code,
             amount: amount.minorString
         )
         let request = retailRequestBuilder.post(

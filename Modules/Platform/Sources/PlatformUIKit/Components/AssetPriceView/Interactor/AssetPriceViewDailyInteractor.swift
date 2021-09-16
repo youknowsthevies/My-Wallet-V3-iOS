@@ -72,7 +72,7 @@ public final class AssetPriceViewDailyInteractor: AssetPriceViewInteracting {
                     // Zero or negative previousBalance shouldn't be possible but
                     // it is handled in any case, in a way that does not throw.
                     if previousBalance.moneyValue.isPositive {
-                        percentage = try change.percentage(of: previousBalance.moneyValue)
+                        percentage = try change.percentage(in: previousBalance.moneyValue)
                     } else {
                         percentage = 0
                     }

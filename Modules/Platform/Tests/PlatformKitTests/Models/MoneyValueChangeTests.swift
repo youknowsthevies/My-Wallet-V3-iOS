@@ -5,7 +5,7 @@ import XCTest
 
 final class MoneyValueChangeTests: XCTestCase {
 
-    // Test value before 10% increase
+    // Test value before 50% increase
     func testFiatValueBefore10PercentIncrease() {
         let value = FiatValue.create(minor: "1500", currency: .GBP)!
         let expected = FiatValue.create(minor: "1000", currency: .GBP)!

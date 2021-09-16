@@ -9,20 +9,12 @@ enum TransactionFlowDescriptor {
     private typealias LocalizedString = LocalizationConstants.Transaction
 
     enum EnterAmountScreen {
-        private static let cryptoFormatterProvider = CryptoFormatterProvider()
 
         private static func formatForHeader(moneyValue: MoneyValue) -> String {
             if let cryptoValue = moneyValue.cryptoValue {
-                let formatter = cryptoFormatterProvider.formatter(
-                    locale: .current,
-                    cryptoCurrency: cryptoValue.currencyType,
-                    minFractionDigits: 2
-                )
-                return formatter.format(
-                    value: cryptoValue,
-                    withPrecision: .short,
-                    includeSymbol: true
-                )
+                return CryptoFormatterProvider.shared
+                    .formatter(locale: .current, cryptoCurrency: cryptoValue.currencyType, minFractionDigits: 2)
+                    .format(value: cryptoValue, withPrecision: .short, includeSymbol: true)
             }
             return moneyValue.displayString
         }

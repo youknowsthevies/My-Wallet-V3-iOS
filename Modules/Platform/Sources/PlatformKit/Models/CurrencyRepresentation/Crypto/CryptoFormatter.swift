@@ -1,83 +1,137 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
-
-/// Enumerates the different precision levels for formatting a `CryptoValue` into a String
-///
-/// - short: a short precision (e.g. ETH has 18 precision but displayable precision is less)
-/// - long: a long precision (i.e. the full precision of the currency)
+/// A precision level for formatting a `CryptoValue` into a `String`.
 public enum CryptoPrecision {
+
+    /// The currency's display precision.
     case short
+
+    /// The currency's full precision.
     case long
 }
 
 public final class CryptoFormatterProvider {
 
-    static let shared = CryptoFormatterProvider()
+    /// A singleton value.
+    public static let shared = CryptoFormatterProvider()
 
-    private var formatterMap = [String: CryptoFormatter]()
+    // MARK: - Private Properties
+
+    private var formatters = [String: CryptoFormatter]()
+
+    /// Dispatch queue used for thread safe access to `formatters`.
     private let queue = DispatchQueue(label: "CryptoFormatterProvider.queue.\(UUID().uuidString)")
 
-    public init() {}
+    // MARK: - Public Methods
 
-    /// Returns `CryptoFormatter`. This method executes on a dedicated queue.
-    public func formatter(locale: Locale, cryptoCurrency: CryptoCurrency, minFractionDigits: Int = 1) -> CryptoFormatter {
-        var formatter: CryptoFormatter!
+    /// Returns a `CryptoFormatter`.
+    ///
+    /// Provides caching for the existing crypto formatters, with thread safe access.
+    ///
+    /// - Parameters:
+    ///   - locale:            A locale.
+    ///   - cryptoCurrency:    A crypto currency.
+    ///   - minFractionDigits: The minimum number of digits after the decimal separator.
+    public func formatter(
+        locale: Locale,
+        cryptoCurrency: CryptoCurrency,
+        minFractionDigits: Int = 1
+    ) -> CryptoFormatter {
         queue.sync { [unowned self] in
-            let mapKey = key(locale: locale, cryptoCurrency: cryptoCurrency)
-            if let matchingFormatter = formatterMap[mapKey] {
-                formatter = matchingFormatter
+            let key = key(locale: locale, cryptoCurrency: cryptoCurrency, minFractionDigits: minFractionDigits)
+            if let formatter = self.formatters[key] {
+                return formatter
             } else {
-                formatter = CryptoFormatter(
+                let formatter = CryptoFormatter(
                     locale: locale,
                     cryptoCurrency: cryptoCurrency,
                     minFractionDigits: minFractionDigits
                 )
-                self.formatterMap[mapKey] = formatter
+                self.formatters[key] = formatter
+
+                return formatter
             }
         }
-        return formatter
     }
 
-    private func key(locale: Locale, cryptoCurrency: CryptoCurrency) -> String {
-        guard let languageCode = locale.languageCode else {
-            return cryptoCurrency.displayCode
-        }
-        return "\(languageCode)_\(cryptoCurrency.displayCode)"
+    // MARK: - Private Methods
+
+    /// Creates a caching key.
+    ///
+    /// - Parameters:
+    ///   - locale:            A locale.
+    ///   - fiatCurrency:      A crypto currency.
+    ///   - minFractionDigits: The minimum number of digits after the decimal separator.
+    private func key(locale: Locale, cryptoCurrency: CryptoCurrency, minFractionDigits: Int) -> String {
+        "\(locale.identifier)_\(cryptoCurrency.displayCode)_\(minFractionDigits)"
     }
 }
 
 public final class CryptoFormatter {
 
+    // MARK: - Private Properties
+
+    /// The number formatter using the currency's `displayableDecimalPlaces`.
     private let shortFormatter: NumberFormatter
+
+    /// The number formatter using the currency's `decimalPlaces`.
     private let longFormatter: NumberFormatter
+
+    /// The associated crypto currency.
     private let cryptoCurrency: CryptoCurrency
 
+    // MARK: - Setup
+
+    /// Creates a crypto formatter.
+    ///
+    /// - Parameters:
+    ///   - locale:            A locale.
+    ///   - cryptoCurrency:    A crypto currency
+    ///   - minFractionDigits: The minimum number of digits after the decimal separator.
     public init(locale: Locale, cryptoCurrency: CryptoCurrency, minFractionDigits: Int) {
         shortFormatter = NumberFormatter.cryptoFormatter(
             locale: locale,
             minFractionDigits: minFractionDigits,
-            maxFractionDigits: cryptoCurrency.maxDisplayableDecimalPlaces
+            maxFractionDigits: cryptoCurrency.displayPrecision
         )
         longFormatter = NumberFormatter.cryptoFormatter(
             locale: locale,
             minFractionDigits: minFractionDigits,
-            maxFractionDigits: cryptoCurrency.maxDecimalPlaces
+            maxFractionDigits: cryptoCurrency.precision
         )
         self.cryptoCurrency = cryptoCurrency
     }
 
-    public func format(value: CryptoValue, withPrecision precision: CryptoPrecision = CryptoPrecision.short, includeSymbol: Bool = false) -> String {
+    // MARK: - Public Methods
+
+    /// Returns a string containing the formatted crypto value, optionally including the symbol.
+    ///
+    /// - Parameters:
+    ///   - value:         A crypto value.
+    ///   - precision:     A precision level.
+    ///   - includeSymbol: Whether the symbol should be included.
+    public func format(
+        value: CryptoValue,
+        withPrecision precision: CryptoPrecision = .short,
+        includeSymbol: Bool = false
+    ) -> String {
         let formatter = (precision == .short) ? shortFormatter : longFormatter
         var formattedString = formatter.string(from: NSDecimalNumber(decimal: value.displayMajorValue)) ?? "\(value.displayMajorValue)"
         if includeSymbol {
-            formattedString += " " + value.currencyType.displayCode
+            formattedString += " " + value.displayCode
         }
         return formattedString
     }
 }
 
 extension NumberFormatter {
+
+    /// Creates a crypto number formatter.
+    ///
+    /// - Parameters:
+    ///   - locale:            A locale.
+    ///   - minFractionDigits: The minimum number of digits after the decimal separator.
+    ///   - maxFractionDigits: The maximum number of digits after the decimal separator.
     static func cryptoFormatter(locale: Locale, minFractionDigits: Int, maxFractionDigits: Int) -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.locale = locale

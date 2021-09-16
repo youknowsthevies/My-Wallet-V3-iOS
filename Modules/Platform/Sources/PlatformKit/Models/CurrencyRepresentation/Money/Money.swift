@@ -1,72 +1,67 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-import ToolKit
 
 public protocol Money: CustomDebugStringConvertible {
 
-    /// The type of currency (e.g. `fiat` or `crypto`)
+    /// The type of currency (`FiatCurrency` or `CryptoCurrency`).
     var currency: CurrencyType { get }
 
-    /// The amount is the smallest unit of the currency (i.e. satoshi for BTC, wei for ETH, etc.)
-    /// a.k.a. the minor value of the currency
+    /// The currency amount in minor units (the smallest unit of the respective currency - e.g. `cent` for `USD`, `Satoshi` for `BTC`, etc.).
     var amount: BigInt { get }
 
-    /// The fiat or crypto currency code (e.g. `USD` or `BTC`), defined by `FiatCurrency` and `CryptoCurrency`
-    var currencyCode: String { get }
+    /// The currency code (e.g. `USD`, `BTC`, etc.).
+    var code: String { get }
 
-    /// The currency symbol (e.g. `£`, `$`)
+    /// The currency display code (e.g. `USD`, `BTC`, etc.).
+    var displayCode: String { get }
+
+    /// The currency symbol (e.g. `$`, `BTC`).
     var displaySymbol: String { get }
 
-    /// Returns `true` if the value is exactly `0`
+    /// The currency precision.
+    var precision: Int { get }
+
+    /// The currency display precision.
+    var displayPrecision: Int { get }
+
+    /// Whether the amount is zero.
     var isZero: Bool { get }
 
-    /// Returns `true` if the value is greater than `0`
+    /// Whether the amount is positive.
     var isPositive: Bool { get }
 
-    /// Returns `true` if the value is less than `0`
+    /// Whether the amount is negative.
     var isNegative: Bool { get }
 
-    /// The maximum number of decimal places supported by the money
-    var maxDecimalPlaces: Int { get }
-
-    /// The maximum number of displayable decimal places.
-    var maxDisplayableDecimalPlaces: Int { get }
-
-    /// The minor value of the currency
+    /// The currency amount in minor units, as a `String`.
     var minorString: String { get }
 
-    /// The major value as `String` rendered using the current locale and default formatter
+    /// The currency amount in major units, as a `String`, in the current locale, including the currency symbol.
     var displayString: String { get }
 
-    /// The major value as `Decimal` truncated to `maxDecimalPlaces`
+    /// The currency amount in major units, as a `Decimal`, truncated to `decimalPlaces`.
     var displayMajorValue: Decimal { get }
 
-    /// Converts this money to a displayable String
+    /// Creates a displayable string, representing the currency amount in major units, in the given locale, including the currency symbol.
     ///
-    /// - Parameter locale: the `Locale` used to render the string
-    /// - Returns: the displayable String
+    /// - Parameter locale: A locale.
     func toDisplayString(locale: Locale) -> String
 
-    /// Converts this money to a displayable String
+    /// Creates a displayable string, representing the currency amount in major units, in the current locale, optionally including the currency symbol.
     ///
-    /// - Parameter includeSymbol: whether or not the symbol should be included in the string
-    /// - Returns: the displayable String
+    /// - Parameter includeSymbol: Whether the symbol should be included.
     func toDisplayString(includeSymbol: Bool) -> String
 
-    /// Converts this money to a displayable String
+    /// Creates a displayable string, representing the currency amount in major units, in the given locale, optionally including the currency symbol.
     ///
-    /// - Parameter includeSymbol: whether or not the symbol should be included in the string
-    /// - Parameter locale: the `Locale` used to render the string
-    /// - Returns: the displayable String
+    /// - Parameters:
+    ///   - includeSymbol: Whether the symbol should be included.
+    ///   - locale:        A locale.
     func toDisplayString(includeSymbol: Bool, locale: Locale) -> String
 }
 
 extension Money {
-
-    public var debugDescription: String {
-        "\(type(of: self)) \(code) \(amount)"
-    }
 
     public var code: String {
         currency.code
@@ -76,29 +71,16 @@ extension Money {
         currency.displayCode
     }
 
-    public var maxDecimalPlaces: Int {
-        currency.maxDecimalPlaces
-    }
-
-    public var maxDisplayableDecimalPlaces: Int {
-        currency.maxDisplayableDecimalPlaces
-    }
-
-    public var minorString: String {
-        amount.description
-    }
-
-    @available(*, deprecated, message: "please use `displayString` instead")
-    public var displayMajorValue: Decimal {
-        amount.toDecimalMajor(baseDecimalPlaces: currency.maxDecimalPlaces, roundingDecimalPlaces: currency.maxDecimalPlaces)
-    }
-
-    public var currencyCode: String {
-        currency.code
-    }
-
     public var displaySymbol: String {
         currency.displaySymbol
+    }
+
+    public var precision: Int {
+        currency.precision
+    }
+
+    public var displayPrecision: Int {
+        currency.displayPrecision
     }
 
     public var isZero: Bool {
@@ -113,8 +95,20 @@ extension Money {
         amount < 0
     }
 
+    public var minorString: String {
+        amount.description
+    }
+
     public var displayString: String {
         toDisplayString(includeSymbol: true)
+    }
+
+    @available(*, deprecated, message: "please use `displayString` instead")
+    public var displayMajorValue: Decimal {
+        amount.toDecimalMajor(
+            baseDecimalPlaces: currency.precision,
+            roundingDecimalPlaces: currency.precision
+        )
     }
 
     public func toDisplayString(locale: Locale) -> String {
@@ -123,5 +117,9 @@ extension Money {
 
     public func toDisplayString(includeSymbol: Bool) -> String {
         toDisplayString(includeSymbol: includeSymbol, locale: Locale.current)
+    }
+
+    public var debugDescription: String {
+        "\(type(of: self)) \(code) \(amount)"
     }
 }

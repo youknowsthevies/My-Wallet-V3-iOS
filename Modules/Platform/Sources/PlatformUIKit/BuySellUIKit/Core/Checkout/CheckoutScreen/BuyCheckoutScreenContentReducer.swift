@@ -170,7 +170,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         let localizedPaymentMethod: String
         switch data.paymentMethod {
         case .funds:
-            localizedPaymentMethod = "\(LocalizedLineItem.Funds.prefix) \(data.fee.currency.code) \(LocalizedLineItem.Funds.suffix)"
+            localizedPaymentMethod = "\(LocalizedLineItem.Funds.prefix) \(data.fee.code) \(LocalizedLineItem.Funds.suffix)"
         case .card:
             localizedPaymentMethod = "\(data.card?.label ?? "") \(data.card?.displaySuffix ?? "")"
         case .bankAccount:
@@ -211,7 +211,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             .loaded(next: .init(type: .default(accessibilitySuffix: description), description: description))
         )
 
-        cryptoPriceItemCellPresenter = LineItem.cryptoPrice(data.cryptoValue?.currencyCode ?? LocalizedLineItem.price).defaultPresenter(
+        cryptoPriceItemCellPresenter = LineItem.cryptoPrice(data.cryptoValue?.code ?? LocalizedLineItem.price).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 

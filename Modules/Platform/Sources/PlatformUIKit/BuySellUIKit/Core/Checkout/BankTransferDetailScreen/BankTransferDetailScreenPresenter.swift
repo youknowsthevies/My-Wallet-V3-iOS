@@ -133,7 +133,7 @@ final class BankTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     // MARK: - View Life Cycle
 
     func viewDidLoad() {
-        let currencyCode = interactor.checkoutData.order.inputValue.currencyCode
+        let currencyCode = interactor.checkoutData.order.inputValue.code
         analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsShown(currencyCode: currencyCode))
     }
 }

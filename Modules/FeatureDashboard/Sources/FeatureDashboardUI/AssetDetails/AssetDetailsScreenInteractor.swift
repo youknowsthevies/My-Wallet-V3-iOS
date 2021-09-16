@@ -53,7 +53,7 @@ final class AssetDetailsScreenInteractor {
         savingsAccountService: InterestAccountOverviewAPI = resolve(),
         blockchainAccountFetcher: BlockchainAccountFetching = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        exchangeAPI: PairExchangeServiceAPI
+        pairExchangeService: PairExchangeServiceAPI
     ) {
         self.coincore = coincore
         self.blockchainAccountFetcher = blockchainAccountFetcher
@@ -61,7 +61,7 @@ final class AssetDetailsScreenInteractor {
         self.savingsAccountService = savingsAccountService
         historicalFiatPriceService = HistoricalFiatPriceService(
             cryptoCurrency: currency,
-            exchangeAPI: exchangeAPI,
+            pairExchangeService: pairExchangeService,
             fiatCurrencyService: fiatCurrencyService
         )
         recoveryPhraseStatus = resolve()

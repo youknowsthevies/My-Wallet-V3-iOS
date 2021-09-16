@@ -1,21 +1,30 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import Localization
-import ToolKit
 
-/// This is used to distinguish between different types of digital assets.
-public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebugStringConvertible {
+/// A crypto currency, representing a digital asset.
+public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebugStringConvertible, Equatable {
 
+    /// A coin crypto currency.
     case coin(CoinAssetModel)
+
+    /// An Ethereum ERC-20 crypto currency.
     case erc20(ERC20AssetModel)
 
+    /// Creates a crypto currency.
+    ///
+    /// If `code` is invalid, this initializer returns `nil`.
+    ///
+    /// - Parameters:
+    ///   - code:                     A crypto currency code.
+    ///   - enabledCurrenciesService: An enabled currencies service.
     public init?(code: String, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
         guard let cryptoCurrency = enabledCurrenciesService.allEnabledCryptoCurrencies
             .first(where: { $0.code == code })
         else {
             return nil
         }
+
         self = cryptoCurrency
     }
 
@@ -62,6 +71,37 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
         "CryptoCurrency.\(code)"
     }
 
+    /// Whether the crypto currency is a coin asset.
+    public var isCoin: Bool {
+        switch self {
+        case .coin:
+            return true
+        case .erc20:
+            return false
+        }
+    }
+
+    /// Whether the crypto currency is an Ethereum ERC-20 asset.
+    public var isERC20: Bool {
+        switch self {
+        case .coin:
+            return false
+        case .erc20:
+            return true
+        }
+    }
+
+    /// A uniquely identifying tag.
+    public var typeTag: AnyHashable {
+        switch self {
+        case .coin(let model):
+            return model.typeTag
+        case .erc20(let model):
+            return model.typeTag
+        }
+    }
+
+    /// The underlying asset of the crypto currency.
     public var assetModel: AssetModel {
         switch self {
         case .coin(let model):
@@ -76,39 +116,22 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
 
 extension CryptoCurrency {
 
-    public static let maxDisplayableDecimalPlaces: Int = 8
-
-    /// Sort currencies, first non ERC20 coins following `integerValue` value, then ERC20 coins sorted as we received them.
-    public static func < (lhs: CryptoCurrency, rhs: CryptoCurrency) -> Bool {
-        lhs.integerValue < rhs.integerValue
-    }
-
-    /// Helper value for `Comparable` conformance.
-    private var integerValue: Int {
-        switch self {
-        case .coin(let model):
-            return model.sortIndex
-        case .erc20(let model):
-            return 10000 + model.sortIndex
-        }
-    }
+    public static let maxDisplayPrecision: Int = 8
 
     public var name: String {
         switch self {
-        case .erc20(let model):
-            return model.name
         case .coin(let model):
+            return model.name
+        case .erc20(let model):
             return model.name
         }
     }
 
-    public var displaySymbol: String { displayCode }
-
     public var code: String {
         switch self {
-        case .erc20(let model):
-            return model.code
         case .coin(let model):
+            return model.code
+        case .erc20(let model):
             return model.code
         }
     }
@@ -122,46 +145,45 @@ extension CryptoCurrency {
         }
     }
 
-    public var maxDecimalPlaces: Int {
+    public var displaySymbol: String { displayCode }
+
+    public var precision: Int {
         switch self {
-        case .erc20(let model):
-            return model.precision
         case .coin(let model):
             return model.precision
-        }
-    }
-
-    public var maxDisplayableDecimalPlaces: Int {
-        min(8, maxDecimalPlaces)
-    }
-
-    /// Returns `true` for any ERC20 asset
-    public var isERC20: Bool {
-        switch self {
-        case .erc20:
-            return true
-        case .coin:
-            return false
-        }
-    }
-
-    /// Returns `true` for any ERC20 asset
-    public var isCoin: Bool {
-        switch self {
-        case .coin:
-            return true
-        case .erc20:
-            return false
-        }
-    }
-
-    /// A `Hashable` tag that can be used to discern between different L1/L2 chains.
-    public var typeTag: AnyHashable {
-        switch self {
         case .erc20(let model):
-            return model.typeTag
+            return model.precision
+        }
+    }
+
+    public var displayPrecision: Int {
+        min(8, precision)
+    }
+
+    /// A helper value for `Comparable` conformance.
+    ///
+    /// Coin assets are "smaller" than ERC-20 assets.
+    private var integerValue: Int {
+        switch self {
         case .coin(let model):
-            return model.typeTag
+            return model.sortIndex
+        case .erc20(let model):
+            return 10000 + model.sortIndex
+        }
+    }
+
+    public static func < (lhs: CryptoCurrency, rhs: CryptoCurrency) -> Bool {
+        lhs.integerValue < rhs.integerValue
+    }
+
+    public static func == (lhs: CryptoCurrency, rhs: CryptoCurrency) -> Bool {
+        switch (lhs, rhs) {
+        case (.coin(let lhs), .coin(let rhs)):
+            return lhs == rhs
+        case (.erc20(let lhs), .erc20(let rhs)):
+            return lhs == rhs
+        default:
+            return false
         }
     }
 }

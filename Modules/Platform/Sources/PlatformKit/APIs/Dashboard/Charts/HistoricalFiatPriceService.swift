@@ -5,69 +5,49 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-/// This protocol defines a `Single<FiatValue>`. It's the
-/// latest Fiat price for a given asset type and is to be used
-/// with the `HistoricalPricesAPI`. Basically it's the last item
-/// in the array of prices returned.
-public protocol LatestFiatPriceFetching: AnyObject {
-    var latestPrice: Observable<FiatValue> { get }
-}
+public protocol HistoricalFiatPriceServiceAPI {
 
-public protocol HistoricalFiatPriceServiceAPI: LatestFiatPriceFetching {
-
-    /// The calculationState of the service. Returns a `ValueCalculationState` that
-    /// contains `HistoricalPriceSeries` and a `FiatValue` each derived from `LatestFiatPriceFetching`
-    /// and `HistoricalFiatPriceFetching`.
+    /// An observable that streams the calculation state of the service.
     var calculationState: Observable<ValueCalculationState<HistoricalFiatPriceResponse>> { get }
-    /// A trigger that force the service to fetch the updated price.
-    /// Handy to call on currency type and value changes
+
+    /// A trigger that forces the service to fetch the updated price. Handy to call on currency type and value changes.
     var fetchTriggerRelay: PublishRelay<PriceWindow> { get }
 }
 
 public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
 
-    // MARK: Types
+    // MARK: - Public Types
 
     public typealias CalculationState = ValueCalculationState<HistoricalFiatPriceResponse>
 
     // MARK: - HistoricalFiatPriceServiceAPI
-
-    public let fetchTriggerRelay = PublishRelay<PriceWindow>()
 
     public var calculationState: Observable<CalculationState> {
         _ = setup
         return calculationStateRelay.asObservable()
     }
 
-    // MARK: - LatestFiatPriceFetching
-
-    public var latestPrice: Observable<FiatValue> {
-        exchangeAPI.fiatPrice
-    }
+    public let fetchTriggerRelay = PublishRelay<PriceWindow>()
 
     // MARK: - Private Properties
 
-    private let calculationStateRelay = BehaviorRelay<CalculationState>(value: .calculating)
-    private let bag = DisposeBag()
+    /// The associated crypto currency.
+    private let cryptoCurrency: CryptoCurrency
 
-    // MARK: - Services
+    private let pairExchangeService: PairExchangeServiceAPI
 
-    /// The historical price service
     private let priceService: PriceServiceAPI
 
-    /// The exchange service
-    private let exchangeAPI: PairExchangeServiceAPI
-
-    /// The currency service
     private let fiatCurrencyService: FiatCurrencyServiceAPI
-
-    /// The associated asset
-    private let cryptoCurrency: CryptoCurrency
 
     private let scheduler: SchedulerType
 
+    private let calculationStateRelay = BehaviorRelay<CalculationState>(value: .calculating)
+
+    private let disposeBag = DisposeBag()
+
     private lazy var setup: Void = {
-        let historicalPrices: Observable<(HistoricalPriceSeries, PriceWindow)> = Observable
+        let historicalPricesInWindow = Observable
             .combineLatest(
                 fiatCurrencyService.fiatCurrencyObservable,
                 fetchTriggerRelay.startWith(.day(.oneHour))
@@ -75,45 +55,48 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
             .throttle(.milliseconds(100), scheduler: scheduler)
             .flatMapLatest { [priceService, cryptoCurrency] fiatCurrency, window
                 -> Observable<(HistoricalPriceSeries, PriceWindow)> in
-                let prices = priceService.priceSeries(
-                    of: cryptoCurrency,
-                    in: fiatCurrency,
-                    within: window
-                )
-                return Observable
-                    .zip(prices.asObservable(), Observable.just(window))
+                let prices = priceService
+                    .priceSeries(of: cryptoCurrency, in: fiatCurrency, within: window)
+                    .asObservable()
+                return Observable.zip(prices, Observable.just(window))
             }
             .subscribeOn(scheduler)
             .observeOn(scheduler)
 
         Observable
-            .combineLatest(latestPrice, historicalPrices)
-            .map { latestPrice, historicalPrices -> HistoricalFiatPriceResponse in
-                let (priceSeries, priceWindow) = historicalPrices
-                return HistoricalFiatPriceResponse(
-                    prices: priceSeries,
-                    fiatValue: latestPrice,
-                    priceWindow: priceWindow
-                )
+            .combineLatest(pairExchangeService.fiatPrice, historicalPricesInWindow)
+            .map { payload in
+                let (fiatValue, (prices, window)) = payload
+                return HistoricalFiatPriceResponse(fiatValue: fiatValue, prices: prices, priceWindow: window)
             }
             .map(CalculationState.value)
             .startWith(.calculating)
             .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)
-            .disposed(by: bag)
+            .disposed(by: disposeBag)
     }()
 
+    // MARK: - Setup
+
+    /// Creates a historical fiat price service.
+    ///
+    /// - Parameters:
+    ///   - cryptoCurrency:      A crypto currency.
+    ///   - exchangeService:     A pair exchange service.
+    ///   - priceService:        A price service.
+    ///   - fiatCurrencyService: A fiat currency service.
+    ///   - scheduler:           A scheduler.
     public init(
         cryptoCurrency: CryptoCurrency,
-        exchangeAPI: PairExchangeServiceAPI,
+        pairExchangeService: PairExchangeServiceAPI,
         priceService: PriceServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI,
         scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)
     ) {
-        self.scheduler = scheduler
-        self.exchangeAPI = exchangeAPI
         self.cryptoCurrency = cryptoCurrency
+        self.pairExchangeService = pairExchangeService
         self.priceService = priceService
         self.fiatCurrencyService = fiatCurrencyService
+        self.scheduler = scheduler
     }
 }

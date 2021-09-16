@@ -1,26 +1,30 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 // swiftlint:disable file_length
-import Foundation
+// swiftlint:disable type_body_length
 
-/// To regenerate this file use:
-/** ```swift
+/**
+ A fiat currency.
+
+ This follows the `ISO 4217` alphabetic currency codes.
+
+ To regenerate this enum, use the following code:
+
+ ```swift
  let locale = NSLocale(localeIdentifier: "en_US")
  var s = "public enum FiatCurrency: String, Currency, Codable, CaseIterable {"
  for currencyCode in NSLocale.isoCurrencyCodes {
-         if let description = locale.localizedString(forCurrencyCode: currencyCode) {
-             s.append("\n\n\t/// \(description)")
-         }
+     s.append("\n")
+     if let description = locale.localizedString(forCurrencyCode: currencyCode) {
+         s.append("\n\t/// \(description)")
+     }
      s.append("\n\tcase \(currencyCode)")
  }
- print(s + "\n}")
+ s.append("\n}")
+ print(s)
  ```
  */
-
-// swiftlint:disable type_body_length
-
-/// An implementation of `ISO 4217` currency codes
-public enum FiatCurrency: String, Currency, Codable, CaseIterable {
+public enum FiatCurrency: String, Currency, Codable, CaseIterable, Equatable {
 
     /// Andorran Peseta
     case ADP
@@ -285,6 +289,7 @@ public enum FiatCurrency: String, Currency, Codable, CaseIterable {
 
     /// Egyptian Pound
     case EGP
+
     case EQE
 
     /// Eritrean Nakfa
@@ -469,6 +474,7 @@ public enum FiatCurrency: String, Currency, Codable, CaseIterable {
 
     /// Lesotho Loti
     case LSL
+
     case LSM
 
     /// Lithuanian Litas
@@ -930,8 +936,10 @@ public enum FiatCurrency: String, Currency, Codable, CaseIterable {
 
 extension FiatCurrency {
 
+    /// The default fiat currency.
     public static let `default` = FiatCurrency.USD
 
+    /// The fiat currency corresponding to the user's current locale. If this is not a valid currency, `default` is returned instead.
     public static var locale: FiatCurrency {
         let locale = NSLocale.current as NSLocale
         guard let code = locale.currencyCode else { return .default }
@@ -943,49 +951,57 @@ extension FiatCurrency {
 
 extension FiatCurrency {
 
-    public static let maxDisplayableDecimalPlaces: Int = {
-        Self.allCases.map(\.maxDisplayableDecimalPlaces).max() ?? 0
+    public static let maxDisplayPrecision: Int = {
+        allCases.map(\.displayPrecision).max() ?? 0
     }()
 
-    /// The code of the currency. e.g `USD`, `GBP`, `EUR`
-    public var code: String { rawValue }
-
-    public var displayCode: String { code }
-
-    /// The symbol of the currency. e.g $, £, €
-    public var displaySymbol: String {
-        currentLocale.displayName(forKey: .currencySymbol, value: code) ?? ""
-    }
-
-    /// The name of the currency. e.g US Dollar, Euro, Great British Pound
     public var name: String {
         currentLocale.localizedString(forCurrencyCode: code) ?? ""
     }
 
-    private var currentLocale: NSLocale {
-        NSLocale.current as NSLocale
+    public var code: String { rawValue }
+
+    public var displayCode: String { code }
+
+    public var displaySymbol: String {
+        currentLocale.displayName(forKey: .currencySymbol, value: code) ?? ""
     }
 
-    /// The number of decimal places as specified in `ISO 4217`
-    public var maxDecimalPlaces: Int {
+    public var precision: Int {
         switch self {
-        case .XOF,
+        case .ADP,
+             .AOK,
+             .AON,
+             .AOR,
              .BIF,
-             .XAF,
+             .BYR,
              .CLP,
-             .KMF,
              .DJF,
-             .XPF,
+             .ECS,
+             .ESP,
+             .GEK,
              .GNF,
              .ISK,
+             .ITL,
              .JPY,
+             .KMF,
              .KRW,
+             .MGF,
+             .PTE,
              .PYG,
+             .ROL,
              .RWF,
+             .TJR,
+             .TPE,
+             .TRL,
              .UGX,
              .UYI,
+             .VND,
              .VUV,
-             .VND:
+             .XAF,
+             .XEU,
+             .XOF,
+             .XPF:
             return 0
         case .BHD,
              .IQD,
@@ -1002,27 +1018,45 @@ extension FiatCurrency {
         }
     }
 
-    public var maxDisplayableDecimalPlaces: Int { maxDecimalPlaces }
+    public var displayPrecision: Int { precision }
 
+    private var currentLocale: NSLocale {
+        NSLocale.current as NSLocale
+    }
+
+    /// Creates a fiat currency.
+    ///
+    /// If `code` is invalid, this initializer returns `nil`.
+    ///
+    /// - Parameter code: A fiat currency code.
     public init?(code: String) {
         self.init(rawValue: code.uppercased())
+    }
+
+    public static func == (lhs: FiatCurrency, rhs: FiatCurrency) -> Bool {
+        lhs.code == rhs.code
     }
 }
 
 extension FiatCurrency {
 
+    /// The list of fiat currencies supported for ACH.
     static let achCurrencies: [FiatCurrency] = [.USD]
 
+    /// The list of fiat currencies supported for bank wire transfers.
     static let bankWireSupported: [FiatCurrency] = [.GBP, .EUR, .USD]
 
+    /// Whether the current fiat currency is supported for ACH.
     public var isACHSupportedCurrency: Bool {
         FiatCurrency.achCurrencies.contains(self)
     }
 
+    /// Whether the current fiat currency is supported for bank wire transfers.
     public var isBankWireSupportedCurrency: Bool {
         FiatCurrency.bankWireSupported.contains(self)
     }
 
+    /// The list of fiat currencies currently supported.
     public static let supported: [FiatCurrency] = [
         .AUD,
         .BRL,

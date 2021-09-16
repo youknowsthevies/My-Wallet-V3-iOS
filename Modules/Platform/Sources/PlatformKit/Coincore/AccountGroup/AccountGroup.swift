@@ -5,6 +5,17 @@ import CombineExt
 import RxSwift
 import ToolKit
 
+/// An account group error.
+public enum AccountGroupError: Error {
+
+    case noBalance
+
+    case noReceiveAddress
+
+    /// No accounts in account group.
+    case noAccounts
+}
+
 /// A `BlockchainAccount` that represents a collection of accounts, opposed to a single account.
 public protocol AccountGroup: BlockchainAccount {
     var accounts: [SingleAccount] { get }
@@ -87,11 +98,6 @@ extension AccountGroup {
             .just(accounts.map { $0.can(perform: action) })
             .flatMapConcatFirst()
     }
-}
-
-public enum AccountGroupError: Error {
-    case noBalance
-    case noReceiveAddress
 }
 
 extension AnyPublisher where Output == [AccountGroup] {

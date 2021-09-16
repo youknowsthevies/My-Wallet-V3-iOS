@@ -32,7 +32,7 @@ final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
             .reduce(into: [CryptoCurrency: HistoricalFiatPriceServiceAPI]()) { result, cryptoCurrency in
                 result[cryptoCurrency] = HistoricalFiatPriceService(
                     cryptoCurrency: cryptoCurrency,
-                    exchangeAPI: exchangeProvider[cryptoCurrency],
+                    pairExchangeService: exchangeProvider[cryptoCurrency],
                     fiatCurrencyService: fiatCurrencyService
                 )
             }

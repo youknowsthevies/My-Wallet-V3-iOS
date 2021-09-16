@@ -38,7 +38,7 @@ public final class AllAccountsGroup: AccountGroup {
 
     public var pendingBalance: Single<MoneyValue> {
         guard !accounts.isEmpty else {
-            return .error(MoneyValueError.invalidInput)
+            return .error(AccountGroupError.noAccounts)
         }
         return Single
             .zip(accounts.map(\.pendingBalance))
@@ -49,7 +49,7 @@ public final class AllAccountsGroup: AccountGroup {
 
     public var balance: Single<MoneyValue> {
         guard !accounts.isEmpty else {
-            return .error(MoneyValueError.invalidInput)
+            return .error(AccountGroupError.noAccounts)
         }
         return Single
             .zip(accounts.map(\.balance))
@@ -60,7 +60,7 @@ public final class AllAccountsGroup: AccountGroup {
 
     public var actionableBalance: Single<MoneyValue> {
         guard !accounts.isEmpty else {
-            return .error(MoneyValueError.invalidInput)
+            return .error(AccountGroupError.noAccounts)
         }
         return Single
             .zip(accounts.map(\.actionableBalance))

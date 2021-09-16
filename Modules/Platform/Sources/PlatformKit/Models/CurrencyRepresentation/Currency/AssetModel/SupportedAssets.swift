@@ -1,13 +1,21 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
-
-/// A list of supported `AssetModel`.
+/// A list of supported assets.
 struct SupportedAssets {
+
+    // MARK: - Internal Properties
+
+    /// The empty list of supported assets.
     static let empty = SupportedAssets(currencies: [])
 
+    /// The list of supported assets.
     let currencies: [AssetModel]
 
+    // MARK: - Setup
+
+    /// Creates a list of supported assets.
+    ///
+    /// - Parameter response: A supported assets response.
     init(response: SupportedAssetsResponse) {
         currencies = response.currencies
             .enumerated()
@@ -31,6 +39,9 @@ struct SupportedAssets {
             }
     }
 
+    /// Creates a list of supported assets.
+    ///
+    /// - Parameter currencies: A list of supported assets.
     private init(currencies: [AssetModel]) {
         self.currencies = currencies
     }

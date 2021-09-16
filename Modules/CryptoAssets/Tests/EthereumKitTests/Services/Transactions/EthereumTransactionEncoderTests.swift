@@ -36,7 +36,7 @@ class EthereumTransactionEncoderTests: XCTestCase {
             to: EthereumAddress(address: "0x3535353535353535353535353535353535353535")!,
             gasPrice: 23,
             gasLimit: 21000,
-            value: BigUInt("0.1", decimals: CryptoCurrency.coin(.ethereum).maxDecimalPlaces)!,
+            value: BigUInt("0.1", decimals: CryptoCurrency.coin(.ethereum).precision)!,
             data: nil,
             transferType: .transfer
         )

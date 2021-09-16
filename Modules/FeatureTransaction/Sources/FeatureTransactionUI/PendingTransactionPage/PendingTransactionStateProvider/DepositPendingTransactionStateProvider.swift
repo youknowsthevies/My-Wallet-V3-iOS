@@ -39,7 +39,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
             subtitle: String(
                 format: LocalizationIds.Success.description,
                 amount.displayString,
-                amount.currencyCode,
+                amount.code,
                 value
             ),
             compositeViewType: .composite(

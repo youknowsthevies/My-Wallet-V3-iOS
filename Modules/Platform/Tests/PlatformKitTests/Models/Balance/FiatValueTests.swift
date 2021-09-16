@@ -26,22 +26,22 @@ class FiatValueTests: XCTestCase {
     func testUSDDecimalPlaces() {
         XCTAssertEqual(
             2,
-            FiatValue.create(major: "1.00", currency: .USD)!.maxDecimalPlaces
+            FiatValue.create(major: "1.00", currency: .USD)!.precision
         )
     }
 
     func testJPYDecimalPlaces() {
         XCTAssertEqual(
             0,
-            FiatValue.create(major: "1.000000", currency: .JPY)!.maxDecimalPlaces
+            FiatValue.create(major: "1.000000", currency: .JPY)!.precision
         )
     }
 
     func testSymbol() {
-        let usdValue = FiatValue.zero(currencyCode: "USD")!
+        let usdValue = FiatValue.zero(currency: .USD)
         XCTAssertEqual("$", usdValue.displaySymbol)
 
-        let eurValue = FiatValue.zero(currencyCode: "EUR")!
+        let eurValue = FiatValue.zero(currency: .EUR)
         XCTAssertEqual("€", eurValue.displaySymbol)
     }
 

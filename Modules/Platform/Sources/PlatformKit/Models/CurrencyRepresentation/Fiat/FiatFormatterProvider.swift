@@ -1,35 +1,54 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
-
 final class FiatFormatterProvider {
 
+    /// A singleton value.
     static let shared = FiatFormatterProvider()
 
-    private var formatterMap = [String: NumberFormatter]()
+    // MARK: - Private Properties
+
+    private var formatters = [String: NumberFormatter]()
+
+    /// Dispatch queue used for thread safe access to `formatters`.
     private let queue = DispatchQueue(label: "FiatFormatterProvider.queue")
 
-    /// Returns `NumberFormatter`. This method executes on a dedicated queue.
+    // MARK: - Internal Methods
+
+    /// Returns a `NumberFormatter`.
+    ///
+    /// Provides caching for the existing number formatters, with thread safe access.
+    ///
+    /// - Parameters:
+    ///   - locale:            A locale.
+    ///   - fiatValue:         A fiat value.
+    ///   - maxFractionDigits: The maximum number of digits after the decimal separator.
     func formatter(locale: Locale, fiatValue: FiatValue, maxFractionDigits: Int) -> NumberFormatter {
-        var formatter: NumberFormatter!
         queue.sync { [unowned self] in
-            let mapKey = key(locale: locale, fiatValue: fiatValue)
-            if let matchingFormatter = formatterMap[mapKey] {
-                matchingFormatter.maximumFractionDigits = maxFractionDigits
-                formatter = matchingFormatter
+            let key = key(locale: locale, fiatValue: fiatValue, maxFractionDigits: maxFractionDigits)
+            if let formatter = self.formatters[key] {
+                return formatter
             } else {
-                formatter = NumberFormatter(
+                let formatter = NumberFormatter(
                     locale: locale,
-                    currencyCode: fiatValue.currency.code,
+                    currencyCode: fiatValue.code,
                     maxFractionDigits: maxFractionDigits
                 )
-                self.formatterMap[mapKey] = formatter
+                self.formatters[key] = formatter
+
+                return formatter
             }
         }
-        return formatter
     }
 
-    private func key(locale: Locale, fiatValue: FiatValue) -> String {
-        "\(locale.identifier)_\(fiatValue.currency.code)"
+    // MARK: - Private Methods
+
+    /// Creates a caching key.
+    ///
+    /// - Parameters:
+    ///   - locale:            A locale.
+    ///   - fiatValue:         A fiat value.
+    ///   - maxFractionDigits: The maximum number of digits after the decimal separator.
+    private func key(locale: Locale, fiatValue: FiatValue, maxFractionDigits: Int) -> String {
+        "\(locale.identifier)_\(fiatValue.code)_\(maxFractionDigits)"
     }
 }

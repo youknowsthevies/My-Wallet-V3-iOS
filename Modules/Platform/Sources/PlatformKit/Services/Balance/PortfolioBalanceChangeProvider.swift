@@ -63,7 +63,7 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
                     if previousBalance.isZero || previousBalance.isNegative {
                         percentage = 0
                     } else {
-                        percentage = try change.percentage(of: previousBalance)
+                        percentage = try change.percentage(in: previousBalance)
                     }
                 }
                 return PortfolioBalanceChange(

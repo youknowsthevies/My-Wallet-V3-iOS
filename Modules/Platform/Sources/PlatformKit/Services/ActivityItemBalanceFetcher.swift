@@ -5,8 +5,8 @@ import RxSwift
 import ToolKit
 
 public protocol ActivityItemBalanceFetching {
-    /// The exchange service
-    var exchange: PairExchangeServiceAPI { get }
+    /// The pair exchange service
+    var pairExchangeService: PairExchangeServiceAPI { get }
 
     /// The calculation state of the `MoneyValuePair`
     var calculationState: Observable<MoneyValuePairCalculationState> { get }
@@ -17,7 +17,7 @@ public protocol ActivityItemBalanceFetching {
 
 public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
 
-    public let exchange: PairExchangeServiceAPI
+    public let pairExchangeService: PairExchangeServiceAPI
 
     public var calculationState: Observable<MoneyValuePairCalculationState> {
         _ = setup
@@ -31,7 +31,7 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
     private let moneyValue: MoneyValue
 
     private lazy var setup: Void = {
-        exchange
+        pairExchangeService
             .fiatPrice
             .map(weak: self) { (self, fiatPrice) -> MoneyValuePair in
                 do {
@@ -50,12 +50,12 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
 
     // MARK: - Private Properties
 
-    public init(exchange: PairExchangeServiceAPI, moneyValue: MoneyValue) {
-        self.exchange = exchange
+    public init(pairExchangeService: PairExchangeServiceAPI, moneyValue: MoneyValue) {
+        self.pairExchangeService = pairExchangeService
         self.moneyValue = moneyValue
     }
 
     public func refresh() {
-        exchange.fetchTriggerRelay.accept(())
+        pairExchangeService.fetchTriggerRelay.accept(())
     }
 }
