@@ -14,8 +14,6 @@ public struct PriceQuoteAtTime: Equatable {
     /// - Parameters:
     ///   - response: A timestamp.
     ///   - currency: A value.
-    ///
-    /// - Throws: Money value initialization error.
     public init(timestamp: Date, moneyValue: MoneyValue) {
         self.timestamp = timestamp
         self.moneyValue = moneyValue

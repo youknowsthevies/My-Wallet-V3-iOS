@@ -34,12 +34,7 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
         pairExchangeService
             .fiatPrice
             .map(weak: self) { (self, fiatPrice) -> MoneyValuePair in
-                do {
-                    let pair = try MoneyValuePair(base: self.moneyValue, exchangeRate: .init(fiatValue: fiatPrice))
-                    return pair
-                } catch {
-                    return MoneyValuePair.zero(baseCurrency: self.moneyValue.currencyType, quoteCurrency: .fiat(fiatPrice.currencyType))
-                }
+                MoneyValuePair(base: self.moneyValue, exchangeRate: .init(fiatValue: fiatPrice))
             }
             .map { .value($0) }
             .startWith(.calculating)

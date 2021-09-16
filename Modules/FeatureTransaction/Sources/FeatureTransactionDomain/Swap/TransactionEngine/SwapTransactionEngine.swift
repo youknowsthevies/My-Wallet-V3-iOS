@@ -79,7 +79,7 @@ extension SwapTransactionEngine {
                 MoneyValue(amount: pricedQuote.price, currency: self.target.currencyType)
             }
             .map(weak: self) { (self, rate) -> MoneyValuePair in
-                try MoneyValuePair(base: .one(currency: self.sourceAsset), exchangeRate: rate)
+                MoneyValuePair(base: .one(currency: self.sourceAsset), exchangeRate: rate)
             }
     }
 
@@ -177,7 +177,7 @@ extension SwapTransactionEngine {
                 }
 
                 let resultValue = CryptoValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
-                let swapDestinationValue: MoneyValue = try pendingTransaction.amount.convert(using: resultValue)
+                let swapDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
                 let confirmations: [TransactionConfirmation] = [
                     .swapSourceValue(.init(cryptoValue: pendingTransaction.amount.cryptoValue!)),
                     .swapDestinationValue(.init(cryptoValue: swapDestinationValue.cryptoValue!)),
@@ -241,7 +241,7 @@ extension SwapTransactionEngine {
                     resultValue: resultValue
                 )
                 let swapDestinationValue = TransactionConfirmation.Model.SwapDestinationValue(
-                    cryptoValue: (try pendingTransaction.amount.convert(using: resultValue)).cryptoValue!
+                    cryptoValue: pendingTransaction.amount.convert(using: resultValue).cryptoValue!
                 )
 
                 var pendingTransaction = pendingTransaction
@@ -363,7 +363,7 @@ extension PendingTransaction {
         let source = amount.currencyType
         let price = MoneyValue(amount: quote.price, currency: destination)
         let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destination)
-        let convertedFees = try totalFees.convert(usingInverse: price, currencyType: source)
+        let convertedFees = totalFees.convert(usingInverse: price, currencyType: source)
         return (try? minimumApiLimit + convertedFees) ?? MoneyValue.zero(currency: destination)
     }
 }

@@ -45,15 +45,10 @@ private struct BitcoinChainBalances {
 
     let total: CryptoValue
 
-    private let balances: [String: CryptoValue]
-
     init(response: BitcoinChainBalanceResponse, coin: BitcoinChainCoin) {
-        let cryptoCurrency = coin.cryptoCurrency
-        balances = response.compactMapValues { item -> CryptoValue? in
-            CryptoValue.create(minor: "\(item.finalBalance)", currency: cryptoCurrency)
-        }
-        total = (try? balances
-            .values
-            .reduce(CryptoValue.zero(currency: cryptoCurrency), +)) ?? CryptoValue.zero(currency: cryptoCurrency)
+        total = (try? response.values
+            .map { item in .create(minor: item.finalBalance, currency: coin.cryptoCurrency) }
+            .reduce(.zero(currency: coin.cryptoCurrency), +)
+        ) ?? .zero(currency: coin.cryptoCurrency)
     }
 }

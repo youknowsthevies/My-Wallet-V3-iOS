@@ -518,19 +518,14 @@ extension TransactionErrorState {
                 return source
             }
             // Convert crypto max amount into fiat amount.
-            guard let result = try? source.convert(using: exchangeRate.quote) else {
-                // Can't convert, use original value for error message.
-                return source
-            }
-            return result
+            return source.convert(using: exchangeRate.quote)
         case (.fiat, .crypto):
-            guard let quote = exchangeRate?.quote,
-                  let result = try? source.convert(usingInverse: quote, currencyType: source.currencyType)
-            else {
-                // Can't convert, use original value for error message.
+            guard let exchangeRate = exchangeRate else {
+                // No exchange rate yet, use original value for error message.
                 return source
             }
-            return result
+            // Convert fiat max amount into crypto amount.
+            return source.convert(usingInverse: exchangeRate.quote, currencyType: source.currencyType)
         }
     }
 }

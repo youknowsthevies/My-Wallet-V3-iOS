@@ -24,7 +24,7 @@ public final class AmountTranslationPriceProvider: AmountTranslationPriceProvidi
             .asSingle()
             .map { exchangeRate in
                 let amount = amount.isEmpty ? "0" : amount
-                return try MoneyValuePair(
+                return MoneyValuePair(
                     base: CryptoValue.create(major: amount, currency: cryptoCurrency)!.moneyValue,
                     exchangeRate: exchangeRate.moneyValue
                 )

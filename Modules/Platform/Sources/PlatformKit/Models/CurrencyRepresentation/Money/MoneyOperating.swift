@@ -219,7 +219,7 @@ extension MoneyOperating {
         try Self.percentage(of: self, in: other)
     }
 
-    /// Rounds the current value to the current currency's `displayableDecimalPlaces`.
+    /// Rounds the current value to the current currency's `displayPrecision`.
     ///
     /// - Warning: Rounding a money implies a **precision loss** for the underlying amount. This should only be used for displaying purposes.
     ///

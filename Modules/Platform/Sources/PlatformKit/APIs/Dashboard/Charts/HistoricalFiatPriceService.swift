@@ -82,7 +82,7 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
     ///
     /// - Parameters:
     ///   - cryptoCurrency:      A crypto currency.
-    ///   - exchangeService:     A pair exchange service.
+    ///   - pairExchangeService: A pair exchange service.
     ///   - priceService:        A price service.
     ///   - fiatCurrencyService: A fiat currency service.
     ///   - scheduler:           A scheduler.

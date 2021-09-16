@@ -18,10 +18,10 @@ public struct MoneyValuePair: Equatable {
     /// - Parameters:
     ///   - base:         A base money value.
     ///   - exchangeRate: An exchange rate, representing one major unit of `base`'s currency in another currency.
-    public init(base: MoneyValue, exchangeRate: MoneyValue) throws {
+    public init(base: MoneyValue, exchangeRate: MoneyValue) {
         self.init(
             base: base,
-            quote: try base.convert(using: exchangeRate)
+            quote: base.convert(using: exchangeRate)
         )
     }
 

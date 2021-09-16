@@ -40,10 +40,6 @@ extension FiatValue {
             return CryptoValue.zero(currency: cryptoCurrency)
         }
         let conversionAmount = displayMajorValue / exchangeRate.displayMajorValue
-        guard let result = CryptoValue.create(major: "\(conversionAmount)", currency: cryptoCurrency) else {
-            // swiftlint:disable:next line_length
-            fatalError("FiatValue.convertToCryptoValue conversion failed. conversionAmount: \(conversionAmount), displayMajorValue: \(displayMajorValue), exchangeRate.displayMajorValue: \(exchangeRate.displayMajorValue)")
-        }
-        return result
+        return CryptoValue.create(major: conversionAmount, currency: cryptoCurrency)
     }
 }

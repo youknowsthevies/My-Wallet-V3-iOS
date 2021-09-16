@@ -130,7 +130,7 @@ final class FiatCustodialAccount: FiatAccount {
             .eraseError()
             .zip(balance.asPublisher())
             .tryMap { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
             .eraseToAnyPublisher()
     }

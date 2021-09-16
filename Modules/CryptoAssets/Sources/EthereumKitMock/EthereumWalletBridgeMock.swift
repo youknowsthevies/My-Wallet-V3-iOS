@@ -40,12 +40,12 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI,
         history
     }
 
-    var fetchBalanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .coin(.ethereum))!)
+    var fetchBalanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: 2, currency: .coin(.ethereum)))
     var fetchBalance: Single<CryptoValue> {
         fetchBalanceValue
     }
 
-    var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .coin(.ethereum))!)
+    var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: 2, currency: .coin(.ethereum)))
 
     var balanceMoneyObservable: Observable<MoneyValue> {
         balance.asObservable().moneyValue

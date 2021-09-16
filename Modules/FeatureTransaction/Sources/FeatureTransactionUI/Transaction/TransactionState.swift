@@ -217,14 +217,14 @@ extension TransactionState {
     }
 
     /// Converts an FiatValue `available` into CryptoValue if necessary.
-    private func availableToAmountCurrency(available: MoneyValue, amount: MoneyValue) throws -> MoneyValue {
+    private func availableToAmountCurrency(available: MoneyValue, amount: MoneyValue) -> MoneyValue {
         guard amount.isFiat else {
             return available
         }
         guard let rate = sourceToFiatPair else {
             return .zero(currency: amount.currency)
         }
-        return try available.convert(using: rate.quote)
+        return available.convert(using: rate.quote)
     }
 }
 

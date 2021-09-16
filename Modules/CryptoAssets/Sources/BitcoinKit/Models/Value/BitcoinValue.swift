@@ -33,8 +33,8 @@ public struct BitcoinValue: CryptoMoney {
         self.crypto = crypto
     }
 
-    public init(satoshis: BigInt) {
-        crypto = CryptoValue(amount: satoshis, currency: .coin(.bitcoin))
+    public init(satoshis: Decimal) {
+        crypto = CryptoValue.create(minor: satoshis, currency: .coin(.bitcoin))
     }
 }
 

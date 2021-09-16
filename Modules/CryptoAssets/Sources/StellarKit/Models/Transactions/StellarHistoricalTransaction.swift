@@ -69,15 +69,11 @@ enum StellarHistoricalTransaction {
     }
 
     var amount: CryptoValue {
-        CryptoValue.create(majorDisplay: amountString, currency: .coin(.stellar)) ?? .zero(currency: .coin(.stellar))
-    }
-
-    private var amountString: String {
         switch self {
         case .accountCreated(let value):
-            return String(describing: value.balance)
+            return CryptoValue.create(major: value.balance, currency: .coin(.stellar))
         case .payment(let value):
-            return value.amount
+            return CryptoValue.create(major: value.amount, currency: .coin(.stellar)) ?? .zero(currency: .coin(.stellar))
         }
     }
 

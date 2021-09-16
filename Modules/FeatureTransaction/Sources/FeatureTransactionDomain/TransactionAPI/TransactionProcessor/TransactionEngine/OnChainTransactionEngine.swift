@@ -64,9 +64,7 @@ extension OnChainTransactionEngine {
         case (.custom, .some(let amount)):
             let currency = pendingTransaction.amount.currency
             let zero: MoneyValue = .zero(currency: currency)
-            guard let minimum = MoneyValue.create(minor: "1", currency: pendingTransaction.amount.currency) else {
-                throw TransactionValidationFailure(state: .unknownError)
-            }
+            let minimum = MoneyValue.create(minor: 1, currency: pendingTransaction.amount.currency)
 
             switch amount {
             case _ where try amount < minimum:

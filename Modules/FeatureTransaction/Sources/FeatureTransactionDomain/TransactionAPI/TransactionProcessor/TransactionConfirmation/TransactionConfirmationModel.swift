@@ -81,10 +81,8 @@ extension TransactionConfirmation.Model {
 
         public var formatted: (title: String, subtitle: String)? {
             var value: String = total.displayString
-            if let exchange = exchange,
-               let converted = try? total.convert(using: exchange)
-            {
-                value = converted.displayString
+            if let exchange = exchange {
+                value = total.convert(using: exchange).displayString
             }
             return (LocalizedString.total, value)
         }

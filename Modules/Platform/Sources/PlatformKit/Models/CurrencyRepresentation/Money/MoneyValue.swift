@@ -2,12 +2,6 @@
 
 import BigInt
 
-/// A money value error.
-public enum MoneyValueError: Error {
-
-    case invalidInput
-}
-
 /// A money value.
 public struct MoneyValue: Money, Hashable {
 
@@ -125,18 +119,12 @@ public struct MoneyValue: Money, Hashable {
     /// - Parameters:
     ///   - amount:   An amount in major units.
     ///   - currency: A currency.
-    private init(major amount: String, currency: CurrencyType) throws {
+    private init(major amount: Decimal, currency: CurrencyType) {
         switch currency {
         case .crypto(let cryptoCurrency):
-            guard let cryptoValue = CryptoValue.create(major: amount, currency: cryptoCurrency) else {
-                throw MoneyValueError.invalidInput
-            }
-            _value = .crypto(cryptoValue)
+            _value = .crypto(CryptoValue.create(major: amount, currency: cryptoCurrency))
         case .fiat(let fiatCurrency):
-            guard let fiatValue = FiatValue.create(major: amount, currency: fiatCurrency) else {
-                throw MoneyValueError.invalidInput
-            }
-            _value = .fiat(fiatValue)
+            _value = .fiat(FiatValue.create(major: amount, currency: fiatCurrency))
         }
     }
 
@@ -203,7 +191,7 @@ public struct MoneyValue: Money, Hashable {
     /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate from `A` to `B`.
     ///
     /// - Parameter exchangeRate: An exchange rate, representing one major unit of currency `A` in currency `B`.
-    public func convert(using exchangeRate: MoneyValue) throws -> MoneyValue {
+    public func convert(using exchangeRate: MoneyValue) -> MoneyValue {
         guard currency != exchangeRate.currency else {
             // Converting to the same currency.
             return self
@@ -212,8 +200,7 @@ public struct MoneyValue: Money, Hashable {
             return MoneyValue.zero(currency: exchangeRate.currency)
         }
         let conversionAmount = displayMajorValue * exchangeRate.displayMajorValue
-        let major = "\(conversionAmount)"
-        return try MoneyValue(major: major, currency: exchangeRate.currencyType)
+        return MoneyValue(major: conversionAmount, currency: exchangeRate.currencyType)
     }
 
     /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate from `B` to `A`.
@@ -221,13 +208,12 @@ public struct MoneyValue: Money, Hashable {
     /// - Parameters:
     ///   - exchangeRate: An exchange rate, representing one major unit of currency `B` in currency `A`.
     ///   - currencyType: The destination currency `B`.
-    public func convert(usingInverse exchangeRate: MoneyValue, currencyType: CurrencyType) throws -> MoneyValue {
+    public func convert(usingInverse exchangeRate: MoneyValue, currencyType: CurrencyType) -> MoneyValue {
         guard !isZero, !exchangeRate.isZero else {
             return MoneyValue.zero(currency: currencyType)
         }
         let conversionAmount = displayMajorValue / exchangeRate.displayMajorValue
-        let major = "\(conversionAmount)"
-        return try MoneyValue(major: major, currency: currencyType)
+        return MoneyValue(major: conversionAmount, currency: currencyType)
     }
 
     /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate pair from `A` to `B`.
@@ -235,7 +221,6 @@ public struct MoneyValue: Money, Hashable {
     /// - Parameter exchangeRate: An exchange rate, representing a money value pair with the base in currency `A`, and the quote in currency `B`.
     ///
     /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the current currency and the `exchangeRate`'s base currency do not match.
-    // TODO: Should we replace this with `MoneyValue.convert(using:)`?
     public func convert(using exchangeRate: MoneyValuePair) throws -> MoneyValue {
         guard currency != exchangeRate.quote.currency else {
             // Converting to the same currency.
@@ -244,7 +229,7 @@ public struct MoneyValue: Money, Hashable {
         guard currency == exchangeRate.base.currency else {
             throw MoneyOperatingError.mismatchingCurrencies(currency, exchangeRate.base.currencyType)
         }
-        return try convert(using: exchangeRate.quote)
+        return convert(using: exchangeRate.quote)
     }
 }
 

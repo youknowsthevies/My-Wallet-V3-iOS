@@ -73,7 +73,7 @@ final class BuyTransactionEngine: TransactionEngine {
         transactionExchangeRatePair.asSingle()
             .flatMap { [sourceAccount] moneyPair in
 
-                let cryptoValue = try pendingTransaction.amount.convert(
+                let cryptoValue = pendingTransaction.amount.convert(
                     using: moneyPair.inverseQuote.quote
                 ).cryptoValue!
 

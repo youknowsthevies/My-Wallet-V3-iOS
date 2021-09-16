@@ -106,14 +106,14 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             .map(weak: self) { (self, exchangeRate) -> [TransactionConfirmation] in
                 let from = TransactionConfirmation.Model.Source(value: self.sourceAccount.label)
                 let to = TransactionConfirmation.Model.Destination(value: self.receiveAddress.label)
-                let feesFiat = try pendingTransaction.feeAmount.convert(using: exchangeRate.quote)
+                let feesFiat = pendingTransaction.feeAmount.convert(using: exchangeRate.quote)
                 let fee = self.makeFeeSelectionOption(
                     pendingTransaction: pendingTransaction,
                     feesFiat: feesFiat
                 )
                 let feedTotal = TransactionConfirmation.Model.FeedTotal(
                     amount: pendingTransaction.amount,
-                    amountInFiat: try pendingTransaction.amount.convert(using: exchangeRate.quote),
+                    amountInFiat: pendingTransaction.amount.convert(using: exchangeRate.quote),
                     fee: pendingTransaction.feeAmount,
                     feeInFiat: feesFiat
                 )

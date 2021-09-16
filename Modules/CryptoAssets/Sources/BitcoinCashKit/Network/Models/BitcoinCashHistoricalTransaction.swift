@@ -99,7 +99,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
     public required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let amount = try values.decode(Int64.self, forKey: .amount)
-        let value = BigInt(integerLiteral: amount)
+        let value = BigInt(amount)
         self.amount = CryptoValue.create(minor: abs(value), currency: .coin(.bitcoinCash))
         direction = value.sign == .minus ? .credit : .debit
         transactionHash = try values.decode(String.self, forKey: .identifier)

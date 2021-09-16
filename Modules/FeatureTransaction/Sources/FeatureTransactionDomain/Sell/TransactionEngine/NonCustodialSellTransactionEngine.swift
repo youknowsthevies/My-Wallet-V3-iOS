@@ -266,7 +266,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
 
                 let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let baseValue = MoneyValue.one(currency: pendingTransaction.amount.currency)
-                let sellDestinationValue: MoneyValue = try pendingTransaction.amount.convert(using: resultValue)
+                let sellDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
 
                 let confirmations: [TransactionConfirmation] = [
                     .sellSourceValue(.init(cryptoValue: pendingTransaction.amount.cryptoValue!)),
@@ -302,7 +302,7 @@ extension PendingTransaction {
         let source = amount.currencyType
         let price = MoneyValue(amount: quote.price, currency: destination)
         let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destination)
-        let convertedFees = try totalFees.convert(usingInverse: price, currencyType: source)
+        let convertedFees = totalFees.convert(usingInverse: price, currencyType: source)
         return (try? minimumApiLimit + convertedFees) ?? MoneyValue.zero(currency: destination)
     }
 }

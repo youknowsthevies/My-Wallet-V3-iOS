@@ -93,7 +93,7 @@ extension SellTransactionEngine {
                 MoneyValue(amount: pricedQuote.price, currency: target.currencyType)
             }
             .map { [sourceAsset] rate -> MoneyValuePair in
-                try MoneyValuePair(base: .one(currency: sourceAsset), exchangeRate: rate)
+                MoneyValuePair(base: .one(currency: sourceAsset), exchangeRate: rate)
             }
     }
 
@@ -197,7 +197,7 @@ extension PendingTransaction {
         let source = amount.currencyType
         let price = MoneyValue(amount: quote.price, currency: destination)
         let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destination)
-        let convertedFees = try totalFees.convert(usingInverse: price, currencyType: source)
+        let convertedFees = totalFees.convert(usingInverse: price, currencyType: source)
         return (try? minimumApiLimit + convertedFees) ?? MoneyValue.zero(currency: destination)
     }
 }
