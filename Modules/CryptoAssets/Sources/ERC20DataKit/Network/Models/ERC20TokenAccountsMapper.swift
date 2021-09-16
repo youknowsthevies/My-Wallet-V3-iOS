@@ -30,7 +30,7 @@ final class ERC20TokenAccountsMapper {
         tokenAccountsResponse.tokenAccounts
             .reduce(into: [:]) { accounts, account in
                 if let tokenCurrency = CryptoCurrency(
-                    code: account.tokenSymbol,
+                    erc20Address: account.tokenHash,
                     enabledCurrenciesService: enabledCurrenciesService
                 ), let balance = CryptoValue.create(
                     minor: account.balance,

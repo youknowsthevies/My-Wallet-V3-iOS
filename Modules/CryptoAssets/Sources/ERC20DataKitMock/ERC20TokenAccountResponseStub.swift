@@ -10,6 +10,7 @@ extension ERC20TokenAccountResponse {
     /// - Parameter cryptoCurrency: An ERC-20 crypto currency.
     static func stubbed(cryptoCurrency: CryptoCurrency) -> ERC20TokenAccountResponse {
         .init(
+            tokenHash: "ETH",
             balance: CryptoValue.create(major: 2, currency: cryptoCurrency).amount.string(unitDecimals: 0),
             tokenSymbol: cryptoCurrency.code
         )
