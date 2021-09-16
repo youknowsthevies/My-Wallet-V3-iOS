@@ -584,12 +584,13 @@ extension DependencyContainer {
 
         // MARK: Account Picker
 
-        factory {
-            #if INTERNAL_BUILD
-            FeatureAccountPickerControllableAdapter() as AccountPickerViewControllable
-            #else
-            AccountPickerViewController() as AccountPickerViewControllable
-            #endif
+        factory { () -> AccountPickerViewControllable in
+            let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
+
+            if internalFeatureFlagService.isEnabled(.newAccountPicker) {
+                return FeatureAccountPickerControllableAdapter() as AccountPickerViewControllable
+            }
+            return AccountPickerViewController() as AccountPickerViewControllable
         }
     }
 }

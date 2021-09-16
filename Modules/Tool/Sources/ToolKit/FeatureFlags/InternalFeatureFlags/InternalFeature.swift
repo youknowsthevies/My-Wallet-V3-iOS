@@ -27,6 +27,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable split dashboard screen.
     case splitDashboard
 
+    /// Enable new account SwiftUI picker.
+    case newAccountPicker
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -44,6 +47,8 @@ public enum InternalFeature: String, CaseIterable {
             return false
         case .splitDashboard:
             return true
+        case .newAccountPicker:
+            return false
         }
     }
 }
@@ -71,6 +76,8 @@ extension InternalFeature {
             return "Disable manual (guid) login option"
         case .splitDashboard:
             return "Split Dashboard Screen"
+        case .newAccountPicker:
+            return "New SwiftUI Account Picker"
         }
     }
 }
