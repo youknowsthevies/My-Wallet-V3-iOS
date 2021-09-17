@@ -6,5 +6,9 @@ let tourReducer = Reducer<TourState, TourAction, TourEnvironment> { _, action, _
     switch action {
     case .createAccount:
         return .none
+    case .restore:
+        return .none
+    case .logIn:
+        return .none
     }
 }

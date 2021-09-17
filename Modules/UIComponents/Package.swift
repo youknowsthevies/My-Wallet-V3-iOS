@@ -14,6 +14,7 @@ let package = Package(
         )
     ],
     dependencies: [
+        .package(name: "SnapshotTesting", url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.9.0")
     ],
     targets: [
         .target(
@@ -23,8 +24,12 @@ let package = Package(
         ),
         .testTarget(
             name: "UIComponentsKitTests",
-            dependencies: ["UIComponentsKit"],
-            path: "UIComponentsKitTests"
+            dependencies: [
+                "UIComponentsKit",
+                .product(name: "SnapshotTesting", package: "SnapshotTesting")
+            ],
+            path: "UIComponentsKitTests",
+            exclude: ["__Snapshots__"]
         )
     ]
 )

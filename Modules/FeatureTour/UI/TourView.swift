@@ -80,7 +80,7 @@ extension TourView {
                     .frame(width: 200.0)
                     .textStyle(.title)
             }
-            .padding(.bottom, 112)
+            .padding(.bottom, 180)
         }
     }
 
@@ -100,6 +100,12 @@ extension TourView {
             PrimaryButton(title: LocalizationConstants.Tour.createAccountButtonTitle) {
                 viewStore.send(.createAccount)
             }
+            MinimalDoubleButton(
+                leftTitle: LocalizationConstants.Tour.restoreButtonTitle,
+                leftAction: { viewStore.send(.restore) },
+                rightTitle: LocalizationConstants.Tour.loginButtonTitle,
+                rightAction: { viewStore.send(.logIn) }
+            )
         }
         .padding(.top)
         .padding(.bottom, 60)

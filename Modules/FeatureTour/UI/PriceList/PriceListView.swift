@@ -26,7 +26,8 @@ struct PriceListView: View {
                                 colors: [
                                     Color.black,
                                     Color.black,
-                                    Color.black.opacity(0)
+                                    Color.black.opacity(0.2),
+                                    Color.black.opacity(0.03)
                                 ]
                             ),
                             startPoint: .top,
@@ -52,7 +53,7 @@ struct PriceListView: View {
                         ),
                         content: PriceView.init(store:)
                     )
-                    Color.clear.padding(.bottom, 200) // contentInset
+                    Color.clear.padding(.bottom, 180) // contentInset
                 }
                 .anchorPreference(key: OffsetKey.self, value: .top) {
                     reader[$0].y
