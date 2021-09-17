@@ -30,7 +30,7 @@ class PaymentAccountEURTests: XCTestCase {
 
         XCTAssertEqual(account!.identifier, mock.id, "its id comes from the response object")
         XCTAssertEqual(account!.state, mock.state, "its state comes from the response object")
-        XCTAssertEqual(account!.currency.currency, mock.currency, "its currency comes from the response object")
+        XCTAssertEqual(account!.currency.currencyType, mock.currency, "its currency comes from the response object")
 
         XCTAssertEqual(account!.bankName, mock.agent.name, "its bankName comes from response.agent")
         XCTAssertEqual(account!.bankCountry, "", "its bankCountry is empty")
@@ -46,7 +46,7 @@ class PaymentAccountEURTests: XCTestCase {
 
         XCTAssertEqual(account!.identifier, mock.id, "its id comes from the response object")
         XCTAssertEqual(account!.state, mock.state, "its state comes from the response object")
-        XCTAssertEqual(account!.currency.currency, mock.currency, "its currency comes from the response object")
+        XCTAssertEqual(account!.currency.currencyType, mock.currency, "its currency comes from the response object")
 
         XCTAssertEqual(account!.bankName, mock.agent.name, "its bankName comes from response.agent")
         XCTAssertEqual(account!.bankCountry, mock.agent.country, "its bankCountry comes from response.agent")

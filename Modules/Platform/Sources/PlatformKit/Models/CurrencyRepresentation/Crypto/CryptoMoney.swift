@@ -4,7 +4,7 @@
 public protocol CryptoMoney: Money {
 
     /// The crypto currency.
-    var currencyType: CryptoCurrency { get }
+    var currency: CryptoCurrency { get }
 }
 
 extension CryptoMoney {
@@ -25,7 +25,7 @@ extension CryptoMoney {
         locale: Locale
     ) -> String {
         CryptoFormatterProvider.shared
-            .formatter(locale: locale, cryptoCurrency: currencyType, withPrecision: precision)
+            .formatter(locale: locale, cryptoCurrency: currency, withPrecision: precision)
             .format(major: displayMajorValue, includeSymbol: includeSymbol)
     }
 }

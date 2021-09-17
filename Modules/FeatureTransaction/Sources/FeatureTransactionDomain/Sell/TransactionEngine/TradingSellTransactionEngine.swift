@@ -54,8 +54,8 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     var pair: OrderPair {
         OrderPair(
-            sourceCurrencyType: sourceAsset.currency,
-            destinationCurrencyType: target.currencyType.currency
+            sourceCurrencyType: sourceAsset.currencyType,
+            destinationCurrencyType: target.currencyType
         )
     }
 
@@ -138,7 +138,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
                     .networkFee(.init(
                         fee: pendingTransaction.feeAmount,
                         feeType: .depositFee,
-                        asset: sourceAsset.currency
+                        asset: sourceAsset.currencyType
                     ))
                 ]
 

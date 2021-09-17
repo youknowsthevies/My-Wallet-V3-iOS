@@ -90,7 +90,7 @@ public final class CryptoExchangeAccount: ExchangeAccount {
 
     public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
         /// Exchange API does not return a balance.
-        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {

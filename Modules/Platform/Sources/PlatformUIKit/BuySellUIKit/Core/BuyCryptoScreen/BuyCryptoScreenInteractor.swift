@@ -44,7 +44,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     /// Exposes a stream of the currently selected `CryptoCurrency` value
     override var selectedCurrencyType: Observable<CurrencyType> {
-        cryptoCurrencySelectionService.selectedData.map(\.cryptoCurrency.currency).asObservable()
+        cryptoCurrencySelectionService.selectedData.map(\.cryptoCurrency.currencyType).asObservable()
     }
 
     /// The state of the screen with associated data
@@ -298,7 +298,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     guard method.max.currency == pair.maxFiatValue.currency else {
                         return .empty(currency: currency)
                     }
-                    maxFiatValue = try FiatValue.min(pair.maxFiatValue, method.max)
+                    maxFiatValue = try .min(pair.maxFiatValue, method.max)
                     paymentMethodId = nil
                 case .linkedBank(let data):
                     maxFiatValue = data.topLimit

@@ -17,7 +17,7 @@ public struct PaymentMethodAccount: FiatAccount {
     }
 
     public var fiatCurrency: FiatCurrency {
-        paymentMethod.min.currencyType
+        paymentMethod.min.currency
     }
 
     public var canWithdrawFunds: Single<Bool> {

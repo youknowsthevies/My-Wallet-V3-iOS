@@ -61,7 +61,7 @@ public final class CardOrderCheckoutInteractor {
         return orderQuoteService
             .getQuote(
                 for: .buy,
-                cryptoCurrency: crypto.currencyType,
+                cryptoCurrency: crypto.currency,
                 fiatValue: fiat
             )
             .flatMap(weak: self) { (self, quote) in

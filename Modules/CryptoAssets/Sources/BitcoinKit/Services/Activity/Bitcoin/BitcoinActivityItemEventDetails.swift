@@ -54,7 +54,7 @@ public struct BitcoinActivityItemEventDetails: Equatable {
         )
         self.from = from
         self.to = to
-        self.fee = fee ?? .zero(currency: amount.currencyType)
+        self.fee = fee ?? .zero(currency: amount.currency)
         self.amount = amount
     }
 }

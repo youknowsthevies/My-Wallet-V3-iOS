@@ -4,9 +4,11 @@ import BigInt
 
 public protocol MoneyImplementing: Money {
 
+    /// A currency type.
     associatedtype MoneyCurrency: Currency
 
-    var currencyType: MoneyCurrency { get }
+    /// The currency.
+    var currency: MoneyCurrency { get }
 
     /// Creates a money.
     ///
@@ -18,8 +20,8 @@ public protocol MoneyImplementing: Money {
 
 extension MoneyImplementing {
 
-    public var currency: CurrencyType {
-        currencyType.currency
+    public var currencyType: CurrencyType {
+        currency.currencyType
     }
 
     /// Creates a zero valued money (e.g. `0 USD`, `0 BTC`, etc.).

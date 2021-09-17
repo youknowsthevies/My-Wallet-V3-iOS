@@ -86,9 +86,9 @@ final class MoneyValuePairInverseTests: XCTestCase {
         let inversePair = originalPair.inverseQuote
 
         // THEN: The inverse should return a 1 based FX anyway
-        let expectedInversePair = MoneyValuePair(
-            base: .zero(currency: .fiat(.USD)),
-            quote: .zero(currency: .crypto(.coin(.ethereum)))
+        let expectedInversePair: MoneyValuePair = .zero(
+            baseCurrency: .fiat(.USD),
+            quoteCurrency: .crypto(.coin(.ethereum))
         )
         XCTAssertEqual(inversePair, expectedInversePair)
     }
@@ -106,9 +106,9 @@ final class MoneyValuePairInverseTests: XCTestCase {
         let inversePair = originalPair.inverseQuote
 
         // THEN: The inverse should return a 1 based FX anyway
-        let expectedInversePair = MoneyValuePair(
-            base: .zero(currency: .fiat(.USD)),
-            quote: .zero(currency: .crypto(.coin(.ethereum)))
+        let expectedInversePair: MoneyValuePair = .zero(
+            baseCurrency: .fiat(.USD),
+            quoteCurrency: .crypto(.coin(.ethereum))
         )
         XCTAssertEqual(inversePair, expectedInversePair)
     }

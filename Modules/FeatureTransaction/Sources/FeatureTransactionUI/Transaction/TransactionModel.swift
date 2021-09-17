@@ -99,7 +99,7 @@ final class TransactionModel {
                 fatalError("You should have a sourceAccount.")
             }
             let sourceCurrency = source.currencyType
-            let isAmountValid = previousState.amount.currencyType == sourceCurrency
+            let isAmountValid = previousState.amount.currency == sourceCurrency
             let amount = isAmountValid ? previousState.amount : .zero(currency: sourceCurrency)
             // If the `amount` `currencyType` differs from the source, we should
             // use `zero` as the amount. If not, it is safe to use the

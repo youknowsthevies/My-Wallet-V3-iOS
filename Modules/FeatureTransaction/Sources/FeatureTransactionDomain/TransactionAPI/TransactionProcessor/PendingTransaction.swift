@@ -20,7 +20,7 @@ public struct PendingTransaction: Equatable {
         guard let availableMaximumLimit = try? maximumLimit - feeAmount else {
             return available
         }
-        return (try? MoneyValue.min(available, availableMaximumLimit)) ?? .zero(currency: amount.currencyType)
+        return (try? .min(available, availableMaximumLimit)) ?? .zero(currency: amount.currency)
     }
 
     public var feeLevel: FeeLevel {

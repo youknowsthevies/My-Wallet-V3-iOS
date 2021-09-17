@@ -450,7 +450,7 @@ public final class StateService: StateServiceAPI {
         switch data.order.paymentMethod {
         case .funds:
             state = .fundsTransferDetails(
-                currency: data.order.inputValue.currencyType,
+                currency: data.order.inputValue.currency,
                 isOriginPaymentMethods: false,
                 isOriginDeposit: false
             )

@@ -4,8 +4,8 @@ import BigInt
 
 public protocol Money: CustomDebugStringConvertible {
 
-    /// The type of currency (`FiatCurrency` or `CryptoCurrency`).
-    var currency: CurrencyType { get }
+    /// The currency (`FiatCurrency` or `CryptoCurrency`) wrapped in a `CurrencyType`.
+    var currencyType: CurrencyType { get }
 
     /// The currency amount in minor units (the smallest unit of the respective currency - e.g. `cent` for `USD`, `Satoshi` for `BTC`, etc.).
     var amount: BigInt { get }
@@ -64,23 +64,23 @@ public protocol Money: CustomDebugStringConvertible {
 extension Money {
 
     public var code: String {
-        currency.code
+        currencyType.code
     }
 
     public var displayCode: String {
-        currency.displayCode
+        currencyType.displayCode
     }
 
     public var displaySymbol: String {
-        currency.displaySymbol
+        currencyType.displaySymbol
     }
 
     public var precision: Int {
-        currency.precision
+        currencyType.precision
     }
 
     public var displayPrecision: Int {
-        currency.displayPrecision
+        currencyType.displayPrecision
     }
 
     public var isZero: Bool {
@@ -106,8 +106,8 @@ extension Money {
     @available(*, deprecated, message: "please use `displayString` instead")
     public var displayMajorValue: Decimal {
         amount.toDecimalMajor(
-            baseDecimalPlaces: currency.precision,
-            roundingDecimalPlaces: currency.precision
+            baseDecimalPlaces: currencyType.precision,
+            roundingDecimalPlaces: currencyType.precision
         )
     }
 

@@ -6,7 +6,7 @@ import BigInt
 public enum MoneyOperatingError: Error {
 
     /// The currencies of two money do not match.
-    case mismatchingCurrencies(CurrencyType, CurrencyType)
+    case mismatchingCurrencies(Currency, Currency)
 
     /// Division with a zero divisior.
     case divideByZero
@@ -97,7 +97,7 @@ extension MoneyOperating {
     /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the currencies do not match.
     public static func + (lhs: Self, rhs: Self) throws -> Self {
         try ensureComparable(lhs, rhs)
-        return Self(amount: lhs.amount + rhs.amount, currency: lhs.currencyType)
+        return Self(amount: lhs.amount + rhs.amount, currency: lhs.currency)
     }
 
     /// Calculates the sum of two money and stores the result in the left-hand side variable.
@@ -120,7 +120,7 @@ extension MoneyOperating {
     /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the currencies do not match.
     public static func - (lhs: Self, rhs: Self) throws -> Self {
         try ensureComparable(lhs, rhs)
-        return Self(amount: lhs.amount - rhs.amount, currency: lhs.currencyType)
+        return Self(amount: lhs.amount - rhs.amount, currency: lhs.currency)
     }
 
     /// Calculates the difference of two money, and stores the result in the left-hand-side variable.
@@ -146,7 +146,7 @@ extension MoneyOperating {
         let productAmount = (lhs.amount * rhs.amount)
             .quotientAndRemainder(dividingBy: BigInt(10).power(lhs.precision))
             .quotient
-        return Self(amount: productAmount, currency: lhs.currencyType)
+        return Self(amount: productAmount, currency: lhs.currency)
     }
 
     /// Calculates the product of two money, and stores the result in the left-hand-side variable.
@@ -180,11 +180,11 @@ extension MoneyOperating {
         let quotientResult = quotient * decimalPower
         let remainderDivisor = rhs.amount / decimalPower
         guard remainder != 0, remainderDivisor != 0 else {
-            return Self(amount: quotientResult, currency: lhs.currencyType)
+            return Self(amount: quotientResult, currency: lhs.currency)
         }
 
         let remainderResult = remainder / remainderDivisor
-        return Self(amount: quotientResult + remainderResult, currency: lhs.currencyType)
+        return Self(amount: quotientResult + remainderResult, currency: lhs.currency)
     }
 
     /// Returns the quotient of dividing two money, and stores the result in the left-hand-side variable.
@@ -206,10 +206,10 @@ extension MoneyOperating {
     public func value(before percentageChange: Double) -> Self {
         let percentageChange = percentageChange + 1
         guard !percentageChange.isNaN, !percentageChange.isZero, percentageChange.isNormal else {
-            return Self.zero(currency: currencyType)
+            return Self.zero(currency: currency)
         }
         let majorAmount = displayMajorValue / Decimal(percentageChange)
-        return Self.create(major: majorAmount, currency: currencyType)
+        return Self.create(major: majorAmount, currency: currency)
     }
 
     /// Returns the percentage of the current money in another, rounded to 4 decimal places.
@@ -242,7 +242,7 @@ extension MoneyOperating {
                 roundingDecimalPlaces: decimalPlaces,
                 roundingMode: roundingMode
             ),
-            currency: currencyType
+            currency: currency
         )
     }
 
@@ -266,7 +266,7 @@ extension MoneyOperating {
     ///
     /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the currencies do not match.
     private static func ensureComparable(_ x: Self, _ y: Self) throws {
-        guard x.currency == y.currency else {
+        guard x.currencyType == y.currencyType else {
             throw MoneyOperatingError.mismatchingCurrencies(x.currency, y.currency)
         }
     }

@@ -252,7 +252,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable { [erc20Token] in
-            if try pendingTransaction.amount <= CryptoValue.zero(currency: erc20Token.cryptoCurrency).moneyValue {
+            if try pendingTransaction.amount <= .zero(currency: erc20Token.cryptoCurrency) {
                 throw TransactionValidationFailure(state: .invalidAmount)
             }
         }

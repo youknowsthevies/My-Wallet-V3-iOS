@@ -29,6 +29,6 @@ public protocol CryptoTarget: TransactionTarget {
 extension CryptoTarget {
 
     public var currencyType: CurrencyType {
-        asset.currency
+        asset.currencyType
     }
 }

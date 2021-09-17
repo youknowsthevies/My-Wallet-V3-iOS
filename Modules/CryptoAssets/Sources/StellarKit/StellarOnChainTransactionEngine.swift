@@ -145,7 +145,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                     textMemo: memo,
                     required: isMemoRequired
                 )
-                let zeroStellar = CryptoValue.zero(currency: .coin(.stellar)).moneyValue
+                let zeroStellar: MoneyValue = .zero(currency: .coin(.stellar))
                 var transaction = PendingTransaction(
                     amount: zeroStellar,
                     available: zeroStellar,
@@ -174,7 +174,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                 guard let actionableBalance = actionableBalance else {
                     throw PlatformKitError.illegalStateException(message: "actionableBalance not CryptoValue")
                 }
-                let zeroStellar = CryptoValue.zero(currency: .coin(.stellar))
+                let zeroStellar: CryptoValue = .zero(currency: .coin(.stellar))
                 let total = try actionableBalance - fees
                 let available = (try total < zeroStellar) ? zeroStellar : total
                 var pendingTransaction = pendingTransaction

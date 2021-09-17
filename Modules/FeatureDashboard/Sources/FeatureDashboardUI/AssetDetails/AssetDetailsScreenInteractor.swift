@@ -11,17 +11,17 @@ final class AssetDetailsScreenInteractor {
 
     var nonCustodialAccount: Single<BlockchainAccount> {
         blockchainAccountFetcher
-            .account(for: currency.currency, accountType: .nonCustodial)
+            .account(for: currency.currencyType, accountType: .nonCustodial)
     }
 
     var tradingAccount: Single<BlockchainAccount> {
         blockchainAccountFetcher
-            .account(for: currency.currency, accountType: .custodial(.trading))
+            .account(for: currency.currencyType, accountType: .custodial(.trading))
     }
 
     var interestAccountIfFunded: Single<BlockchainAccount?> {
         blockchainAccountFetcher
-            .account(for: currency.currency, accountType: .custodial(.savings))
+            .account(for: currency.currencyType, accountType: .custodial(.savings))
             .flatMap { account -> Single<BlockchainAccount?> in
                 account.isFunded.map { isFunded -> BlockchainAccount? in
                     isFunded ? account : nil

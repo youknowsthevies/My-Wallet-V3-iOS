@@ -27,7 +27,7 @@ public enum CryptoPrecision: String {
 public final class CryptoFormatterProvider {
 
     /// A singleton value.
-    public static let shared = CryptoFormatterProvider()
+    static let shared = CryptoFormatterProvider()
 
     // MARK: - Private Properties
 

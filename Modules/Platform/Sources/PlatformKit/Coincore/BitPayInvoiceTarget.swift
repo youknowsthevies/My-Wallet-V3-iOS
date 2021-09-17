@@ -16,7 +16,7 @@ public final class BitPayInvoiceTarget: InvoiceTarget, CryptoReceiveAddress {
     }
 
     public var currencyType: CurrencyType {
-        amount.currency
+        amount.currencyType
     }
 
     public var expirationTimeInSeconds: TimeInterval {

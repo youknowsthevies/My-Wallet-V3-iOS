@@ -100,7 +100,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
         let destination: String
-        switch event.outputValue.currencyType {
+        switch event.outputValue.currency {
         case .crypto:
             destination = "" // NOOP: impossible because this is only used for `Sell`, where destination is Fiat.
         case .fiat(let fiat):

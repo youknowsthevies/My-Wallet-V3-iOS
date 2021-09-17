@@ -155,7 +155,7 @@ extension BankTransferDetailScreenPresenter {
         ) {
             typealias SummaryString = LocalizedString.Summary
             typealias TitleString = LocalizedString.Title
-            let inputCurrency = data.order.inputValue.currencyType
+            let inputCurrency = data.order.inputValue.currency
             let currencyString = "\(inputCurrency.name) (\(inputCurrency.displaySymbol))"
 
             title = TitleString.checkout

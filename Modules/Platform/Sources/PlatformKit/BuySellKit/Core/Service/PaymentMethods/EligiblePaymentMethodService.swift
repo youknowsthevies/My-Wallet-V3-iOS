@@ -81,7 +81,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         case .bankAccount:
                             // Filter out bank transfer details from currencies we do not
                             //  have local support/UI.
-                            return enabledFiatCurrencies.contains(paymentMethod.min.currencyType)
+                            return enabledFiatCurrencies.contains(paymentMethod.min.currency)
                         }
                     }
                 }
@@ -167,7 +167,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         case .bankAccount:
                             // Filter out bank transfer details from currencies we do not
                             //  have local support/UI.
-                            return enabledFiatCurrencies.contains(paymentMethod.min.currencyType)
+                            return enabledFiatCurrencies.contains(paymentMethod.min.currency)
                         }
                     }
                 }

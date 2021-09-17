@@ -4,7 +4,7 @@
 public protocol Fiat: Money {
 
     /// The fiat currency.
-    var currencyType: FiatCurrency { get }
+    var currency: FiatCurrency { get }
 }
 
 extension Fiat {
@@ -32,7 +32,7 @@ extension Fiat {
         }
 
         return FiatFormatterProvider.shared
-            .formatter(locale: locale, fiatCurrency: currencyType, maxFractionDigits: maxFractionDigits)
+            .formatter(locale: locale, fiatCurrency: currency, maxFractionDigits: maxFractionDigits)
             .format(major: displayMajorValue, includeSymbol: includeSymbol)
     }
 }

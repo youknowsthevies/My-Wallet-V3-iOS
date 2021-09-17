@@ -43,6 +43,6 @@ struct CustodialTransferResponse: Decodable {
             )
         }
         let value = try amountContainer.decode(String.self, forKey: .value)
-        cryptoValue = CryptoValue.create(major: value, currency: currency) ?? CryptoValue.zero(currency: currency)
+        cryptoValue = CryptoValue.create(major: value, currency: currency) ?? .zero(currency: currency)
     }
 }

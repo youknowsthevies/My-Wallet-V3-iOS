@@ -81,7 +81,7 @@ public enum FiatBalanceViewAsset {
             // MARK: - Setup
 
             public init(with value: Interaction, descriptors: Descriptors) {
-                let showsQuoteValue = value.quote.currencyType != value.base.currencyType
+                let showsQuoteValue = value.quote.currency != value.base.currency
                 let baseFont: UIFont
                 let baseColor: UIColor
                 if showsQuoteValue {

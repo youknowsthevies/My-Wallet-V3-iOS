@@ -48,7 +48,7 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
                     .price(of: sourceAsset, in: fiatValue.currency)
                     .asSingle()
                     .map(\.moneyValue)
-                    .map { $0.fiatValue ?? .zero(currency: fiatValue.currencyType) }
+                    .map { $0.fiatValue ?? .zero(currency: fiatValue.currency) }
                 return Single.zip(quote, .just(fiatValue))
             }
             .map { [sourceAsset] (quote: FiatValue, deposit: FiatValue) -> CryptoValue in

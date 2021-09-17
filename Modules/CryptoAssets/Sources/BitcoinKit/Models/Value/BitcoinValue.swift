@@ -10,9 +10,9 @@ public enum BitcoinValueError: Error {
 
 public struct BitcoinValue: CryptoMoney {
 
-    public let currency: CurrencyType = .crypto(.coin(.bitcoin))
+    public let currencyType: CurrencyType = .crypto(.coin(.bitcoin))
 
-    public let currencyType: CryptoCurrency = .coin(.bitcoin)
+    public let currency: CryptoCurrency = .coin(.bitcoin)
 
     public var amount: BigInt {
         crypto.amount

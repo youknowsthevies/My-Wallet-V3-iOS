@@ -64,7 +64,7 @@ extension AccountGroup {
             }
             .zip()
             .tryMap { balances in
-                try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
+                try balances.reduce(.zero(currency: fiatCurrency), +)
             }
             .eraseToAnyPublisher()
     }
@@ -73,11 +73,11 @@ extension AccountGroup {
         accounts
             .map { account in
                 account.balancePair(fiatCurrency: fiatCurrency, at: time)
-                    .replaceError(with: MoneyValuePair.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
+                    .replaceError(with: .zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currencyType))
             }
             .zip()
             .tryMap { [currencyType] balancePairs in
-                try balancePairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency), +)
+                try balancePairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType), +)
             }
             .eraseToAnyPublisher()
     }

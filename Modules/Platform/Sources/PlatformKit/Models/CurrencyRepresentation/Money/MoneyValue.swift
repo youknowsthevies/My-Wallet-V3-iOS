@@ -17,6 +17,24 @@ public struct MoneyValue: Money, Hashable {
 
     // MARK: - Public properties
 
+    public var currency: CurrencyType {
+        switch _value {
+        case .crypto(let cryptoValue):
+            return cryptoValue.currencyType
+        case .fiat(let fiatValue):
+            return fiatValue.currencyType
+        }
+    }
+
+    public var amount: BigInt {
+        switch _value {
+        case .crypto(let cryptoValue):
+            return cryptoValue.amount
+        case .fiat(let fiatValue):
+            return fiatValue.amount
+        }
+    }
+
     /// Whether the money value is a crypto value.
     public var isCrypto: Bool {
         switch _value {
@@ -37,15 +55,6 @@ public struct MoneyValue: Money, Hashable {
         }
     }
 
-    public var amount: BigInt {
-        switch _value {
-        case .crypto(let cryptoValue):
-            return cryptoValue.amount
-        case .fiat(let fiatValue):
-            return fiatValue.amount
-        }
-    }
-
     /// The fiat value, or `nil` if not a fiat value.
     public var fiatValue: FiatValue? {
         switch _value {
@@ -63,16 +72,6 @@ public struct MoneyValue: Money, Hashable {
             return cryptoValue
         case .fiat:
             return nil
-        }
-    }
-
-    /// The underlying currency type.
-    public var currencyType: CurrencyType {
-        switch _value {
-        case .crypto(let cryptoValue):
-            return cryptoValue.currency
-        case .fiat(let fiatValue):
-            return fiatValue.currency
         }
     }
 
@@ -158,28 +157,28 @@ public struct MoneyValue: Money, Hashable {
     ///
     /// - Parameter currency: A crypto currency.
     public static func zero(currency: CryptoCurrency) -> MoneyValue {
-        MoneyValue(cryptoValue: CryptoValue.zero(currency: currency))
+        MoneyValue(cryptoValue: .zero(currency: currency))
     }
 
     /// Creates a zero valued money value (e.g. `0 USD`, `0 BTC`, etc.).
     ///
     /// - Parameter currency: A fiat currency.
     public static func zero(currency: FiatCurrency) -> MoneyValue {
-        MoneyValue(fiatValue: FiatValue.zero(currency: currency))
+        MoneyValue(fiatValue: .zero(currency: currency))
     }
 
     /// Creates a one (major unit) valued money value (e.g. `1 USD`, `1 BTC`, etc.).
     ///
     /// - Parameter currency: A crypto currency.
     public static func one(currency: CryptoCurrency) -> MoneyValue {
-        MoneyValue(cryptoValue: CryptoValue.one(currency: currency))
+        MoneyValue(cryptoValue: .one(currency: currency))
     }
 
     /// Creates a one (major unit) valued money value (e.g. `1 USD`, `1 BTC`, etc.).
     ///
     /// - Parameter currency: A fiat currency.
     public static func one(currency: FiatCurrency) -> MoneyValue {
-        MoneyValue(fiatValue: FiatValue.one(currency: currency))
+        MoneyValue(fiatValue: .one(currency: currency))
     }
 
     // MARK: - Public Methods
@@ -193,10 +192,10 @@ public struct MoneyValue: Money, Hashable {
             return self
         }
         guard !isZero, !exchangeRate.isZero else {
-            return MoneyValue.zero(currency: exchangeRate.currency)
+            return .zero(currency: exchangeRate.currency)
         }
         let conversionAmount = displayMajorValue * exchangeRate.displayMajorValue
-        return MoneyValue(major: conversionAmount, currency: exchangeRate.currencyType)
+        return MoneyValue(major: conversionAmount, currency: exchangeRate.currency)
     }
 
     /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate from `B` to `A`.
@@ -206,7 +205,7 @@ public struct MoneyValue: Money, Hashable {
     ///   - currencyType: The destination currency `B`.
     public func convert(usingInverse exchangeRate: MoneyValue, currencyType: CurrencyType) -> MoneyValue {
         guard !isZero, !exchangeRate.isZero else {
-            return MoneyValue.zero(currency: currencyType)
+            return .zero(currency: currencyType)
         }
         let conversionAmount = displayMajorValue / exchangeRate.displayMajorValue
         return MoneyValue(major: conversionAmount, currency: currencyType)
@@ -223,7 +222,7 @@ public struct MoneyValue: Money, Hashable {
             return self
         }
         guard currency == exchangeRate.base.currency else {
-            throw MoneyOperatingError.mismatchingCurrencies(currency, exchangeRate.base.currencyType)
+            throw MoneyOperatingError.mismatchingCurrencies(currency, exchangeRate.base.currency)
         }
         return convert(using: exchangeRate.quote)
     }

@@ -43,7 +43,7 @@ public final class AllAccountsGroup: AccountGroup {
         return Single
             .zip(accounts.map(\.pendingBalance))
             .map { [currencyType] values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: currencyType), +)
+                try values.reduce(.zero(currency: currencyType), +)
             }
     }
 
@@ -54,7 +54,7 @@ public final class AllAccountsGroup: AccountGroup {
         return Single
             .zip(accounts.map(\.balance))
             .map { [currencyType] values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: currencyType), +)
+                try values.reduce(.zero(currency: currencyType), +)
             }
     }
 
@@ -65,7 +65,7 @@ public final class AllAccountsGroup: AccountGroup {
         return Single
             .zip(accounts.map(\.actionableBalance))
             .map { [currencyType] values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: currencyType), +)
+                try values.reduce(.zero(currency: currencyType), +)
             }
     }
 

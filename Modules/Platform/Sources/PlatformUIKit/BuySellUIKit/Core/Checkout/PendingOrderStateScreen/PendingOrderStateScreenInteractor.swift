@@ -18,11 +18,11 @@ final class PendingOrderStateScreenInteractor: Interactor {
     }
 
     var inputCurrencyType: CurrencyType {
-        orderDetails.inputValue.currencyType
+        orderDetails.inputValue.currency
     }
 
     var outputCurrencyType: CurrencyType {
-        orderDetails.outputValue.currencyType
+        orderDetails.outputValue.currency
     }
 
     private let orderDetails: OrderDetails

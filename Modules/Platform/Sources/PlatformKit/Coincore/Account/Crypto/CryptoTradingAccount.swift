@@ -152,7 +152,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
 
     private var balances: Single<CustodialAccountBalanceState> {
-        balanceService.balance(for: asset.currency)
+        balanceService.balance(for: asset.currencyType)
     }
 
     public init(

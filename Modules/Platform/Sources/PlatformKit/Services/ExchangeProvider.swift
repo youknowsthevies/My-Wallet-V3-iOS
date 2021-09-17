@@ -19,7 +19,7 @@ final class ExchangeProvider: ExchangeProviding {
     // MARK: - Subscript
 
     subscript(currency: Currency) -> PairExchangeServiceAPI {
-        retrieveOrCreate(currency: currency.currency)
+        retrieveOrCreate(currency: currency.currencyType)
     }
 
     // MARK: - Private Properties

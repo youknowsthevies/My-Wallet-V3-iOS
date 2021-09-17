@@ -7,15 +7,15 @@ extension MoneyValuePair {
     /// For a pair with base `1 BTC` and quote `50,000 USD`, this will return a pair with base `1 USD` and quote `1 / 50,000 BTC`.
     public var inverseQuote: MoneyValuePair {
         guard !base.isZero, !quote.isZero else {
-            return MoneyValuePair(
-                base: .zero(currency: quote.currency),
-                quote: .zero(currency: base.currency)
+            return .zero(
+                baseCurrency: quote.currency,
+                quoteCurrency: base.currency
             )
         }
 
         return MoneyValuePair(
-            base: .one(currency: quote.currencyType),
-            quote: base.convert(usingInverse: quote, currencyType: base.currencyType)
+            base: .one(currency: quote.currency),
+            quote: base.convert(usingInverse: quote, currencyType: base.currency)
         )
     }
 }

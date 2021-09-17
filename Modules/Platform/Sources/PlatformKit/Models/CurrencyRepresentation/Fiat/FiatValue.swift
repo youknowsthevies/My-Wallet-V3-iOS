@@ -7,7 +7,7 @@ public struct FiatValue: Fiat, Hashable {
 
     public let amount: BigInt
 
-    public let currencyType: FiatCurrency
+    public let currency: FiatCurrency
 
     /// Creates a fiat value.
     ///
@@ -16,7 +16,7 @@ public struct FiatValue: Fiat, Hashable {
     ///   - currency: A fiat currency.
     public init(amount: BigInt, currency: FiatCurrency) {
         self.amount = amount
-        currencyType = currency
+        self.currency = currency
     }
 }
 
@@ -33,7 +33,7 @@ extension FiatValue {
     ///   - cryptoCurrency: A destination crypto currency.
     public func convertToCryptoValue(exchangeRate: FiatValue, cryptoCurrency: CryptoCurrency) -> CryptoValue {
         guard !isZero, !exchangeRate.isZero else {
-            return CryptoValue.zero(currency: cryptoCurrency)
+            return .zero(currency: cryptoCurrency)
         }
         let conversionAmount = displayMajorValue / exchangeRate.displayMajorValue
         return CryptoValue.create(major: conversionAmount, currency: cryptoCurrency)

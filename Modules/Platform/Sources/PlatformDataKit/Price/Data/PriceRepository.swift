@@ -41,7 +41,7 @@ final class PriceRepository: PriceRepositoryAPI {
                         entries.mapValues { item in
                             PriceQuoteAtTime(
                                 timestamp: item.timestamp,
-                                moneyValue: .create(major: item.price, currency: key.quote.currency)
+                                moneyValue: .create(major: item.price, currency: key.quote.currencyType)
                             )
                         }
                     }
@@ -75,7 +75,7 @@ final class PriceRepository: PriceRepositoryAPI {
                     .get(
                         key: PriceRequest.IndexMulti.Key(
                             base: Set(bases.map(\.code)).intersection(supportedBases),
-                            quote: quote.currency,
+                            quote: quote.currencyType,
                             time: time
                         )
                     )
@@ -124,7 +124,7 @@ extension PriceQuoteAtTime {
     init(response: PriceResponse.Item, currency: Currency) {
         self.init(
             timestamp: response.timestamp,
-            moneyValue: .create(major: response.price, currency: currency.currency)
+            moneyValue: .create(major: response.price, currency: currency.currencyType)
         )
     }
 }

@@ -55,7 +55,7 @@ public final class PairExchangeService: PairExchangeServiceAPI {
     private var zero: Observable<FiatValue> {
         fiatCurrencyService
             .fiatCurrencyObservable
-            .map { FiatValue.zero(currency: $0) }
+            .map(FiatValue.zero)
     }
 
     /// A trigger for a fetch

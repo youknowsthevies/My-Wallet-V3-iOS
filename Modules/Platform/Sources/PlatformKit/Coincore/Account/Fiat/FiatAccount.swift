@@ -11,7 +11,7 @@ public protocol FiatAccount: SingleAccount {
 extension FiatAccount {
 
     public var currencyType: CurrencyType {
-        fiatCurrency.currency
+        fiatCurrency.currencyType
     }
 
     public var pendingBalance: Single<MoneyValue> {
@@ -25,8 +25,8 @@ extension FiatAccount {
     public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
         .just(
             .zero(
-                baseCurrency: fiatCurrency.currency,
-                quoteCurrency: fiatCurrency.currency
+                baseCurrency: fiatCurrency.currencyType,
+                quoteCurrency: fiatCurrency.currencyType
             )
         )
     }

@@ -72,7 +72,7 @@ final class WithdrawAmountValidationService {
             .asObservable()
             .asSingle()
             .compactMap { [fiatCurrency] group in
-                group.accounts.first(where: { $0.currencyType == fiatCurrency.currency })
+                group.accounts.first(where: { $0.currencyType == fiatCurrency.currencyType })
             }
             .asObservable()
             .share(replay: 1, scope: .whileConnected)

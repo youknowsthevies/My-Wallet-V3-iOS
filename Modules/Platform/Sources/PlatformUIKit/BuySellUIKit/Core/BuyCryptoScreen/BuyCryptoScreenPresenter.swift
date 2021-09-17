@@ -151,7 +151,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .compactMap { [weak self] candidateOrderDetails in
                 let paymentMethod = candidateOrderDetails.paymentMethod?.method
                 return self?.displayBundle.events.confirmTapped(
-                    candidateOrderDetails.fiatValue.currency,
+                    candidateOrderDetails.fiatValue.currencyType,
                     candidateOrderDetails.fiatValue.moneyValue,
                     candidateOrderDetails.cryptoCurrency,
                     [AnalyticsEvents.SimpleBuy.ParameterName.paymentMethod: (paymentMethod?.analyticsParameter.string) ?? ""]

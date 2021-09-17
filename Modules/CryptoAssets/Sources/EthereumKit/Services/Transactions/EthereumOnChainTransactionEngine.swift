@@ -160,7 +160,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             let (actionableBalance, fee) = values
             let available = try actionableBalance - fee.moneyValue
             let zero: MoneyValue = .zero(currency: actionableBalance.currency)
-            let max = try MoneyValue.max(available, zero)
+            let max: MoneyValue = try .max(available, zero)
             return pendingTransaction.update(
                 amount: amount,
                 available: max,
@@ -206,7 +206,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        guard pendingTransaction.amount.currencyType == .crypto(.coin(.ethereum)) else {
+        guard pendingTransaction.amount.currency == .crypto(.coin(.ethereum)) else {
             preconditionFailure("Not an ethereum value")
         }
 

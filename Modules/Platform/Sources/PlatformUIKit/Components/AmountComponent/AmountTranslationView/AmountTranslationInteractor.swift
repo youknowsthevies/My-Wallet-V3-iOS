@@ -230,7 +230,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
         anyPair
             .bindAndCatch(weak: self) { (self, value) in
-                switch value.base.currencyType {
+                switch value.base.currency {
                 case .crypto:
                     self.cryptoAmountRelay.accept(value.base)
                     self.fiatAmountRelay.accept(value.quote)

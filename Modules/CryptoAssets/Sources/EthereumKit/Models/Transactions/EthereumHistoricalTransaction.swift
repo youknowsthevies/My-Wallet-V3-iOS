@@ -101,10 +101,10 @@ public struct EthereumHistoricalTransaction {
 
     private static func fee(gasPrice: String, gasUsed: String?) -> CryptoValue {
         guard let gasUsed = gasUsed else {
-            return CryptoValue.zero(currency: CryptoCurrency.coin(.ethereum))
+            return .zero(currency: .coin(.ethereum))
         }
         let fee = BigInt(stringLiteral: gasPrice) * BigInt(stringLiteral: gasUsed)
-        return CryptoValue.create(minor: fee, currency: CryptoCurrency.coin(.ethereum))
+        return CryptoValue.create(minor: fee, currency: .coin(.ethereum))
     }
 
     private static func confirmations(latestBlock: Int, blockNumber: String?) -> Int {

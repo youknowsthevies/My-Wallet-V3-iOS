@@ -20,7 +20,7 @@ public struct BuySellActivityItemEvent {
     }
 
     public var currencyType: CurrencyType {
-        outputValue.currencyType
+        outputValue.currency
     }
 
     public let isBuy: Bool

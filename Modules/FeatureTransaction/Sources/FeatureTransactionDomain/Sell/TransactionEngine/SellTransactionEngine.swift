@@ -27,8 +27,8 @@ extension SellTransactionEngine {
 
     var pair: OrderPair {
         OrderPair(
-            sourceCurrencyType: sourceAsset.currency,
-            destinationCurrencyType: target.fiatCurrency.currency
+            sourceCurrencyType: sourceAsset.currencyType,
+            destinationCurrencyType: target.fiatCurrency.currencyType
         )
     }
 
@@ -106,8 +106,8 @@ extension SellTransactionEngine {
             .zip(
                 kycTiersService.tiers.asSingle(),
                 tradeLimitsRepository.fetchTransactionLimits(
-                    currency: fiatCurrency.currency,
-                    networkFee: targetAsset.currency,
+                    currency: fiatCurrency.currencyType,
+                    networkFee: targetAsset.currencyType,
                     product: .sell(orderDirection)
                 )
                 .asObservable()
@@ -162,7 +162,7 @@ extension SellTransactionEngine {
             .flatMap(weak: self) { (self, _) -> Single<SellOrder> in
                 self.orderQuoteRepository.fetchQuote(
                     direction: self.orderDirection,
-                    sourceCurrencyType: self.sourceAsset.currency,
+                    sourceCurrencyType: self.sourceAsset.currencyType,
                     destinationCurrencyType: self.target.currencyType
                 )
                 .asSingle()

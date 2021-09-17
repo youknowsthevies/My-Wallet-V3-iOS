@@ -14,12 +14,12 @@ extension CustodialAccountBalanceStates {
                     return
                 }
                 guard let accountBalance = CustodialAccountBalance(
-                    currency: cryptoCurrency.currency,
+                    currency: cryptoCurrency.currencyType,
                     response: item.value
                 ) else {
                     return
                 }
-                result[cryptoCurrency.currency] = .present(accountBalance)
+                result[cryptoCurrency.currencyType] = .present(accountBalance)
             }
         self = .init(balances: balances)
     }

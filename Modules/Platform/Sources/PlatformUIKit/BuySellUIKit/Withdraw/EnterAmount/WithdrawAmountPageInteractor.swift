@@ -64,7 +64,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
         self.fiatCurrency = fiatCurrency
         self.beneficiary = beneficiary
         self.amountInteractor = amountInteractor
-        auxiliaryViewInteractor = SendAuxiliaryViewInteractor(currencyType: fiatCurrency.currency)
+        auxiliaryViewInteractor = SendAuxiliaryViewInteractor(currencyType: fiatCurrency.currencyType)
         self.withdrawalFeeService = withdrawalFeeService
         self.analyticsRecorder = analyticsRecorder
         self.validationService = validationService

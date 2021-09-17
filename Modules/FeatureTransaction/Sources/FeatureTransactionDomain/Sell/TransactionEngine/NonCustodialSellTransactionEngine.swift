@@ -277,7 +277,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                     .networkFee(.init(
                         fee: pendingTransaction.feeAmount,
                         feeType: .depositFee,
-                        asset: sourceAsset.currency
+                        asset: sourceAsset.currencyType
                     ))
                 ]
 

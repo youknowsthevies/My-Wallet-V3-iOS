@@ -24,7 +24,7 @@ public struct InterestLimits: Decodable {
         lockUpDuration = try values.decode(Double.self, forKey: .lockUpDuration)
         let withdrawal = try values.decode(String.self, forKey: .maxWithdrawalAmount)
         let deposit = try values.decode(String.self, forKey: .minDepositAmount)
-        let zero = FiatValue.zero(currency: currency)
+        let zero: FiatValue = .zero(currency: currency)
         maxWithdrawalAmount = FiatValue.create(minor: withdrawal, currency: currency) ?? zero
         minDepositAmount = FiatValue.create(minor: deposit, currency: currency) ?? zero
     }

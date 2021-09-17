@@ -126,7 +126,7 @@ final class AnalyticsUserPropertyInteractor {
             .filter(\.value.isPositive)
             .map(\.key.code)
 
-        let totalFiatBalance = try? balances.values.reduce(FiatValue.zero(currency: .USD).moneyValue, +)
+        let totalFiatBalance = try? balances.values.reduce(.zero(currency: .USD), +)
 
         recorder.record(
             StandardUserProperty(key: .fundedCoins, value: positives.joined(separator: ","))

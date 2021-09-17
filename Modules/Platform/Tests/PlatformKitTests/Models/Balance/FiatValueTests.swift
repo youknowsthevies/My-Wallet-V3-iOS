@@ -111,16 +111,16 @@ class FiatValueTests: XCTestCase {
     }
 
     func testConvertToCryptoValueZeroExchangeRate() {
-        let expected = CryptoValue.zero(currency: .coin(.bitcoin))
+        let expected: CryptoValue = .zero(currency: .coin(.bitcoin))
         let amount = FiatValue.create(major: "4,000.00", currency: .USD)!
-        let exchangeRate = FiatValue.zero(currency: .USD)
+        let exchangeRate: FiatValue = .zero(currency: .USD)
         let result = amount.convertToCryptoValue(exchangeRate: exchangeRate, cryptoCurrency: .coin(.bitcoin))
         XCTAssertEqual(expected, result)
     }
 
     func testConvertToCryptoValueZeroValue() {
-        let expected = CryptoValue.zero(currency: .coin(.bitcoin))
-        let amount = FiatValue.zero(currency: .USD)
+        let expected: CryptoValue = .zero(currency: .coin(.bitcoin))
+        let amount: FiatValue = .zero(currency: .USD)
         let exchangeRate = FiatValue.create(major: "5.00", currency: .USD)!
         let result = amount.convertToCryptoValue(exchangeRate: exchangeRate, cryptoCurrency: .coin(.bitcoin))
         XCTAssertEqual(expected, result)

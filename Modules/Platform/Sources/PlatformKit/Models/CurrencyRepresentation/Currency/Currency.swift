@@ -38,8 +38,8 @@ public protocol Currency {
     /// Whether the currency is a crypto currency.
     var isCryptoCurrency: Bool { get }
 
-    /// Self wrapper for `CurrencyType`.
-    var currency: CurrencyType { get }
+    /// The `CurrencyType` wrapper for self.
+    var currencyType: CurrencyType { get }
 }
 
 extension Currency {
@@ -179,7 +179,7 @@ extension CurrencyType: Currency {
         }
     }
 
-    public var currency: CurrencyType { self }
+    public var currencyType: CurrencyType { self }
 
     /// The crypto currency, or `nil` if not a crypto currency.
     public var cryptoCurrency: CryptoCurrency? {
@@ -203,25 +203,25 @@ extension CurrencyType: Currency {
 }
 
 extension CryptoCurrency {
-    public var currency: CurrencyType {
+    public var currencyType: CurrencyType {
         .crypto(self)
     }
 }
 
 extension FiatCurrency {
-    public var currency: CurrencyType {
+    public var currencyType: CurrencyType {
         .fiat(self)
     }
 }
 
 extension CryptoValue {
-    public var currency: CurrencyType {
-        currencyType.currency
+    public var currencyType: CurrencyType {
+        currency.currencyType
     }
 }
 
 extension FiatValue {
-    public var currency: CurrencyType {
-        currencyType.currency
+    public var currencyType: CurrencyType {
+        currency.currencyType
     }
 }

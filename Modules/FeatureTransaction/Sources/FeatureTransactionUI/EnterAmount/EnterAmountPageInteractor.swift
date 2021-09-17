@@ -110,7 +110,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                         if let fiatValue = amount.fiatValue, !state.allowFiatInput {
                             // Fiat Input but state does not allow fiat
                             guard let sourceToFiatPair = state.sourceToFiatPair else {
-                                return MoneyValue.zero(currency: state.asset)
+                                return .zero(currency: state.asset)
                             }
                             return MoneyValuePair(
                                 fiatValue: fiatValue,
@@ -507,7 +507,7 @@ extension TransactionErrorState {
         exchangeRate: MoneyValuePair?,
         input: ActiveAmountInput
     ) -> MoneyValue {
-        switch (source.currencyType, input) {
+        switch (source.currency, input) {
         case (.crypto, .crypto),
              (.fiat, .fiat):
             return source
@@ -525,7 +525,7 @@ extension TransactionErrorState {
                 return source
             }
             // Convert fiat max amount into crypto amount.
-            return source.convert(usingInverse: exchangeRate.quote, currencyType: source.currencyType)
+            return source.convert(usingInverse: exchangeRate.quote, currencyType: source.currency)
         }
     }
 }

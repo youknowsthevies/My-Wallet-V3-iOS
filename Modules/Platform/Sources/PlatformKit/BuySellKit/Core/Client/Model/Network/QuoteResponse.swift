@@ -49,8 +49,8 @@ public struct Quote {
         estimatedAmount = CryptoValue.create(major: majorEstimatedAmount, currency: cryptoCurrency)
         let feeAmountMinor = feeRateMinor * estimatedAmount.displayMajorValue
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        fee = FiatValue.create(minor: feeAmountMinor, currency: amount.currencyType)
+        fee = FiatValue.create(minor: feeAmountMinor, currency: amount.currency)
         self.time = time
-        self.rate = FiatValue.create(minor: rate, currency: amount.currencyType)
+        self.rate = FiatValue.create(minor: rate, currency: amount.currency)
     }
 }

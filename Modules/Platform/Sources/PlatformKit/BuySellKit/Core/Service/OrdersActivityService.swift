@@ -20,11 +20,11 @@ final class OrdersActivityService: OrdersActivityServiceAPI {
     }
 
     func activity(fiatCurrency: FiatCurrency) -> Single<[CustodialActivityEvent.Fiat]> {
-        guard let response = cache.value(forKey: fiatCurrency.currency) else {
+        guard let response = cache.value(forKey: fiatCurrency.currencyType) else {
             return client.activityResponse(currency: fiatCurrency)
                 .asSingle()
                 .do(onSuccess: { [cache] response in
-                    cache.set(response, forKey: fiatCurrency.currency)
+                    cache.set(response, forKey: fiatCurrency.currencyType)
                 })
                 .map { response in
                     response.items.compactMap(CustodialActivityEvent.Fiat.init)
@@ -34,11 +34,11 @@ final class OrdersActivityService: OrdersActivityServiceAPI {
     }
 
     func activity(cryptoCurrency: CryptoCurrency) -> Single<[CustodialActivityEvent.Crypto]> {
-        guard let response = cache.value(forKey: cryptoCurrency.currency) else {
+        guard let response = cache.value(forKey: cryptoCurrency.currencyType) else {
             return client.activityResponse(currency: cryptoCurrency)
                 .asSingle()
                 .do(onSuccess: { [cache] response in
-                    cache.set(response, forKey: cryptoCurrency.currency)
+                    cache.set(response, forKey: cryptoCurrency.currencyType)
                 })
                 .map { [enabledCurrenciesService] response in
                     response.items.compactMap { item in

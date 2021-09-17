@@ -45,7 +45,7 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let currentPrice = result.currentFiatValue
                     let fiatChange = FiatValue.create(
                         major: result.historicalPrices.fiatChange,
-                        currency: result.currentFiatValue.currencyType
+                        currency: result.currentFiatValue.currency
                     )
                     return .loaded(
                         next: .init(
@@ -59,7 +59,7 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let historicalPrices = result.historicalPrices
                     let currentFiatValue = result.currentFiatValue
                     let prices = Array(historicalPrices.prices[0...min(index, historicalPrices.prices.count - 1)])
-                    let fiatCurrency = currentFiatValue.currencyType
+                    let fiatCurrency = currentFiatValue.currency
                     guard let selected = prices.last else { return .loading }
                     let adjusted = HistoricalPriceSeries(
                         currency: historicalPrices.currency,

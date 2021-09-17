@@ -13,7 +13,7 @@ public struct MoneyValueBalancePairs: Equatable {
     public let quoteCurrency: CurrencyType
 
     public subscript(accountType: SingleAccountType) -> MoneyValuePair {
-        moneyPairs[accountType] ?? MoneyValuePair(base: .zero(currency: baseCurrency), quote: .zero(currency: quoteCurrency))
+        moneyPairs[accountType] ?? .zero(baseCurrency: baseCurrency, quoteCurrency: quoteCurrency)
     }
 
     /// Returns true in case the balance is absent
@@ -37,19 +37,19 @@ public struct MoneyValueBalancePairs: Equatable {
         trading: MoneyValuePair,
         savings: MoneyValuePair
     ) {
-        guard wallet.base.currencyType == trading.base.currencyType,
-              trading.base.currencyType == savings.base.currencyType
+        guard wallet.base.currency == trading.base.currency,
+              trading.base.currency == savings.base.currency
         else {
             fatalError("Mismatch in wallet/trading/savings base currency")
         }
-        guard wallet.quote.currencyType == trading.quote.currencyType,
-              trading.quote.currencyType == savings.quote.currencyType
+        guard wallet.quote.currency == trading.quote.currency,
+              trading.quote.currency == savings.quote.currency
         else {
             fatalError("Mismatch in wallet/trading/savings quote currency")
         }
 
-        baseCurrency = trading.base.currencyType
-        quoteCurrency = trading.quote.currencyType
+        baseCurrency = trading.base.currency
+        quoteCurrency = trading.quote.currency
 
         moneyPairs[.nonCustodial] = wallet
         moneyPairs[.custodial(.trading)] = trading
@@ -58,8 +58,8 @@ public struct MoneyValueBalancePairs: Equatable {
     }
 
     public init(trading: MoneyValuePair) {
-        baseCurrency = trading.base.currencyType
-        quoteCurrency = trading.quote.currencyType
+        baseCurrency = trading.base.currency
+        quoteCurrency = trading.quote.currency
         moneyPairs[.custodial(.trading)] = trading
         isAbsent = false
     }
@@ -86,13 +86,13 @@ extension MoneyValueBalancePairs {
     /// The total value for the base currency
     public var base: MoneyValue {
         let total = moneyPairs.values.map(\.base.amount).reduce(0, +)
-        return MoneyValue.create(minor: total, currency: baseCurrency.currency)
+        return MoneyValue.create(minor: total, currency: baseCurrency)
     }
 
     /// The total value for the quote currency
     public var quote: MoneyValue {
         let total = moneyPairs.values.map(\.quote.amount).reduce(0, +)
-        return MoneyValue.create(minor: total, currency: quoteCurrency.currency)
+        return MoneyValue.create(minor: total, currency: quoteCurrency)
     }
 
     /// `true` if `self` is zero.

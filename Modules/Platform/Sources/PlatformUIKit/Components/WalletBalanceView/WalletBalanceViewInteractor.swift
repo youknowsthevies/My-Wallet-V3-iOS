@@ -15,7 +15,7 @@ public final class WalletBalanceViewInteractor {
         let fiatValue: FiatValue
         /// The wallet's fiat currency code
         var fiatCurrency: FiatCurrency {
-            fiatValue.currencyType
+            fiatValue.currency
         }
 
         public init(fiatValue: FiatValue) {

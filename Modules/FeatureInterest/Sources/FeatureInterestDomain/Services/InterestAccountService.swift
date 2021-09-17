@@ -87,7 +87,7 @@ final class InterestAccountService: InterestAccountServiceAPI {
 
     func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState> {
         balances(fetch: false)
-            .map { $0[currency.currency] }
+            .map { $0[currency.currencyType] }
     }
 
     func rate(for currency: CryptoCurrency) -> Single<Double> {

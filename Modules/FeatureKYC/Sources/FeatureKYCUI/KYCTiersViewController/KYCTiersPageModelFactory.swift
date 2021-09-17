@@ -41,7 +41,7 @@ final class KYCTiersPageModelFactory: KYCTiersPageModelFactoryAPI {
             }
             .map { tradeLimits, tiers, fiatCurrency -> (FiatValue, KYC.UserTiers) in
                 guard tiers.tierAccountStatus(for: .tier1).isApproved else {
-                    return (FiatValue.zero(currency: fiatCurrency), tiers)
+                    return (.zero(currency: fiatCurrency), tiers)
                 }
                 let maxTradableToday = FiatValue.create(
                     major: tradeLimits?.maxTradableToday ?? 0,

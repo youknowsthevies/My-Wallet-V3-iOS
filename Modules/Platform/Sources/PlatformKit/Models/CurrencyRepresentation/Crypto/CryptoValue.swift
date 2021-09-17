@@ -7,7 +7,7 @@ public struct CryptoValue: CryptoMoney, Hashable {
 
     public let amount: BigInt
 
-    public let currencyType: CryptoCurrency
+    public let currency: CryptoCurrency
 
     /// Creates a crypto value.
     ///
@@ -16,7 +16,7 @@ public struct CryptoValue: CryptoMoney, Hashable {
     ///   - currency: A crypto currency.
     public init(amount: BigInt, currency: CryptoCurrency) {
         self.amount = amount
-        currencyType = currency
+        self.currency = currency
     }
 }
 
@@ -31,6 +31,6 @@ extension CryptoValue {
     /// - Parameter exchangeRate: An exchange rate, representing one major unit of the fiat currency in the crypto currency.
     public func convertToFiatValue(exchangeRate: FiatValue) -> FiatValue {
         let conversionAmount = displayMajorValue * exchangeRate.displayMajorValue
-        return FiatValue.create(major: conversionAmount, currency: exchangeRate.currencyType)
+        return FiatValue.create(major: conversionAmount, currency: exchangeRate.currency)
     }
 }

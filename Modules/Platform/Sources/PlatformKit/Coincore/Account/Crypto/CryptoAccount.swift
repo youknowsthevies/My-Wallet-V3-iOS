@@ -9,6 +9,6 @@ public protocol CryptoAccount: SingleAccount {
 
 extension CryptoAccount {
     public var currencyType: CurrencyType {
-        asset.currency
+        asset.currencyType
     }
 }

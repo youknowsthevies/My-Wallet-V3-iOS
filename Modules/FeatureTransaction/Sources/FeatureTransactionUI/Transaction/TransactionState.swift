@@ -132,7 +132,7 @@ extension TransactionState {
             /// deposit or a withdraw.
             return .success(amount)
         }
-        guard let currencyType = rate.base.cryptoValue?.currencyType else {
+        guard let currency = rate.base.cryptoValue?.currency else {
             return .failure(.unexpectedMoneyValueType(rate.base))
         }
         guard let quote = rate.quote.fiatValue else {
@@ -149,14 +149,14 @@ extension TransactionState {
             return .success(amount
                 .convertToCryptoValue(
                     exchangeRate: quote,
-                    cryptoCurrency: currencyType
+                    cryptoCurrency: currency
                 )
                 .moneyValue
             )
         default:
             break
         }
-        return .success(.zero(currency: currencyType))
+        return .success(.zero(currency: currency))
     }
 
     /// The `MoneyValue` representing the amount received
@@ -167,15 +167,15 @@ extension TransactionState {
         case let account as SingleAccount:
             currencyType = account.currencyType
         case let receiveAddress as CryptoReceiveAddress:
-            currencyType = receiveAddress.asset.currency
+            currencyType = receiveAddress.asset.currencyType
         default:
             return .failure(.unexpectedDestinationAccountType)
         }
         guard let exchange = sourceDestinationPair else {
             return .success(.zero(currency: currencyType))
         }
-        guard case .crypto(let currency) = exchange.quote.currencyType else {
-            return .failure(.unexpectedCurrencyType(exchange.quote.currencyType))
+        guard case .crypto(let currency) = exchange.quote.currency else {
+            return .failure(.unexpectedCurrencyType(exchange.quote.currency))
         }
         guard let sourceQuote = sourceToFiatPair?.quote.fiatValue else {
             return .failure(.emptySourceExchangeRate)
@@ -195,7 +195,7 @@ extension TransactionState {
             return .success(
                 fiat.convertToCryptoValue(
                     exchangeRate: destinationQuote,
-                    cryptoCurrency: cryptoPrice.currencyType
+                    cryptoCurrency: cryptoPrice.currency
                 )
                 .moneyValue
             )

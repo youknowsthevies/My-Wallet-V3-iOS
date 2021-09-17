@@ -110,7 +110,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     // MARK: - BlockchainAccount
 
     public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
-        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType))
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {

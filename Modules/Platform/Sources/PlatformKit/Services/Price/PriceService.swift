@@ -106,7 +106,7 @@ final class PriceService: PriceServiceAPI {
     ) -> AnyPublisher<MoneyValuePair, PriceServiceError> {
         price(of: cryptoCurrency, in: fiatValue.currency)
             .map(\.moneyValue.fiatValue)
-            .replaceNil(with: .zero(currency: fiatValue.currencyType))
+            .replaceNil(with: .zero(currency: fiatValue.currency))
             .map { price in
                 MoneyValuePair(
                     fiatValue: fiatValue,
@@ -138,7 +138,7 @@ final class PriceService: PriceServiceAPI {
             return .just(
                 PriceQuoteAtTime(
                     timestamp: time.date,
-                    moneyValue: .one(currency: quote.currency)
+                    moneyValue: .one(currency: quote.currencyType)
                 )
             )
         }
