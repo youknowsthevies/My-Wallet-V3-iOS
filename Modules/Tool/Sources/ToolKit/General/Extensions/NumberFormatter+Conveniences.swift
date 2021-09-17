@@ -41,11 +41,11 @@ extension NumberFormatter {
     /// - Parameters:
     ///   - amount:        An amount in major units.
     ///   - includeSymbol: Whether the symbol should be included.
-    public func format(amount: Decimal, includeSymbol: Bool) -> String {
+    public func format(major amount: Decimal, includeSymbol: Bool) -> String {
         let formattedString = string(from: NSDecimalNumber(decimal: amount)) ?? "\(amount)"
-        if let firstDigitIndex = formattedString.firstIndex(where: { $0.inSet(characterSet: .decimalDigits) }),
-           let lastDigitIndex = formattedString.lastIndex(where: { $0.inSet(characterSet: .decimalDigits) }),
-           !includeSymbol
+        if !includeSymbol,
+           let firstDigitIndex = formattedString.firstIndex(where: { $0.inSet(characterSet: .decimalDigits) }),
+           let lastDigitIndex = formattedString.lastIndex(where: { $0.inSet(characterSet: .decimalDigits) })
         {
             return String(formattedString[firstDigitIndex...lastDigitIndex])
         }

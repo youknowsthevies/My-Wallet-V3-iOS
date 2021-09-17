@@ -20,17 +20,17 @@ final class FiatFormatterProvider {
     ///
     /// - Parameters:
     ///   - locale:            A locale.
-    ///   - fiatValue:         A fiat value.
+    ///   - fiatCurrency:      A fiat currency.
     ///   - maxFractionDigits: The maximum number of digits after the decimal separator.
-    func formatter(locale: Locale, fiatValue: FiatValue, maxFractionDigits: Int) -> NumberFormatter {
+    func formatter(locale: Locale, fiatCurrency: FiatCurrency, maxFractionDigits: Int) -> NumberFormatter {
         queue.sync { [unowned self] in
-            let key = key(locale: locale, fiatValue: fiatValue, maxFractionDigits: maxFractionDigits)
+            let key = key(locale: locale, fiatCurrency: fiatCurrency, maxFractionDigits: maxFractionDigits)
             if let formatter = self.formatters[key] {
                 return formatter
             } else {
                 let formatter = NumberFormatter(
                     locale: locale,
-                    currencyCode: fiatValue.code,
+                    currencyCode: fiatCurrency.code,
                     maxFractionDigits: maxFractionDigits
                 )
                 self.formatters[key] = formatter
@@ -46,9 +46,9 @@ final class FiatFormatterProvider {
     ///
     /// - Parameters:
     ///   - locale:            A locale.
-    ///   - fiatValue:         A fiat value.
+    ///   - fiatCurrency:      A fiat currency.
     ///   - maxFractionDigits: The maximum number of digits after the decimal separator.
-    private func key(locale: Locale, fiatValue: FiatValue, maxFractionDigits: Int) -> String {
-        "\(locale.identifier)_\(fiatValue.code)_\(maxFractionDigits)"
+    private func key(locale: Locale, fiatCurrency: FiatCurrency, maxFractionDigits: Int) -> String {
+        "\(locale.identifier)_\(fiatCurrency.code)_\(maxFractionDigits)"
     }
 }

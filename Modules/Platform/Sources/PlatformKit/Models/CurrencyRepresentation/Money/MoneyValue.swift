@@ -76,10 +76,6 @@ public struct MoneyValue: Money, Hashable {
         }
     }
 
-    public var value: MoneyValue {
-        self
-    }
-
     // MARK: - Private properties
 
     private let _value: Value

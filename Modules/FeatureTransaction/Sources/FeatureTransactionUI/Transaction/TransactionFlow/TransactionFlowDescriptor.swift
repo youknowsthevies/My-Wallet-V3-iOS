@@ -11,12 +11,7 @@ enum TransactionFlowDescriptor {
     enum EnterAmountScreen {
 
         private static func formatForHeader(moneyValue: MoneyValue) -> String {
-            if let cryptoValue = moneyValue.cryptoValue {
-                return CryptoFormatterProvider.shared
-                    .formatter(locale: .current, cryptoCurrency: cryptoValue.currencyType, minFractionDigits: 2)
-                    .format(value: cryptoValue, withPrecision: .short, includeSymbol: true)
-            }
-            return moneyValue.displayString
+            moneyValue.displayString
         }
 
         static func headerTitle(state: TransactionState) -> String {

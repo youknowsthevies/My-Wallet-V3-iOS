@@ -8,8 +8,6 @@ public protocol MoneyImplementing: Money {
 
     var currencyType: MoneyCurrency { get }
 
-    var value: Self { get }
-
     /// Creates a money.
     ///
     /// - Parameters:

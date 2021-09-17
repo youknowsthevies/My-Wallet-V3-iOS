@@ -9,10 +9,6 @@ public struct FiatValue: Fiat, Hashable {
 
     public let currencyType: FiatCurrency
 
-    public var value: FiatValue {
-        self
-    }
-
     /// Creates a fiat value.
     ///
     /// - Parameters:
@@ -34,7 +30,7 @@ extension FiatValue {
     ///
     /// - Parameters:
     ///   - exchangeRate:   An exchange rate, representing one major unit of the crypto currency in the fiat currency.
-    ///   - cryptoCurrency: A destination crypto currency.]
+    ///   - cryptoCurrency: A destination crypto currency.
     public func convertToCryptoValue(exchangeRate: FiatValue, cryptoCurrency: CryptoCurrency) -> CryptoValue {
         guard !isZero, !exchangeRate.isZero else {
             return CryptoValue.zero(currency: cryptoCurrency)

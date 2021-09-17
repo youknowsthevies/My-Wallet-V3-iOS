@@ -17,10 +17,6 @@ public struct EthereumValue: CryptoMoney {
         crypto.amount
     }
 
-    public var value: CryptoValue {
-        crypto.value
-    }
-
     private let crypto: CryptoMoney
 
     public init(crypto: CryptoMoney) throws {

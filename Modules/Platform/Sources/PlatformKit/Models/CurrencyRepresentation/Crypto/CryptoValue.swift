@@ -9,10 +9,6 @@ public struct CryptoValue: CryptoMoney, Hashable {
 
     public let currencyType: CryptoCurrency
 
-    public var value: CryptoValue {
-        self
-    }
-
     /// Creates a crypto value.
     ///
     /// - Parameters:

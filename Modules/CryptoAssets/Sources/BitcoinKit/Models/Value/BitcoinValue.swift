@@ -20,10 +20,6 @@ public struct BitcoinValue: CryptoMoney {
 
     public static let zero = BitcoinValue(satoshis: 0)
 
-    public var value: CryptoValue {
-        crypto.value
-    }
-
     private let crypto: CryptoMoney
 
     public init(crypto: CryptoMoney) throws {

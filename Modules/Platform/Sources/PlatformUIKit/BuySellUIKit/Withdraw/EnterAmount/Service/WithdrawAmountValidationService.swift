@@ -103,8 +103,8 @@ final class WithdrawAmountValidationService {
                     case .amount(let value):
                         guard !value.isZero else { return .empty }
                         guard let fiatValue = value.fiatValue else { return .empty }
-                        guard try value <= balance.value else {
-                            return .maxLimitExceeded(balance.value)
+                        guard try value <= balance else {
+                            return .maxLimitExceeded(balance)
                         }
                         guard try value >= minValue else {
                             return .minLimitNotReached(minValue)

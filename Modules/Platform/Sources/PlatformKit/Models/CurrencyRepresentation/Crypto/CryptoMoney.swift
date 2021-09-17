@@ -5,16 +5,27 @@ public protocol CryptoMoney: Money {
 
     /// The crypto currency.
     var currencyType: CryptoCurrency { get }
-
-    /// The current crypto currency value represented as a `CryptoValue`.
-    var value: CryptoValue { get }
 }
 
 extension CryptoMoney {
 
     public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
+        toDisplayString(includeSymbol: includeSymbol, withPrecision: .short, locale: locale)
+    }
+
+    /// Creates a displayable string, representing the currency amount in major units, in the given locale, using the given format, optionally including the currency symbol.
+    ///
+    /// - Parameters:
+    ///   - includeSymbol: Whether the symbol should be included.
+    ///   - precision:     A precision level.
+    ///   - locale:        A locale.
+    public func toDisplayString(
+        includeSymbol: Bool,
+        withPrecision precision: CryptoPrecision,
+        locale: Locale
+    ) -> String {
         CryptoFormatterProvider.shared
-            .formatter(locale: locale, cryptoCurrency: currencyType)
-            .format(value: value, withPrecision: .short, includeSymbol: includeSymbol)
+            .formatter(locale: locale, cryptoCurrency: currencyType, withPrecision: precision)
+            .format(major: displayMajorValue, includeSymbol: includeSymbol)
     }
 }
