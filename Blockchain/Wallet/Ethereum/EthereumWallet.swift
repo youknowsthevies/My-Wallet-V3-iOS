@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
@@ -130,6 +131,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
 
     var name: Single<String> {
         secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+            .asSingle()
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
                 self.label(secondPassword: secondPassword)
             }
@@ -139,6 +141,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
         reactiveWallet.waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) in
                 self.secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+                    .asSingle()
             }
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
                 self.address(secondPassword: secondPassword)
@@ -148,6 +151,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
 
     var account: Single<EthereumAssetAccount> {
         wallets
+            .asSingle()
             .map { wallets in
                 guard let defaultAccount = wallets.first else {
                     throw EthereumWalletError.noEthereumAccount
@@ -257,36 +261,48 @@ extension EthereumWallet: PasswordAccessAPI {
 }
 
 extension EthereumWallet: EthereumWalletAccountBridgeAPI {
-    var wallets: Single<[EthereumWalletAccount]> {
+    var wallets: AnyPublisher<[EthereumWalletAccount], Error> {
         reactiveWallet
-            .waitUntilInitializedSingle
-            .flatMap(weak: self) { (self, _) -> Single<String?> in
-                self.secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+            .waitUntilInitializedSinglePublisher
+            .setFailureType(to: SecondPasswordError.self)
+            .flatMap { [secondPasswordPrompter] _ in
+                secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             }
-            .flatMap(weak: self) { (self, secondPassword) -> Single<[EthereumWalletAccount]> in
-                self.ethereumWallets(secondPassword: secondPassword)
+            .eraseError()
+            .flatMap { [weak self] secondPassword -> AnyPublisher<[EthereumWalletAccount], Error> in
+                guard let self = self else {
+                    return .failure(WalletError.notInitialized)
+                }
+                return self.ethereumWallets(secondPassword: secondPassword)
             }
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 
-    private func ethereumWallets(secondPassword: String?) -> Single<[EthereumWalletAccount]> {
-        Single<[[String: Any]]>
-            .create { [weak self] observer -> Disposable in
+    private func ethereumWallets(
+        secondPassword: String?
+    ) -> AnyPublisher<[EthereumWalletAccount], Error> {
+        AnyPublisher<[[String: Any]], Error>
+            .create { [weak self] subscriber in
                 guard let wallet = self?.wallet else {
-                    observer(.error(WalletError.notInitialized))
-                    return Disposables.create()
+                    subscriber.send(completion: .failure(WalletError.notInitialized))
+                    return AnyCancellable {}
                 }
                 wallet.ethereumAccounts(
                     with: secondPassword,
-                    success: { account in
-                        observer(.success(account))
+                    success: { accounts in
+                        subscriber.send(accounts)
+                        subscriber.send(completion: .finished)
                     },
                     error: { _ in
-                        observer(.error(EthereumWalletError.ethereumAccountsFailed))
+                        subscriber.send(completion: .failure(EthereumWalletError.ethereumAccountsFailed))
                     }
                 )
-                return Disposables.create()
+                return AnyCancellable {}
             }
-            .map { $0.decodeJSONObjects(type: LegacyEthereumWalletAccount.self) }
+            .map { accounts in
+                accounts.decodeJSONObjects(type: LegacyEthereumWalletAccount.self)
+            }
             .map { legacyWallets in
                 legacyWallets.enumerated()
                     .map { offset, account in
@@ -298,5 +314,7 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
                         )
                     }
             }
+            .eraseError()
+            .eraseToAnyPublisher()
     }
 }

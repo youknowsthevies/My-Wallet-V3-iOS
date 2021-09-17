@@ -14,7 +14,12 @@ final class PriceRepository: PriceRepositoryAPI {
     private let client: PriceClientAPI
     private let indexMultiCachedValue: CachedValueNew<
         PriceRequest.IndexMulti.Key,
-        PriceResponse.IndexMulti.Response,
+        [String: PriceQuoteAtTime],
+        NetworkError
+    >
+    private let symbolsCachedValue: CachedValueNew<
+        PriceRequest.Symbols.Key,
+        Set<String>,
         NetworkError
     >
 
@@ -22,14 +27,37 @@ final class PriceRepository: PriceRepositoryAPI {
 
     init(client: PriceClientAPI = resolve()) {
         self.client = client
-        let inMemoryCache = InMemoryCache<PriceRequest.IndexMulti.Key, PriceResponse.IndexMulti.Response>(
+        let inMemoryCache = InMemoryCache<PriceRequest.IndexMulti.Key, [String: PriceQuoteAtTime]>(
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         )
         .eraseToAnyCache()
         indexMultiCachedValue = CachedValueNew(
             cache: inMemoryCache,
             fetch: { key in
-                client.price(of: key.base, in: key.quote, time: key.time.timestamp)
+                client
+                    .price(of: key.base, in: key.quote.code, time: key.time.timestamp)
+                    .map(\.entries)
+                    .map { entries in
+                        entries.mapValues { item in
+                            PriceQuoteAtTime(
+                                timestamp: item.timestamp,
+                                moneyValue: .create(major: item.price, currency: key.quote.currency)
+                            )
+                        }
+                    }
+                    .eraseToAnyPublisher()
+            }
+        )
+        symbolsCachedValue = CachedValueNew(
+            cache: InMemoryCache<PriceRequest.Symbols.Key, Set<String>>(
+                refreshControl: PerpetualCacheRefreshControl()
+            )
+            .eraseToAnyCache(),
+            fetch: { _ in
+                client.symbols()
+                    .map(\.base.keys)
+                    .map(Set.init)
+                    .eraseToAnyPublisher()
             }
         )
     }
@@ -39,21 +67,19 @@ final class PriceRepository: PriceRepositoryAPI {
         in quote: Currency,
         at time: PriceTime
     ) -> AnyPublisher<[String: PriceQuoteAtTime], NetworkError> {
-        let key = PriceRequest.IndexMulti.Key(
-            base: bases.map(\.code).sorted(),
-            quote: quote.code,
-            time: time
-        )
-        return indexMultiCachedValue
-            .get(key: key)
-            .map(\.entries)
-            .map { entries -> [String: PriceQuoteAtTime] in
-                entries.mapValues { item in
-                    PriceQuoteAtTime(
-                        timestamp: item.timestamp,
-                        moneyValue: .create(major: item.price, currency: quote.currency)
+        symbolsCachedValue
+            .get(key: PriceRequest.Symbols.Key())
+            .flatMap { [indexMultiCachedValue] supportedBases
+                -> AnyPublisher<[String: PriceQuoteAtTime], NetworkError> in
+                indexMultiCachedValue
+                    .get(
+                        key: PriceRequest.IndexMulti.Key(
+                            base: Set(bases.map(\.code)).intersection(supportedBases),
+                            quote: quote.currency,
+                            time: time
+                        )
                     )
-                }
+                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

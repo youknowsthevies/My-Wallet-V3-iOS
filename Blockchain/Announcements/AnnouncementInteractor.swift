@@ -24,7 +24,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         }
 
         let nabuUser = dataRepository.nabuUserSingle
-        let tiers = tiersService.tiers
+        let tiers = tiersService.tiers.asSingle()
         let sddEligibility = tiersService.checkSimplifiedDueDiligenceEligibility()
             .asObservable()
             .asSingle()

@@ -7,6 +7,9 @@ import NetworkKit
 
 protocol PriceClientAPI {
 
+    /// Fetches collection of supported symbols.
+    func symbols() -> AnyPublisher<PriceResponse.Symbols.Response, NetworkError>
+
     /// Fetches the quoted price of the given base currencies, in the given quote currency, at the given time.
     ///
     /// - Parameters:
@@ -16,7 +19,7 @@ protocol PriceClientAPI {
     ///
     /// - Returns: A publisher that emits a `PriceResponse.IndexMulti.Response` on success, or a `NetworkError` on failure.
     func price(
-        of bases: [String],
+        of bases: Set<String>,
         in quote: String,
         time: String?
     ) -> AnyPublisher<PriceResponse.IndexMulti.Response, NetworkError>
@@ -62,10 +65,17 @@ final class PriceClient: PriceClientAPI {
         self.requestBuilder = requestBuilder
     }
 
-    // MARK: - Internal Methods
+    // MARK: - Methods
+
+    func symbols() -> AnyPublisher<PriceResponse.Symbols.Response, NetworkError> {
+        let request: NetworkRequest! = PriceRequest.Symbols.request(
+            requestBuilder: requestBuilder
+        )
+        return networkAdapter.perform(request: request)
+    }
 
     func price(
-        of bases: [String],
+        of bases: Set<String>,
         in quote: String,
         time: String?
     ) -> AnyPublisher<PriceResponse.IndexMulti.Response, NetworkError> {

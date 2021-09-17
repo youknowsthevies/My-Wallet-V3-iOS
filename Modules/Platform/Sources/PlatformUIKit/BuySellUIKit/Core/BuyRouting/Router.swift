@@ -659,6 +659,7 @@ public final class Router: RouterAPI {
         } else {
             tiersService
                 .tiers
+                .asSingle()
                 .subscribe { [kycRouter] tiersResponse in
                     kycRouter.start(
                         tier: tiersResponse.latestApprovedTier,

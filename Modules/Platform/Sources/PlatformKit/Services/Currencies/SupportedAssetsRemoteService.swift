@@ -7,6 +7,7 @@ import ToolKit
 
 public protocol SupportedAssetsRemoteServiceAPI {
     func refreshCustodialAssetsCache() -> AnyPublisher<Void, Never>
+    func refreshERC20AssetsCache() -> AnyPublisher<Void, Never>
 }
 
 final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
@@ -15,9 +16,6 @@ final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
     private let filePathProvider: SupportedAssetsFilePathProviderAPI
     private let fileIO: FileIOAPI
     private let jsonDecoder: JSONEncoder
-    private var fileURL: URL? {
-        filePathProvider.remoteCustodialAssets
-    }
 
     init(
         client: SupportedAssetsClientAPI = resolve(),
@@ -34,9 +32,30 @@ final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
     func refreshCustodialAssetsCache() -> AnyPublisher<Void, Never> {
         client.custodialAssets
             .eraseError()
-            .flatMap { [fileURL, fileIO, jsonDecoder] response -> AnyPublisher<Void, Error> in
+            .flatMap { [filePathProvider, fileIO, jsonDecoder] response -> AnyPublisher<Void, Error> in
                 fileIO
-                    .write(response, to: fileURL!, encodedUsing: jsonDecoder)
+                    .write(
+                        response,
+                        to: filePathProvider.remoteERC20Assets!,
+                        encodedUsing: jsonDecoder
+                    )
+                    .eraseError()
+                    .publisher
+            }
+            .replaceError(with: ())
+            .eraseToAnyPublisher()
+    }
+
+    func refreshERC20AssetsCache() -> AnyPublisher<Void, Never> {
+        client.erc20Assets
+            .eraseError()
+            .flatMap { [filePathProvider, fileIO, jsonDecoder] response -> AnyPublisher<Void, Error> in
+                fileIO
+                    .write(
+                        response,
+                        to: filePathProvider.remoteERC20Assets!,
+                        encodedUsing: jsonDecoder
+                    )
                     .eraseError()
                     .publisher
             }

@@ -18,7 +18,8 @@ final class PricesScreenInteractor {
     // MARK: - Private Properties
 
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
-    private let priceInteractors: [CryptoCurrency: AssetPriceViewInteracting]
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let priceService: PriceServiceAPI
 
     // MARK: - Init
 
@@ -28,27 +29,21 @@ final class PricesScreenInteractor {
         priceService: PriceServiceAPI = resolve()
     ) {
         self.enabledCurrenciesService = enabledCurrenciesService
-        priceInteractors = enabledCurrenciesService.allEnabledCryptoCurrencies
-            .reduce(into: [CryptoCurrency: AssetPriceViewInteracting]()) { result, cryptoCurrency in
-                result[cryptoCurrency] = AssetPriceViewDailyInteractor(
-                    cryptoCurrency: cryptoCurrency,
-                    priceService: priceService,
-                    fiatCurrencyService: fiatCurrencyService
-                )
-            }
+        self.fiatCurrencyService = fiatCurrencyService
+        self.priceService = priceService
     }
 
     // MARK: - Methods
 
     func assetPriceViewInteractor(
         for currency: CryptoCurrency
-    ) -> AssetPriceViewInteracting? {
-        priceInteractors[currency]
+    ) -> AssetPriceViewInteracting {
+        AssetPriceViewDailyInteractor(
+            cryptoCurrency: currency,
+            priceService: priceService,
+            fiatCurrencyService: fiatCurrencyService
+        )
     }
 
-    func refresh() {
-        priceInteractors.values.forEach { interactor in
-            interactor.refresh()
-        }
-    }
+    func refresh() {}
 }

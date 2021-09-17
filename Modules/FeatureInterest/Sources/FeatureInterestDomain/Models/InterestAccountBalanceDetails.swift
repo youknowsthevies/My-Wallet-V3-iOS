@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public struct InterestAccountBalanceDetails {
+public struct InterestAccountBalanceDetails: Equatable {
     public let balance: String?
     public let pendingInterest: String?
     public let totalInterest: String?

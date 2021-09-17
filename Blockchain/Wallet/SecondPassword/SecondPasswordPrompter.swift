@@ -1,15 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxSwift
 import ToolKit
 
 enum SecondPasswordError: Error {
+    case walletError(WalletError)
     case userDismissed
 }
 
 protocol SecondPasswordPromptable: AnyObject {
-    func secondPasswordIfNeeded(type: PasswordScreenType) -> Single<String?>
+    func secondPasswordIfNeeded(type: PasswordScreenType) -> AnyPublisher<String?, SecondPasswordError>
 }
 
 final class SecondPasswordPrompter: SecondPasswordPromptable {
@@ -26,48 +28,59 @@ final class SecondPasswordPrompter: SecondPasswordPromptable {
         self.secondPasswordPrompterHelper = secondPasswordPrompterHelper
     }
 
-    func secondPasswordIfNeeded(type: PasswordScreenType) -> Single<String?> {
+    func secondPasswordIfNeeded(type: PasswordScreenType) -> AnyPublisher<String?, SecondPasswordError> {
         secondPasswordNeeded
-            .flatMap(weak: self) { (self, needed) -> Single<String?> in
+            .flatMap { [weak self] needed -> AnyPublisher<String?, SecondPasswordError> in
                 guard needed else {
                     return .just(nil)
                 }
+                guard let self = self else {
+                    return .just(nil)
+                }
                 guard let secondPassword = self.secondPasswordStore.secondPassword.value else {
-                    return self.promptForSecondPassword(type: type).optional()
+                    return self.promptForSecondPassword(type: type)
+                        .optional()
                 }
                 return .just(secondPassword)
             }
+            .eraseToAnyPublisher()
     }
 
-    private func promptForSecondPassword(type: PasswordScreenType) -> Single<String> {
-        Single.create { [weak self] observer -> Disposable in
-            self?.secondPasswordPrompterHelper
-                .showPasswordScreen(
-                    type: type,
-                    confirmHandler: { [weak self] secondPassword in
-                        self?.secondPasswordStore.secondPassword.mutate { $0 = secondPassword }
-                        observer(.success(secondPassword))
-                    },
-                    dismissHandler: {
-                        observer(.error(SecondPasswordError.userDismissed))
-                    }
-                )
-            return Disposables.create()
-        }
-        .subscribeOn(MainScheduler.asyncInstance)
-    }
-
-    private var secondPasswordNeeded: Single<Bool> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
-            let wallet = self.walletManager.wallet
-            switch wallet.isInitialized() {
-            case false:
-                observer(.error(WalletError.notInitialized))
-            case true:
-                observer(.success(wallet.needsSecondPassword()))
+    private func promptForSecondPassword(type: PasswordScreenType) -> AnyPublisher<String, SecondPasswordError> {
+        AnyPublisher<String, SecondPasswordError>
+            .create { [secondPasswordPrompterHelper, secondPasswordStore] subscriber in
+                secondPasswordPrompterHelper
+                    .showPasswordScreen(
+                        type: type,
+                        confirmHandler: { secondPassword in
+                            secondPasswordStore.secondPassword.mutate { $0 = secondPassword }
+                            subscriber.send(secondPassword)
+                            subscriber.send(completion: .finished)
+                        },
+                        dismissHandler: {
+                            subscriber.send(completion: .failure(.userDismissed))
+                        }
+                    )
+                return AnyCancellable {}
             }
-            return Disposables.create()
-        }
-        .subscribeOn(MainScheduler.asyncInstance)
+            .subscribe(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+
+    private var secondPasswordNeeded: AnyPublisher<Bool, SecondPasswordError> {
+        AnyPublisher<Bool, WalletError>
+            .create { [walletManager] subscriber in
+                switch walletManager.wallet.isInitialized() {
+                case false:
+                    subscriber.send(completion: .failure(.notInitialized))
+                case true:
+                    subscriber.send(walletManager.wallet.needsSecondPassword())
+                    subscriber.send(completion: .finished)
+                }
+                return AnyCancellable {}
+            }
+            .mapError(SecondPasswordError.walletError)
+            .subscribe(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 }

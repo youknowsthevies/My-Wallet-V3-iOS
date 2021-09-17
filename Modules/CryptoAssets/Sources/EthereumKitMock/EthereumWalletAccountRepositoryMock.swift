@@ -1,12 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Combine
 @testable import EthereumKit
 import Foundation
 import PlatformKit
 import RxSwift
 
 class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, KeyPairProviderAPI {
+
+    static let mockEthereumWalletAccount = EthereumWalletAccount(
+        index: 0,
+        publicKey: "",
+        label: "",
+        archived: false
+    )
 
     var keyPairValue = Single.just(MockEthereumWalletTestData.keyPair)
     var keyPair: Single<EthereumKeyPair> {
@@ -17,23 +25,8 @@ class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, K
         keyPairValue
     }
 
-    static let ethereumWalletAccount = EthereumWalletAccount(
-        index: 0,
-        publicKey: "",
-        label: "",
-        archived: false
-    )
-
-    var defaultAccountValue: EthereumWalletAccount = ethereumWalletAccount
-    var defaultAccount: Single<EthereumWalletAccount> {
-        .just(defaultAccountValue)
-    }
-
-    var accounts: Single<[EthereumWalletAccount]> {
-        defaultAccount.map { [$0] }
-    }
-
-    var activeAccounts: Single<[EthereumWalletAccount]> {
-        accounts
+    var underlyingDefaultAccount: EthereumWalletAccount = mockEthereumWalletAccount
+    var defaultAccount: AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> {
+        .just(underlyingDefaultAccount)
     }
 }

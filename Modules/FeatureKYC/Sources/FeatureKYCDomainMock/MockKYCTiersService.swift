@@ -23,18 +23,11 @@ final class MockKYCTiersService: PlatformKit.KYCTiersServiceAPI {
     private(set) var recordedInvocations = RecordedInvocations()
     var stubbedResponses = StubbedResponses()
 
-    var tiers: Single<KYC.UserTiers> {
+    var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
         fetchTiers()
     }
 
-    func fetchTiers() -> Single<KYC.UserTiers> {
-        fetchTiersPublisher()
-            .asObservable()
-            .take(1)
-            .asSingle()
-    }
-
-    func fetchTiersPublisher() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+    func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
         recordedInvocations.fetchTiers.append(())
         return stubbedResponses.fetchTiers
     }

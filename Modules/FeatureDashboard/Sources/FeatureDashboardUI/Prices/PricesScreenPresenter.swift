@@ -76,15 +76,15 @@ final class PricesScreenPresenter {
                     )
                     return [.emptyState(labelContent)]
                 }
+                let interactor = self.interactor
                 return filteredCurrencies
                     .compactMap { cryptoCurrency in
-                        guard let interactor = self.interactor.assetPriceViewInteractor(for: cryptoCurrency) else {
-                            return nil
+                        let presenter: () -> PricesTableViewCellPresenter = {
+                            PricesTableViewCellPresenter(
+                                cryptoCurrency: cryptoCurrency,
+                                interactor: interactor.assetPriceViewInteractor(for: cryptoCurrency)
+                            )
                         }
-                        let presenter = PricesTableViewCellPresenter(
-                            cryptoCurrency: cryptoCurrency,
-                            interactor: interactor
-                        )
                         return .currency(cryptoCurrency, presenter)
                     }
             }

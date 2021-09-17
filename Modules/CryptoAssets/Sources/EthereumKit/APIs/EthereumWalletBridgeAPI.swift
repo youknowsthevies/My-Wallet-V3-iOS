@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Combine
 import PlatformKit
 import RxSwift
 
@@ -10,7 +11,7 @@ import RxSwift
 /// and inject it in as a dependency. Frequently we'll use the term `bridge` as a way of
 /// describing this.
 public protocol EthereumWalletAccountBridgeAPI: AnyObject {
-    var wallets: Single<[EthereumWalletAccount]> { get }
+    var wallets: AnyPublisher<[EthereumWalletAccount], Error> { get }
 }
 
 public protocol EthereumWalletBridgeAPI: AnyObject {

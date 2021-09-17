@@ -65,7 +65,7 @@ final class AnalyticsUserPropertyInteractor {
         Single
             .zip(
                 dataRepository.nabuUserSingle,
-                tiersService.tiers,
+                tiersService.tiers.asSingle(),
                 walletRepository.authenticatorType,
                 walletRepository.guid,
                 fiatBalances()

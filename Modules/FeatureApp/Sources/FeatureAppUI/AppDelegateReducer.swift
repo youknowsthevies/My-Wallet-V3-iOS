@@ -104,6 +104,11 @@ let appDelegateReducer = Reducer<
                 .eraseToEffect()
                 .fireAndForget(),
 
+            environment.supportedAssetsRemoteService
+                .refreshERC20AssetsCache()
+                .eraseToEffect()
+                .fireAndForget(),
+
             environment.remoteNotificationAuthorizer
                 .registerForRemoteNotificationsIfAuthorized()
                 .asPublisher()

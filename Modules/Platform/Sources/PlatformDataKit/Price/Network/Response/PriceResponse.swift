@@ -6,6 +6,7 @@ import Foundation
 
 enum PriceResponse {
     enum IndexMulti {}
+    enum Symbols {}
 }
 
 extension PriceResponse {
@@ -27,5 +28,23 @@ extension PriceResponse.IndexMulti {
             let container = try decoder.singleValueContainer()
             entries = try container.decode([String: PriceResponse.Item].self)
         }
+    }
+}
+
+// MARK: - Symbols
+
+extension PriceResponse.Symbols {
+    struct Response: Decodable, Equatable {
+        struct Item: Decodable, Equatable {
+            let code: String
+        }
+
+        enum CodingKeys: String, CodingKey {
+            case base = "Base"
+            case quote = "Quote"
+        }
+
+        let base: [String: Item]
+        let quote: [String: Item]
     }
 }

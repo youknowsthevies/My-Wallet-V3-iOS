@@ -97,6 +97,16 @@ public struct CoinAssetModel: AssetModel, Hashable {
             sortIndex: sortIndex
         )
     }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(code)
+        hasher.combine(kind)
+    }
+
+    public static func == (lhs: CoinAssetModel, rhs: CoinAssetModel) -> Bool {
+        lhs.code == rhs.code
+            && lhs.kind == rhs.kind
+    }
 }
 
 extension CoinAssetModel {

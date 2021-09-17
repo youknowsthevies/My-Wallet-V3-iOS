@@ -110,6 +110,15 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
             return model
         }
     }
+
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .coin(let model):
+            hasher.combine(model)
+        case .erc20(let model):
+            hasher.combine(model)
+        }
+    }
 }
 
 // MARK: - Currency
@@ -182,7 +191,7 @@ extension CryptoCurrency {
             return lhs == rhs
         case (.erc20(let lhs), .erc20(let rhs)):
             return lhs == rhs
-        default:
+        case (.erc20, .coin), (.coin, .erc20):
             return false
         }
     }

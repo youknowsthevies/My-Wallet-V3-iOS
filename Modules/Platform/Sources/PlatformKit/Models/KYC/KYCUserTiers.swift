@@ -3,7 +3,7 @@
 import Foundation
 
 extension KYC {
-    public struct UserTiers: Decodable {
+    public struct UserTiers: Decodable, Equatable {
         public let tiers: [KYC.UserTier]
 
         public var isTier0: Bool {

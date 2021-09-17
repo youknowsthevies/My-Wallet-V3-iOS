@@ -340,6 +340,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) -> Single<String?> in
                 self.secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+                    .asSingle()
             }
             .flatMap(weak: self) { (self, secondPassword) -> Single<BitcoinWalletAccount> in
                 self.defaultWallet(secondPassword: secondPassword)
@@ -361,6 +362,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
 
     var wallets: Single<[BitcoinWalletAccount]> {
         secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+            .asSingle()
             .flatMap(weak: self) { (self, secondPassword) -> Single<[BitcoinWalletAccount]> in
                 self.bitcoinWallets(secondPassword: secondPassword)
             }

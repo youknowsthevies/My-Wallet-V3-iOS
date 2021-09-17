@@ -107,7 +107,7 @@ extension SwapTransactionEngine {
     ) -> Single<PendingTransaction> {
         Single
             .zip(
-                kycTiersService.tiers,
+                kycTiersService.tiers.asSingle(),
                 tradeLimitsRepository.fetchTransactionLimits(
                     currency: fiatCurrency.currency,
                     networkFee: targetAsset.currency,

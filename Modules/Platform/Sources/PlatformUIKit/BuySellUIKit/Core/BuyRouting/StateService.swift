@@ -297,6 +297,7 @@ public final class StateService: StateServiceAPI {
 
         let isTier2Approved = kycTiersService
             .fetchTiers()
+            .asSingle()
             .map(\.isTier2Approved)
 
         Single

@@ -50,6 +50,7 @@ final class PendingOrderStateScreenInteractor: Interactor {
             return .just(false)
         }
         return tiersService.fetchTiers()
+            .asSingle()
             .map { $0.latestApprovedTier < .tier2 }
     }
 }

@@ -6,24 +6,13 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-enum WalletAccountRepositoryError: Error {
+public enum WalletAccountRepositoryError: Error {
     case failedToFetchAccount(Error)
 }
 
-protocol EthereumWalletAccountRepositoryAPI {
+public protocol EthereumWalletAccountRepositoryAPI {
 
-    var defaultAccount: Single<EthereumWalletAccount> { get }
-    var accounts: Single<[EthereumWalletAccount]> { get }
-    var activeAccounts: Single<[EthereumWalletAccount]> { get }
-}
-
-extension EthereumWalletAccountRepositoryAPI {
-
-    var defaultAccountPublisher: AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> {
-        defaultAccount.asPublisher()
-            .mapError(WalletAccountRepositoryError.failedToFetchAccount)
-            .eraseToAnyPublisher()
-    }
+    var defaultAccount: AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> { get }
 }
 
 final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, KeyPairProviderAPI {
@@ -38,26 +27,19 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI,
 
     // MARK: - EthereumWalletAccountRepositoryAPI
 
-    var defaultAccount: Single<Account> {
+    var defaultAccount: AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> {
         bridge.account
-            .map { assetAccount -> Account in
-                Account(
+            .map { assetAccount -> EthereumWalletAccount in
+                EthereumWalletAccount(
                     index: assetAccount.walletIndex,
                     publicKey: assetAccount.accountAddress,
                     label: assetAccount.name,
                     archived: false
                 )
             }
-    }
-
-    var accounts: Single<[Account]> {
-        defaultAccount.map { [$0] }
-    }
-
-    var activeAccounts: Single<[Account]> {
-        accounts.map { accounts in
-            accounts.filter(\.isActive)
-        }
+            .asPublisher()
+            .mapError(WalletAccountRepositoryError.failedToFetchAccount)
+            .eraseToAnyPublisher()
     }
 
     // MARK: - KeyPairProviderAPI

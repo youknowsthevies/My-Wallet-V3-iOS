@@ -3,7 +3,7 @@
 import Foundation
 
 extension KYC {
-    public struct UserState: Decodable {
+    public struct UserState: Decodable, Equatable {
         public let current: KYC.Tier
         public let selected: KYC.Tier
         public let next: KYC.Tier

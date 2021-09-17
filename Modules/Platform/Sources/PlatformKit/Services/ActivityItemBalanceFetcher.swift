@@ -33,10 +33,13 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
     private lazy var setup: Void = {
         pairExchangeService
             .fiatPrice
-            .map(weak: self) { (self, fiatPrice) -> MoneyValuePair in
-                MoneyValuePair(base: self.moneyValue, exchangeRate: .init(fiatValue: fiatPrice))
+            .map { [moneyValue] fiatPrice -> MoneyValuePair in
+                MoneyValuePair(
+                    base: moneyValue,
+                    exchangeRate: fiatPrice.moneyValue
+                )
             }
-            .map { .value($0) }
+            .map(MoneyValuePairCalculationState.value)
             .startWith(.calculating)
             .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)

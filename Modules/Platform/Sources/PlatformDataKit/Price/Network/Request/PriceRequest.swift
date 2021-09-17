@@ -9,6 +9,7 @@ import PlatformKit
 enum PriceRequest {
     enum IndexMulti {}
     enum IndexSeries {}
+    enum Symbols {}
 }
 
 // MARK: - IndexSeries
@@ -39,12 +40,12 @@ extension PriceRequest.IndexSeries {
 extension PriceRequest.IndexMulti {
 
     struct Key: Hashable {
-        let base: [String]
-        let quote: String
+        let base: Set<String>
+        let quote: CurrencyType
         let time: PriceTime
 
-        init(base: [String], quote: String, time: PriceTime) {
-            self.base = base.sorted()
+        init(base: Set<String>, quote: CurrencyType, time: PriceTime) {
+            self.base = base
             self.quote = quote
             self.time = time
         }
@@ -61,7 +62,7 @@ extension PriceRequest.IndexMulti {
     /// - parameter time: The epoch seconds used to locate a time in the past.
     static func request(
         requestBuilder: RequestBuilder,
-        bases: [String],
+        bases: Set<String>,
         quote: String,
         time: String?
     ) -> NetworkRequest? {
@@ -69,6 +70,25 @@ extension PriceRequest.IndexMulti {
             path: ["price", "index-multi"],
             parameters: time.flatMap { [URLQueryItem(name: "time", value: $0)] },
             body: try? bases.map { Pair(base: $0, quote: quote) }.encode()
+        )
+    }
+}
+
+// MARK: - Symbols
+
+extension PriceRequest.Symbols {
+
+    struct Key: Hashable {}
+
+    /// Aggregated call for multiple price quotes.
+    /// - parameter base: Base fiat currency code. Must be supported in https://api.blockchain.info/price/symbols
+    /// - parameter quote: Currencies to quote, fiat or crypto.
+    /// - parameter time: The epoch seconds used to locate a time in the past.
+    static func request(
+        requestBuilder: RequestBuilder
+    ) -> NetworkRequest? {
+        requestBuilder.get(
+            path: ["price", "symbols"]
         )
     }
 }

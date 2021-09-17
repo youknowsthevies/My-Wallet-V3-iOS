@@ -96,7 +96,7 @@ final class PricesViewController: BaseScreenViewController {
                     return cell
                 case .currency(_, let presenter):
                     let cell = tableView.dequeue(PricesTableViewCell.self, for: indexPath)
-                    cell.presenter = presenter
+                    cell.presenter = presenter()
                     return cell
                 }
             }

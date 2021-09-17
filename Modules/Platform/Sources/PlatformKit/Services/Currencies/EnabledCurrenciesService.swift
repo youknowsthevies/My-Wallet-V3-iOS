@@ -13,14 +13,16 @@ public protocol EnabledCurrenciesServiceAPI {
 
 final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
-    private let nonCustodialCryptoCurrencies: [CryptoCurrency] = [
-        .coin(.bitcoin),
-        .coin(.ethereum),
-        .coin(.bitcoinCash),
-        .coin(.stellar)
-    ].sorted()
+    private var nonCustodialCryptoCurrencies: [CryptoCurrency] {
+        [
+            .coin(.bitcoin),
+            .coin(.ethereum),
+            .coin(.bitcoinCash),
+            .coin(.stellar)
+        ]
+    }
 
-    private lazy var custodialCurrencies: [CryptoCurrency] = {
+    private var custodialCurrencies: [CryptoCurrency] {
         repository.custodialAssets
             .currencies
             .filter { !NonCustodialCoinCode.allCases.map(\.rawValue).contains($0.code) }
@@ -35,10 +37,29 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
                     return nil
                 }
             }
-    }()
+    }
+
+    private var erc20Currencies: [CryptoCurrency] {
+        guard internalFeatureFlagService.isEnabled(.loadAllERC20Tokens) else {
+            return []
+        }
+        return repository.erc20Assets
+            .currencies
+            .filter { !NonCustodialCoinCode.allCases.map(\.rawValue).contains($0.code) }
+            .compactMap {
+                switch $0 {
+                case let model as ERC20AssetModel:
+                    return .erc20(model)
+                default:
+                    return nil
+                }
+            }
+    }
 
     lazy var allEnabledCryptoCurrencies: [CryptoCurrency] = {
-        (nonCustodialCryptoCurrencies + custodialCurrencies).sorted()
+        (nonCustodialCryptoCurrencies + custodialCurrencies + erc20Currencies)
+            .unique
+            .sorted()
     }()
 
     lazy var allEnabledCurrencies: [CurrencyType] = {
@@ -55,11 +76,14 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
         [.USD]
     }
 
+    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let repository: SupportedAssetsRepositoryAPI
 
     init(
+        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
         repository: SupportedAssetsRepositoryAPI = resolve()
     ) {
+        self.internalFeatureFlagService = internalFeatureFlagService
         self.repository = repository
     }
 }

@@ -30,25 +30,23 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable new account SwiftUI picker.
     case newAccountPicker
 
+    /// Load All ERC20 Tokens.
+    case loadAllERC20Tokens
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .interestWithdrawAndDeposit:
-            return false
-        case .secureChannel:
-            return false
-        case .requestConsoleLogging:
-            return false
-        case .useTransactionsFlowToBuyCrypto:
-            return false
-        case .useTransactionsFlowToSellCrypto:
-            return false
-        case .disableGUIDLogin:
+        case .disableGUIDLogin,
+             .interestWithdrawAndDeposit,
+             .loadAllERC20Tokens,
+             .newAccountPicker,
+             .requestConsoleLogging,
+             .secureChannel,
+             .useTransactionsFlowToBuyCrypto,
+             .useTransactionsFlowToSellCrypto:
             return false
         case .splitDashboard:
             return true
-        case .newAccountPicker:
-            return false
         }
     }
 }
@@ -78,6 +76,8 @@ extension InternalFeature {
             return "Split Dashboard Screen"
         case .newAccountPicker:
             return "New SwiftUI Account Picker"
+        case .loadAllERC20Tokens:
+            return "Load All ERC20 Tokens"
         }
     }
 }

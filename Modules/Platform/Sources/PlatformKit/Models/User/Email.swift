@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public struct Email: Decodable {
+public struct Email: Decodable, Equatable {
     public let address: String
     public let verified: Bool
 

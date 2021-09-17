@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Combine
 @testable import EthereumKit
 import PlatformKit
 import RxRelay
@@ -15,6 +16,7 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI,
     MnemonicAccessAPI,
     PasswordAccessAPI
 {
+
     func update(accountIndex: Int, label: String) -> Completable {
         .empty()
     }
@@ -89,8 +91,8 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI,
 
     // MARK: - EthereumWalletAccountBridgeAPI
 
-    var wallets: Single<[EthereumWalletAccount]> {
-        Single.just([])
+    var wallets: AnyPublisher<[EthereumWalletAccount], Error> {
+        .just([])
     }
 
     func save(keyPair: EthereumKeyPair, label: String) -> Completable {

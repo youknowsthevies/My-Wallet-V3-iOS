@@ -214,7 +214,7 @@ public class Router: Routing {
 
         // step 1: check KYC status.
         return kycService
-            .fetchTiersPublisher()
+            .fetchTiers()
             .receive(on: DispatchQueue.main)
             .mapError { _ in RouterError.kycStepFailed }
             .flatMap { [routeToKYC] userTiers -> AnyPublisher<FlowResult, RouterError> in

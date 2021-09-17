@@ -102,4 +102,14 @@ public struct ERC20AssetModel: AssetModel, Hashable {
             sortIndex: sortIndex
         )
     }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(code)
+        hasher.combine(kind)
+    }
+
+    public static func == (lhs: ERC20AssetModel, rhs: ERC20AssetModel) -> Bool {
+        lhs.code == rhs.code
+            && lhs.kind == rhs.kind
+    }
 }

@@ -12,6 +12,7 @@ final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI 
     private var isTier2Approved: Single<Bool> {
         kycTiersService
             .tiers
+            .asSingle()
             .map(\.isTier2Approved)
             .catchErrorJustReturn(false)
     }

@@ -112,6 +112,7 @@ final class KYCTierUpdatePollingService: KYCTierUpdatePollingServiceAPI {
                 self
                     .tiersService
                     .fetchTiers()
+                    .asSingle()
                     .map { $0.tierAccountStatus(for: desiredTier) }
                     .map(weak: self) { (self, status) in
                         try self.checkForTimeout(status: status)

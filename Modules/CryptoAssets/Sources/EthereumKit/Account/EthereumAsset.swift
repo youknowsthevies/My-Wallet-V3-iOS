@@ -14,17 +14,7 @@ final class EthereumAsset: CryptoAsset {
     let asset: CryptoCurrency = .coin(.ethereum)
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        repository
-            .defaultAccountPublisher
-            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
-            .map { account -> SingleAccount in
-                EthereumCryptoAccount(
-                    publicKey: account.publicKey,
-                    label: account.label,
-                    hdAccountIndex: account.index
-                )
-            }
-            .eraseToAnyPublisher()
+        repository.defaultSingleAccount
     }
 
     var canTransactToCustodial: AnyPublisher<Bool, Never> {
@@ -38,8 +28,8 @@ final class EthereumAsset: CryptoAsset {
             asset: asset,
             errorRecorder: errorRecorder,
             kycTiersService: kycTiersService,
-            defaultAccountProvider: { [defaultAccount] in
-                defaultAccount
+            defaultAccountProvider: { [repository] in
+                repository.defaultSingleAccount
             },
             exchangeAccountsProvider: exchangeAccountProvider,
             addressFactory: addressFactory
@@ -87,5 +77,21 @@ final class EthereumAsset: CryptoAsset {
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
         cryptoAssetRepository.parse(address: address)
+    }
+}
+
+extension EthereumWalletAccountRepositoryAPI {
+
+    fileprivate var defaultSingleAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
+        defaultAccount
+            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
+            .map { account -> SingleAccount in
+                EthereumCryptoAccount(
+                    publicKey: account.publicKey,
+                    label: account.label,
+                    hdAccountIndex: account.index
+                )
+            }
+            .eraseToAnyPublisher()
     }
 }

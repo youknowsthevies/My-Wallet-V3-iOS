@@ -13,34 +13,49 @@ public protocol TradingBalanceServiceAPI: AnyObject {
 
 class TradingBalanceService: TradingBalanceServiceAPI {
 
+    private struct Key: Hashable {}
+
     // MARK: - Properties
 
     var balances: Single<CustodialAccountBalanceStates> {
-        cachedValue
-            .valueSingle
+        cachedValue.get(key: Key())
+            .asSingle()
             .catchErrorJustReturn(.absent)
     }
 
     // MARK: - Private Properties
 
     private let client: TradingBalanceClientAPI
-    private let cachedValue: CachedValue<CustodialAccountBalanceStates>
+    private let cachedValue: CachedValueNew<
+        Key,
+        CustodialAccountBalanceStates,
+        Error
+    >
 
     // MARK: - Setup
 
     init(client: TradingBalanceClientAPI = resolve()) {
         self.client = client
-        cachedValue = CachedValue(configuration: .periodic(90))
-        cachedValue.setFetch(weak: self) { (self) in
-            self.client.balance
-                .asSingle()
-                .map { response in
-                    guard let response = response else {
-                        return .absent
+
+        let cache: AnyCache<Key, CustodialAccountBalanceStates> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 90)
+        ).eraseToAnyCache()
+
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { [client] _ in
+                client
+                    .balance
+                    .map { response in
+                        guard let response = response else {
+                            return .absent
+                        }
+                        return CustodialAccountBalanceStates(response: response)
                     }
-                    return CustodialAccountBalanceStates(response: response)
-                }
-        }
+                    .eraseError()
+            }
+        )
     }
 
     // MARK: - Methods
@@ -53,6 +68,9 @@ class TradingBalanceService: TradingBalanceServiceAPI {
     }
 
     func fetchBalances() -> Single<CustodialAccountBalanceStates> {
-        cachedValue.fetchValue
+        cachedValue
+            .get(key: Key(), forceFetch: true)
+            .asSingle()
+            .catchErrorJustReturn(.absent)
     }
 }

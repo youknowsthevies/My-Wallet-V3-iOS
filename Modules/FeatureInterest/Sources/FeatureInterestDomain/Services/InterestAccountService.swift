@@ -102,7 +102,7 @@ final class InterestAccountService: InterestAccountServiceAPI {
     private func fetchBalancesResponse() -> Single<InterestAccountBalances> {
         Single
             .zip(
-                kycTiersService.tiers.map(\.isTier2Approved),
+                kycTiersService.tiers.asSingle().map(\.isTier2Approved),
                 fiatCurrencyService.fiatCurrency
             )
             .flatMap(weak: self) { (self, values) -> Single<InterestAccountBalances?> in

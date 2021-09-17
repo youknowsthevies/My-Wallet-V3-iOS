@@ -21,23 +21,7 @@ final class ERC20Asset: CryptoAsset {
     // MARK: - Private properties
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        walletAccountBridge.wallets
-            .asPublisher()
-            .map(\.first)
-            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
-            .flatMap { wallet -> AnyPublisher<EthereumWalletAccount, CryptoAssetError> in
-                guard let wallet = wallet else {
-                    return .failure(.noDefaultAccount)
-                }
-                return .just(wallet)
-            }
-            .map { [erc20Token] wallet -> SingleAccount in
-                ERC20CryptoAccount(
-                    publicKey: wallet.publicKey,
-                    erc20Token: erc20Token
-                )
-            }
-            .eraseToAnyPublisher()
+        walletAccountBridge.defaultAccount(erc20Token: erc20Token)
     }
 
     // MARK: - Private properties
@@ -47,8 +31,8 @@ final class ERC20Asset: CryptoAsset {
             asset: asset,
             errorRecorder: errorRecorder,
             kycTiersService: kycTiersService,
-            defaultAccountProvider: { [defaultAccount] in
-                defaultAccount
+            defaultAccountProvider: { [walletAccountBridge, erc20Token] in
+                walletAccountBridge.defaultAccount(erc20Token: erc20Token)
             },
             exchangeAccountsProvider: exchangeAccountProvider,
             addressFactory: addressFactory
@@ -93,5 +77,27 @@ final class ERC20Asset: CryptoAsset {
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
         cryptoAssetRepository.parse(address: address)
+    }
+}
+
+extension EthereumWalletAccountBridgeAPI {
+
+    fileprivate func defaultAccount(erc20Token: ERC20AssetModel) -> AnyPublisher<SingleAccount, CryptoAssetError> {
+        wallets
+            .map(\.first)
+            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
+            .flatMap { wallet -> AnyPublisher<EthereumWalletAccount, CryptoAssetError> in
+                guard let wallet = wallet else {
+                    return .failure(.noDefaultAccount)
+                }
+                return .just(wallet)
+            }
+            .map { wallet -> SingleAccount in
+                ERC20CryptoAccount(
+                    publicKey: wallet.publicKey,
+                    erc20Token: erc20Token
+                )
+            }
+            .eraseToAnyPublisher()
     }
 }

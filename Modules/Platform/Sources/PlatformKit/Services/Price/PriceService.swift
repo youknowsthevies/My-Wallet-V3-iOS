@@ -78,6 +78,7 @@ final class PriceService: PriceServiceAPI {
 
     private let repository: PriceRepositoryAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let scheduler: DispatchQueue
 
     // MARK: - Setup
 
@@ -88,8 +89,10 @@ final class PriceService: PriceServiceAPI {
     ///   - enabledCurrenciesService: An enabled currencies service.
     init(
         repository: PriceRepositoryAPI = resolve(),
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        scheduler: DispatchQueue = DispatchQueue(label: "PriceService", qos: .default)
     ) {
+        self.scheduler = scheduler
         self.repository = repository
         self.enabledCurrenciesService = enabledCurrenciesService
     }
@@ -122,10 +125,6 @@ final class PriceService: PriceServiceAPI {
         price(of: base, in: quote, at: .now)
     }
 
-    private func allBases(for quote: Currency) -> [Currency] {
-        enabledCurrenciesService.allEnabledCurrencies.filter { $0.code != quote.code }
-    }
-
     func price(
         of base: Currency,
         in quote: Currency,
@@ -143,11 +142,25 @@ final class PriceService: PriceServiceAPI {
                 )
             )
         }
-        let allBases: [Currency] = time.isSpecificDate
-            ? [base] : allBases(for: quote)
-
-        return repository
-            .prices(of: allBases, in: quote, at: time)
+        return AnyPublisher<[Currency], Never>
+            .create { [enabledCurrenciesService] subscriber in
+                if time.isSpecificDate {
+                    subscriber.send([base])
+                } else {
+                    subscriber.send(
+                        enabledCurrenciesService
+                            .allEnabledCurrencies
+                            .filter { $0.code != quote.code }
+                    )
+                }
+                subscriber.send(completion: .finished)
+                return AnyCancellable {}
+            }
+            .subscribe(on: scheduler)
+            .receive(on: scheduler)
+            .flatMap { [repository] bases in
+                repository.prices(of: bases, in: quote, at: time)
+            }
             .mapError(PriceServiceError.networkError)
             .map { prices in
                 // Get price of pair.

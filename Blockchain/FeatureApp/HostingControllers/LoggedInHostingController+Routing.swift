@@ -113,7 +113,7 @@ extension LoggedInHostingController {
 
     private func showCustomerChatSupportIfSupported() {
         tiersService
-            .fetchTiersPublisher()
+            .fetchTiers()
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 switch completion {

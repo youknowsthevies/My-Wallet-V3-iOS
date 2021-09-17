@@ -21,7 +21,7 @@ public final class AssetPriceViewDailyInteractor: AssetPriceViewInteracting {
         Observable
             .combineLatest(
                 fiatCurrencyService.fiatCurrencyObservable,
-                refreshRelay
+                refreshRelay.startWith(())
             )
             .map(\.0)
             .flatMapLatest(weak: self) { (self, fiatCurrency) in

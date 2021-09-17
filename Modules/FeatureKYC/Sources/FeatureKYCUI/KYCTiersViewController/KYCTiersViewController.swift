@@ -324,7 +324,12 @@ extension KYCTiersViewController {
                     .optional()
                     .catchErrorJustReturn(nil)
 
-                return Single.zip(tradeLimits, tiersService.tiers, .just(fiatCurrency))
+                return Single
+                    .zip(
+                        tradeLimits,
+                        tiersService.tiers.asSingle(),
+                        .just(fiatCurrency)
+                    )
             }
             .map { tradeLimits, tiers, fiatCurrency -> (FiatValue, KYC.UserTiers) in
                 guard tiers.tierAccountStatus(for: .tier1).isApproved else {

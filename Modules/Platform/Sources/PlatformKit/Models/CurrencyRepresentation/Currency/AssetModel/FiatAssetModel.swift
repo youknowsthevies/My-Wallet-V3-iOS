@@ -27,4 +27,14 @@ struct FiatAssetModel: AssetModel, Hashable {
         precision = assetResponse.precision
         products = assetResponse.products.compactMap(AssetModelProduct.init)
     }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(code)
+        hasher.combine(kind)
+    }
+
+    static func == (lhs: FiatAssetModel, rhs: FiatAssetModel) -> Bool {
+        lhs.code == rhs.code
+            && lhs.kind == rhs.kind
+    }
 }

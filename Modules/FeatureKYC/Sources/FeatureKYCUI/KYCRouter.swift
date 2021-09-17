@@ -341,6 +341,7 @@ final class KYCRouter: KYCRouterAPI {
         /// Sometimes we receive an `INTERNAL_SERVER_ERROR` if we refresh this
         /// immediately after submitting all KYC data. So, we apply a delay here.
         tiersService.tiers
+            .asSingle()
             .handleLoaderForLifecycle(loader: loadingViewPresenter)
             .observeOn(MainScheduler.instance)
             .subscribe(
