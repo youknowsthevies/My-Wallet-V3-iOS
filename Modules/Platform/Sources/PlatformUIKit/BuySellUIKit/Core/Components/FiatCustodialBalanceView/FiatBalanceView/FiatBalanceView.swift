@@ -67,9 +67,7 @@ public final class FiatBalanceView: UIView {
         addSubview(stackView)
         stackView.axis = .vertical
         stackView.fillSuperview()
-        stackView.distribution = .fillProportionally
-        quoteLabel.horizontalContentCompressionResistancePriority = .fittingSizeLevel
-        quoteLabel.horizontalContentHuggingPriority = .fittingSizeLevel
+        stackView.distribution = .fillEqually
         quoteLabel.adjustsFontSizeToFitWidth = true
         quoteLabel.minimumScaleFactor = 0.4
 
