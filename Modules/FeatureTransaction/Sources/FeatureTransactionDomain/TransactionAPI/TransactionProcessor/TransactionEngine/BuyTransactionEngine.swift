@@ -23,7 +23,7 @@ final class BuyTransactionEngine: TransactionEngine {
             .map { quote in
                 TransactionMoneyValuePairs(
                     source: quote,
-                    destination: quote.inverseQuote
+                    destination: quote.inverseExchangeRate
                 )
             }
     }
@@ -73,8 +73,8 @@ final class BuyTransactionEngine: TransactionEngine {
         transactionExchangeRatePair.asSingle()
             .flatMap { [sourceAccount] moneyPair in
 
-                let cryptoValue = pendingTransaction.amount.convert(
-                    using: moneyPair.inverseQuote.quote
+                let cryptoValue = try pendingTransaction.amount.convert(
+                    using: moneyPair.inverseExchangeRate.quote
                 ).cryptoValue!
 
                 var confirmations: [TransactionConfirmation] = [

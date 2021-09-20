@@ -68,3 +68,40 @@ extension BuySellActivityItemEvent: Equatable {
             lhs.status == rhs.status
     }
 }
+
+extension BuySellActivityItemEvent {
+
+    /// Creates a buy sell activity item event.
+    ///
+    /// Some sell activities are retrieved as swaps from a crypto currency to a fiat currency, and they should be mapped using this initializer.
+    ///
+    /// - Parameter swapActivityItemEvent: A swap activity item event.
+    public init(swapActivityItemEvent: SwapActivityItemEvent) {
+        isBuy = false
+        creationDate = swapActivityItemEvent.date
+        identifier = swapActivityItemEvent.identifier
+        inputValue = swapActivityItemEvent.amounts.withdrawal
+        outputValue = swapActivityItemEvent.amounts.deposit
+        fee = swapActivityItemEvent.amounts.withdrawalFee
+        paymentMethod = .funds
+
+        switch swapActivityItemEvent.status {
+        case .complete:
+            status = .finished
+        case .delayed:
+            status = .pending
+        case .expired:
+            status = .expired
+        case .failed:
+            status = .failed
+        case .inProgress:
+            status = .pending
+        case .none:
+            status = .pending
+        case .pendingRefund:
+            status = .pending
+        case .refunded:
+            status = .cancelled
+        }
+    }
+}

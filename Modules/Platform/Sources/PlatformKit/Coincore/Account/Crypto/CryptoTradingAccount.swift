@@ -131,9 +131,17 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal]).catchErrorJustReturn([])
             )
             .map { buySellActivity, ordersActivity, swapActivity -> [ActivityItemEvent] in
-                buySellActivity.map(ActivityItemEvent.buySell)
+                let swapAndSellActivityItemsEvents: [ActivityItemEvent] = swapActivity
+                    .map { item in
+                        if item.pair.outputCurrencyType.isFiatCurrency {
+                            return .buySell(.init(swapActivityItemEvent: item))
+                        }
+                        return .swap(item)
+                    }
+
+                return buySellActivity.map(ActivityItemEvent.buySell)
                     + ordersActivity.map(ActivityItemEvent.crypto)
-                    + swapActivity.map(ActivityItemEvent.swap)
+                    + swapAndSellActivityItemsEvents
             }
     }
 

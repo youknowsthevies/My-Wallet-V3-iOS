@@ -61,5 +61,11 @@ extension CryptoNonCustodialAccount {
             }
             return .swap(swap)
         }
+        .map { event in
+            if case .swap(let swapEvent) = event, swapEvent.pair.outputCurrencyType.isFiatCurrency {
+                return .buySell(.init(swapActivityItemEvent: swapEvent))
+            }
+            return event
+        }
     }
 }

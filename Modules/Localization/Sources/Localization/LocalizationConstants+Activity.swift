@@ -45,7 +45,7 @@ extension LocalizationConstants.Activity.MainScreen {
         public static let buy = NSLocalizedString("Bought", comment: "Bought")
         public static let swap = NSLocalizedString("Swap", comment: "Swap")
         public static let receive = NSLocalizedString("Receive", comment: "Receive")
-        public static let sell = NSLocalizedString("Sell", comment: "Sell")
+        public static let sell = NSLocalizedString("Sold", comment: "Sold")
     }
 }
 
@@ -73,7 +73,7 @@ extension LocalizationConstants.Activity.Details {
 
     public enum Title {
         public static let buy = NSLocalizedString("Bought", comment: "Bought")
-        public static let sell = NSLocalizedString("Sell", comment: "Sell")
+        public static let sell = NSLocalizedString("Sold", comment: "Sold")
         public static let gas = NSLocalizedString("Gas", comment: "'Gas' title")
         public static let receive = NSLocalizedString("Receive", comment: "'Receive' title")
         public static let send = NSLocalizedString("Send", comment: "'Send' title")
