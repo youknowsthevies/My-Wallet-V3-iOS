@@ -97,29 +97,17 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             }
     }
 
-    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
-        let saveMemo = Completable.create { completable in
-            self.wallet?.setEthereumMemo(for: transactionHash, memo: memo)
-            completable(.completed)
-            return Disposables.create()
-        }
-        return reactiveWallet
-            .waitUntilInitialized
-            .flatMap { saveMemo.asObservable() }
-            .asCompletable()
-    }
-
-    func memo(for transactionHash: String) -> Single<String?> {
+    func note(for transactionHash: String) -> Single<String?> {
         Single<String?>
             .create(weak: self) { (self, observer) -> Disposable in
                 guard let wallet = self.wallet else {
                     observer(.error(WalletError.notInitialized))
                     return Disposables.create()
                 }
-                wallet.getEthereumMemo(
+                wallet.getEthereumNote(
                     for: transactionHash,
-                    success: { memo in
-                        observer(.success(memo))
+                    success: { note in
+                        observer(.success(note))
                     },
                     error: { _ in
                         observer(.error(WalletError.notInitialized))
@@ -127,6 +115,18 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 )
                 return Disposables.create()
             }
+    }
+
+    func updateNote(for transactionHash: String, note: String?) -> Completable {
+        let setNote = Completable.create { completable in
+            self.wallet?.setEthereumNote(for: transactionHash, note: note)
+            completable(.completed)
+            return Disposables.create()
+        }
+        return reactiveWallet
+            .waitUntilInitialized
+            .flatMap { setNote.asObservable() }
+            .asCompletable()
     }
 
     var name: Single<String> {

@@ -25,12 +25,12 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI,
         balanceValue
     }
 
-    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
-        .empty()
+    func note(for transactionHash: String) -> Single<String?> {
+        .just(nil)
     }
 
-    func memo(for transactionHash: String) -> Single<String?> {
-        .just(nil)
+    func updateNote(for transactionHash: String, note: String?) -> Completable {
+        .empty()
     }
 
     var historyValue = Single.just(())

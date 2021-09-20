@@ -30,14 +30,14 @@ final class EthereumActivityDetailsInteractor {
 
     // MARK: - Public Functions
 
-    func updateMemo(for identifier: String, to memo: String?) -> Completable {
-        wallet.updateMemo(for: identifier, memo: memo)
+    func updateNote(for identifier: String, to note: String?) -> Completable {
+        wallet.updateNote(for: identifier, note: note)
     }
 
     func details(identifier: String, createdAt: Date) -> Observable<EthereumActivityDetailsViewModel> {
         let transaction = detailsService
             .details(for: identifier)
-        let memo = self.memo(for: identifier)
+        let note = self.note(for: identifier)
             .catchErrorJustReturn(nil)
         let price = self.price(at: createdAt)
             .optional()
@@ -47,15 +47,15 @@ final class EthereumActivityDetailsInteractor {
             .combineLatest(
                 transaction,
                 price.asObservable(),
-                memo.asObservable()
+                note.asObservable()
             )
-            .map { EthereumActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue, memo: $2) }
+            .map { EthereumActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue, note: $2) }
     }
 
     // MARK: - Private Functions
 
-    private func memo(for identifier: String) -> Single<String?> {
-        wallet.memo(for: identifier)
+    private func note(for identifier: String) -> Single<String?> {
+        wallet.note(for: identifier)
     }
 
     private func price(at date: Date) -> Single<PriceQuoteAtTime> {

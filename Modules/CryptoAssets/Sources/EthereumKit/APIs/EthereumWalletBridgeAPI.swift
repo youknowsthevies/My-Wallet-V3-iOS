@@ -19,8 +19,9 @@ public protocol EthereumWalletBridgeAPI: AnyObject {
     var address: Single<EthereumAddress> { get }
     var account: Single<EthereumAssetAccount> { get }
 
-    func memo(for transactionHash: String) -> Single<String?>
-    func updateMemo(for transactionHash: String, memo: String?) -> Completable
+    func note(for transactionHash: String) -> Single<String?>
+
+    func updateNote(for transactionHash: String, note: String?) -> Completable
 
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished>
 

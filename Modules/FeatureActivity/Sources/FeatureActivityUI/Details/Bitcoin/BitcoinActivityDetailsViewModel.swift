@@ -24,15 +24,14 @@ struct BitcoinActivityDetailsViewModel: Equatable {
 
     let confirmation: Confirmation
     let dateCreated: String
-    let from: String
-    let memo: String
     let to: String
+    let from: String
     let cryptoAmount: String
-    let amount: String
     let value: String
     let fee: String
+    let note: String
 
-    init(details: BitcoinActivityItemEventDetails, price: FiatValue?, memo: String?) {
+    init(details: BitcoinActivityItemEventDetails, price: FiatValue?, note: String?) {
         confirmation = Confirmation(
             needConfirmation: details.confirmation.needConfirmation,
             // swiftlint:disable line_length
@@ -41,19 +40,19 @@ struct BitcoinActivityDetailsViewModel: Equatable {
             statusBadge: BitcoinActivityDetailsViewModel.statusBadge(needConfirmation: details.confirmation.needConfirmation)
         )
         dateCreated = DateFormatter.elegantDateFormatter.string(from: details.createdAt)
-        from = details.from.publicKey
         to = details.to.publicKey
-        self.memo = memo ?? ""
+        from = details.from.publicKey
 
-        cryptoAmount = details.amount.toDisplayString(includeSymbol: true)
+        cryptoAmount = details.amount.displayString
         if let price = price {
-            amount = "\(cryptoAmount) at \(price.displayString)"
             value = details.amount.convertToFiatValue(exchangeRate: price).displayString
+            fee = "\(details.fee.displayString) / \(details.fee.convertToFiatValue(exchangeRate: price).displayString)"
         } else {
-            amount = cryptoAmount
             value = ""
+            fee = details.fee.displayString
         }
-        fee = details.fee.toDisplayString(includeSymbol: true)
+
+        self.note = note ?? ""
     }
 
     private static func statusBadge(needConfirmation: Bool) -> BadgeAsset.Value.Interaction.BadgeItem {

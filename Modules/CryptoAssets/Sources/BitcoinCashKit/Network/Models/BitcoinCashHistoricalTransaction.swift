@@ -75,7 +75,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
     public let transactionHash: String
     public let createdAt: Date
     public let fee: CryptoValue?
-    public let memo: String?
+    public let note: String?
     public let inputs: [Input]
     public let outputs: [Output]
     public let blockHeight: Int?
@@ -128,7 +128,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
         toAddress = BitcoinCashAssetAddress(publicKey: destinationOutput.address)
         fromAddress = BitcoinCashAssetAddress(publicKey: fromOutput.address)
 
-        memo = nil
+        note = nil
     }
 
     // MARK: - BitcoinChainHistoricalTransaction

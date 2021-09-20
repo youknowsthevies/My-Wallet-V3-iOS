@@ -54,6 +54,34 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
             .map { $0.replacingOccurrences(of: "bitcoincash:", with: "") }
     }
 
+    func note(for transactionHash: String) -> Single<String?> {
+        Single<String?>
+            .create(weak: self) { (self, observer) -> Disposable in
+                self.wallet.getBitcoinCashNote(
+                    for: transactionHash,
+                    success: { note in
+                        observer(.success(note))
+                    },
+                    error: { _ in
+                        observer(.error(WalletError.notInitialized))
+                    }
+                )
+                return Disposables.create()
+            }
+    }
+
+    func updateNote(for transactionHash: String, note: String?) -> Completable {
+        let setNote = Completable.create { completable in
+            self.wallet.setBitcoinCashNote(for: transactionHash, note: note)
+            completable(.completed)
+            return Disposables.create()
+        }
+        return reactiveWallet
+            .waitUntilInitialized
+            .flatMap { setNote.asObservable() }
+            .asCompletable()
+    }
+
     func update(accountIndex: Int, label: String) -> Completable {
         reactiveWallet
             .waitUntilInitializedSingle

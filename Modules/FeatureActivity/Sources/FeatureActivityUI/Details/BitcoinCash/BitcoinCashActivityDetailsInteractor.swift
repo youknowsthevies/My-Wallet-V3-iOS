@@ -9,6 +9,7 @@ final class BitcoinCashActivityDetailsInteractor {
 
     // MARK: - Private Properties
 
+    private let wallet: BitcoinCashWalletBridgeAPI
     private let fiatCurrencySettings: FiatCurrencySettingsServiceAPI
     private let priceService: PriceServiceAPI
     private let detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails>
@@ -16,10 +17,12 @@ final class BitcoinCashActivityDetailsInteractor {
     // MARK: - Init
 
     init(
+        wallet: BitcoinCashWalletBridgeAPI = resolve(),
         fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> = resolve()
     ) {
+        self.wallet = wallet
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
@@ -27,10 +30,19 @@ final class BitcoinCashActivityDetailsInteractor {
 
     // MARK: - Public Functions
 
+    private func note(for identifier: String) -> Single<String?> {
+        wallet.note(for: identifier)
+    }
+
+    func updateNote(for identifier: String, to note: String?) -> Completable {
+        wallet.updateNote(for: identifier, note: note)
+    }
+
     func details(identifier: String, createdAt: Date) -> Observable<BitcoinCashActivityDetailsViewModel> {
         let transaction = detailsService
             .details(for: identifier)
-
+        let note = self.note(for: identifier)
+            .catchErrorJustReturn(nil)
         let price = self.price(at: createdAt)
             .optional()
             .catchErrorJustReturn(nil)
@@ -38,9 +50,10 @@ final class BitcoinCashActivityDetailsInteractor {
         return Observable
             .combineLatest(
                 transaction,
-                price.asObservable()
+                price.asObservable(),
+                note.asObservable()
             )
-            .map { BitcoinCashActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue) }
+            .map { BitcoinCashActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue, note: $2) }
     }
 
     // MARK: - Private Functions

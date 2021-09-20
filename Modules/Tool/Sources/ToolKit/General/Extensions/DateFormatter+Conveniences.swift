@@ -39,9 +39,8 @@ extension DateFormatter {
 
     public static var elegantDateFormatter: DateFormatter {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM dd, yyyy @ h:mm a"
-        formatter.amSymbol = "AM"
-        formatter.pmSymbol = "PM"
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .medium
         formatter.isLenient = true
         return formatter
     }

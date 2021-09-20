@@ -23,15 +23,15 @@ protocol LegacyBitcoinWalletProtocol: AnyObject {
         error: @escaping (String) -> Void
     )
 
-    func getBitcoinMemo(
+    func getBitcoinNote(
         for transaction: String,
         success: @escaping (String?) -> Void,
         error: @escaping (String) -> Void
     )
 
-    func saveBitcoinMemo(
+    func setBitcoinNote(
         for transaction: String,
-        memo: String?
+        note: String?
     )
 
     func getBitcoinReceiveAddress(
@@ -115,20 +115,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         return .success(result)
     }
 
-    func saveBitcoinMemo(for transaction: String, memo: String?) {
-        guard isInitialized() else {
-            return
-        }
-        let function: String
-        if let memo = memo, !memo.isEmpty {
-            function = "MyWallet.wallet.setNote(\"\(transaction.escapedForJS())\", \"\(memo.escapedForJS())\")"
-        } else {
-            function = "MyWallet.wallet.deleteNote(\"\(transaction.escapedForJS())\")"
-        }
-        context.evaluateScriptCheckIsOnMainQueue(function)
-    }
-
-    func getBitcoinMemo(
+    func getBitcoinNote(
         for transaction: String,
         success: @escaping (String?) -> Void,
         error: @escaping (String) -> Void
@@ -148,6 +135,19 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             return
         }
         success(result)
+    }
+
+    func setBitcoinNote(for transaction: String, note: String?) {
+        guard isInitialized() else {
+            return
+        }
+        let function: String
+        if let note = note, !note.isEmpty {
+            function = "MyWallet.wallet.setNote(\"\(transaction.escapedForJS())\", \"\(note.escapedForJS())\")"
+        } else {
+            function = "MyWallet.wallet.deleteNote(\"\(transaction.escapedForJS())\")"
+        }
+        context.evaluateScriptCheckIsOnMainQueue(function)
     }
 
     func bitcoinDefaultWalletIndex(

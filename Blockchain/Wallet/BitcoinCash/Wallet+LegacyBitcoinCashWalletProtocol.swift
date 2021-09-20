@@ -21,6 +21,14 @@ protocol LegacyBitcoinCashWalletProtocol: AnyObject {
 
     func getBitcoinCashReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError>
 
+    func getBitcoinCashNote(
+        for transaction: String,
+        success: @escaping (String?) -> Void,
+        error: @escaping (String) -> Void
+    )
+
+    func setBitcoinCashNote(for transaction: String, note: String?)
+
     func validateBitcoinCash(address: String) -> Bool
 }
 
@@ -50,6 +58,38 @@ extension Wallet: LegacyBitcoinCashWalletProtocol {
             return .failure(.jsValueEmptyString)
         }
         return .success(result)
+    }
+
+    public func getBitcoinCashNote(
+        for transaction: String,
+        success: @escaping (String?) -> Void,
+        error: @escaping (String) -> Void
+    ) {
+        guard isInitialized() else {
+            error("Wallet is not yet initialized.")
+            return
+        }
+        let function: String = "MyWallet.wallet.bch.getNote(\"\(transaction.escapedForJS())\")"
+        guard
+            let result: String = context.evaluateScriptCheckIsOnMainQueue(function)?.toString(),
+            !result.isEmpty,
+            result != "null",
+            result != "undefined"
+        else {
+            success(nil)
+            return
+        }
+        success(result)
+    }
+
+    public func setBitcoinCashNote(for transaction: String, note: String?) {
+        guard isInitialized() else {
+            return
+        }
+        let note: String = note?.escapedForJS() ?? ""
+        let transaction = transaction.escapedForJS()
+        let function: String = "MyWallet.wallet.bch.setNote(\"\(transaction)\", \"\(note)\")"
+        context.evaluateScriptCheckIsOnMainQueue(function)
     }
 
     var hasBitcoinCashAccount: Bool {
