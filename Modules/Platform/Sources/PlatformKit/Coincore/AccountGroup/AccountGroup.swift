@@ -61,10 +61,11 @@ extension AccountGroup {
         accounts
             .map { account in
                 account.fiatBalance(fiatCurrency: fiatCurrency, at: time)
+                    .replaceError(with: MoneyValue.zero(currency: fiatCurrency))
             }
-            .zip()
-            .tryMap { balances in
-                try balances.reduce(.zero(currency: fiatCurrency), +)
+            .zipMany()
+            .tryMap { balances -> MoneyValue in
+                try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
             }
             .eraseToAnyPublisher()
     }
@@ -75,7 +76,7 @@ extension AccountGroup {
                 account.balancePair(fiatCurrency: fiatCurrency, at: time)
                     .replaceError(with: .zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currencyType))
             }
-            .zip()
+            .zipMany()
             .tryMap { [currencyType] balancePairs in
                 try balancePairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType), +)
             }

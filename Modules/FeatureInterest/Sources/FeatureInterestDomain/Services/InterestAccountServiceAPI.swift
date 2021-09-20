@@ -6,11 +6,6 @@ import ToolKit
 
 public protocol InterestAccountServiceAPI: AnyObject, InterestAccountOverviewAPI {
 
-    /// Fetches the balances for all interest accounts.
-    /// - Parameter fetch: Value specifies whether to fetch from cache
-    /// or not.
-    func balances(fetch: Bool) -> Single<CustodialAccountBalanceStates>
-
     /// Fetches `InterestAccountBalanceDetails` for a given `CryptoCurrency`
     /// - Parameter currency: CryptoCurrency
     func fetchInterestAccountDetailsForCryptoCurrency(

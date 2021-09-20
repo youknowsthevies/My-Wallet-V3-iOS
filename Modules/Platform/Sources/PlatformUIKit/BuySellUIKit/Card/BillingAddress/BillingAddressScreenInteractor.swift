@@ -55,12 +55,13 @@ final class BillingAddressScreenInteractor: Interactor {
         super.didBecomeActive()
         disposeBag = DisposeBag()
 
-        userDataRepository.userSingle
-            .map(\.address)
+        userDataRepository.user
+            .map(\.address?.country)
+            .asSingle()
             .subscribe(
-                onSuccess: { [weak self] address in
-                    guard let address = address else { return }
-                    self?.countrySelectionService.set(country: address.country)
+                onSuccess: { [weak self] country in
+                    guard let country = country else { return }
+                    self?.countrySelectionService.set(country: country)
                 }
             )
             .disposed(by: disposeBag)

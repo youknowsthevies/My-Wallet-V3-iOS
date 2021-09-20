@@ -120,6 +120,6 @@ extension Money {
     }
 
     public var debugDescription: String {
-        "\(type(of: self)) \(code) \(amount)"
+        "\(type(of: self)) \(code) \(displayString)"
     }
 }

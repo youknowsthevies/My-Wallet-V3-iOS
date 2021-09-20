@@ -15,24 +15,24 @@ enum ExchangeLinkingAPIError: Error {
 
 final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
 
-    private let blockchainRepository: BlockchainDataRepository
-    private let clientAPI: ExchangeClientAPI
+    private let nabuUserService: NabuUserServiceAPI
+    private let client: ExchangeClientAPI
     private let coincore: CoincoreAPI
 
     init(
-        blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
+        nabuUserService: NabuUserServiceAPI = resolve(),
         client: ExchangeClientAPI = resolve(),
         coincore: CoincoreAPI = resolve()
     ) {
-        self.blockchainRepository = blockchainRepository
-        clientAPI = client
+        self.nabuUserService = nabuUserService
+        self.client = client
         self.coincore = coincore
     }
 
     var hasLinkedExchangeAccount: Single<Bool> {
-        blockchainRepository
-            .nabuUserSingle
+        nabuUserService.user
             .map(\.hasLinkedExchangeAccount)
+            .asSingle()
     }
 
     func syncDepositAddressesIfLinked() -> Completable {
@@ -63,7 +63,6 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
                                 .optional()
                                 .replaceError(with: nil)
                                 .eraseToAnyPublisher()
-                                .asObservable()
                                 .asSingle()
                         }
                 )
@@ -77,8 +76,8 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
             .map { receiveAddresses -> [CryptoReceiveAddress] in
                 receiveAddresses as? [CryptoReceiveAddress] ?? []
             }
-            .flatMapCompletable(weak: self) { (self, receiveAddresses) in
-                self.clientAPI.syncDepositAddress(accounts: receiveAddresses)
+            .flatMapCompletable { [client] receiveAddresses in
+                client.syncDepositAddress(accounts: receiveAddresses)
                     .asObservable()
                     .ignoreElements()
             }

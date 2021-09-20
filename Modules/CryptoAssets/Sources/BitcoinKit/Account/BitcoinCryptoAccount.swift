@@ -30,6 +30,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     var balance: Single<MoneyValue> {
         balanceService
             .balances(for: walletAccount.publicKeys.xpubs)
+            .asSingle()
             .moneyValue
     }
 

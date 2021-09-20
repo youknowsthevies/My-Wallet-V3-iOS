@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxCombine
 import RxRelay
@@ -22,8 +23,7 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
     // MARK: - Exposed Properties
 
     public var changeObservable: Observable<ValueCalculationState<PortfolioBalanceChange>> {
-        changeRelay
-            .asObservable()
+        changeRelay.asObservable()
     }
 
     // MARK: - Private Properties
@@ -35,23 +35,29 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
                 refreshRelay
             )
             .map(\.0)
-            .flatMap { [coincore] fiatCurrency in
-                Observable.zip(coincore.allAccounts.asObservable(), Observable.just(fiatCurrency))
-            }
-            .flatMapLatest(weak: self) { (self, data) in
-                self.fetch(accountGroup: data.0, fiatCurrency: data.1)
+            .flatMapLatest { [coincore] fiatCurrency in
+                Self.fetch(coincore: coincore, fiatCurrency: fiatCurrency)
+                    .asObservable()
                     .map { .value($0) }
                     .catchErrorJustReturn(.calculating)
-                    .asObservable()
             }
             .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: changeRelay)
             .disposed(by: disposeBag)
     }()
 
-    private func fetch(accountGroup: AccountGroup, fiatCurrency: FiatCurrency) -> Single<PortfolioBalanceChange> {
-        accountGroup.fiatBalance(fiatCurrency: fiatCurrency)
-            .zip(accountGroup.fiatBalance(fiatCurrency: fiatCurrency, at: .oneDay))
+    private static func fetch(
+        coincore: CoincoreAPI,
+        fiatCurrency: FiatCurrency
+    ) -> AnyPublisher<PortfolioBalanceChange, Error> {
+        coincore.allAccounts
+            .eraseError()
+            .flatMap { accountGroup in
+                accountGroup.fiatBalance(fiatCurrency: fiatCurrency)
+                    .zip(accountGroup.fiatBalance(fiatCurrency: fiatCurrency, at: .oneDay))
+                    .eraseToAnyPublisher()
+                    .eraseError()
+            }
             .tryMap { currentBalance, previousBalance in
                 let percentage: Decimal // in range [0...1]
                 let change = try currentBalance - previousBalance
@@ -72,7 +78,7 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
                     change: change
                 )
             }
-            .asSingle()
+            .eraseToAnyPublisher()
     }
 
     private let coincore: CoincoreAPI

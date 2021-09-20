@@ -125,6 +125,15 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
 
 extension CryptoCurrency {
 
+    func supports(product: AssetModelProduct) -> Bool {
+        switch self {
+        case .coin(let model):
+            return model.products.contains(product)
+        case .erc20(let model):
+            return model.products.contains(product)
+        }
+    }
+
     public static let maxDisplayPrecision: Int = 8
 
     public var name: String {

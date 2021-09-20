@@ -43,14 +43,14 @@ final class ERC20Asset: CryptoAsset {
     private let erc20Token: ERC20AssetModel
     private let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
-    private let walletAccountBridge: EthereumWalletAccountBridgeAPI
+    private let walletAccountBridge: EthereumWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
 
     // MARK: - Setup
 
     init(
         erc20Token: ERC20AssetModel,
-        walletAccountBridge: EthereumWalletAccountBridgeAPI = resolve(),
+        walletAccountBridge: EthereumWalletAccountRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
@@ -80,21 +80,14 @@ final class ERC20Asset: CryptoAsset {
     }
 }
 
-extension EthereumWalletAccountBridgeAPI {
+extension EthereumWalletAccountRepositoryAPI {
 
     fileprivate func defaultAccount(erc20Token: ERC20AssetModel) -> AnyPublisher<SingleAccount, CryptoAssetError> {
-        wallets
-            .map(\.first)
+        defaultAccount
             .mapError(CryptoAssetError.failedToLoadDefaultAccount)
-            .flatMap { wallet -> AnyPublisher<EthereumWalletAccount, CryptoAssetError> in
-                guard let wallet = wallet else {
-                    return .failure(.noDefaultAccount)
-                }
-                return .just(wallet)
-            }
-            .map { wallet -> SingleAccount in
+            .map { account in
                 ERC20CryptoAccount(
-                    publicKey: wallet.publicKey,
+                    publicKey: account.publicKey,
                     erc20Token: erc20Token
                 )
             }

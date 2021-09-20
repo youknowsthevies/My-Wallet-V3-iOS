@@ -13,7 +13,7 @@ final class AnalyticsUserPropertyInteractor {
     // MARK: - Properties
 
     private let coincore: CoincoreAPI
-    private let dataRepository: BlockchainDataRepository
+    private let nabuUserService: NabuUserServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let recorder: UserPropertyRecording
     private let tiersService: KYCTiersServiceAPI
@@ -24,14 +24,14 @@ final class AnalyticsUserPropertyInteractor {
 
     init(
         coincore: CoincoreAPI = resolve(),
-        dataRepository: BlockchainDataRepository = .shared,
+        nabuUserService: NabuUserServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         recorder: UserPropertyRecording = AnalyticsUserPropertyRecorder(),
         tiersService: KYCTiersServiceAPI = resolve(),
         walletRepository: WalletRepositoryAPI = resolve()
     ) {
         self.coincore = coincore
-        self.dataRepository = dataRepository
+        self.nabuUserService = nabuUserService
         self.fiatCurrencyService = fiatCurrencyService
         self.recorder = recorder
         self.tiersService = tiersService
@@ -64,7 +64,7 @@ final class AnalyticsUserPropertyInteractor {
         disposeBag = DisposeBag()
         Single
             .zip(
-                dataRepository.nabuUserSingle,
+                nabuUserService.user.asSingle(),
                 tiersService.tiers.asSingle(),
                 walletRepository.authenticatorType,
                 walletRepository.guid,

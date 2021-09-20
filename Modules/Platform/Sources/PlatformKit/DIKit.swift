@@ -121,7 +121,7 @@ extension DependencyContainer {
 
         single { EmailVerificationService() as EmailVerificationServiceAPI }
 
-        factory { SwapActivityService() as SwapActivityServiceAPI }
+        single { SwapActivityService() as SwapActivityServiceAPI }
 
         single { ExchangeAccountsProvider() as ExchangeAccountsProviderAPI }
 

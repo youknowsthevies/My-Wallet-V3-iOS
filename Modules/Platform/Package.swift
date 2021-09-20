@@ -94,7 +94,8 @@ let package = Package(
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
             ],
             resources: [
-                .copy("Services/Currencies/local-currencies-custodial.json")
+                .copy("Services/Currencies/local-currencies-custodial.json"),
+                .copy("Services/Currencies/local-currencies-erc20.json")
             ]
         ),
         .target(

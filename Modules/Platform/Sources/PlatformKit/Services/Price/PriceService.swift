@@ -157,7 +157,6 @@ final class PriceService: PriceServiceAPI {
                 return AnyCancellable {}
             }
             .subscribe(on: scheduler)
-            .receive(on: scheduler)
             .flatMap { [repository] bases in
                 repository.prices(of: bases, in: quote, at: time)
             }

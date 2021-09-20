@@ -21,12 +21,7 @@ extension DependencyContainer {
 
         single { EthereumAccountDetailsService() as EthereumAccountDetailsServiceAPI }
 
-        factory { EthereumWalletAccountRepository() }
-
-        factory { () -> EthereumWalletAccountRepositoryAPI in
-            let repository: EthereumWalletAccountRepository = DIKit.resolve()
-            return repository as EthereumWalletAccountRepositoryAPI
-        }
+        single { EthereumWalletAccountRepository() as EthereumWalletAccountRepositoryAPI }
 
         single { EthereumHistoricalTransactionService() as EthereumHistoricalTransactionServiceAPI }
 

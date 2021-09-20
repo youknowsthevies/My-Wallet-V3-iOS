@@ -2,7 +2,7 @@
 
 import DIKit
 
-struct CryptoExchangeAddressResponse: Decodable {
+struct CryptoExchangeAddressResponse: Decodable, Equatable {
 
     // MARK: - Types
 
@@ -14,7 +14,7 @@ struct CryptoExchangeAddressResponse: Decodable {
     }
 
     /// State of Exchange account linking
-    enum State: String {
+    enum State: String, Equatable {
         case pending = "PENDING"
         case active = "ACTIVE"
         case blocked = "BLOCKED"

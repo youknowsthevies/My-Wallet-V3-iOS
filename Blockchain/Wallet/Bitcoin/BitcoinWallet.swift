@@ -441,15 +441,6 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
 }
 
-extension BitcoinWallet: PasswordAccessAPI {
-    public var password: Maybe<String> {
-        guard let password = credentialsProvider.legacyPassword else {
-            return Maybe.empty()
-        }
-        return Maybe.just(password)
-    }
-}
-
 extension BitcoinWallet: MnemonicAccessAPI {
     var mnemonic: Maybe<Mnemonic> {
         guard let wallet = wallet else {

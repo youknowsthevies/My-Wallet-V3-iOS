@@ -7,6 +7,7 @@ import RxSwift
 import ToolKit
 
 public enum WalletAccountRepositoryError: Error {
+    case missingWallet
     case failedToFetchAccount(Error)
 }
 
@@ -17,35 +18,28 @@ public protocol EthereumWalletAccountRepositoryAPI {
 
 final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI, KeyPairProviderAPI {
 
+    // MARK: - Types
+
+    private struct Key: Hashable {}
+
     enum RepositoryError: Error {
         case failedToFetchAccount(Error)
     }
 
     typealias KeyPair = EthereumKeyPair
     typealias Account = EthereumWalletAccount
-    typealias Bridge = CompleteEthereumWalletBridgeAPI
 
     // MARK: - EthereumWalletAccountRepositoryAPI
 
     var defaultAccount: AnyPublisher<EthereumWalletAccount, WalletAccountRepositoryError> {
-        bridge.account
-            .map { assetAccount -> EthereumWalletAccount in
-                EthereumWalletAccount(
-                    index: assetAccount.walletIndex,
-                    publicKey: assetAccount.accountAddress,
-                    label: assetAccount.name,
-                    archived: false
-                )
-            }
-            .asPublisher()
-            .mapError(WalletAccountRepositoryError.failedToFetchAccount)
-            .eraseToAnyPublisher()
+        cachedValue.get(key: Key())
     }
 
     // MARK: - KeyPairProviderAPI
 
     func keyPair(with secondPassword: String?) -> Single<EthereumKeyPair> {
-        bridge.mnemonic(with: secondPassword)
+        mnemonicAccess
+            .mnemonic(with: secondPassword)
             .flatMap(weak: self) { (self, mnemonic) -> Single<KeyPair> in
                 self.deriver.derive(
                     input: EthereumKeyDerivationInput(
@@ -57,7 +51,8 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI,
     }
 
     var keyPair: Single<KeyPair> {
-        bridge.mnemonicPromptingIfNeeded
+        mnemonicAccess
+            .mnemonicPromptingIfNeeded
             .flatMap(weak: self) { (self, mnemonic) -> Single<KeyPair> in
                 self.deriver.derive(
                     input: EthereumKeyDerivationInput(
@@ -70,23 +65,59 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI,
 
     // MARK: - Private Properties
 
-    private let bridge: Bridge
+    private let mnemonicAccess: MnemonicAccessAPI
+    private let accountBridge: EthereumWalletAccountBridgeAPI
     private let deriver: AnyEthereumKeyPairDeriver
+    private let cachedValue: CachedValueNew<
+        Key,
+        EthereumWalletAccount,
+        WalletAccountRepositoryError
+    >
 
     // MARK: - Init
 
-    convenience init(with bridge: Bridge = resolve()) {
-        self.init(with: bridge, deriver: AnyEthereumKeyPairDeriver(deriver: EthereumKeyPairDeriver()))
+    convenience init(
+        mnemonicAccess: MnemonicAccessAPI = resolve(),
+        accountBridge: EthereumWalletAccountBridgeAPI = resolve()
+    ) {
+        self.init(
+            mnemonicAccess: mnemonicAccess,
+            accountBridge: accountBridge,
+            deriver: AnyEthereumKeyPairDeriver(deriver: EthereumKeyPairDeriver())
+        )
     }
 
-    init(with bridge: Bridge, deriver: AnyEthereumKeyPairDeriver) {
-        self.bridge = bridge
+    init(
+        mnemonicAccess: MnemonicAccessAPI,
+        accountBridge: EthereumWalletAccountBridgeAPI,
+        deriver: AnyEthereumKeyPairDeriver
+    ) {
+        self.mnemonicAccess = mnemonicAccess
+        self.accountBridge = accountBridge
         self.deriver = deriver
-    }
-}
 
-extension EthereumWalletAccount {
-    var isActive: Bool {
-        !archived
+        let cache: AnyCache<Key, EthereumWalletAccount> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PerpetualCacheRefreshControl()
+        ).eraseToAnyCache()
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { [accountBridge] _ in
+                accountBridge.wallets
+                    .eraseError()
+                    .map(\.first)
+                    .mapError(WalletAccountRepositoryError.failedToFetchAccount)
+                    .onNil(.missingWallet)
+                    .map { account in
+                        EthereumWalletAccount(
+                            index: account.index,
+                            publicKey: account.publicKey,
+                            label: account.label,
+                            archived: account.archived
+                        )
+                    }
+                    .eraseToAnyPublisher()
+            }
+        )
     }
 }

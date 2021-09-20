@@ -2,7 +2,8 @@
 
 @testable import EthereumKit
 @testable import EthereumKitMock
-@testable import PlatformKit
+import PlatformKit
+@testable import PlatformKitMock
 import RxSwift
 import RxTest
 import XCTest
@@ -12,7 +13,7 @@ class EthereumWalletAccountRepositoryTests: XCTestCase {
     var scheduler: TestScheduler!
     var disposeBag: DisposeBag!
 
-    var bridge: EthereumWalletBridgeMock!
+    var accountBridge: EthereumWalletAccountBridgeMock!
     var ethereumDeriver: EthereumKeyPairDeriverMock!
     var deriver: AnyEthereumKeyPairDeriver!
     var subject: EthereumWalletAccountRepository!
@@ -23,12 +24,13 @@ class EthereumWalletAccountRepositoryTests: XCTestCase {
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
 
-        bridge = EthereumWalletBridgeMock()
+        accountBridge = EthereumWalletAccountBridgeMock()
         ethereumDeriver = EthereumKeyPairDeriverMock()
         deriver = AnyEthereumKeyPairDeriver(deriver: ethereumDeriver)
 
         subject = EthereumWalletAccountRepository(
-            with: bridge,
+            mnemonicAccess: MnemonicAccessMock(),
+            accountBridge: accountBridge,
             deriver: deriver
         )
     }
@@ -37,7 +39,7 @@ class EthereumWalletAccountRepositoryTests: XCTestCase {
         scheduler = nil
         disposeBag = nil
 
-        bridge = nil
+        accountBridge = nil
         ethereumDeriver = nil
         deriver = nil
         subject = nil

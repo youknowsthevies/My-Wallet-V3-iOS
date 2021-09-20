@@ -52,7 +52,7 @@ final class Coincore: CoincoreAPI {
                     .map { asset in
                         asset.accountGroup(filter: .all)
                     }
-                    .zip()
+                    .zipMany()
             }
             .map { accountGroups -> [SingleAccount] in
                 accountGroups
@@ -108,7 +108,7 @@ final class Coincore: CoincoreAPI {
                 }
                 .eraseToAnyPublisher()
         )
-        return assetInitializers.zip()
+        return assetInitializers.zipMany()
             .mapToVoid()
             .ignoreOutput()
             .eraseToAnyPublisher()

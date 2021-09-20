@@ -373,38 +373,18 @@ extension DependencyContainer {
 
         // MARK: - BlockchainDataRepository
 
-        factory { BlockchainDataRepository.shared as DataRepositoryAPI }
+        factory { BlockchainDataRepository() as DataRepositoryAPI }
 
         // MARK: - Ethereum Wallet
 
-        factory { () -> EthereumWallet in
+        factory { () -> EthereumWalletBridgeAPI in
             let manager: WalletManager = DIKit.resolve()
             return manager.wallet.ethereum
         }
 
-        factory { () -> EthereumWalletBridgeAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
-
         factory { () -> EthereumWalletAccountBridgeAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
-
-        factory(tag: CryptoCurrency.coin(.ethereum)) { () -> MnemonicAccessAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
-
-        factory(tag: CryptoCurrency.coin(.ethereum)) { () -> PasswordAccessAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
-
-        factory { () -> CompleteEthereumWalletBridgeAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum as CompleteEthereumWalletBridgeAPI
+            let manager: WalletManager = DIKit.resolve()
+            return manager.wallet.ethereum
         }
 
         // MARK: - Stellar Wallet

@@ -11,12 +11,13 @@ public enum EthereumTransactionCreationServiceError: Error {
 }
 
 protocol EthereumTransactionSendingServiceAPI {
-    func send(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished>
+    func send(
+        transaction: EthereumTransactionCandidate,
+        keyPair: EthereumKeyPair
+    ) -> Single<EthereumTransactionPublished>
 }
 
 final class EthereumTransactionSendingService: EthereumTransactionSendingServiceAPI {
-
-    typealias Bridge = EthereumWalletBridgeAPI
 
     private let accountDetailsService: EthereumAccountDetailsServiceAPI
     private let client: TransactionPushClientAPI

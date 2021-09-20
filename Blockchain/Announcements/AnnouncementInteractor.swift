@@ -23,7 +23,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             return Single.error(AnnouncementError.uninitializedWallet)
         }
 
-        let nabuUser = dataRepository.nabuUserSingle
+        let nabuUser = userService.user.asSingle()
         let tiers = tiersService.tiers.asSingle()
         let sddEligibility = tiersService.checkSimplifiedDueDiligenceEligibility()
             .asObservable()
@@ -110,7 +110,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
 
     private let repository: AuthenticatorRepositoryAPI
     private let wallet: WalletProtocol
-    private let dataRepository: BlockchainDataRepository
+    private let userService: NabuUserServiceAPI
     private let tiersService: KYCTiersServiceAPI
     private let infoService: GeneralInformationServiceAPI
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
@@ -126,7 +126,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     init(
         repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
         wallet: WalletProtocol = WalletManager.shared.wallet,
-        dataRepository: BlockchainDataRepository = .shared,
+        userService: NabuUserServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         featureFetcher: FeatureFetching = resolve(),
         infoService: GeneralInformationServiceAPI = resolve(),
@@ -139,7 +139,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     ) {
         self.repository = repository
         self.wallet = wallet
-        self.dataRepository = dataRepository
+        self.userService = userService
         self.tiersService = tiersService
         self.infoService = infoService
         self.supportedPairsInteractor = supportedPairsInteractor

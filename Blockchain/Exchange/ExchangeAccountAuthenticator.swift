@@ -18,16 +18,16 @@ protocol ExchangeAccountAuthenticatorAPI {
 
 class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
 
-    private let blockchainRepository: BlockchainDataRepository
+    private let dataRepository: DataRepositoryAPI
     private let client: ExchangeClientAPI
     private let campaignComposer: CampaignComposer
 
     init(
-        blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
+        dataRepository: DataRepositoryAPI = resolve(),
         campaignComposer: CampaignComposer = CampaignComposer(),
         client: ExchangeClientAPI = resolve()
     ) {
-        self.blockchainRepository = blockchainRepository
+        self.dataRepository = dataRepository
         self.campaignComposer = campaignComposer
         self.client = client
     }
@@ -38,10 +38,12 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
 
     var exchangeURL: Single<URL> {
         Single
-            .zip(blockchainRepository.nabuUserSingle, exchangeLinkID)
+            .zip(
+                dataRepository.user.asSingle(),
+                exchangeLinkID
+            )
             .flatMap(weak: self) { (self, payload) -> Single<URL> in
-                let user = payload.0
-                let linkID = payload.1
+                let (user, linkID) = payload
 
                 let email = self.percentEscapeString(user.email.address)
                 guard let apiURL = URL(string: BlockchainAPI.shared.exchangeURL) else {

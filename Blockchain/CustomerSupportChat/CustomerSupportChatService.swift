@@ -36,7 +36,7 @@ final class CustomerSupportChatService: CustomerSupportChatServiceAPI {
                     // Customer support can confirm that the email
                     // is correct.
                     .replaceError(with: ""),
-                nabuUserService.userPublisher
+                nabuUserService.user
                     .map(\.personalDetails)
                     .map(\.fullName)
             )

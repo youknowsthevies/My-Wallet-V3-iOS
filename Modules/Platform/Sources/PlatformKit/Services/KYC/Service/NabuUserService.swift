@@ -3,17 +3,12 @@
 import Combine
 import CombineExt
 import DIKit
-import RxSwift
 import ToolKit
 
 public protocol NabuUserServiceAPI: AnyObject {
-    var user: Single<NabuUser> { get }
+    var user: AnyPublisher<NabuUser, Never> { get }
 
-    var userPublisher: AnyPublisher<NabuUser, Never> { get }
-
-    func fetchUser() -> Single<NabuUser>
-
-    func fetchUserPublisher() -> AnyPublisher<NabuUser, Never>
+    func fetchUser() -> AnyPublisher<NabuUser, Never>
 }
 
 final class NabuUserService: NabuUserServiceAPI {
@@ -24,16 +19,10 @@ final class NabuUserService: NabuUserServiceAPI {
 
     // MARK: - Exposed Properties
 
-    var userPublisher: AnyPublisher<NabuUser, Never> {
+    var user: AnyPublisher<NabuUser, Never> {
         cachedValue
             .get(key: Key())
             .ignoreFailure()
-    }
-
-    var user: Single<NabuUser> {
-        cachedValue
-            .get(key: Key())
-            .asSingle()
     }
 
     // MARK: - Properties
@@ -67,7 +56,9 @@ final class NabuUserService: NabuUserServiceAPI {
                     .fetchUser()
                     .handleEvents(
                         receiveOutput: { nabuUser in
-                            siftService.set(userId: nabuUser.identifier)
+                            DispatchQueue.main.async {
+                                siftService.set(userId: nabuUser.identifier)
+                            }
                         }
                     )
                     .eraseError()
@@ -75,15 +66,9 @@ final class NabuUserService: NabuUserServiceAPI {
         )
     }
 
-    func fetchUserPublisher() -> AnyPublisher<NabuUser, Never> {
+    func fetchUser() -> AnyPublisher<NabuUser, Never> {
         cachedValue
             .get(key: Key(), forceFetch: true)
             .ignoreFailure()
-    }
-
-    func fetchUser() -> Single<NabuUser> {
-        cachedValue
-            .get(key: Key(), forceFetch: true)
-            .asSingle()
     }
 }

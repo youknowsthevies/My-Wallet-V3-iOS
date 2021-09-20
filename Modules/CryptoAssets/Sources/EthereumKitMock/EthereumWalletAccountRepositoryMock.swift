@@ -7,7 +7,7 @@ import Foundation
 import PlatformKit
 import RxSwift
 
-class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, KeyPairProviderAPI {
+final class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, KeyPairProviderAPI {
 
     static let mockEthereumWalletAccount = EthereumWalletAccount(
         index: 0,

@@ -26,6 +26,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     var balance: Single<MoneyValue> {
         balanceService
             .balance(for: xPub)
+            .asSingle()
             .moneyValue
     }
 

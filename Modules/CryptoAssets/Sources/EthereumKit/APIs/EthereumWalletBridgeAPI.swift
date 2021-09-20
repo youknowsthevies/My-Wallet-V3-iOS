@@ -5,32 +5,22 @@ import Combine
 import PlatformKit
 import RxSwift
 
-/// `Wallet.m` needs to be injected into much of the `WalletRepository` type classes.
-/// The reason is we still heavily rely on `My-Wallet-V3`. We don't want to bring this into
-/// `PlatformKit` as a dependency. So, we have `Wallet.m` conform to protocols that we need
-/// and inject it in as a dependency. Frequently we'll use the term `bridge` as a way of
-/// describing this.
 public protocol EthereumWalletAccountBridgeAPI: AnyObject {
+    /// Get all ethereum wallets.
+    /// There should be only one wallet, but some blockchain wallets have more than one.
     var wallets: AnyPublisher<[EthereumWalletAccount], Error> { get }
 }
 
 public protocol EthereumWalletBridgeAPI: AnyObject {
-    var name: Single<String> { get }
-    var address: Single<EthereumAddress> { get }
-    var account: Single<EthereumAssetAccount> { get }
-
+    /// Get transaction note.
     func note(for transactionHash: String) -> Single<String?>
 
+    /// Set transaction note.
     func updateNote(for transactionHash: String, note: String?) -> Completable
 
+    /// Record transaction in metadata.
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished>
 
     /// Updates the Ethereum account label at the given index.
     func update(accountIndex: Int, label: String) -> Completable
 }
-
-public typealias CompleteEthereumWalletBridgeAPI =
-    EthereumWalletBridgeAPI
-        & EthereumWalletAccountBridgeAPI
-        & MnemonicAccessAPI
-        & PasswordAccessAPI

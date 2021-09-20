@@ -21,16 +21,17 @@ public final class PITConnectionStatusProvider: PITConnectionStatusProviding {
 
     // MARK: - Private Properties
 
-    private let dataRepository: DataRepositoryAPI
+    private let nabuUserService: NabuUserServiceAPI
 
-    public init(blockchainRepository: DataRepositoryAPI = resolve()) {
-        dataRepository = blockchainRepository
+    public init(nabuUserService: NabuUserServiceAPI = resolve()) {
+        self.nabuUserService = nabuUserService
     }
 
     public var hasLinkedPITAccount: Observable<Bool> {
-        Observable.combineLatest(dataRepository.fetchNabuUser().asObservable(), fetchTriggerRelay)
-            .flatMap {
-                Single.just($0.0.hasLinkedExchangeAccount)
+        fetchTriggerRelay
+            .flatMap { [nabuUserService] _ in
+                nabuUserService.fetchUser().asObservable()
             }
+            .map(\.hasLinkedExchangeAccount)
     }
 }

@@ -16,7 +16,7 @@ public protocol InterestAccountBalanceRepositoryAPI: AnyObject {
     /// return a `InterestAccountBalanceDetails` for a given
     /// CryptoCurrency.
     /// - Parameter fiatCurrency: FiatCurrency
-    func fetchInterestAccountBalanceStates(
-        _ fiatCurrency: FiatCurrency
+    func interestAccountsBalance(
+        fiatCurrency: FiatCurrency
     ) -> AnyPublisher<InterestAccountBalances, InterestAccountBalanceRepositoryError>
 }

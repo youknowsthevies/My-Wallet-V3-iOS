@@ -205,9 +205,7 @@ extension TransactionConfirmation.Model {
             case .pendingOrdersLimitReached:
                 return (LocalizedString.Error.title, LocalizedString.Error.pendingOrderLimitReached)
             case .nabuError(let error):
-                let errorCode = String(format: LocalizationConstants.Errors.errorCode, error.code.rawValue)
-                let rawNabuDescription = error.description ?? "\(LocalizedString.Error.generic). \(errorCode)"
-                return (LocalizedString.Error.title, rawNabuDescription)
+                return (LocalizedString.Error.title, error.description)
             }
         }
     }

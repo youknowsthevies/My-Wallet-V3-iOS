@@ -72,7 +72,7 @@ final class KYCRouter: KYCRouterAPI {
     private let tiersService: KYCTiersServiceAPI
     private let networkAdapter: NetworkAdapterAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    private let dataRepository: DataRepositoryAPI
+    private let nabuUserService: NabuUserServiceAPI
     private let requestBuilder: RequestBuilder
 
     private let webViewServiceAPI: WebViewServiceAPI
@@ -115,7 +115,7 @@ final class KYCRouter: KYCRouterAPI {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         alertPresenter: AlertViewPresenterAPI = resolve(),
-        dataRepository: DataRepositoryAPI = resolve(),
+        nabuUserService: NabuUserServiceAPI = resolve(),
         kycSettings: KYCSettingsAPI = resolve(),
         loadingViewPresenter: LoadingViewPresenting = resolve(),
         networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)
@@ -124,7 +124,7 @@ final class KYCRouter: KYCRouterAPI {
         self.errorRecorder = errorRecorder
         self.alertPresenter = alertPresenter
         self.analyticsRecorder = analyticsRecorder
-        self.dataRepository = dataRepository
+        self.nabuUserService = nabuUserService
         self.webViewServiceAPI = webViewServiceAPI
         self.tiersService = tiersService
         self.appSettings = appSettings
@@ -175,7 +175,7 @@ final class KYCRouter: KYCRouterAPI {
         }
 
         loadingViewPresenter.show(with: LocalizationConstants.loading)
-        let userObservable = dataRepository.fetchNabuUser().asObservable()
+
         let postTierObservable = post(tier: tier).asObservable()
             .flatMap { [tiersService] tiersResponse in
                 Observable.zip(
@@ -192,7 +192,11 @@ final class KYCRouter: KYCRouterAPI {
                 )
             }
 
-        let disposable = Observable.zip(userObservable, postTierObservable)
+        let disposable = Observable
+            .zip(
+                nabuUserService.fetchUser().asObservable(),
+                postTierObservable
+            )
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .hideLoaderOnDisposal(loader: loadingViewPresenter)

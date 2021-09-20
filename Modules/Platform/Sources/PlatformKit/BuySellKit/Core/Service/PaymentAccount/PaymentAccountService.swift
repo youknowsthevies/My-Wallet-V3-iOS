@@ -64,21 +64,14 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
         for currency: FiatCurrency,
         patcher: PaymentAccountPatcher
     ) -> Single<PaymentAccountDescribing> {
-        Single
-            .zip(
-                client.paymentAccount(for: currency).map(\.account).asSingle(),
-                dataRepository.user.take(1).asSingle()
-            )
-            .map { response, user -> PaymentAccountDescribing? in
+        dataRepository.user.eraseError()
+            .zip(client.paymentAccount(for: currency).map(\.account).eraseError())
+            .map { user, response -> PaymentAccountDescribing? in
                 PaymentAccountBuilder
                     .build(response: response)
                     .map { patcher.patch($0, recipientName: user.personalDetails.fullName) }
             }
-            .map { account -> PaymentAccountDescribing in
-                guard let account = account else {
-                    throw ServiceError.invalidResponse
-                }
-                return account
-            }
+            .onNil(ServiceError.invalidResponse)
+            .asSingle()
     }
 }

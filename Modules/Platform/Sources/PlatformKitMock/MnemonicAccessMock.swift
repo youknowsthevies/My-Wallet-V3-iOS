@@ -3,15 +3,20 @@
 import PlatformKit
 import RxSwift
 
-class MnemonicAccessMock: MnemonicAccessAPI {
+final class MnemonicAccessMock: MnemonicAccessAPI {
 
-    func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
-        .never()
+    var underlyingMnemonicMaybe: Maybe<Mnemonic> = .just("")
+    var underlyingMnemonicSingle: Single<Mnemonic> = .just("")
+
+    var mnemonic: Maybe<Mnemonic> {
+        underlyingMnemonicMaybe
     }
 
-    var mnemonic: Maybe<Mnemonic> = .empty()
+    var mnemonicPromptingIfNeeded: Maybe<Mnemonic> {
+        underlyingMnemonicMaybe
+    }
 
-    var mnemonicPromptingIfNeeded: Maybe<Mnemonic> = .empty()
-
-    init() {}
+    func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
+        underlyingMnemonicSingle
+    }
 }
