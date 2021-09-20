@@ -27,8 +27,8 @@ extension LocalizationConstants {
             )
         }
 
-        public static let complete = NSLocalizedString(
-            "Complete",
+        public static let completed = NSLocalizedString(
+            "Completed",
             comment: "Text shown on the exchange list cell indicating the trade status"
         )
         public static let delayed = NSLocalizedString(
@@ -45,6 +45,10 @@ extension LocalizationConstants {
         )
         public static let inProgress = NSLocalizedString(
             "In Progress",
+            comment: "Text shown on the exchange list cell indicating the trade status"
+        )
+        public static let pending = NSLocalizedString(
+            "Pending",
             comment: "Text shown on the exchange list cell indicating the trade status"
         )
         public static let refundInProgress = NSLocalizedString(

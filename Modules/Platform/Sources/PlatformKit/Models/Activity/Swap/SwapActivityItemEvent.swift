@@ -108,20 +108,16 @@ public struct SwapActivityItemEvent: Decodable {
         public var localizedDescription: String {
             switch self {
             case .complete:
-                return LocalizationConstants.Swap.complete
-            case .delayed:
-                return LocalizationConstants.Swap.delayed
-            case .pendingRefund:
-                return LocalizationConstants.Swap.refundInProgress
-            case .refunded:
-                return LocalizationConstants.Swap.refunded
-            case .failed:
+                return LocalizationConstants.Swap.completed
+            case .delayed,
+                 .inProgress,
+                 .none,
+                 .pendingRefund:
+                return LocalizationConstants.Swap.pending
+            case .expired,
+                 .failed,
+                 .refunded:
                 return LocalizationConstants.Swap.failed
-            case .expired:
-                return LocalizationConstants.Swap.expired
-            case .inProgress,
-                 .none:
-                return LocalizationConstants.Swap.inProgress
             }
         }
 
