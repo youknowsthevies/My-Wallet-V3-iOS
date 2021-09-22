@@ -130,28 +130,53 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
             messageRecorder: messageRecorder
         )
 
-        cells = [
-            .label(cryptoAmountLabelPresenter),
-            .badges(badgesModel),
-            .separator,
-            .lineItem(orderIDPresenter),
-            .separator,
-            .lineItem(dateCreatedPresenter),
-            .separator,
-            .lineItem(totalPresenter),
-            .separator,
-            .lineItem(networkFeePresenter),
-            .separator,
-            .lineItem(toPresenter),
-            .separator,
-            .lineItem(fromPresenter),
-            .separator,
-            .textField(noteModel)
-        ]
+        switch event.type {
+        case .receive:
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(orderIDPresenter),
+                .separator,
+                .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(totalPresenter),
+                .separator,
+                .lineItem(networkFeePresenter),
+                .separator,
+                .lineItem(toPresenter),
+                .separator,
+                .lineItem(fromPresenter)
+            ]
+        case .send:
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(orderIDPresenter),
+                .separator,
+                .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(totalPresenter),
+                .separator,
+                .lineItem(networkFeePresenter),
+                .separator,
+                .lineItem(toPresenter),
+                .separator,
+                .lineItem(fromPresenter),
+                .separator,
+                .textField(noteModel)
+            ]
+        }
 
         explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
 
-        buttons = [explorerButton]
+        switch event.type {
+        case .receive:
+            buttons = []
+        case .send:
+            buttons = [explorerButton]
+        }
 
         bindAll(event: event)
     }

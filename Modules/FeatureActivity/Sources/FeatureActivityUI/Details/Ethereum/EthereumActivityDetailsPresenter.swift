@@ -139,7 +139,12 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
         explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
 
-        buttons = [explorerButton]
+        switch event.type {
+        case .receive:
+            buttons = []
+        case .send:
+            buttons = [explorerButton]
+        }
 
         bindAll(event: event)
     }
@@ -276,7 +281,7 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
         itemRelay
             .map { $0?.amounts.isGas ?? false }
             .bindAndCatch(weak: self) { (self, isGas) in
-                self.cells = self.baseCells(isGas: isGas)
+                self.cells = self.baseCells(eventType: event.type, isGas: isGas)
                 self.reloadRelay.accept(())
             }
             .disposed(by: disposeBag)
@@ -289,25 +294,48 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
     }
 
-    private func baseCells(isGas: Bool) -> [DetailsScreen.CellType] {
-        [
-            .label(cryptoAmountLabelPresenter),
-            .badges(badgesModel),
-            .separator,
-            .lineItem(orderIDPresenter),
-            .separator,
-            .lineItem(dateCreatedPresenter),
-            .separator,
-            .lineItem(totalPresenter),
-            .separator,
-            .lineItem(isGas ? gasForPresenter : networkFeePresenter),
-            .separator,
-            .lineItem(toPresenter),
-            .separator,
-            .lineItem(fromPresenter),
-            .separator,
-            .textField(noteModel)
-        ]
+    private func baseCells(
+        eventType: TransactionalActivityItemEvent.EventType,
+        isGas: Bool
+    ) -> [DetailsScreen.CellType] {
+        switch eventType {
+        case .receive:
+            return [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(orderIDPresenter),
+                .separator,
+                .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(totalPresenter),
+                .separator,
+                .lineItem(isGas ? gasForPresenter : networkFeePresenter),
+                .separator,
+                .lineItem(toPresenter),
+                .separator,
+                .lineItem(fromPresenter)
+            ]
+        case .send:
+            return [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(orderIDPresenter),
+                .separator,
+                .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(totalPresenter),
+                .separator,
+                .lineItem(isGas ? gasForPresenter : networkFeePresenter),
+                .separator,
+                .lineItem(toPresenter),
+                .separator,
+                .lineItem(fromPresenter),
+                .separator,
+                .textField(noteModel)
+            ]
+        }
     }
 
     deinit {

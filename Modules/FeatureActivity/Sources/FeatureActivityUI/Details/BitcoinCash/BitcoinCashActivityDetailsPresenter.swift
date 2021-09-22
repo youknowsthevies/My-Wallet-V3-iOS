@@ -151,7 +151,12 @@ final class BitcoinCashActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
         explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
 
-        buttons = [explorerButton]
+        switch event.type {
+        case .receive:
+            buttons = []
+        case .send:
+            buttons = [explorerButton]
+        }
 
         bindAll(event: event)
     }

@@ -64,9 +64,7 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
         baseCells + [
             .lineItem(toPresenter),
             .separator,
-            .lineItem(fromPresenter),
-            .separator,
-            .lineItem(memoPresenter)
+            .lineItem(fromPresenter)
         ]
     }
 
@@ -161,7 +159,12 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
         explorerButton = .secondary(with: LocalizedString.Button.viewOnStellarChainIO)
 
-        buttons = [explorerButton]
+        switch event.type {
+        case .receive:
+            buttons = []
+        case .send:
+            buttons = [explorerButton]
+        }
 
         switch event.type {
         case .send:
