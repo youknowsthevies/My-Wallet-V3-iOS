@@ -12,7 +12,7 @@ let package = Package(
         .package(
             name: "CombineExt",
             url: "https://github.com/CombineCommunity/CombineExt.git",
-            .revision("665fc63272b8de2cfdeec2ebeae16ad45bb61a2b")
+            from: "1.5.0"
         ),
         .package(
             name: "RxSwift",
