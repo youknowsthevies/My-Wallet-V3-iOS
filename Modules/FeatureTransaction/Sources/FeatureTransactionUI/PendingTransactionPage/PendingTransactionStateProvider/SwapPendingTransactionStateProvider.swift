@@ -38,7 +38,7 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
             ),
             subtitle: String(
                 format: LocalizationIds.Success.description,
-                state.amount.currency.name
+                state.destination?.currencyType.cryptoCurrency?.name ?? ""
             ),
             compositeViewType: .composite(
                 .init(
