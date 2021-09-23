@@ -22,10 +22,6 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
         static func transactions(for address: String, contractAddress: String) -> [String] {
             account + [address, "token", contractAddress, "transfers"]
         }
-
-        static func isContract(with address: String) -> [String] {
-            account(for: address) + ["isContract"]
-        }
     }
 
     // MARK: - Private Properties
@@ -55,14 +51,6 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
         }
         let path = EndpointV2.transactions(for: address, contractAddress: contractAddress)
         let request = requestBuilder.get(path: path, parameters: parameters)!
-        return networkAdapter.perform(request: request)
-    }
-
-    func isContract(
-        address: String
-    ) -> AnyPublisher<ERC20IsContractResponse, NetworkError> {
-        let path = EndpointV2.isContract(with: address)
-        let request = requestBuilder.get(path: path)!
         return networkAdapter.perform(request: request)
     }
 }

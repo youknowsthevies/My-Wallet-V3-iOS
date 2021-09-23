@@ -2,35 +2,30 @@
 
 @testable import EthereumKit
 @testable import EthereumKitMock
-import PlatformKit
 @testable import PlatformKitMock
 import RxSwift
 import RxTest
 import XCTest
 
-class EthereumWalletAccountRepositoryTests: XCTestCase {
+final class EthereumKeyPairProviderTests: XCTestCase {
 
     var scheduler: TestScheduler!
     var disposeBag: DisposeBag!
-
-    var accountBridge: EthereumWalletAccountBridgeMock!
+    var mnemonicAccess: MnemonicAccessMock!
     var ethereumDeriver: EthereumKeyPairDeriverMock!
     var deriver: AnyEthereumKeyPairDeriver!
-    var subject: EthereumWalletAccountRepository!
+    var subject: EthereumKeyPairProvider!
 
     override func setUp() {
         super.setUp()
 
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
-
-        accountBridge = EthereumWalletAccountBridgeMock()
+        mnemonicAccess = MnemonicAccessMock()
         ethereumDeriver = EthereumKeyPairDeriverMock()
         deriver = AnyEthereumKeyPairDeriver(deriver: ethereumDeriver)
-
-        subject = EthereumWalletAccountRepository(
-            mnemonicAccess: MnemonicAccessMock(),
-            accountBridge: accountBridge,
+        subject = EthereumKeyPairProvider(
+            mnemonicAccess: mnemonicAccess,
             deriver: deriver
         )
     }
@@ -38,12 +33,9 @@ class EthereumWalletAccountRepositoryTests: XCTestCase {
     override func tearDown() {
         scheduler = nil
         disposeBag = nil
-
-        accountBridge = nil
         ethereumDeriver = nil
         deriver = nil
         subject = nil
-
         super.tearDown()
     }
 

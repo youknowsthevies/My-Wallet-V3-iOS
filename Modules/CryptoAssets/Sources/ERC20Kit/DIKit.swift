@@ -3,7 +3,6 @@
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
-import ToolKit
 
 extension DependencyContainer {
 
@@ -12,10 +11,6 @@ extension DependencyContainer {
     public static var erc20Kit = module {
 
         // MARK: Asset Agnostic
-
-        single(tag: Tags.ERC20AccountService.isContractAddressCache) {
-            Atomic<[String: Bool]>([:])
-        }
 
         factory(tag: AssetModelType.erc20) { ERC20ExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
 
@@ -26,15 +21,5 @@ extension DependencyContainer {
         factory { ERC20BalanceService() as ERC20BalanceServiceAPI }
 
         factory { ERC20AccountAPIClient() as ERC20AccountAPIClientAPI }
-
-        factory { ERC20AccountService() as ERC20AccountServiceAPI }
-    }
-}
-
-extension DependencyContainer {
-    enum Tags {
-        enum ERC20AccountService {
-            static let isContractAddressCache = String(describing: Self.self)
-        }
     }
 }

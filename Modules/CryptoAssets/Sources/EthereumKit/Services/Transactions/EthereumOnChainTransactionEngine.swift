@@ -35,6 +35,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     private let feeService: EthereumFeeServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let priceService: PriceServiceAPI
+    private let ethereumAccountService: EthereumAccountServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
@@ -57,6 +58,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         priceService: PriceServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         feeService: EthereumFeeServiceAPI = resolve(),
+        ethereumAccountService: EthereumAccountServiceAPI = resolve(),
         transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve()
@@ -65,6 +67,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.feeService = feeService
         self.requireSecondPassword = requireSecondPassword
         self.priceService = priceService
+        self.ethereumAccountService = ethereumAccountService
         self.transactionBuildingService = transactionBuildingService
         self.transactionsService = transactionsService
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
@@ -293,9 +296,16 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private func absoluteFee(with feeLevel: FeeLevel) -> Single<CryptoValue> {
-        feeCache
-            .valueSingle
-            .map { (fees: EthereumTransactionFee) -> CryptoValue in
+        let isContract = receiveAddress
+            .flatMap(weak: self) { (self, receiveAddress) in
+                self.ethereumAccountService
+                    .isContract(address: receiveAddress.address)
+                    .asSingle()
+            }
+
+        return Single
+            .zip(feeCache.valueSingle, isContract)
+            .map { (fees: EthereumTransactionFee, isContract: Bool) -> CryptoValue in
                 let level: EthereumTransactionFee.FeeLevel
                 switch feeLevel {
                 case .none:
@@ -307,7 +317,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 case .regular:
                     level = .regular
                 }
-                return fees.absoluteFee(with: level, isContract: false)
+                return fees.absoluteFee(with: level, isContract: isContract)
             }
     }
 

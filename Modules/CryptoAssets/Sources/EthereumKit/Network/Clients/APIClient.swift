@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BigInt
 import Combine
 import DIKit
 import NetworkKit
@@ -54,7 +53,22 @@ enum ClientError: Error {
     case missingAccountResponseForAddress
 }
 
-final class APIClient: TransactionPushClientAPI, TransactionClientAPI, BalanceClientAPI, TransactionFeeClientAPI {
+protocol EthereumAccountClientAPI {
+
+    /// Checks if a given ethereum address is associated with an ethereum contract.
+    ///
+    /// - Parameter address: The ethereum address to check.
+    ///
+    /// - Returns: A publisher that emits a `EthereumIsContractResponse` on success, or a `NetworkError` on failure.
+    func isContract(address: String) -> AnyPublisher<EthereumIsContractResponse, NetworkError>
+}
+
+final class APIClient: TransactionPushClientAPI,
+                       TransactionClientAPI,
+                       BalanceClientAPI,
+                       TransactionFeeClientAPI,
+                       EthereumAccountClientAPI
+{
 
     // MARK: - Types
 
@@ -70,6 +84,10 @@ final class APIClient: TransactionPushClientAPI, TransactionClientAPI, BalanceCl
 
         static func account(for address: String) -> [String] {
             base + ["account", address]
+        }
+
+        static func isContract(address: String) -> [String] {
+            account(for: address) + ["isContract"]
         }
     }
 
@@ -189,6 +207,12 @@ final class APIClient: TransactionPushClientAPI, TransactionClientAPI, BalanceCl
                 return .just(details)
             }
             .eraseToAnyPublisher()
+    }
+
+    func isContract(address: String) -> AnyPublisher<EthereumIsContractResponse, NetworkError> {
+        let path = Endpoint.isContract(address: address)
+        let request = requestBuilder.get(path: path)!
+        return networkAdapter.perform(request: request)
     }
 }
 

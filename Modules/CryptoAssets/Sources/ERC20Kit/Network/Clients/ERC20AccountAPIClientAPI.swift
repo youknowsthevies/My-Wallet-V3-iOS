@@ -11,7 +11,4 @@ protocol ERC20AccountAPIClientAPI {
         contractAddress: String
     ) -> AnyPublisher<ERC20TransfersResponse, NetworkError>
 
-    func isContract(
-        address: String
-    ) -> AnyPublisher<ERC20IsContractResponse, NetworkError>
 }

@@ -40,6 +40,7 @@ let package = Package(
             .exact("2.0.2")
         ),
         .package(path: "../Network"),
+        .package(path: "../NetworkErrors"),
         .package(path: "../Platform"),
         .package(path: "../FeatureTransaction"),
         .package(path: "../Test"),
@@ -143,6 +144,7 @@ let package = Package(
             name: "EthereumKitMock",
             dependencies: [
                 .target(name: "EthereumKit"),
+                .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "TestKit", package: "Test")
             ]
         ),
