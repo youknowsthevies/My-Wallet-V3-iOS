@@ -450,7 +450,7 @@ extension LocalizationConstants.FeatureAuthentication {
             comment: "Reset password screen: passwords do not match error"
         )
         public static let securityCallOut = NSLocalizedString(
-            "For your security, you may have to re-verify your identity before accessing your trading or interest account.",
+            "For your security, you may have to re-verify your identity before accessing your trading or rewards account.",
             comment: "Seed phrase screen: callout message for the security measure"
         )
         public enum Button {
