@@ -650,7 +650,7 @@ public enum LocalizationConstants {
             "Sell Crypto",
             comment: "Item displayed on the side menu of the app for when the user wants to sell crypto."
         )
-        public static let earnInterest = NSLocalizedString("Earn Interest", comment: "Earn Interest")
+        public static let earnInterest = NSLocalizedString("Earn Rewards", comment: "Earn Rewards")
         public static let addresses = NSLocalizedString(
             "Addresses",
             comment: "Item displayed on the side menu of the app for when the user wants to view their crypto addresses."
@@ -947,7 +947,7 @@ public enum LocalizationConstants {
             public enum Deposit {
                 public static let title = NSLocalizedString("Deposit", comment: "Deposit")
                 public enum Crypto {
-                    public static let description = NSLocalizedString("Add %@ to your Interest Account", comment: "Add %@ to your Interest Account")
+                    public static let description = NSLocalizedString("Add %@ to your Rewards Account", comment: "Add %@ to your Rewards Account")
                 }
 
                 public enum Fiat {
@@ -966,8 +966,8 @@ public enum LocalizationConstants {
             }
 
             public enum Interest {
-                public static let title = NSLocalizedString("Interest Summary", comment: "Interest Summary")
-                public static let description = NSLocalizedString("View your accrued %@ Interest", comment: "View your accrued %@ Interest")
+                public static let title = NSLocalizedString("Rewards Summary", comment: "Rewards Summary")
+                public static let description = NSLocalizedString("View your accrued %@ Rewards", comment: "View your accrued %@ Rewards")
             }
 
             public enum Activity {
