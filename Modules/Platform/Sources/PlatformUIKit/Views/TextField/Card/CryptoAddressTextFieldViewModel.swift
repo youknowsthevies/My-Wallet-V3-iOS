@@ -23,11 +23,14 @@ public final class CryptoAddressTextFieldViewModel: TextFieldViewModel {
         let content = ImageViewContent(
             imageResource: .local(name: "Icon-qr", bundle: .platformUIKit)
         )
-        let viewModel = BadgeImageViewModel(cornerRadius: .roundedLow)
-        viewModel.sizingTypeRelay.accept(.constant(CGSize(width: 32, height: 20)))
-        viewModel.marginOffsetRelay.accept(0)
-        viewModel.imageContentRelay.accept(content)
-        viewModel.backgroundColorRelay.accept(.white)
+        let theme = BadgeImageViewModel.Theme(
+            backgroundColor: .white,
+            cornerRadius: .roundedLow,
+            imageViewContent: content,
+            marginOffset: 0,
+            sizingType: .constant(CGSize(width: 32, height: 20))
+        )
+        let viewModel = BadgeImageViewModel(theme: theme)
 
         Observable.just(.badgeImageView(viewModel))
             .bindAndCatch(to: accessoryContentTypeRelay)

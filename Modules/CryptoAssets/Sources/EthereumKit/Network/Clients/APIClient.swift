@@ -64,10 +64,10 @@ protocol EthereumAccountClientAPI {
 }
 
 final class APIClient: TransactionPushClientAPI,
-                       TransactionClientAPI,
-                       BalanceClientAPI,
-                       TransactionFeeClientAPI,
-                       EthereumAccountClientAPI
+    TransactionClientAPI,
+    BalanceClientAPI,
+    TransactionFeeClientAPI,
+    EthereumAccountClientAPI
 {
 
     // MARK: - Types

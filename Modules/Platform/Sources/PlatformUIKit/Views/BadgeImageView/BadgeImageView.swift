@@ -26,7 +26,7 @@ public final class BadgeImageView: UIView {
 
     // MARK: - Public Properties
 
-    public var viewModel: BadgeImageViewModel! {
+    public var viewModel: BadgeImageViewModel? {
         willSet {
             disposeBag = DisposeBag()
         }
@@ -129,7 +129,7 @@ public final class BadgeImageView: UIView {
             of: imageView,
             offset: 4
         )
-
+        imageView.clipsToBounds = true
         clipsToBounds = true
         sizeConstraints = layout(size: .edge(32), priority: .penultimateLow)
     }

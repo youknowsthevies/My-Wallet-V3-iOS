@@ -10,5 +10,4 @@ protocol ERC20AccountAPIClientAPI {
         page: String?,
         contractAddress: String
     ) -> AnyPublisher<ERC20TransfersResponse, NetworkError>
-
 }

@@ -8,7 +8,7 @@ import RxSwift
 import ToolKit
 
 final class PricesTableViewCellPresenter {
-    let imageViewModel: ImageViewContent
+    let imageViewModel: BadgeImageViewModel
     let titleLabelContent: LabelContent
     var subtitleLabelContent: Driver<NSAttributedString?> {
         subtitleRelay.asDriver()
@@ -22,11 +22,15 @@ final class PricesTableViewCellPresenter {
         cryptoCurrency: CryptoCurrency,
         interactor: AssetPriceViewInteracting
     ) {
-        imageViewModel = ImageViewContent(
-            imageResource: cryptoCurrency.logoResource,
-            accessibility: .none,
-            renderingMode: .normal
+        let theme = BadgeImageViewModel.Theme(
+            backgroundColor: .background,
+            cornerRadius: .round,
+            imageViewContent: ImageViewContent(
+                imageResource: cryptoCurrency.logoResource
+            ),
+            marginOffset: 0
         )
+        imageViewModel = BadgeImageViewModel(theme: theme)
         titleLabelContent = .init(text: cryptoCurrency.name, font: .main(.semibold, 16), color: .titleText)
         self.interactor = interactor
         interactor

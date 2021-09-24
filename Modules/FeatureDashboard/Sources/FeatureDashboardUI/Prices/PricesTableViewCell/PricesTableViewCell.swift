@@ -26,7 +26,7 @@ final class PricesTableViewCell: UITableViewCell {
             disposeBag = .init()
         }
         didSet {
-            badgeImageView.set(presenter?.imageViewModel)
+            badgeImageView.viewModel = presenter?.imageViewModel
             titleLabel.content = presenter?.titleLabelContent ?? .empty
             presenter?
                 .subtitleLabelContent
@@ -37,7 +37,7 @@ final class PricesTableViewCell: UITableViewCell {
 
     // MARK: Private Properties
 
-    private let badgeImageView = UIImageView()
+    private let badgeImageView = BadgeImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let separatorView = UIView()
