@@ -116,6 +116,9 @@ public final class StateService: StateServiceAPI {
         /// Purchase completed
         case pendingOrderCompleted(orderDetails: OrderDetails)
 
+        /// The user will be taken to link a card flow
+        case linkCard
+
         /// The user will be taken to link a bank flow
         case linkBank
 
@@ -205,14 +208,15 @@ public final class StateService: StateServiceAPI {
             .disposed(by: disposeBag)
     }
 
-    public func cardRoutingInteractor(with checkoutData: CheckoutData) -> CardRouterInteractor {
+    public func cardRoutingInteractor(with checkoutData: CheckoutData?) -> CardRouterInteractor {
         let interactor = CardRouterInteractor()
         interactor.completionCardData
             .observeOn(MainScheduler.asyncInstance)
             .bindAndCatch(weak: self) { (self, cardData) in
-                let checkoutData = checkoutData.checkoutData(byAppending: cardData)
                 self.previous()
-                self.nextFromBuyCrypto(with: checkoutData)
+                if let checkoutData = checkoutData?.checkoutData(byAppending: cardData) {
+                    self.nextFromBuyCrypto(with: checkoutData)
+                }
             }
             .disposed(by: disposeBag)
 
@@ -226,7 +230,6 @@ public final class StateService: StateServiceAPI {
         return interactor
     }
 
-    // TODO: Look into reactive state machine
     private func next() {
         let states = statesRelay.value
         messageRecorder.record("StateService: next: \(states.debugDescription)")
@@ -251,6 +254,7 @@ public final class StateService: StateServiceAPI {
              .unsupportedFiat,
              .showURL,
              .changeFiat,
+             .linkCard,
              .linkBank:
             state = .inactive
             apply(
@@ -259,7 +263,14 @@ public final class StateService: StateServiceAPI {
             )
         case .kyc:
             statesRelay.accept(statesByRemovingLast())
-        case .buy, .checkout, .paymentMethods, .selectFiat, .addCard, .authorizeCard, .pendingOrderCompleted, .ineligible:
+        case .buy,
+             .checkout,
+             .paymentMethods,
+             .selectFiat,
+             .addCard,
+             .authorizeCard,
+             .pendingOrderCompleted,
+             .ineligible:
             fatalError("\(#function) was called with unhandled state: \(states.debugDescription).")
         }
     }
@@ -509,6 +520,7 @@ extension StateService {
 // MARK: - URLSelectionServiceAPI
 
 extension StateService {
+
     public func show(url: URL) {
         ensureIsOnMainQueue()
         DispatchQueue.main.async { [weak self] in
@@ -538,6 +550,14 @@ extension StateService {
             }
 
             let states = self.states(byAppending: state)
+            self.apply(action: .next(to: states.current), states: states)
+        }
+    }
+
+    public func nextFromCardLinkSelection() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .linkCard)
             self.apply(action: .next(to: states.current), states: states)
         }
     }
@@ -622,6 +642,7 @@ extension StateService {
 // MARK: - CurrencySelectionServiceAPI
 
 extension StateService {
+
     public func currencySelected() {
         ensureIsOnMainQueue()
         DispatchQueue.main.async { [weak self] in
@@ -645,6 +666,7 @@ extension StateService {
 // MARK: - ConfirmCheckoutServiceAPI
 
 extension StateService {
+
     public func confirmCheckout(with checkoutData: CheckoutData, isOrderNew: Bool) {
         ensureIsOnMainQueue()
         DispatchQueue.main.async { [weak self] in
@@ -677,6 +699,7 @@ extension StateService {
 }
 
 extension StateService {
+
     public func cancelTransfer(with checkoutData: CheckoutData) {
         ensureIsOnMainQueue()
         DispatchQueue.main.async { [weak self] in
@@ -688,6 +711,7 @@ extension StateService {
 }
 
 extension StateService {
+
     public func cardAuthorized(with paymentMethodId: String) {
         ensureIsOnMainQueue()
         DispatchQueue.main.async { [weak self] in
@@ -706,6 +730,7 @@ extension StateService {
 }
 
 extension StateService {
+
     public func orderCompleted() {
         ensureIsOnMainQueue()
         DispatchQueue.main.async { [weak self] in
@@ -732,63 +757,5 @@ extension StateService {
         tierUpgradeRouter.presentPromptToUpgradeTier(from: nil) { [weak self] in
             self?.orderCompleted()
         }
-    }
-}
-
-extension StateService.States: CustomDebugStringConvertible {
-    var debugDescription: String {
-        "current: \(current.debugDescription), previous: \(previous.map(\.debugDescription))"
-    }
-}
-
-extension StateService.State: CustomDebugStringConvertible {
-
-    public var debugDescription: String {
-        let suffix: String
-        switch self {
-        case .intro:
-            suffix = "intro"
-        case .selectFiat:
-            suffix = "select-fiat"
-        case .showURL:
-            suffix = "show-url"
-        case .unsupportedFiat:
-            suffix = "unsupported-fiat"
-        case .buy:
-            suffix = "enter-amount-to-buy"
-        case .changeFiat:
-            suffix = "change-fiat"
-        case .paymentMethods:
-            suffix = "payment-methods"
-        case .addCard:
-            suffix = "add-card"
-        case .kycBeforeCheckout:
-            suffix = "kyc-before-checkout"
-        case .kyc:
-            suffix = "kyc"
-        case .pendingKycApproval:
-            suffix = "pending-kyc-approval"
-        case .ineligible:
-            suffix = "ineligible-for-buy"
-        case .checkout:
-            suffix = "checkout"
-        case .bankTransferDetails:
-            suffix = "bank-transfer-details"
-        case .fundsTransferDetails:
-            suffix = "funds-transfer-details"
-        case .authorizeCard:
-            suffix = "authorize-card"
-        case .transferCancellation:
-            suffix = "order-cancellation"
-        case .pendingOrderDetails:
-            suffix = "pending-order-details"
-        case .pendingOrderCompleted:
-            suffix = "pending-order-completed"
-        case .linkBank:
-            suffix = "link-bank"
-        case .inactive:
-            suffix = "inactive"
-        }
-        return "buy-state: \(suffix)"
     }
 }
