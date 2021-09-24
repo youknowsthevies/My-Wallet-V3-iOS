@@ -33,6 +33,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Load All ERC20 Tokens.
     case loadAllERC20Tokens
 
+    /// Enable new Onboarding Tour on the Welcome Flow
+    case newOnboardingTour
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -40,6 +43,7 @@ public enum InternalFeature: String, CaseIterable {
              .interestWithdrawAndDeposit,
              .loadAllERC20Tokens,
              .newAccountPicker,
+             .newOnboardingTour,
              .requestConsoleLogging,
              .secureChannel,
              .useTransactionsFlowToBuyCrypto,
@@ -78,6 +82,8 @@ extension InternalFeature {
             return "New SwiftUI Account Picker"
         case .loadAllERC20Tokens:
             return "Load All ERC20 Tokens"
+        case .newOnboardingTour:
+            return "New Onboarding Tour"
         }
     }
 }

@@ -22,7 +22,7 @@ public enum SecondPasswordNotice {
         }
     }
 
-    struct State: Equatable {}
+    public struct State: Equatable {}
 
     public enum Action: Equatable {
         case open(urlContent: URLContent)
@@ -51,7 +51,7 @@ let secondPasswordNoticeReducer = Reducer<
     }
 }
 
-struct SecondPasswordNoticeView: View {
+public struct SecondPasswordNoticeView: View {
 
     private typealias LocalizedConstants = LocalizationConstants.SecondPasswordScreen
     private typealias AccessibilityIdentifier = AccessibilityIdentifiers.SecondPasswordScreen
@@ -73,11 +73,11 @@ struct SecondPasswordNoticeView: View {
 
     private let store: Store<SecondPasswordNotice.State, SecondPasswordNotice.Action>
 
-    init(store: Store<SecondPasswordNotice.State, SecondPasswordNotice.Action>) {
+    public init(store: Store<SecondPasswordNotice.State, SecondPasswordNotice.Action>) {
         self.store = store
     }
 
-    var body: some View {
+    public var body: some View {
         WithViewStore(store) { viewStore in
             VStack {
                 VStack {

@@ -6,7 +6,7 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-struct SeedPhraseView: View {
+public struct SeedPhraseView: View {
 
     // MARK: - Type
 
@@ -49,7 +49,7 @@ struct SeedPhraseView: View {
 
     // MARK: - Setup
 
-    init(context: AccountRecoveryContext, store: Store<SeedPhraseState, SeedPhraseAction>) {
+    public init(context: AccountRecoveryContext, store: Store<SeedPhraseState, SeedPhraseAction>) {
         self.context = context
         self.store = store
         viewStore = ViewStore(store)
@@ -57,7 +57,7 @@ struct SeedPhraseView: View {
 
     // MARK: - SwiftUI
 
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading) {
             instructionText
                 .padding(.bottom, Layout.instructionBottomPadding)

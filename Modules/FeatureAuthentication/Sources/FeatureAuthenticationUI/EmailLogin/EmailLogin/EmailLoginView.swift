@@ -8,7 +8,7 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-struct EmailLoginView: View {
+public struct EmailLoginView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureAuthentication.EmailLogin
 
@@ -27,12 +27,12 @@ struct EmailLoginView: View {
 
     @State private var isEmailFieldFirstResponder: Bool = true
 
-    init(store: Store<EmailLoginState, EmailLoginAction>) {
+    public init(store: Store<EmailLoginState, EmailLoginAction>) {
         self.store = store
         viewStore = ViewStore(self.store)
     }
 
-    var body: some View {
+    public var body: some View {
         NavigationView {
             VStack {
                 emailField

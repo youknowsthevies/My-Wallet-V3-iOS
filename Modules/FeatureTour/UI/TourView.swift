@@ -13,12 +13,12 @@ public struct TourView: View {
         self.store = store
     }
 
-    public init() {
+    public init(environment: TourEnvironment) {
         self.init(
             store: Store(
                 initialState: TourState(),
                 reducer: tourReducer,
-                environment: TourEnvironment()
+                environment: environment
             )
         )
     }
@@ -89,7 +89,6 @@ extension TourView {
             Carousel.brokerage.makeView()
             Carousel.earn.makeView()
             Carousel.keys.makeView()
-            Carousel.prices.makeView()
         }
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
     }
@@ -115,6 +114,12 @@ extension TourView {
 
 struct TourView_Previews: PreviewProvider {
     static var previews: some View {
-        TourView()
+        TourView(
+            environment: TourEnvironment(
+                createAccountAction: {},
+                restoreAction: {},
+                logInAction: {}
+            )
+        )
     }
 }

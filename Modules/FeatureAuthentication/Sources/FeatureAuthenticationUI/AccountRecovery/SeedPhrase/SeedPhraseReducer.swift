@@ -23,7 +23,7 @@ public enum SeedPhraseAction: Equatable {
     case none
 }
 
-enum AccountRecoveryContext: Equatable {
+public enum AccountRecoveryContext: Equatable {
     case troubleLoggingIn
     case importWallet
     case none
@@ -31,7 +31,7 @@ enum AccountRecoveryContext: Equatable {
 
 // MARK: - Properties
 
-struct SeedPhraseState: Equatable {
+public struct SeedPhraseState: Equatable {
     var seedPhrase: String
     var seedPhraseScore: MnemonicValidationScore
     var isResetPasswordScreenVisible: Bool

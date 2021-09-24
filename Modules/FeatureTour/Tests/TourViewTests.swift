@@ -7,7 +7,13 @@ import XCTest
 class TourViewTests: XCTestCase {
 
     func testTourView() {
-        let view = TourView()
+        let view = TourView(
+            environment: TourEnvironment(
+                createAccountAction: {},
+                restoreAction: {},
+                logInAction: {}
+            )
+        )
         assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
 
         let brokerageView = TourView.Carousel.brokerage.makeView()

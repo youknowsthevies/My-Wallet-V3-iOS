@@ -9,7 +9,7 @@ import ToolKit
 import UIComponentsKit
 
 // swiftlint:disable type_body_length
-struct CredentialsView: View {
+public struct CredentialsView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureAuthentication.EmailLogin
 
@@ -65,7 +65,7 @@ struct CredentialsView: View {
     }
 
     // swiftlint:disable closure_body_length
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading) {
             emailOrWalletIdentifierView()
                 .padding(.bottom, Layout.textFieldBottomPadding)

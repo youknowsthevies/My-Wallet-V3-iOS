@@ -7,6 +7,7 @@ import FeatureAppUI
 import FeatureAuthenticationUI
 import PlatformUIKit
 import SwiftUI
+import ToolKit
 import UIKit
 
 /// Acts as a container for Pin screen and Login screen
@@ -70,8 +71,7 @@ final class OnboardingHostingController: UIViewController {
             .scope(state: \.welcomeState, action: Onboarding.Action.welcomeScreen)
             .ifLet(then: { [weak self] authStore in
                 guard let self = self else { return }
-                let welcomeView = WelcomeView(store: authStore)
-                let hostingController = UIHostingController(rootView: welcomeView)
+                let hostingController = UIHostingController(rootView: self.makeWelcomeView(store: authStore))
                 self.transitionFromCurrentController(to: hostingController)
                 hostingController.view.constraint(edgesTo: self.view)
                 self.currentController = hostingController
@@ -125,6 +125,16 @@ final class OnboardingHostingController: UIViewController {
     }
 
     // MARK: Private
+
+    @ViewBuilder
+    private func makeWelcomeView(store: Store<WelcomeState, WelcomeAction>) -> some View {
+        let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
+        if internalFeatureFlagService.isEnabled(.newOnboardingTour) {
+            TourViewAdapter(store: store)
+        } else {
+            WelcomeView(store: store)
+        }
+    }
 
     /// Transition from the current controller, if any to the specified controller.
     private func transitionFromCurrentController(to controller: UIViewController) {
