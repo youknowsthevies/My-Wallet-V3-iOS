@@ -65,7 +65,7 @@ extension InternalFeature {
     public var displayTitle: String {
         switch self {
         case .interestWithdrawAndDeposit:
-            return "Interest - Deposit and Withdraw"
+            return "Rewards - Deposit and Withdraw"
         case .secureChannel:
             return "Secure Channel"
         case .requestConsoleLogging:

@@ -38,7 +38,7 @@ extension UnlockTradingViewModel {
     static let unlockGoldTier = UnlockTradingViewModel(
         title: NSLocalizedString("Unlock Gold Level Trading", comment: ""),
         message: NSLocalizedString(
-            "Verify your identity, earn interest and trade up to $10,000 a day.",
+            "Verify your identity, earn rewards and trade up to $10,000 a day.",
             comment: ""
         ),
         viewIconName: "icon-bank",
@@ -61,7 +61,7 @@ extension UnlockTradingViewModel {
                 iconName: "icon-bank"
             ),
             Benefit(
-                title: NSLocalizedString("Earn Interest", comment: ""),
+                title: NSLocalizedString("Earn Rewards", comment: ""),
                 message: NSLocalizedString(
                     "Put your crypto to work. Earn up to 10% monthly by simply doing nothing. Instanly deposit and start earning.",
                     comment: ""
