@@ -428,7 +428,6 @@ public final class StateService: StateServiceAPI {
 
     private func checkTier3Verification() -> Single<Bool> {
         kycTiersService.checkSimplifiedDueDiligenceVerification(pollUntilComplete: false)
-            .asObservable()
             .asSingle()
     }
 
