@@ -389,6 +389,12 @@ extension LocalizationConstants.SimpleBuy {
     public enum TransferDetails {
 
         public enum Funds {
+
+            public static let bankTransfer = NSLocalizedString(
+                "Bank Transfer",
+                comment: "Bank Transfer"
+            )
+
             public enum Title {
                 public static let addBankPrefix = NSLocalizedString(
                     "Add a",
@@ -405,6 +411,17 @@ extension LocalizationConstants.SimpleBuy {
             }
 
             public enum Notice {
+                public enum Instructions {
+                    public static let title = NSLocalizedString(
+                        "Instructions",
+                        comment: "Instructions"
+                    )
+                    public static let description = NSLocalizedString(
+                        "To link your bank, send %@ or more to your %@ Account",
+                        comment: "To link your bank, send [One dollar] or more to your [fiat currency code] Account"
+                    )
+                }
+
                 public enum BankTransferOnly {
                     public static let title = NSLocalizedString(
                         "Bank Transfers Only",
