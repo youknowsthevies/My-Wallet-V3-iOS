@@ -50,6 +50,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         height: 24
     )
 
+    public let viewAccessibilitySuffix: String
     public let titleAccessibilitySuffix: String
     public let descriptionAccessibilitySuffix: String
     public let pendingAccessibilitySuffix: String
@@ -75,6 +76,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
     ) {
         self.account = account
         separatorVisibilityRelay = BehaviorRelay<Visibility>(value: separatorVisibility)
+        viewAccessibilitySuffix = "\(AccessibilityId.view)"
         titleAccessibilitySuffix = "\(AccessibilityId.titleLabel)"
         descriptionAccessibilitySuffix = "\(AccessibilityId.descriptionLabel)"
         pendingAccessibilitySuffix = "\(AccessibilityId.pendingLabel)"

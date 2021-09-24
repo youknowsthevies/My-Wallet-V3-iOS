@@ -285,6 +285,7 @@ final class AssetDetailsScreenPresenter {
             interactor: CurrentBalanceCellInteractor(account: account),
             descriptionValue: descriptionValue,
             currency: .crypto(currency),
+            viewAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.view)",
             titleAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.titleValue)",
             descriptionAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.descriptionValue)",
             pendingAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.pendingValue)",

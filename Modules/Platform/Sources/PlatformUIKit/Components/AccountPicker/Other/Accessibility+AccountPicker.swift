@@ -6,6 +6,7 @@ extension Accessibility.Identifier {
 
         enum AccountCell {
             static let prefix = "\(AccountPicker.prefix)AccountCell."
+            static let view = "\(prefix)view"
             static let cryptoAmountLabel = "\(prefix)cryptoAmountLabel"
             static let fiatAmountLabel = "\(prefix)fiatAmountLabel"
             static let badgeImageView = "\(prefix)badgeImageView"

@@ -73,6 +73,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
             interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
             currency: interactor.currency,
+            viewAccessibilitySuffix: "\(AccessibilityId.AssetDetails.CurrentBalanceCell.view)",
             titleAccessibilitySuffix: "\(AccessibilityId.AssetDetails.CurrentBalanceCell.titleValue)",
             descriptionAccessibilitySuffix: "\(AccessibilityId.AssetDetails.CurrentBalanceCell.descriptionValue)",
             pendingAccessibilitySuffix: "\(AccessibilityId.AssetDetails.CurrentBalanceCell.pendingValue)",

@@ -48,6 +48,8 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     }
 
     public let multiBadgeViewModel = MultiBadgeViewModel()
+
+    public let viewAccessibilitySuffix: String
     public let titleAccessibilitySuffix: String
     public let descriptionAccessibilitySuffix: String
     public let pendingAccessibilitySuffix: String
@@ -93,11 +95,13 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         descriptionValue: @escaping DescriptionValue,
         currency: CurrencyType,
         separatorVisibility: Visibility = .hidden,
+        viewAccessibilitySuffix: String,
         titleAccessibilitySuffix: String,
         descriptionAccessibilitySuffix: String,
         pendingAccessibilitySuffix: String,
         descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors
     ) {
+        self.viewAccessibilitySuffix = viewAccessibilitySuffix
         self.titleAccessibilitySuffix = titleAccessibilitySuffix
         self.descriptionAccessibilitySuffix = descriptionAccessibilitySuffix
         self.pendingAccessibilitySuffix = pendingAccessibilitySuffix
