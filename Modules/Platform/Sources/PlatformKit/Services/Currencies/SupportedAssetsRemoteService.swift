@@ -36,7 +36,7 @@ final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
                 fileIO
                     .write(
                         response,
-                        to: filePathProvider.remoteERC20Assets!,
+                        to: filePathProvider.remoteCustodialAssets!,
                         encodedUsing: jsonDecoder
                     )
                     .eraseError()
