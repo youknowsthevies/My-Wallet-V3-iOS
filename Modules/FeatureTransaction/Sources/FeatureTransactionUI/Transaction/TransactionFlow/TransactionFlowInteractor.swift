@@ -9,6 +9,12 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+enum TransitionType: Equatable {
+    case push
+    case modal
+    case replaceRoot
+}
+
 protocol TransactionFlowRouting: Routing {
 
     var isDisplayingRootViewController: Bool { get }
@@ -47,7 +53,11 @@ protocol TransactionFlowRouting: Routing {
     func showDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
 
     /// Route to the destination account picker from the target selection screen
-    func routeToDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
+    func routeToDestinationAccountPicker(
+        transitionType: TransitionType,
+        transactionModel: TransactionModel,
+        action: AssetAction
+    )
 
     /// Present the destination account picker modally over the current screen
     func presentDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
@@ -377,17 +387,11 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     action: action
                 )
             case .buy:
-                if newState.stepsBackStack.contains(.enterAmount) {
-                    router?.presentDestinationAccountPicker(
-                        transactionModel: transactionModel,
-                        action: action
-                    )
-                } else {
-                    router?.routeToDestinationAccountPicker(
-                        transactionModel: transactionModel,
-                        action: action
-                    )
-                }
+                router?.routeToDestinationAccountPicker(
+                    transitionType: newState.stepsBackStack.contains(.enterAmount) ? .modal : .replaceRoot,
+                    transactionModel: transactionModel,
+                    action: action
+                )
             case .withdraw:
                 // `Withdraw` shows the destination screen modally. It does not
                 // present over another screen (and thus replaces the root).
@@ -400,8 +404,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                  .sell,
                  .receive,
                  .swap:
-                // This pushes on the destination screen.
                 router?.routeToDestinationAccountPicker(
+                    transitionType: newState.stepsBackStack.contains(.selectSource) ? .push : .replaceRoot,
                     transactionModel: transactionModel,
                     action: action
                 )
@@ -464,6 +468,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
         case .enterAddress:
             router?.routeToDestinationAccountPicker(
+                transitionType: action == .buy ? .replaceRoot : .push,
                 transactionModel: transactionModel,
                 action: action
             )

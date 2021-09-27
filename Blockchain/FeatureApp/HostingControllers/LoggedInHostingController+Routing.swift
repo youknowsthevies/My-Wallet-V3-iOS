@@ -195,6 +195,14 @@ extension LoggedInHostingController {
         }
     }
 
+    /// Starts Swap Crypto flow
+    func handleSwapCrypto(account: CryptoAccount?) {
+        let presenter = topMostViewController ?? self
+        transactionsAdapter.presentTransactionFlow(to: .swap(account), from: presenter) { result in
+            Logger.shared.info("[AppCoordinator] Buy Transaction Flow completed with result '\(result)'")
+        }
+    }
+
     func startSimpleBuyAtLogin() {
         handleBuyCrypto()
     }

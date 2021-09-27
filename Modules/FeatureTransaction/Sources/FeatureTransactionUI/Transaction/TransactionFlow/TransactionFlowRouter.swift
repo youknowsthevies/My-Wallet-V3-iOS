@@ -161,30 +161,35 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         viewController.present(viewController: viewControllable, animated: true)
     }
 
-    func routeToDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction) {
-        let shouldPush = action != .buy
-        let navigationModel: ScreenNavigationModel
-        if shouldPush {
-            navigationModel = ScreenNavigationModel.AccountPicker.navigationClose(
-                title: TransactionFlowDescriptor.AccountPicker.destinationTitle(action: action)
+    func routeToDestinationAccountPicker(
+        transitionType: TransitionType,
+        transactionModel: TransactionModel,
+        action: AssetAction
+    ) {
+        switch transitionType {
+        case .modal:
+            presentDestinationAccountPicker(transactionModel: transactionModel, action: action)
+        case .push:
+            let router = destinationAccountPicker(
+                with: transactionModel,
+                navigationModel: ScreenNavigationModel.AccountPicker.navigationClose(
+                    title: TransactionFlowDescriptor.AccountPicker.destinationTitle(action: action)
+                ),
+                action: action
             )
-        } else {
-            navigationModel = ScreenNavigationModel.AccountPicker.modal(
-                title: TransactionFlowDescriptor.AccountPicker.destinationTitle(action: action)
-            )
-        }
-
-        let router = destinationAccountPicker(
-            with: transactionModel,
-            navigationModel: navigationModel,
-            action: action
-        )
-        let viewControllable = router.viewControllable
-        attachChild(router)
-
-        if shouldPush {
+            let viewControllable = router.viewControllable
+            attachChild(router)
             viewController.push(viewController: viewControllable)
-        } else {
+        case .replaceRoot:
+            let router = destinationAccountPicker(
+                with: transactionModel,
+                navigationModel: ScreenNavigationModel.AccountPicker.modal(
+                    title: TransactionFlowDescriptor.AccountPicker.destinationTitle(action: action)
+                ),
+                action: action
+            )
+            let viewControllable = router.viewControllable
+            attachChild(router)
             viewController.replaceRoot(viewController: viewControllable, animated: false)
         }
     }
