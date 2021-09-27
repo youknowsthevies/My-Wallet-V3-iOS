@@ -1504,7 +1504,7 @@ Incluso si la reduces a %2$s, puedes esperar que la transacción se confirme en 
 "Rewards" = "Interés";
 "Trading" = "Comercio";
 "Completed" = "Terminado";
-"View on Blockchain Explorer" = "Ver en Blockchain Explorer";
+"View on Blockchain.com Explorer" = "Ver en Blockchain Explorer";
 "Gas for" = "Gas para";
 "Sending to" = "Enviando a";
 "Confirmations" = "Confirmaciones";

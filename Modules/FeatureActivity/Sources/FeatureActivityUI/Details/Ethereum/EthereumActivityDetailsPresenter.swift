@@ -39,11 +39,11 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let interactor: EthereumActivityDetailsInteractor
     private let alertViewPresenter: AlertViewPresenterAPI
     private let loadingViewPresenter: LoadingViewPresenting
-
     private let disposeBag = DisposeBag()
 
     // MARK: Private Properties (Model Relay)
 
+    private let cellRelay: PublishRelay<[DetailsScreen.CellType]> = .init()
     private let itemRelay: BehaviorRelay<EthereumActivityDetailsViewModel?> = .init(value: nil)
 
     // MARK: Private Properties (LabelContentPresenting)
@@ -278,19 +278,32 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .subscribe()
             .disposed(by: disposeBag)
 
-        itemRelay
-            .map { $0?.amounts.isGas ?? false }
-            .bindAndCatch(weak: self) { (self, isGas) in
-                self.cells = self.baseCells(eventType: event.type, isGas: isGas)
-                self.reloadRelay.accept(())
-            }
-            .disposed(by: disposeBag)
-
         explorerButton
             .tapRelay
             .bind { [weak self] in
                 self?.router.showBlockchainExplorer(for: event)
             }
+            .disposed(by: disposeBag)
+
+        Observable
+            .combineLatest(cellRelay, itemRelay)
+            .mapToVoid()
+            .throttle(.milliseconds(300), scheduler: MainScheduler.asyncInstance)
+            .bind(to: reloadRelay)
+            .disposed(by: disposeBag)
+
+        cellRelay
+            .bindAndCatch(weak: self) { (self, cells) in
+                self.cells = cells
+            }
+            .disposed(by: disposeBag)
+
+        itemRelay
+            .map { $0?.amounts.isGas ?? false }
+            .map(weak: self) { (self, isGas) in
+                self.baseCells(eventType: event.type, isGas: isGas)
+            }
+            .bindAndCatch(to: cellRelay)
             .disposed(by: disposeBag)
     }
 

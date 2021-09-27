@@ -1507,7 +1507,7 @@ Même si vous diminuez les frais à %2$s, vous pouvez vous attendre à la confir
 "Rewards" = "Intérêt";
 "Trading" = "Trading";
 "Completed" = "Terminé";
-"View on Blockchain Explorer" = "Afficher sur Blockchain Explorer";
+"View on Blockchain.com Explorer" = "Afficher sur Blockchain Explorer";
 "Gas for" = "Gaz pour";
 "Sending to" = "Envoi à";
 "Confirmations" = "Confirmations";

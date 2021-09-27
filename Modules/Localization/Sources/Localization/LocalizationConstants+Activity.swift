@@ -84,7 +84,7 @@ extension LocalizationConstants.Activity.Details {
 
     public enum Button {
         public static let viewOnExplorer = NSLocalizedString(
-            "View on Blockchain Explorer",
+            "View on Blockchain.com Explorer",
             comment: "Button title, button takes user to explorer webpage"
         )
         public static let viewOnStellarChainIO = NSLocalizedString(
