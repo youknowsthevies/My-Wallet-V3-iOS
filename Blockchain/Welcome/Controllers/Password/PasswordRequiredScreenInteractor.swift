@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import FeatureSettingsDomain
@@ -20,6 +21,7 @@ final class PasswordRequiredScreenInteractor {
     let passwordRelay = BehaviorRelay<String>(value: "")
 
     private let walletPayloadService: WalletPayloadServiceAPI
+    private let pushNotificationsRepository: PushNotificationsRepositoryAPI
     private let walletFetcher: (_ password: String) -> Void
     private let appSettings: BlockchainSettings.App
     private let walletManager: WalletManager
@@ -30,17 +32,20 @@ final class PasswordRequiredScreenInteractor {
     private let errorRelay = PublishRelay<Error>()
 
     private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Setup
 
     init(
         walletPayloadService: WalletPayloadServiceAPI = resolve(),
+        pushNotificationsRepository: PushNotificationsRepositoryAPI = resolve(),
         walletManager: WalletManager = resolve(),
         appSettings: BlockchainSettings.App = resolve(),
         credentialsStore: CredentialsStoreAPI = resolve(),
         walletFetcher: @escaping ((_ password: String) -> Void)
     ) {
         self.walletPayloadService = walletPayloadService
+        self.pushNotificationsRepository = pushNotificationsRepository
         self.walletManager = walletManager
         self.walletFetcher = walletFetcher
         self.appSettings = appSettings
@@ -68,5 +73,11 @@ final class PasswordRequiredScreenInteractor {
         walletManager.forgetWallet()
         appSettings.clear()
         credentialsStore.erase()
+
+        // TODO: [10/15/2021] Move this to CoreCoordinator with the forget wallet logic in the future
+        pushNotificationsRepository
+            .revokeToken()
+            .subscribe()
+            .store(in: &cancellables)
     }
 }
