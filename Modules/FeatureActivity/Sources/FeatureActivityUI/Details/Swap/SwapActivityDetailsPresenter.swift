@@ -104,12 +104,12 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        let amountFrom = event.amounts.deposit.displayString
+        let amountFrom = event.amounts.withdrawal.displayString
         amountFromPresenter = TransactionalLineItem.amount(amountFrom).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        let amountFor = event.amounts.withdrawal.displayString
+        let amountFor = event.amounts.deposit.displayString
         amountForPresenter = TransactionalLineItem.for(amountFor).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )

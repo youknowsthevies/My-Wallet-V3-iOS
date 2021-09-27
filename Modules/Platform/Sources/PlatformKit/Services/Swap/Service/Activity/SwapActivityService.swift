@@ -5,7 +5,10 @@ import RxSwift
 import ToolKit
 
 public protocol SwapActivityServiceAPI: AnyObject {
-    func fetchActivity(cryptoCurrency: CryptoCurrency, directions: Set<OrderDirection>) -> Single<[SwapActivityItemEvent]>
+    func fetchActivity(
+        cryptoCurrency: CryptoCurrency,
+        directions: Set<OrderDirection>
+    ) -> Single<[SwapActivityItemEvent]>
 }
 
 final class SwapActivityService: SwapActivityServiceAPI {
