@@ -29,10 +29,11 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
     private let calculationStateRelay = BehaviorRelay<MoneyValuePairCalculationState>(value: .calculating)
     private let disposeBag = DisposeBag()
     private let moneyValue: MoneyValue
+    private let instant: Date
 
     private lazy var setup: Void = {
         pairExchangeService
-            .fiatPrice
+            .fiatPrice(at: .time(instant))
             .map { [moneyValue] fiatPrice -> MoneyValuePair in
                 MoneyValuePair(
                     base: moneyValue,
@@ -48,9 +49,10 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
 
     // MARK: - Private Properties
 
-    public init(pairExchangeService: PairExchangeServiceAPI, moneyValue: MoneyValue) {
+    public init(pairExchangeService: PairExchangeServiceAPI, moneyValue: MoneyValue, at instant: Date) {
         self.pairExchangeService = pairExchangeService
         self.moneyValue = moneyValue
+        self.instant = instant
     }
 
     public func refresh() {

@@ -64,7 +64,7 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
             .observeOn(scheduler)
 
         Observable
-            .combineLatest(pairExchangeService.fiatPrice, historicalPricesInWindow)
+            .combineLatest(pairExchangeService.fiatPrice(at: .now), historicalPricesInWindow)
             .map { payload in
                 let (fiatValue, (prices, window)) = payload
                 return HistoricalFiatPriceResponse(fiatValue: fiatValue, prices: prices, priceWindow: window)

@@ -13,7 +13,8 @@ final class ActivityItemInteractor {
         balanceViewInteractor = ActivityItemBalanceViewInteractor(
             activityItemBalanceFetching: ActivityItemBalanceFetcher(
                 pairExchangeService: pairExchangeService,
-                moneyValue: activityItemEvent.amount
+                moneyValue: activityItemEvent.amount,
+                at: event.creationDate
             )
         )
     }
