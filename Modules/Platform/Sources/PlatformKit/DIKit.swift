@@ -43,6 +43,8 @@ extension DependencyContainer {
 
         factory { SupportedAssetsClient() as SupportedAssetsClientAPI }
 
+        factory { SendEmailNotificationClient() as SendEmailNotificationClientAPI }
+
         // MARK: Exchange
 
         factory { ExchangeAccountsClient() as ExchangeAccountsClientAPI }
@@ -195,6 +197,8 @@ extension DependencyContainer {
         factory { CryptoReceiveAddressFactoryService() }
 
         factory { BlockchainAccountFetcher() as BlockchainAccountFetching }
+
+        factory { SendEmailNotificationService() as SendEmailNotificationServiceAPI }
 
         // MARK: - Settings
 
