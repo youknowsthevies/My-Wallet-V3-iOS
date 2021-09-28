@@ -30,7 +30,7 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
     ) -> AnyPublisher<Void, Never> {
         credentialsRepository.credentialsPublisher
             .ignoreFailure()
-            .map { (guid, sharedKey) in
+            .map { guid, sharedKey in
                 SendEmailNotificationClient.Payload(
                     guid: guid,
                     sharedKey: sharedKey,

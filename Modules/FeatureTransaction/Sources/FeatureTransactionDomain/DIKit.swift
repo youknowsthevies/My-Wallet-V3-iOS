@@ -23,6 +23,5 @@ extension DependencyContainer {
         }
 
         factory { PaymentAccountsService() as FeatureTransactionDomain.PaymentAccountsServiceAPI }
-
     }
 }
