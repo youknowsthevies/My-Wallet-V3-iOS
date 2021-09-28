@@ -13,7 +13,7 @@ protocol SendEmailNotificationClientAPI {
 
 final class SendEmailNotificationClient: SendEmailNotificationClientAPI {
 
-    struct Payload: Encodable {
+    struct Payload {
         let method = "trigger-sent-tx-email"
         let guid: String
         let sharedKey: String
@@ -41,7 +41,13 @@ final class SendEmailNotificationClient: SendEmailNotificationClientAPI {
     ) -> AnyPublisher<Void, NetworkError> {
         let request = requestBuilder.post(
             path: ["wallet"],
-            body: try? payload.encode()
+            parameters: [
+                URLQueryItem(name: "method", value: payload.method),
+                URLQueryItem(name: "guid", value: payload.guid),
+                URLQueryItem(name: "sharedKey", value: payload.sharedKey),
+                URLQueryItem(name: "currency", value: payload.currency),
+                URLQueryItem(name: "amount", value: payload.amount)
+            ]
         )
         return networkAdapter.perform(request: request!)
             .eraseToAnyPublisher()
