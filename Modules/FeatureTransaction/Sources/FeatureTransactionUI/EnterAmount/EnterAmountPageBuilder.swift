@@ -114,7 +114,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         }
 
         let digitPadViewModel = provideDigitPadViewModel()
-        let continueButtonViewModel = ButtonViewModel.primary(with: LocalizationConstants.Transaction.next)
+        let continueButtonTitle = String(format: LocalizationConstants.Transaction.preview, action.name)
+        let continueButtonViewModel = ButtonViewModel.primary(with: continueButtonTitle)
 
         let viewController = EnterAmountViewController(
             displayBundle: displayBundle,

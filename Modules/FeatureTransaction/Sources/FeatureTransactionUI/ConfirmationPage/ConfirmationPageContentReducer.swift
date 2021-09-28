@@ -167,22 +167,19 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     }
 
     static func confirmCtaText(state: TransactionState) -> String {
-        let amount = state.pendingTransaction?.amount.toDisplayString(includeSymbol: true) ?? ""
         switch state.action {
         case .swap:
-            let source = state.source?.currencyType.displayCode ?? ""
-            let destination = (state.destination as? CryptoAccount)?.asset.displayCode ?? ""
-            return String(format: LocalizedString.Swap.swapAForB, source, destination)
+            return LocalizedString.Swap.swapNow
         case .send:
-            return String(format: LocalizedString.Swap.send, amount)
+            return LocalizedString.Swap.sendNow
         case .buy:
-            return String(format: LocalizedString.Swap.buy, state.destination?.currencyType.displayCode ?? "")
+            return LocalizedString.Swap.buyNow
         case .sell:
-            return String(format: LocalizedString.Swap.sell, amount)
+            return LocalizedString.Swap.sellNow
         case .deposit:
-            return [LocalizedString.Deposit.deposit, "\(state.amount.displayString)"].joined(separator: " ")
+            return LocalizedString.Deposit.depositNow
         case .withdraw:
-            return LocalizedString.Withdraw.withdraw + " \(state.amount.displayString)"
+            return LocalizedString.Withdraw.withdrawNow
         case .receive,
              .viewActivity:
             fatalError("ConfirmationPageContentReducer: \(state.action) not supported.")
