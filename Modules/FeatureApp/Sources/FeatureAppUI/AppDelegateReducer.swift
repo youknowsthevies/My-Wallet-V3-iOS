@@ -101,17 +101,20 @@ let appDelegateReducer = Reducer<
         return .merge(
             environment.supportedAssetsRemoteService
                 .refreshCustodialAssetsCache()
+                .receive(on: RunLoop.main)
                 .eraseToEffect()
                 .fireAndForget(),
 
             environment.supportedAssetsRemoteService
                 .refreshERC20AssetsCache()
+                .receive(on: RunLoop.main)
                 .eraseToEffect()
                 .fireAndForget(),
 
             environment.remoteNotificationAuthorizer
                 .registerForRemoteNotificationsIfAuthorized()
                 .asPublisher()
+                .receive(on: RunLoop.main)
                 .eraseToEffect()
                 .fireAndForget(),
 
