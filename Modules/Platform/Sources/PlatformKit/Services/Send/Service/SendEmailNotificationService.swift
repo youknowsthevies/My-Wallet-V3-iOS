@@ -5,6 +5,7 @@ import DIKit
 import FeatureAuthenticationDomain
 import Foundation
 import NetworkKit
+import ToolKit
 
 public protocol SendEmailNotificationServiceAPI {
     func postSendEmailNotificationTrigger(
@@ -16,13 +17,16 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
 
     private let client: SendEmailNotificationClientAPI
     private let credentialsRepository: CredentialsRepositoryAPI
+    private let errorRecoder: ErrorRecording
 
     init(
         client: SendEmailNotificationClientAPI = resolve(),
-        credentialsRepository: CredentialsRepositoryAPI = resolve()
+        credentialsRepository: CredentialsRepositoryAPI = resolve(),
+        errorRecoder: ErrorRecording = resolve()
     ) {
         self.client = client
         self.credentialsRepository = credentialsRepository
+        self.errorRecoder = errorRecoder
     }
 
     public func postSendEmailNotificationTrigger(
@@ -41,6 +45,11 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
             .flatMap { [client] payload in
                 client.postSendEmailNotificationTrigger(payload)
             }
+            .handleEvents(receiveCompletion: { [errorRecoder] in
+                if case let .failure(error) = $0 {
+                    errorRecoder.error(error)
+                }
+            })
             .ignoreFailure()
             .eraseToAnyPublisher()
     }
