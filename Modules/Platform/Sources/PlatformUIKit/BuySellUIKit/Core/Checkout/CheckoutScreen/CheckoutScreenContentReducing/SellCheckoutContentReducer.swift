@@ -97,7 +97,7 @@ final class SellCheckoutContentReducer: CheckoutScreenContentReducing {
         ]
 
         cancelButtonViewModel = .cancel(with: LocalizationConstants.cancel)
-        continueButtonViewModel = .primary(with: "\(LocalizedSummary.sellButtonPrefix) \(data.order.inputValue.toDisplayString(includeSymbol: true))")
+        continueButtonViewModel = .primary(with: LocalizedSummary.sellButtonTitle)
     }
 
     func setupDidSucceed(with data: CheckoutInteractionData) {

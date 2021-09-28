@@ -217,9 +217,9 @@ extension LocalizationConstants.SimpleBuy {
             "Buy Crypto",
             comment: "Simple Buy: Buy Crypto screen title"
         )
-        public static let ctaButton = NSLocalizedString(
-            "Continue",
-            comment: "Simple Buy: Buy Crypto Screen - CTA button"
+        public static let previewBuy = NSLocalizedString(
+            "Preview Buy",
+            comment: "Simple Buy: Buy Crypto Screen - CTA button - Preview Buy"
         )
         public static let paymentMethodTitle = NSLocalizedString(
             "Payment Method",
@@ -281,9 +281,9 @@ extension LocalizationConstants.SimpleBuy {
             "Sell",
             comment: "Sell Crypto screen title prefix"
         )
-        public static let ctaButton = NSLocalizedString(
-            "Continue",
-            comment: "Sell Crypto Screen - CTA button"
+        public static let previewSell = NSLocalizedString(
+            "Preview Sell",
+            comment: "Sell Crypto Screen - CTA button - Preview Sell"
         )
         public static let available = NSLocalizedString(
             "Available",
@@ -619,12 +619,12 @@ extension LocalizationConstants.SimpleBuy {
                 )
             }
 
-            public static let buyButtonPrefix = NSLocalizedString(
-                "Buy ",
+            public static let buyButtonTitle = NSLocalizedString(
+                "Buy Now",
                 comment: "Simple buy checkout screen - buy button prefix"
             )
-            public static let sellButtonPrefix = NSLocalizedString(
-                "Sell ",
+            public static let sellButtonTitle = NSLocalizedString(
+                "Sell Now",
                 comment: "Simple buy checkout screen - sell button prefix"
             )
             public static let continueButtonPrefix = NSLocalizedString(

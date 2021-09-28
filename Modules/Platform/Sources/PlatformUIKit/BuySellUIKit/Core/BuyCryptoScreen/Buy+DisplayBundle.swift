@@ -17,7 +17,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
         return EnterAmountScreenPresenter.DisplayBundle(
             strings: Strings(
                 title: LocalizedString.title,
-                ctaButton: LocalizedString.ctaButton,
+                ctaButton: LocalizedString.previewBuy,
                 bottomAuxiliaryItemSeparatorTitle: ""
             ),
             colors: Colors(

@@ -17,7 +17,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
         return EnterAmountScreenPresenter.DisplayBundle(
             strings: Strings(
                 title: "\(LocalizedString.titlePrefix) \(cryptoCurrency.code)",
-                ctaButton: LocalizedString.ctaButton,
+                ctaButton: LocalizedString.previewSell,
                 bottomAuxiliaryItemSeparatorTitle: ""
             ),
             colors: Colors(

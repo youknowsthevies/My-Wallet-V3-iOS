@@ -237,6 +237,10 @@ extension LocalizationConstants.Transaction {
         "Next",
         comment: "Next"
     )
+    public static let preview = NSLocalizedString(
+        "Preview %@",
+        comment: "Preview [Transaction Type]"
+    )
     public static let receive = NSLocalizedString(
         "Receive",
         comment: "Receive"
@@ -269,6 +273,10 @@ extension LocalizationConstants.Transaction {
 }
 
 extension LocalizationConstants.Transaction.Withdraw {
+    public static let withdrawNow = NSLocalizedString(
+        "Withdraw Now",
+        comment: "Withdraw Now"
+    )
     public static let withdraw = NSLocalizedString(
         "Withdraw",
         comment: "Withdraw"
@@ -296,6 +304,8 @@ extension LocalizationConstants.Transaction.Deposit {
     public static let dailyLimit = NSLocalizedString("Daily Limit", comment: "Daily Limit")
 
     public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+
+    public static let depositNow = NSLocalizedString("Deposit Now", comment: "Deposit Now")
 }
 
 extension LocalizationConstants.Transaction.Send {
@@ -431,17 +441,21 @@ extension LocalizationConstants.Transaction.Swap {
         "Which crypto do you want to Swap for?",
         comment: "Swap Destination Account Picket Header Subtitle"
     )
-    public static let swapAForB = NSLocalizedString(
-        "Swap %@ for %@",
-        comment: "Swap %@ for %@"
+    public static let swapNow = NSLocalizedString(
+        "Swap Now",
+        comment: "Swap Now"
     )
-    public static let send = NSLocalizedString(
-        "Send %@",
-        comment: "Send %@"
+    public static let sendNow = NSLocalizedString(
+        "Send Now",
+        comment: "Send Now"
     )
-    public static let buy = NSLocalizedString(
-        "Buy %@",
-        comment: "e.g. Buy BTC"
+    public static let buyNow = NSLocalizedString(
+        "Buy Now",
+        comment: "Buy Now"
+    )
+    public static let sellNow = NSLocalizedString(
+        "Sell Now",
+        comment: "Sell Now"
     )
     public static let sell = NSLocalizedString(
         "Sell %@",

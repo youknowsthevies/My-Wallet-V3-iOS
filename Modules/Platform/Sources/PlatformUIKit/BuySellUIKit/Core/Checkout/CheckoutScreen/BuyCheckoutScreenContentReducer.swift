@@ -110,11 +110,11 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             if data.hasCardCheckoutMade {
                 title = data.isPending3DS ? LocalizedSummary.completePaymentButton : LocalizedSummary.continueButtonPrefix
             } else {
-                title = "\(LocalizedSummary.buyButtonPrefix)\(data.outputCurrency.displayCode)"
+                title = LocalizedSummary.buyButtonTitle
             }
         case .bankAccount, .funds, .bankTransfer:
             if data.order.isPendingConfirmation {
-                title = "\(LocalizedSummary.buyButtonPrefix)\(data.outputCurrency.displayCode)"
+                title = LocalizedSummary.buyButtonTitle
             } else {
                 title = LocalizedSummary.continueButtonPrefix
             }
