@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import Localization
@@ -27,16 +28,21 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     private let pendingTransationStateProvider: PendingTransactionStateProviding
     private let transactionModel: TransactionModel
     private let analyticsHook: TransactionAnalyticsHook
+    private let sendEmailNotificationService: SendEmailNotificationServiceAPI
+
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         transactionModel: TransactionModel,
         presenter: PendingTransactionPagePresentable,
         action: AssetAction,
-        analyticsHook: TransactionAnalyticsHook = resolve()
+        analyticsHook: TransactionAnalyticsHook = resolve(),
+        sendEmailNotificationService: SendEmailNotificationServiceAPI = resolve()
     ) {
         pendingTransationStateProvider = PendingTransctionStateProviderFactory.pendingTransactionStateProvider(action: action)
         self.transactionModel = transactionModel
         self.analyticsHook = analyticsHook
+        self.sendEmailNotificationService = sendEmailNotificationService
         super.init(presenter: presenter)
     }
 
@@ -69,6 +75,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                     self?.analyticsHook.onTransactionFailure(with: transactionState)
                 case .completed:
                     self?.analyticsHook.onTransactionSuccess(with: transactionState)
+                    self?.triggerSendEmailNotification(transactionState)
                 }
             })
             .disposeOnDeactivate(interactor: self)
@@ -98,6 +105,15 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
             listener?.closeFlow()
         case .none:
             break
+        }
+    }
+
+    private func triggerSendEmailNotification(_ transactionState: TransactionState) {
+        if transactionState.action == .send, transactionState.source is NonCustodialAccount {
+            sendEmailNotificationService
+                .postSendEmailNotificationTrigger(transactionState.amount)
+                .subscribe()
+                .store(in: &cancellables)
         }
     }
 
