@@ -46,7 +46,7 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
                 client.postSendEmailNotificationTrigger(payload)
             }
             .handleEvents(receiveCompletion: { [errorRecoder] in
-                if case let .failure(error) = $0 {
+                if case .failure(let error) = $0 {
                     errorRecoder.error(error)
                 }
             })
