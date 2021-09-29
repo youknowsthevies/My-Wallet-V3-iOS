@@ -7,6 +7,7 @@ import PlatformUIKit
 import RIBs
 import RxRelay
 import RxSwift
+import UIComponentsKit
 
 final class ReceiveKYCPresenter: DetailsScreenPresenterAPI {
 

@@ -1,85 +1,16 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 import Combine
 import ComposableArchitecture
-import FeatureAccountPickerDomain
-import Localization
+@testable import FeatureAccountPickerUI
+import SnapshotTesting
 import SwiftUI
 import UIComponentsKit
+import XCTest
 
-public struct AccountPickerView: View {
+class AccountPickerViewTests: XCTestCase {
 
-    // MARK: - Internal properties
-
-    let store: Store<AccountPickerState, AccountPickerAction>
-    let badgeView: (AnyHashable) -> AnyView
-    let iconView: (AnyHashable) -> AnyView
-    let multiBadgeView: (AnyHashable) -> (AnyView)
-
-    // MARK: - Init
-
-    init(
-        store: Store<AccountPickerState, AccountPickerAction>,
-        badgeView: @escaping (AnyHashable) -> AnyView,
-        iconView: @escaping (AnyHashable) -> AnyView,
-        multiBadgeView: @escaping (AnyHashable) -> (AnyView)
-    ) {
-        self.store = store
-        self.badgeView = badgeView
-        self.iconView = iconView
-        self.multiBadgeView = multiBadgeView
-    }
-
-    public init(
-        environment: AccountPickerEnvironment,
-        badgeView: @escaping (AnyHashable) -> AnyView,
-        iconView: @escaping (AnyHashable) -> AnyView,
-        multiBadgeView: @escaping (AnyHashable) -> (AnyView)
-    ) {
-        self.init(
-            store: Store(
-                initialState: AccountPickerState(
-                    rows: [],
-                    header: .none
-                ),
-                reducer: accountPickerReducer,
-                environment: environment
-            ),
-            badgeView: badgeView,
-            iconView: iconView,
-            multiBadgeView: multiBadgeView
-        )
-    }
-
-    // MARK: - Body
-
-    public var body: some View {
-        WithViewStore(self.store) { viewStore in
-            VStack(spacing: .zero) {
-                HeaderView(viewModel: viewStore.header)
-                List {
-                    ForEachStore(
-                        self.store.scope(
-                            state: \.rows,
-                            action: AccountPickerAction.accountPickerRow(id:action:)
-                        ),
-                        content: AccountPickerRowView.with(
-                            badgeView: badgeView,
-                            iconView: iconView,
-                            multiBadgeView: multiBadgeView
-                        )
-                    )
-                    .listRowInsets(EdgeInsets())
-                }
-            }
-            .onAppear {
-                viewStore.send(.subscribeToUpdates)
-            }
-        }
-    }
-}
-
-struct AccountPickerView_Previews: PreviewProvider {
-
-    static let accountPickerRowList: IdentifiedArrayOf<AccountPickerRow> = [
+    let accountPickerRowList: IdentifiedArrayOf<AccountPickerRow> = [
         .accountGroup(
             AccountPickerRow.AccountGroup(
                 id: UUID(),
@@ -142,18 +73,18 @@ struct AccountPickerView_Previews: PreviewProvider {
         )
     ]
 
-    static let header = Header.normal(
+    let header = Header.normal(
         title: "Send Crypto Now",
         subtitle: "Choose a Wallet to send cypto from.",
         image: ImageAsset.iconSend.image,
         tableTitle: "Select a Wallet"
     )
 
-    static var previews: some View {
-        AccountPickerView(
+    func testView() {
+        let view = AccountPickerView(
             store: Store(
                 initialState: AccountPickerState(
-                    rows: [],
+                    rows: accountPickerRowList,
                     header: header
                 ),
                 reducer: accountPickerReducer,
@@ -161,15 +92,17 @@ struct AccountPickerView_Previews: PreviewProvider {
                     rowSelected: { _ in },
                     backButtonTapped: {},
                     closeButtonTapped: {},
-                    sections: { Just(Array(accountPickerRowList)).eraseToAnyPublisher() },
+                    sections: { .just([]).eraseToAnyPublisher() },
                     updateSingleAccount: { _ in nil },
                     updateAccountGroup: { _ in nil },
-                    header: { Just(header).setFailureType(to: Error.self).eraseToAnyPublisher() }
+                    header: { [unowned self] in .just(header).eraseToAnyPublisher() }
                 )
             ),
             badgeView: { _ in AnyView(EmptyView()) },
             iconView: { _ in AnyView(EmptyView()) },
             multiBadgeView: { _ in AnyView(EmptyView()) }
         )
+
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
     }
 }

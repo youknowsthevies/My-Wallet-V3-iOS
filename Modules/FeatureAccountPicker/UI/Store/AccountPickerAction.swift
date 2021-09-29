@@ -4,7 +4,8 @@ import SwiftUI
 
 enum AccountPickerAction {
     case accountPickerRow(id: AccountPickerRow.ID, action: AccountPickerRowAction)
-    case update(rows: [AccountPickerRow])
+    case updateRows(_ rows: [AccountPickerRow])
     case subscribeToUpdates
     case failedToUpdate(Error)
+    case updateHeader(_ header: Header)
 }

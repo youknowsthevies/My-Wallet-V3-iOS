@@ -6,10 +6,10 @@ public struct AccountPickerHeaderModel {
     public typealias LocalizedString = LocalizationConstants.WalletPicker
     static let defaultHeight: CGFloat = 169
 
-    private let title: String
-    private let subtitle: String
-    let imageContent: ImageViewContent
-    private let tableTitle: String?
+    public let title: String
+    public let subtitle: String
+    public let imageContent: ImageViewContent
+    public let tableTitle: String?
 
     var titleLabel: LabelContent {
         .init(

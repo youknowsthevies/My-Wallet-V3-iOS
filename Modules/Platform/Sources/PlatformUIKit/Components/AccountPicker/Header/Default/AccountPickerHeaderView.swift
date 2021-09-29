@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import UIComponentsKit
+
 final class AccountPickerHeaderView: UIView {
     private let patternImageView = UIImageView()
     private let assetImageView = UIImageView()
@@ -48,7 +50,7 @@ final class AccountPickerHeaderView: UIView {
         // MARK: Background Image Vie
 
         patternImageView.layoutToSuperview(.leading, .trailing, .top, .bottom)
-        patternImageView.image = UIImage(named: "link-pattern", in: .platformUIKit, compatibleWith: nil)
+        patternImageView.set(ImageViewContent(imageResource: ImageAsset.linkPattern.imageResource))
         patternImageView.contentMode = .scaleAspectFill
 
         // MARK: Asset Image View

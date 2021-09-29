@@ -8,6 +8,7 @@ import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
+import UIComponentsKit
 
 protocol SwapLandingRouting: ViewableRouting {}
 
@@ -188,7 +189,7 @@ extension SwapLandingInteractor {
             title: LocalizationId.Header.title,
             subtitle: LocalizationId.Header.description,
             imageContent: .init(
-                imageResource: .local(name: "icon_swap_transaction", bundle: .featureTransactionUI),
+                imageResource: ImageAsset.iconSwapTransaction.imageResource,
                 accessibility: .none,
                 renderingMode: .normal
             ),

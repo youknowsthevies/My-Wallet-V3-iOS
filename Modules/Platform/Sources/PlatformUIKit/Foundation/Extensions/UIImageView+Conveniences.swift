@@ -33,7 +33,7 @@ public struct ImageViewContent: Equatable {
     }
 
     let accessibility: Accessibility
-    let imageResource: ImageResource?
+    public let imageResource: ImageResource?
     let renderingMode: RenderingMode
 
     public init(

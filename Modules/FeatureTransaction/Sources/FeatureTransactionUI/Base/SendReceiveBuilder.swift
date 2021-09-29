@@ -3,6 +3,7 @@
 import Localization
 import PlatformKit
 import PlatformUIKit
+import UIComponentsKit
 import UIKit
 
 public final class ReceiveBuilder {

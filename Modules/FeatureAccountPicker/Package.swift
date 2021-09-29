@@ -69,7 +69,8 @@ let package = Package(
                 .product(name: "SnapshotTesting", package: "SnapshotTesting"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "PlatformUIKit", package: "Platform")
+                .product(name: "PlatformUIKit", package: "Platform"),
+                .product(name: "UIComponents", package: "UIComponents")
             ],
             path: "Tests",
             exclude: ["__Snapshots__"]

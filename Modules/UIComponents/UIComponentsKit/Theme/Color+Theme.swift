@@ -36,6 +36,7 @@ extension Color {
     // MARK: Divider
 
     public static let dividerLine = Color(paletteColor: .grey100)
+    public static let dividerLineLight = Color(paletteColor: .grey000)
 
     // MARK: Text
 

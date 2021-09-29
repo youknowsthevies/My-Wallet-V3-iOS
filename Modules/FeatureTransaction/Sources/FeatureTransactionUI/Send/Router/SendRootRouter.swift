@@ -5,6 +5,7 @@ import Localization
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import UIComponentsKit
 
 protocol SendRootInteractable: Interactable, TransactionFlowListener {
     var router: SendRootRouting? { get set }
