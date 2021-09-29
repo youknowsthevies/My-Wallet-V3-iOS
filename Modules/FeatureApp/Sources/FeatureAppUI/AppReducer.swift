@@ -45,7 +45,8 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     customerSupportChatService: $0.customerSupportChatService,
                     blurEffectHandler: $0.blurEffectHandler,
                     backgroundAppHandler: $0.backgroundAppHandler,
-                    supportedAssetsRemoteService: $0.supportedAssetsRemoteService
+                    supportedAssetsRemoteService: $0.supportedAssetsRemoteService,
+                    mainQueue: $0.mainQueue
                 )
             }
         ),

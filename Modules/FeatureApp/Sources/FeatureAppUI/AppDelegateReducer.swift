@@ -72,6 +72,7 @@ struct AppDelegateEnvironment {
     var blurEffectHandler: BlurVisualEffectHandlerAPI
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
+    var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
 /// The state of the app delegate
@@ -101,20 +102,20 @@ let appDelegateReducer = Reducer<
         return .merge(
             environment.supportedAssetsRemoteService
                 .refreshCustodialAssetsCache()
-                .receive(on: RunLoop.main)
+                .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),
 
             environment.supportedAssetsRemoteService
                 .refreshERC20AssetsCache()
-                .receive(on: RunLoop.main)
+                .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),
 
             environment.remoteNotificationAuthorizer
                 .registerForRemoteNotificationsIfAuthorized()
                 .asPublisher()
-                .receive(on: RunLoop.main)
+                .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .fireAndForget(),
 
