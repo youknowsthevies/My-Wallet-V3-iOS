@@ -485,4 +485,79 @@ extension LocalizationConstants.FeatureAuthentication {
             comment: "Reset password screen: password strength indicator: strong"
         )
     }
+
+    // MARK: - Skip Upgrade Screen
+
+    public enum SkipUpgrade {
+        public static let title = NSLocalizedString(
+            "Skip Upgrade",
+            comment: "Skip Upgrade screen: title"
+        )
+        public static let message = NSLocalizedString(
+            "Looks like you don’t have a Blockchain.com Wallet setup. If you continue to skip, you will be taken back to the log in screen.",
+            comment: "Skip Upgrade screen: message"
+        )
+        public enum Button {
+            public static let skipUpgrade = NSLocalizedString(
+                "Skip Upgrade",
+                comment: "Skip Upgrade CTA button"
+            )
+            public static let upgradeAccount = NSLocalizedString(
+                "Upgrade Account",
+                comment: "Upgrade Account CTA button"
+            )
+        }
+    }
+
+    // MARK: - Upgrade Account Screen
+
+    public enum UpgradeAccount {
+        public static let navigationTitle = NSLocalizedString(
+            "Upgrade Account",
+            comment: "Upgrade Account screen: navigation title"
+        )
+        public static let heading = NSLocalizedString(
+            "Upgrade to a Unified Blockchain Account",
+            comment: "Upgrade Account screen: heading"
+        )
+        public static let subheading = NSLocalizedString(
+            "Would you like to upgrade to a single login for all your Blockchain.com accounts?",
+            comment: "Upgrade Account screen: subheading"
+        )
+        public enum MessageList {
+            public static let headingOne = NSLocalizedString(
+                "One Login for All Accounts",
+                comment: "Upgrade Account screen: heading one"
+            )
+            public static let bodyOne = NSLocalizedString(
+                "Easily access your Blockchain.com Wallet and the Exchange with a single login.",
+                comment: "Upgrade Account screen: body one"
+            )
+            public static let headingTwo = NSLocalizedString(
+                "Greater Security Across Accounts",
+                comment: "Upgrade Account screen: heading two"
+            )
+            public static let bodyTwo = NSLocalizedString(
+                "Secure your investments across all Blockchain.com products.",
+                comment: "Upgrade Account screen: body two"
+            )
+            public static let headingThree = NSLocalizedString(
+                "Free Blockchain.com Wallet",
+                comment: "Upgrade Account screen: heading three"
+            )
+            public static let bodyThree = NSLocalizedString(
+                "Create a free Wallet account to do even more with your crypto.",
+                comment: "Upgrade Account screen: body three"
+            )
+        }
+
+        public static let upgradeAccountButton = NSLocalizedString(
+            "Upgrade My Account",
+            comment: "Upgrade Account CTA button"
+        )
+        public static let skipButton = NSLocalizedString(
+            "I’ll Do This Later",
+            comment: "Skip Upgrade CTA button"
+        )
+    }
 }

@@ -4,6 +4,8 @@ import Foundation
 
 final class AccessibilityIdentifiers: NSObject {
 
+    // MARK: - Email Login
+
     enum WelcomeScreen {
         static let prefix = "WelcomeScreen."
 
@@ -65,6 +67,8 @@ final class AccessibilityIdentifiers: NSObject {
         static let resetTwoFAButton = "\(prefix)resetTwoFAButton"
         static let hardwareKeyGroup = "\(prefix)hardwareKeyGroup"
     }
+
+    // MARK: - Account Recovery
 
     enum SeedPhraseScreen {
         static let prefix = "SeedPhraseScreen."
@@ -130,5 +134,27 @@ final class AccessibilityIdentifiers: NSObject {
         static let passwordStrengthIndicatorGroup = "\(prefix)passwordStrengthIndicatorGroup"
         static let confirmPasswordGroup = "\(prefix)confirmPasswordGroup"
         static let createAccountButton = "\(prefix)createAccountButton"
+    }
+
+    // MARK: - Upgrade Account (Unified sign in)
+
+    enum SkipUpgradeScreen {
+        static let prefix = "SkipUpgradeScreen."
+
+        static let skipUpgradeImage = "\(prefix)skipUpgradeImage"
+        static let skipUpgradeTitleText = "\(prefix)skipUpgradeTitleText"
+        static let skipUpgradeMessageText = "\(prefix)skipUpgradeMessageText"
+        static let skipUpgradeButton = "\(prefix)skipUpgradeButton"
+        static let upgradeAccountButton = "\(prefix)upgradeAccountButton"
+    }
+
+    enum UpgradeAccountScreen {
+        static let prefix = "UpgradeAccountScreen."
+
+        static let heading = "\(prefix)heading"
+        static let subheading = "\(prefix)subheading"
+        static let messageList = "\(prefix)messageList"
+        static let upgradeButton = "\(prefix)upgradeButton"
+        static let skipButton = "\(prefix)skipButton"
     }
 }

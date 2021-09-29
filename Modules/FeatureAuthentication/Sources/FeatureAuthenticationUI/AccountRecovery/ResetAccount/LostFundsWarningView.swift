@@ -33,7 +33,7 @@ struct LostFundsWarningView: View {
     var body: some View {
         VStack {
             Spacer()
-            Image.CircleIcon.lostFundWarning
+            Image.CircleIcon.warning
                 .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
                 .accessibility(identifier: AccessibilityIdentifiers.LostFundsWarningScreen.lostFundsWarningImage)
 
