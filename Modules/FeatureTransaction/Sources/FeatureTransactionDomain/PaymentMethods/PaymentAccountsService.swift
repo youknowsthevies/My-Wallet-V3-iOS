@@ -20,69 +20,60 @@ public protocol PaymentAccountsServiceAPI {
 
 final class PaymentAccountsService: PaymentAccountsServiceAPI {
 
-    let paymentMethodsService: PaymentMethodsServiceAPI
-    let linkedBanksService: LinkedBanksFactoryAPI
-    let linkedCardsService: CardListServiceAPI
+    let paymentMethodsService: PaymentMethodTypesServiceAPI
 
-    init(
-        paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
-        linkedBanksService: LinkedBanksFactoryAPI = resolve(),
-        linkedCardsService: CardListServiceAPI = resolve()
-    ) {
+    init(paymentMethodsService: PaymentMethodTypesServiceAPI = resolve()) {
         self.paymentMethodsService = paymentMethodsService
-        self.linkedBanksService = linkedBanksService
-        self.linkedCardsService = linkedCardsService
     }
 
     func fetchPaymentMethodAccounts(
         for currency: CryptoCurrency,
         amount: MoneyValue
     ) -> AnyPublisher<[PaymentMethodAccount], NetworkError> {
-        let linkedBanksService = self.linkedBanksService
-        let linkedCardsService = self.linkedCardsService
         // NOTE: currency and amount are ignored until new API is ready to use
-        return paymentMethodsService.paymentMethods
+        // STEP 1: Get all valid linked and linkable payment methods: this means, linked banks, linked cards, and payment methods.
+        // Linked cards and banks are currently filtered for Buy. This should be improved.
+        // Fetching payment methods is important as those contain the limits for the user.
+        paymentMethodsService
+            .paymentMethodTypesValidForBuy
             .asPublisher()
-            .flatMap { paymentMethods -> AnyPublisher<[PaymentMethodAccount], Error> in
-                let linkablePaymentMethods = paymentMethods.map { paymentMethod in
-                    PaymentMethodAccount(
-                        paymentMethod: paymentMethod,
-                        linkedAccount: nil
+            .zip(
+                paymentMethodsService
+                    .eligiblePaymentMethods(for: .locale)
+                    .asPublisher()
+            )
+            .map { paymentMethodTypes, elibiblePaymentMethods -> [PaymentMethodAccount] in
+                // Create `BlockchainAccount` types by merging a linked or linkable payment method, with it's payment method type metadata for limits
+                let mappedPaymentMethods: [PaymentMethod] = elibiblePaymentMethods.compactMap { paymentMethodType in
+                    // NOTE: Eligible payment methods are always of type `.suggested`
+                    guard case .suggested(let rawPaymentMethod) = paymentMethodType else {
+                        return nil
+                    }
+                    return rawPaymentMethod
+                }
+                return paymentMethodTypes.compactMap { paymentMethodType in
+                    guard let paymentMethod = mappedPaymentMethods.first(where: {
+                        paymentMethodType.method == $0.type
+                    }) else {
+                        Logger.shared.warning(
+                            "⚠️⚠️⚠️ [\(#function)] Could not find payment method for \(paymentMethodType.method) ⚠️⚠️⚠️"
+                        )
+                        return nil
+                    }
+                    return PaymentMethodAccount(
+                        paymentMethodType: paymentMethodType,
+                        paymentMethod: paymentMethod
                     )
                 }
-
-                let linkedCardAccounts = linkedCardsService
-                    .cards
-                    .asPublisher()
-                    .mapToCreditCardAccounts()
-                    .filter(canPerform: .buy)
-                    .mapToPaymentAccounts(
-                        paymentMethods: paymentMethods,
-                        filter: { $0.type.isCard }
-                    )
-
-                let linkedBankAccounts = linkedBanksService
-                    .nonWireTransferBanks // NOTE: LinkedBankAccounts don't have any supported actions, so use this.
-                    .asPublisher()
-                    .mapToPaymentAccounts(
-                        paymentMethods: paymentMethods,
-                        filter: { $0.type.isBankAccount }
-                    )
-
-                let linkablePaymentAccounts = Just(linkablePaymentMethods)
-                    .setFailureType(to: Error.self)
-                    .eraseToAnyPublisher()
-
-                return Publishers.Zip3(
-                    linkedCardAccounts,
-                    linkedBankAccounts,
-                    linkablePaymentAccounts
-                )
-                .map { cards, bankAccounts, paymentMethods in
-                    let allLinkedAccounts = cards + bankAccounts
-                    return allLinkedAccounts.isEmpty ? paymentMethods : allLinkedAccounts
+            }
+            .map { paymentAccounts in
+                // If there are linked accounts - e.g. bank or card accounts, we don't need to return 'linkable' account types.
+                if paymentAccounts.contains(where: { !$0.paymentMethodType.isSuggested }) {
+                    // Filter out "suggested" (linkable) account types, so the user only sees accounts that are already linked.
+                    // In this case, users can link new accounts by selecting the "Add" option in the source selection screen.
+                    return paymentAccounts.filter { !$0.paymentMethodType.isSuggested }
                 }
-                .eraseToAnyPublisher()
+                return paymentAccounts
             }
             .mapError { error in
                 guard let networkError = error as? NetworkError else {
@@ -91,46 +82,5 @@ final class PaymentAccountsService: PaymentAccountsServiceAPI {
                 return networkError
             }
             .eraseToAnyPublisher()
-    }
-}
-
-extension Publisher where Output: Collection, Output.Element: FiatAccount {
-
-    /// Maps `FiatAccount`s to `PaymentMethodAccount`s
-    /// - Parameters:
-    ///   - paymentMethods: A list of available payment methods to be used for the mapping.
-    ///   - filter: An extra filter for the payment method - for example, `isCard` or `isBank`. The list of accounts is filtered by currency and other parameters on the payment method.
-    /// - Returns:A `Combine.Publisher` outputting a list of `PaymentMethodAccount`s.
-    func mapToPaymentAccounts(
-        paymentMethods: [PaymentMethod],
-        filter: @escaping (PaymentMethod) -> Bool
-    ) -> AnyPublisher<[FeatureTransactionDomain.PaymentMethodAccount], Failure> {
-        map { accounts in
-            accounts.compactMap { account in
-                let paymentMethod = paymentMethods.first { paymentMethod in
-                    paymentMethod.isVisible
-                        && paymentMethod.fiatCurrency == account.fiatCurrency
-                        && filter(paymentMethod)
-                }
-                guard let filteredPaymentMethod = paymentMethod else {
-                    return nil
-                }
-                return PaymentMethodAccount(
-                    paymentMethod: filteredPaymentMethod,
-                    linkedAccount: account
-                )
-            }
-        }
-        .eraseToAnyPublisher()
-    }
-}
-
-extension Publisher where Output: Collection, Output.Element == CardData {
-
-    func mapToCreditCardAccounts() -> AnyPublisher<[FeatureTransactionDomain.CreditCardAccount], Failure> {
-        map {
-            $0.map(CreditCardAccount.init(cardData:))
-        }
-        .eraseToAnyPublisher()
     }
 }

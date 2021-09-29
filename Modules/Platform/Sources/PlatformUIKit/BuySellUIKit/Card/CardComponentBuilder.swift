@@ -29,7 +29,7 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
 
     public init(
         routingInteractor: CardRouterInteractor,
-        paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         messageRecorder: MessageRecording = resolve()
     ) {
@@ -79,7 +79,6 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
     }
 
     public func billingAddress(for cardData: CardData, navigationControllerAPI: NavigationControllerAPI) -> UIViewController {
-        // TODO: Move `SelectionRouter` to RIBs
         let selectionRouter = SelectionRouter(parent: navigationControllerAPI)
         let interactor = BillingAddressScreenInteractor(
             cardData: cardData,

@@ -87,7 +87,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             guard let self = self else {
                 return .error(PlatformKitError.default)
             }
-            guard case .hashed(let hash, let amount) = result else {
+            guard case .hashed(let hash, let amount, _) = result else {
                 return .error(PlatformKitError.default)
             }
             guard amount.isCrypto else {

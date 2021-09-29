@@ -3,6 +3,7 @@
 import DIKit
 import RxSwift
 
+/// Used to convert the user input into an actual quote with fee (takes a fiat amount)
 public protocol OrderQuoteServiceAPI: AnyObject {
 
     func getQuote(

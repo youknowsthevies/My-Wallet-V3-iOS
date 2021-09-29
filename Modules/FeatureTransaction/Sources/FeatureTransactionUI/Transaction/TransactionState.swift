@@ -28,6 +28,7 @@ struct TransactionState: StateType {
     var pendingTransaction: PendingTransaction?
     var executionStatus: TransactionExecutionStatus = .notStarted
     var errorState: TransactionErrorState = .none // TODO: make it associated data of execution status, if related?
+    var order: OrderDetails?
 
     // MARK: UI Supporting Data
 
@@ -279,6 +280,9 @@ extension TransactionState {
                 return transactionErrorDescriptionForError(nabu.code)
             case .rxError:
                 return LocalizationIds.unknownError
+
+            case .message(let message):
+                return message
             }
         case .unknownError:
             return LocalizationIds.unknownError
@@ -349,6 +353,7 @@ enum TransactionFlowStep: Equatable {
     case validateSource
     case confirmDetail
     case inProgress
+    case securityConfirmation
     case closed
 }
 
@@ -359,18 +364,19 @@ extension TransactionFlowStep {
         case .selectSource,
              .selectTarget,
              .enterAddress,
-             .enterAmount:
+             .enterAmount,
+             .inProgress,
+             .confirmDetail:
             return true
         case .closed,
-             .confirmDetail,
              .enterPassword,
-             .inProgress,
              .initial,
              .kycChecks,
              .validateSource,
              .linkPaymentMethod,
              .linkACard,
-             .linkABank:
+             .linkABank,
+             .securityConfirmation:
             return false
         }
     }
@@ -381,7 +387,8 @@ extension TransactionFlowStep {
         case .kycChecks,
              .linkPaymentMethod,
              .linkACard,
-             .linkABank:
+             .linkABank,
+             .securityConfirmation:
             return true
         case .closed,
              .confirmDetail,

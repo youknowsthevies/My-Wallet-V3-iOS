@@ -178,6 +178,15 @@ final class TransactionModel {
             )
         case .modifyTransactionConfirmation(let confirmation):
             return processModifyTransactionConfirmation(confirmation: confirmation)
+        case .performSecurityChecksForTransaction:
+            return nil
+        case .securityChecksCompleted:
+            process(
+                action: .updateTransactionComplete(
+                    .unHashed(amount: previousState.amount)
+                )
+            )
+            return nil
         case .invalidateTransaction:
             return processInvalidateTransaction()
         case .showSourceSelection:
@@ -247,7 +256,12 @@ final class TransactionModel {
     private func processExecuteTransaction(secondPassword: String) -> Disposable {
         interactor.verifyAndExecute(secondPassword: secondPassword)
             .subscribe(onSuccess: { [weak self] result in
-                self?.process(action: .updateTransactionComplete(result))
+                switch result {
+                case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
+                    self?.process(action: .performSecurityChecksForTransaction(result))
+                default:
+                    self?.process(action: .updateTransactionComplete(result))
+                }
             }, onError: { [weak self] error in
                 Logger.shared.error("!TRANSACTION!> Unable to processExecuteTransaction: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))

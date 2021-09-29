@@ -6,7 +6,7 @@ import Localization
 import PlatformKit
 import ToolKit
 
-final class CardAuthorizationScreenPresenter: RibBridgePresenter {
+public final class CardAuthorizationScreenPresenter: RibBridgePresenter {
 
     let title = LocalizationConstants.AuthorizeCardScreen.title
 
@@ -23,7 +23,7 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
 
     // MARK: - Setup
 
-    init(
+    public init(
         interactor: CardAuthorizationScreenInteractor,
         data: PartnerAuthorizationData,
         eventRecorder: AnalyticsEventRecorderAPI = resolve()

@@ -204,6 +204,10 @@ public struct PaymentMethod: Equatable, Comparable {
         lhs.type < rhs.type
     }
 
+    public var label: String {
+        type.rawType.rawValue
+    }
+
     public init(
         type: MethodType,
         max: FiatValue,

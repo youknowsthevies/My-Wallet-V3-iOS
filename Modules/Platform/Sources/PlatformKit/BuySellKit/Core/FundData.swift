@@ -3,6 +3,11 @@
 public struct FundData: Equatable {
     /// The lesser between available amount and maximum limit.
     public let topLimit: FiatValue
+    public let balance: FiatValue
+
+    public var label: String {
+        topLimit.currency.name
+    }
 
     init(balance: CustodialAccountBalance, max: FiatValue) {
         let fiatBalance = balance.available.fiatValue!
@@ -12,5 +17,6 @@ public struct FundData: Equatable {
         } else {
             topLimit = max
         }
+        self.balance = fiatBalance
     }
 }
