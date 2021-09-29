@@ -128,7 +128,8 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .zip(
                 buySellActivity.buySellActivityEvents(cryptoCurrency: asset),
                 ordersActivity.activity(cryptoCurrency: asset).catchErrorJustReturn([]),
-                swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal]).catchErrorJustReturn([])
+                swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal])
+                    .catchErrorJustReturn([])
             )
             .map { buySellActivity, ordersActivity, swapActivity -> [ActivityItemEvent] in
                 let swapAndSellActivityItemsEvents: [ActivityItemEvent] = swapActivity
