@@ -13,6 +13,9 @@ extension Color {
 
     public static let viewPrimaryBackground = Color(paletteColor: .white)
 
+    public static let shimmeringLight = Color(paletteColor: .grey000)
+    public static let shimmeringDark = Color(paletteColor: .grey200)
+
     // MARK: PrimaryButton
 
     public static let buttonPrimaryBackground = Color(paletteColor: .blue600)
