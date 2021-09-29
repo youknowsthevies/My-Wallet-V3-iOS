@@ -79,8 +79,9 @@ extension Result where Failure == Never {
     }
 
     public func mapError<E: Error>() -> Result<Success, E> {
-        mapError { _ -> E in
-            fatalError("This can never be executed")
+        switch self {
+        case let .success(value):
+            return .success(value)
         }
     }
 }
@@ -91,8 +92,9 @@ extension Result where Success == Never {
     }
 
     public func map<T>() -> Result<T, Failure> {
-        map { _ in
-            fatalError("This can never be executed")
+        switch self {
+        case let .failure(error):
+            return .failure(error)
         }
     }
 }

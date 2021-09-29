@@ -22,6 +22,11 @@ let package = Package(
             .branch("safe-property-wrappers")
         ),
         .package(
+            name: "combine-schedulers",
+            url: "https://github.com/pointfreeco/combine-schedulers",
+            from: "0.5.2"
+        ),
+        .package(
             name: "CombineExt",
             url: "https://github.com/CombineCommunity/CombineExt.git",
             from: "1.5.0"
@@ -67,6 +72,7 @@ let package = Package(
             dependencies: [
                 .target(name: "ToolKit"),
                 .target(name: "ToolKitMock"),
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")
             ]
         )
