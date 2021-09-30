@@ -188,21 +188,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .compactMap { $0 }
             .share(scope: .whileConnected)
 
-        let bottomAuxiliaryViewAccounts = Observable.combineLatest(
-            availableSources,
-            availableTargets
-        )
-        .map { [action] availableSources, availableTargets -> [Account] in
-            guard action == .buy || action == .deposit else {
-                return availableTargets
-            }
-            return availableSources
-        }
-
         accountAuxiliaryViewInteractor
             .connect(
-                stream: auxiliaryViewAccount,
-                availableAccounts: bottomAuxiliaryViewAccounts
+                stream: auxiliaryViewAccount
             )
             .disposeOnDeactivate(interactor: self)
 
