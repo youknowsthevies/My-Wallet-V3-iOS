@@ -120,9 +120,13 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
                     fiatCurrency: fiatCurrency
                 )
             } else {
+                // If you want the TxFlow to go straight to the
+                // `Enter Amount` screen, pass in a `sourceAccount`.
+                // However, if you do this, the user will not be able to
+                // return to the prior screen to change their source.
                 self.router?.startDeposit(
                     target: self.targetAccount,
-                    sourceAccount: filteredLinkedBanks.count > 1 ? nil : filteredLinkedBanks.first
+                    sourceAccount: nil
                 )
             }
         })
