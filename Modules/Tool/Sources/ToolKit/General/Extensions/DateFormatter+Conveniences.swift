@@ -40,7 +40,7 @@ extension DateFormatter {
     public static var elegantDateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
-        formatter.timeStyle = .medium
+        formatter.timeStyle = .short
         formatter.isLenient = true
         return formatter
     }
