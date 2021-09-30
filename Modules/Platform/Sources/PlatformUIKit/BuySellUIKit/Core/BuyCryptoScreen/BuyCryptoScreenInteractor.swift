@@ -191,6 +191,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .disposed(by: disposeBag)
 
         state
+            .observeOn(MainScheduler.asyncInstance)
             .flatMapLatest(weak: self) { (self, state) -> Observable<AmountInteractorState> in
                 Single
                     .zip(
