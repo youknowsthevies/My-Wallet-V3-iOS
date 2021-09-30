@@ -21,5 +21,7 @@ extension DependencyContainer {
         factory { ERC20BalanceService() as ERC20BalanceServiceAPI }
 
         factory { ERC20AccountAPIClient() as ERC20AccountAPIClientAPI }
+
+        factory { ERC20CryptoAssetService() as ERC20CryptoAssetServiceAPI }
     }
 }

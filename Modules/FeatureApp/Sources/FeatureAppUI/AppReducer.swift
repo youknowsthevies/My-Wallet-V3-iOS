@@ -66,14 +66,15 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     fiatCurrencySettingsService: $0.fiatCurrencySettingsService,
                     blockchainSettings: $0.blockchainSettings,
                     credentialsStore: $0.credentialsStore,
-                    alertPresenter: resolve(),
+                    alertPresenter: $0.alertViewPresenter,
                     walletUpgradeService: $0.walletUpgradeService,
                     exchangeRepository: $0.exchangeRepository,
                     remoteNotificationServiceContainer: $0.remoteNotificationServiceContainer,
-                    coincore: resolve(),
+                    coincore: $0.coincore,
+                    erc20CryptoAssetService: $0.erc20CryptoAssetService,
                     sharedContainer: $0.sharedContainer,
                     analyticsRecorder: $0.analyticsRecorder,
-                    siftService: resolve(),
+                    siftService: $0.siftService,
                     onboardingSettings: $0.onboardingSettings,
                     mainQueue: $0.mainQueue,
                     appStoreOpener: $0.appStoreOpener,
@@ -86,7 +87,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
 
 let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, action, environment in
     switch action {
-    case .appDelegate(.didFinishLaunching(let window)):
+    case .appDelegate(.didFinishLaunching):
         return .init(value: .core(.start))
     case .appDelegate(.didEnterBackground):
         return .fireAndForget {

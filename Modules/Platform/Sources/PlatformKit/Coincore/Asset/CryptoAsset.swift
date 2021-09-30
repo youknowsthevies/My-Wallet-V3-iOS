@@ -9,6 +9,9 @@ public protocol CryptoAsset: Asset {
 
     var asset: CryptoCurrency { get }
 
+    /// Gives a chance for the `CryptoAsset` to initialize itself.
+    func initialize() -> AnyPublisher<Void, AssetError>
+
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> { get }
 
     var canTransactToCustodial: AnyPublisher<Bool, Never> { get }
@@ -18,27 +21,24 @@ extension CryptoAsset {
 
     /// Forces wallets with the previous legacy label to the new default label.
     public func upgradeLegacyLabels(accounts: [BlockchainAccount]) -> AnyPublisher<Void, Never> {
-        AnyPublisher<[BlockchainAccount], Never>.just(accounts)
+        let publishers = accounts
             // Optional cast each element in the array to `CryptoNonCustodialAccount`.
-            .map { accounts -> [CryptoNonCustodialAccount] in
-                accounts.compactMap { $0 as? CryptoNonCustodialAccount }
-            }
+            .compactMap { $0 as? CryptoNonCustodialAccount }
             // Filter in elements that need `labelNeedsForcedUpdate`.
-            .map { accounts in
-                accounts.filter(\.labelNeedsForcedUpdate)
+            .filter(\.labelNeedsForcedUpdate)
+            // Map to infallible Publisher jobs.
+            .map { account in
+                // Updates this account label with new default.
+                account.updateLabel(account.newForcedUpdateLabel)
             }
-            // Map to infallible Completable jobs.
-            .map { accounts -> [AnyPublisher<Void, Never>] in
-                accounts.map { account in
-                    // Updates this account label with new default.
-                    account.updateLabel(account.newForcedUpdateLabel)
-                }
-            }
-            // Concat.
-            .flatMap { publishers -> AnyPublisher<Void, Never> in
-                publishers.merge()
-            }
-            .eraseToAnyPublisher()
+
+        return Deferred {
+            publishers
+                .merge()
+                .collect()
+        }
+        .mapToVoid()
+        .eraseToAnyPublisher()
     }
 
     /// Possible transaction targets this `Asset` has for a transaction initiating from the given `SingleAccount`.

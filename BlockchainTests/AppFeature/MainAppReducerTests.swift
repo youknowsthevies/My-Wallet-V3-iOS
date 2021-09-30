@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import DIKit
+import ERC20Kit
 import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
@@ -40,6 +41,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockInternalFeatureFlagService: InternalFeatureFlagServiceMock!
     var mockFiatCurrencySettingsService: FiatCurrencySettingsServiceMock!
     var mockAppStoreOpener: MockAppStoreOpener!
+    var mockERC20CryptoAssetService: ERC20CryptoAssetServiceMock!
 
     var testStore: TestStore<
         CoreAppState,
@@ -81,6 +83,7 @@ final class MainAppReducerTests: XCTestCase {
         mockInternalFeatureFlagService = InternalFeatureFlagServiceMock()
         mockFiatCurrencySettingsService = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
         mockAppStoreOpener = MockAppStoreOpener()
+        mockERC20CryptoAssetService = ERC20CryptoAssetServiceMock()
 
         testStore = TestStore(
             initialState: CoreAppState(),
@@ -101,6 +104,7 @@ final class MainAppReducerTests: XCTestCase {
                 exchangeRepository: mockExchangeAccountRepository,
                 remoteNotificationServiceContainer: mockRemoteNotificationServiceContainer,
                 coincore: mockCoincore,
+                erc20CryptoAssetService: mockERC20CryptoAssetService,
                 sharedContainer: SharedContainerUserDefaults(),
                 analyticsRecorder: mockAnalyticsRecorder,
                 siftService: mockSiftService,
@@ -372,7 +376,8 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.walletInitialized)
         mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(false))
-        testStore.receive(.proceedToLoggedIn) { state in
+        testStore.receive(.prepareForLoggedIn)
+        testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.onboarding = nil
             state.loggedIn = .init()
         }
@@ -493,7 +498,7 @@ final class MainAppReducerTests: XCTestCase {
     }
 
     func test_sending_logout_should_perform_cleanup_and_display_password_screen() {
-        testStore.send(.proceedToLoggedIn) { state in
+        testStore.send(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = .init()
             state.onboarding = nil
         }
@@ -570,7 +575,8 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.send(.onboarding(.walletUpgrade(.completed)))
         mockMainQueue.advance()
-        testStore.receive(.proceedToLoggedIn) { state in
+        testStore.receive(.prepareForLoggedIn)
+        testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
         }
@@ -591,7 +597,8 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(false))
-        testStore.receive(.proceedToLoggedIn) { state in
+        testStore.receive(.prepareForLoggedIn)
+        testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
         }
@@ -617,7 +624,8 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.walletInitialized)
         mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(false))
-        testStore.receive(.proceedToLoggedIn) { state in
+        testStore.receive(.prepareForLoggedIn)
+        testStore.receive(.proceedToLoggedIn(.success(true))) { state in
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
         }
@@ -722,3 +730,14 @@ final class MainAppReducerTests: XCTestCase {
 }
 
 // swiftlint:enable type_body_length
+
+// Copied from ERC20KitMock due to BlockchainTests not being able to import that dependency.
+final class ERC20CryptoAssetServiceMock: ERC20CryptoAssetServiceAPI {
+
+    var initializeCalled: Bool = false
+
+    func initialize() -> AnyPublisher<Void, ERC20CryptoAssetServiceError> {
+        initializeCalled = true
+        return .just(())
+    }
+}

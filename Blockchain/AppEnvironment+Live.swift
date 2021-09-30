@@ -32,6 +32,7 @@ extension AppEnvironment {
             sharedContainer: .default,
             analyticsRecorder: resolve(),
             coincore: resolve(),
+            erc20CryptoAssetService: resolve(),
             walletManager: resolve(),
             walletUpgradeService: resolve(),
             exchangeRepository: ExchangeAccountRepository(),

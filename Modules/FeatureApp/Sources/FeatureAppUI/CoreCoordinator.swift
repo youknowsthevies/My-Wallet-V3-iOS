@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import DIKit
+import ERC20Kit
 import FeatureAuthenticationUI
 import FeatureSettingsDomain
 import Localization
@@ -20,6 +21,7 @@ private enum WalletCancelations {
     struct AuthenticationId: Hashable {}
     struct InitializationId: Hashable {}
     struct UpgradeId: Hashable {}
+    struct AssetInitializationId: Hashable {}
 }
 
 public struct CoreAppState: Equatable {
@@ -40,11 +42,17 @@ public struct CoreAppState: Equatable {
     }
 }
 
+public enum ProceedToLoggedInError: Error, Equatable {
+    case coincore(CoincoreError)
+    case erc20Service(ERC20CryptoAssetServiceError)
+}
+
 public enum CoreAppAction: Equatable {
     case start
     case loggedIn(LoggedIn.Action)
     case onboarding(Onboarding.Action)
-    case proceedToLoggedIn
+    case prepareForLoggedIn
+    case proceedToLoggedIn(Result<Bool, ProceedToLoggedInError>)
     case appForegrounded
     case deeplink(DeeplinkOutcome)
     case requirePin
@@ -77,6 +85,7 @@ struct CoreAppEnvironment {
     var exchangeRepository: ExchangeAccountRepositoryAPI
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
     var coincore: CoincoreAPI
+    var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
     var sharedContainer: SharedContainerUserDefaults
     var analyticsRecorder: AnalyticsEventRecorderAPI
     var siftService: SiftServiceAPI
@@ -116,7 +125,6 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     remoteNotificationTokenSender: environment.remoteNotificationServiceContainer.tokenSender,
                     remoteNotificationAuthorizer: environment.remoteNotificationServiceContainer.authorizer,
                     walletManager: environment.walletManager,
-                    coincore: environment.coincore,
                     appSettings: environment.blockchainSettings,
                     deeplinkRouter: environment.deeplinkRouter,
                     featureFlagsService: environment.featureFlagsService,
@@ -382,14 +390,14 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .map { result -> CoreAppAction in
                 guard case .success(let shouldUpgrade) = result else {
                     // impossible with current `WalletUpgradeServicing` implementation
-                    return CoreAppAction.proceedToLoggedIn
+                    return CoreAppAction.prepareForLoggedIn
                 }
                 return CoreAppAction.walletNeedsUpgrade(shouldUpgrade)
             }
     case .walletNeedsUpgrade(let shouldUpgrade):
         // check if we need the wallet needs an upgrade otherwise proceed to logged in state
         guard shouldUpgrade else {
-            return Effect(value: CoreAppAction.proceedToLoggedIn)
+            return Effect(value: CoreAppAction.prepareForLoggedIn)
         }
         environment.loadingViewPresenter.hide()
         state.onboarding?.pinState = nil
@@ -399,7 +407,41 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .cancel(id: WalletCancelations.UpgradeId()),
             Effect(value: CoreAppAction.onboarding(.walletUpgrade(.begin)))
         )
-    case .proceedToLoggedIn:
+
+    case .prepareForLoggedIn:
+        let coincoreInit = environment.coincore
+            .initialize()
+            .mapError(ProceedToLoggedInError.coincore)
+        let erc20Init = environment.erc20CryptoAssetService
+            .initialize()
+            .mapError(ProceedToLoggedInError.erc20Service)
+            .eraseToAnyPublisher()
+
+        return coincoreInit
+            .flatMap { _ in
+                erc20Init
+            }
+            .receive(on: environment.mainQueue)
+            .catchToEffect { result in
+                switch result {
+                case .failure(let error):
+                    return .failure(error)
+                case .success:
+                    return .success(true)
+                }
+            }
+            .cancellable(id: WalletCancelations.AssetInitializationId(), cancelInFlight: false)
+            .map(CoreAppAction.proceedToLoggedIn)
+
+    case .proceedToLoggedIn(.failure(let error)):
+        state.onboarding?.displayAlert = .proceedToLoggedIn(error)
+        return .merge(
+            .cancel(id: WalletCancelations.AssetInitializationId()),
+            .cancel(id: WalletCancelations.InitializationId()),
+            .cancel(id: WalletCancelations.UpgradeId())
+        )
+
+    case .proceedToLoggedIn(.success):
         environment.loadingViewPresenter.hide()
         // prepare the context for logged in state, if required
         var context: LoggedIn.Context = .none
@@ -412,6 +454,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         state.loggedIn = LoggedIn.State()
         state.onboarding = nil
         return .merge(
+            .cancel(id: WalletCancelations.AssetInitializationId()),
             .cancel(id: WalletCancelations.InitializationId()),
             .cancel(id: WalletCancelations.UpgradeId()),
             Effect(
@@ -435,7 +478,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
     case .onboarding(.walletUpgrade(.completed)):
         return Effect(
-            value: CoreAppAction.proceedToLoggedIn
+            value: CoreAppAction.prepareForLoggedIn
         )
     case .onboarding(.passwordScreen(.authenticate(let password))):
         return Effect(

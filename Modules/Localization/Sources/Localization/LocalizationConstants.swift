@@ -75,7 +75,7 @@ public enum LocalizationConstants {
 
     public enum Errors {
         public static let genericError = NSLocalizedString(
-            "An error occured. Please try again.",
+            "An error occurred. Please try again.",
             comment: "Generic error message displayed when an error occurs."
         )
         public static let error = NSLocalizedString("Error", comment: "")

@@ -80,7 +80,7 @@ extension Result where Failure == Never {
 
     public func mapError<E: Error>() -> Result<Success, E> {
         switch self {
-        case let .success(value):
+        case .success(let value):
             return .success(value)
         }
     }
@@ -93,7 +93,7 @@ extension Result where Success == Never {
 
     public func map<T>() -> Result<T, Failure> {
         switch self {
-        case let .failure(error):
+        case .failure(let error):
             return .failure(error)
         }
     }

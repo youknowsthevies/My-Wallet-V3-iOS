@@ -68,7 +68,9 @@ final class ERC20Asset: CryptoAsset {
     // MARK: - Asset
 
     func initialize() -> AnyPublisher<Void, AssetError> {
-        .empty()
+        Just(())
+            .mapError(to: AssetError.self)
+            .eraseToAnyPublisher()
     }
 
     func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {

@@ -70,10 +70,7 @@ public final class PortfolioProvider: PortfolioProviding {
     // MARK: - Balance Descriptions
 
     private func balance(for currency: CryptoCurrency) -> Observable<Portfolio.Account> {
-        guard let cryptoAsset = coincore.cryptoAssets.first(where: { $0.asset == currency }) else {
-            return .just(Portfolio.Account(currency: currency, balance: BigInt.zero.description))
-        }
-        return cryptoAsset
+        coincore[currency]
             .accountGroup(filter: .all)
             .asObservable()
             .flatMap(\.balance)
@@ -81,6 +78,5 @@ public final class PortfolioProvider: PortfolioProviding {
             .catchErrorJustReturn(.zero)
             .map(\.description)
             .map { Portfolio.Account(currency: currency, balance: $0) }
-            .asObservable()
     }
 }

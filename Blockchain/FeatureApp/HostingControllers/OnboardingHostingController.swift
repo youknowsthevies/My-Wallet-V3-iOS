@@ -191,6 +191,18 @@ final class OnboardingHostingController: UIViewController {
 
     private func showAlert(type: Onboarding.Alert) {
         switch type {
+        case .proceedToLoggedIn(.coincore(let error)):
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.genericError + " " + error.localizedDescription
+            )
+            alertViewPresenter.notify(content: content, in: self)
+        case .proceedToLoggedIn(.erc20Service(let error)):
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.genericError + " " + error.localizedDescription
+            )
+            alertViewPresenter.notify(content: content, in: self)
         case .walletAuthentication(let error) where error.code == .failedToLoadWallet:
             handleFailedToLoadWalletAlert()
         case .walletAuthentication(let error) where error.code == .noInternet:

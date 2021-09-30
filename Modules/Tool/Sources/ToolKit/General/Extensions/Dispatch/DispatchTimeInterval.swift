@@ -8,13 +8,13 @@ extension DispatchTimeInterval {
         switch self {
         case .never:
             return TimeInterval(0)
-        case let .seconds(value):
+        case .seconds(let value):
             return TimeInterval(value)
-        case let .milliseconds(value):
+        case .milliseconds(let value):
             return TimeInterval(value) * 0.001
-        case let .microseconds(value):
+        case .microseconds(let value):
             return TimeInterval(value) * 0.000001
-        case let .nanoseconds(value):
+        case .nanoseconds(let value):
             return TimeInterval(value) * 0.000000001
         @unknown default:
             assertionFailure("Unknown case in \(My.self)")

@@ -11,6 +11,7 @@ import ToolKit
 
 public enum Onboarding {
     public enum Alert: Equatable {
+        case proceedToLoggedIn(ProceedToLoggedInError)
         case walletAuthentication(AuthenticationError)
     }
 

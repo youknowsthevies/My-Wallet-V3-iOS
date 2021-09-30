@@ -131,39 +131,7 @@ extension DependencyContainer {
 
         factory { LinkedBanksFactory() as LinkedBanksFactoryAPI }
 
-        single { () -> CoincoreAPI in
-            let provider: EnabledCurrenciesServiceAPI = DIKit.resolve()
-            let allEnabledCryptoCurrencies = provider.allEnabledCryptoCurrencies
-            let nonCustodialCoinCodes = NonCustodialCoinCode.allCases.map(\.rawValue)
-
-            let nonCustodialAssets = allEnabledCryptoCurrencies
-                .filter(\.isCoin)
-                .filter { nonCustodialCoinCodes.contains($0.code) }
-                .map { cryptoCurrency -> CryptoAsset in
-                    let asset: CryptoAsset = DIKit.resolve(tag: cryptoCurrency)
-                    return asset
-                }
-            let custodialAssets = allEnabledCryptoCurrencies
-                .filter(\.isCoin)
-                .filter { !nonCustodialCoinCodes.contains($0.code) }
-                .map { cryptoCurrency -> CryptoAsset in
-                    CustodialCryptoAsset(asset: cryptoCurrency)
-                }
-            let erc20Factory: ERC20AssetFactoryAPI = DIKit.resolve()
-            let erc20Assets = allEnabledCryptoCurrencies
-                .filter(\.isERC20)
-                .compactMap { cryptoCurrency -> ERC20AssetModel? in
-                    guard case .erc20(let model) = cryptoCurrency else {
-                        return nil
-                    }
-                    return model
-                }
-                .compactMap { erc20Factory.erc20Asset(erc20AssetModel: $0) }
-
-            return Coincore(
-                cryptoAssets: nonCustodialAssets + custodialAssets + erc20Assets
-            )
-        }
+        single { Coincore() as CoincoreAPI }
 
         factory { SupportedAssetsFilePathProvider() as SupportedAssetsFilePathProviderAPI }
 
