@@ -314,33 +314,39 @@ public final class FirebaseDeeplinkHandler: URIHandlingAPI {
     public func handle(url: URL) -> AnyPublisher<DeeplinkOutcome, AppDeeplinkError> {
         Deferred { [dynamicLinks] in
             Future<DeeplinkOutcome, AppDeeplinkError> { promise in
-                dynamicLinks.dynamicLink(fromUniversalLink: url) { dynamicLink, error in
-                    guard error == nil else {
-                        Logger.shared.error("Got error handling universal link: \(String(describing: error!))")
-                        promise(.failure(.dynamicLink(error!)))
-                        return
-                    }
-
-                    guard let deepLinkUrl = dynamicLink?.url else {
-                        Logger.shared.error("Dynamic link not detected")
-                        promise(.failure(.urlMissing))
-                        return
-                    }
-
+                dynamicLinks.handleUniversalLink(url) { dynamicLink, error in
                     // Check that the version of the link (if provided) is supported, if not, prompt the user to update
-                    if let minimumAppVersionStr = dynamicLink?.minimumAppVersion,
-                       let minimumAppVersion = AppVersion(string: minimumAppVersionStr),
-                       let appVersionStr = Bundle.applicationVersion,
-                       let appVersion = AppVersion(string: appVersionStr),
+                    if let minimumAppVersion = dynamicLink?.minimumAppVersion.flatMap(AppVersion.init(string:)),
+                       let appVersion = Bundle.applicationVersion.flatMap(AppVersion.init(string:)),
                        appVersion < minimumAppVersion
                     {
-                        promise(.success(.informAppNeedsUpdate))
-                        return
+                        return promise(.success(.informAppNeedsUpdate))
                     }
 
-                    Logger.shared.info("Deeplink: \(deepLinkUrl.absoluteString)")
-                    let content = URIContent(url: deepLinkUrl, context: .dynamicLinks)
-                    promise(.success(.handleLink(content)))
+                    do {
+                        if let error = error { throw error }
+
+                        var dynamicURL = try (dynamicLink?.url)
+                            .flatMap { URLComponents(url: $0, resolvingAgainstBaseURL: false) }
+                            .or(throw: AppDeeplinkError.urlMissing)
+
+                        let base = try URLComponents(url: url, resolvingAgainstBaseURL: false)
+                            .or(throw: AppDeeplinkError.urlMissing)
+
+                        dynamicURL.queryItems = dynamicURL.queryItems.or(default: [])
+                            + base.queryItems.or(default: [])
+
+                        let url = try dynamicURL.url
+                            .or(throw: AppDeeplinkError.urlMissing)
+
+                        let content = URIContent(url: url, context: .dynamicLinks)
+                        promise(.success(.handleLink(content)))
+                    } catch let error as AppDeeplinkError {
+                        promise(.failure(error))
+                    } catch {
+                        Logger.shared.error("Got error handling universal link: \(String(describing: error))")
+                        promise(.failure(.dynamicLink(error)))
+                    }
                 }
             }
         }
