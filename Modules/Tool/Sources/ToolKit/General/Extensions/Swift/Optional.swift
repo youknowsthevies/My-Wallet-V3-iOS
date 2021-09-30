@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 public protocol OptionalProtocol: ExpressibleByNilLiteral {
     associatedtype Wrapped
 
@@ -21,6 +23,11 @@ extension Optional {
     @discardableResult
     public func or<E>(throw error: E) throws -> Wrapped where E: Error {
         guard let value = self else { throw error }
+        return value
+    }
+
+    public func or(default defaultValue: @autoclosure () -> Wrapped) -> Wrapped {
+        guard let value = self else { return defaultValue() }
         return value
     }
 }
