@@ -33,13 +33,8 @@ public final class ReceiveBuilder {
             titleViewStyle: .text(value: LocalizedReceive.Text.request),
             barStyle: .lightContent()
         )
-        let accountProvider = AccountPickerAccountProvider(
-            singleAccountsOnly: true,
-            action: .receive,
-            failSequence: false
-        )
         let builder = AccountPickerBuilder(
-            accountProvider: accountProvider,
+            accountProvider: ReceiveAccountProvider(),
             action: .receive
         )
         let didSelect: AccountPickerDidSelect = { [weak self] account in

@@ -128,6 +128,15 @@
         }
       },
       {
+        "package": "swift-algorithms",
+        "repositoryURL": "https://github.com/apple/swift-algorithms.git",
+        "state": {
+          "branch": null,
+          "revision": "2327673b0e9c7e90e6b1826376526ec3627210e4",
+          "version": "0.2.1"
+        }
+      },
+      {
         "package": "swift-case-paths",
         "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
         "state": {
@@ -170,6 +179,15 @@
           "branch": null,
           "revision": "edececbdb56b07e9402f2f3f5b907d220a28b4ea",
           "version": "0.1.1"
+        }
+      },
+      {
+        "package": "swift-numerics",
+        "repositoryURL": "https://github.com/apple/swift-numerics",
+        "state": {
+          "branch": null,
+          "revision": "6583ac70c326c3ee080c1d42d9ca3361dca816cd",
+          "version": "0.1.0"
         }
       },
       {

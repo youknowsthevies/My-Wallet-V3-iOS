@@ -22,6 +22,7 @@ public class ReceiveCoordinator {
 
     // MARK: - Private Properties
 
+    private let coincore: CoincoreAPI
     private let receiveRouter: ReceiveRouterAPI
     private let kycStatusChecker: KYCStatusChecking
     private let analyticsHook: TransactionAnalyticsHook
@@ -30,11 +31,13 @@ public class ReceiveCoordinator {
     // MARK: - Setup
 
     init(
+        coincore: CoincoreAPI = resolve(),
         receiveRouter: ReceiveRouterAPI = resolve(),
         receiveSelectionService: AccountSelectionServiceAPI = AccountSelectionService(),
         kycStatusChecker: KYCStatusChecking = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve()
     ) {
+        self.coincore = coincore
         self.receiveRouter = receiveRouter
         self.kycStatusChecker = kycStatusChecker
         self.analyticsHook = analyticsHook
@@ -44,8 +47,10 @@ public class ReceiveCoordinator {
 
         receiveSelectionService
             .selectedData
-            .flatMap(weak: self) { (self, account) -> Observable<ReceiveAction> in
+            .flatMapLatest(weak: self) { (self, account) -> Observable<ReceiveAction> in
                 switch account {
+                case let account as ReceivePlaceholderCryptoAccount:
+                    return self.present(placeholderAccount: account)
                 case is TradingAccount:
                     return self.didSelectTradingAccountForReceive(account: account)
                 default:
@@ -69,6 +74,13 @@ public class ReceiveCoordinator {
     }
 
     // MARK: - Private Methods
+
+    private func present(placeholderAccount: ReceivePlaceholderCryptoAccount) -> Observable<ReceiveAction> {
+        coincore[placeholderAccount.asset]
+            .defaultAccount
+            .asObservable()
+            .map { .presentReceiveScreen(account: $0) }
+    }
 
     private func didSelectTradingAccountForReceive(account: BlockchainAccount) -> Observable<ReceiveAction> {
         kycStatusChecker.checkStatus()
