@@ -35,6 +35,12 @@ extension LocalizationConstants {
             public enum AmountPresenter {
                 public enum LimitView {}
             }
+
+            public enum Completion {
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
+            }
         }
 
         public enum Sell {
@@ -651,6 +657,71 @@ extension LocalizationConstants.Transaction.Swap.Completion.Failure {
 
     public static let overSilverTierLimit = NSLocalizedString(
         "Please upgrade your profile to swap this amount.",
+        comment: ""
+    )
+}
+
+// MARK: - Buy
+
+extension LocalizationConstants.Transaction.Buy.Completion.Success {
+    public static let title = NSLocalizedString(
+        "Buy Complete",
+        comment: "Buy Complete"
+    )
+    public static let description = NSLocalizedString(
+        "Your %@ is now available in your Wallet.",
+        comment: "Your %@ is now available in your Wallet."
+    )
+    public static let action = NSLocalizedString(
+        "OK",
+        comment: "OK"
+    )
+}
+
+extension LocalizationConstants.Transaction.Buy.Completion.Pending {
+    public static let title = NSLocalizedString(
+        "Buying %@ with %@",
+        comment: "Buying [target crypto] with [source fiat]"
+    )
+    public static let description = NSLocalizedString(
+        "We're completing your buy order now.",
+        comment: "We're completing your buy order now."
+    )
+}
+
+extension LocalizationConstants.Transaction.Buy.Completion.Failure {
+    public static let title = NSLocalizedString(
+        "Oops! Something Went Wrong.",
+        comment: "Oops! Something Went Wrong."
+    )
+
+    public static let description = NSLocalizedString(
+        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+    )
+
+    public static let action = NSLocalizedString(
+        "OK",
+        comment: "OK"
+    )
+
+    public static let insufficientFundsForFees = NSLocalizedString(
+        "Not enough %@ in your wallet to buy with current network fees.",
+        comment: ""
+    )
+
+    public static let underMinLimit = NSLocalizedString(
+        "Minimum buy is %@.",
+        comment: ""
+    )
+
+    public static let overGoldTierLimit = NSLocalizedString(
+        "You can buy up to %1$s today.",
+        comment: ""
+    )
+
+    public static let overSilverTierLimit = NSLocalizedString(
+        "Please upgrade your profile to buy this amount.",
         comment: ""
     )
 }
