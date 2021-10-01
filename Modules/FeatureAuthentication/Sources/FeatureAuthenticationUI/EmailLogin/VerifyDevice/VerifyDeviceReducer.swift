@@ -50,6 +50,7 @@ struct VerifyDeviceState: Equatable {
 struct VerifyDeviceEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let deviceVerificationService: DeviceVerificationServiceAPI
+    let appFeatureConfigurator: FeatureConfiguratorAPI
     let errorRecorder: ErrorRecording
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -57,12 +58,14 @@ struct VerifyDeviceEnvironment {
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         deviceVerificationService: DeviceVerificationServiceAPI,
+        appFeatureConfigurator: FeatureConfiguratorAPI,
         errorRecorder: ErrorRecording,
         externalAppOpener: ExternalAppOpener = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
+        self.appFeatureConfigurator = appFeatureConfigurator
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
@@ -81,6 +84,7 @@ let verifyDeviceReducer = Reducer.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder,
                     externalAppOpener: $0.externalAppOpener,
+                    appFeatureConfigurator: $0.appFeatureConfigurator,
                     analyticsRecorder: $0.analyticsRecorder
                 )
             }
@@ -148,6 +152,8 @@ let verifyDeviceReducer = Reducer.combine(
                 switch state.credentialsContext {
                 case .walletInfo(let walletInfo):
                     state.credentialsState = CredentialsState(
+                        accountRecoveryEnabled:
+                        environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled,
                         walletPairingState: WalletPairingState(
                             emailAddress: walletInfo.email ?? "",
                             emailCode: walletInfo.emailCode,
@@ -156,12 +162,17 @@ let verifyDeviceReducer = Reducer.combine(
                     )
                 case .walletIdentifier(let guid):
                     state.credentialsState = CredentialsState(
+                        accountRecoveryEnabled:
+                        environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled,
                         walletPairingState: WalletPairingState(
                             walletGuid: guid ?? ""
                         )
                     )
                 case .manualPairing, .none:
-                    state.credentialsState = .init()
+                    state.credentialsState = .init(
+                        accountRecoveryEnabled:
+                        environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled
+                    )
                 }
             }
             return .none

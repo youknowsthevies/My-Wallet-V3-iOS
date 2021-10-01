@@ -6,6 +6,7 @@ import ERC20DataKit
 import FeatureAppUI
 import FeatureDebugUI
 import FeatureInterestData
+import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData
 import Firebase
@@ -101,11 +102,12 @@ func defineDependencies() {
         DependencyContainer.featureKYCDomain
         DependencyContainer.featureKYCUI
         DependencyContainer.blockchain
+        DependencyContainer.featureSettingsData
         DependencyContainer.featureSettingsDomain
         DependencyContainer.featureSettingsUI
         DependencyContainer.remoteNotificationsKit
-        DependencyContainer.featureAuthenticationDomain
         DependencyContainer.featureAuthenticationData
+        DependencyContainer.featureAuthenticationDomain
         DependencyContainer.featureAppUI
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI

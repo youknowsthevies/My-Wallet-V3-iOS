@@ -88,8 +88,8 @@ let package = Package(
         .target(
             name: "FeatureAuthenticationMock",
             dependencies: [
-                .target(name: "FeatureAuthenticationDomain"),
-                .target(name: "FeatureAuthenticationData")
+                .target(name: "FeatureAuthenticationData"),
+                .target(name: "FeatureAuthenticationDomain")
             ]
         ),
         .testTarget(

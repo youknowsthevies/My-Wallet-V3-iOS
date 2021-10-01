@@ -573,6 +573,8 @@ targets:
     - createIntermediateGroups: true
       path: Modules/RemoteNotifications/Sources/RemoteNotificationsKitMock
     - createIntermediateGroups: true
+      path: Modules/FeatureAuthentication/Sources/FeatureAuthenticationMock
+    - createIntermediateGroups: true
       path: Modules/FeatureKYC/Sources/FeatureKYCDomainMock
     - createIntermediateGroups: true
       path: Modules/FeatureKYC/Sources/FeatureKYCUIMock

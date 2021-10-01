@@ -2,12 +2,14 @@
 
 import Combine
 import CombineExt
-import NetworkError
+import FeatureAuthenticationData
+import FeatureAuthenticationDomain
 @testable import NetworkKit
 @testable import PlatformKit
 import ToolKit
 import XCTest
 
+@testable import FeatureAuthenticationMock
 @testable import NetworkKitMock
 @testable import PlatformKitMock
 @testable import ToolKitMock
@@ -19,7 +21,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
     private var cancellables: Set<AnyCancellable>!
     private var userCreationClient: NabuUserCreationClientMock!
     private var sessionTokenClient: NabuSessionTokenClientMock!
-    private var resetUserClient: NabuResetUserClientMock!
+    private var errorBroadcaster: MockUserAlreadyRestoredHandler!
     private var store: NabuTokenStore!
     private var settingsService: SettingsServiceMock!
     private var siftService: SiftServiceMock!
@@ -34,7 +36,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         cancellables = Set<AnyCancellable>([])
         sessionTokenClient = NabuSessionTokenClientMock()
         userCreationClient = NabuUserCreationClientMock()
-        resetUserClient = NabuResetUserClientMock()
+        errorBroadcaster = MockUserAlreadyRestoredHandler()
         store = NabuTokenStore()
         settingsService = SettingsServiceMock()
         siftService = SiftServiceMock()
@@ -46,13 +48,13 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             uuidString: "uuid"
         )
         subject = NabuAuthenticationExecutor(
-            userCreationClient: userCreationClient,
             store: store,
+            errorBroadcaster: errorBroadcaster,
+            userCreationClient: userCreationClient,
             settingsService: settingsService,
             siftService: siftService,
             jwtService: jwtService,
             sessionTokenClient: sessionTokenClient,
-            resetUserClient: resetUserClient,
             credentialsRepository: walletRepository,
             deviceInfo: deviceInfo
         )
@@ -62,7 +64,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         cancellables = nil
         sessionTokenClient = nil
         userCreationClient = nil
-        resetUserClient = nil
+        errorBroadcaster = nil
         store = nil
         settingsService = nil
         siftService = nil
@@ -74,12 +76,13 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         try super.tearDownWithError()
     }
 
+    // swiftlint:disable function_body_length
     func testSuccessfulAuthenticationWhenUserIsAlreadyCreated() throws {
 
         // Arrange
         let expectedSessionTokenValue = "session-token"
 
-        let offlineTokenResponse = NabuOfflineTokenResponse(
+        let offlineToken = NabuOfflineToken(
             userId: "user-id",
             token: "offline-token"
         )
@@ -108,8 +111,8 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             description: "The offline token was set successfully"
         )
         walletRepository
-            .setPublisher(
-                offlineTokenResponse: offlineTokenResponse
+            .set(
+                offlineToken: offlineToken
             )
             .sink(receiveCompletion: { completion in
                 switch completion {
@@ -224,15 +227,17 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         )
     }
 
+    // swiftlint:disable function_body_length
     func testSuccessfulAuthenticationWhenUserIsNotCreated() throws {
 
         // Arrange
         let expectedSessionTokenValue = "session-token"
 
         let offlineTokenResponse = NabuOfflineTokenResponse(userId: "user-id", token: "offline-token")
+        let offlineToken = NabuOfflineToken(userId: "user-id", token: "offline-token")
 
         // Offline token is missing - user creation will be attempted
-        walletRepository.expectedOfflineTokenResponse = .failure(.offlineToken)
+        walletRepository.expectedOfflineToken = .failure(.offlineToken)
         jwtService.expectedResult = .success("jwt-token")
         userCreationClient.expectedResult = .success(offlineTokenResponse)
 
@@ -328,8 +333,8 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 case .finished:
                     XCTAssertEqual(
                         // swiftlint:disable:next force_try
-                        try! self.walletRepository.expectedOfflineTokenResponse.get(),
-                        offlineTokenResponse
+                        try! self.walletRepository.expectedOfflineToken.get(),
+                        offlineToken
                     )
                     authenticationSuccessfulExpectation.fulfill()
                 case .failure(let error):
@@ -349,10 +354,11 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         )
     }
 
+    // swiftlint:disable function_body_length
     func testExpiredTokenAndSecondSuccessfulAuthentication() throws {
 
         // Arrange
-        let offlineTokenResponse = NabuOfflineTokenResponse(
+        let offlineToken = NabuOfflineToken(
             userId: "user-id",
             token: "offline-token"
         )
@@ -416,8 +422,8 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             description: "The offline token was set successfully"
         )
         walletRepository
-            .setPublisher(
-                offlineTokenResponse: offlineTokenResponse
+            .set(
+                offlineToken: offlineToken
             )
             .sink(receiveCompletion: { completion in
                 guard case .finished = completion else {
@@ -496,7 +502,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 } else {
                     let httpResponse = HTTPURLResponse(
                         url: URL(string: "https://www.blockchain.com")!,
-                        statusCode: NabuAuthenticationError.tokenExpired.rawValue,
+                        statusCode: 401,
                         httpVersion: nil,
                         headerFields: nil
                     )!
@@ -519,8 +525,8 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 case .finished:
                     XCTAssertEqual(
                         // swiftlint:disable:next force_try
-                        try! self.walletRepository.expectedOfflineTokenResponse.get(),
-                        offlineTokenResponse
+                        try! self.walletRepository.expectedOfflineToken.get(),
+                        offlineToken
                     )
                     authenticationSuccessfulExpectation.fulfill()
                 case .failure(let error):
@@ -541,5 +547,74 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             timeout: 20,
             enforceOrder: true
         )
+    }
+
+    func testUserAlreadyRestoredShouldBroadcastError() {
+
+        // Arrange (409 server error response)
+        let offlineToken = NabuOfflineToken(
+            userId: "user-id",
+            token: "offline-token"
+        )
+        walletRepository.expectedOfflineToken = .success(offlineToken)
+        walletRepository.expectedGuid = "guid"
+        walletRepository.expectedSharedKey = "shared-key"
+        jwtService.expectedResult = .success("jwt-token")
+        settingsService.expectedResult = .success(
+            .init(
+                response: .init(
+                    language: "en",
+                    currency: "USD",
+                    email: "abcd@abcd.com",
+                    guid: "guid",
+                    emailNotificationsEnabled: false,
+                    smsNumber: nil,
+                    smsVerified: false,
+                    emailVerified: false,
+                    authenticator: 0,
+                    countryCode: "US",
+                    invited: [:]
+                )
+            )
+        )
+
+        let mockHttpResponse = HTTPURLResponse(
+            url: URL(string: "https://www.blockchain.com")!,
+            statusCode: 409,
+            httpVersion: nil,
+            headerFields: nil
+        )!
+        let mockPayload = """
+            {
+                "type": "CONFLICT",
+                "description": "User linked to another wallet 3829...87c7"
+            }
+        """.data(using: .utf8)
+
+        let mockNetworkError: NetworkError = .rawServerError(
+            .init(
+                response: mockHttpResponse,
+                payload: mockPayload
+            )
+        )
+        sessionTokenClient.expectedResult = .failure(mockNetworkError)
+
+        // Act (409 server error response)
+        subject
+            .authenticate { _ -> AnyPublisher<ServerResponse, NetworkError> in
+                .failure(mockNetworkError)
+            }
+            .sink(
+                receiveCompletion: { [unowned self] completion in
+                    print(completion)
+                    guard case .finished = completion else {
+                        XCTFail("should broadcast error instead of return error")
+                        return
+                    }
+                    XCTAssertEqual(errorBroadcaster.recordedWalletIdHint, "3829...87c7")
+                },
+                receiveValue: { _ in }
+            )
+            .store(in: &cancellables)
     }
 }

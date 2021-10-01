@@ -71,11 +71,9 @@ public struct CredentialsView: View {
                 .padding(.bottom, Layout.textFieldBottomPadding)
 
             passwordField
-                .padding(.bottom, Layout.textFieldBottomPadding)
                 .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.passwordGroup)
 
-            // TODO: remove internal build flag when SSO account recovery is ready to release
-            if BuildFlag.isInternal {
+            if viewStore.accountRecoveryEnabled {
                 Button(
                     action: {
                         viewStore.send(.setTroubleLoggingInScreenVisible(true))
@@ -87,12 +85,12 @@ public struct CredentialsView: View {
                     }
                 )
                 .padding(.top, Layout.troubleLogInTextTopPadding)
-                .padding(.bottom, Layout.textFieldBottomPadding)
                 .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.troubleLoggingInButton)
             }
 
             if let state = viewStore.twoFAState, state.isTwoFACodeFieldVisible {
                 twoFAField
+                    .padding(.top, Layout.textFieldBottomPadding)
                     .padding(.bottom, Layout.troubleLogInTextTopPadding)
                     .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.twoFAGroup)
 
@@ -365,12 +363,13 @@ struct PasswordLoginView_Previews: PreviewProvider {
         CredentialsView(
             context: .none,
             store: Store(
-                initialState: .init(),
+                initialState: .init(accountRecoveryEnabled: true),
                 reducer: credentialsReducer,
                 environment: .init(
                     mainQueue: .main,
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     errorRecorder: NoOpErrorRecorder(),
+                    appFeatureConfigurator: NoOpFeatureConfigurator(),
                     analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )

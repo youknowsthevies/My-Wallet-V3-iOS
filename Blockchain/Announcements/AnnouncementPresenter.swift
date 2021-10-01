@@ -134,6 +134,8 @@ final class AnnouncementPresenter {
         for type in metadata.order {
             let announcement: Announcement
             switch type {
+            case .resubmitDocumentsAfterRecovery:
+                announcement = resubmitDocumentsAfterRecovery(user: preliminaryData.user)
             case .sddUsersFirstBuy:
                 announcement = sddUsersFirstBuy(
                     tiers: preliminaryData.tiers,
@@ -520,10 +522,28 @@ extension AnnouncementPresenter {
     /// Computes Upload Documents card announcement
     private func resubmitDocuments(user: NabuUser) -> Announcement {
         ResubmitDocumentsAnnouncement(
-            needsDocumentResubmission: user.needsDocumentResubmission != nil,
+            needsDocumentResubmission: user.needsDocumentResubmission != nil
+                && user.needsDocumentResubmission?.reason != 1,
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             },
+            action: { [weak self] in
+                guard let self = self else { return }
+                guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
+                let tier = user.tiers?.selected ?? .tier1
+                self.kycRouter.start(
+                    tier: tier,
+                    parentFlow: .announcement,
+                    from: tabControllerManager.tabViewController
+                )
+            }
+        )
+    }
+
+    private func resubmitDocumentsAfterRecovery(user: NabuUser) -> Announcement {
+        ResubmitDocumentsAfterRecoveryAnnouncement(
+            // reason 1: resubmission needed due to account recovery
+            needsDocumentResubmission: user.needsDocumentResubmission?.reason == 1,
             action: { [weak self] in
                 guard let self = self else { return }
                 guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }

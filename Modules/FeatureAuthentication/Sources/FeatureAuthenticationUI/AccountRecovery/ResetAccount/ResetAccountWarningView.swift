@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import Localization
 import SwiftUI
@@ -71,6 +72,9 @@ struct ResetAccountWarningView: View {
                 )
             )
             .navigationBarHidden(true)
+            .onDisappear {
+                viewStore.send(.onDisappear)
+            }
         }
     }
 }
@@ -82,7 +86,9 @@ struct ResetAccountWarningView_Previews: PreviewProvider {
             store: .init(
                 initialState: .init(),
                 reducer: resetAccountWarningReducer,
-                environment: .init()
+                environment: .init(
+                    analyticsRecorder: NoOpAnalyticsRecorder()
+                )
             )
         )
     }

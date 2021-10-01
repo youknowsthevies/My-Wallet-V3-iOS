@@ -361,6 +361,10 @@ extension LocalizationConstants.FeatureAuthentication {
             "Reset Account",
             comment: "Seed phrase screen: link for reset account"
         )
+        public static let contactSupportLink = NSLocalizedString(
+            "Contact Support",
+            comment: "Seed phrase screen: link for contact support"
+        )
         public static let loginInButton = NSLocalizedString(
             "Log In",
             comment: "Seed phrase screen: login CTA button"
@@ -379,6 +383,10 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Resetting Account May Result In\nLost Funds",
                 comment: "Lost Fund Warning: title"
             )
+            public static let recoveryFailed = NSLocalizedString(
+                "Fund Recovery Failed",
+                comment: "Fund Recovery Failed: title"
+            )
         }
 
         public enum Message {
@@ -390,7 +398,16 @@ extension LocalizationConstants.FeatureAuthentication {
                 "This means that if you lose your recovery phrase, you will lose access to your Private Key Wallet funds. You can always restore your Private Key Wallet funds later if you find your recovery phrase.",
                 comment: "Lost fund warning: message"
             )
+            public static let recoveryFailed = NSLocalizedString(
+                "Don’t worry, your account is safe. Please contact support to finish the Account Recovery process. Your account will not show balances or transaction history until you complete the recovery process.",
+                comment: "Fund Recovery Failed: message"
+            )
         }
+
+        public static let recoveryFailureCallout = NSLocalizedString(
+            "Fund recovery failures can happen for a number of reasons. Our support team is able to help recover your account.",
+            comment: "Fund Recovery Failed: callout message"
+        )
 
         public enum Button {
             public static let continueReset = NSLocalizedString(
@@ -408,6 +425,14 @@ extension LocalizationConstants.FeatureAuthentication {
             public static let goBack = NSLocalizedString(
                 "Go Back",
                 comment: "Go Back CTA Button"
+            )
+            public static let learnMore = NSLocalizedString(
+                "Learn more",
+                comment: "Learn more button"
+            )
+            public static let contactSupport = NSLocalizedString(
+                "Contact Support",
+                comment: "Contact Support CTA Button"
             )
         }
     }
@@ -484,6 +509,37 @@ extension LocalizationConstants.FeatureAuthentication {
             "Strong",
             comment: "Reset password screen: password strength indicator: strong"
         )
+    }
+
+    // MARK: - Trading Account Warning
+
+    public enum TradingAccountWarning {
+        public static let title = NSLocalizedString(
+            "Your Trading Account is Linked to another wallet",
+            comment: "Trading Account Warning: title"
+        )
+
+        public static let message = NSLocalizedString(
+            "Your Blockchain.com trading account is associated with another wallet. Please log into the wallet referenced below for account access.",
+            comment: "Trading Account Warning: message"
+        )
+
+        public static let walletIdMessagePrefix = NSLocalizedString(
+            "Wallet ID: ",
+            comment: "Trading Account Warning: wallet ID prefix"
+        )
+
+        public enum Button {
+            public static let logout = NSLocalizedString(
+                "Logout",
+                comment: "Trading Account Warning: logout button"
+            )
+
+            public static let cancel = NSLocalizedString(
+                "Cancel",
+                comment: "Trading Account Warning: cancel button"
+            )
+        }
     }
 
     // MARK: - Skip Upgrade Screen

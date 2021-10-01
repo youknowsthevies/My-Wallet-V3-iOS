@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
+import FeatureAuthenticationDomain
 
 public enum ImportWalletAction: Equatable {
     case importWalletButtonTapped
@@ -18,7 +20,13 @@ struct ImportWalletState: Equatable {
     }
 }
 
-struct ImportWalletEnvironment: Equatable {}
+struct ImportWalletEnvironment {
+    let analyticsRecorder: AnalyticsEventRecorderAPI
+
+    init(analyticsRecorder: AnalyticsEventRecorderAPI) {
+        self.analyticsRecorder = analyticsRecorder
+    }
+}
 
 let importWalletReducer = Reducer.combine(
     createAccountReducer
@@ -26,13 +34,17 @@ let importWalletReducer = Reducer.combine(
         .pullback(
             state: \.createAccountState,
             action: /ImportWalletAction.createAccount,
-            environment: { _ in CreateAccountEnvironment() }
+            environment: {
+                CreateAccountEnvironment(
+                    analyticsRecorder: $0.analyticsRecorder
+                )
+            }
         ),
     Reducer<
         ImportWalletState,
         ImportWalletAction,
         ImportWalletEnvironment
-    > { state, action, _ in
+    > { state, action, environment in
         switch action {
         case .setCreateAccountScreenVisible(let isVisible):
             state.isCreateAccountScreenVisible = isVisible
@@ -41,8 +53,14 @@ let importWalletReducer = Reducer.combine(
             }
             return .none
         case .importWalletButtonTapped:
-            return .none
+            environment.analyticsRecorder.record(
+                event: .importWalletClicked
+            )
+            return Effect(value: .setCreateAccountScreenVisible(true))
         case .goBackButtonTapped:
+            environment.analyticsRecorder.record(
+                event: .importWalletCancelled
+            )
             return .none
         case .createAccount:
             return .none

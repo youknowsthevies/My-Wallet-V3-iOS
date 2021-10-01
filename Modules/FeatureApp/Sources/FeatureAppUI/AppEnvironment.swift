@@ -4,6 +4,7 @@ import AnalyticsKit
 import ComposableArchitecture
 import DIKit
 import ERC20Kit
+import FeatureAuthenticationDomain
 import FeatureDebugUI
 import FeatureSettingsDomain
 import NetworkKit
@@ -27,6 +28,9 @@ public struct AppEnvironment {
     var deeplinkRouter: DeepLinkRouting
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var portfolioSyncingService: BalanceSharingSettingsServiceAPI
+    var mobileAuthSyncService: MobileAuthSyncServiceAPI
+    var resetPasswordService: ResetPasswordServiceAPI
+    var accountRecoveryService: AccountRecoveryServiceAPI
     var featureFlagsService: FeatureFlagsServiceAPI
     var internalFeatureService: InternalFeatureFlagServiceAPI // TODO: deprecated, use featureFlagsService instead
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
@@ -65,6 +69,9 @@ public struct AppEnvironment {
         deeplinkRouter: DeepLinkRouting,
         backgroundAppHandler: BackgroundAppHandlerAPI,
         portfolioSyncingService: BalanceSharingSettingsServiceAPI,
+        mobileAuthSyncService: MobileAuthSyncServiceAPI,
+        resetPasswordService: ResetPasswordServiceAPI,
+        accountRecoveryService: AccountRecoveryServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
         internalFeatureService: InternalFeatureFlagServiceAPI,
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI,
@@ -98,6 +105,9 @@ public struct AppEnvironment {
         self.deeplinkRouter = deeplinkRouter
         self.backgroundAppHandler = backgroundAppHandler
         self.portfolioSyncingService = portfolioSyncingService
+        self.mobileAuthSyncService = mobileAuthSyncService
+        self.resetPasswordService = resetPasswordService
+        self.accountRecoveryService = accountRecoveryService
         self.featureFlagsService = featureFlagsService
         self.internalFeatureService = internalFeatureService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService

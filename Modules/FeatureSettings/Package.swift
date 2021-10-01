@@ -6,12 +6,37 @@ let package = Package(
     name: "FeatureSettings",
     platforms: [.iOS(.v14)],
     products: [
-        .library(name: "FeatureSettings", targets: ["FeatureSettingsDomain", "FeatureSettingsUI"]),
-        .library(name: "FeatureSettingsDomain", targets: ["FeatureSettingsDomain"]),
-        .library(name: "FeatureSettingsUI", targets: ["FeatureSettingsUI"]),
-        .library(name: "FeatureSettingsDomainMock", targets: ["FeatureSettingsDomainMock"])
+        .library(
+            name: "FeatureSettings",
+            targets: [
+                "FeatureSettingsData",
+                "FeatureSettingsDomain",
+                "FeatureSettingsUI"
+            ]
+        ),
+        .library(
+            name: "FeatureSettingsData",
+            targets: ["FeatureSettingsData"]
+        ),
+        .library(
+            name: "FeatureSettingsDomain",
+            targets: ["FeatureSettingsDomain"]
+        ),
+        .library(
+            name: "FeatureSettingsUI",
+            targets: ["FeatureSettingsUI"]
+        ),
+        .library(
+            name: "FeatureSettingsDomainMock",
+            targets: ["FeatureSettingsDomainMock"]
+        )
     ],
     dependencies: [
+        .package(
+            name: "DIKit",
+            url: "https://github.com/jackpooleybc/DIKit.git",
+            .branch("safe-property-wrappers")
+        ),
         .package(
             name: "RxSwift",
             url: "https://github.com/ReactiveX/RxSwift.git",
@@ -40,6 +65,14 @@ let package = Package(
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
+            ]
+        ),
+        .target(
+            name: "FeatureSettingsData",
+            dependencies: [
+                .target(name: "FeatureSettingsDomain"),
+                .product(name: "NetworkKit", package: "Network"),
+                .product(name: "DIKit", package: "DIKit")
             ]
         ),
         .target(

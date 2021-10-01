@@ -34,7 +34,11 @@ public enum AppFeature: Int, CaseIterable {
     /// Shows Email Verification, if needed, when a user tries to make a purchase
     case showEmailVerificationInBuyFlow
 
-    // MARK: SDD
+    // MARK: - SSO
+
+    case accountRecovery
+
+    // MARK: - SDD
 
     /// Enables SDD checks. If `false`, all checks immediately fail
     case sddEnabled
@@ -73,6 +77,8 @@ extension AppFeature {
             return "show_email_verification_in_onboarding_ios"
         case .showEmailVerificationInBuyFlow:
             return "show_email_verification_in_buy_flow_ios"
+        case .accountRecovery:
+            return "sso_account_recovery_enabled_ios"
         case .sddEnabled:
             return "sdd_enabled_ios"
         case .customerSupportChat:
@@ -102,6 +108,8 @@ extension AppFeature {
         case .showEmailVerificationInOnboarding:
             return false
         case .showEmailVerificationInBuyFlow:
+            return false
+        case .accountRecovery:
             return false
         case .sddEnabled:
             return false

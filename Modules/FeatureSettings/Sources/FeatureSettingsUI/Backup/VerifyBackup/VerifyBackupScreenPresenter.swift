@@ -51,6 +51,7 @@ final class VerifyBackupScreenPresenter {
 
     // MARK: - Injected
 
+    private let recoveryPhraseRepository: RecoveryPhraseRepositoryAPI
     private let loadingViewPresenter: LoadingViewPresenting
     private let stateService: BackupRouterStateServiceAPI
     private let service: RecoveryPhraseVerifyingServiceAPI
@@ -65,8 +66,10 @@ final class VerifyBackupScreenPresenter {
     init(
         stateService: BackupRouterStateService,
         service: RecoveryPhraseVerifyingServiceAPI,
-        loadingViewPresenter: LoadingViewPresenting = resolve()
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        recoveryPhraseRepository: RecoveryPhraseRepositoryAPI = resolve()
     ) {
+        self.recoveryPhraseRepository = recoveryPhraseRepository
         self.stateService = stateService
         self.loadingViewPresenter = loadingViewPresenter
         self.service = service
@@ -173,7 +176,11 @@ final class VerifyBackupScreenPresenter {
                 // Ignore
                 .empty()
             }
-            .andThen(Observable.just(()))
+            .andThen(
+                recoveryPhraseRepository
+                    .updateMnemonicBackup()
+                    .asObservable()
+            )
             .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
     }

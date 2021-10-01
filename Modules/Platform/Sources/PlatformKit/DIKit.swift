@@ -29,15 +29,7 @@ extension DependencyContainer {
 
         factory { UpdateWalletInformationClient() as UpdateWalletInformationClientAPI }
 
-        factory { JWTClient() as JWTClientAPI }
-
         factory { KYCClient() as KYCClientAPI }
-
-        factory { NabuUserCreationClient() as NabuUserCreationClientAPI }
-
-        factory { NabuSessionTokenClient() as NabuSessionTokenClientAPI }
-
-        factory { NabuResetUserClient() as NabuResetUserClientAPI }
 
         factory { SupportedAssetsRemoteService() as SupportedAssetsRemoteServiceAPI }
 
@@ -63,6 +55,18 @@ extension DependencyContainer {
 
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
 
+        single { NabuAuthenticationErrorBroadcaster() }
+
+        factory { () -> NabuAuthenticationErrorReceiverAPI in
+            let broadcaster: NabuAuthenticationErrorBroadcaster = DIKit.resolve()
+            return broadcaster as NabuAuthenticationErrorReceiverAPI
+        }
+
+        factory { () -> UserAlreadyRestoredHandlerAPI in
+            let broadcaster: NabuAuthenticationErrorBroadcaster = DIKit.resolve()
+            return broadcaster as UserAlreadyRestoredHandlerAPI
+        }
+
         // swiftlint:disable opening_brace
         factory { () -> NabuAuthenticationExecutorProvider in
             { () -> NabuAuthenticationExecutorAPI in
@@ -72,8 +76,6 @@ extension DependencyContainer {
         // swiftlint:enable opening_brace
 
         factory { NabuAuthenticator() as AuthenticatorAPI }
-
-        factory { JWTService() as JWTServiceAPI }
 
         // MARK: - Wallet
 

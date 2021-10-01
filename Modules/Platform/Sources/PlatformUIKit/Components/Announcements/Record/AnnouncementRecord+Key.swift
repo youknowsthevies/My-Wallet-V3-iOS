@@ -14,6 +14,7 @@ extension AnnouncementRecord {
         case sddUsersFirstBuy
         case walletIntro
         case verifyEmail
+        case resubmitDocumentsAfterRecovery
         case blockstackAirdropRegisteredMini
         case simpleBuyPendingTransaction
         case simpleBuyKYCIncomplete
@@ -50,6 +51,8 @@ extension AnnouncementRecord {
                 key = "cache-wallet-intro"
             case .verifyEmail:
                 key = "cache-email-verification"
+            case .resubmitDocumentsAfterRecovery:
+                key = "cache-resubmit-documents-after-recovery"
             case .blockstackAirdropRegisteredMini:
                 key = "cache-stx-registered-airdrop-mini"
             case .simpleBuyPendingTransaction:
