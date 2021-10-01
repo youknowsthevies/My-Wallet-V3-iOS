@@ -5,6 +5,7 @@ import FeatureKYCDomain
 import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
+import ToolKit
 
 public class ReceiveCoordinator {
 
@@ -32,6 +33,7 @@ public class ReceiveCoordinator {
 
     init(
         coincore: CoincoreAPI = resolve(),
+        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
         receiveRouter: ReceiveRouterAPI = resolve(),
         receiveSelectionService: AccountSelectionServiceAPI = AccountSelectionService(),
         kycStatusChecker: KYCStatusChecking = resolve(),
@@ -42,6 +44,7 @@ public class ReceiveCoordinator {
         self.kycStatusChecker = kycStatusChecker
         self.analyticsHook = analyticsHook
         builder = ReceiveBuilder(
+            internalFeatureFlagService: internalFeatureFlagService,
             receiveSelectionService: receiveSelectionService
         )
 

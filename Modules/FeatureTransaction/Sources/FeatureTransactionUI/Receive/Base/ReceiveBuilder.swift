@@ -3,29 +3,37 @@
 import Localization
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 import UIComponentsKit
 import UIKit
 
 public final class ReceiveBuilder {
     private typealias LocalizedReceive = LocalizationConstants.Receive
 
+    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let receiveSelectionService: AccountSelectionServiceAPI
 
-    init(receiveSelectionService: AccountSelectionServiceAPI) {
+    init(
+        internalFeatureFlagService: InternalFeatureFlagServiceAPI,
+        receiveSelectionService: AccountSelectionServiceAPI
+    ) {
+        self.internalFeatureFlagService = internalFeatureFlagService
         self.receiveSelectionService = receiveSelectionService
     }
 
     var receiveAccountPickerRouter: AccountPickerRouting!
 
     public func receive() -> UIViewController {
+        let searchable = internalFeatureFlagService.isEnabled(.loadAllERC20Tokens)
         let header = AccountPickerHeaderModel(
-            title: LocalizedReceive.Header.receiveCryptoNow,
-            subtitle: LocalizedReceive.Header.chooseAWalletToReceiveTo,
             imageContent: .init(
                 imageResource: ImageAsset.iconReceive.imageResource,
                 accessibility: .none,
                 renderingMode: .normal
-            )
+            ),
+            searchable: searchable,
+            subtitle: LocalizedReceive.Header.chooseWalletToReceive,
+            title: LocalizedReceive.Header.receiveCryptoNow
         )
         let navigationModel = ScreenNavigationModel(
             leadingButton: .drawer,

@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct AccountPickerSimpleHeaderModel {
+public struct AccountPickerSimpleHeaderModel: Equatable {
     static let defaultHeight: CGFloat = 64
 
     public let subtitle: String

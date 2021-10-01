@@ -9,7 +9,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
 
     // MARK: - IBOutlets
 
-    @IBOutlet private var tableView: UITableView!
+    private let tableView: UITableView = .init()
 
     // MARK: - Injected
 
@@ -23,13 +23,11 @@ public final class SelectionScreenViewController: BaseScreenViewController {
 
     public init(presenter: SelectionScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: SelectionScreenViewController.objectName, bundle: .module)
+        super.init(nibName: nil, bundle: nil)
     }
 
     @available(*, unavailable)
-    public required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    public required init?(coder: NSCoder) { nil }
 
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -76,6 +74,9 @@ public final class SelectionScreenViewController: BaseScreenViewController {
     private func setupTableView() {
 
         // Table view setup
+
+        view.addSubview(tableView)
+        tableView.layoutToSuperview(.leading, .trailing, .top, .bottom)
 
         if let viewModel = presenter.tableHeaderViewModel {
             let width = tableView.bounds.width

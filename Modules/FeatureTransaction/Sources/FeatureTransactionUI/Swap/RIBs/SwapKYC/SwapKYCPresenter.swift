@@ -38,14 +38,14 @@ final class SwapKYCPresenter: DetailsScreenPresenterAPI {
 
     init() {
         let model = AccountPickerHeaderModel(
-            title: LocalizedString.KYC.title,
-            subtitle: LocalizedString.KYC.subtitle,
             imageContent: .init(
                 imageResource: ImageAsset.iconVerified.imageResource,
                 accessibility: .none,
                 renderingMode: .normal
             ),
-            tableTitle: nil
+            subtitle: LocalizedString.KYC.subtitle,
+            tableTitle: nil,
+            title: LocalizedString.KYC.title
         )
         headers = [
             0: AccountPickerHeaderBuilder(headerType: .default(model))

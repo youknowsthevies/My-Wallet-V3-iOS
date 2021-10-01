@@ -2,14 +2,26 @@
 
 import Localization
 
-public struct AccountPickerHeaderModel {
-    public typealias LocalizedString = LocalizationConstants.WalletPicker
-    static let defaultHeight: CGFloat = 169
+public struct AccountPickerHeaderModel: Equatable {
 
-    public let title: String
-    public let subtitle: String
+    // MARK: Types
+
+    public typealias LocalizedString = LocalizationConstants.WalletPicker
+
+    // MARK: Public Properties
+
     public let imageContent: ImageViewContent
+    public let subtitle: String
     public let tableTitle: String?
+    public let title: String
+
+    // MARK: Properties
+
+    let searchable: Bool
+
+    var height: CGFloat {
+        searchable ? 189 : 169
+    }
 
     var titleLabel: LabelContent {
         .init(
@@ -28,23 +40,29 @@ public struct AccountPickerHeaderModel {
     }
 
     var tableTitleLabel: LabelContent? {
-        guard let tableTitle = tableTitle else { return nil }
-        return LabelContent(
-            text: tableTitle,
-            font: .main(.semibold, 12),
-            color: .titleText
-        )
+        tableTitle
+            .flatMap { tableTitle in
+                LabelContent(
+                    text: tableTitle,
+                    font: .main(.semibold, 12),
+                    color: .titleText
+                )
+            }
     }
 
+    // MARK: Init
+
     public init(
-        title: String,
-        subtitle: String,
         imageContent: ImageViewContent,
-        tableTitle: String? = LocalizedString.selectAWallet
+        searchable: Bool = false,
+        subtitle: String,
+        tableTitle: String? = LocalizedString.selectAWallet,
+        title: String
     ) {
-        self.title = title
-        self.subtitle = subtitle
         self.imageContent = imageContent
+        self.searchable = searchable
+        self.subtitle = subtitle
         self.tableTitle = tableTitle
+        self.title = title
     }
 }

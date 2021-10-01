@@ -186,14 +186,14 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
 extension SwapLandingInteractor {
     struct State {
         var header: AccountPickerHeaderModel = .init(
-            title: LocalizationId.Header.title,
-            subtitle: LocalizationId.Header.description,
             imageContent: .init(
                 imageResource: ImageAsset.iconSwapTransaction.imageResource,
                 accessibility: .none,
                 renderingMode: .normal
             ),
-            tableTitle: LocalizationId.trending
+            subtitle: LocalizationId.Header.description,
+            tableTitle: LocalizationId.trending,
+            title: LocalizationId.Header.title
         )
         var pairViewModels: [SwapTrendingPairViewModel]
     }

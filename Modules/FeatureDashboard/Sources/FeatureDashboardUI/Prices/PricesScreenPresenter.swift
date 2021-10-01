@@ -59,10 +59,8 @@ final class PricesScreenPresenter {
                 guard !searchText.isEmpty else {
                     return enabledCryptoCurrencies
                 }
-                let lowercased = searchText.lowercased()
                 return enabledCryptoCurrencies.filter { cryptoCurrency in
-                    cryptoCurrency.name.lowercased().contains(lowercased)
-                        || cryptoCurrency.code.lowercased().contains(lowercased)
+                    cryptoCurrency.matchSearch(searchText)
                 }
             }
             .map { [interactor] filteredCurrencies -> [PricesCellType] in
