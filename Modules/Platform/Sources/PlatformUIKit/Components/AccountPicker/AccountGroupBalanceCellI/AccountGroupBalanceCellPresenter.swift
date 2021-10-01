@@ -55,7 +55,7 @@ public final class AccountGroupBalanceCellPresenter {
         )
 
         badgeImageViewModel = .primary(
-            image: .local(name: "icon-card", bundle: .platformUIKit),
+            image: .local(name: "icon-wallet", bundle: .platformUIKit),
             cornerRadius: .round,
             accessibilityIdSuffix: "walletBalance"
         )

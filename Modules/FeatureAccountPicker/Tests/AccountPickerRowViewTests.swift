@@ -72,7 +72,7 @@ class AccountPickerRowViewTests: XCTestCase {
                     return AnyView(view)
                 case self.accountGroup.id:
                     let model: BadgeImageViewModel = .primary(
-                        image: .local(name: "icon-card", bundle: .platformUIKit),
+                        image: .local(name: "icon-wallet", bundle: .platformUIKit),
                         cornerRadius: .round,
                         accessibilityIdSuffix: "walletBalance"
                     )
