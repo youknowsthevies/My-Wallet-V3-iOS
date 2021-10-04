@@ -86,7 +86,7 @@ final class WelcomeReducerTests: XCTestCase {
                     state.emailLoginState = .init()
                 case .restoreWalletScreen:
                     state.restoreWalletState = .init()
-                case .createWalletScreen, .manualLoginScreen:
+                case .createWalletScreen, .manualLoginScreen, .legacyRestoreWalletScreen:
                     break
                 case .welcomeScreen:
                     state.emailLoginState = nil

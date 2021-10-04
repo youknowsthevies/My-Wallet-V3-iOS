@@ -38,6 +38,12 @@ public protocol WalletManagerAPI: WalletManagerReactiveAPI {
     /// Set the `Wallet` property `isNew` to `true`
     func markWalletAsNew()
 
+    /// Recovers a wallet from metadata using a given seed phrase
+    func recoverFromMetadata(seedPhrase: String)
+
+    /// Recovers a wallet by creating a new wallet using a given seed phrase (new GUID)
+    func recover(email: String, password: String, seedPhrase: String)
+
     /// Performs cleanup on methods
     func close()
 }

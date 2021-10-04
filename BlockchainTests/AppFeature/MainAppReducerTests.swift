@@ -455,9 +455,10 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.receive(.onboarding(.welcomeScreen(.start)))
 
-        testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.restoreWalletScreen)))) { state in
-            state.onboarding?.welcomeState?.restoreWalletState = .init()
-            state.onboarding?.welcomeState?.screenFlow = .restoreWalletScreen
+        testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.legacyRestoreWalletScreen)))) { state in
+            state.onboarding?.showLegacyRecoverWalletScreen = true
+            state.onboarding?.walletCreationContext = .recovery
+            state.onboarding?.welcomeState?.screenFlow = .legacyRestoreWalletScreen
         }
 
         testStore.receive(.authenticate)
@@ -477,7 +478,8 @@ final class MainAppReducerTests: XCTestCase {
         )
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.authenticated(.success(true))) { state in
-            state.onboarding?.welcomeState?.screenFlow = .restoreWalletScreen
+            state.onboarding?.showLegacyRecoverWalletScreen = false
+            state.onboarding?.welcomeState?.screenFlow = .legacyRestoreWalletScreen
         }
         testStore.receive(.onboarding(.welcomeScreen(.presentScreenFlow(.welcomeScreen)))) { state in
             state.onboarding?.welcomeState?.restoreWalletState = nil
