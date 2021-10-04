@@ -56,7 +56,8 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "CombineSchedulers", package: "combine-schedulers")
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "PlatformKit", package: "Platform")
             ],
             path: "UI"
         ),

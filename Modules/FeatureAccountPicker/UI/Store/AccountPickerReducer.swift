@@ -15,11 +15,11 @@ let accountPickerReducer = Reducer<AccountPickerState, AccountPickerAction, Acco
 
         case .updateRows(rows: let rows):
             state.rows = IdentifiedArrayOf(uniqueElements: rows)
-            return Effect(value: .subscribeToUpdates)
+            return .none
 
         case .updateHeader(header: let header):
             state.header = header
-            return Effect(value: .subscribeToUpdates)
+            return .none
 
         case .failedToUpdate:
             return .none

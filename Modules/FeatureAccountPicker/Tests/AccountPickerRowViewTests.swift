@@ -19,20 +19,20 @@ class AccountPickerRowViewTests: XCTestCase {
         updateAccountGroup: { _ in nil }
     )
 
-    let accountGroup = AccountPickerRow.AccountGroup(
+    var accountGroup = AccountPickerRow.AccountGroup(
         id: UUID(),
         title: "All Wallets",
         description: "Total Balance",
-        fiatBalance: "$2,302.39",
-        currencyCode: "USD"
+        fiatBalance: .loaded(next: "$2,302.39"),
+        currencyCode: .loaded(next: "USD")
     )
 
-    let singleAccount = AccountPickerRow.SingleAccount(
+    var singleAccount = AccountPickerRow.SingleAccount(
         id: UUID(),
         title: "BTC Trading Wallet",
         description: "Bitcoin",
-        fiatBalance: "$2,302.39",
-        cryptoBalance: "0.21204887 BTC"
+        fiatBalance: .loaded(next: "$2,302.39"),
+        cryptoBalance: .loaded(next: "0.21204887 BTC")
     )
 
     lazy var linkedBankAccountModel = AccountPickerRow.LinkedBankAccount(
@@ -152,6 +152,17 @@ class AccountPickerRowViewTests: XCTestCase {
         assertSnapshot(matching: view(row: accountGroupRow), as: .image)
     }
 
+    func testAccountGroupLoading() {
+        accountGroup.fiatBalance = .loading
+        accountGroup.currencyCode = .loading
+
+        let accountGroupRow = AccountPickerRow.accountGroup(
+            accountGroup
+        )
+
+        assertSnapshot(matching: view(row: accountGroupRow), as: .image)
+    }
+
     func testSingleAccount() {
         let singleAccountRow = AccountPickerRow.singleAccount(
             singleAccount
@@ -160,6 +171,17 @@ class AccountPickerRowViewTests: XCTestCase {
         assertSnapshot(matching: view(row: singleAccountRow), as: .image)
 
         isShowingMultiBadge = true
+
+        assertSnapshot(matching: view(row: singleAccountRow), as: .image)
+    }
+
+    func testSingleAccountLoading() {
+        singleAccount.cryptoBalance = .loading
+        singleAccount.fiatBalance = .loading
+
+        let singleAccountRow = AccountPickerRow.singleAccount(
+            singleAccount
+        )
 
         assertSnapshot(matching: view(row: singleAccountRow), as: .image)
     }

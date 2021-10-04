@@ -14,7 +14,7 @@ let singleAccountReducer = Reducer<
     switch action {
     case .update(model: let model):
         state = model
-        return Effect(value: .subscribeToUpdates)
+        return .none
 
     case .failedToUpdate:
         return .none
@@ -43,7 +43,7 @@ let accountGroupReducer = Reducer<
     switch action {
     case .update(model: let model):
         state = model
-        return Effect(value: .subscribeToUpdates)
+        return .none
 
     case .failedToUpdate:
         return .none

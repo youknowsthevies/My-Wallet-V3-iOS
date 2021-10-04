@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformKit
 import SwiftUI
 
 extension AccountPickerRow {
@@ -8,8 +9,8 @@ extension AccountPickerRow {
 
         // MARK: - Public properties
 
-        public var fiatBalance: String
-        public var cryptoBalance: String
+        public var fiatBalance: LoadingState<String>
+        public var cryptoBalance: LoadingState<String>
 
         public let id: AnyHashable
 
@@ -24,8 +25,8 @@ extension AccountPickerRow {
             id: AnyHashable,
             title: String,
             description: String,
-            fiatBalance: String,
-            cryptoBalance: String
+            fiatBalance: LoadingState<String>,
+            cryptoBalance: LoadingState<String>
         ) {
             self.id = id
             self.title = title

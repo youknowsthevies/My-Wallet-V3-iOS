@@ -45,11 +45,11 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                     var account = account
                     switch value {
                     case .loading:
-                        account.fiatBalance = "Loading"
-                        account.cryptoBalance = "Loading"
+                        account.fiatBalance = .loading
+                        account.cryptoBalance = .loading
                     case .loaded(let balance):
-                        account.fiatBalance = balance.fiatBalance.text
-                        account.cryptoBalance = balance.cryptoBalance.text
+                        account.fiatBalance = .loaded(next: balance.fiatBalance.text)
+                        account.cryptoBalance = .loaded(next: balance.cryptoBalance.text)
                     }
                     return account
                 }
@@ -66,11 +66,11 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                     var group = group
                     switch value {
                     case .loading:
-                        group.fiatBalance = "Loading"
-                        group.currencyCode = "Loading"
+                        group.fiatBalance = .loading
+                        group.currencyCode = .loading
                     case .loaded(let balance):
-                        group.fiatBalance = balance.fiatBalance.text
-                        group.currencyCode = balance.currencyCode.text
+                        group.fiatBalance = .loaded(next: balance.fiatBalance.text)
+                        group.currencyCode = .loaded(next: balance.currencyCode.text)
                     }
                     return group
                 }
@@ -275,8 +275,8 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                     id: item.identity,
                                     title: presenter.account.label,
                                     description: LocalizationConstants.Dashboard.Portfolio.totalBalance,
-                                    fiatBalance: "",
-                                    currencyCode: ""
+                                    fiatBalance: .loading,
+                                    currencyCode: .loading
                                 )
                             )
                         case .singleAccount(let presenter):
@@ -285,8 +285,8 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                     id: item.identity,
                                     title: presenter.account.label,
                                     description: presenter.account.currencyType.name,
-                                    fiatBalance: "",
-                                    cryptoBalance: ""
+                                    fiatBalance: .loading,
+                                    cryptoBalance: .loading
                                 )
                             )
                         }

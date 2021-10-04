@@ -16,8 +16,8 @@ class AccountPickerViewTests: XCTestCase {
                 id: UUID(),
                 title: "All Wallets",
                 description: "Total Balance",
-                fiatBalance: "$2,302.39",
-                currencyCode: "USD"
+                fiatBalance: .loaded(next: "$2,302.39"),
+                currencyCode: .loaded(next: "USD")
             )
         ),
         .button(
@@ -31,8 +31,8 @@ class AccountPickerViewTests: XCTestCase {
                 id: UUID(),
                 title: "BTC Wallet",
                 description: "Bitcoin",
-                fiatBalance: "$2,302.39",
-                cryptoBalance: "0.21204887 BTC"
+                fiatBalance: .loaded(next: "$2,302.39"),
+                cryptoBalance: .loaded(next: "0.21204887 BTC")
             )
         ),
         .singleAccount(
@@ -40,8 +40,8 @@ class AccountPickerViewTests: XCTestCase {
                 id: UUID(),
                 title: "BTC Trading Wallet",
                 description: "Bitcoin",
-                fiatBalance: "$10,093.13",
-                cryptoBalance: "1.38294910 BTC"
+                fiatBalance: .loaded(next: "$10,093.13"),
+                cryptoBalance: .loaded(next: "1.38294910 BTC")
             )
         ),
         .singleAccount(
@@ -49,8 +49,8 @@ class AccountPickerViewTests: XCTestCase {
                 id: UUID(),
                 title: "ETH Wallet",
                 description: "Ethereum",
-                fiatBalance: "$807.21",
-                cryptoBalance: "0.17039384 ETH"
+                fiatBalance: .loaded(next: "$807.21"),
+                cryptoBalance: .loaded(next: "0.17039384 ETH")
             )
         ),
         .singleAccount(
@@ -58,8 +58,8 @@ class AccountPickerViewTests: XCTestCase {
                 id: UUID(),
                 title: "BCH Wallet",
                 description: "Bitcoin Cash",
-                fiatBalance: "$807.21",
-                cryptoBalance: "0.00388845 BCH"
+                fiatBalance: .loaded(next: "$807.21"),
+                cryptoBalance: .loaded(next: "0.00388845 BCH")
             )
         ),
         .singleAccount(
@@ -67,8 +67,8 @@ class AccountPickerViewTests: XCTestCase {
                 id: UUID(),
                 title: "BCH Trading Wallet",
                 description: "Bitcoin Cash",
-                fiatBalance: "$40.30",
-                cryptoBalance: "0.00004829 BCH"
+                fiatBalance: .loaded(next: "$40.30"),
+                cryptoBalance: .loaded(next: "0.00004829 BCH")
             )
         )
     ]
