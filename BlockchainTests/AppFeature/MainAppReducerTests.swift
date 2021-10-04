@@ -894,8 +894,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.resetVerificationStatusIfNeeded(guid: guid, sharedKey: sharedKey))
         testStore.receive(.authenticated(.success(true))) { state in
-            state.onboarding?.showLegacyRecoverWalletScreen = false
-            state.onboarding?.welcomeState?.screenFlow = .legacyRestoreWalletScreen
+            state.onboarding?.welcomeState?.screenFlow = .restoreWalletScreen
         }
         testStore.receive(.onboarding(.welcomeScreen(.presentScreenFlow(.welcomeScreen)))) { state in
             state.onboarding?.welcomeState?.restoreWalletState = nil
