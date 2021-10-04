@@ -154,6 +154,21 @@ extension LocalizationConstants {
             )
         }
 
+        public enum AssetRename {
+            public static let title = NSLocalizedString(
+                "%@ has a new name",
+                comment: "Asset Rename announcement card title."
+            )
+            public static let description = NSLocalizedString(
+                "Heads up: %@ has renamed to %@. All balances are unaffected.",
+                comment: "Asset Rename announcement card description."
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Trade %@",
+                comment: "Asset Rename card CTA button title."
+            )
+        }
+
         public enum CloudBackup {
             public static let title = NSLocalizedString(
                 "Introducing Cloud Backups",

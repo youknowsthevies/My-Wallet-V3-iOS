@@ -8,18 +8,18 @@ import RxSwift
 import SwiftUI
 import ToolKit
 
-/// This is a generic announcement that introduces a new crypto currency.
-final class NewAssetAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+/// This is a generic announcement that introduces change in the name of a crypto currency.
+final class AssetRenameAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
 
-    private typealias LocalizedString = LocalizationConstants.AnnouncementCards.NewAsset
+    private typealias LocalizedString = LocalizationConstants.AnnouncementCards.AssetRename
 
     // MARK: - Properties
 
     var viewModel: AnnouncementCardViewModel {
 
-        let title = String(format: LocalizedString.title, cryptoCurrency!.name, cryptoCurrency!.displayCode)
-        let description = String(format: LocalizedString.description, cryptoCurrency!.displayCode)
-        let buttonTitle = String(format: LocalizedString.ctaButton, cryptoCurrency!.displayCode)
+        let title = String(format: LocalizedString.title, data!.asset.code)
+        let description = String(format: LocalizedString.description, data!.asset.code, data!.asset.displayCode)
+        let buttonTitle = String(format: LocalizedString.ctaButton, data!.asset.displayCode)
 
         let button = ButtonViewModel.primary(
             with: buttonTitle,
@@ -40,7 +40,7 @@ final class NewAssetAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
         return AnnouncementCardViewModel(
             type: type,
             badgeImage: .init(
-                image: cryptoCurrency!.logoResource,
+                image: data!.asset.logoResource,
                 contentColor: nil,
                 backgroundColor: .clear,
                 cornerRadius: .round,
@@ -63,27 +63,29 @@ final class NewAssetAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     }
 
     var shouldShow: Bool {
-        cryptoCurrency != nil && !isDismissed
+        data != nil
+            && !isDismissed
+            && data?.balance.isPositive == true
     }
 
     var key: AnnouncementRecord.Key {
-        .newAsset(code: cryptoCurrency?.code ?? "")
+        .assetRename(code: data?.asset.code ?? "")
     }
 
-    let type = AnnouncementType.newAsset
+    let type = AnnouncementType.assetRename
     let analyticsRecorder: AnalyticsEventRecorderAPI
-    let cryptoCurrency: CryptoCurrency?
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
     let action: CardAnnouncementAction
 
+    private let data: AnnouncementPreliminaryData.AssetRename?
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
     init(
-        cryptoCurrency: CryptoCurrency?,
+        data: AnnouncementPreliminaryData.AssetRename?,
         cacheSuite: CacheSuite = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
@@ -91,7 +93,7 @@ final class NewAssetAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
         action: @escaping CardAnnouncementAction
     ) {
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
-        self.cryptoCurrency = cryptoCurrency
+        self.data = data
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action
@@ -101,12 +103,12 @@ final class NewAssetAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
 // MARK: SwiftUI Preview
 
 #if DEBUG
-struct NewAssetAnnouncementContainer: UIViewRepresentable {
+struct AssetRenameAnnouncementContainer: UIViewRepresentable {
     typealias UIViewType = AnnouncementCardView
 
     func makeUIView(context: Context) -> UIViewType {
-        let presenter = NewAssetAnnouncement(
-            cryptoCurrency: .coin(.bitcoin),
+        let presenter = AssetRenameAnnouncement(
+            data: .init(asset: .coin(.bitcoin), balance: .one(currency: .coin(.bitcoin))),
             dismiss: {},
             action: {}
         )
@@ -116,10 +118,10 @@ struct NewAssetAnnouncementContainer: UIViewRepresentable {
     func updateUIView(_ uiView: UIViewType, context: Context) {}
 }
 
-struct NewAssetAnnouncementContainer_Previews: PreviewProvider {
+struct AssetRenameAnnouncementContainer_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            NewAssetAnnouncementContainer().colorScheme(.light)
+            AssetRenameAnnouncementContainer().colorScheme(.light)
         }.previewLayout(.fixed(width: 375, height: 250))
     }
 }

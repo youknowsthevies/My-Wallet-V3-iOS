@@ -14,8 +14,11 @@ public enum AppFeature: Int, CaseIterable {
     /// The announcements
     case announcements
 
-    /// The announcements
-    case announcementAsset
+    /// The ticker for the new asset announcement.
+    case newAssetAnnouncement
+
+    /// The ticker for the asset rename announcement.
+    case assetRenameAnnouncement
 
     /// Sift Science SDK is enabled
     case siftScienceEnabled
@@ -63,8 +66,10 @@ extension AppFeature {
             return "ios_interest_deposit_withdraw"
         case .announcements:
             return "announcements"
-        case .announcementAsset:
+        case .newAssetAnnouncement:
             return "new_asset_announcement_ticker"
+        case .assetRenameAnnouncement:
+            return "rename_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
         case .secureChannel:
@@ -93,7 +98,9 @@ extension AppFeature {
     /// Enables the feature for alpha release by overriding remote config settings.
     var isAlphaReady: Bool {
         switch self {
-        case .announcementAsset:
+        case .newAssetAnnouncement:
+            return false
+        case .assetRenameAnnouncement:
             return false
         case .interestWithdrawAndDeposit:
             return false
