@@ -9,22 +9,9 @@ enum TransactionFlowDescriptor {
     private typealias LocalizedString = LocalizationConstants.Transaction
 
     enum EnterAmountScreen {
-        private static let cryptoFormatterProvider = CryptoFormatterProvider()
 
         private static func formatForHeader(moneyValue: MoneyValue) -> String {
-            if let cryptoValue = moneyValue.cryptoValue {
-                let formatter = cryptoFormatterProvider.formatter(
-                    locale: .current,
-                    cryptoCurrency: cryptoValue.currencyType,
-                    minFractionDigits: 2
-                )
-                return formatter.format(
-                    value: cryptoValue,
-                    withPrecision: .short,
-                    includeSymbol: true
-                )
-            }
-            return moneyValue.displayString
+            moneyValue.displayString
         }
 
         static func headerTitle(state: TransactionState) -> String {
@@ -206,11 +193,11 @@ enum TransactionFlowDescriptor {
     static func confirmDisclaimerVisibility(action: AssetAction) -> Bool {
         switch action {
         case .swap,
-             .withdraw:
+             .withdraw,
+             .buy:
             return true
         case .deposit,
              .receive,
-             .buy,
              .sell,
              .send,
              .viewActivity:
@@ -224,9 +211,10 @@ enum TransactionFlowDescriptor {
             return LocalizedString.Swap.confirmationDisclaimer
         case .withdraw:
             return LocalizedString.Withdraw.confirmationDisclaimer
+        case .buy:
+            return LocalizedString.Buy.confirmationDisclaimer
         case .deposit,
              .receive,
-             .buy,
              .sell,
              .send,
              .viewActivity:

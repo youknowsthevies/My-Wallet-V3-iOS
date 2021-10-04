@@ -25,10 +25,14 @@ extension DependencyContainer {
 
         factory { WalletPayloadClient() as WalletPayloadClientAPI }
 
+        factory { PushNotificationsClient() as PushNotificationsClientAPI }
+
         // MARK: - Repositories
 
         factory { DeviceVerificationRepository() as DeviceVerificationRepositoryAPI }
 
         factory { RemoteSessionTokenRepository() as RemoteSessionTokenRepositoryAPI }
+
+        factory { PushNotificationsRepository() as PushNotificationsRepositoryAPI }
     }
 }

@@ -3,14 +3,17 @@
 import ComposableArchitecture
 import DIKit
 import ERC20DataKit
+import FeatureAppUI
 import FeatureDebugUI
 import FeatureInterestData
 import FeatureSettingsDomain
+import FeatureTransactionData
 import Firebase
-import PlatformKit
+import PlatformDataKit
 import ToolKit
 import UIKit
 
+@UIApplicationMain
 final class AppDelegate: NSObject, UIApplicationDelegate {
     @LazyInject(tag: DebugScreenContext.tag) var debugCoordinator: DebugCoordinating
 
@@ -27,7 +30,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     override init() {
         bootstrap()
         store = Store(
-            initialState: .init(),
+            initialState: AppState(),
             reducer: appReducer,
             environment: .live
         )
@@ -61,7 +64,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             )
         )
         window.setRootViewController(hostingController)
-        viewStore.send(.appDelegate(.didFinishLaunching(window: window)))
+        let context = AppDelegateContext(
+            zendeskKey: CustomerSupportChatConfiguration.apiKey
+        )
+        viewStore.send(.appDelegate(.didFinishLaunching(window: window, context: context)))
         return true
     }
 }
@@ -75,6 +81,7 @@ func defineDependencies() {
         DependencyContainer.networkKit
         DependencyContainer.walletPayloadKit
         DependencyContainer.platformKit
+        DependencyContainer.platformDataKit
         DependencyContainer.interestKit
         DependencyContainer.interestDataKit
         DependencyContainer.platformUIKit
@@ -99,6 +106,7 @@ func defineDependencies() {
         DependencyContainer.remoteNotificationsKit
         DependencyContainer.featureAuthenticationDomain
         DependencyContainer.featureAuthenticationData
+        DependencyContainer.featureAppUI
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

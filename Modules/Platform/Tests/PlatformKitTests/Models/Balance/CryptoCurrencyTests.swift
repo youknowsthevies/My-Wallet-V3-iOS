@@ -30,4 +30,43 @@ class CryptoCurrencyTests: XCTestCase {
             "sut.allEnabledCryptoCurrencies.sorted() is not as expected."
         )
     }
+
+    func testUniquenessERC20AssetModel() {
+        let currencies: [ERC20AssetModel] = [
+            .mock(name: "AAA", sortIndex: 0),
+            .mock(name: "AAA", sortIndex: 1),
+            .mock(name: "BBB", sortIndex: 2)
+        ]
+        let unique = currencies.unique
+        XCTAssertEqual(unique.count, 2)
+        let set = Set(currencies)
+        XCTAssertEqual(set.count, 2)
+    }
+
+    func testUniquenessCoinAssetModel() {
+        let currencies: [CoinAssetModel] = [
+            .mock(name: "AAA", sortIndex: 0),
+            .mock(name: "AAA", sortIndex: 1),
+            .mock(name: "BBB", sortIndex: 2)
+        ]
+        let unique = currencies.unique
+        XCTAssertEqual(unique.count, 2)
+        let set = Set(currencies)
+        XCTAssertEqual(set.count, 2)
+    }
+
+    func testUniquenessCryptoCurrency() {
+        let currencies: [CryptoCurrency] = [
+            .erc20(.mock(name: "AAA", sortIndex: 0)),
+            .erc20(.mock(name: "AAA", sortIndex: 1)),
+            .erc20(.mock(name: "BBB", sortIndex: 2)),
+            .coin(.mock(name: "AAA", sortIndex: 0)),
+            .coin(.mock(name: "AAA", sortIndex: 1)),
+            .coin(.mock(name: "BBB", sortIndex: 2))
+        ]
+        let unique = currencies.unique
+        XCTAssertEqual(unique.count, 4)
+        let set = Set(currencies)
+        XCTAssertEqual(set.count, 4)
+    }
 }

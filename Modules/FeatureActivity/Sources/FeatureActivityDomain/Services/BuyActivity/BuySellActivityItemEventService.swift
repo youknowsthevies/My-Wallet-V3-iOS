@@ -12,6 +12,7 @@ final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI 
     private var isTier2Approved: Single<Bool> {
         kycTiersService
             .tiers
+            .asSingle()
             .map(\.isTier2Approved)
             .catchErrorJustReturn(false)
     }
@@ -39,7 +40,7 @@ final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI 
             .orders
             .map { orders -> [OrderDetails] in
                 orders.filter {
-                    $0.outputValue.currencyType == cryptoCurrency || $0.inputValue.currencyType == cryptoCurrency
+                    $0.outputValue.currency == cryptoCurrency || $0.inputValue.currency == cryptoCurrency
                 }
             }
             .map { items in items.map { BuySellActivityItemEvent(with: $0) } }

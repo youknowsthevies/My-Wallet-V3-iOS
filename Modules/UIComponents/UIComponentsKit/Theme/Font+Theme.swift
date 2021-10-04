@@ -53,7 +53,7 @@ extension UIFont {
         registerFont(fileName: InterType.bold.rawValue)
     }
 
-    static func registerFont(fileName: String, bundle: Bundle = Bundle.safeModuleBundle) {
+    static func registerFont(fileName: String, bundle: Bundle = Bundle.module) {
         guard let fontURL = bundle.url(forResource: fileName, withExtension: "ttf") else {
             print("No font named \(fileName).ttf was found in the module bundle")
             return
@@ -62,15 +62,5 @@ extension UIFont {
         var error: Unmanaged<CFError>?
         CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, &error)
         print(error ?? "Successfully registered font: \(fileName)")
-    }
-}
-
-extension Bundle {
-    /// If unit tests are running, returns main Bundle.
-    static var safeModuleBundle: Bundle {
-        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
-            return Bundle.main
-        }
-        return Bundle.module
     }
 }

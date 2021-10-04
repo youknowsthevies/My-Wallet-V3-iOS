@@ -43,20 +43,18 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .separator,
             .lineItem(dateCreatedPresenter),
             .separator,
-            .lineItem(amountPresenter),
-            .separator,
-            .lineItem(valuePresenter),
+            .lineItem(totalPresenter),
             .separator
         ]
     }
 
     private var sendCells: [DetailsScreen.CellType] {
         baseCells + [
-            .lineItem(feePresenter),
-            .separator,
-            .lineItem(fromPresenter),
+            .lineItem(networkFeePresenter),
             .separator,
             .lineItem(toPresenter),
+            .separator,
+            .lineItem(fromPresenter),
             .separator,
             .lineItem(memoPresenter)
         ]
@@ -64,21 +62,20 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private var receiveCells: [DetailsScreen.CellType] {
         baseCells + [
-            .lineItem(fromPresenter),
-            .separator,
             .lineItem(toPresenter),
             .separator,
-            .lineItem(memoPresenter)
+            .lineItem(fromPresenter)
         ]
     }
 
     // MARK: - Private Properties
 
-    private let interactor: StellarActivityDetailsInteractor
-    private let router: ActivityRouterAPI
-    private let disposeBag: DisposeBag = .init()
     private let event: TransactionalActivityItemEvent
+    private let router: ActivityRouterAPI
+    private let interactor: StellarActivityDetailsInteractor
     private let alertViewPresenter: AlertViewPresenterAPI
+
+    private let disposeBag = DisposeBag()
 
     // MARK: Private Properties (Model Relay)
 
@@ -88,21 +85,20 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let cryptoAmountLabelPresenter: LabelContentPresenting
 
-    // MARK: Private Properties (LineItemCellPresenting)
-
-    private let dateCreatedPresenter: LineItemCellPresenting
-    private let amountPresenter: LineItemCellPresenting
-    private let valuePresenter: LineItemCellPresenting
-    private let fromPresenter: LineItemCellPresenting
-    private let toPresenter: LineItemCellPresenting
-    private let orderIDPresenter: LineItemCellPresenting
-    private let memoPresenter: LineItemCellPresenting
-    private let feePresenter: LineItemCellPresenting
-
     // MARK: Private Properties (Badge)
 
     private let badgesModel = MultiBadgeViewModel()
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
+
+    // MARK: Private Properties (LineItemCellPresenting)
+
+    private let orderIDPresenter: LineItemCellPresenting
+    private let dateCreatedPresenter: LineItemCellPresenting
+    private let totalPresenter: LineItemCellPresenting
+    private let networkFeePresenter: LineItemCellPresenting
+    private let toPresenter: LineItemCellPresenting
+    private let fromPresenter: LineItemCellPresenting
+    private let memoPresenter: LineItemCellPresenting
 
     // MARK: Private Properties (Explorer Button)
 
@@ -111,59 +107,72 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
     // MARK: - Init
 
     init(
-        alertViewPresenter: AlertViewPresenterAPI = resolve(),
         event: TransactionalActivityItemEvent,
         router: ActivityRouterAPI,
         interactor: StellarActivityDetailsInteractor = .init(),
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        precondition(event.currency == .coin(.stellar), "Using StellarActivityDetailsPresenter with \(event.currency) event.")
-        self.alertViewPresenter = alertViewPresenter
+        precondition(
+            event.currency == .coin(.stellar),
+            "Using StellarActivityDetailsPresenter with \(event.currency) event."
+        )
         self.event = event
         self.router = router
         self.interactor = interactor
-        explorerButton = .secondary(with: LocalizedString.Button.viewOnStellarChainIO)
-        buttons = [explorerButton]
-        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        self.alertViewPresenter = alertViewPresenter
+
+        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
-        amountPresenter = TransactionalLineItem.amount().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        valuePresenter = TransactionalLineItem.value().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
-            analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
-            analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        feePresenter = TransactionalLineItem.fee().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        memoPresenter = TransactionalLineItem.memo().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
+
         orderIDPresenter = TransactionalLineItem.orderId(event.transactionHash).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
-            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
+
+        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
-        let title: String
+
+        totalPresenter = TransactionalLineItem.total().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        networkFeePresenter = TransactionalLineItem.networkFee().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        memoPresenter = TransactionalLineItem.memo().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        explorerButton = .secondary(with: LocalizedString.Button.viewOnStellarChainIO)
+
+        switch event.type {
+        case .receive:
+            buttons = []
+        case .send:
+            buttons = [explorerButton]
+        }
+
         switch event.type {
         case .send:
-            title = LocalizedString.Title.send
             cells = sendCells
         case .receive:
-            title = LocalizedString.Title.receive
             cells = receiveCells
         }
-        titleViewRelay.accept(.text(value: title))
+
         bindAll(with: event)
     }
 
@@ -184,11 +193,19 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
     }
 
     func bindAll(with event: TransactionalActivityItemEvent) {
-        explorerButton
-            .tapRelay
-            .bind { [weak self] _ in
-                self?.router.showBlockchainExplorer(for: event)
-            }
+        let title: String
+        switch event.type {
+        case .send:
+            title = LocalizedString.Title.send
+        case .receive:
+            title = LocalizedString.Title.receive
+        }
+        titleViewRelay.accept(.text(value: title))
+
+        itemRelay
+            .map { $0?.cryptoAmount }
+            .mapToLabelContentStateInteraction()
+            .bindAndCatch(to: cryptoAmountLabelPresenter.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -201,9 +218,10 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
 
         itemRelay
-            .map { $0?.cryptoAmount }
-            .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: cryptoAmountLabelPresenter.interactor.stateRelay)
+            .compactMap { $0?.statusBadge }
+            .distinctUntilChanged()
+            .map { .loaded(next: $0) }
+            .bindAndCatch(to: statusBadge.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -213,21 +231,15 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
 
         itemRelay
-            .map { $0?.amount }
-            .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: amountPresenter.interactor.description.stateRelay)
-            .disposed(by: disposeBag)
-
-        itemRelay
             .map { $0?.value }
             .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: valuePresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: totalPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
-            .map { $0?.from }
+            .map { $0?.fee }
             .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: fromPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: networkFeePresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -237,10 +249,9 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
 
         itemRelay
-            .compactMap { $0?.statusBadge }
-            .distinctUntilChanged()
-            .map { .loaded(next: $0) }
-            .bindAndCatch(to: statusBadge.interactor.stateRelay)
+            .map { $0?.from }
+            .mapToLabelContentStateInteraction()
+            .bindAndCatch(to: fromPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -250,15 +261,16 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
 
         itemRelay
-            .map { $0?.fee }
-            .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: feePresenter.interactor.description.stateRelay)
-            .disposed(by: disposeBag)
-
-        itemRelay
             .distinctUntilChanged()
             .mapToVoid()
             .bindAndCatch(to: reloadRelay)
+            .disposed(by: disposeBag)
+
+        explorerButton
+            .tapRelay
+            .bind { [weak self] _ in
+                self?.router.showBlockchainExplorer(for: event)
+            }
             .disposed(by: disposeBag)
     }
 }

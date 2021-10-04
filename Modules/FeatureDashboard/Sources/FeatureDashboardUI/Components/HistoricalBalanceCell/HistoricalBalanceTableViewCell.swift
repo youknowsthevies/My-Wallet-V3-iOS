@@ -8,21 +8,27 @@ import RxSwift
 final class HistoricalBalanceTableViewCell: UITableViewCell {
 
     /// Presenter should be injected
-    var presenter: HistoricalBalanceCellPresenter! {
+    var presenter: HistoricalBalanceCellPresenter? {
         willSet { disposeBag = DisposeBag() }
         didSet {
-            if let presenter = presenter {
-                assetSparklineView.presenter = presenter.sparklinePresenter
-                assetPriceView.presenter = presenter.pricePresenter
-                assetBalanceView.presenter = presenter.balancePresenter
-                setup()
-            } else {
+            guard let presenter = presenter else {
                 assetSparklineView.presenter = nil
                 assetPriceView.presenter = nil
                 assetBalanceView.presenter = nil
-                assetImageView.set(nil)
+                badgeImageView.viewModel = nil
                 assetTitleLabel.content = .empty
+                return
             }
+
+            assetSparklineView.presenter = presenter.sparklinePresenter
+            assetPriceView.presenter = presenter.pricePresenter
+            assetBalanceView.presenter = presenter.balancePresenter
+            presenter.thumbnail
+                .drive(badgeImageView.rx.viewModel)
+                .disposed(by: disposeBag)
+            presenter.name
+                .drive(assetTitleLabel.rx.content)
+                .disposed(by: disposeBag)
         }
     }
 
@@ -31,7 +37,7 @@ final class HistoricalBalanceTableViewCell: UITableViewCell {
     // MARK: Private IBOutlets
 
     @IBOutlet private var assetTitleLabel: UILabel!
-    @IBOutlet private var assetImageView: UIImageView!
+    @IBOutlet private var badgeImageView: BadgeImageView!
     @IBOutlet private var assetSparklineView: AssetSparklineView!
     @IBOutlet private var assetPriceView: AssetPriceView!
     @IBOutlet private var assetBalanceView: AssetBalanceView!
@@ -57,14 +63,5 @@ final class HistoricalBalanceTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
-    }
-
-    private func setup() {
-        presenter.thumbnail
-            .drive(assetImageView.rx.content)
-            .disposed(by: disposeBag)
-        presenter.name
-            .drive(assetTitleLabel.rx.content)
-            .disposed(by: disposeBag)
     }
 }

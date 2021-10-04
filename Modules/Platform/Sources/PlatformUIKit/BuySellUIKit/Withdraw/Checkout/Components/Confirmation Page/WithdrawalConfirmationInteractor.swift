@@ -31,11 +31,11 @@ final class WithdrawalConfirmationInteractor: Interactor {
     var currencyType: CurrencyType {
         switch type {
         case .success(let value):
-            return value.currency
+            return value.currencyType
         case .failure(let currencyType, _):
             return currencyType
         case .loading(let value):
-            return value.currency
+            return value.currencyType
         }
     }
 

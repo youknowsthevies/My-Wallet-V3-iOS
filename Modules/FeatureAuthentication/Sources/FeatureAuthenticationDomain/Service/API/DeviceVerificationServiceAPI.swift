@@ -2,7 +2,7 @@
 
 import Combine
 import Foundation
-import NetworkKit
+import NetworkError
 
 public enum DeviceVerificationServiceError: Error, Equatable {
     case expiredEmailCode

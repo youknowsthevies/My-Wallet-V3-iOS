@@ -101,11 +101,15 @@ let verifyDeviceReducer = Reducer.combine(
             return .none
 
         case .didExtractWalletInfo(let walletInfo):
+            guard walletInfo.email != nil, walletInfo.emailCode != nil else {
+                state.credentialsContext = .walletIdentifier(guid: walletInfo.guid)
+                return Effect(value: .setCredentialsScreenVisible(true))
+            }
             state.credentialsContext = .walletInfo(walletInfo)
             return Effect(value: .setCredentialsScreenVisible(true))
 
         case .fallbackToWalletIdentifier:
-            state.credentialsContext = .walletIdentifier(email: state.emailAddress)
+            state.credentialsContext = .walletIdentifier(guid: "")
             return Effect(value: .setCredentialsScreenVisible(true))
 
         case .didReceiveWalletInfoDeeplink(let url):
@@ -120,7 +124,11 @@ let verifyDeviceReducer = Reducer.combine(
                         return .didExtractWalletInfo(walletInfo)
                     case .failure(let error):
                         environment.errorRecorder.error(error)
-                        return .fallbackToWalletIdentifier
+                        switch error {
+                        case .failToDecodeBase64Component,
+                             .failToDecodeToWalletInfo:
+                            return .fallbackToWalletIdentifier
+                        }
                     }
                 }
 
@@ -137,7 +145,24 @@ let verifyDeviceReducer = Reducer.combine(
         case .setCredentialsScreenVisible(let isVisible):
             state.isCredentialsScreenVisible = isVisible
             if isVisible {
-                state.credentialsState = .init()
+                switch state.credentialsContext {
+                case .walletInfo(let walletInfo):
+                    state.credentialsState = CredentialsState(
+                        walletPairingState: WalletPairingState(
+                            emailAddress: walletInfo.email ?? "",
+                            emailCode: walletInfo.emailCode,
+                            walletGuid: walletInfo.guid
+                        )
+                    )
+                case .walletIdentifier(let guid):
+                    state.credentialsState = CredentialsState(
+                        walletPairingState: WalletPairingState(
+                            walletGuid: guid ?? ""
+                        )
+                    )
+                case .manualPairing, .none:
+                    state.credentialsState = .init()
+                }
             }
             return .none
 

@@ -110,7 +110,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                         if let fiatValue = amount.fiatValue, !state.allowFiatInput {
                             // Fiat Input but state does not allow fiat
                             guard let sourceToFiatPair = state.sourceToFiatPair else {
-                                return MoneyValue.zero(currency: state.asset)
+                                return .zero(currency: state.asset)
                             }
                             return MoneyValuePair(
                                 fiatValue: fiatValue,
@@ -188,21 +188,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .compactMap { $0 }
             .share(scope: .whileConnected)
 
-        let bottomAuxiliaryViewAccounts = Observable.combineLatest(
-            availableSources,
-            availableTargets
-        )
-        .map { [action] availableSources, availableTargets -> [Account] in
-            guard action == .buy || action == .deposit else {
-                return availableTargets
-            }
-            return availableSources
-        }
-
         accountAuxiliaryViewInteractor
             .connect(
-                stream: auxiliaryViewAccount,
-                availableAccounts: bottomAuxiliaryViewAccounts
+                stream: auxiliaryViewAccount
             )
             .disposeOnDeactivate(interactor: self)
 
@@ -507,7 +495,7 @@ extension TransactionErrorState {
         exchangeRate: MoneyValuePair?,
         input: ActiveAmountInput
     ) -> MoneyValue {
-        switch (source.currencyType, input) {
+        switch (source.currency, input) {
         case (.crypto, .crypto),
              (.fiat, .fiat):
             return source
@@ -518,19 +506,14 @@ extension TransactionErrorState {
                 return source
             }
             // Convert crypto max amount into fiat amount.
-            guard let result = try? source.convert(using: exchangeRate.quote) else {
-                // Can't convert, use original value for error message.
-                return source
-            }
-            return result
+            return source.convert(using: exchangeRate.quote)
         case (.fiat, .crypto):
-            guard let quote = exchangeRate?.quote,
-                  let result = try? source.convert(usingInverse: quote, currencyType: source.currencyType)
-            else {
-                // Can't convert, use original value for error message.
+            guard let exchangeRate = exchangeRate else {
+                // No exchange rate yet, use original value for error message.
                 return source
             }
-            return result
+            // Convert fiat max amount into crypto amount.
+            return source.convert(usingInverse: exchangeRate.quote, currencyType: source.currency)
         }
     }
 }
@@ -549,7 +532,6 @@ extension AssetAction {
     fileprivate var supportsBottomAccountsView: Bool {
         switch self {
         case .buy,
-             .sell,
              .deposit,
              .withdraw:
             return true

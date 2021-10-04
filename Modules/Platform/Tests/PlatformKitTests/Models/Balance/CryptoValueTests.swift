@@ -117,7 +117,7 @@ class CryptoValueTests: XCTestCase {
     }
 
     func testCreateFromMajorEth() {
-        let decimalPlaces = CryptoCurrency.coin(.ethereum).maxDecimalPlaces
+        let decimalPlaces = CryptoCurrency.coin(.ethereum).precision
         XCTAssertEqual(
             BigInt(1) * BigInt(10).power(decimalPlaces),
             CryptoValue.create(major: "1", currency: .coin(.ethereum))!.amount
@@ -261,16 +261,11 @@ class CryptoValueTests: XCTestCase {
 }
 
 extension CryptoValue {
+
     fileprivate static func create(major value: String, currency: CryptoCurrency, locale: Locale) -> CryptoValue? {
         guard let majorDecimal = Decimal(string: value, locale: locale), !majorDecimal.isNaN else {
             return nil
         }
         return create(major: majorDecimal, currency: currency)
-    }
-
-    private static func create(major value: Decimal, currency: CryptoCurrency) -> CryptoValue {
-        let minorDecimal = value * pow(10, currency.maxDecimalPlaces)
-        let amount = BigInt(stringLiteral: "\(minorDecimal.roundTo(places: 0))")
-        return CryptoValue(amount: amount, currency: currency)
     }
 }

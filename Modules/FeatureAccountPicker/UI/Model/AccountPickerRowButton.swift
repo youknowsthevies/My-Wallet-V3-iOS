@@ -4,12 +4,19 @@ import Foundation
 
 extension AccountPickerRow {
 
-    public struct ButtonModel: Equatable {
+    public struct Button: Equatable {
 
-        public init(text: String) {
-            self.text = text
-        }
+        // MARK: - Internal properties
 
         var text: String
+
+        let id: AnyHashable
+
+        // MARK: - Init
+
+        public init(id: AnyHashable, text: String) {
+            self.id = id
+            self.text = text
+        }
     }
 }

@@ -5,8 +5,8 @@ import RxSwift
 import ToolKit
 
 public protocol ActivityItemBalanceFetching {
-    /// The exchange service
-    var exchange: PairExchangeServiceAPI { get }
+    /// The pair exchange service
+    var pairExchangeService: PairExchangeServiceAPI { get }
 
     /// The calculation state of the `MoneyValuePair`
     var calculationState: Observable<MoneyValuePairCalculationState> { get }
@@ -17,7 +17,7 @@ public protocol ActivityItemBalanceFetching {
 
 public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
 
-    public let exchange: PairExchangeServiceAPI
+    public let pairExchangeService: PairExchangeServiceAPI
 
     public var calculationState: Observable<MoneyValuePairCalculationState> {
         _ = setup
@@ -29,19 +29,18 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
     private let calculationStateRelay = BehaviorRelay<MoneyValuePairCalculationState>(value: .calculating)
     private let disposeBag = DisposeBag()
     private let moneyValue: MoneyValue
+    private let instant: Date
 
     private lazy var setup: Void = {
-        exchange
-            .fiatPrice
-            .map(weak: self) { (self, fiatPrice) -> MoneyValuePair in
-                do {
-                    let pair = try MoneyValuePair(base: self.moneyValue, exchangeRate: .init(fiatValue: fiatPrice))
-                    return pair
-                } catch {
-                    return MoneyValuePair.zero(baseCurrency: self.moneyValue.currencyType, quoteCurrency: .fiat(fiatPrice.currencyType))
-                }
+        pairExchangeService
+            .fiatPrice(at: .time(instant))
+            .map { [moneyValue] fiatPrice -> MoneyValuePair in
+                MoneyValuePair(
+                    base: moneyValue,
+                    exchangeRate: fiatPrice.moneyValue
+                )
             }
-            .map { .value($0) }
+            .map(MoneyValuePairCalculationState.value)
             .startWith(.calculating)
             .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)
@@ -50,12 +49,13 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
 
     // MARK: - Private Properties
 
-    public init(exchange: PairExchangeServiceAPI, moneyValue: MoneyValue) {
-        self.exchange = exchange
+    public init(pairExchangeService: PairExchangeServiceAPI, moneyValue: MoneyValue, at instant: Date) {
+        self.pairExchangeService = pairExchangeService
         self.moneyValue = moneyValue
+        self.instant = instant
     }
 
     public func refresh() {
-        exchange.fetchTriggerRelay.accept(())
+        pairExchangeService.fetchTriggerRelay.accept(())
     }
 }

@@ -23,7 +23,7 @@ extension PaymentMethod {
         ) else {
             return nil
         }
-        let zero = FiatValue.zero(currency: currency)
+        let zero: FiatValue = .zero(currency: currency)
         let minValue = method.limits.min
         let maxValue = method.limits.max
         let maxDailyValue = method.limits.daily?.available ?? maxValue

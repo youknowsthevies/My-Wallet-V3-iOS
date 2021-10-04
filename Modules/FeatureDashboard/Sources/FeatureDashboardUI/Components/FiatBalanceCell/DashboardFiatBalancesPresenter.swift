@@ -43,7 +43,10 @@ final class DashboardFiatBalancesPresenter {
 
     // MARK: - Setup
 
-    init(interactor: DashboardFiatBalancesInteractor, fiatBalancePresenter: FiatBalanceCollectionViewPresenting = resolve()) {
+    init(
+        interactor: DashboardFiatBalancesInteractor,
+        fiatBalancePresenter: FiatBalanceCollectionViewPresenting = resolve()
+    ) {
         guard let fiatBalancePresenter = fiatBalancePresenter as? CurrencyViewPresenter else {
             fatalError("fiatBalancePresenter must conform to CurrencyViewPresenter")
         }

@@ -41,7 +41,7 @@ extension NumberFormatter {
     static let bitcoinFormatterWithGroupingSeparator: NumberFormatter = {
         decimalStyleFormatter(
             withMinfractionDigits: 0,
-            maxfractionDigits: CryptoCurrency.coin(.bitcoin).maxDisplayableDecimalPlaces,
+            maxfractionDigits: CryptoCurrency.coin(.bitcoin).displayPrecision,
             usesGroupingSeparator: true
         )
     }()

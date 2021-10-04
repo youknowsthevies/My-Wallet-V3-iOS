@@ -5,7 +5,12 @@ import PlatformKit
 import RxSwift
 
 extension Wallet: LegacyEthereumWalletAPI {
-    public func getEthereumMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
+
+    public func getEthereumNote(
+        for transaction: String,
+        success: @escaping (String?) -> Void,
+        error: @escaping (String) -> Void
+    ) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return
@@ -14,7 +19,8 @@ extension Wallet: LegacyEthereumWalletAPI {
         guard
             let result: String = context.evaluateScriptCheckIsOnMainQueue(function)?.toString(),
             !result.isEmpty,
-            result != "null"
+            result != "null",
+            result != "undefined"
         else {
             success(nil)
             return
@@ -22,13 +28,13 @@ extension Wallet: LegacyEthereumWalletAPI {
         success(result)
     }
 
-    public func setEthereumMemo(for transaction: String, memo: String?) {
+    public func setEthereumNote(for transaction: String, note: String?) {
         guard isInitialized() else {
             return
         }
-        let memo: String = memo?.escapedForJS() ?? ""
+        let note: String = note?.escapedForJS() ?? ""
         let transaction = transaction.escapedForJS()
-        let function: String = "MyWalletPhone.saveEtherNote(\"\(transaction)\", \"\(memo)\")"
+        let function: String = "MyWalletPhone.saveEtherNote(\"\(transaction)\", \"\(note)\")"
         context.evaluateScriptCheckIsOnMainQueue(function)
     }
 

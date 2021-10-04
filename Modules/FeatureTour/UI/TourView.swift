@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import Localization
 import SwiftUI
+import UIComponentsKit
 
 public struct TourView: View {
 
@@ -11,79 +13,113 @@ public struct TourView: View {
         self.store = store
     }
 
-    public init() {
+    public init(environment: TourEnvironment) {
         self.init(
             store: Store(
                 initialState: TourState(),
                 reducer: tourReducer,
-                environment: TourEnvironment()
+                environment: environment
             )
         )
     }
 
     public var body: some View {
-        WithViewStore(self.store) { _ in
-            TabView {
-                BrokerageView()
-                EarnView()
-                KeysView()
-                PricesView()
+        WithViewStore(self.store) { viewStore in
+            VStack {
+                Image("logo-blockchain-black", bundle: Bundle.featureTour)
+                    .padding(.top)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 20)
+                ZStack {
+                    makeTabView()
+                    makeButtonsView(viewStore)
+                }
+                .background(AnimatedGradient().ignoresSafeArea(.all))
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
         }
     }
 }
 
-private struct BrokerageView: View {
+extension TourView {
 
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.red)
-                .contentShape(Rectangle())
-            Text("Brokerage")
+    public enum Carousel {
+        case brokerage
+        case earn
+        case keys
+        case prices
+
+        @ViewBuilder public func makeView() -> some View {
+            switch self {
+            case .brokerage:
+                makeCarouselView(
+                    image: Image("bitcoin_perspective", bundle: Bundle.featureTour),
+                    text: LocalizationConstants.Tour.carouselBrokerageScreenMessage
+                )
+            case .earn:
+                makeCarouselView(
+                    image: Image("rocket", bundle: Bundle.featureTour),
+                    text: LocalizationConstants.Tour.carouselEarnScreenMessage
+                )
+            case .keys:
+                makeCarouselView(
+                    image: Image("lock", bundle: Bundle.featureTour),
+                    text: LocalizationConstants.Tour.carouselKeysScreenMessage
+                )
+            case .prices:
+                PriceListFactory.makePriceList()
+            }
+        }
+
+        @ViewBuilder private func makeCarouselView(image: Image?, text: String) -> some View {
+            VStack(spacing: 25) {
+                if let image = image {
+                    image
+                }
+                Text(text)
+                    .multilineTextAlignment(.center)
+                    .frame(width: 200.0)
+                    .textStyle(.title)
+            }
+            .padding(.bottom, 180)
         }
     }
-}
 
-private struct EarnView: View {
-
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.purple)
-                .contentShape(Rectangle())
-            Text("Earn")
+    @ViewBuilder private func makeTabView() -> some View {
+        TabView {
+            Carousel.brokerage.makeView()
+            Carousel.earn.makeView()
+            Carousel.keys.makeView()
         }
+        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
     }
-}
 
-private struct KeysView: View {
-
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.green)
-                .contentShape(Rectangle())
-            Text("Keys")
+    @ViewBuilder private func makeButtonsView(_ viewStore: ViewStore<TourState, TourAction>) -> some View {
+        VStack(spacing: 16) {
+            Spacer()
+            PrimaryButton(title: LocalizationConstants.Tour.createAccountButtonTitle) {
+                viewStore.send(.createAccount)
+            }
+            MinimalDoubleButton(
+                leftTitle: LocalizationConstants.Tour.restoreButtonTitle,
+                leftAction: { viewStore.send(.restore) },
+                rightTitle: LocalizationConstants.Tour.loginButtonTitle,
+                rightAction: { viewStore.send(.logIn) }
+            )
         }
-    }
-}
-
-private struct PricesView: View {
-
-    var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.pink)
-                .contentShape(Rectangle())
-            Text("Prices")
-        }
+        .padding(.top)
+        .padding(.bottom, 60)
+        .padding(.horizontal, 24)
     }
 }
 
 struct TourView_Previews: PreviewProvider {
     static var previews: some View {
-        TourView()
+        TourView(
+            environment: TourEnvironment(
+                createAccountAction: {},
+                restoreAction: {},
+                logInAction: {}
+            )
+        )
     }
 }

@@ -8,14 +8,14 @@ import RxSwift
 public final class WalletBalanceViewPresenter {
 
     typealias AccessibilityId = Accessibility.Identifier.Activity.WalletBalance
-    typealias PresentationState = LoadingState<WalletBalance>
+    public typealias PresentationState = LoadingState<WalletBalance>
 
     public struct WalletBalance {
         /// The balance in fiat
-        let fiatBalance: LabelContent
+        public let fiatBalance: LabelContent
 
         /// The fiat currency code
-        let currencyCode: LabelContent
+        public let currencyCode: LabelContent
 
         /// Descriptors that allows customized content and style
         public struct Descriptors {
@@ -63,7 +63,7 @@ public final class WalletBalanceViewPresenter {
 
     let accessibility: Accessibility = .id(AccessibilityId.view)
 
-    var state: Observable<PresentationState> {
+    public var state: Observable<PresentationState> {
         stateRelay
             .observeOn(MainScheduler.instance)
     }

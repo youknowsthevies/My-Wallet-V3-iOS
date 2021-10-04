@@ -49,8 +49,8 @@ extension BigInt {
         return majorValue.roundTo(places: roundingDecimalPlaces, roundingMode: roundingMode)
     }
 
-    public func toMinor(maxDecimalPlaces: Int) -> BigInt {
-        let minorDecimal = self * BigInt(10).power(maxDecimalPlaces)
+    public func toMinor(decimalPlaces: Int) -> BigInt {
+        let minorDecimal = self * BigInt(10).power(decimalPlaces)
         return minorDecimal
     }
 }

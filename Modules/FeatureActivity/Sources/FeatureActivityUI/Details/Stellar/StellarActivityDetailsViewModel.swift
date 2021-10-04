@@ -9,33 +9,38 @@ struct StellarActivityDetailsViewModel: Equatable {
 
     private typealias LocalizedString = LocalizationConstants.Activity.Details
 
-    let amount: String
-    let cryptoAmount: String
-    let dateCreated: String
-    let fee: String?
-    let from: String
-    let memo: String
     let statusBadge: BadgeAsset.Value.Interaction.BadgeItem?
+    let dateCreated: String
     let to: String
-    let transactionHash: String
+    let from: String
+    let cryptoAmount: String
     let value: String
+    let fee: String?
+    let memo: String
 
     init(with details: StellarActivityItemEventDetails, price: FiatValue?) {
-        transactionHash = details.transactionHash
-        cryptoAmount = details.cryptoAmount.toDisplayString(includeSymbol: true)
+        statusBadge = .init(type: .verified, description: LocalizedString.completed)
+        dateCreated = DateFormatter.elegantDateFormatter.string(from: details.createdAt)
+        to = details.to
+        from = details.from
+
+        cryptoAmount = details.cryptoAmount.displayString
         if let price = price {
-            amount = "\(cryptoAmount) at \(price.displayString)"
             value = details.cryptoAmount.convertToFiatValue(exchangeRate: price).displayString
         } else {
-            amount = cryptoAmount
             value = ""
         }
-        dateCreated = DateFormatter.elegantDateFormatter.string(from: details.createdAt)
-        from = details.from
-        to = details.to
 
-        fee = details.fee?.toDisplayString(includeSymbol: true)
+        if let fee = details.fee {
+            if let price = price {
+                self.fee = "\(fee.displayString) / \(fee.convertToFiatValue(exchangeRate: price).displayString)"
+            } else {
+                self.fee = fee.displayString
+            }
+        } else {
+            fee = nil
+        }
+
         memo = details.memo ?? LocalizedString.noDescription
-        statusBadge = .init(type: .verified, description: LocalizedString.completed)
     }
 }

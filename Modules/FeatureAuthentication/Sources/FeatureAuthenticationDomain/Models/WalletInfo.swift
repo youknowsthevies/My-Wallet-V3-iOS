@@ -21,15 +21,15 @@ public struct WalletInfo: Codable, Equatable {
 
     public static let empty = WalletInfo(
         guid: "",
-        email: "",
-        emailCode: "",
-        isMobileSetup: false,
-        hasCloudBackup: false
+        email: nil,
+        emailCode: nil,
+        isMobileSetup: nil,
+        hasCloudBackup: nil
     )
 
     public let guid: String
-    public let email: String
-    public let emailCode: String
+    public let email: String?
+    public let emailCode: String?
     public let isMobileSetup: Bool?
     public let hasCloudBackup: Bool?
 
@@ -37,10 +37,10 @@ public struct WalletInfo: Codable, Equatable {
 
     public init(
         guid: String,
-        email: String,
-        emailCode: String,
-        isMobileSetup: Bool?,
-        hasCloudBackup: Bool?
+        email: String? = nil,
+        emailCode: String? = nil,
+        isMobileSetup: Bool? = nil,
+        hasCloudBackup: Bool? = nil
     ) {
         self.guid = guid
         self.email = email

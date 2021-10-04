@@ -38,7 +38,7 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
             ),
             subtitle: String(
                 format: LocalizationIds.Success.description,
-                state.amount.currency.name
+                state.destination?.currencyType.cryptoCurrency?.name ?? ""
             ),
             compositeViewType: .composite(
                 .init(
@@ -67,9 +67,9 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
             case nil:
                 fatalError("Expected a Destination: \(state)")
             case let account as SingleAccount:
-                received = MoneyValue.zero(currency: account.currencyType)
+                received = .zero(currency: account.currencyType)
             case let cryptoTarget as CryptoTarget:
-                received = MoneyValue.zero(currency: cryptoTarget.asset)
+                received = .zero(currency: cryptoTarget.asset)
             default:
                 fatalError("Unsupported state.destination: \(String(reflecting: state.destination))")
             }

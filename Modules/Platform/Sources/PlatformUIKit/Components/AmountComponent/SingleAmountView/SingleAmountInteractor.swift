@@ -45,10 +45,7 @@ public final class SingleAmountInteractor: AmountViewInteracting {
             .input
             .compactMap { [inputCurrency] input -> MoneyValue? in
                 let amount = input.isEmpty || input.isPlaceholderZero ? "0" : input.amount
-                return MoneyValue.create(
-                    major: amount,
-                    currency: inputCurrency.currency
-                )
+                return MoneyValue.create(major: amount, currency: inputCurrency.currencyType)
             }
             .share(replay: 1, scope: .whileConnected)
     }

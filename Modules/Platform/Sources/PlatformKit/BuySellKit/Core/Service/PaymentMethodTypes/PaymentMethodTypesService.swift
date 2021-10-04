@@ -25,11 +25,11 @@ public enum PaymentMethodType: Equatable {
         case .card(let data):
             return .card([data.type])
         case .account(let data):
-            return .funds(data.topLimit.currency)
+            return .funds(data.topLimit.currencyType)
         case .suggested(let method):
             return method.type
         case .linkedBank(let data):
-            return .bankTransfer(data.currency.currency)
+            return .bankTransfer(data.currency.currencyType)
         }
     }
 
@@ -38,11 +38,11 @@ public enum PaymentMethodType: Equatable {
         case .card(let data):
             return .fiat(data.currency)
         case .account(let data):
-            return data.topLimit.currency
+            return data.topLimit.currencyType
         case .suggested(let method):
-            return method.max.currency
+            return method.max.currencyType
         case .linkedBank(let bank):
-            return bank.currency.currency
+            return bank.currency.currencyType
         }
     }
 
@@ -571,14 +571,16 @@ extension Array where Element == PaymentMethodType {
                     return accountForEligibility ? (paymentMethod.isEligible && isFiatSupported) : isFiatSupported
                 case .funds(let currency):
                     guard accountForEligibility else {
-                        return currency == currentWalletCurrency.currency
+                        return currency == currentWalletCurrency.currencyType
                     }
-                    return currency == currentWalletCurrency.currency && paymentMethod.isEligible
+                    return currency == currentWalletCurrency.currencyType && paymentMethod.isEligible
                 case .card:
                     return accountForEligibility ? paymentMethod.isEligible : true
                 }
             case .card(let data):
                 return data.state == .active
+            case .linkedBank(let data) where data.partner == .yapily:
+                return false
             case .linkedBank(let data):
                 return data.state == .active && data.currency == currentWalletCurrency
             }

@@ -18,7 +18,7 @@ class WalletUpgradeJSServiceTests: XCTestCase {
         super.setUp()
         scheduler = TestScheduler(initialClock: 0)
         contextProvider = MockContextProvider()
-        sut = WalletUpgradeJSService(contextProvider: contextProvider)
+        sut = WalletUpgradeJSService(contextProvider: contextProvider, scheduler: scheduler)
     }
 
     override func tearDown() {
@@ -85,10 +85,10 @@ class WalletUpgradeJSServiceTests: XCTestCase {
         // Assert
         let expectedEvents: [Recorded<Event<String>>] = Recorded.events(
             .next(
-                200,
+                201,
                 expectedString
             ),
-            .completed(200)
+            .completed(201)
         )
         XCTAssertEqual(result.events, expectedEvents)
     }
@@ -106,10 +106,10 @@ class WalletUpgradeJSServiceTests: XCTestCase {
         // Assert
         let expectedEvents: [Recorded<Event<String>>] = Recorded.events(
             .next(
-                200,
+                201,
                 expectedString
             ),
-            .completed(200)
+            .completed(201)
         )
         XCTAssertEqual(result.events, expectedEvents)
     }
@@ -127,10 +127,10 @@ class WalletUpgradeJSServiceTests: XCTestCase {
         // Assert
         let expectedEvents: [Recorded<Event<String>>] = Recorded.events(
             .next(
-                200,
+                201,
                 expectedString
             ),
-            .completed(200)
+            .completed(201)
         )
         XCTAssertEqual(result.events, expectedEvents)
     }
@@ -147,7 +147,7 @@ class WalletUpgradeJSServiceTests: XCTestCase {
         // Assert
         let expectedEvents: [Recorded<Event<String>>] = Recorded.events(
             .error(
-                200,
+                201,
                 WalletUpgradeJSError.failedV3Upgrade
             )
         )

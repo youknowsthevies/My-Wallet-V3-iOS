@@ -12,44 +12,43 @@ public protocol EthereumAccountDetailsServiceAPI {
     func accountDetails() -> Single<EthereumAssetAccountDetails>
 }
 
-class EthereumAccountDetailsService: EthereumAccountDetailsServiceAPI {
+final class EthereumAccountDetailsService: EthereumAccountDetailsServiceAPI {
 
     // MARK: - Properties
 
-    private let bridge: EthereumWalletBridgeAPI
+    private let accountRepository: EthereumWalletAccountRepositoryAPI
     private let client: BalanceClientAPI
     private let cache: CachedValue<EthereumAssetAccountDetails>
 
     // MARK: - Setup
 
     init(
-        with bridge: EthereumWalletBridgeAPI = resolve(),
+        accountRepository: EthereumWalletAccountRepositoryAPI = resolve(),
         client: BalanceClientAPI = resolve(),
         scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
     ) {
-        self.bridge = bridge
+        self.accountRepository = accountRepository
         self.client = client
         cache = .init(configuration: .periodic(30, scheduler: scheduler))
-        cache.setFetch(weak: self) { (self) -> Single<EthereumAssetAccountDetails> in
-            self.fetchAccountDetails()
+        cache.setFetch { [accountRepository, client] in
+            accountRepository.defaultAccount
+                .eraseError()
+                .flatMap { account in
+                    client.balanceDetails(from: account.publicKey)
+                        .map { details in
+                            EthereumAssetAccountDetails(
+                                account: account,
+                                balance: details.cryptoValue,
+                                nonce: details.nonce
+                            )
+                        }
+                        .eraseError()
+                }
+                .asSingle()
         }
     }
 
     func accountDetails() -> Single<EthereumAssetAccountDetails> {
         cache.valueSingle
-    }
-
-    private func fetchAccountDetails() -> Single<EthereumAssetAccountDetails> {
-        bridge.account
-            .flatMap(weak: self) { (self, account) -> Single<EthereumAssetAccountDetails> in
-                self.client.balanceDetails(from: account.accountAddress)
-                    .map { details in
-                        EthereumAssetAccountDetails(
-                            account: account,
-                            balance: details.cryptoValue,
-                            nonce: details.nonce
-                        )
-                    }
-            }
     }
 }

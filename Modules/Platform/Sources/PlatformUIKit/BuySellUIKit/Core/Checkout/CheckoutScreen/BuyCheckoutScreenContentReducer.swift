@@ -75,8 +75,6 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
     private let cryptoPriceItemCellPresenter: DefaultLineItemCellPresenter
 
-    private let statusBadge: DefaultBadgeAssetPresenter = .init()
-
     private static func notice(data: CheckoutData) -> LabelContent {
         LabelContent(
             text: data.order.paymentMethod.checkoutNotice(currencyType: data.outputCurrency),
@@ -110,11 +108,11 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             if data.hasCardCheckoutMade {
                 title = data.isPending3DS ? LocalizedSummary.completePaymentButton : LocalizedSummary.continueButtonPrefix
             } else {
-                title = "\(LocalizedSummary.buyButtonPrefix)\(data.outputCurrency.displayCode)"
+                title = LocalizedSummary.buyButtonTitle
             }
         case .bankAccount, .funds, .bankTransfer:
             if data.order.isPendingConfirmation {
-                title = "\(LocalizedSummary.buyButtonPrefix)\(data.outputCurrency.displayCode)"
+                title = LocalizedSummary.buyButtonTitle
             } else {
                 title = LocalizedSummary.continueButtonPrefix
             }
@@ -170,7 +168,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         let localizedPaymentMethod: String
         switch data.paymentMethod {
         case .funds:
-            localizedPaymentMethod = "\(LocalizedLineItem.Funds.prefix) \(data.fee.currency.code) \(LocalizedLineItem.Funds.suffix)"
+            localizedPaymentMethod = "\(LocalizedLineItem.Funds.prefix) \(data.fee.code) \(LocalizedLineItem.Funds.suffix)"
         case .card:
             localizedPaymentMethod = "\(data.card?.label ?? "") \(data.card?.displaySuffix ?? "")"
         case .bankAccount:
@@ -207,11 +205,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
         let description = data.order.state.localizedDescription
 
-        statusBadge.interactor.stateRelay.accept(
-            .loaded(next: .init(type: .default(accessibilitySuffix: description), description: description))
-        )
-
-        cryptoPriceItemCellPresenter = LineItem.cryptoPrice(data.cryptoValue?.currencyCode ?? LocalizedLineItem.price).defaultPresenter(
+        cryptoPriceItemCellPresenter = LineItem.cryptoPrice(data.cryptoValue?.code ?? LocalizedLineItem.price).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
@@ -223,8 +217,6 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
         continueButtonViewModel = BuyCheckoutScreenContentReducer.continueButton(data: data)
         cancelButtonViewModel = BuyCheckoutScreenContentReducer.cancelButton(data: data)
-        let badgesModel = MultiBadgeViewModel()
-        badgesModel.badgesRelay.accept([statusBadge])
 
         switch (data.order.paymentMethod, data.hasCardCheckoutMade, data.isPendingDepositBankWire, data.isPendingDeposit) {
         case (.card, true, _, _):
@@ -233,7 +225,6 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
             cells = [
                 .label(cryptoAmountLabelPresenter),
-                .badges(badgesModel),
                 .separator,
                 .lineItem(orderIdLineItemCellPresenter),
                 .separator,
@@ -257,7 +248,6 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
             cells = [
                 .label(cryptoAmountLabelPresenter),
-                .badges(badgesModel),
                 .separator,
                 .lineItem(orderIdLineItemCellPresenter),
                 .separator,
@@ -275,7 +265,6 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
             cells = [
                 .label(cryptoAmountLabelPresenter),
-                .badges(badgesModel),
                 .separator,
                 .lineItem(orderIdLineItemCellPresenter),
                 .separator,
@@ -301,7 +290,6 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
             cells = [
                 .label(fiatAmountLabelPresenter),
-                .badges(badgesModel),
                 .buttons([transferDetailsButtonViewModel!]),
                 .separator,
                 .lineItem(orderIdLineItemCellPresenter),
@@ -335,7 +323,6 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         case (.bankTransfer, _, _, true):
             cells = [
                 .label(cryptoAmountLabelPresenter),
-                .badges(badgesModel),
                 .separator,
                 .lineItem(orderIdLineItemCellPresenter),
                 .separator,

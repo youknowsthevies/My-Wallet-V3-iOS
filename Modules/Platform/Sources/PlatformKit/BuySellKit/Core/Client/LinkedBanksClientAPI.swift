@@ -1,8 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import NabuNetworkError
 
 protocol LinkedBanksClientAPI: AnyObject {
+
     /// Fetches any linked banks associated with the current user
     func linkedBanks() -> AnyPublisher<[LinkedBankResponse], NabuNetworkError>
 

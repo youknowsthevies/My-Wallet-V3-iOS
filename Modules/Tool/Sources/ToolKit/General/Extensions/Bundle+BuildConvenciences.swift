@@ -10,7 +10,7 @@ extension Bundle {
     /// - Returns: A `String` representing the build number
     public static func versionAndBuildNumber() -> String {
         var hash = ""
-        if let info = Bundle.main.infoDictionary {
+        if let info = MainBundleProvider.mainBundle.infoDictionary {
             hash = (info["COMMIT_HASH"] as? String ?? "")
         }
         var title = "v\(Bundle.applicationVersion ?? "")"

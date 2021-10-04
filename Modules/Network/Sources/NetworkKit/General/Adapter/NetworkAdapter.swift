@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import Foundation
+import NetworkError
 import RxCombine
 import RxSwift
 import ToolKit

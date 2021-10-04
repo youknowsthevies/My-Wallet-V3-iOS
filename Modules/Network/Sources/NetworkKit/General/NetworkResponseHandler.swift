@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import NetworkError
 import ToolKit
 
 public protocol NetworkResponseHandlerAPI {

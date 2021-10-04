@@ -2,9 +2,9 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureAppUI
 import FeatureSettingsDomain
 import Foundation
-import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa

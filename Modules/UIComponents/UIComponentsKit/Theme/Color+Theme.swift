@@ -23,6 +23,12 @@ extension Color {
     public static let buttonSecondaryBackground = Color(paletteColor: .white)
     public static let buttonSecondaryText = Color(paletteColor: .blue600)
 
+    // MARK: MinimalDoubleButton
+
+    public static let buttonMinimalDoubleBackground = Color(paletteColor: .white)
+    public static let buttonMinimalDoublePressedBackground = Color(paletteColor: .grey000)
+    public static let buttonMinimalDoubleText = Color(paletteColor: .blue600)
+
     // MARK: Links
 
     public static let buttonLinkText = Color(paletteColor: .blue600)

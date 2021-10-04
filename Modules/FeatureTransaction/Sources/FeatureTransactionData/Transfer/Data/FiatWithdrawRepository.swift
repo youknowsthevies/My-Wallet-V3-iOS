@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import FeatureTransactionDomain
+import NabuNetworkError
 import PlatformKit
 
 final class FiatWithdrawRepository: FiatWithdrawRepositoryAPI {

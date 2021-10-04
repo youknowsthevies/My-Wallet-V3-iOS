@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import NabuNetworkError
 import PlatformKit
 
 public protocol OrderCreationRepositoryAPI {
@@ -12,6 +13,13 @@ public protocol OrderCreationRepositoryAPI {
         destinationAddress: String?,
         refundAddress: String?
     ) -> AnyPublisher<SwapOrder, NabuNetworkError>
+
+    func createOrder(
+        direction: OrderDirection,
+        quoteIdentifier: String,
+        volume: MoneyValue,
+        ccy: String?
+    ) -> AnyPublisher<SellOrder, NabuNetworkError>
 }
 
 public protocol OrderUpdateRepositoryAPI {

@@ -12,12 +12,16 @@ enum TransactionType: Equatable {
     case buy(CryptoAccount?)
     /// Performs a sell. If `CrytoCurrency` is `nil`, the users will be presented with a crypto currency selector.
     case sell(CryptoAccount?)
+    /// Performs a swap. If `CrytoCurrency` is `nil`, the users will be presented with a crypto currency selector.
+    case swap(CryptoAccount?)
 
     static func == (lhs: TransactionType, rhs: TransactionType) -> Bool {
         switch (lhs, rhs) {
         case (.buy(let lhsAccount), .buy(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
         case (.sell(let lhsAccount), .sell(let rhsAccount)):
+            return lhsAccount?.identifier == rhsAccount?.identifier
+        case (.swap(let lhsAccount), .swap(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
         default:
             return false
@@ -67,6 +71,8 @@ extension TransactionType {
             return .buy(cryptoCurrency)
         case .sell(let cryptoCurrency):
             return .sell(cryptoCurrency)
+        case .swap(let cryptoCurrency):
+            return .swap(cryptoCurrency)
         }
     }
 }

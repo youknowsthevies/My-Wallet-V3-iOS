@@ -44,6 +44,9 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable interest withdraw and deposit
     case interestWithdrawAndDeposit
+
+    /// Enable Zen-Desk Messaging for Gold Verified Users
+    case customerSupportChat
 }
 
 extension AppFeature {
@@ -72,6 +75,8 @@ extension AppFeature {
             return "show_email_verification_in_buy_flow_ios"
         case .sddEnabled:
             return "sdd_enabled_ios"
+        case .customerSupportChat:
+            return "customer_support_chat_ios"
         }
     }
 
@@ -99,6 +104,8 @@ extension AppFeature {
         case .showEmailVerificationInBuyFlow:
             return false
         case .sddEnabled:
+            return false
+        case .customerSupportChat:
             return false
         }
     }

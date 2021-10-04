@@ -2,9 +2,7 @@
 
 import PlatformKit
 
-public struct StellarAssetAccount: SingleAddressAssetAccount {
-
-    public typealias Address = StellarAssetAddress
+public struct StellarAssetAccount {
 
     public let address: StellarAssetAddress
     public let accountAddress: String

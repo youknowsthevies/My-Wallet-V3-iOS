@@ -27,20 +27,27 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable split dashboard screen.
     case splitDashboard
 
+    /// Enable new account SwiftUI picker.
+    case newAccountPicker
+
+    /// Load All ERC20 Tokens.
+    case loadAllERC20Tokens
+
+    /// Enable new Onboarding Tour on the Welcome Flow
+    case newOnboardingTour
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .interestWithdrawAndDeposit:
-            return false
-        case .secureChannel:
-            return false
-        case .requestConsoleLogging:
-            return false
-        case .useTransactionsFlowToBuyCrypto:
-            return false
-        case .useTransactionsFlowToSellCrypto:
-            return false
-        case .disableGUIDLogin:
+        case .disableGUIDLogin,
+             .interestWithdrawAndDeposit,
+             .loadAllERC20Tokens,
+             .newAccountPicker,
+             .newOnboardingTour,
+             .requestConsoleLogging,
+             .secureChannel,
+             .useTransactionsFlowToBuyCrypto,
+             .useTransactionsFlowToSellCrypto:
             return false
         case .splitDashboard:
             return true
@@ -71,6 +78,12 @@ extension InternalFeature {
             return "Disable manual (guid) login option"
         case .splitDashboard:
             return "Split Dashboard Screen"
+        case .newAccountPicker:
+            return "New SwiftUI Account Picker"
+        case .loadAllERC20Tokens:
+            return "Load All ERC20 Tokens"
+        case .newOnboardingTour:
+            return "New Onboarding Tour"
         }
     }
 }

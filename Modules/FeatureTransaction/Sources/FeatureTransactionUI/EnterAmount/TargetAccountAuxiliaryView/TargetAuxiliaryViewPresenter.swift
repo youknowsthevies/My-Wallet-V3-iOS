@@ -22,7 +22,7 @@ final class TargetAuxiliaryViewPresenter: AuxiliaryViewPresenting {
             return UIHostingController(
                 rootView: TargetAccountAuxiliaryView(
                     asset: account.asset,
-                    price: .zero(currency: account.asset.currency),
+                    price: .zero(currency: account.asset.currencyType),
                     action: { [interactor, transactionState] in
                         interactor.handleTopAuxiliaryViewTapped(state: transactionState)
                     }

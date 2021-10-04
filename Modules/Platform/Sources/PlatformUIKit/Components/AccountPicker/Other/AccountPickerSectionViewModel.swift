@@ -2,10 +2,10 @@
 
 import RxDataSources
 
-struct AccountPickerSectionViewModel: SectionModelType {
-    typealias Item = AccountPickerCellItem
+public struct AccountPickerSectionViewModel: SectionModelType {
+    public typealias Item = AccountPickerCellItem
 
-    var items: [Item]
+    public var items: [Item]
 
     var identity: AnyHashable {
         // There's only ever one `AccountPickerSectionViewModel` section
@@ -13,7 +13,7 @@ struct AccountPickerSectionViewModel: SectionModelType {
         "AccountPickerSectionViewModel"
     }
 
-    init(original: AccountPickerSectionViewModel, items: [Item]) {
+    public init(original: AccountPickerSectionViewModel, items: [Item]) {
         self.init(items: items)
     }
 

@@ -85,28 +85,21 @@ public final class AnnouncementCardViewModel {
             contentColor: UIColor? = .defaultBadge,
             backgroundColor: UIColor = .lightBadgeBackground,
             cornerRadius: BadgeImageViewModel.CornerRadius = .roundedHigh,
-            accessibilitySuffix: String = "\(AccessibilityId.badge)",
+            accessibilityID: String = AccessibilityId.badge,
             size: CGSize
         ) {
-            let badgeImageModel: BadgeImageViewModel
-            if let contentColor = contentColor {
-                badgeImageModel = .template(
-                    image: image,
-                    templateColor: contentColor,
-                    backgroundColor: backgroundColor,
-                    cornerRadius: cornerRadius,
-                    accessibilityIdSuffix: accessibilitySuffix
-                )
-            } else {
-                badgeImageModel = .default(
-                    image: image,
-                    backgroundColor: backgroundColor,
-                    cornerRadius: cornerRadius,
-                    accessibilityIdSuffix: accessibilitySuffix
-                )
-            }
-            badgeImageModel.marginOffsetRelay.accept(0)
-            self = .visible(badgeImageModel, size)
+            let image = ImageViewContent(
+                imageResource: image,
+                accessibility: .id(accessibilityID),
+                renderingMode: contentColor.flatMap { .template($0) } ?? .normal
+            )
+            let theme = BadgeImageViewModel.Theme(
+                backgroundColor: backgroundColor,
+                cornerRadius: cornerRadius,
+                imageViewContent: image,
+                marginOffset: 0
+            )
+            self = .visible(.init(theme: theme), size)
         }
 
         var verticalPadding: CGFloat {

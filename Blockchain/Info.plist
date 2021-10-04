@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>zenDeskAccountKey</key>
+	<string>$(ZENDESK_ACCOUNT_KEY)</string>
 	<key>API_URL</key>
 	<string>$(API_URL)</string>
 	<key>EVERYPAY_API_URL</key>
@@ -41,7 +43,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>4.8.1</string>
+	<string>4.9.0</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -56,7 +58,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>0</string>
+	<string>3</string>
 	<key>COMMIT_HASH</key>
 	<string>${COMMIT_HASH}</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>

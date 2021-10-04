@@ -2,7 +2,6 @@
 
 import DIKit
 import FeatureActivityDomain
-import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay

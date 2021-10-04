@@ -2,7 +2,7 @@
 
 import Foundation
 
-public typealias JSON = [String: Any]
+public typealias JSONDictionary = [String: Any]
 
 public struct WalletOptions: Decodable {
 
@@ -195,7 +195,7 @@ public struct WalletOptions: Decodable {
 }
 
 extension WalletOptions.Domains {
-    public init?(json: JSON) {
+    public init?(dictionary json: JSONDictionary) {
         guard
             let mobile = json[WalletOptions.Keys.domains] as? [String: String],
             let stellarHorizonURLString = mobile[Keys.stellarHorizon.rawValue],
@@ -209,7 +209,7 @@ extension WalletOptions.Domains {
 }
 
 extension WalletOptions.XLMMetadata {
-    public init?(json: JSON) {
+    public init?(dictionary json: JSONDictionary) {
         if let xlmData = json[WalletOptions.Keys.xlm] as? [String: Int] {
             guard let fee = xlmData["operationFee"] else { return nil }
             guard let timeout = xlmData["sendTimeOutSeconds"] else { return nil }
@@ -222,7 +222,7 @@ extension WalletOptions.XLMMetadata {
 }
 
 extension WalletOptions.Mobile {
-    public init(json: JSON) {
+    public init(dictionary json: JSONDictionary) {
         if let mobile = json[WalletOptions.Keys.mobile] as? [String: String] {
             walletRoot = mobile[WalletOptions.Keys.walletRoot]
         } else {
@@ -232,7 +232,7 @@ extension WalletOptions.Mobile {
 }
 
 extension WalletOptions.MobileInfo {
-    public init(json: JSON) {
+    public init(dictionary json: JSONDictionary) {
         if let mobileInfo = json[WalletOptions.Keys.mobileInfo] as? [String: String] {
             if let code = Locale.current.languageCode {
                 message = mobileInfo[code] ?? mobileInfo["en"]
@@ -246,11 +246,11 @@ extension WalletOptions.MobileInfo {
 }
 
 extension WalletOptions.UpdateType {
-    public init(json: JSON) {
+    public init(dictionary json: JSONDictionary) {
 
         // Extract version update values
-        guard let iosJson = json[WalletOptions.Keys.ios] as? JSON,
-              let updateJson = iosJson[WalletOptions.Keys.update] as? JSON
+        guard let iosJson = json[WalletOptions.Keys.ios] as? JSONDictionary,
+              let updateJson = iosJson[WalletOptions.Keys.update] as? JSONDictionary
         else {
             self = .none
             return
@@ -282,23 +282,23 @@ extension WalletOptions.UpdateType {
 }
 
 extension WalletOptions.Ethereum {
-    public init(json: JSON) {
+    public init(dictionary json: JSONDictionary) {
         let ethereum = json[WalletOptions.Keys.ethereum] as? [String: Any]
         lastTxFuse = ethereum?[WalletOptions.Keys.lastTxFuse] as? Int64 ?? 0
     }
 }
 
 extension WalletOptions {
-    public init(json: JSON) {
-        domains = WalletOptions.Domains(json: json)
+    public init(dictionary json: JSONDictionary) {
+        domains = WalletOptions.Domains(dictionary: json)
         downForMaintenance = json[Keys.maintenance] as? Bool ?? false
-        mobile = WalletOptions.Mobile(json: json)
-        mobileInfo = WalletOptions.MobileInfo(json: json)
-        xlmMetadata = WalletOptions.XLMMetadata(json: json)
-        updateType = WalletOptions.UpdateType(json: json)
+        mobile = WalletOptions.Mobile(dictionary: json)
+        mobileInfo = WalletOptions.MobileInfo(dictionary: json)
+        xlmMetadata = WalletOptions.XLMMetadata(dictionary: json)
+        updateType = WalletOptions.UpdateType(dictionary: json)
         let xlmExchangeContainer = json[CodingKeys.xlmExchange.rawValue] as? [String: [String]]
         xlmExchangeAddresses = xlmExchangeContainer?[CodingKeys.exchangeAddresses.rawValue] ?? nil
-        ethereum = WalletOptions.Ethereum(json: json)
+        ethereum = WalletOptions.Ethereum(dictionary: json)
     }
 
     public init(from decoder: Decoder) throws {

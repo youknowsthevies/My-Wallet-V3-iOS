@@ -34,12 +34,13 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Private Properties
 
-    private let interactor: BitcoinActivityDetailsInteractor
     private let event: TransactionalActivityItemEvent
     private let router: ActivityRouterAPI
-    private let disposeBag: DisposeBag = .init()
+    private let interactor: BitcoinActivityDetailsInteractor
     private let alertViewPresenter: AlertViewPresenterAPI
     private let loadingViewPresenter: LoadingViewPresenting
+
+    private let disposeBag = DisposeBag()
 
     // MARK: Private Properties (Model Relay)
 
@@ -49,20 +50,6 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let cryptoAmountLabelPresenter: LabelContentPresenting
 
-    // MARK: Private Properties (LineItemCellPresenting)
-
-    private let dateCreatedPresenter: LineItemCellPresenting
-    private let amountPresenter: LineItemCellPresenting
-    private let valuePresenter: LineItemCellPresenting
-    private let fromPresenter: LineItemCellPresenting
-    private let toPresenter: LineItemCellPresenting
-    private let orderIDPresenter: LineItemCellPresenting
-    private let feePresenter: LineItemCellPresenting
-
-    // MARK: Private Properties (TextFieldViewModel)
-
-    private let noteModel: TextFieldViewModel
-
     // MARK: Private Properties (Badge)
 
     private let badgesModel = MultiBadgeViewModel()
@@ -70,79 +57,127 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let confirmingBadge: DefaultBadgeAssetPresenter = .init()
     private let badgeCircleModel: BadgeCircleViewModel = .init()
 
+    // MARK: Private Properties (LineItemCellPresenting)
+
+    private let orderIDPresenter: LineItemCellPresenting
+    private let dateCreatedPresenter: LineItemCellPresenting
+    private let totalPresenter: LineItemCellPresenting
+    private let networkFeePresenter: LineItemCellPresenting
+    private let toPresenter: LineItemCellPresenting
+    private let fromPresenter: LineItemCellPresenting
+
+    // MARK: Private Properties (TextFieldViewModel)
+
+    private let noteModel: TextFieldViewModel
+
     // MARK: Private Properties (Explorer Button)
 
     private let explorerButton: ButtonViewModel
 
     init(
-        alertViewPresenter: AlertViewPresenterAPI = resolve(),
-        loadingViewPresenter: LoadingViewPresenting = resolve(),
         event: TransactionalActivityItemEvent,
         router: ActivityRouterAPI,
         interactor: BitcoinActivityDetailsInteractor = .init(),
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         messageRecorder: MessageRecording = resolve()
     ) {
-        precondition(event.currency == .coin(.bitcoin), "Using BitcoinActivityDetailsPresenter with \(event.currency) event.")
-        self.loadingViewPresenter = loadingViewPresenter
-        self.alertViewPresenter = alertViewPresenter
+        precondition(
+            event.currency == .coin(.bitcoin),
+            "Using BitcoinActivityDetailsPresenter with \(event.currency) event."
+        )
         self.event = event
-        self.interactor = interactor
         self.router = router
-        explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
-        buttons = [explorerButton]
-        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        self.interactor = interactor
+        self.alertViewPresenter = alertViewPresenter
+        self.loadingViewPresenter = loadingViewPresenter
+
+        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
-        amountPresenter = TransactionalLineItem.amount().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        valuePresenter = TransactionalLineItem.value().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        feePresenter = TransactionalLineItem.fee().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
-            analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
-            analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
+
         orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
+
+        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        totalPresenter = TransactionalLineItem.total().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        networkFeePresenter = TransactionalLineItem.networkFee().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
         noteModel = TextFieldViewModel(
             with: .description,
             validator: TextValidationFactory.General.alwaysValid,
             messageRecorder: messageRecorder
         )
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
-            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
-        )
-        cells = [
-            .label(cryptoAmountLabelPresenter),
-            .badges(badgesModel),
-            .separator,
-            .lineItem(orderIDPresenter),
-            .separator,
-            .lineItem(dateCreatedPresenter),
-            .separator,
-            .lineItem(amountPresenter),
-            .separator,
-            .lineItem(valuePresenter),
-            .separator,
-            .lineItem(feePresenter),
-            .separator,
-            .lineItem(fromPresenter),
-            .separator,
-            .lineItem(toPresenter),
-            .separator,
-            .textField(noteModel)
-        ]
+
+        switch event.type {
+        case .receive:
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(orderIDPresenter),
+                .separator,
+                .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(totalPresenter),
+                .separator,
+                .lineItem(networkFeePresenter),
+                .separator,
+                .lineItem(toPresenter),
+                .separator,
+                .lineItem(fromPresenter)
+            ]
+        case .send:
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(orderIDPresenter),
+                .separator,
+                .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(totalPresenter),
+                .separator,
+                .lineItem(networkFeePresenter),
+                .separator,
+                .lineItem(toPresenter),
+                .separator,
+                .lineItem(fromPresenter),
+                .separator,
+                .textField(noteModel)
+            ]
+        }
+
+        explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
+
+        switch event.type {
+        case .receive:
+            buttons = []
+        case .send:
+            buttons = [explorerButton]
+        }
+
         bindAll(event: event)
     }
 
@@ -170,11 +205,16 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
         }
         titleViewRelay.accept(.text(value: title))
 
-        explorerButton
-            .tapRelay
-            .bind { [weak self] in
-                self?.router.showBlockchainExplorer(for: event)
-            }
+        itemRelay
+            .map { $0?.cryptoAmount }
+            .mapToLabelContentStateInteraction()
+            .bindAndCatch(to: cryptoAmountLabelPresenter.interactor.stateRelay)
+            .disposed(by: disposeBag)
+
+        itemRelay
+            .compactMap { $0?.confirmation.statusBadge }
+            .map { .loaded(next: $0) }
+            .bindAndCatch(to: statusBadge.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -207,27 +247,15 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
 
         itemRelay
-            .map { $0?.amount }
-            .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: amountPresenter.interactor.description.stateRelay)
-            .disposed(by: disposeBag)
-
-        itemRelay
-            .map { $0?.cryptoAmount }
-            .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: cryptoAmountLabelPresenter.interactor.stateRelay)
-            .disposed(by: disposeBag)
-
-        itemRelay
             .map { $0?.value }
             .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: valuePresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: totalPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
-            .map { $0?.from }
+            .map { $0?.fee }
             .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: fromPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: networkFeePresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -237,19 +265,13 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
 
         itemRelay
-            .compactMap { $0?.confirmation.statusBadge }
-            .map { .loaded(next: $0) }
-            .bindAndCatch(to: statusBadge.interactor.stateRelay)
-            .disposed(by: disposeBag)
-
-        itemRelay
-            .map { $0?.fee }
+            .map { $0?.from }
             .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: feePresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: fromPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
-            .map { $0?.memo ?? "" }
+            .map { $0?.note ?? "" }
             .bindAndCatch(to: noteModel.originalTextRelay)
             .disposed(by: disposeBag)
 
@@ -267,7 +289,7 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .delay(.milliseconds(200), scheduler: MainScheduler.asyncInstance)
             .flatMap(weak: self) { (self, note) in
                 self.interactor
-                    .updateMemo(for: self.event.identifier, to: note)
+                    .updateNote(for: self.event.identifier, to: note)
                     .hide(loader: self.loadingViewPresenter)
                     .asObservable()
             }
@@ -278,6 +300,13 @@ final class BitcoinActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .distinctUntilChanged()
             .mapToVoid()
             .bindAndCatch(to: reloadRelay)
+            .disposed(by: disposeBag)
+
+        explorerButton
+            .tapRelay
+            .bind { [weak self] in
+                self?.router.showBlockchainExplorer(for: event)
+            }
             .disposed(by: disposeBag)
     }
 

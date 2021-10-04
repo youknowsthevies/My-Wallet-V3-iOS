@@ -1,5 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
-import PlatformKit
+import NabuNetworkError
 
 public enum TransactionValidationState: Equatable {
     case uninitialized

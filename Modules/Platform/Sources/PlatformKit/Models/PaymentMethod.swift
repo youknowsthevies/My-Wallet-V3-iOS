@@ -104,17 +104,17 @@ public struct PaymentMethod: Equatable, Comparable {
                 guard supportedFiatCurrencies.contains(currency) else {
                     return nil
                 }
-                self = .bankAccount(currency.currency)
+                self = .bankAccount(currency.currencyType)
             case .bankTransfer:
                 guard supportedFiatCurrencies.contains(currency) else {
                     return nil
                 }
-                self = .bankTransfer(currency.currency)
+                self = .bankTransfer(currency.currencyType)
             case .funds:
                 guard supportedFiatCurrencies.contains(currency) else {
                     return nil
                 }
-                self = .funds(currency.currency)
+                self = .funds(currency.currencyType)
             }
         }
 
@@ -192,7 +192,7 @@ public struct PaymentMethod: Equatable, Comparable {
             }
             return fiat
         case .card:
-            return max.currencyType
+            return max.currency
         }
     }
 

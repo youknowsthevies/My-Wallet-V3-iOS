@@ -37,7 +37,7 @@ final class FiatBalanceCollectionView: UICollectionView {
 
     let collectionViewFlowLayout: UICollectionViewFlowLayout = {
         let flow = UICollectionViewFlowLayout()
-        flow.estimatedItemSize = CGSize(width: 300, height: 70)
+        flow.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         flow.minimumInteritemSpacing = 0
         flow.minimumLineSpacing = 0
         flow.scrollDirection = .horizontal

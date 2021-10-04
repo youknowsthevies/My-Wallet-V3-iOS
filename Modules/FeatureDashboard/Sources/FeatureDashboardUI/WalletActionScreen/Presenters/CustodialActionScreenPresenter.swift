@@ -85,6 +85,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
             interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
             currency: interactor.currency,
+            viewAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.view)",
             titleAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.title)",
             descriptionAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.description)",
             pendingAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.pending)",

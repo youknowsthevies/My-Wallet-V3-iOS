@@ -26,23 +26,23 @@ class FiatValueTests: XCTestCase {
     func testUSDDecimalPlaces() {
         XCTAssertEqual(
             2,
-            FiatValue.create(major: "1.00", currency: .USD)!.maxDecimalPlaces
+            FiatValue.create(major: "1.00", currency: .USD)!.precision
         )
     }
 
     func testJPYDecimalPlaces() {
         XCTAssertEqual(
             0,
-            FiatValue.create(major: "1.000000", currency: .JPY)!.maxDecimalPlaces
+            FiatValue.create(major: "1.000000", currency: .JPY)!.precision
         )
     }
 
     func testSymbol() {
-        let usdValue = FiatValue.zero(currencyCode: "USD")!
-        XCTAssertEqual("$", usdValue.symbol)
+        let usdValue = FiatValue.zero(currency: .USD)
+        XCTAssertEqual("$", usdValue.displaySymbol)
 
-        let eurValue = FiatValue.zero(currencyCode: "EUR")!
-        XCTAssertEqual("€", eurValue.symbol)
+        let eurValue = FiatValue.zero(currency: .EUR)
+        XCTAssertEqual("€", eurValue.displaySymbol)
     }
 
     func testIsZero() {
@@ -111,16 +111,16 @@ class FiatValueTests: XCTestCase {
     }
 
     func testConvertToCryptoValueZeroExchangeRate() {
-        let expected = CryptoValue.zero(currency: .coin(.bitcoin))
+        let expected: CryptoValue = .zero(currency: .coin(.bitcoin))
         let amount = FiatValue.create(major: "4,000.00", currency: .USD)!
-        let exchangeRate = FiatValue.zero(currency: .USD)
+        let exchangeRate: FiatValue = .zero(currency: .USD)
         let result = amount.convertToCryptoValue(exchangeRate: exchangeRate, cryptoCurrency: .coin(.bitcoin))
         XCTAssertEqual(expected, result)
     }
 
     func testConvertToCryptoValueZeroValue() {
-        let expected = CryptoValue.zero(currency: .coin(.bitcoin))
-        let amount = FiatValue.zero(currency: .USD)
+        let expected: CryptoValue = .zero(currency: .coin(.bitcoin))
+        let amount: FiatValue = .zero(currency: .USD)
         let exchangeRate = FiatValue.create(major: "5.00", currency: .USD)!
         let result = amount.convertToCryptoValue(exchangeRate: exchangeRate, cryptoCurrency: .coin(.bitcoin))
         XCTAssertEqual(expected, result)

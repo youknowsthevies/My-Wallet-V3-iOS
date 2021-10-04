@@ -1,10 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NetworkKit
+import NabuNetworkError
 import PlatformKit
-import ToolKit
-
 public enum InterestAccountRateError: Error {
     case networkError(Error)
 }

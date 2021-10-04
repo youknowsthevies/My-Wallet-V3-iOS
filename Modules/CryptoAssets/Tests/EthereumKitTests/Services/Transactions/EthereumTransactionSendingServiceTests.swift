@@ -57,7 +57,7 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
             transactionHash: finalised.transactionHash
         )
 
-        client.pushTransactionValue = Single.just(
+        client.pushTransactionValue = .just(
             EthereumPushTxResponse(txHash: expectedPublished.transactionHash)
         )
 

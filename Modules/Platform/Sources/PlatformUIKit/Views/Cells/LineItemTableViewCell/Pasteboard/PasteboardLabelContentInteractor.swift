@@ -32,7 +32,7 @@ public final class PasteboardLabelContentInteractor: PasteboardLabelContentInter
 
     // Relay for holding the actual values that populates the label.
     private let originalValueStateRelay: BehaviorRelay<InteractionState>
-    private var originalValueState: Observable<InteractionState> {
+    var originalValueState: Observable<InteractionState> {
         originalValueStateRelay.asObservable()
     }
 

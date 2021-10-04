@@ -40,16 +40,16 @@ public protocol BlockchainAccount: Account {
     var isFunded: Single<Bool> { get }
 
     /// The balance of this account exchanged to the given fiat currency.
-    func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue>
+    func fiatBalance(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValue, Error>
 
     /// The balance of this account exchanged to the given fiat currency.
-    func fiatBalance(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValue>
+    func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error>
 
     /// The balance of this account exchanged to the given fiat currency.
-    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair>
+    func balancePair(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValuePair, Error>
 
     /// The balance of this account exchanged to the given fiat currency.
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair>
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error>
 
     /// Checks if this account can execute the given action.
     func can(perform action: AssetAction) -> Single<Bool>
@@ -74,12 +74,19 @@ extension BlockchainAccount {
 }
 
 extension BlockchainAccount {
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        balancePair(fiatCurrency: fiatCurrency).map(\.quote)
+
+    public func balancePair(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValuePair, Error> {
+        balancePair(fiatCurrency: fiatCurrency, at: .now)
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValue> {
-        balancePair(fiatCurrency: fiatCurrency, at: date).map(\.quote)
+    public func fiatBalance(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValue, Error> {
+        fiatBalance(fiatCurrency: fiatCurrency, at: .now)
+    }
+
+    public func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error> {
+        balancePair(fiatCurrency: fiatCurrency, at: time)
+            .map(\.quote)
+            .eraseToAnyPublisher()
     }
 }
 

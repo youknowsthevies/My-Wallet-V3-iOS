@@ -272,12 +272,12 @@ public final class SelectionButtonViewModel: IdentifiableType {
                         renderingMode: image.renderingMode
                     )
                     let badgeViewModel = BadgeImageViewModel()
-                    badgeViewModel.marginOffsetRelay.accept(image.offset)
-                    badgeViewModel.cornerRadiusRelay.accept(image.cornerRadius)
                     badgeViewModel.set(
                         theme: .init(
                             backgroundColor: image.background,
-                            imageViewContent: imageViewContent
+                            cornerRadius: image.cornerRadius,
+                            imageViewContent: imageViewContent,
+                            marginOffset: image.offset
                         )
                     )
                     return .badgeImage(badgeViewModel)

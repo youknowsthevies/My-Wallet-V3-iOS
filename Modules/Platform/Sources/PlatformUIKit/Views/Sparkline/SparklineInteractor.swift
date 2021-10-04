@@ -23,7 +23,10 @@ public class SparklineInteractor: SparklineInteracting {
                 case .calculating, .invalid:
                     return .calculating
                 case .value(let value):
-                    let prices = value.historicalPrices.prices.map(\.price)
+                    let prices = value
+                        .historicalPrices
+                        .prices
+                        .map(\.moneyValue.displayMajorValue)
                     return .value(prices)
                 }
             }

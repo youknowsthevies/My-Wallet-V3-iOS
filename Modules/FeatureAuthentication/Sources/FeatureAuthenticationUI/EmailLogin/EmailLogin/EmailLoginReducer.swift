@@ -31,7 +31,7 @@ public enum EmailLoginAction: Equatable {
 
 // MARK: - Properties
 
-struct EmailLoginState: Equatable {
+public struct EmailLoginState: Equatable {
     var emailAddress: String
     var isEmailValid: Bool
     var isVerifyDeviceScreenVisible: Bool

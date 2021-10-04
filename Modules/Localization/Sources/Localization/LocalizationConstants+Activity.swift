@@ -39,13 +39,13 @@ extension LocalizationConstants.Activity.MainScreen {
         public static let confirmations = NSLocalizedString("Confirmations", comment: "Confirmations")
         public static let of = NSLocalizedString("of", comment: "of")
         public static let failed = NSLocalizedString("Failed", comment: "Failed")
-        public static let send = NSLocalizedString("Send", comment: "Send")
-        public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
-        public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
+        public static let send = NSLocalizedString("Sent", comment: "Sent")
+        public static let deposit = NSLocalizedString("Deposited", comment: "Deposited")
+        public static let withdraw = NSLocalizedString("Withdrawn", comment: "Withdrawn")
         public static let buy = NSLocalizedString("Bought", comment: "Bought")
-        public static let swap = NSLocalizedString("Swap", comment: "Swap")
-        public static let receive = NSLocalizedString("Receive", comment: "Receive")
-        public static let sell = NSLocalizedString("Sell", comment: "Sell")
+        public static let swap = NSLocalizedString("Swapped", comment: "Swapped")
+        public static let receive = NSLocalizedString("Received", comment: "Received")
+        public static let sell = NSLocalizedString("Sold", comment: "Sold")
     }
 }
 
@@ -73,18 +73,18 @@ extension LocalizationConstants.Activity.Details {
 
     public enum Title {
         public static let buy = NSLocalizedString("Bought", comment: "Bought")
-        public static let sell = NSLocalizedString("Sell", comment: "Sell")
+        public static let sell = NSLocalizedString("Sold", comment: "Sold")
         public static let gas = NSLocalizedString("Gas", comment: "'Gas' title")
-        public static let receive = NSLocalizedString("Receive", comment: "'Receive' title")
-        public static let send = NSLocalizedString("Send", comment: "'Send' title")
-        public static let swap = NSLocalizedString("Swap", comment: "'Swap' title")
-        public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
-        public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
+        public static let receive = NSLocalizedString("Received", comment: "Received")
+        public static let send = NSLocalizedString("Sent", comment: "Sent")
+        public static let swap = NSLocalizedString("Swapped", comment: "Swapped")
+        public static let deposit = NSLocalizedString("Deposited", comment: "Deposited")
+        public static let withdraw = NSLocalizedString("Withdrawn", comment: "Withdrawn")
     }
 
     public enum Button {
         public static let viewOnExplorer = NSLocalizedString(
-            "View on Blockchain Explorer",
+            "View on Blockchain.com Explorer",
             comment: "Button title, button takes user to explorer webpage"
         )
         public static let viewOnStellarChainIO = NSLocalizedString(

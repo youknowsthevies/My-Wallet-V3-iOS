@@ -75,7 +75,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
     public let transactionHash: String
     public let createdAt: Date
     public let fee: CryptoValue?
-    public let memo: String?
+    public let note: String?
     public let inputs: [Input]
     public let outputs: [Output]
     public let blockHeight: Int?
@@ -99,7 +99,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
     public required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let amount = try values.decode(Int64.self, forKey: .amount)
-        let value = BigInt(integerLiteral: amount)
+        let value = BigInt(amount)
         self.amount = CryptoValue.create(minor: abs(value), currency: .coin(.bitcoinCash))
         direction = value.sign == .minus ? .credit : .debit
         transactionHash = try values.decode(String.self, forKey: .identifier)
@@ -128,7 +128,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
         toAddress = BitcoinCashAssetAddress(publicKey: destinationOutput.address)
         fromAddress = BitcoinCashAssetAddress(publicKey: fromOutput.address)
 
-        memo = nil
+        note = nil
     }
 
     // MARK: - BitcoinChainHistoricalTransaction

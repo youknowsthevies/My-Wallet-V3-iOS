@@ -56,7 +56,6 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
             }
             .disposed(by: disposeBag)
 
-        // TODO: Remove once BuySell moves into RIBs because Should be automatically
         // called by `Router` once `self` is attached as a child router.
         interactor.activate()
 
@@ -117,7 +116,10 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
     }
 
     private func showBillingAddressScreen(for cardData: CardData) {
-        let viewController = builder.billingAddress(for: cardData, navigationControllerAPI: navigationRouter.navigationControllerAPI!)
+        let viewController = builder.billingAddress(
+            for: cardData,
+            navigationControllerAPI: navigationRouter.navigationControllerAPI!
+        )
         navigationRouter.present(viewController: viewController)
     }
 }

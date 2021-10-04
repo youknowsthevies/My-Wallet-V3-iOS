@@ -24,13 +24,13 @@ class BitcoinWalletBridgeMock: BitcoinWalletBridgeAPI {
         receiveAddressValue
     }
 
-    var memoValue: Single<String?> = .just(nil)
+    var noteValue: Single<String?> = .just(nil)
 
-    func memo(for transactionHash: String) -> Single<String?> {
-        memoValue
+    func note(for transactionHash: String) -> Single<String?> {
+        noteValue
     }
 
-    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
+    func updateNote(for transactionHash: String, note: String?) -> Completable {
         .empty()
     }
 

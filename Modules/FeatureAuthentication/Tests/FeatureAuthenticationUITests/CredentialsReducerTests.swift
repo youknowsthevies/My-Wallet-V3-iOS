@@ -73,19 +73,19 @@ final class CredentialsReducerTests: XCTestCase {
         testStore.assert(
             .send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
                 state.isTroubleLoggingInScreenVisible = false
-                state.walletPairingState.emailAddress = mockWalletInfo.email
+                state.walletPairingState.emailAddress = mockWalletInfo.email!
                 state.walletPairingState.walletGuid = mockWalletInfo.guid
                 state.walletPairingState.emailCode = mockWalletInfo.emailCode
             }
         )
     }
 
-    func test_wallet_identifier_fallback_did_appear_should_setup_email() {
-        let mockWalletEmail = MockDeviceVerificationService.mockWalletInfo.email
+    func test_wallet_identifier_fallback_did_appear_should_setup_guid_if_present() {
+        let mockWalletGuid = MockDeviceVerificationService.mockWalletInfo.guid
         testStore.assert(
-            .send(.didAppear(context: .walletIdentifier(email: mockWalletEmail))) { state in
+            .send(.didAppear(context: .walletIdentifier(guid: mockWalletGuid))) { state in
                 state.isTroubleLoggingInScreenVisible = false
-                state.walletPairingState.emailAddress = mockWalletEmail
+                state.walletPairingState.walletGuid = mockWalletGuid
             }
         )
     }
@@ -444,7 +444,7 @@ final class CredentialsReducerTests: XCTestCase {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
         testStore.assert(
             .send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
-                state.walletPairingState.emailAddress = mockWalletInfo.email
+                state.walletPairingState.emailAddress = mockWalletInfo.email!
                 state.walletPairingState.walletGuid = mockWalletInfo.guid
                 state.walletPairingState.emailCode = mockWalletInfo.emailCode
             }

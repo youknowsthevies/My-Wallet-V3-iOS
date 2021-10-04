@@ -51,11 +51,16 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
     // MARK: Private Properties
 
     private let contextProvider: JSContextProviderAPI
+    private let scheduler: SchedulerType
 
     // MARK: Init
 
-    init(contextProvider: JSContextProviderAPI = resolve()) {
+    init(
+        contextProvider: JSContextProviderAPI = resolve(),
+        scheduler: SchedulerType = MainScheduler.asyncInstance
+    ) {
         self.contextProvider = contextProvider
+        self.scheduler = scheduler
     }
 
     // MARK: WalletUpgradeJSServicing
@@ -79,7 +84,7 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
             context.evaluateScriptCheckIsOnMainQueue(JSFunction.V3Payload.upgrade(with: walletName))
             return Disposables.create()
         }
-        .subscribeOn(MainScheduler.asyncInstance)
+        .subscribeOn(scheduler)
     }
 
     func upgradeToV4() -> Single<String> {
@@ -100,6 +105,6 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
             context.evaluateScriptCheckIsOnMainQueue(JSFunction.V4Payload.upgrade.rawValue)
             return Disposables.create()
         }
-        .subscribeOn(MainScheduler.asyncInstance)
+        .subscribeOn(scheduler)
     }
 }

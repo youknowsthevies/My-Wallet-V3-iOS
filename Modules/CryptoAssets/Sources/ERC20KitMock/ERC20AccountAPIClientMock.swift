@@ -1,27 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 @testable import ERC20Kit
-import RxSwift
+import NetworkError
+import ToolKit
 
 final class ERC20AccountAPIClientMock: ERC20AccountAPIClientAPI {
 
-    // MARK: - Private Properties
-
-    private let fetchTransactionsResponse: Single<ERC20TransfersResponse> = .just(.transfersResponse)
-
-    private let isContractResponse: Single<ERC20IsContractResponse> = .just(ERC20IsContractResponse(contract: false))
-
-    // MARK: - Internal Methods
+    var fetchTransactionsResponse: AnyPublisher<ERC20TransfersResponse, NetworkError> =
+        .just(.transfersResponse)
 
     func fetchTransactions(
         from address: String,
         page: String?,
         contractAddress: String
-    ) -> Single<ERC20TransfersResponse> {
+    ) -> AnyPublisher<ERC20TransfersResponse, NetworkError> {
         fetchTransactionsResponse
-    }
-
-    func isContract(address: String) -> Single<ERC20IsContractResponse> {
-        isContractResponse
     }
 }

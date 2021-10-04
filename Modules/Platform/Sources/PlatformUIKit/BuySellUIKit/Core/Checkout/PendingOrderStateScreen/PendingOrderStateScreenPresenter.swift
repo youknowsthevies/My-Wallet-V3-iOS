@@ -35,7 +35,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
     }
 
     private var currencyType: CurrencyType {
-        interactor.amount.currencyType
+        interactor.amount.currency
     }
 
     // MARK: - Setup

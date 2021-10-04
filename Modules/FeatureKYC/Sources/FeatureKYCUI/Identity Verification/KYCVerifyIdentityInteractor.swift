@@ -90,7 +90,11 @@ extension KYCVerifyIdentityInteractor: KYCVerifyIdentityInput {
             }, onError: onError)
     }
 
-    func supportedDocumentTypes(countryCode: String, onSuccess: @escaping (([KYCDocumentType]) -> Void), onError: @escaping ((Error) -> Void)) {
+    func supportedDocumentTypes(
+        countryCode: String,
+        onSuccess: @escaping (([KYCDocumentType]) -> Void),
+        onError: @escaping ((Error) -> Void)
+    ) {
         disposable = supportedDocumentTypes(countryCode)
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: onSuccess, onError: onError)

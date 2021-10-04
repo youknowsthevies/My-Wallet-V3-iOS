@@ -22,6 +22,6 @@ class WalletServiceMock: WalletOptionsAPI {
 
 extension WalletOptions {
     static var empty: WalletOptions {
-        WalletOptions(json: ["maintenance": false])
+        WalletOptions(dictionary: ["maintenance": false])
     }
 }

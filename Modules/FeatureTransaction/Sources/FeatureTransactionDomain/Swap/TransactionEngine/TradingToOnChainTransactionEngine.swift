@@ -97,7 +97,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             Single
                 .zip(feeCache.valueSingle, sourceTradingAccount.withdrawableBalance)
                 .map { fees, withdrawableBalance -> PendingTransaction in
-                    let fee = fees[fee: amount.currencyType]
+                    let fee = fees[fee: amount.currency]
                     let available = try withdrawableBalance - fee
                     var pendingTransaction = pendingTransaction.update(
                         amount: amount,
@@ -105,7 +105,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                         fee: fee,
                         feeForFullAvailable: fee
                     )
-                    pendingTransaction.minimumLimit = fees[minimumAmount: amount.currencyType]
+                    pendingTransaction.minimumLimit = fees[minimumAmount: amount.currency]
                     return pendingTransaction
                 }
     }

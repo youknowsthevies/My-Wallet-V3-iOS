@@ -19,6 +19,6 @@ public struct CustodialTransferRequest: Encodable {
         let currency = moneyValue.code
         try container.encode(address, forKey: .address)
         try container.encode(currency, forKey: .currency)
-        try container.encode(moneyValue.value.amount.description, forKey: .amount)
+        try container.encode(moneyValue.amount.description, forKey: .amount)
     }
 }

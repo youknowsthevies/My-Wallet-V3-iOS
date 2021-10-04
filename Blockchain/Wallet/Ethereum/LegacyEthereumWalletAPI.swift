@@ -7,12 +7,35 @@ protocol LegacyEthereumWalletAPI: AnyObject {
 
     func checkIfEthereumAccountExists() -> Bool
 
-    func ethereumAccounts(with secondPassword: String?, success: @escaping ([[String: Any]]) -> Void, error: @escaping (String) -> Void)
-    func getLabelForEthereumAccount(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
-    func getEthereumAddress(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
+    func ethereumAccounts(
+        with secondPassword: String?,
+        success: @escaping ([[String: Any]]) -> Void,
+        error: @escaping (String) -> Void
+    )
 
-    func getEthereumMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void)
-    func setEthereumMemo(for transaction: String, memo: String?)
+    func getLabelForEthereumAccount(
+        with secondPassword: String?,
+        success: @escaping (String) -> Void,
+        error: @escaping (String) -> Void
+    )
 
-    func recordLastEthereumTransaction(transactionHash: String, success: @escaping () -> Void, error: @escaping (String) -> Void)
+    func getEthereumAddress(
+        with secondPassword: String?,
+        success: @escaping (String) -> Void,
+        error: @escaping (String) -> Void
+    )
+
+    func getEthereumNote(
+        for transaction: String,
+        success: @escaping (String?) -> Void,
+        error: @escaping (String) -> Void
+    )
+
+    func setEthereumNote(for transaction: String, note: String?)
+
+    func recordLastEthereumTransaction(
+        transactionHash: String,
+        success: @escaping () -> Void,
+        error: @escaping (String) -> Void
+    )
 }

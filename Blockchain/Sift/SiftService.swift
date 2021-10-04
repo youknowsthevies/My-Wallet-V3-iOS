@@ -36,7 +36,7 @@ final class SiftService: SiftServiceAPI {
     }
 
     private var infoDictionary: [String: Any] {
-        guard let infoDictionary = Bundle.main.infoDictionary else {
+        guard let infoDictionary = MainBundleProvider.mainBundle.infoDictionary else {
             return [:]
         }
         return infoDictionary

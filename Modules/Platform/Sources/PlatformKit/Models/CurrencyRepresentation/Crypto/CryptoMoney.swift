@@ -1,24 +1,31 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BigInt
-
+/// A crypto money.
 public protocol CryptoMoney: Money {
 
-    /// The `CryptoCurrency` (e.g. `BTC`, `ETH`)
-    var currencyType: CryptoCurrency { get }
-
-    /// The current crypto currency value represented as a `CryptoValue`
-    var value: CryptoValue { get }
+    /// The crypto currency.
+    var currency: CryptoCurrency { get }
 }
 
 extension CryptoMoney {
 
-    /// Converts this money to a displayable String in its major format
-    ///
-    /// - Parameter includeSymbol: whether or not the symbol should be included in the string
-    /// - Returns: the displayable String
     public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
-        let formatter = CryptoFormatterProvider.shared.formatter(locale: locale, cryptoCurrency: currencyType)
-        return formatter.format(value: value, withPrecision: .short, includeSymbol: includeSymbol)
+        toDisplayString(includeSymbol: includeSymbol, withPrecision: .short, locale: locale)
+    }
+
+    /// Creates a displayable string, representing the currency amount in major units, in the given locale, using the given format, optionally including the currency symbol.
+    ///
+    /// - Parameters:
+    ///   - includeSymbol: Whether the symbol should be included.
+    ///   - precision:     A precision level.
+    ///   - locale:        A locale.
+    public func toDisplayString(
+        includeSymbol: Bool,
+        withPrecision precision: CryptoPrecision,
+        locale: Locale
+    ) -> String {
+        CryptoFormatterProvider.shared
+            .formatter(locale: locale, cryptoCurrency: currency, withPrecision: precision)
+            .format(major: displayMajorValue, includeSymbol: includeSymbol)
     }
 }

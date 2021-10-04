@@ -1,23 +1,21 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+/// A quoted price in fiat, for one currency, at a specific timestamp.
 public struct PriceQuoteAtTime: Equatable {
 
-    /// The time stamp of the quote
+    /// The timestamp of the quote.
     public let timestamp: Date
 
-    /// The quote value
+    /// The value of the quote.
     public let moneyValue: MoneyValue
-}
 
-extension PriceQuoteAtTime {
-
-    /// Initialize the quote with the network response
+    /// Creates a quoted price.
+    ///
     /// - Parameters:
-    ///   - response: The quote response
-    ///   - currency: The conversion currency of the quote
-    /// - Throws: Money value initialization error.
-    public init(response: PriceQuoteAtTimeResponse, currency: Currency) throws {
-        moneyValue = MoneyValue.create(major: "\(response.price)", currency: currency.currency)!
-        timestamp = response.timestamp
+    ///   - response: A timestamp.
+    ///   - currency: A value.
+    public init(timestamp: Date, moneyValue: MoneyValue) {
+        self.timestamp = timestamp
+        self.moneyValue = moneyValue
     }
 }

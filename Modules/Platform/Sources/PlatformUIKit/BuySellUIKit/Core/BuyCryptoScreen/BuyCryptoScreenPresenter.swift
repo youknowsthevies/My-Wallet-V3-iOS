@@ -151,7 +151,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .compactMap { [weak self] candidateOrderDetails in
                 let paymentMethod = candidateOrderDetails.paymentMethod?.method
                 return self?.displayBundle.events.confirmTapped(
-                    candidateOrderDetails.fiatValue.currency,
+                    candidateOrderDetails.fiatValue.currencyType,
                     candidateOrderDetails.fiatValue.moneyValue,
                     candidateOrderDetails.cryptoCurrency,
                     [AnalyticsEvents.SimpleBuy.ParameterName.paymentMethod: (paymentMethod?.analyticsParameter.string) ?? ""]
@@ -268,7 +268,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             }
             .map { payload -> String in
                 let tuple: (fiat: FiatValue, crypto: CryptoCurrency) = payload
-                return "1 \(tuple.crypto.displayCode) = \(tuple.fiat.displayString) \(tuple.fiat.currencyCode)"
+                return "1 \(tuple.crypto.displayCode) = \(tuple.fiat.displayString) \(tuple.fiat.code)"
             }
             .catchError { _ -> Observable<String?> in
                 .just(nil)

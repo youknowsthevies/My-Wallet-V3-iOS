@@ -34,7 +34,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let event: BuySellActivityItemEvent
     private let interactor: BuySellActivityDetailsInteractor
-    private let disposeBag: DisposeBag = .init()
+    private let disposeBag = DisposeBag()
 
     // MARK: Private Properties (Model Relay)
 
@@ -44,82 +44,29 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let cryptoAmountLabelPresenter: LabelContentPresenting
 
-    // MARK: Private Properties (LineItemCellPresenting)
-
-    private let orderIDPresenter: LineItemCellPresenting
-    private let dateCreatedPresenter: LineItemCellPresenting
-    private let exchangeRatePresenter: LineItemCellPresenting
-    private let totalCostPresenter: LineItemCellPresenting
-    private let totalPresenter: LineItemCellPresenting
-    private let sendingToPresenter: LineItemCellPresenting
-    private let feePresenter: LineItemCellPresenting
-    private let paymentMethodPresenter: LineItemCellPresenting
-
     // MARK: Private Properties (Badge)
 
     private let badgesModel = MultiBadgeViewModel()
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
 
+    // MARK: Private Properties (LineItemCellPresenting)
+
+    private let orderIDPresenter: LineItemCellPresenting
+    private let dateCreatedPresenter: LineItemCellPresenting
+    private let exchangeRatePresenter: LineItemCellPresenting
+    private let totalPresenter: LineItemCellPresenting
+    private let toPresenter: LineItemCellPresenting
+    private let fromPresenter: LineItemCellPresenting
+    private let feePresenter: LineItemCellPresenting
+    private let paymentMethodPresenter: LineItemCellPresenting
+
     init(event: BuySellActivityItemEvent, interactor: BuySellActivityDetailsInteractor = .init()) {
         self.interactor = interactor
         self.event = event
+
         let title = event.isBuy ? LocalizedString.Title.buy : LocalizedString.Title.sell
         titleViewRelay.accept(.text(value: title))
 
-        let paymentMethod: String
-        switch event.paymentMethod {
-        case .bankTransfer:
-            paymentMethod = LocalizedLineItem.bankTransfer
-        case .bankAccount:
-            paymentMethod = LocalizedLineItem.bankTransfer
-        case .card:
-            paymentMethod = LocalizedLineItem.creditOrDebitCard
-        case .funds:
-            paymentMethod = "\(event.inputValue.currencyCode) \(LocalizedLineItem.Funds.suffix)"
-        }
-        let date = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
-
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        let exchangeRate = MoneyValuePair(
-            base: event.inputValue,
-            quote: event.outputValue
-        ).inverseQuote.quote
-        let exchangeRateString = "\(exchangeRate.displayString) / \(event.outputValue.currencyCode)"
-        exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        totalCostPresenter = TransactionalLineItem.totalCost(event.inputValue.displayString).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        totalPresenter = TransactionalLineItem.total(event.outputValue.displayString).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        let destination: String
-        switch event.outputValue.currencyType {
-        case .crypto:
-            destination = "" // NOOP: impossible because this is only used for `Sell`, where destination is Fiat.
-        case .fiat(let fiat):
-            destination = fiat.defaultWalletName
-        }
-        sendingToPresenter = TransactionalLineItem.sendingTo(destination).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        feePresenter = TransactionalLineItem.buyingFee(event.fee.displayString).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        let amount = event.isBuy ? event.outputValue : event.inputValue
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
-            knownValue: amount.toDisplayString(includeSymbol: true),
-            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
-        )
         badgesModel.badgesRelay.accept([statusBadge])
         let description = event.status.localizedDescription
         let badgeType: BadgeAsset.Value.Interaction.BadgeItem.BadgeType
@@ -139,12 +86,75 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 )
             )
         )
+
+        let amount = event.isBuy ? event.outputValue : event.inputValue
+        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+            knownValue: amount.toDisplayString(includeSymbol: true),
+            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
+        )
+
+        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let date = DateFormatter.elegantDateFormatter.string(from: event.creationDate)
+        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let pair = MoneyValuePair(base: event.inputValue, quote: event.outputValue)
+        let exchangeRate = event.isBuy ? pair.inverseExchangeRate : pair.exchangeRate
+        let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.code)"
+        exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let total = event.isBuy ? event.inputValue.displayString : event.outputValue.displayString
+        totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        feePresenter = TransactionalLineItem.fee(event.fee.displayString).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let paymentMethod: String
+        switch event.paymentMethod {
+        case .bankTransfer:
+            paymentMethod = LocalizedLineItem.bankTransfer
+        case .bankAccount:
+            paymentMethod = LocalizedLineItem.bankTransfer
+        case .card:
+            paymentMethod = LocalizedLineItem.creditOrDebitCard
+        case .funds:
+            paymentMethod = "\(event.inputValue.code) \(LocalizedLineItem.Funds.suffix)"
+        }
+        paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
         cardDataRelay
             .compactMap { $0 }
             .map { "\($0.label) \($0.displaySuffix)" }
             .map { .loaded(next: .init(text: $0)) }
             .bindAndCatch(to: paymentMethodPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
+
+        let source = "\(event.inputValue.code) \(LocalizedLineItem.Funds.suffix)"
+        fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let destination: String
+        switch event.outputValue.currencyType {
+        case .crypto:
+            destination = "" // NOOP: impossible because this is only used for `Sell`, where destination is Fiat.
+        case .fiat(let fiat):
+            destination = fiat.defaultWalletName
+        }
+        toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
 
         switch event.isBuy {
         case true:
@@ -157,7 +167,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 .separator,
                 .lineItem(exchangeRatePresenter),
                 .separator,
-                .lineItem(totalCostPresenter),
+                .lineItem(totalPresenter),
                 .separator,
                 .lineItem(feePresenter),
                 .separator,
@@ -171,13 +181,13 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 .separator,
                 .lineItem(dateCreatedPresenter),
                 .separator,
+                .lineItem(exchangeRatePresenter),
+                .separator,
                 .lineItem(totalPresenter),
                 .separator,
-                .lineItem(sendingToPresenter),
+                .lineItem(toPresenter),
                 .separator,
-                .lineItem(feePresenter),
-                .separator,
-                .lineItem(paymentMethodPresenter)
+                .lineItem(fromPresenter)
             ]
         }
     }

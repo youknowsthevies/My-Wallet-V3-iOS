@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "Analytics",
-    platforms: [.iOS(.v14)],
+    platforms: [.iOS(.v14), .macOS(.v11)],
     products: [
         .library(
             name: "AnalyticsKit",
@@ -23,7 +23,7 @@ let package = Package(
         .package(
             name: "CombineExt",
             url: "https://github.com/CombineCommunity/CombineExt.git",
-            from: "1.3.0"
+            from: "1.5.0"
         ),
         .package(
             name: "RxSwift",
@@ -33,7 +33,7 @@ let package = Package(
         .package(
             name: "Mockingbird",
             url: "https://github.com/birdrides/mockingbird.git",
-            from: "0.16.0"
+            from: "0.18.1"
         )
     ],
     targets: [

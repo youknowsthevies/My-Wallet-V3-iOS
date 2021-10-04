@@ -23,7 +23,7 @@ extension DisplayBundle {
                     max: SwapAnalyticsEvent()
                 ),
                 strings: .init(
-                    useMin: LocalizedString.Swap.AmountPresenter.LimitView.useMin,
+                    useMin: LocalizationConstants.Transaction.Swap.AmountPresenter.LimitView.useMin,
                     useMax: LocalizedString.Swap.AmountPresenter.LimitView.useMax
                 ),
                 accessibilityIdentifiers: .init()

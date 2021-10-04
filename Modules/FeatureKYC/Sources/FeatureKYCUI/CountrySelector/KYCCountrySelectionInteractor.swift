@@ -33,7 +33,11 @@ class KYCCountrySelectionInteractor {
         )
     }
 
-    private func sendSelection(countryCode: String, state: String? = nil, shouldBeNotifiedWhenAvailable: Bool? = nil) -> Disposable {
+    private func sendSelection(
+        countryCode: String,
+        state: String? = nil,
+        shouldBeNotifiedWhenAvailable: Bool? = nil
+    ) -> Disposable {
         jwtService.token
             .asObservable()
             .take(1)

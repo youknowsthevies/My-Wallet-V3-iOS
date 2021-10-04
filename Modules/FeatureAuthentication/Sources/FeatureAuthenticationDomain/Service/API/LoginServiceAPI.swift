@@ -2,7 +2,6 @@
 
 import Combine
 import Foundation
-import NetworkKit
 
 /// A potential login service error
 public enum LoginServiceError: LocalizedError, Equatable {

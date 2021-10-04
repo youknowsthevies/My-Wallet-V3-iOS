@@ -34,31 +34,22 @@ final class EthereumHistoricalTransactionService: EthereumHistoricalTransactionS
         cachedLatestBlock.valueSingle
     }
 
-    private var account: Single<EthereumAssetAccount> {
-        cachedAccount.valueSingle
+    private var account: Single<EthereumWalletAccount> {
+        accountRepository.defaultAccount.asSingle()
     }
 
-    private let cachedAccount: CachedValue<EthereumAssetAccount>
     private let cachedTransactions: CachedValue<[EthereumHistoricalTransaction]>
     private let cachedLatestBlock: CachedValue<Int>
-    private let bridge: EthereumWalletBridgeAPI
+    private let accountRepository: EthereumWalletAccountRepositoryAPI
     private let client: TransactionClientAPI
 
     // MARK: - Init
 
-    init(with bridge: EthereumWalletBridgeAPI = resolve(), client: TransactionClientAPI = resolve()) {
-        self.bridge = bridge
+    init(accountRepository: EthereumWalletAccountRepositoryAPI = resolve(), client: TransactionClientAPI = resolve()) {
+        self.accountRepository = accountRepository
         self.client = client
-        cachedAccount = CachedValue<EthereumAssetAccount>(configuration: .onSubscription())
         cachedTransactions = CachedValue<[EthereumHistoricalTransaction]>(configuration: .periodic(60))
         cachedLatestBlock = CachedValue<Int>(configuration: .periodic(5))
-
-        cachedAccount.setFetch { [weak self] () -> Single<EthereumAssetAccount> in
-            guard let self = self else {
-                return .error(ToolKitError.nullReference(Self.self))
-            }
-            return self.bridge.account
-        }
 
         cachedTransactions.setFetch { [weak self] () -> Single<[EthereumHistoricalTransaction]> in
             guard let self = self else {
@@ -83,16 +74,16 @@ final class EthereumHistoricalTransactionService: EthereumHistoricalTransactionS
     func transaction(identifier: String) -> Single<EthereumHistoricalTransaction> {
         Single
             .zip(account, latestBlock)
-            .flatMap(weak: self) { (self, tuple) -> Single<EthereumHistoricalTransaction> in
-                self.client
-                    .transaction(with: identifier)
+            .flatMap { [client] account, latestBlock -> Single<EthereumHistoricalTransaction> in
+                client.transaction(with: identifier)
                     .map { response in
                         EthereumHistoricalTransaction(
                             response: response,
-                            accountAddress: tuple.0.accountAddress,
-                            latestBlock: tuple.1
+                            accountAddress: account.publicKey,
+                            latestBlock: latestBlock
                         )
                     }
+                    .asSingle()
             }
     }
 
@@ -106,36 +97,27 @@ final class EthereumHistoricalTransactionService: EthereumHistoricalTransactionS
             }
     }
 
-    private func fetch(account: EthereumAssetAccount, latestBlock: Int) -> Single<[EthereumHistoricalTransaction]> {
+    private func fetch(account: EthereumWalletAccount, latestBlock: Int) -> Single<[EthereumHistoricalTransaction]> {
         client
-            .transactions(for: account.accountAddress)
-            .map(weak: self) { (self, response) -> [EthereumHistoricalTransaction] in
-                self.transactions(
-                    from: account.accountAddress,
-                    latestBlock: latestBlock,
-                    response: response
-                )
+            .transactions(for: account.publicKey)
+            .asSingle()
+            .map { response -> [EthereumHistoricalTransaction] in
+                response
+                    .map { transactionResponse -> EthereumHistoricalTransaction in
+                        EthereumHistoricalTransaction(
+                            response: transactionResponse,
+                            accountAddress: account.publicKey,
+                            latestBlock: latestBlock
+                        )
+                    }
+                    // Sort backwards
+                    .sorted(by: >)
             }
     }
 
     private func fetchLatestBlock() -> Single<Int> {
-        client.latestBlock.map(\.number)
-    }
-
-    private func transactions(
-        from address: String,
-        latestBlock: Int,
-        response: [EthereumHistoricalTransactionResponse]
-    ) -> [EthereumHistoricalTransaction] {
-        response
-            .map { transactionResponse -> EthereumHistoricalTransaction in
-                EthereumHistoricalTransaction(
-                    response: transactionResponse,
-                    accountAddress: address,
-                    latestBlock: latestBlock
-                )
-            }
-            // Sort backwards
-            .sorted(by: >)
+        client.latestBlock
+            .map(\.number)
+            .asSingle()
     }
 }

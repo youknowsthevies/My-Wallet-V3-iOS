@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import NabuNetworkError
 import NetworkKit
 
 typealias SimpleBuyClientAPI = EligibilityClientAPI &
@@ -316,7 +317,7 @@ final class APIClient: SimpleBuyClientAPI {
         let parameters = [
             URLQueryItem(
                 name: Parameter.currencyPair,
-                value: "\(cryptoCurrency.code)-\(amount.currency.code)"
+                value: "\(cryptoCurrency.code)-\(amount.code)"
             ),
             URLQueryItem(
                 name: Parameter.action,

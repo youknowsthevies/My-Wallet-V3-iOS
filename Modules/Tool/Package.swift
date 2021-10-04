@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "Tool",
-    platforms: [.iOS(.v14)],
+    platforms: [.iOS(.v14), .macOS(.v11)],
     products: [
         .library(
             name: "ToolKit",
@@ -24,7 +24,7 @@ let package = Package(
         .package(
             name: "CombineExt",
             url: "https://github.com/CombineCommunity/CombineExt.git",
-            from: "1.3.0"
+            from: "1.5.0"
         ),
         .package(
             name: "RxCombine",

@@ -42,7 +42,7 @@ public final class LinkedCardCellPresenter {
         self.cardData = cardData
 
         linkedCardViewModel = .init(type: cardData.type)
-        let currencyCode = cardData.topLimit.currencyCode
+        let currencyCode = cardData.topLimit.code
         let limitAmount = cardData.topLimitDisplayValue
         let limitDisplayValue = limitAmount + " \(currencyCode) \(LocalizationIDs.limit)"
 

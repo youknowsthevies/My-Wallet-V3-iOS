@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NetworkKit
+import NetworkError
 import RxSwift
 
 /// Potential errors that may arise during 2FA initialization

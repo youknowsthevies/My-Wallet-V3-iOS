@@ -9,12 +9,8 @@ public final class AssetSparklinePresenter {
 
     // MARK: - Public Properties
 
-    public var currency: CryptoCurrency {
-        interactor.cryptoCurrency
-    }
-
     public var lineColor: UIColor {
-        currency.brandColor
+        interactor.cryptoCurrency.brandColor
     }
 
     public var state: Observable<State> {

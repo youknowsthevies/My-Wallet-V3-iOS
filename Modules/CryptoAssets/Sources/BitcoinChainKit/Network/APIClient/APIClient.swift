@@ -1,15 +1,23 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import NetworkKit
 import PlatformKit
-import RxSwift
 
 public protocol APIClientAPI {
 
-    func multiAddress<T: BitcoinChainHistoricalTransactionResponse>(for wallets: [XPub]) -> Single<BitcoinChainMultiAddressResponse<T>>
-    func balances(for wallets: [XPub]) -> Single<BitcoinChainBalanceResponse>
-    func unspentOutputs(for wallets: [XPub]) -> Single<UnspentOutputsResponse>
+    func multiAddress<T: BitcoinChainHistoricalTransactionResponse>(
+        for wallets: [XPub]
+    ) -> AnyPublisher<BitcoinChainMultiAddressResponse<T>, NetworkError>
+
+    func balances(
+        for wallets: [XPub]
+    ) -> AnyPublisher<BitcoinChainBalanceResponse, NetworkError>
+
+    func unspentOutputs(
+        for wallets: [XPub]
+    ) -> AnyPublisher<UnspentOutputsResponse, NetworkError>
 }
 
 extension DerivationType {
@@ -82,7 +90,9 @@ final class APIClient: APIClientAPI {
 
     // MARK: - APIClientAPI
 
-    func multiAddress<T: BitcoinChainHistoricalTransactionResponse>(for wallets: [XPub]) -> Single<BitcoinChainMultiAddressResponse<T>> {
+    func multiAddress<T: BitcoinChainHistoricalTransactionResponse>(
+        for wallets: [XPub]
+    ) -> AnyPublisher<BitcoinChainMultiAddressResponse<T>, NetworkError> {
         let parameters = Parameter.active(wallets: wallets)
         let request = requestBuilder.get(
             path: endpoint.multiaddress,
@@ -92,7 +102,9 @@ final class APIClient: APIClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    func balances(for wallets: [XPub]) -> Single<BitcoinChainBalanceResponse> {
+    func balances(
+        for wallets: [XPub]
+    ) -> AnyPublisher<BitcoinChainBalanceResponse, NetworkError> {
         let parameters = Parameter.active(wallets: wallets)
         let request = requestBuilder.get(
             path: endpoint.balance,
@@ -102,7 +114,9 @@ final class APIClient: APIClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    func unspentOutputs(for wallets: [XPub]) -> Single<UnspentOutputsResponse> {
+    func unspentOutputs(
+        for wallets: [XPub]
+    ) -> AnyPublisher<UnspentOutputsResponse, NetworkError> {
         let parameters = Parameter.active(wallets: wallets)
         let request = requestBuilder.post(
             path: endpoint.unspent,

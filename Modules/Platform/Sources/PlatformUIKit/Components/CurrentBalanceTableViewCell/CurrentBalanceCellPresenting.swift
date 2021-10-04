@@ -22,6 +22,8 @@ public protocol CurrentBalanceCellPresenting {
 
     var separatorVisibility: Driver<Visibility> { get }
 
+    var viewAccessibilitySuffix: String { get }
+
     var titleAccessibilitySuffix: String { get }
 
     var descriptionAccessibilitySuffix: String { get }

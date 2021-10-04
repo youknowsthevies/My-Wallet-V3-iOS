@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
+import NabuNetworkError
 
 enum TransactionErrorState: Equatable {
     case none

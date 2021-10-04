@@ -36,8 +36,11 @@ typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable
 
 final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRouting {
 
+    private var paymentMethodLinker: PaymentMethodLinkerAPI
+    private var cardLinker: CardLinkerAPI
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
+
     private let disposeBag = DisposeBag()
     private var linkBankFlowRouter: LinkBankFlowStarter?
 
@@ -48,9 +51,13 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     init(
         interactor: TransactionFlowInteractable,
         viewController: TransactionFlowViewControllable,
+        paymentMethodLinker: PaymentMethodLinkerAPI = resolve(),
+        cardLinker: CardLinkerAPI = resolve(),
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve()
     ) {
+        self.paymentMethodLinker = paymentMethodLinker
+        self.cardLinker = cardLinker
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
         super.init(interactor: interactor, viewController: viewController)
@@ -98,8 +105,10 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             return
         }
         guard let child = children.last else { return }
-        top.dismiss(animated: true, completion: nil)
-        detachChild(child)
+        top.dismiss(animated: true) { [weak self] in
+            // Detatch child in completion block to avoid false-positive leak checks
+            self?.detachChild(child)
+        }
     }
 
     func didTapBack() {
@@ -152,30 +161,35 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         viewController.present(viewController: viewControllable, animated: true)
     }
 
-    func routeToDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction) {
-        let shouldPush = action != .buy
-        let navigationModel: ScreenNavigationModel
-        if shouldPush {
-            navigationModel = ScreenNavigationModel.AccountPicker.navigationClose(
-                title: TransactionFlowDescriptor.AccountPicker.destinationTitle(action: action)
+    func routeToDestinationAccountPicker(
+        transitionType: TransitionType,
+        transactionModel: TransactionModel,
+        action: AssetAction
+    ) {
+        switch transitionType {
+        case .modal:
+            presentDestinationAccountPicker(transactionModel: transactionModel, action: action)
+        case .push:
+            let router = destinationAccountPicker(
+                with: transactionModel,
+                navigationModel: ScreenNavigationModel.AccountPicker.navigationClose(
+                    title: TransactionFlowDescriptor.AccountPicker.destinationTitle(action: action)
+                ),
+                action: action
             )
-        } else {
-            navigationModel = ScreenNavigationModel.AccountPicker.modal(
-                title: TransactionFlowDescriptor.AccountPicker.destinationTitle(action: action)
-            )
-        }
-
-        let router = destinationAccountPicker(
-            with: transactionModel,
-            navigationModel: navigationModel,
-            action: action
-        )
-        let viewControllable = router.viewControllable
-        attachChild(router)
-
-        if shouldPush {
+            let viewControllable = router.viewControllable
+            attachChild(router)
             viewController.push(viewController: viewControllable)
-        } else {
+        case .replaceRoot:
+            let router = destinationAccountPicker(
+                with: transactionModel,
+                navigationModel: ScreenNavigationModel.AccountPicker.modal(
+                    title: TransactionFlowDescriptor.AccountPicker.destinationTitle(action: action)
+                ),
+                action: action
+            )
+            let viewControllable = router.viewControllable
+            attachChild(router)
             viewController.replaceRoot(viewController: viewControllable, animated: false)
         }
     }
@@ -204,18 +218,54 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         viewController.replaceRoot(viewController: viewControllable, animated: false)
     }
 
+    func presentLinkPaymentMethod(transactionModel: TransactionModel) {
+        let presenter = viewController.uiviewController.topMostViewController ?? viewController.uiviewController
+        paymentMethodLinker.presentAccountLinkingFlow(from: presenter) { result in
+            presenter.dismiss(animated: true) {
+                switch result {
+                case .abandoned:
+                    transactionModel.process(action: .returnToPreviousStep)
+                case .completed(let paymentMethod) where paymentMethod.type.isCard:
+                    transactionModel.process(action: .showCardLinkingFlow)
+                case .completed(let paymentMethod) where paymentMethod.type.isBankAccount:
+                    transactionModel.process(action: .showBankLinkingFlow)
+                case .completed(let paymentMethod) where paymentMethod.type.isBankTransfer:
+                    // TODO: IOS-5300 Show wiring instructions instead
+                    transactionModel.process(action: .showBankLinkingFlow)
+                default:
+                    unimplemented("TODO")
+                }
+            }
+        }
+    }
+
+    func presentLinkACard(transactionModel: TransactionModel) {
+        let presenter = viewController.uiviewController.topMostViewController ?? viewController.uiviewController
+        cardLinker.presentCardLinkingFlow(from: presenter) { [transactionModel] result in
+            presenter.dismiss(animated: true) {
+                switch result {
+                case .abandoned:
+                    transactionModel.process(action: .returnToPreviousStep)
+                case .completed:
+                    transactionModel.process(action: .cardLinkingFlowCompleted)
+                }
+            }
+        }
+    }
+
     func presentLinkABank(transactionModel: TransactionModel) {
         let builder = LinkBankFlowRootBuilder()
         let router = builder.build()
         linkBankFlowRouter = router
         router.startFlow()
             .withLatestFrom(transactionModel.state) { ($0, $1) }
+            .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [topMostViewControllerProvider] effect, state in
+                topMostViewControllerProvider
+                    .topMostViewController?
+                    .dismiss(animated: true, completion: nil)
                 switch effect {
                 case .closeFlow:
-                    topMostViewControllerProvider
-                        .topMostViewController?
-                        .dismiss(animated: true, completion: nil)
                     transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
                 case .bankLinked:
                     if let source = state.source {
@@ -275,7 +325,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             ),
             action: action
         )
-        let button: ButtonViewModel? = action == .deposit ? .secondary(with: LocalizationConstants.addNew) : nil
+        let button: ButtonViewModel? = action.supportsAddingSourceAccounts ? .secondary(with: LocalizationConstants.addNew) : nil
         return builder.build(
             listener: .listener(interactor),
             navigationModel: ScreenNavigationModel.AccountPicker.modal(
@@ -308,5 +358,24 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             headerModel: subtitle.isEmpty ? .none : .simple(AccountPickerSimpleHeaderModel(subtitle: subtitle)),
             buttonViewModel: button
         )
+    }
+}
+
+extension AssetAction {
+
+    var supportsAddingSourceAccounts: Bool {
+        switch self {
+        case .buy,
+             .deposit:
+            return true
+
+        case .sell,
+             .withdraw,
+             .receive,
+             .send,
+             .swap,
+             .viewActivity:
+            return false
+        }
     }
 }

@@ -22,5 +22,10 @@ extension DependencyContainer {
         // MARK: - Other
 
         factory { TransactionsRouter() as TransactionsRouterAPI }
+
+        // MARK: Internal
+
+        factory { PaymentMethodLinker() as PaymentMethodLinkerAPI }
+        factory { CardLinker() as CardLinkerAPI }
     }
 }

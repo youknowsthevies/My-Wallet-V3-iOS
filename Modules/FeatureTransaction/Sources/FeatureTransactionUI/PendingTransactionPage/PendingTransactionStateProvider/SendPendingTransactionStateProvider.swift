@@ -63,7 +63,7 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
             format: LocalizationIds.Pending.title,
             sent.displayString
         )
-        let zeroSent = MoneyValue.zero(currency: sent.currencyType)
+        let zeroSent: MoneyValue = .zero(currency: sent.currency)
         if sent == zeroSent {
             title = String(
                 format: LocalizationIds.Pending.title,

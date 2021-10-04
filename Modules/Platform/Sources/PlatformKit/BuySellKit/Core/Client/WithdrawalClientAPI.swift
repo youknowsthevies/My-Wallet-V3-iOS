@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import NabuNetworkError
 
 protocol WithdrawalClientAPI: AnyObject {
     /// Requests the withdraw fee for the requested currency

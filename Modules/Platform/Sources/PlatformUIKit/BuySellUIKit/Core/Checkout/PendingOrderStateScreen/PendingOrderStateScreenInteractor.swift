@@ -18,11 +18,11 @@ final class PendingOrderStateScreenInteractor: Interactor {
     }
 
     var inputCurrencyType: CurrencyType {
-        orderDetails.inputValue.currencyType
+        orderDetails.inputValue.currency
     }
 
     var outputCurrencyType: CurrencyType {
-        orderDetails.outputValue.currencyType
+        orderDetails.outputValue.currency
     }
 
     private let orderDetails: OrderDetails
@@ -50,6 +50,7 @@ final class PendingOrderStateScreenInteractor: Interactor {
             return .just(false)
         }
         return tiersService.fetchTiers()
+            .asSingle()
             .map { $0.latestApprovedTier < .tier2 }
     }
 }

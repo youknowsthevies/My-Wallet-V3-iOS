@@ -11,7 +11,9 @@ import StellarKit
 extension Wallet: MnemonicAccessAPI {
     public var mnemonicPromptingIfNeeded: Maybe<Mnemonic> {
         let prompter: SecondPasswordPromptable = resolve()
-        return prompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+        return prompter
+            .secondPasswordIfNeeded(type: .actionRequiresPassword)
+            .asSingle()
             .flatMap(weak: self) { (self, secondPassword) -> Single<Mnemonic> in
                 self.mnemonic(with: secondPassword)
             }

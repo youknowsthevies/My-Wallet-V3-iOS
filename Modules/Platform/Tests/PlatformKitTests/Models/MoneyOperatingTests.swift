@@ -37,7 +37,7 @@ final class MoneyOperatingTests: XCTestCase {
         y: MoneyValue,
         shouldBe result: Decimal
     ) {
-        XCTAssertEqual(try x.percentage(of: y), result)
+        XCTAssertEqual(try x.percentage(in: y), result)
     }
 
     func testPercentage() {
@@ -209,5 +209,9 @@ final class MoneyOperatingTests: XCTestCase {
             y: moneyValueIQD(1000),
             shouldBe: BigInt(1000000000000)
         )
+    }
+
+    func testMoneyValueDivisionByZero() {
+        XCTAssertThrowsError(try moneyValueUSD(10) / moneyValueUSD(0))
     }
 }

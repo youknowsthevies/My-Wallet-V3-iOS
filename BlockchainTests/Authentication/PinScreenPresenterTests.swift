@@ -12,7 +12,6 @@ import XCTest
 /// Tests the pin screen presenter
 class PinScreenPresenterTests: XCTestCase {
 
-    private let flowProvider: MainFlowProviding = AppCoordinator.shared
     private var biometryProvider: BiometryProviding!
     private var appSettings: MockBlockchainSettingsApp!
 

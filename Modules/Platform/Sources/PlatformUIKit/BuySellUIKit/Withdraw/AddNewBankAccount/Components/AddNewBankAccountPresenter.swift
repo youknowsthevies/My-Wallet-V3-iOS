@@ -205,7 +205,20 @@ extension AddNewBankAccountPagePresenter {
                 termsTextViewModel = nil
             }
 
+            let amount = MoneyValue.one(currency: account.currency)
+            let code = account.currency.code
+            let instructions = String(
+                format: FundsString.Notice.Instructions.description,
+                amount.displayString,
+                code
+            )
+
             noticeViewModels = [
+                (
+                    title: FundsString.Notice.Instructions.title,
+                    description: instructions,
+                    image: ImageResource.local(name: "Icon-Info", bundle: .platformUIKit)
+                ),
                 (
                     title: FundsString.Notice.BankTransferOnly.title,
                     description: FundsString.Notice.BankTransferOnly.description,

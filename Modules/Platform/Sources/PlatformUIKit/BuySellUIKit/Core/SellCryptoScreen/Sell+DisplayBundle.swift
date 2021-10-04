@@ -17,7 +17,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
         return EnterAmountScreenPresenter.DisplayBundle(
             strings: Strings(
                 title: "\(LocalizedString.titlePrefix) \(cryptoCurrency.code)",
-                ctaButton: LocalizedString.ctaButton,
+                ctaButton: LocalizedString.previewSell,
                 bottomAuxiliaryItemSeparatorTitle: ""
             ),
             colors: Colors(
@@ -48,8 +48,8 @@ extension EnterAmountScreenPresenter.DisplayBundle {
                     max: AnalyticsEvent.sbBuyFormMaxClicked
                 ),
                 strings: .init(
-                    useMin: LocalizedString.useMin,
-                    useMax: LocalizedString.useMax
+                    useMin: LocalizationConstants.Transaction.Swap.AmountPresenter.LimitView.useMin,
+                    useMax: LocalizationConstants.Transaction.Swap.AmountPresenter.LimitView.useMax
                 ),
                 accessibilityIdentifiers: .init()
             )

@@ -122,9 +122,11 @@ final class ExchangeCoordinator {
     }
 
     private func userRequiresEmailVerification() -> Observable<Bool> {
-        BlockchainDataRepository.shared.fetchNabuUser().asObservable().take(1).flatMap {
-            Observable.just($0.email.verified == false)
-        }
+        let dataRepository: DataRepositoryAPI = resolve()
+        return dataRepository.user
+            .map(\.email.verified)
+            .map(!)
+            .asObservable()
     }
 
     private func showEmailConfirmationScreen() {

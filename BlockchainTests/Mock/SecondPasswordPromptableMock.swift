@@ -1,12 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
-import RxSwift
+import Combine
 
 final class SecondPasswordPromptableMock: SecondPasswordPromptable {
-    var underlyingSecondPasswordIfNeeded: Single<String?> = .just(nil)
+    var underlyingSecondPasswordIfNeeded: AnyPublisher<
+        String?,
+        SecondPasswordError
+    > = .just(nil)
 
-    func secondPasswordIfNeeded(type: PasswordScreenType) -> Single<String?> {
+    func secondPasswordIfNeeded(
+        type: PasswordScreenType
+    ) -> AnyPublisher<String?, SecondPasswordError> {
         underlyingSecondPasswordIfNeeded
     }
 }

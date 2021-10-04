@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NetworkKit
+import NetworkError
 
 /// A `GUID` client/service API. A concrete type is expected to fetch the `GUID`
 public protocol GuidClientAPI: AnyObject {

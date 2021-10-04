@@ -12,7 +12,7 @@ extension ERC20TokenAccountResponse {
         .init(
             tokenHash: "ETH",
             balance: CryptoValue.create(major: 2, currency: cryptoCurrency).amount.string(unitDecimals: 0),
-            tokenSymbol: cryptoCurrency.symbol
+            tokenSymbol: cryptoCurrency.code
         )
     }
 }

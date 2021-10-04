@@ -110,7 +110,7 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
             .flatMap { orderDetails in
                 Order(
                     isBankWire: orderDetails.isBankWire,
-                    currencyCode: orderDetails.outputValue.currencyType.displayCode,
+                    currencyCode: orderDetails.outputValue.displayCode,
                     isPendingDeposit: orderDetails.state == .pendingDeposit
                 )
             }

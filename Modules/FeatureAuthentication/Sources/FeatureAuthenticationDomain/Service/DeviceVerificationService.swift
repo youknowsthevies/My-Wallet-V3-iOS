@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import Foundation
 import NetworkKit
+import ToolKit
 
 public final class DeviceVerificationService: DeviceVerificationServiceAPI {
 
@@ -12,17 +13,20 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
     private let deviceVerificationRepository: DeviceVerificationRepositoryAPI
     private let sessionTokenRepository: SessionTokenRepositoryAPI
     private let recaptchaService: GoogleRecaptchaServiceAPI
+    private let walletIdentifierValidator: (String) -> Bool
 
     // MARK: - Setup
 
     public init(
         deviceVerificationRepository: DeviceVerificationRepositoryAPI = resolve(),
         sessionTokenRepository: SessionTokenRepositoryAPI = resolve(),
-        recaptchaService: GoogleRecaptchaServiceAPI = resolve()
+        recaptchaService: GoogleRecaptchaServiceAPI = resolve(),
+        walletIdentifierValidator: @escaping (String) -> Bool = TextValidation.walletIdentifierValidator
     ) {
         self.deviceVerificationRepository = deviceVerificationRepository
         self.sessionTokenRepository = sessionTokenRepository
         self.recaptchaService = recaptchaService
+        self.walletIdentifierValidator = walletIdentifierValidator
     }
 
     // MARK: - AuthenticationServiceAPI
@@ -62,7 +66,8 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
                 }
                 return .just(sessionToken)
             }
-            .flatMap { [deviceVerificationRepository] sessionToken -> AnyPublisher<Void, DeviceVerificationServiceError> in
+            .flatMap { [deviceVerificationRepository] sessionToken
+                -> AnyPublisher<Void, DeviceVerificationServiceError> in
                 deviceVerificationRepository
                     .authorizeLogin(sessionToken: sessionToken, emailCode: emailCode)
             }
@@ -70,9 +75,18 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
     }
 
     public func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError> {
-        Deferred {
+        let walletIdentifierValidator = self.walletIdentifierValidator
+        return Deferred {
             Future { promise in
-                guard let base64LastPath = deeplink.absoluteString.components(separatedBy: "/").last?.paddedBase64,
+                let lastPathOrNil = deeplink.absoluteString.components(separatedBy: "/").last
+                if let lastPath = lastPathOrNil,
+                   walletIdentifierValidator(lastPath)
+                {
+                    let walletInfo = WalletInfo(guid: lastPath)
+                    promise(.success(walletInfo))
+                    return
+                }
+                guard let base64LastPath = lastPathOrNil?.paddedBase64,
                       let jsonData = Data(base64Encoded: base64LastPath, options: .ignoreUnknownCharacters)
                 else {
                     promise(.failure(.failToDecodeBase64Component))

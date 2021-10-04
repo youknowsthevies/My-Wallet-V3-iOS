@@ -43,10 +43,10 @@ public struct WelcomeState: Equatable {
     public var screenFlow: ScreenFlow
     public var modals: Modals
     public var buildVersion: String
-    var emailLoginState: EmailLoginState?
-    var restoreWalletState: SeedPhraseState?
+    public var emailLoginState: EmailLoginState?
+    public var restoreWalletState: SeedPhraseState?
 
-    var secondPasswordNoticeState: SecondPasswordNotice.State?
+    public var secondPasswordNoticeState: SecondPasswordNotice.State?
 
     /// should only be used on internal builds
     var manualCredentialsState: CredentialsState?

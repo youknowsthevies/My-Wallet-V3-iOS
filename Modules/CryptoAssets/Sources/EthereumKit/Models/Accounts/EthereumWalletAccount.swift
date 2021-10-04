@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-public struct EthereumWalletAccount: WalletAccount, Codable {
+public struct EthereumWalletAccount: WalletAccount, Equatable {
     public let index: Int
     public let publicKey: String
     public var label: String?
@@ -24,9 +24,11 @@ public struct EthereumWalletAccount: WalletAccount, Codable {
 public struct LegacyEthereumWalletAccount: Codable {
     public let addr: String
     public let label: String
+    public let archived: Bool
 
-    public init(addr: String, label: String) {
+    public init(addr: String, label: String, archived: Bool) {
         self.addr = addr
         self.label = label
+        self.archived = archived
     }
 }

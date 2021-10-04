@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import NabuNetworkError
 import NetworkKit
 import PlatformKit
 import RxCocoa
@@ -15,9 +17,14 @@ final class TradeLimitsService: TradeLimitsAPI {
     private var cachedLimitsTimer: Timer?
     private let clearCachedLimitsInterval: TimeInterval = 60
     private let networkAdapter: NetworkAdapterAPI
+    private let requestBuilder: RequestBuilder
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
+        self.requestBuilder = requestBuilder
         cachedLimitsTimer = Timer.scheduledTimer(
             withTimeInterval: clearCachedLimitsInterval,
             repeats: true
@@ -74,6 +81,7 @@ final class TradeLimitsService: TradeLimitsAPI {
                   ignoringCache == false
             else {
                 return self.getTradeLimitsNetwork(withFiatCurrency: currency)
+                    .asSingle()
             }
             return Single.just(cachedLimits)
         }
@@ -84,29 +92,19 @@ final class TradeLimitsService: TradeLimitsAPI {
 
     // MARK: - Private
 
-    private func getTradeLimitsNetwork(withFiatCurrency currency: String) -> Single<TradeLimits> {
-        guard let baseURL = URL(
-            string: BlockchainAPI.shared.retailCoreUrl
-        ) else {
-            return .error(TradeLimitsAPIError.generic)
-        }
-
-        guard let endpoint = URL.endpoint(
-            baseURL,
-            pathComponents: ["trades", "limits"],
-            queryParameters: ["currency": currency]
-        ) else {
-            return .error(TradeLimitsAPIError.generic)
-        }
-        return networkAdapter
-            .perform(
-                request: NetworkRequest(
-                    endpoint: endpoint,
-                    method: .get,
-                    authenticated: true
-                ),
-                errorResponseType: NabuNetworkError.self
-            )
+    private func getTradeLimitsNetwork(
+        withFiatCurrency currency: String
+    ) -> AnyPublisher<TradeLimits, NabuNetworkError> {
+        let path = ["trades", "limits"]
+        let parameters = [
+            URLQueryItem(name: "currency", value: currency)
+        ]
+        let request = requestBuilder.get(
+            path: path,
+            parameters: parameters,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
     }
 
     private func clearCachedLimits() {

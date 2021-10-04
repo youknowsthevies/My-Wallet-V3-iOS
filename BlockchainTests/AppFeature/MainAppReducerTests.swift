@@ -12,6 +12,7 @@ import WalletPayloadKit
 import XCTest
 
 @testable import Blockchain
+@testable import FeatureAppUI
 @testable import FeatureAuthenticationUI
 
 // swiftlint:disable type_body_length
@@ -38,6 +39,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockFeatureFlagsService: MockFeatureFlagsService!
     var mockInternalFeatureFlagService: InternalFeatureFlagServiceMock!
     var mockFiatCurrencySettingsService: FiatCurrencySettingsServiceMock!
+    var mockAppStoreOpener: MockAppStoreOpener!
 
     var testStore: TestStore<
         CoreAppState,
@@ -78,6 +80,7 @@ final class MainAppReducerTests: XCTestCase {
         mockFeatureFlagsService = MockFeatureFlagsService()
         mockInternalFeatureFlagService = InternalFeatureFlagServiceMock()
         mockFiatCurrencySettingsService = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
+        mockAppStoreOpener = MockAppStoreOpener()
 
         testStore = TestStore(
             initialState: CoreAppState(),
@@ -103,6 +106,7 @@ final class MainAppReducerTests: XCTestCase {
                 siftService: mockSiftService,
                 onboardingSettings: onboardingSettings,
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                appStoreOpener: mockAppStoreOpener,
                 buildVersionProvider: { "" }
             )
         )
@@ -454,8 +458,6 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.restoreWalletScreen)))) { state in
             state.onboarding?.welcomeState?.restoreWalletState = .init()
             state.onboarding?.welcomeState?.screenFlow = .restoreWalletScreen
-            state.onboarding?.walletCreationContext = .recovery
-            state.onboarding?.showLegacyRecoverWalletScreen = true
         }
 
         testStore.receive(.authenticate)
@@ -475,7 +477,6 @@ final class MainAppReducerTests: XCTestCase {
         )
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.authenticated(.success(true))) { state in
-            state.onboarding?.showLegacyRecoverWalletScreen = false
             state.onboarding?.welcomeState?.screenFlow = .restoreWalletScreen
         }
         testStore.receive(.onboarding(.welcomeScreen(.presentScreenFlow(.welcomeScreen)))) { state in

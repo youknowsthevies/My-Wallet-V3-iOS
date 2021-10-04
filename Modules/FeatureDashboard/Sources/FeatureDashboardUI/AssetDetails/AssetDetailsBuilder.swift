@@ -24,7 +24,7 @@ final class AssetDetailsBuilder {
     func build() -> UIViewController {
         let interactor = AssetDetailsScreenInteractor(
             currency: currency,
-            exchangeAPI: exchangeProviding[currency]
+            pairExchangeService: exchangeProviding[currency]
         )
         let presenter = AssetDetailsScreenPresenter(
             accountsRouter: accountsRouter,

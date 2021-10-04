@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import NetworkKit
+import NabuNetworkError
 import RxSwift
 import ToolKit
 
@@ -19,8 +19,8 @@ struct CreatePendingDepositRequestBody: Encodable {
         transactionHash: String,
         product: String
     ) {
-        currency = value.currencyCode
-        amount = value.value.amount.description
+        currency = value.code
+        amount = value.amount.description
         depositAddress = destination
         txHash = transactionHash
         self.product = product

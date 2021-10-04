@@ -12,7 +12,6 @@ final class InterestAccountService: InterestAccountServiceAPI {
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let priceService: PriceServiceAPI
-    private let cachedValue: CachedValue<InterestAccountBalances>
     private let interestAccountBalanceRepository: InterestAccountBalanceRepositoryAPI
     private let interestAccountLimitsRepository: InterestAccountLimitsRepositoryAPI
     private let interestAccountEligibilityRepository: InterestAccountEligibilityRepositoryAPI
@@ -36,10 +35,6 @@ final class InterestAccountService: InterestAccountServiceAPI {
         self.priceService = priceService
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiersService = kycTiersService
-        cachedValue = CachedValue(configuration: .periodic(60))
-        cachedValue.setFetch(weak: self) { (self) in
-            self.fetchBalancesResponse()
-        }
     }
 
     // MARK: - InterestAccountServiceAPI
@@ -67,9 +62,9 @@ final class InterestAccountService: InterestAccountServiceAPI {
     }
 
     func details(for currency: CryptoCurrency) -> Single<ValueCalculationState<InterestAccountBalanceDetails>> {
-        cachedValue.valueSingle
-            .map { response -> ValueCalculationState<InterestAccountBalanceDetails> in
-                switch response[currency] {
+        interestAccountsBalance
+            .map { balances in
+                switch balances[currency] {
                 case .none:
                     return .invalid(.empty)
                 case .some(let details):
@@ -78,46 +73,36 @@ final class InterestAccountService: InterestAccountServiceAPI {
             }
     }
 
-    func balances(fetch: Bool) -> Single<CustodialAccountBalanceStates> {
-        (fetch ? cachedValue.fetchValue : cachedValue.valueSingle)
-            .map { CustodialAccountBalanceStates(balances: $0) }
-    }
-
-    // MARK: - SavingsOverviewAPI
+    // MARK: - InterestAccountOverviewAPI
 
     func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState> {
-        balances(fetch: false)
-            .map { $0[currency.currency] }
+        interestAccountsBalance
+            .map(CustodialAccountBalanceStates.init)
+            .map(\.[currency.currencyType])
     }
 
     func rate(for currency: CryptoCurrency) -> Single<Double> {
         interestAccountRateRepository
             .fetchInteretAccountRateForCryptoCurrency(currency)
             .map(\.rate)
-            .asObservable()
-            .take(1)
             .asSingle()
     }
 
-    private func fetchBalancesResponse() -> Single<InterestAccountBalances> {
+    private var interestAccountsBalance: Single<InterestAccountBalances> {
         Single
             .zip(
-                kycTiersService.tiers.map(\.isTier2Approved),
+                kycTiersService.tiers.map(\.isTier2Approved).asSingle(),
                 fiatCurrencyService.fiatCurrency
             )
-            .flatMap(weak: self) { (self, values) -> Single<InterestAccountBalances?> in
-                let (tier2Approved, fiatCurrency) = values
+            .flatMap { [interestAccountBalanceRepository] tier2Approved, fiatCurrency
+                -> Single<InterestAccountBalances> in
                 guard tier2Approved else {
-                    return .just(nil)
+                    return .just(.empty)
                 }
-                return self.interestAccountBalanceRepository
-                    .fetchInterestAccountBalanceStates(fiatCurrency)
-                    .asObservable()
-                    .take(1)
+                return interestAccountBalanceRepository
+                    .interestAccountsBalance(fiatCurrency: fiatCurrency)
                     .asSingle()
-                    .optional()
             }
-            .catchErrorJustReturn(nil)
-            .onNilJustReturn(.empty)
+            .catchErrorJustReturn(InterestAccountBalances.empty)
     }
 }

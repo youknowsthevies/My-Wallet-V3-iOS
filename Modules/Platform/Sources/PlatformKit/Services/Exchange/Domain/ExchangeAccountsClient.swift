@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import NabuNetworkError
 import NetworkKit
 
 protocol ExchangeAccountsProviderClientAPI {

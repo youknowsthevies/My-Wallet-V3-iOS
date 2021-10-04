@@ -10,13 +10,9 @@ final class HistoricalBalanceCellPresenter {
 
     private typealias AccessibilityId = Accessibility.Identifier.Dashboard.AssetCell
 
-    var thumbnail: Driver<ImageViewContent> {
-        .just(
-            .init(
-                imageResource: cryptoCurrency.logoResource,
-                accessibility: .id("\(AccessibilityId.assetImageView)\(interactor.cryptoCurrency.displayCode)")
-            )
-        )
+    private let badgeImageViewModel: BadgeImageViewModel
+    var thumbnail: Driver<BadgeImageViewModel> {
+        .just(badgeImageViewModel)
     }
 
     var name: Driver<LabelContent> {
@@ -56,5 +52,17 @@ final class HistoricalBalanceCellPresenter {
                 fiatAccessiblitySuffix: AccessibilityId.fiatBalanceLabelFormat
             )
         )
+
+        let theme = BadgeImageViewModel.Theme(
+            backgroundColor: .background,
+            cornerRadius: .round,
+            imageViewContent: ImageViewContent(
+                imageResource: interactor.cryptoCurrency.logoResource,
+                accessibility: .id("\(AccessibilityId.assetImageView)\(interactor.cryptoCurrency.displayCode)"),
+                renderingMode: .normal
+            ),
+            marginOffset: 0
+        )
+        badgeImageViewModel = BadgeImageViewModel(theme: theme)
     }
 }

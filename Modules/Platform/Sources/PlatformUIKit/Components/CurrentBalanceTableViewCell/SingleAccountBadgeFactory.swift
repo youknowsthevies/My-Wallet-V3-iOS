@@ -68,13 +68,13 @@ extension DefaultBadgeAssetPresenter {
         return DefaultBadgeAssetPresenter(interactor: interactor)
     }
 
-    fileprivate static func makeLowFeesBadge() -> DefaultBadgeAssetPresenter {
+    static func makeLowFeesBadge() -> DefaultBadgeAssetPresenter {
         let item = BadgeItem(type: .verified, description: LocalizedString.lowFees)
         let interactor = DefaultBadgeAssetInteractor(initialState: .loaded(next: item))
         return DefaultBadgeAssetPresenter(interactor: interactor)
     }
 
-    fileprivate static func makeFasterBadge() -> DefaultBadgeAssetPresenter {
+    static func makeFasterBadge() -> DefaultBadgeAssetPresenter {
         let item = BadgeItem(type: .verified, description: LocalizedString.faster)
         let interactor = DefaultBadgeAssetInteractor(initialState: .loaded(next: item))
         return DefaultBadgeAssetPresenter(interactor: interactor)

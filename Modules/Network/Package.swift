@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "Network",
-    platforms: [.iOS(.v14)],
+    platforms: [.iOS(.v14), .macOS(.v11)],
     products: [
         .library(
             name: "NetworkKit",
@@ -33,7 +33,8 @@ let package = Package(
         ),
         .package(name: "Analytics", path: "../Analytics"),
         .package(name: "Test", path: "../Test"),
-        .package(name: "Tool", path: "../Tool")
+        .package(name: "Tool", path: "../Tool"),
+        .package(name: "NetworkErrors", path: "../NetworkErrors")
     ],
     targets: [
         .target(
@@ -43,7 +44,8 @@ let package = Package(
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "RxCombine", package: "RxCombine"),
-                .product(name: "DIKit", package: "DIKit")
+                .product(name: "DIKit", package: "DIKit"),
+                .product(name: "NetworkError", package: "NetworkErrors")
             ]
         ),
         .target(

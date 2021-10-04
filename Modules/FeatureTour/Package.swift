@@ -20,6 +20,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.24.0"),
         .package(name: "SnapshotTesting", url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.9.0"),
+        .package(path: "../Localization"),
         .package(path: "../UIComponents")
     ],
     targets: [
@@ -40,8 +41,9 @@ let package = Package(
         .target(
             name: "FeatureTourUI",
             dependencies: [
-                "FeatureTourDomain",
-                "UIComponents",
+                .target(name: "FeatureTourDomain"),
+                .product(name: "Localization", package: "Localization"),
+                .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
             path: "UI"
@@ -49,13 +51,14 @@ let package = Package(
         .testTarget(
             name: "FeatureTourTests",
             dependencies: [
-                "FeatureTourData",
-                "FeatureTourDomain",
-                "FeatureTourUI",
-                "SnapshotTesting",
+                .target(name: "FeatureTourData"),
+                .target(name: "FeatureTourDomain"),
+                .target(name: "FeatureTourUI"),
+                .product(name: "SnapshotTesting", package: "SnapshotTesting"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
-            path: "Tests"
+            path: "Tests",
+            exclude: ["__Snapshots__"]
         )
     ]
 )

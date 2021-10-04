@@ -117,7 +117,7 @@ final class TransactionAnalyticsHook {
             }
             analyticsRecorder.record(events: [
                 NewSwapAnalyticsEvent.swapAmountMaxClicked(
-                    amountCurrency: state.maxSpendable.currencyCode,
+                    amountCurrency: state.maxSpendable.code,
                     inputCurrency: source.currencyType.code,
                     inputType: .init(source),
                     outputCurrency: target.currencyType.code,

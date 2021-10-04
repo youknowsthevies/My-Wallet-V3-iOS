@@ -18,11 +18,14 @@ public enum TransactionFlowAction: Equatable {
     case buy(CryptoAccount?)
     /// Performs a sell. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
     case sell(CryptoAccount?)
+    /// Performs a swap. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
+    case swap(CryptoAccount?)
 
     public static func == (lhs: TransactionFlowAction, rhs: TransactionFlowAction) -> Bool {
         switch (lhs, rhs) {
         case (.buy(let lhsAccount), .buy(let rhsAccount)),
-             (.sell(let lhsAccount), .sell(let rhsAccount)):
+             (.sell(let lhsAccount), .sell(let rhsAccount)),
+             (.swap(let lhsAccount), .swap(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
         default:
             return false
@@ -79,18 +82,20 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         switch action {
-        case .buy(let cryptoAccount):
+        case .buy:
             if featureFlagsService.isEnabled(.useTransactionsFlowToBuyCrypto) {
-                return presentNewTransactionFlow(.buy(cryptoAccount), from: presenter)
+                return presentNewTransactionFlow(action, from: presenter)
             } else {
-                return presentLegacyTransactionFlow(.buy(cryptoAccount), from: presenter)
+                return presentLegacyTransactionFlow(action, from: presenter)
             }
-        case .sell(let cryptoAccount):
+        case .sell:
             if featureFlagsService.isEnabled(.useTransactionsFlowToSellCrypto) {
-                return presentNewTransactionFlow(.sell(cryptoAccount), from: presenter)
+                return presentNewTransactionFlow(action, from: presenter)
             } else {
-                return presentLegacyTransactionFlow(.sell(cryptoAccount), from: presenter)
+                return presentLegacyTransactionFlow(action, from: presenter)
             }
+        case .swap:
+            return presentNewTransactionFlow(action, from: presenter)
         }
     }
 }
@@ -130,6 +135,18 @@ extension TransactionsRouter {
             router.start(with: cryptoAccount, from: presenter)
             mimicRIBAttachment(router: router)
             return listener.publisher
+        case .swap(let cryptoAccount):
+            let listener = SwapRootInteractor()
+            let builder = TransactionFlowBuilder()
+            let router = builder.build(
+                withListener: listener,
+                action: .swap,
+                sourceAccount: cryptoAccount,
+                target: nil
+            )
+            presenter.present(router.viewControllable.uiviewController, animated: true)
+            mimicRIBAttachment(router: router)
+            return .empty()
         }
     }
 
@@ -165,6 +182,8 @@ extension TransactionsRouter {
             sellRouter = PlatformUIKit.LegacySellRouter(builder: builder)
             sellRouter?.load()
             return .just(.abandoned)
+        case .swap:
+            unimplemented("There is no legacy swap flow.")
         }
     }
 }

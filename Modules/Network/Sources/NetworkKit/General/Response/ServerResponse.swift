@@ -6,8 +6,3 @@ public struct ServerResponse {
     let payload: Data?
     let response: HTTPURLResponse
 }
-
-public struct ServerErrorResponse: Error {
-    public let response: HTTPURLResponse
-    public let payload: Data?
-}

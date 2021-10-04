@@ -4,16 +4,19 @@ import PlatformKit
 import PlatformUIKit
 
 final class AssetPriceCellInteractor {
-    let priceViewInteractor: AssetPriceViewInteractor
+    let priceViewInteractor: AssetPriceViewInteracting
     let currency: CryptoCurrency
 
     init(
         cryptoCurrency: CryptoCurrency,
-        historicalFiatPriceServiceAPI: HistoricalFiatPriceServiceAPI
+        priceService: PriceServiceAPI,
+        fiatCurrencyService: FiatCurrencyServiceAPI
     ) {
         currency = cryptoCurrency
-        priceViewInteractor = AssetPriceViewInteractor(
-            historicalPriceProvider: historicalFiatPriceServiceAPI
+        priceViewInteractor = AssetPriceViewDailyInteractor(
+            cryptoCurrency: cryptoCurrency,
+            priceService: priceService,
+            fiatCurrencyService: fiatCurrencyService
         )
     }
 }

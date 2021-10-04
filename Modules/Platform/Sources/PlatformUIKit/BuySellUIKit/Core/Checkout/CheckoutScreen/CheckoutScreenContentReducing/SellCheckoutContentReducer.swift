@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import Localization
 import PlatformKit
 import RxCocoa
@@ -38,7 +39,7 @@ final class SellCheckoutContentReducer: CheckoutScreenContentReducing {
     private let toLineItemCellPresenter: DefaultLineItemCellPresenter
     private let totalLineItemCellPresenter: DefaultLineItemCellPresenter
 
-    init(data: CheckoutData) {
+    init(data: CheckoutData, priceService: PriceServiceAPI = resolve()) {
         title = LocalizedString.Title.checkout
 
         inputLabelContentPresenter = DefaultLabelContentPresenter(
@@ -50,7 +51,7 @@ final class SellCheckoutContentReducer: CheckoutScreenContentReducing {
         let priceLineItemCellInteractor: CellInteractor = .init(
             title: TitleLabelInteractor(knownValue: "\(data.inputCurrency.code) \(LocalizedLineItem.price)"),
             description: CheckoutContentDescriptionLabelInteractor.AssetPrice(
-                service: PriceService(),
+                service: priceService,
                 baseCurrency: data.outputCurrency,
                 quoteCurrency: data.inputCurrency
             )
@@ -96,7 +97,7 @@ final class SellCheckoutContentReducer: CheckoutScreenContentReducing {
         ]
 
         cancelButtonViewModel = .cancel(with: LocalizationConstants.cancel)
-        continueButtonViewModel = .primary(with: "\(LocalizedSummary.sellButtonPrefix) \(data.order.inputValue.toDisplayString(includeSymbol: true))")
+        continueButtonViewModel = .primary(with: LocalizedSummary.sellButtonTitle)
     }
 
     func setupDidSucceed(with data: CheckoutInteractionData) {

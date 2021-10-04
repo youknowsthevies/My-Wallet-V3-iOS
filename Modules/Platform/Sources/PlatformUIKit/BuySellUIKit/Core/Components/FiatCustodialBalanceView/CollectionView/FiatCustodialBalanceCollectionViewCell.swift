@@ -17,9 +17,10 @@ final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
             case .plain:
                 custodialBalanceView.layer.borderColor = Color.clear.cgColor
                 custodialBalanceViewWidthConstraint.constant = UIScreen.main.bounds.width
+                custodialBalanceViewWidthConstraint.isActive = true
             case .border:
                 custodialBalanceView.layer.borderColor = Color.lightBorder.cgColor
-                custodialBalanceViewWidthConstraint.constant = 320
+                custodialBalanceViewWidthConstraint.isActive = false
             }
         }
     }
@@ -36,13 +37,25 @@ final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
         custodialBalanceView.layer.borderWidth = 1.0
         super.init(frame: frame)
         contentView.addSubview(custodialBalanceView)
-        custodialBalanceView.layoutToSuperview(axis: .vertical)
-        custodialBalanceView.layoutToSuperview(axis: .horizontal)
+        custodialBalanceView.layoutToSuperview(.top, .bottom, .leading, .trailing)
         custodialBalanceViewWidthConstraint = custodialBalanceView.layout(
             dimension: .width,
             to: UIScreen.main.bounds.width,
             priority: .penultimateHigh
         )
+    }
+
+    override func preferredLayoutAttributesFitting(
+        _ layoutAttributes: UICollectionViewLayoutAttributes
+    ) -> UICollectionViewLayoutAttributes {
+        setNeedsLayout()
+        layoutIfNeeded()
+        let size = contentView.systemLayoutSizeFitting(layoutAttributes.size)
+        var newFrame = layoutAttributes.frame
+        newFrame.size.width = CGFloat(ceilf(Float(size.width)))
+        newFrame.size.height = CGFloat(ceilf(Float(size.height)))
+        layoutAttributes.frame = newFrame
+        return layoutAttributes
     }
 
     @available(*, unavailable)

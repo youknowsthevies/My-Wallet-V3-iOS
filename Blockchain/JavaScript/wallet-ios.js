@@ -1032,12 +1032,6 @@ MyWalletPhone.KYC = {
     }
 }
 
-MyWalletPhone.lockbox = {
-    devices: function() {
-        return MyWallet.wallet.lockbox.devices;
-    }
-}
-
 MyWalletPhone.xlm = {
     saveAccount: function(publicKey, label) {
         let error = function (e) {

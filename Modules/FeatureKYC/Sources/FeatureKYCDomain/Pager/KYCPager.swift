@@ -6,16 +6,16 @@ import RxSwift
 
 public final class KYCPager: KYCPagerAPI {
 
-    private let dataRepository: DataRepositoryAPI
+    private let nabuUserService: NabuUserServiceAPI
     public private(set) var tier: KYC.Tier
     public private(set) var tiersResponse: KYC.UserTiers
 
     public init(
-        dataRepository: DataRepositoryAPI = resolve(),
+        nabuUserService: NabuUserServiceAPI = resolve(),
         tier: KYC.Tier,
         tiersResponse: KYC.UserTiers
     ) {
-        self.dataRepository = dataRepository
+        self.nabuUserService = nabuUserService
         self.tier = tier
         self.tiersResponse = tiersResponse
     }
@@ -41,24 +41,25 @@ public final class KYCPager: KYCPagerAPI {
                 break
             }
         }
-        return dataRepository.nabuUserSingle.flatMapMaybe { [weak self] user -> Maybe<KYCPageType> in
-            guard let strongSelf = self else {
-                return Maybe.empty()
+        return nabuUserService.user.asSingle()
+            .flatMapMaybe { [weak self] user -> Maybe<KYCPageType> in
+                guard let strongSelf = self else {
+                    return Maybe.empty()
+                }
+                guard let nextPage = page.nextPage(
+                    forTier: strongSelf.tier,
+                    user: user,
+                    country: kycCountry,
+                    tiersResponse: strongSelf.tiersResponse
+                ) else {
+                    return strongSelf.nextPageFromNextTierMaybe()
+                }
+                return Maybe.just(nextPage)
             }
-            guard let nextPage = page.nextPage(
-                forTier: strongSelf.tier,
-                user: user,
-                country: kycCountry,
-                tiersResponse: strongSelf.tiersResponse
-            ) else {
-                return strongSelf.nextPageFromNextTierMaybe()
-            }
-            return Maybe.just(nextPage)
-        }
     }
 
     private func nextPageFromNextTierMaybe() -> Maybe<KYCPageType> {
-        dataRepository.fetchNabuUser().flatMapMaybe { [weak self] user -> Maybe<KYCPageType> in
+        nabuUserService.fetchUser().asSingle().flatMapMaybe { [weak self] user -> Maybe<KYCPageType> in
             guard let strongSelf = self else {
                 return Maybe.empty()
             }

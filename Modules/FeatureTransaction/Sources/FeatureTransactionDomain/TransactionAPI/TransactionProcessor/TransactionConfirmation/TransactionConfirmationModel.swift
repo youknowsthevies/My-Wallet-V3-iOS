@@ -81,10 +81,8 @@ extension TransactionConfirmation.Model {
 
         public var formatted: (title: String, subtitle: String)? {
             var value: String = total.displayString
-            if let exchange = exchange,
-               let converted = try? total.convert(using: exchange)
-            {
-                value = converted.displayString
+            if let exchange = exchange {
+                value = total.convert(using: exchange).displayString
             }
             return (LocalizedString.total, value)
         }
@@ -207,9 +205,7 @@ extension TransactionConfirmation.Model {
             case .pendingOrdersLimitReached:
                 return (LocalizedString.Error.title, LocalizedString.Error.pendingOrderLimitReached)
             case .nabuError(let error):
-                let errorCode = String(format: LocalizationConstants.Errors.errorCode, error.code.rawValue)
-                let rawNabuDescription = error.description ?? "\(LocalizedString.Error.generic). \(errorCode)"
-                return (LocalizedString.Error.title, rawNabuDescription)
+                return (LocalizedString.Error.title, error.description)
             }
         }
     }
@@ -282,6 +278,62 @@ extension TransactionConfirmation.Model {
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizationConstants.Transaction.receive, cryptoValue.displayString)
+        }
+    }
+
+    public struct SellSourceValue: TransactionConfirmationModelable {
+        public let cryptoValue: CryptoValue
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizationConstants.Transaction.sell, cryptoValue.displayString)
+        }
+    }
+
+    public struct SellDestinationValue: TransactionConfirmationModelable {
+        public let fiatValue: FiatValue
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizationConstants.Transaction.receive, fiatValue.displayString)
+        }
+    }
+
+    public struct SellExchangeRateValue: TransactionConfirmationModelable {
+        public let baseValue: MoneyValue
+        public let resultValue: MoneyValue
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizedString.exchangeRate, "\(baseValue.displayString) = \(resultValue.displayString)")
+        }
+    }
+
+    public struct BuyCryptoValue: TransactionConfirmationModelable {
+        public let baseValue: CryptoValue
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizedString.buy, baseValue.displayString)
+        }
+    }
+
+    public struct BuyExchangeRateValue: TransactionConfirmationModelable {
+        public let baseValue: MoneyValue
+        public let code: String
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (String(format: LocalizedString.price, code), baseValue.displayString)
+        }
+    }
+
+    public struct BuyPaymentMethodValue: TransactionConfirmationModelable {
+        public let name: String
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizedString.paymentMethod, name)
         }
     }
 

@@ -112,7 +112,19 @@ extension CoincoreAPI {
                     )
                 }
         case (_, .sell):
-            unimplemented()
+            return account
+                .requireSecondPassword
+                .map { requiresSecondPassword -> TransactionProcessor in
+                    .init(
+                        sourceAccount: account,
+                        transactionTarget: target,
+                        engine: NonCustodialSellTransactionEngine(
+                            quotesEngine: SwapQuotesEngine(),
+                            requireSecondPassword: requiresSecondPassword,
+                            onChainEngine: factory.build(requiresSecondPassword: requiresSecondPassword)
+                        )
+                    )
+                }
         default:
             unimplemented()
         }
@@ -218,13 +230,12 @@ extension CoincoreAPI {
         with account: CryptoAccount,
         target: TransactionTarget
     ) -> Single<TransactionProcessor> {
-        unimplemented()
-    }
-
-    private func createOnChainProcessorSell(
-        with account: CryptoAccount,
-        target: TransactionTarget
-    ) -> Single<TransactionProcessor> {
-        unimplemented()
+        .just(
+            TransactionProcessor(
+                sourceAccount: account,
+                transactionTarget: target as! FiatAccount,
+                engine: TradingSellTransactionEngine(quotesEngine: SwapQuotesEngine())
+            )
+        )
     }
 }

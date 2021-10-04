@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import RxCombine
 import RxSwift
 import ToolKit
 
@@ -174,11 +173,21 @@ extension Publisher where Output == AccountGroup, Failure == Error {
 extension CoincoreAPI {
 
     public func cryptoAccounts(
-        supporting action: AssetAction
+        supporting action: AssetAction,
+        filter: AssetFilter = .all
     ) -> AnyPublisher<[CryptoAccount], Error> {
-        allAccounts
-            .eraseError()
-            .mapToCryptoAccounts(supporting: action)
+        allAssets
+            .map { asset in
+                asset.accountGroup(filter: filter)
+                    .eraseError()
+                    .mapToCryptoAccounts(supporting: action)
+            }
+            .zip()
+            .map { accountsMatrix in
+                // the result is an array of arrays of accounts, so flatten it to a single array of accounts
+                Array(accountsMatrix.joined())
+            }
+            .eraseToAnyPublisher()
     }
 
     public func cryptoAccounts(

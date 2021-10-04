@@ -1,12 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureTransactionDomain
 import PlatformKit
 import PlatformUIKit
 import RIBs
 import RxRelay
 import RxSwift
 import ToolKit
+
+enum TransitionType: Equatable {
+    case push
+    case modal
+    case replaceRoot
+}
 
 protocol TransactionFlowRouting: Routing {
 
@@ -46,10 +53,20 @@ protocol TransactionFlowRouting: Routing {
     func showDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
 
     /// Route to the destination account picker from the target selection screen
-    func routeToDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
+    func routeToDestinationAccountPicker(
+        transitionType: TransitionType,
+        transactionModel: TransactionModel,
+        action: AssetAction
+    )
 
     /// Present the destination account picker modally over the current screen
     func presentDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
+
+    /// Present the payment method linking flow modally over the current screen
+    func presentLinkPaymentMethod(transactionModel: TransactionModel)
+
+    /// Present the card linking flow modally over the current screen
+    func presentLinkACard(transactionModel: TransactionModel)
 
     /// Present the bank linking flow modally over the current screen
     func presentLinkABank(transactionModel: TransactionModel)
@@ -201,7 +218,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func didSelectActionButton() {
-        transactionModel.process(action: .showBankLinkingFlow)
+        transactionModel.process(action: .showAddAccountFlow)
     }
 
     func didSelect(blockchainAccount: BlockchainAccount) {
@@ -321,8 +338,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     private func showFlowStep(previousState: TransactionState?, newState: TransactionState) {
         guard !newState.isGoingBack else {
-            guard previousState?.step != .kycChecks else {
-                // KYC gets dismissed automatically
+            guard previousState?.step.goingBackSkipsNavigation == false else {
                 return
             }
 
@@ -346,6 +362,12 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 action: action
             )
 
+        case .linkPaymentMethod:
+            router?.presentLinkPaymentMethod(transactionModel: transactionModel)
+
+        case .linkACard:
+            router?.presentLinkACard(transactionModel: transactionModel)
+
         case .linkABank:
             router?.presentLinkABank(transactionModel: transactionModel)
 
@@ -365,17 +387,11 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     action: action
                 )
             case .buy:
-                if newState.stepsBackStack.contains(.enterAmount) {
-                    router?.presentDestinationAccountPicker(
-                        transactionModel: transactionModel,
-                        action: action
-                    )
-                } else {
-                    router?.routeToDestinationAccountPicker(
-                        transactionModel: transactionModel,
-                        action: action
-                    )
-                }
+                router?.routeToDestinationAccountPicker(
+                    transitionType: newState.stepsBackStack.contains(.enterAmount) ? .modal : .replaceRoot,
+                    transactionModel: transactionModel,
+                    action: action
+                )
             case .withdraw:
                 // `Withdraw` shows the destination screen modally. It does not
                 // present over another screen (and thus replaces the root).
@@ -388,8 +404,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                  .sell,
                  .receive,
                  .swap:
-                // This pushes on the destination screen.
                 router?.routeToDestinationAccountPicker(
+                    transitionType: newState.stepsBackStack.contains(.selectSource) ? .push : .replaceRoot,
                     transactionModel: transactionModel,
                     action: action
                 )
@@ -398,10 +414,19 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .kycChecks:
             router?.presentKYCFlowIfNeeded { [transactionModel] didCompleteKYC in
                 if didCompleteKYC {
-                    transactionModel.process(action: .prepareTransaction)
+                    transactionModel.process(action: .validateSourceAccount)
                 } else {
                     transactionModel.process(action: .returnToPreviousStep)
                 }
+            }
+
+        case .validateSource:
+            switch action {
+            case .buy:
+                linkPaymentMethodOrMoveToNextStep(for: newState)
+            default:
+                // there's no need to validate the source account for these kinds of transactions
+                transactionModel.process(action: .prepareTransaction)
             }
 
         case .confirmDetail:
@@ -443,6 +468,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
         case .enterAddress:
             router?.routeToDestinationAccountPicker(
+                transitionType: action == .buy ? .replaceRoot : .push,
                 transactionModel: transactionModel,
                 action: action
             )
@@ -483,5 +509,31 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             action: .deposit,
             passwordRequired: passwordRequired
         )
+    }
+
+    private func linkPaymentMethodOrMoveToNextStep(for transactionState: TransactionState) {
+        guard let paymentAccount = transactionState.source as? FeatureTransactionDomain.PaymentMethodAccount else {
+            impossible("The source account for Buy should be a valid payment method")
+        }
+        // If there's a linked payment account - e.g. a Credit Card or Bank Acccount - the source account is valid.
+        // If so, simply move on to the next step.
+        guard paymentAccount.linkedAccount == nil else {
+            transactionModel.process(action: .prepareTransaction)
+            return
+        }
+        // Otherwise, make the user link a relevant payment account.
+        switch paymentAccount.paymentMethod.type {
+        case .bankAccount:
+            transactionModel.process(action: .showBankLinkingFlow)
+        case .bankTransfer:
+            // Nothing to link, move on to the next step
+            // TODO: Is this right? Check with Alex
+            transactionModel.process(action: .prepareTransaction)
+        case .card:
+            transactionModel.process(action: .showCardLinkingFlow)
+        case .funds:
+            // Nothing to link, move on to the next step
+            transactionModel.process(action: .prepareTransaction)
+        }
     }
 }

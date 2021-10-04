@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxSwift
 import ToolKit
@@ -130,9 +131,17 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal]).catchErrorJustReturn([])
             )
             .map { buySellActivity, ordersActivity, swapActivity -> [ActivityItemEvent] in
-                buySellActivity.map(ActivityItemEvent.buySell)
+                let swapAndSellActivityItemsEvents: [ActivityItemEvent] = swapActivity
+                    .map { item in
+                        if item.pair.outputCurrencyType.isFiatCurrency {
+                            return .buySell(.init(swapActivityItemEvent: item))
+                        }
+                        return .swap(item)
+                    }
+
+                return buySellActivity.map(ActivityItemEvent.buySell)
                     + ordersActivity.map(ActivityItemEvent.crypto)
-                    + swapActivity.map(ActivityItemEvent.swap)
+                    + swapAndSellActivityItemsEvents
             }
     }
 
@@ -142,7 +151,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let custodialPendingDepositService: CustodialPendingDepositServiceAPI
     private let eligibilityService: EligibilityServiceAPI
     private let errorRecorder: ErrorRecording
-    private let fiatPriceService: FiatPriceServiceAPI
+    private let priceService: PriceServiceAPI
     private let featureFetcher: FeatureFetching
     private let kycTiersService: KYCTiersServiceAPI
     private let ordersActivity: OrdersActivityServiceAPI
@@ -151,7 +160,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
 
     private var balances: Single<CustodialAccountBalanceState> {
-        balanceService.balance(for: asset.currency)
+        balanceService.balance(for: asset.currencyType)
     }
 
     public init(
@@ -161,7 +170,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         buySellActivity: BuySellActivityItemEventServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         featureFetcher: FeatureFetching = resolve(),
-        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve(),
         custodialAddressService: CustodialAddressServiceAPI = resolve(),
@@ -175,7 +184,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.ordersActivity = ordersActivity
         self.swapActivity = swapActivity
         self.buySellActivity = buySellActivity
-        self.fiatPriceService = fiatPriceService
+        self.priceService = priceService
         self.balanceService = balanceService
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
         self.custodialAddressService = custodialAddressService
@@ -217,8 +226,11 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 .catchErrorJustReturn(false)
         case .buy:
             return isPairToFiatAvailable
-        case .sell,
-             .swap:
+        case .sell:
+            return Single.zip(isPairToFiatAvailable, isFunded).map {
+                $0.0 && $0.1
+            }
+        case .swap:
             return balance
                 .map(\.isPositive)
                 .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in
@@ -245,25 +257,14 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         }
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Swift.Error> {
+        priceService
+            .price(of: asset, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
-    }
-
-    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
-            }
+            .eraseToAnyPublisher()
     }
 }

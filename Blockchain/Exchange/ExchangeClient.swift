@@ -1,19 +1,26 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinCashKit
+import Combine
 import DIKit
 import FeatureSettingsDomain
+import NabuNetworkError
 import NetworkKit
 import PlatformKit
-import RxSwift
+import ToolKit
 
 protocol ExchangeClientAPI {
     typealias LinkID = String
 
-    var linkID: Single<LinkID> { get }
+    var linkID: AnyPublisher<LinkID, Error> { get }
 
-    func linkToExistingExchangeUser(linkID: LinkID) -> Completable
-    func syncDepositAddress(accounts: [CryptoReceiveAddress]) -> Completable
+    func linkToExistingExchangeUser(
+        linkID: LinkID
+    ) -> AnyPublisher<Void, NabuNetworkError>
+
+    func syncDepositAddress(
+        accounts: [CryptoReceiveAddress]
+    ) -> AnyPublisher<Void, NabuNetworkError>
 }
 
 final class ExchangeClient: ExchangeClientAPI {
@@ -32,77 +39,67 @@ final class ExchangeClient: ExchangeClientAPI {
         appSettings = settings
     }
 
-    var linkID: Single<LinkID> {
-        let fallback = fetchLinkIDPayload()
-            .flatMap(weak: self) { _, payload -> Single<LinkID> in
+    var linkID: AnyPublisher<LinkID, Error> {
+        let fallback: AnyPublisher<LinkID, Error> = fetchLinkIDPayload()
+            .eraseError()
+            .flatMap { payload -> AnyPublisher<LinkID, Error> in
                 guard let linkID = payload["linkId"] else {
-                    return Single.error(ExchangeLinkingAPIError.noLinkID)
+                    return .failure(ExchangeLinkingAPIError.noLinkID)
                 }
 
-                return Single.just(linkID)
+                return .just(linkID)
             }
-        return existingUserLinkIdentifier().ifEmpty(switchTo: fallback)
+            .eraseToAnyPublisher()
+        return existingUserLinkIdentifier()
+            .flatMap { linkId -> AnyPublisher<LinkID, Error> in
+                guard let linkId = linkId else {
+                    return fallback
+                }
+                return .just(linkId)
+            }
+            .eraseToAnyPublisher()
     }
 
-    func syncDepositAddress(accounts: [CryptoReceiveAddress]) -> Completable {
-        let depositAddresses = accounts.reduce(into: [String: String]()) { result, receiveAddress in
-            result[receiveAddress.asset.code] = receiveAddress.address
-        }
+    func syncDepositAddress(
+        accounts: [CryptoReceiveAddress]
+    ) -> AnyPublisher<Void, NabuNetworkError> {
+        let depositAddresses = accounts
+            .reduce(into: [String: String]()) { result, receiveAddress in
+                result[receiveAddress.asset.code] = receiveAddress.address
+            }
         let payload = ["addresses": depositAddresses]
         let request = requestBuilder.post(
             path: ["users", "deposit", "addresses"],
             body: try? JSONEncoder().encode(payload),
             authenticated: true
         )!
-        return networkAdapter
-            .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
-            )
+        return networkAdapter.perform(request: request)
     }
 
-    func linkToExistingExchangeUser(linkID: LinkID) -> Completable {
+    func linkToExistingExchangeUser(
+        linkID: LinkID
+    ) -> AnyPublisher<Void, NabuNetworkError> {
         let payload = ["linkId": linkID]
-        let apiURL = URL(string: BlockchainAPI.shared.retailCoreUrl)!
-        let components = ["users", "link-account", "existing"]
-        let endpoint = URL.endpoint(apiURL, pathComponents: components)!
-        let request = NetworkRequest(
-            endpoint: endpoint,
-            method: .put,
+        let path = ["users", "link-account", "existing"]
+        let request = requestBuilder.put(
+            path: path,
             body: try? JSONEncoder().encode(payload),
-            authenticated: true,
-            contentType: .json
-        )
-        return networkAdapter
-            .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
-            )
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
     }
 
-    func fetchLinkIDPayload() -> Single<[String: String]> {
-        let apiURL = URL(string: BlockchainAPI.shared.retailCoreUrl)!
-        let components = ["users", "link-account", "create", "start"]
-        let endpoint = URL.endpoint(apiURL, pathComponents: components)!
-        let request = NetworkRequest(
-            endpoint: endpoint,
-            method: .put,
+    func fetchLinkIDPayload() -> AnyPublisher<[String: String], NabuNetworkError> {
+        let path = ["users", "link-account", "create", "start"]
+        let request = requestBuilder.put(
+            path: path,
             body: nil,
-            authenticated: true,
-            contentType: .json
-        )
-        return networkAdapter
-            .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
-            )
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
     }
 
-    private func existingUserLinkIdentifier() -> Maybe<LinkID> {
-        if let identifier = appSettings.exchangeLinkIdentifier {
-            return Maybe.just(identifier)
-        } else {
-            return Maybe.empty()
-        }
+    private func existingUserLinkIdentifier() -> AnyPublisher<LinkID?, Never> {
+        .just(appSettings.exchangeLinkIdentifier)
     }
 }

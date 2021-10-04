@@ -44,7 +44,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     /// Exposes a stream of the currently selected `CryptoCurrency` value
     override var selectedCurrencyType: Observable<CurrencyType> {
-        cryptoCurrencySelectionService.selectedData.map(\.cryptoCurrency.currency).asObservable()
+        cryptoCurrencySelectionService.selectedData.map(\.cryptoCurrency.currencyType).asObservable()
     }
 
     /// The state of the screen with associated data
@@ -86,6 +86,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     /// Streams a `KycState` indicating whether the user should complete KYC
     var currentKycState: Single<Result<KycState, Error>> {
         kycTiersService.fetchTiers()
+            .asSingle()
             .map(\.isTier2Approved)
             .mapToResult(successMap: { $0 ? .completed : .shouldComplete })
     }
@@ -190,6 +191,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .disposed(by: disposeBag)
 
         state
+            .observeOn(MainScheduler.asyncInstance)
             .flatMapLatest(weak: self) { (self, state) -> Observable<AmountInteractorState> in
                 Single
                     .zip(
@@ -297,7 +299,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     guard method.max.currency == pair.maxFiatValue.currency else {
                         return .empty(currency: currency)
                     }
-                    maxFiatValue = try FiatValue.min(pair.maxFiatValue, method.max)
+                    maxFiatValue = try .min(pair.maxFiatValue, method.max)
                     paymentMethodId = nil
                 case .linkedBank(let data):
                     maxFiatValue = data.topLimit
@@ -308,7 +310,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     return .empty(currency: currency)
                 }
 
-                if fiat.amount.isZero {
+                if fiat.isZero {
                     return .empty(currency: currency)
                 } else if try fiat > maxFiatValue {
                     return .tooHigh(max: maxFiatValue)

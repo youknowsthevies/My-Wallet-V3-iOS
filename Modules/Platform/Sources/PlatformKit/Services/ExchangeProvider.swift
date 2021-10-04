@@ -2,6 +2,7 @@
 
 import DIKit
 import Foundation
+import ToolKit
 
 /// A provider for exchange rates as per supported crypto.
 public protocol ExchangeProviding: AnyObject {
@@ -9,51 +10,51 @@ public protocol ExchangeProviding: AnyObject {
     /// Returns the exchange service
     subscript(currency: Currency) -> PairExchangeServiceAPI { get }
 
-    subscript(currency: CryptoCurrency) -> PairExchangeServiceAPI { get }
-
-    subscript(currency: FiatCurrency) -> PairExchangeServiceAPI { get }
-
     /// Refreshes all the exchange rates
     func refresh()
 }
 
-public final class ExchangeProvider: ExchangeProviding {
+final class ExchangeProvider: ExchangeProviding {
 
-    public subscript(currency: Currency) -> PairExchangeServiceAPI {
-        services[currency.currency]!
+    // MARK: - Subscript
+
+    subscript(currency: Currency) -> PairExchangeServiceAPI {
+        retrieveOrCreate(currency: currency.currencyType)
     }
 
-    public subscript(currency: CryptoCurrency) -> PairExchangeServiceAPI {
-        services[currency.currency]!
+    // MARK: - Private Properties
+
+    private let services: Atomic<[CurrencyType: PairExchangeServiceAPI]>
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+
+    // MARK: - Init
+
+    init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+        services = Atomic([:])
+        self.fiatCurrencyService = fiatCurrencyService
     }
 
-    public subscript(currency: FiatCurrency) -> PairExchangeServiceAPI {
-        services[currency.currency]!
-    }
+    // MARK: - Methods
 
-    // MARK: - Services
-
-    private let services: [CurrencyType: PairExchangeServiceAPI]
-
-    // MARK: - Setup
-
-    public init(
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
-    ) {
-        services = enabledCurrenciesService
-            .allEnabledCurrencies
-            .reduce(into: [CurrencyType: PairExchangeServiceAPI]()) { result, currencyType in
-                result[currencyType] = PairExchangeService(
-                    currency: currencyType,
-                    fiatCurrencyService: fiatCurrencyService
-                )
-            }
-    }
-
-    public func refresh() {
-        services.values.forEach { service in
+    func refresh() {
+        services.value.values.forEach { service in
             service.fetchTriggerRelay.accept(())
+        }
+    }
+
+    // MARK: - Private Methods
+
+    private func retrieveOrCreate(currency: CurrencyType) -> PairExchangeServiceAPI {
+        services.mutateAndReturn { services -> PairExchangeServiceAPI in
+            if let service = services[currency] {
+                return service
+            }
+            let service = PairExchangeService(
+                currency: currency,
+                fiatCurrencyService: fiatCurrencyService
+            )
+            services[currency] = service
+            return service
         }
     }
 }

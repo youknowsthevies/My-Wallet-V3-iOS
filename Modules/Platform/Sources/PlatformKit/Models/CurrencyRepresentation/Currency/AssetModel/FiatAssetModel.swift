@@ -1,21 +1,40 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
-
-/// An `AssetModel` describing a Fiat asset.
+/// A fiat asset.
 struct FiatAssetModel: AssetModel, Hashable {
-    let spotColor: String? = nil
-    let name: String
+
+    // MARK: - Internal Properties
+
     let code: String
-    let precision: Int
+    let displayCode: String
     let kind: AssetModelType = .fiat
+    let name: String
+    let precision: Int
     let products: [AssetModelProduct]
     let logoPngUrl: String? = nil
+    let spotColor: String? = nil
 
-    init?(assetResponse: SupportedAssetsResponse.Asset) {
+    // MARK: - Setup
+
+    /// Creates a fiat asset.
+    ///
+    /// - Parameter assetResponse: A supported fiat asset response.
+    init(assetResponse: SupportedAssetsResponse.Asset) {
+        precondition(assetResponse.type.name == SupportedAssetsResponse.Asset.AssetType.Name.fiat.rawValue)
         code = assetResponse.symbol
+        displayCode = assetResponse.displaySymbol ?? assetResponse.symbol
         name = assetResponse.name
         precision = assetResponse.precision
         products = assetResponse.products.compactMap(AssetModelProduct.init)
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(code)
+        hasher.combine(kind)
+    }
+
+    static func == (lhs: FiatAssetModel, rhs: FiatAssetModel) -> Bool {
+        lhs.code == rhs.code
+            && lhs.kind == rhs.kind
     }
 }

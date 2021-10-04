@@ -1,25 +1,32 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 @testable import EthereumKit
+import NetworkError
 import PlatformKit
-import RxSwift
 
 class TransactionClientAPIMock: TransactionClientAPI {
-    var latestBlockValue: Single<LatestBlockResponse> = Single.error(EthereumAPIClientMockError.mockError)
-    var latestBlock: Single<LatestBlockResponse> {
+
+    var latestBlockValue: AnyPublisher<LatestBlockResponse, NetworkError> =
+        .failure(.authentication(EthereumAPIClientMockError.mockError))
+    var latestBlock: AnyPublisher<LatestBlockResponse, NetworkError> {
         latestBlockValue
     }
 
-    var transactionValue: Single<EthereumHistoricalTransactionResponse> = .error(EthereumAPIClientMockError.mockError)
+    var transactionValue: AnyPublisher<EthereumHistoricalTransactionResponse, NetworkError> =
+        .failure(.authentication(EthereumAPIClientMockError.mockError))
 
-    func transaction(with hash: String) -> Single<EthereumHistoricalTransactionResponse> {
+    func transaction(
+        with hash: String
+    ) -> AnyPublisher<EthereumHistoricalTransactionResponse, NetworkError> {
         transactionValue
     }
 
     var lastTransactionsForAccount: String?
-    var transactionsForAccountValue: Single<[EthereumHistoricalTransactionResponse]> = .just([])
+    var transactionsForAccountValue: AnyPublisher<[EthereumHistoricalTransactionResponse], NetworkError> =
+        .just([])
 
-    func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]> {
+    func transactions(for account: String) -> AnyPublisher<[EthereumHistoricalTransactionResponse], NetworkError> {
         lastTransactionsForAccount = account
         return transactionsForAccountValue
     }

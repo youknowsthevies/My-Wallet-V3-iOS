@@ -3,7 +3,6 @@
 import DIKit
 import FeatureActivityDomain
 import Localization
-import NetworkKit
 import PlatformKit
 import PlatformUIKit
 

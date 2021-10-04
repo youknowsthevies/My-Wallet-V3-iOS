@@ -91,6 +91,7 @@ extension Accessibility.Identifier {
         private static let prefix = "DashboardDetails."
         public enum CurrentBalanceCell {
             public static let prefix = "\(AssetDetails.prefix)CurrentBalance."
+            public static let view = "\(prefix)view"
             public static let titleValue = "\(prefix)titleValue"
             public static let descriptionValue = "\(prefix)descriptionValue"
             public static let pendingValue = "\(prefix)pending"

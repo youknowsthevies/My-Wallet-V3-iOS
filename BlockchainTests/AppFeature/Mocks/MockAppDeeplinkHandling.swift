@@ -3,6 +3,7 @@
 import Combine
 
 @testable import Blockchain
+@testable import FeatureAppUI
 
 final class MockAppDeeplinkHandler: AppDeeplinkHandlerAPI {
 

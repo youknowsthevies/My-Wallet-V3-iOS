@@ -2,7 +2,7 @@
 
 import Combine
 import Foundation
-import NetworkKit
+import NetworkError
 
 /// A potential SMS service error
 public enum SMSServiceError: LocalizedError, Equatable {

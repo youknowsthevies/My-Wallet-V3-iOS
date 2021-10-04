@@ -1,48 +1,39 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import CombineExt
 import DIKit
-import RxSwift
 import ToolKit
 
 public protocol NabuUserServiceAPI: AnyObject {
-    var user: Single<NabuUser> { get }
+    var user: AnyPublisher<NabuUser, Never> { get }
 
-    func fetchUser() -> Single<NabuUser>
+    func fetchUser() -> AnyPublisher<NabuUser, Never>
 }
 
 final class NabuUserService: NabuUserServiceAPI {
 
+    // MARK: - Types
+
+    private struct Key: Hashable {}
+
     // MARK: - Exposed Properties
 
-    var user: Single<NabuUser> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
-            guard case .success = self.semaphore.wait(timeout: .now() + .seconds(30)) else {
-                observer(.error(ToolKitError.timedOut))
-                return Disposables.create()
-            }
-            let disposable = self.cachedUser.valueSingle
-                .subscribe { event in
-                    switch event {
-                    case .success(let value):
-                        observer(.success(value))
-                    case .error(let value):
-                        observer(.error(value))
-                    }
-                }
-            return Disposables.create {
-                disposable.dispose()
-                self.semaphore.signal()
-            }
-        }
-        .subscribeOn(scheduler)
+    var user: AnyPublisher<NabuUser, Never> {
+        cachedValue
+            .get(key: Key())
+            .ignoreFailure()
     }
 
-    private let cachedUser = CachedValue<NabuUser>(configuration: .onSubscription())
-    private let semaphore = DispatchSemaphore(value: 1)
-    private let scheduler = SerialDispatchQueueScheduler(qos: .default)
+    // MARK: - Properties
 
     private let client: KYCClientAPI
     private let siftService: SiftServiceAPI
+    private let cachedValue: CachedValueNew<
+        Key,
+        NabuUser,
+        Error
+    >
 
     // MARK: - Setup
 
@@ -53,18 +44,31 @@ final class NabuUserService: NabuUserServiceAPI {
         self.client = client
         self.siftService = siftService
 
-        cachedUser.setFetch(weak: self) { (self) in
-            self.client.user()
-                .asSingle()
-                .do(
-                    onSuccess: { [weak self] nabuUser in
-                        self?.siftService.set(userId: nabuUser.identifier)
-                    }
-                )
-        }
+        let cache: AnyCache<Key, NabuUser> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PerpetualCacheRefreshControl()
+        ).eraseToAnyCache()
+
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { [client, siftService] _ in
+                client
+                    .fetchUser()
+                    .handleEvents(
+                        receiveOutput: { nabuUser in
+                            DispatchQueue.main.async {
+                                siftService.set(userId: nabuUser.identifier)
+                            }
+                        }
+                    )
+                    .eraseError()
+            }
+        )
     }
 
-    func fetchUser() -> Single<NabuUser> {
-        cachedUser.fetchValue
+    func fetchUser() -> AnyPublisher<NabuUser, Never> {
+        cachedValue
+            .get(key: Key(), forceFetch: true)
+            .ignoreFailure()
     }
 }

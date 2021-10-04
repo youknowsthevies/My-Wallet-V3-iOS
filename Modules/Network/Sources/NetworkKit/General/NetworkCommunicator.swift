@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import DIKit
 import Foundation
+import NetworkError
 import ToolKit
 
 protocol NetworkCommunicatorAPI {

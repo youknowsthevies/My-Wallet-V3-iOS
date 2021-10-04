@@ -68,13 +68,30 @@ final class TransactionModel {
         case .availableDestinationAccountsListUpdated:
             return processAvailableDestinationAccountsListUpdated(state: previousState)
 
+        case .showAddAccountFlow:
+            return nil
+
+        case .showCardLinkingFlow:
+            return nil
+
+        case .cardLinkingFlowCompleted:
+            return processCardLinkingCompletion(state: previousState)
+
         case .bankAccountLinked(let action):
             return processSourceAccountsListUpdate(action: action)
+
         case .bankAccountLinkedFromSource(let source, let action):
-            return processTargetAccountsListUpdate(fromAccount: source, action: action)
+            switch action {
+            case .buy:
+                return nil
+            default:
+                return processTargetAccountsListUpdate(fromAccount: source, action: action)
+            }
+
         case .showBankLinkingFlow,
              .bankLinkingFlowDismissed:
             return nil
+
         case .initialiseWithSourceAccount(let action, let sourceAccount, _):
             return processTargetAccountsListUpdate(fromAccount: sourceAccount, action: action)
         case .targetAccountSelected(let destinationAccount):
@@ -82,7 +99,7 @@ final class TransactionModel {
                 fatalError("You should have a sourceAccount.")
             }
             let sourceCurrency = source.currencyType
-            let isAmountValid = previousState.amount.currencyType == sourceCurrency
+            let isAmountValid = previousState.amount.currency == sourceCurrency
             let amount = isAmountValid ? previousState.amount : .zero(currency: sourceCurrency)
             // If the `amount` `currencyType` differs from the source, we should
             // use `zero` as the amount. If not, it is safe to use the
@@ -101,6 +118,8 @@ final class TransactionModel {
         case .pendingTransactionUpdated:
             return nil
         case .performKYCChecks:
+            return nil
+        case .validateSourceAccount:
             return nil
         case .prepareTransaction:
             return nil
@@ -337,5 +356,14 @@ final class TransactionModel {
                 })
         }
         return nil
+    }
+
+    private func processCardLinkingCompletion(state: TransactionState) -> Disposable? {
+        switch state.action {
+        case .buy:
+            return processSourceAccountsListUpdate(action: state.action)
+        default:
+            return nil
+        }
     }
 }

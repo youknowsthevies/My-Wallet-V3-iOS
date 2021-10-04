@@ -110,7 +110,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
     public init(
         fiatCurrencyService: FiatCurrencyServiceAPI,
         cryptoCurrencyService: CryptoCurrencyServiceAPI,
-        priceProvider: AmountTranslationPriceProviding = AmountTranslationPriceProvider(),
+        priceProvider: AmountTranslationPriceProviding,
         defaultFiatCurrency: FiatCurrency = .default,
         defaultCryptoCurrency: CryptoCurrency,
         initialActiveInput: ActiveAmountInput
@@ -230,7 +230,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
         anyPair
             .bindAndCatch(weak: self) { (self, value) in
-                switch value.base.currencyType {
+                switch value.base.currency {
                 case .crypto:
                     self.cryptoAmountRelay.accept(value.base)
                     self.fiatAmountRelay.accept(value.quote)
@@ -265,8 +265,8 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
         let insertAction = appendNewRelay
             .map { MoneyValueInputScanner.Action.insert($0) }
-            .flatMap(weak: self) { (self, action) in
-                self.activeInput
+            .flatMap { [activeInput] action in
+                activeInput
                     .take(1)
                     .map { (activeInputType: $0, action: action) }
             }
@@ -380,9 +380,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         Single.just(activeInput)
             .map(\.inverted)
             .observeOn(MainScheduler.asyncInstance)
-            .do(onSuccess: { [weak self] input in
-                self?.activeInputRelay.accept(input)
-            })
+            .do(onSuccess: activeInputRelay.accept)
             .asCompletable()
     }
 

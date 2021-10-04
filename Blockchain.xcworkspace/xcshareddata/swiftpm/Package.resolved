@@ -20,12 +20,30 @@
         }
       },
       {
+        "package": "ZendeskChatProvidersSDK",
+        "repositoryURL": "https://github.com/zendesk/chat_providers_sdk_ios",
+        "state": {
+          "branch": null,
+          "revision": "eb3b54f087d0f21bb7a80f98a4e4680e490c6abf",
+          "version": "2.11.1"
+        }
+      },
+      {
+        "package": "ZendeskChatSDK",
+        "repositoryURL": "https://github.com/zendesk/chat_sdk_ios.git",
+        "state": {
+          "branch": null,
+          "revision": "92ca0c74e4004b7513cfdad31e3700a0ea7d8f2e",
+          "version": "2.11.1"
+        }
+      },
+      {
         "package": "combine-schedulers",
         "repositoryURL": "https://github.com/pointfreeco/combine-schedulers",
         "state": {
           "branch": null,
-          "revision": "6bde3b0063ba8e7537b43744948535ca7e9e0dad",
-          "version": "0.5.2"
+          "revision": "6dcc7c034d28fe7ac652453faeae07656f723909",
+          "version": "0.5.1"
         }
       },
       {
@@ -33,8 +51,17 @@
         "repositoryURL": "https://github.com/CombineCommunity/CombineExt.git",
         "state": {
           "branch": null,
-          "revision": "5b8a0c0f178527f9204200505c5fefa6847e528f",
-          "version": "1.3.0"
+          "revision": "fc3e405ea46ee748649bd8b71587b2a9c37e1422",
+          "version": "1.5.0"
+        }
+      },
+      {
+        "package": "ZendeskCommonUISDK",
+        "repositoryURL": "https://github.com/zendesk/commonui_sdk_ios",
+        "state": {
+          "branch": null,
+          "revision": "6a27a10d89379ab120c38758013079518c4b3002",
+          "version": "6.1.1"
         }
       },
       {
@@ -74,12 +101,30 @@
         }
       },
       {
+        "package": "ZendeskMessagingSDK",
+        "repositoryURL": "https://github.com/zendesk/messaging_sdk_ios",
+        "state": {
+          "branch": null,
+          "revision": "305f4a3991b355f87e70497616833d0e71f90298",
+          "version": "3.8.2"
+        }
+      },
+      {
+        "package": "ZendeskMessagingAPISDK",
+        "repositoryURL": "https://github.com/zendesk/messagingapi_sdk_ios",
+        "state": {
+          "branch": null,
+          "revision": "97a131367258192800e5b45cc13412224b84d9e8",
+          "version": "3.8.2"
+        }
+      },
+      {
         "package": "Mockingbird",
         "repositoryURL": "https://github.com/birdrides/mockingbird.git",
         "state": {
           "branch": null,
-          "revision": "37a8c220ef172ef261c436c1bc55a8b25dceab13",
-          "version": "0.16.0"
+          "revision": "4069bb0cb0163b1f05b2bbb95f9396964d5a19ca",
+          "version": "0.18.1"
         }
       },
       {
@@ -87,8 +132,8 @@
         "repositoryURL": "https://github.com/kean/Nuke.git",
         "state": {
           "branch": null,
-          "revision": "0db18dd34998cca18e9a28bcee136f84518007a0",
-          "version": "10.4.1"
+          "revision": "9881b20cfe6d895ee8c273aa4887487843a59397",
+          "version": "10.3.4"
         }
       },
       {
@@ -96,8 +141,8 @@
         "repositoryURL": "https://github.com/kean/NukeUI.git",
         "state": {
           "branch": null,
-          "revision": "0130ce2c1d140a426ced903a9abd68b4b8bf9790",
-          "version": "0.6.8"
+          "revision": "41a4d68121a0b1000202528e791209ae7432db52",
+          "version": "0.6.7"
         }
       },
       {
@@ -146,12 +191,30 @@
         }
       },
       {
+        "package": "ZendeskSDKConfigurationsSDK",
+        "repositoryURL": "https://github.com/zendesk/sdkconfigurations_sdk_ios",
+        "state": {
+          "branch": null,
+          "revision": "7649c83108cad094cf9cbb68f25f6e8270177099",
+          "version": "1.1.8"
+        }
+      },
+      {
         "package": "stellarsdk",
         "repositoryURL": "https://github.com/Soneso/stellar-ios-mac-sdk.git",
         "state": {
           "branch": null,
           "revision": "c2f7a48391555fcac70b55dd728051ba50b059dd",
           "version": "2.0.2"
+        }
+      },
+      {
+        "package": "swift-algorithms",
+        "repositoryURL": "https://github.com/apple/swift-algorithms.git",
+        "state": {
+          "branch": null,
+          "revision": "2327673b0e9c7e90e6b1826376526ec3627210e4",
+          "version": "0.2.1"
         }
       },
       {
@@ -191,6 +254,15 @@
         }
       },
       {
+        "package": "swift-numerics",
+        "repositoryURL": "https://github.com/apple/swift-numerics",
+        "state": {
+          "branch": null,
+          "revision": "6583ac70c326c3ee080c1d42d9ca3361dca816cd",
+          "version": "0.1.0"
+        }
+      },
+      {
         "package": "SnapshotTesting",
         "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing",
         "state": {
@@ -222,8 +294,8 @@
         "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
         "state": {
           "branch": null,
-          "revision": "50a70a9d3583fe228ce672e8923010c8df2deddd",
-          "version": "0.2.1"
+          "revision": "152390e9e78ebbf0d767ee52971d41e7f44f39bc",
+          "version": "0.1.1"
         }
       },
       {

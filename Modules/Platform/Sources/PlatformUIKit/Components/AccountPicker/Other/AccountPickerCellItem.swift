@@ -4,11 +4,11 @@ import PlatformKit
 import RxDataSources
 import ToolKit
 
-struct AccountPickerCellItem: IdentifiableType {
+public struct AccountPickerCellItem: IdentifiableType {
 
     // MARK: - Properties
 
-    enum Presenter {
+    public enum Presenter {
         case button(ButtonViewModel)
         case linkedBankAccount(LinkedBankAccountCellPresenter)
         case accountGroup(AccountGroupBalanceCellPresenter)
@@ -22,7 +22,7 @@ struct AccountPickerCellItem: IdentifiableType {
         case singleAccount(SingleAccount, AssetBalanceViewInteracting)
     }
 
-    var identity: AnyHashable {
+    public var identity: AnyHashable {
         if let identifier = account?.identifier {
             return identifier
         }
@@ -32,8 +32,8 @@ struct AccountPickerCellItem: IdentifiableType {
         unimplemented()
     }
 
-    let account: BlockchainAccount?
-    let presenter: Presenter
+    public let account: BlockchainAccount?
+    public let presenter: Presenter
 
     init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {

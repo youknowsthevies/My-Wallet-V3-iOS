@@ -13,7 +13,7 @@ final class AnalyticsUserPropertyInteractor {
     // MARK: - Properties
 
     private let coincore: CoincoreAPI
-    private let dataRepository: BlockchainDataRepository
+    private let nabuUserService: NabuUserServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let recorder: UserPropertyRecording
     private let tiersService: KYCTiersServiceAPI
@@ -24,14 +24,14 @@ final class AnalyticsUserPropertyInteractor {
 
     init(
         coincore: CoincoreAPI = resolve(),
-        dataRepository: BlockchainDataRepository = .shared,
+        nabuUserService: NabuUserServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         recorder: UserPropertyRecording = AnalyticsUserPropertyRecorder(),
         tiersService: KYCTiersServiceAPI = resolve(),
         walletRepository: WalletRepositoryAPI = resolve()
     ) {
         self.coincore = coincore
-        self.dataRepository = dataRepository
+        self.nabuUserService = nabuUserService
         self.fiatCurrencyService = fiatCurrencyService
         self.recorder = recorder
         self.tiersService = tiersService
@@ -42,12 +42,11 @@ final class AnalyticsUserPropertyInteractor {
         let balances: [Single<(asset: CryptoCurrency, moneyValue: MoneyValue?)>] = coincore.cryptoAssets
             .map { asset in
                 asset.accountGroup(filter: .all)
-                    .asObservable()
-                    .asSingle()
-                    .flatMap { accountGroup -> Single<MoneyValue> in
+                    .flatMap { accountGroup in
                         // We want to record the fiat balance analytics event always in USD.
                         accountGroup.fiatBalance(fiatCurrency: .USD)
                     }
+                    .asSingle()
                     .optional()
                     .catchErrorJustReturn(nil)
                     .map { (asset: asset.asset, moneyValue: $0) }
@@ -65,8 +64,8 @@ final class AnalyticsUserPropertyInteractor {
         disposeBag = DisposeBag()
         Single
             .zip(
-                dataRepository.nabuUserSingle,
-                tiersService.tiers,
+                nabuUserService.user.asSingle(),
+                tiersService.tiers.asSingle(),
                 walletRepository.authenticatorType,
                 walletRepository.guid,
                 fiatBalances()
@@ -127,7 +126,7 @@ final class AnalyticsUserPropertyInteractor {
             .filter(\.value.isPositive)
             .map(\.key.code)
 
-        let totalFiatBalance = try? balances.values.reduce(FiatValue.zero(currency: .USD).moneyValue, +)
+        let totalFiatBalance = try? balances.values.reduce(.zero(currency: .USD), +)
 
         recorder.record(
             StandardUserProperty(key: .fundedCoins, value: positives.joined(separator: ","))

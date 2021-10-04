@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NetworkKit
+import NabuNetworkError
 
 public protocol CardChargeClientAPI: AnyObject {
 

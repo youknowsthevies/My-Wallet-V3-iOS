@@ -4,35 +4,34 @@ import SwiftUI
 
 extension AccountPickerRow {
 
-    public struct SingleAccountModel: Equatable {
+    public struct SingleAccount: Equatable, Identifiable {
 
-        init(
-            title: String,
-            description: String,
-            pending: String,
-            fiatBalance: String,
-            cryptoBalance: String,
-            badgeImage: Image? = nil,
-            thumbSideImage: Image? = nil,
-            multiBadge: Image? = nil
-        ) {
-            self.title = title
-            self.description = description
-            self.pending = pending
-            self.fiatBalance = fiatBalance
-            self.cryptoBalance = cryptoBalance
-            self.badgeImage = badgeImage
-            self.thumbSideImage = thumbSideImage
-            self.multiBadge = multiBadge
-        }
+        // MARK: - Public properties
+
+        public var fiatBalance: String
+        public var cryptoBalance: String
+
+        public let id: AnyHashable
+
+        // MARK: - Internal properties
 
         var title: String
         var description: String
-        var pending: String
-        var fiatBalance: String
-        var cryptoBalance: String
-        var badgeImage: Image?
-        var thumbSideImage: Image?
-        var multiBadge: Image?
+
+        // MARK: - Init
+
+        public init(
+            id: AnyHashable,
+            title: String,
+            description: String,
+            fiatBalance: String,
+            cryptoBalance: String
+        ) {
+            self.id = id
+            self.title = title
+            self.description = description
+            self.fiatBalance = fiatBalance
+            self.cryptoBalance = cryptoBalance
+        }
     }
 }

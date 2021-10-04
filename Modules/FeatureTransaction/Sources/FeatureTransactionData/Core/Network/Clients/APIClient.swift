@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import FeatureTransactionDomain
+import NabuNetworkError
 import NetworkKit
 import PlatformKit
 import ToolKit
@@ -33,6 +34,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         static let payment = "payment"
         static let simpleBuy = "SIMPLEBUY"
         static let swap = "SWAP"
+        static let sell = "SELL"
         static let `default` = "DEFAULT"
     }
 
@@ -113,12 +115,47 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         destinationAddress: String?,
         refundAddress: String?
     ) -> AnyPublisher<SwapActivityItemEvent, NabuNetworkError> {
+        create(
+            direction: direction,
+            quoteIdentifier: quoteIdentifier,
+            volume: volume,
+            destinationAddress: destinationAddress,
+            refundAddress: refundAddress,
+            ccy: nil
+        )
+    }
+
+    func create(
+        direction: OrderDirection,
+        quoteIdentifier: String,
+        volume: MoneyValue,
+        ccy: String?
+    ) -> AnyPublisher<SwapActivityItemEvent, NabuNetworkError> {
+        create(
+            direction: direction,
+            quoteIdentifier: quoteIdentifier,
+            volume: volume,
+            destinationAddress: nil,
+            refundAddress: nil,
+            ccy: ccy
+        )
+    }
+
+    private func create(
+        direction: OrderDirection,
+        quoteIdentifier: String,
+        volume: MoneyValue,
+        destinationAddress: String?,
+        refundAddress: String?,
+        ccy: String?
+    ) -> AnyPublisher<SwapActivityItemEvent, NabuNetworkError> {
         let body = OrderCreationRequest(
             direction: direction,
             quoteId: quoteIdentifier,
             volume: volume,
             destinationAddress: destinationAddress,
-            refundAddress: refundAddress
+            refundAddress: refundAddress,
+            ccy: ccy
         )
         let request = retailRequestBuilder.post(
             path: Path.createOrder,
@@ -208,7 +245,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
     ) -> AnyPublisher<BankTranferPaymentResponse, NabuNetworkError> {
         let model = BankTransferPaymentRequest(
             amountMinor: amount.minorString,
-            currency: amount.currencyCode,
+            currency: amount.code,
             attributes: nil
         )
         let request = retailRequestBuilder.post(
@@ -223,7 +260,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
         let body = WithdrawRequestBody(
             beneficiary: id,
-            currency: amount.currencyCode,
+            currency: amount.code,
             amount: amount.minorString
         )
         let request = retailRequestBuilder.post(
@@ -343,6 +380,13 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         case .swap(let orderDirection):
             parameters.append(
                 URLQueryItem(name: Parameter.product, value: Parameter.swap)
+            )
+            parameters.append(
+                URLQueryItem(name: Parameter.orderDirection, value: orderDirection.rawValue)
+            )
+        case .sell(let orderDirection):
+            parameters.append(
+                URLQueryItem(name: Parameter.product, value: Parameter.sell)
             )
             parameters.append(
                 URLQueryItem(name: Parameter.orderDirection, value: orderDirection.rawValue)

@@ -54,10 +54,6 @@ class SideMenuPresenter {
             .map { [wallet] interestWithdrawDepositIsEnabled -> [SideMenuItem] in
                 var items: [SideMenuItem] = []
 
-                if wallet.isLockboxEnabled() {
-                    items.append(.lockbox)
-                }
-
                 if interestWithdrawDepositIsEnabled {
                     items.append(.interest)
                 }

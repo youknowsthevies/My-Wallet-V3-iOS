@@ -86,7 +86,7 @@ final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentabl
                     router?.route(to: .confirmation(amount: amount))
                 case .failure(let error):
                     analyticsRecorder.record(event: AnalyticsEvent.withdrawFailure(currencyCode: self.checkoutData.currency.code))
-                    router?.route(to: .failure(self.checkoutData.currency.currency, error))
+                    router?.route(to: .failure(self.checkoutData.currency.currencyType, error))
                 }
             })
             .disposeOnDeactivate(interactor: self)

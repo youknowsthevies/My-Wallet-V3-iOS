@@ -48,6 +48,8 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     }
 
     public let multiBadgeViewModel = MultiBadgeViewModel()
+
+    public let viewAccessibilitySuffix: String
     public let titleAccessibilitySuffix: String
     public let descriptionAccessibilitySuffix: String
     public let pendingAccessibilitySuffix: String
@@ -80,7 +82,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     private let badgeRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
     private let separatorVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let iconImageViewContentRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
-    private let pendingLabelVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    public let pendingLabelVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let titleRelay = BehaviorRelay<String>(value: "")
     private let descriptionRelay = BehaviorRelay<String>(value: "")
     private let interactor: CurrentBalanceCellInteracting
@@ -93,11 +95,13 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         descriptionValue: @escaping DescriptionValue,
         currency: CurrencyType,
         separatorVisibility: Visibility = .hidden,
+        viewAccessibilitySuffix: String,
         titleAccessibilitySuffix: String,
         descriptionAccessibilitySuffix: String,
         pendingAccessibilitySuffix: String,
         descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors
     ) {
+        self.viewAccessibilitySuffix = viewAccessibilitySuffix
         self.titleAccessibilitySuffix = titleAccessibilitySuffix
         self.descriptionAccessibilitySuffix = descriptionAccessibilitySuffix
         self.pendingAccessibilitySuffix = pendingAccessibilitySuffix

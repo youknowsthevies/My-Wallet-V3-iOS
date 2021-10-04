@@ -48,17 +48,17 @@ public enum AssetBalanceViewModel {
             // MARK: - Properties
 
             /// The balance in fiat
-            let fiatBalance: LabelContent
+            public let fiatBalance: LabelContent
 
             /// The balance in crypto
-            let cryptoBalance: LabelContent
+            public let cryptoBalance: LabelContent
 
             /// The visibility state of the `Pending` balance
             let pendingBalanceVisibility: Visibility
 
             /// The pending balance in crypto. This value is `.none`
             /// should the user's pending balance be `.zero`
-            let pendingBalance: LabelContent
+            public let pendingBalance: LabelContent
 
             /// Descriptors that allows customized content and style
             public struct Descriptors {
@@ -106,7 +106,7 @@ public enum AssetBalanceViewModel {
                     font: descriptors.fiatFont,
                     color: descriptors.fiatTextColor,
                     alignment: textAlignment,
-                    accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
+                    accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.code)
                 )
 
                 if value.cryptoValue == value.fiatValue {
@@ -117,7 +117,7 @@ public enum AssetBalanceViewModel {
                         font: descriptors.cryptoFont,
                         color: descriptors.cryptoTextColor,
                         alignment: textAlignment,
-                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
+                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.code)
                     )
                 }
                 pendingBalanceVisibility = value.pendingValue.isZero ? .hidden : .visible
@@ -126,7 +126,7 @@ public enum AssetBalanceViewModel {
                     font: descriptors.cryptoFont,
                     color: descriptors.pendingTextColor,
                     alignment: textAlignment,
-                    accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
+                    accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.code)
                 )
             }
         }

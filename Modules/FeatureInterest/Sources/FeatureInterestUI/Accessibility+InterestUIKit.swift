@@ -15,6 +15,7 @@ extension Accessibility.Identifier {
 
             enum InterestDetails {
                 private static let prefix = "InterestAccoundDetailsScreen."
+                static let view = "\(prefix)view"
                 static let balanceCellTitle = "\(prefix)balanceCellTitle"
                 static let balanceCellDescription = "\(prefix)balanceCellDescription"
                 static let balanceCellFiatAmount = "\(prefix)balanceCellFiatAmount"

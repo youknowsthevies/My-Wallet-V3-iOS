@@ -10,19 +10,15 @@ public enum BitcoinValueError: Error {
 
 public struct BitcoinValue: CryptoMoney {
 
-    public let currency: CurrencyType = .crypto(.coin(.bitcoin))
+    public let currencyType: CurrencyType = .crypto(.coin(.bitcoin))
 
-    public let currencyType: CryptoCurrency = .coin(.bitcoin)
+    public let currency: CryptoCurrency = .coin(.bitcoin)
 
     public var amount: BigInt {
         crypto.amount
     }
 
     public static let zero = BitcoinValue(satoshis: 0)
-
-    public var value: CryptoValue {
-        crypto.value
-    }
 
     private let crypto: CryptoMoney
 
@@ -33,8 +29,8 @@ public struct BitcoinValue: CryptoMoney {
         self.crypto = crypto
     }
 
-    public init(satoshis: BigInt) {
-        crypto = CryptoValue(amount: satoshis, currency: .coin(.bitcoin))
+    public init(satoshis: Decimal) {
+        crypto = CryptoValue.create(minor: satoshis, currency: .coin(.bitcoin))
     }
 }
 

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import Localization
 import RxSwift
@@ -76,7 +77,7 @@ final class FiatCustodialAccount: FiatAccount {
 
     private let activityFetcher: OrdersActivityServiceAPI
     private let balanceService: TradingBalanceServiceAPI
-    private let exchange: PairExchangeServiceAPI
+    private let priceService: PriceServiceAPI
     private let paymentMethodService: PaymentMethodTypesServiceAPI
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: currencyType)
@@ -86,7 +87,7 @@ final class FiatCustodialAccount: FiatAccount {
         fiatCurrency: FiatCurrency,
         activityFetcher: OrdersActivityServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
-        exchangeProviding: ExchangeProviding = resolve(),
+        priceService: PriceServiceAPI = resolve(),
         paymentMethodService: PaymentMethodTypesServiceAPI = resolve()
     ) {
         label = fiatCurrency.defaultWalletName
@@ -94,7 +95,7 @@ final class FiatCustodialAccount: FiatAccount {
         self.activityFetcher = activityFetcher
         self.paymentMethodService = paymentMethodService
         self.balanceService = balanceService
-        exchange = exchangeProviding[fiatCurrency]
+        self.priceService = priceService
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -123,24 +124,14 @@ final class FiatCustodialAccount: FiatAccount {
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        guard self.fiatCurrency != fiatCurrency else {
-            return balance
-                .map { balance in
-                    MoneyValuePair(base: balance, quote: balance)
-                }
-        }
-        return Single
-            .zip(
-                exchange.fiatPrice.take(1).asSingle(),
-                balance
-            )
-            .map { exchangeRate, balance -> MoneyValuePair in
-                try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: self.fiatCurrency, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
-    }
-
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
-        balancePair(fiatCurrency: fiatCurrency)
+            .eraseToAnyPublisher()
     }
 }

@@ -120,13 +120,7 @@ struct AirdropCampaigns {
                 guard let cryptoCurrency = cryptoCurrency.cryptoCurrency else {
                     return nil
                 }
-                guard let amount = BigInt("\(withdrawalQuantity)") else {
-                    return nil
-                }
-                return CryptoValue.create(
-                    minor: amount,
-                    currency: cryptoCurrency
-                )
+                return CryptoValue.create(minor: withdrawalQuantity, currency: cryptoCurrency)
             }
 
             init(from decoder: Decoder) throws {

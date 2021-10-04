@@ -25,8 +25,13 @@ public final class PinClient: PinClientAPI {
     public func create(
         pinPayload: PinPayload
     ) -> AnyPublisher<PinStoreResponse, PinStoreResponse> {
-        let requestPayload = StoreRequestData(payload: pinPayload, requestType: .create)
-        let data = ParameterEncoder(requestPayload.dictionary).encoded
+        let requestPayload = StoreRequestData(
+            payload: pinPayload,
+            requestType: .create
+        )
+        let parameters = requestPayload.dictionary
+            .map(URLQueryItem.init)
+        let data = RequestBuilder.body(from: parameters)
         let request = NetworkRequest(
             endpoint: apiURL,
             method: .post,
@@ -43,8 +48,13 @@ public final class PinClient: PinClientAPI {
     public func validate(
         pinPayload: PinPayload
     ) -> AnyPublisher<PinStoreResponse, PinStoreResponse> {
-        let requestPayload = StoreRequestData(payload: pinPayload, requestType: .validate)
-        let data = ParameterEncoder(requestPayload.dictionary).encoded
+        let requestPayload = StoreRequestData(
+            payload: pinPayload,
+            requestType: .validate
+        )
+        let parameters = requestPayload.dictionary
+            .map(URLQueryItem.init)
+        let data = RequestBuilder.body(from: parameters)
         let request = NetworkRequest(
             endpoint: apiURL,
             method: .post,
@@ -59,7 +69,7 @@ public final class PinClient: PinClientAPI {
 
 extension PinClient {
 
-    struct StoreRequestData: Encodable {
+    struct StoreRequestData {
 
         // MARK: - Types
 
@@ -87,12 +97,23 @@ extension PinClient {
 
         // MARK: - Properties
 
+        var dictionary: [String: String?] {
+            [
+                CodingKeys.format.rawValue: format,
+                CodingKeys.apiCode.rawValue: apiCode,
+                CodingKeys.pin.rawValue: pin,
+                CodingKeys.key.rawValue: key,
+                CodingKeys.value.rawValue: value,
+                CodingKeys.requestType.rawValue: requestType
+            ]
+        }
+
         let format = "json"
         let apiCode = BlockchainAPI.Parameters.apiCode
         let pin: String
         let key: String
         let value: String?
-        let requestType: RequestType
+        let requestType: String
 
         // MARK: - Setup
 
@@ -100,17 +121,7 @@ extension PinClient {
             pin = payload.pinCode
             key = payload.pinKey
             value = payload.pinValue
-            self.requestType = requestType
-        }
-
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(format, forKey: .format)
-            try container.encode(apiCode, forKey: .apiCode)
-            try container.encode(pin, forKey: .pin)
-            try container.encode(key, forKey: .key)
-            try container.encode(value, forKey: .value)
-            try container.encode(requestType, forKey: .requestType)
+            self.requestType = requestType.rawValue
         }
     }
 }

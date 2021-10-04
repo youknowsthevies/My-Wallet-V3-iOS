@@ -2,6 +2,7 @@
 
 import Combine
 import CombineExt
+import NetworkError
 @testable import NetworkKit
 @testable import PlatformKit
 import ToolKit

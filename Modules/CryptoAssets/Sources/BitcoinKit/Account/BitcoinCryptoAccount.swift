@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinChainKit
+import Combine
 import DIKit
 import Localization
 import PlatformKit
@@ -29,6 +30,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     var balance: Single<MoneyValue> {
         balanceService
             .balances(for: walletAccount.publicKeys.xpubs)
+            .asSingle()
             .moneyValue
     }
 
@@ -85,7 +87,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     private let balanceService: BalanceServiceAPI
     private let bridge: BitcoinWalletBridgeAPI
     private let hdAccountIndex: Int
-    private let fiatPriceService: FiatPriceServiceAPI
+    private let priceService: PriceServiceAPI
     private let walletAccount: BitcoinWalletAccount
     private let transactionsService: BitcoinHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
@@ -96,7 +98,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainKit.BitcoinChainCoin.bitcoin),
         transactionsService: BitcoinHistoricalTransactionServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
-        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
         bridge: BitcoinWalletBridgeAPI = resolve()
     ) {
         xPub = walletAccount.publicKeys.default
@@ -104,7 +106,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
         label = walletAccount.label ?? CryptoCurrency.coin(.bitcoin).defaultWalletName
         self.isDefault = isDefault
         self.balanceService = balanceService
-        self.fiatPriceService = fiatPriceService
+        self.priceService = priceService
         self.transactionsService = transactionsService
         self.swapTransactionsService = swapTransactionsService
         self.bridge = bridge
@@ -127,26 +129,15 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: asset, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
-    }
-
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
-            }
+            .eraseToAnyPublisher()
     }
 
     func updateLabel(_ newLabel: String) -> Completable {

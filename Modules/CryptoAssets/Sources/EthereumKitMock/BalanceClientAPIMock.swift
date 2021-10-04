@@ -1,13 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 @testable import EthereumKit
+import NetworkError
 import PlatformKit
-import RxSwift
 
 class BalanceClientAPIMock: BalanceClientAPI {
-    var balanceDetailsValue: Single<BalanceDetailsResponse> = .error(EthereumAPIClientMockError.mockError)
 
-    func balanceDetails(from address: String) -> Single<BalanceDetailsResponse> {
+    var balanceDetailsValue: AnyPublisher<BalanceDetailsResponse, ClientError> =
+        .failure(.networkError(.authentication(EthereumAPIClientMockError.mockError)))
+
+    func balanceDetails(
+        from address: String
+    ) -> AnyPublisher<BalanceDetailsResponse, ClientError> {
         balanceDetailsValue
     }
 }

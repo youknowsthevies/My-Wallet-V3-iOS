@@ -7,7 +7,13 @@ import stellarsdk
 
 extension AccountResponse {
     var totalBalance: CryptoValue {
-        let value = balances.reduce(Decimal(0)) { $0 + (Decimal(string: $1.balance) ?? 0) }
+        let value = balances
+            .lazy
+            .filter { $0.whichAssetType == .native }
+            .map(\.balance)
+            .compactMap { Decimal(string: $0) }
+            .reduce(0, +)
+
         return CryptoValue.create(major: value, currency: .coin(.stellar))
     }
 
@@ -28,5 +34,18 @@ extension AccountResponse {
             balance: totalBalance,
             actionableBalance: actionableBalance
         )
+    }
+}
+
+extension AccountBalanceResponse {
+
+    fileprivate enum WhichAssetType: String, Codable {
+        case native
+        case credit_alphanum4
+        case credit_alphanum12
+    }
+
+    fileprivate var whichAssetType: WhichAssetType? {
+        WhichAssetType(rawValue: assetType)
     }
 }

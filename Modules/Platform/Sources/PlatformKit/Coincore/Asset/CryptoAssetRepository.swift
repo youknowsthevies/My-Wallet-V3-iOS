@@ -39,9 +39,8 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
     // MARK: - Properties
 
     public var nonCustodialGroup: AnyPublisher<AccountGroup, Never> {
-        let asset = self.asset
-        return defaultAccountProvider()
-            .map { account -> AccountGroup in
+        defaultAccountProvider()
+            .map { [asset] account -> AccountGroup in
                 CryptoAccountNonCustodialGroup(asset: asset, accounts: [account])
             }
             .recordErrors(on: errorRecorder)
@@ -73,10 +72,13 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
     }
 
     public var exchangeGroup: AnyPublisher<AccountGroup, Never> {
-        guard asset.assetModel.products.contains(.mercuryDeposits) else {
+        guard asset.supports(product: .mercuryDeposits) else {
             return .just(CryptoAccountCustodialGroup(asset: asset))
         }
-        return exchangeAccount()
+        return exchangeAccountsProvider.account(for: asset)
+            .optional()
+            .replaceError(with: nil)
+            .eraseToAnyPublisher()
             .map { [asset] account -> CryptoAccountCustodialGroup in
                 guard let account = account else {
                     return CryptoAccountCustodialGroup(asset: asset)
@@ -87,7 +89,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
     }
 
     public var interestGroup: AnyPublisher<AccountGroup, Never> {
-        guard asset.assetModel.products.contains(.interestBalance) else {
+        guard asset.supports(product: .interestBalance) else {
             return .just(CryptoAccountCustodialGroup(asset: asset))
         }
         return .just(
@@ -99,7 +101,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
     }
 
     public var custodialGroup: AnyPublisher<AccountGroup, Never> {
-        guard asset.assetModel.products.contains(.custodialWalletBalance) else {
+        guard asset.supports(product: .custodialWalletBalance) else {
             return .just(CryptoAccountCustodialGroup(asset: asset))
         }
         return .just(
@@ -111,31 +113,6 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
     }
 
     // MARK: - Private properties
-
-    private lazy var exchangeAccount = { [asset, exchangeAccountsProvider] in
-        exchangeAccountsProvider.account(for: asset)
-            .asObservable()
-            .asPublisher()
-            .optional()
-            .catch { error -> AnyPublisher<CryptoExchangeAccount?, Never> in
-                // TODO: This shouldn't prevent users from seeing all accounts.
-                // Potentially return nil should this fail.
-                guard let serviceError = error as? ExchangeAccountsNetworkError else {
-                    //                        #if INTERNAL_BUILD
-                    //                        Logger.shared.error(error)
-                    //                        throw error
-                    //                        #else
-                    //                        return .just(nil)
-                    //                        #endif
-                    return .just(nil)
-                }
-                switch serviceError {
-                case .missingAccount:
-                    return .just(nil)
-                }
-            }
-            .eraseToAnyPublisher()
-    }
 
     private let asset: CryptoCurrency
     private let errorRecorder: ErrorRecording

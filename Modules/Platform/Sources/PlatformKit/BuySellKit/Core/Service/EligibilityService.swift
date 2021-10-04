@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import CombineExt
 import DIKit
 import RxRelay
 import RxSwift
@@ -9,8 +11,16 @@ final class EligibilityService: EligibilityServiceAPI {
 
     // MARK: - Properties
 
+    var isEligiblePublisher: AnyPublisher<Bool, Never> {
+        isEligible
+            .asPublisher()
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
     var isEligible: Single<Bool> {
-        isEligibileValue.valueSingle
+        isEligibileValue
+            .valueSingle
     }
 
     private let isEligibileValue: CachedValue<Bool>

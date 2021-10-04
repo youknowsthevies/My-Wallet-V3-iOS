@@ -32,7 +32,7 @@ struct TransactionLimitsResponse: Decodable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         currency = try values.decode(FiatCurrency.self, forKey: .currency)
-        let zero = FiatValue.zero(currency: currency)
+        let zero: FiatValue = .zero(currency: currency)
 
         minOrder = FiatValue.create(
             minor: try values.decode(String.self, forKey: .minOrder),

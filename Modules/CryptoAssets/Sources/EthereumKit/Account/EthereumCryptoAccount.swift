@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RxSwift
@@ -71,7 +72,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     private let publicKey: String
     private let hdAccountIndex: Int
     private let accountDetailsService: EthereumAccountDetailsServiceAPI
-    private let fiatPriceService: FiatPriceServiceAPI
+    private let priceService: PriceServiceAPI
     private let bridge: EthereumWalletBridgeAPI
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
@@ -84,14 +85,14 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         bridge: EthereumWalletBridgeAPI = resolve(),
         accountDetailsService: EthereumAccountDetailsServiceAPI = resolve(),
-        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve()
     ) {
         let asset = CryptoCurrency.coin(.ethereum)
         self.asset = asset
         self.publicKey = publicKey
         self.hdAccountIndex = hdAccountIndex
-        self.fiatPriceService = fiatPriceService
+        self.priceService = priceService
         self.transactionsService = transactionsService
         self.swapTransactionsService = swapTransactionsService
         self.accountDetailsService = accountDetailsService
@@ -115,26 +116,15 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: asset, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
-    }
-
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
-            }
+            .eraseToAnyPublisher()
     }
 
     func updateLabel(_ newLabel: String) -> Completable {

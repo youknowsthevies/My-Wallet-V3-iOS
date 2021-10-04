@@ -21,23 +21,7 @@ final class ERC20Asset: CryptoAsset {
     // MARK: - Private properties
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        walletAccountBridge.wallets
-            .asPublisher()
-            .map(\.first)
-            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
-            .flatMap { wallet -> AnyPublisher<EthereumWalletAccount, CryptoAssetError> in
-                guard let wallet = wallet else {
-                    return .failure(.noDefaultAccount)
-                }
-                return .just(wallet)
-            }
-            .map { [erc20Token] wallet -> SingleAccount in
-                ERC20CryptoAccount(
-                    publicKey: wallet.publicKey,
-                    erc20Token: erc20Token
-                )
-            }
-            .eraseToAnyPublisher()
+        walletAccountBridge.defaultAccount(erc20Token: erc20Token)
     }
 
     // MARK: - Private properties
@@ -47,8 +31,8 @@ final class ERC20Asset: CryptoAsset {
             asset: asset,
             errorRecorder: errorRecorder,
             kycTiersService: kycTiersService,
-            defaultAccountProvider: { [defaultAccount] in
-                defaultAccount
+            defaultAccountProvider: { [walletAccountBridge, erc20Token] in
+                walletAccountBridge.defaultAccount(erc20Token: erc20Token)
             },
             exchangeAccountsProvider: exchangeAccountProvider,
             addressFactory: addressFactory
@@ -59,14 +43,14 @@ final class ERC20Asset: CryptoAsset {
     private let erc20Token: ERC20AssetModel
     private let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
-    private let walletAccountBridge: EthereumWalletAccountBridgeAPI
+    private let walletAccountBridge: EthereumWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
 
     // MARK: - Setup
 
     init(
         erc20Token: ERC20AssetModel,
-        walletAccountBridge: EthereumWalletAccountBridgeAPI = resolve(),
+        walletAccountBridge: EthereumWalletAccountRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
@@ -93,5 +77,20 @@ final class ERC20Asset: CryptoAsset {
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
         cryptoAssetRepository.parse(address: address)
+    }
+}
+
+extension EthereumWalletAccountRepositoryAPI {
+
+    fileprivate func defaultAccount(erc20Token: ERC20AssetModel) -> AnyPublisher<SingleAccount, CryptoAssetError> {
+        defaultAccount
+            .mapError(CryptoAssetError.failedToLoadDefaultAccount)
+            .map { account in
+                ERC20CryptoAccount(
+                    publicKey: account.publicKey,
+                    erc20Token: erc20Token
+                )
+            }
+            .eraseToAnyPublisher()
     }
 }

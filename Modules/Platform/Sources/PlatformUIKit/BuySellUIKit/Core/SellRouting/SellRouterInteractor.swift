@@ -189,7 +189,7 @@ public final class SellRouterInteractor: Interactor {
         let eligibility: Single<Bool> = eligibilityService.fetch()
 
         Single.zip(
-            kycTiersService.fetchTiers(),
+            kycTiersService.fetchTiers().asSingle(),
             eligibility
         )
         .map { (tiers: $0.0, eligible: $0.1) }
@@ -250,6 +250,7 @@ public final class SellRouterInteractor: Interactor {
 
     public func nextFromKYC() {
         kycTiersService.fetchTiers()
+            .asSingle()
             .handleLoaderForLifecycle(
                 loader: loader,
                 style: .circle

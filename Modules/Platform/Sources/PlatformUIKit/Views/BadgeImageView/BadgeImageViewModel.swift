@@ -10,14 +10,23 @@ public struct BadgeImageViewModel {
 
     public struct Theme {
         public let backgroundColor: UIColor
+        public let cornerRadius: CornerRadius
         public let imageViewContent: ImageViewContent
+        public let marginOffset: CGFloat
+        public let sizingType: SizingType
 
         public init(
-            backgroundColor: UIColor,
-            imageViewContent: ImageViewContent
+            backgroundColor: UIColor = .clear,
+            cornerRadius: CornerRadius = .roundedLow,
+            imageViewContent: ImageViewContent = .empty,
+            marginOffset: CGFloat = 4,
+            sizingType: SizingType = .configuredByOwner
         ) {
             self.backgroundColor = backgroundColor
+            self.cornerRadius = cornerRadius
             self.imageViewContent = imageViewContent
+            self.marginOffset = marginOffset
+            self.sizingType = sizingType
         }
     }
 
@@ -40,7 +49,7 @@ public struct BadgeImageViewModel {
     // MARK: - Properties
 
     /// Corner radius
-    public let cornerRadiusRelay = BehaviorRelay<CornerRadius>(value: .roundedHigh)
+    public let cornerRadiusRelay: BehaviorRelay<CornerRadius>
 
     /// Image to be displayed on the badge
     public var cornerRadius: Driver<CornerRadius> {
@@ -48,25 +57,25 @@ public struct BadgeImageViewModel {
     }
 
     /// The background color relay
-    public let backgroundColorRelay = BehaviorRelay<UIColor>(value: .clear)
+    public let backgroundColorRelay: BehaviorRelay<UIColor>
 
     /// The background color of the badge
     public var backgroundColor: Driver<UIColor> {
         backgroundColorRelay.asDriver()
     }
 
-    public let marginOffsetRelay = BehaviorRelay<CGFloat>(value: 4)
+    public let marginOffsetRelay: BehaviorRelay<CGFloat>
     public var marginOffset: Driver<CGFloat> {
         marginOffsetRelay.asDriver()
     }
 
-    public let sizingTypeRelay = BehaviorRelay<SizingType>(value: .configuredByOwner)
+    public let sizingTypeRelay: BehaviorRelay<SizingType>
     public var sizingType: Driver<SizingType> {
         sizingTypeRelay.asDriver()
     }
 
     /// The image name relay
-    public let imageContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
+    public let imageContentRelay: BehaviorRelay<ImageViewContent>
 
     /// Image to be displayed on the badge
     public var imageContent: Driver<ImageViewContent> {
@@ -74,13 +83,20 @@ public struct BadgeImageViewModel {
     }
 
     /// - parameter cornerRadius: corner radius of the component
-    public init(cornerRadius: CornerRadius = .roundedLow) {
-        cornerRadiusRelay.accept(cornerRadius)
+    public init(theme: Theme = Theme()) {
+        backgroundColorRelay = .init(value: theme.backgroundColor)
+        cornerRadiusRelay = .init(value: theme.cornerRadius)
+        imageContentRelay = .init(value: theme.imageViewContent)
+        marginOffsetRelay = .init(value: theme.marginOffset)
+        sizingTypeRelay = .init(value: theme.sizingType)
     }
 
     func set(theme: Theme) {
         backgroundColorRelay.accept(theme.backgroundColor)
+        cornerRadiusRelay.accept(theme.cornerRadius)
         imageContentRelay.accept(theme.imageViewContent)
+        marginOffsetRelay.accept(theme.marginOffset)
+        sizingTypeRelay.accept(theme.sizingType)
     }
 }
 
@@ -104,18 +120,16 @@ extension BadgeImageViewModel {
         cornerRadius: CornerRadius = .roundedHigh,
         accessibilityIdSuffix: String
     ) -> BadgeImageViewModel {
-        let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
-        viewModel.set(
-            theme: Theme(
-                backgroundColor: backgroundColor,
-                imageViewContent: ImageViewContent(
-                    imageResource: image,
-                    accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
-                    renderingMode: .normal
-                )
+        let theme = Theme(
+            backgroundColor: backgroundColor,
+            cornerRadius: cornerRadius,
+            imageViewContent: ImageViewContent(
+                imageResource: image,
+                accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
+                renderingMode: .normal
             )
         )
-        return viewModel
+        return BadgeImageViewModel(theme: theme)
     }
 
     public static func template(
@@ -125,18 +139,16 @@ extension BadgeImageViewModel {
         cornerRadius: CornerRadius,
         accessibilityIdSuffix: String
     ) -> BadgeImageViewModel {
-        let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
-        viewModel.set(
-            theme: Theme(
-                backgroundColor: backgroundColor,
-                imageViewContent: ImageViewContent(
-                    imageResource: image,
-                    accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
-                    renderingMode: .template(templateColor)
-                )
+        let theme = Theme(
+            backgroundColor: backgroundColor,
+            cornerRadius: cornerRadius,
+            imageViewContent: ImageViewContent(
+                imageResource: image,
+                accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
+                renderingMode: .template(templateColor)
             )
         )
-        return viewModel
+        return BadgeImageViewModel(theme: theme)
     }
 
     /// Returns a primary badge with an image.
@@ -150,18 +162,16 @@ extension BadgeImageViewModel {
         cornerRadius: CornerRadius = .roundedHigh,
         accessibilityIdSuffix: String
     ) -> BadgeImageViewModel {
-        let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
-        viewModel.set(
-            theme: Theme(
-                backgroundColor: backgroundColor,
-                imageViewContent: ImageViewContent(
-                    imageResource: image,
-                    accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
-                    renderingMode: .template(contentColor)
-                )
+        let theme = Theme(
+            backgroundColor: backgroundColor,
+            cornerRadius: cornerRadius,
+            imageViewContent: ImageViewContent(
+                imageResource: image,
+                accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
+                renderingMode: .template(contentColor)
             )
         )
-        return viewModel
+        return BadgeImageViewModel(theme: theme)
     }
 }
 

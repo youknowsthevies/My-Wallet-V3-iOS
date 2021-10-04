@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct PersonalDetails: Decodable {
+public struct PersonalDetails: Decodable, Equatable {
     public let identifier: String?
     public let firstName: String?
     public let lastName: String?

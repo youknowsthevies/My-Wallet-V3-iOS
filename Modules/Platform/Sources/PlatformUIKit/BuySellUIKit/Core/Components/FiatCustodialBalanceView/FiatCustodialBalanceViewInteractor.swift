@@ -11,7 +11,7 @@ public final class FiatCustodialBalanceViewInteractor {
     let currencyType: CurrencyType
 
     public var fiatCurrency: Observable<FiatCurrency> {
-        guard case CurrencyType.fiat(let currency) = currencyType else {
+        guard case .fiat(let currency) = currencyType else {
             fatalError("The base currency of `FiatCustodialBalanceViewInteractor` must be a fiat currency type")
         }
         return .just(currency)

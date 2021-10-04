@@ -75,7 +75,7 @@ public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTran
     public let transactionHash: String
     public let createdAt: Date
     public let fee: CryptoValue?
-    public let memo: String?
+    public let note: String?
     public let inputs: [Input]
     public let outputs: [Output]
     public let blockHeight: Int?
@@ -130,7 +130,7 @@ public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTran
         toAddress = BitcoinAssetAddress(publicKey: destinationOutput.address)
         fromAddress = BitcoinAssetAddress(publicKey: fromOutput.address)
 
-        memo = nil
+        note = nil
     }
 
     public func apply(latestBlockHeight: Int) {

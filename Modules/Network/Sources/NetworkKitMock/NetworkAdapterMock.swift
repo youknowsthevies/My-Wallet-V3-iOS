@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import NetworkError
 @testable import NetworkKit
 import TestKit
 import ToolKit

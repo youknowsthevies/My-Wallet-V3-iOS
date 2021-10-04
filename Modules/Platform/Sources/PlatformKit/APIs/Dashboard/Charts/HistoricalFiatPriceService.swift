@@ -5,108 +5,98 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-/// This protocol defines a `Single<FiatValue>`. It's the
-/// latest Fiat price for a given asset type and is to be used
-/// with the `HistoricalPricesAPI`. Basically it's the last item
-/// in the array of prices returned.
-public protocol LatestFiatPriceFetching: AnyObject {
-    var latestPrice: Observable<FiatValue> { get }
-}
+public protocol HistoricalFiatPriceServiceAPI {
 
-public protocol HistoricalFiatPriceServiceAPI: LatestFiatPriceFetching {
-
-    /// The calculationState of the service. Returns a `ValueCalculationState` that
-    /// contains `HistoricalPriceSeries` and a `FiatValue` each derived from `LatestFiatPriceFetching`
-    /// and `HistoricalFiatPriceFetching`.
+    /// An observable that streams the calculation state of the service.
     var calculationState: Observable<ValueCalculationState<HistoricalFiatPriceResponse>> { get }
-    /// A trigger that force the service to fetch the updated price.
-    /// Handy to call on currency type and value changes
+
+    /// A trigger that forces the service to fetch the updated price. Handy to call on currency type and value changes.
     var fetchTriggerRelay: PublishRelay<PriceWindow> { get }
 }
 
 public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
 
-    // MARK: Types
+    // MARK: - Public Types
 
     public typealias CalculationState = ValueCalculationState<HistoricalFiatPriceResponse>
 
     // MARK: - HistoricalFiatPriceServiceAPI
-
-    public let fetchTriggerRelay = PublishRelay<PriceWindow>()
 
     public var calculationState: Observable<CalculationState> {
         _ = setup
         return calculationStateRelay.asObservable()
     }
 
-    // MARK: - LatestFiatPriceFetching
-
-    public var latestPrice: Observable<FiatValue> {
-        exchangeAPI.fiatPrice
-    }
+    public let fetchTriggerRelay = PublishRelay<PriceWindow>()
 
     // MARK: - Private Properties
 
-    private let calculationStateRelay = BehaviorRelay<CalculationState>(value: .calculating)
-    private let bag = DisposeBag()
-
-    // MARK: - Services
-
-    /// The historical price service
-    private let priceService: PriceServiceAPI
-
-    /// The exchange service
-    private let exchangeAPI: PairExchangeServiceAPI
-
-    /// The currency service
-    private let fiatCurrencyService: FiatCurrencyServiceAPI
-
-    /// The associated asset
+    /// The associated crypto currency.
     private let cryptoCurrency: CryptoCurrency
 
-    private lazy var setup: Void = {
-        let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
+    private let pairExchangeService: PairExchangeServiceAPI
 
-        let historicalPrices = Observable
-            .combineLatest(fiatCurrencyService.fiatCurrencyObservable, fetchTriggerRelay)
+    private let priceService: PriceServiceAPI
+
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+
+    private let scheduler: SchedulerType
+
+    private let calculationStateRelay = BehaviorRelay<CalculationState>(value: .calculating)
+
+    private let disposeBag = DisposeBag()
+
+    private lazy var setup: Void = {
+        let historicalPricesInWindow = Observable
+            .combineLatest(
+                fiatCurrencyService.fiatCurrencyObservable,
+                fetchTriggerRelay.startWith(.day(.oneHour))
+            )
             .throttle(.milliseconds(100), scheduler: scheduler)
-            .map { ($0.0, $0.1) }
-            .flatMapLatest(weak: self) { (self, tuple) -> Observable<(HistoricalPriceSeries, String, PriceWindow)> in
-                let fiatCurrency = tuple.0
-                let window = tuple.1
-                let prices = self.priceService.priceSeries(
-                    of: self.cryptoCurrency,
-                    in: fiatCurrency,
-                    within: window
-                )
-                .asObservable()
-                return Observable.zip(prices, Observable.just(fiatCurrency.code), Observable.just(window))
+            .flatMapLatest { [priceService, cryptoCurrency] fiatCurrency, window
+                -> Observable<(HistoricalPriceSeries, PriceWindow)> in
+                let prices = priceService
+                    .priceSeries(of: cryptoCurrency, in: fiatCurrency, within: window)
+                    .asObservable()
+                return Observable.zip(prices, Observable.just(window))
             }
-            .map { ($0.0, $0.2) }
             .subscribeOn(scheduler)
             .observeOn(scheduler)
-            .share(replay: 1)
 
         Observable
-            .combineLatest(latestPrice, historicalPrices)
-            .map {
-                .value(HistoricalFiatPriceResponse(prices: $0.1.0, fiatValue: $0.0, priceWindow: $0.1.1))
+            .combineLatest(pairExchangeService.fiatPrice(at: .now), historicalPricesInWindow)
+            .map { payload in
+                let (fiatValue, (prices, window)) = payload
+                return HistoricalFiatPriceResponse(fiatValue: fiatValue, prices: prices, priceWindow: window)
             }
+            .map(CalculationState.value)
             .startWith(.calculating)
             .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)
-            .disposed(by: bag)
+            .disposed(by: disposeBag)
     }()
 
+    // MARK: - Setup
+
+    /// Creates a historical fiat price service.
+    ///
+    /// - Parameters:
+    ///   - cryptoCurrency:      A crypto currency.
+    ///   - pairExchangeService: A pair exchange service.
+    ///   - priceService:        A price service.
+    ///   - fiatCurrencyService: A fiat currency service.
+    ///   - scheduler:           A scheduler.
     public init(
         cryptoCurrency: CryptoCurrency,
-        exchangeAPI: PairExchangeServiceAPI,
+        pairExchangeService: PairExchangeServiceAPI,
         priceService: PriceServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI
+        fiatCurrencyService: FiatCurrencyServiceAPI,
+        scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)
     ) {
-        self.exchangeAPI = exchangeAPI
         self.cryptoCurrency = cryptoCurrency
+        self.pairExchangeService = pairExchangeService
         self.priceService = priceService
         self.fiatCurrencyService = fiatCurrencyService
+        self.scheduler = scheduler
     }
 }

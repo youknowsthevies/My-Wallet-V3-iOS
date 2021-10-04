@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Algorithms
 import BigInt
 import PlatformKit
-import RxSwift
 import ToolKit
 
 final class PricesInterpolator {
@@ -10,34 +10,52 @@ final class PricesInterpolator {
     private let prices: [OrderPriceTier]
 
     init(prices: [OrderPriceTier]) {
-        self.prices = [.zero] + prices
+        self.prices = prices
     }
 
     func rate(amount: BigInt) -> BigInt {
-        prices
-            .enumerated()
-            .compactMap { index, priceTier -> BigInt? in
-                guard index != prices.count - 1 else {
-                    return BigInt(stringLiteral: priceTier.price)
-                }
-
-                let next = prices[index + 1]
-                let volume = BigInt(stringLiteral: priceTier.volume)
-                let price = BigInt(stringLiteral: priceTier.price)
-                let nextVolume = BigInt(stringLiteral: next.volume)
-                let nextPrice = BigInt(stringLiteral: next.price)
-
-                if volume < amount, amount <= nextVolume {
-                    return LinearInterpolator
-                        .interpolate(
-                            x: [volume, nextVolume],
-                            y: [price, nextPrice],
-                            xi: amount
-                        )
-                } else {
-                    return nil
-                }
+        if let base = prices.first?.data, amount < base.volume {
+            return base.price
+        }
+        let tier = prices
+            .lazy
+            .map(\.data)
+            .adjacentPairs()
+            .filter { tier, next in
+                tier.volume < amount && amount <= next.volume
             }
-            .first ?? .zero
+            .map { tier, next in
+                LinearInterpolator
+                    .interpolate(
+                        x: [tier.volume, next.volume],
+                        y: [tier.price, next.price],
+                        xi: amount
+                    )
+            }.first
+
+        return tier
+            ?? prices.last.flatMap(\.price.bigInt)
+            ?? .zero
+    }
+}
+
+extension OrderPriceTier {
+
+    // swiftlint:disable:next large_tuple
+    fileprivate var data: (volume: BigInt, price: BigInt, margin: (price: BigInt, ())) {
+        (
+            volume: volume.bigInt,
+            price: price.bigInt,
+            margin: (
+                price: marginPrice.bigInt, ()
+            )
+        )
+    }
+}
+
+extension String {
+
+    fileprivate var bigInt: BigInt! {
+        BigInt(self)
     }
 }

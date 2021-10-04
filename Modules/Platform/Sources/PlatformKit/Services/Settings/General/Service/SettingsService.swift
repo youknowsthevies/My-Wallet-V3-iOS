@@ -231,6 +231,14 @@ extension SettingsService: EmailSettingsServiceAPI {
         valueSingle.map(\.email)
     }
 
+    var emailPublisher: AnyPublisher<String, EmailSettingsServiceError> {
+        valueSingle
+            .map(\.email)
+            .asPublisher()
+            .mapError(EmailSettingsServiceError.unknown)
+            .eraseToAnyPublisher()
+    }
+
     func update(email: String, context: FlowContext?) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in

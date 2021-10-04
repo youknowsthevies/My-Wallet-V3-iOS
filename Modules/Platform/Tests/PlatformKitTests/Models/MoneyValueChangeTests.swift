@@ -5,7 +5,7 @@ import XCTest
 
 final class MoneyValueChangeTests: XCTestCase {
 
-    // Test value before 10% increase
+    // Test value before 50% increase
     func testFiatValueBefore10PercentIncrease() {
         let value = FiatValue.create(minor: "1500", currency: .GBP)!
         let expected = FiatValue.create(minor: "1000", currency: .GBP)!
@@ -16,7 +16,7 @@ final class MoneyValueChangeTests: XCTestCase {
     // Test value before NaN
     func testFiatValueBeforeNaN() {
         let value = FiatValue.create(minor: "1500", currency: .GBP)!
-        let expected = FiatValue.zero(currency: .GBP)
+        let expected: FiatValue = .zero(currency: .GBP)
         let result = value.value(before: .nan)
         XCTAssertEqual(result, expected)
     }
@@ -24,7 +24,7 @@ final class MoneyValueChangeTests: XCTestCase {
     // Test value before inf
     func testFiatValueBeforeInf() {
         let value = FiatValue.create(minor: "1500", currency: .GBP)!
-        let expected = FiatValue.zero(currency: .GBP)
+        let expected: FiatValue = .zero(currency: .GBP)
         let result = value.value(before: Double.infinity)
         XCTAssertEqual(result, expected)
     }
@@ -32,7 +32,7 @@ final class MoneyValueChangeTests: XCTestCase {
     // Test value before 100 % Decrease
     func testFiatValueBefore100PercentDecrease() {
         let value = FiatValue.create(minor: "1500", currency: .GBP)!
-        let expected = FiatValue.zero(currency: .GBP)
+        let expected: FiatValue = .zero(currency: .GBP)
         let result = value.value(before: -1)
         XCTAssertEqual(result, expected)
     }
@@ -48,7 +48,7 @@ final class MoneyValueChangeTests: XCTestCase {
     // Test value before NaN
     func testCryptoValueBeforeNaN() {
         let value = CryptoValue.create(major: "1", currency: .coin(.bitcoin))!
-        let expected = CryptoValue.zero(currency: .coin(.bitcoin))
+        let expected: CryptoValue = .zero(currency: .coin(.bitcoin))
         let result = value.value(before: .nan)
         XCTAssertEqual(result, expected)
     }
@@ -56,7 +56,7 @@ final class MoneyValueChangeTests: XCTestCase {
     // Test value before 100 % Decrease
     func testCryptoValueBefore100PercentDecrease() {
         let value = CryptoValue.create(major: "1", currency: .coin(.bitcoin))!
-        let expected = CryptoValue.zero(currency: .coin(.bitcoin))
+        let expected: CryptoValue = .zero(currency: .coin(.bitcoin))
         let result = value.value(before: -1)
         XCTAssertEqual(result, expected)
     }

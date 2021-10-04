@@ -41,7 +41,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
         let fetch = fiatCurrencyService.fiatCurrencyObservable
             .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Observable<[PaymentMethod]> in
-                let fetchTiers = tiersService.fetchTiers()
+                let fetchTiers = tiersService.fetchTiers().asSingle()
                 return fetchTiers.flatMap { tiersResult -> Single<(KYC.UserTiers, SimplifiedDueDiligenceResponse)> in
                     tiersService.simplifiedDueDiligenceEligibility(for: tiersResult.latestApprovedTier)
                         .asObservable()
@@ -81,7 +81,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         case .bankAccount:
                             // Filter out bank transfer details from currencies we do not
                             //  have local support/UI.
-                            return enabledFiatCurrencies.contains(paymentMethod.min.currencyType)
+                            return enabledFiatCurrencies.contains(paymentMethod.min.currency)
                         }
                     }
                 }
@@ -126,7 +126,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         return Single
             .just(currency)
             .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Single<[PaymentMethod]> in
-                let fetchTiers = tiersService.fetchTiers()
+                let fetchTiers = tiersService.fetchTiers().asSingle()
                 return fetchTiers.flatMap { tiersResult -> Single<(KYC.UserTiers, SimplifiedDueDiligenceResponse)> in
                     tiersService.simplifiedDueDiligenceEligibility(for: tiersResult.latestApprovedTier)
                         .asObservable()
@@ -167,7 +167,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         case .bankAccount:
                             // Filter out bank transfer details from currencies we do not
                             //  have local support/UI.
-                            return enabledFiatCurrencies.contains(paymentMethod.min.currencyType)
+                            return enabledFiatCurrencies.contains(paymentMethod.min.currency)
                         }
                     }
                 }

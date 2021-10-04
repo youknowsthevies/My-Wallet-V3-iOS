@@ -67,6 +67,7 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
 
     private func fetchUnspentOutputs(for addresses: [XPub]) -> Single<UnspentOutputs> {
         client.unspentOutputs(for: addresses)
-            .map { UnspentOutputs(networkResponse: $0) }
+            .map(UnspentOutputs.init(networkResponse:))
+            .asSingle()
     }
 }

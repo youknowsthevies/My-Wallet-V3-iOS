@@ -1,63 +1,70 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
-
+/// A price window, representing a time range, coupled with a timeline interval.
 public enum PriceWindow: Equatable {
-    public enum TimelineInterval {
-        case fifteenMinutes
-        case oneHour
-        case twoHours
-        case oneDay
-        case fiveDays
+
+    case day(TimelineInterval = .fifteenMinutes)
+
+    case week(TimelineInterval = .oneHour)
+
+    case month(TimelineInterval = .twoHours)
+
+    case year(TimelineInterval = .oneDay)
+
+    case all(TimelineInterval = .fiveDays)
+
+    // MARK: - Public Types
+
+    /// A timeline interval, representing the number of seconds between consecutive items in a timeline.
+    public enum TimelineInterval: TimeInterval {
+
+        case fifteenMinutes = 900
+
+        case oneHour = 3600
+
+        case twoHours = 7200
+
+        case oneDay = 86400
+
+        case fiveDays = 432000
     }
 
-    case day(TimelineInterval?)
-    case week(TimelineInterval?)
-    case month(TimelineInterval?)
-    case year(TimelineInterval?)
-    case all(TimelineInterval?)
-}
+    // MARK: - Internal Properties
 
-extension PriceWindow {
-    public static func == (lhs: PriceWindow, rhs: PriceWindow) -> Bool {
-        switch (lhs, rhs) {
-        case (.day(let left), .day(let right)):
-            return left == right
-        case (.week(let left), .week(let right)):
-            return left == right
-        case (.month(let left), .month(let right)):
-            return left == right
-        case (.year(let left), .year(let right)):
-            return left == right
-        case (.all(let left), .all(let right)):
-            return left == right
-        default:
-            return false
-        }
+    /// The scale of the price window, representing the number of seconds between consecutive items in a timeline.
+    public var scale: Int {
+        Int(timelineInterval.rawValue)
     }
-}
 
-extension PriceWindow {
+    /// The timeline interval associated with the price window.
     var timelineInterval: TimelineInterval {
         switch self {
-        case .all(let interval):
-            return interval ?? .fiveDays
-        case .day(let interval):
-            return interval ?? .fifteenMinutes
-        case .week(let interval):
-            return interval ?? .oneHour
-        case .year(let interval):
-            return interval ?? .oneDay
-        case .month(let interval):
-            return interval ?? .twoHours
+        case .day(let interval),
+             .week(let interval),
+             .month(let interval),
+             .year(let interval),
+             .all(let interval):
+            return interval
         }
     }
 
-    func timeIntervalSince1970(cryptoCurrency: CryptoCurrency, calendar: Calendar, date: Date) -> TimeInterval {
+    // MARK: - Private Properties
+
+    /// The earliest start date for a price window.
+    private var maxStartDate: TimeInterval {
+        1438992000 // 8 August 2015 00:00:00 GMT
+    }
+
+    // MARK: - Public Methods
+
+    /// Gets the unix time of the start of the price window, relative to the given date, using the given calendar.
+    ///
+    /// - Parameters:
+    ///   - calendar: A calendar.
+    ///   - date:     A date, representing the end of the price window.
+    public func timeIntervalSince1970(calendar: Calendar, date: Date) -> TimeInterval {
         var components = DateComponents()
         switch self {
-        case .all:
-            return maxStartDate
         case .day:
             components.day = -1
         case .week:
@@ -66,43 +73,9 @@ extension PriceWindow {
             components.month = -1
         case .year:
             components.year = -1
+        case .all:
+            return maxStartDate
         }
-        return timeInterval(from: date, with: components, calendar: calendar, cryptoCurrency: cryptoCurrency)
-    }
-
-    private func timeInterval(
-        from date: Date,
-        with components: DateComponents,
-        calendar: Calendar,
-        cryptoCurrency: CryptoCurrency
-    ) -> TimeInterval {
-        calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? maxStartDate
-    }
-
-    private var maxStartDate: TimeInterval {
-        1438992000 // 8 August 2015 00:00:00 GMT
-    }
-}
-
-extension PriceWindow {
-    public var scale: Int {
-        Int(timelineInterval.value)
-    }
-}
-
-extension PriceWindow.TimelineInterval {
-    public var value: TimeInterval {
-        switch self {
-        case .fifteenMinutes:
-            return 900
-        case .oneHour:
-            return 3600
-        case .twoHours:
-            return 7200
-        case .oneDay:
-            return 86400
-        case .fiveDays:
-            return 432000
-        }
+        return calendar.date(byAdding: components, to: date)?.timeIntervalSince1970 ?? maxStartDate
     }
 }

@@ -55,6 +55,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     /// Streams a `KycState` indicating whether the user should complete KYC
     var currentKycState: Single<Result<KycState, Error>> {
         kycTiersService.fetchTiers()
+            .asSingle()
             .map(\.isTier2Approved)
             .mapToResult(successMap: { $0 ? .completed : .shouldComplete })
     }
@@ -172,8 +173,8 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                 self.analyticsRecorder.record(event:
                     AnalyticsEvents.New.Sell.sellAmountMaxClicked(
                         fromAccountType: .init(self.data.source),
-                        inputCurrency: crypto.currencyCode,
-                        outputCurrency: fiat.currencyCode
+                        inputCurrency: crypto.code,
+                        outputCurrency: fiat.code
                     )
                 )
                 let data = CandidateOrderDetails.sell(

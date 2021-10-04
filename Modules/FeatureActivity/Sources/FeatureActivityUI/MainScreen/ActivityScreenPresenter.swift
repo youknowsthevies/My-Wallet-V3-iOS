@@ -201,7 +201,7 @@ extension SelectionButtonViewModel.LeadingContent {
         case is AccountGroup:
             return .image(
                 .init(
-                    image: .local(name: "icon-card", bundle: .platformUIKit),
+                    image: .local(name: "icon-wallet", bundle: .platformUIKit),
                     background: .lightBadgeBackground,
                     cornerRadius: .round,
                     size: .edge(32)

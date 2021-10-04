@@ -8,12 +8,13 @@ final class ActivityItemInteractor {
     let event: ActivityItemEvent
     let balanceViewInteractor: AssetBalanceViewInteracting
 
-    init(activityItemEvent: ActivityItemEvent, exchangeAPI: PairExchangeServiceAPI) {
+    init(activityItemEvent: ActivityItemEvent, pairExchangeService: PairExchangeServiceAPI) {
         event = activityItemEvent
         balanceViewInteractor = ActivityItemBalanceViewInteractor(
             activityItemBalanceFetching: ActivityItemBalanceFetcher(
-                exchange: exchangeAPI,
-                moneyValue: activityItemEvent.amount
+                pairExchangeService: pairExchangeService,
+                moneyValue: activityItemEvent.amount,
+                at: event.creationDate
             )
         )
     }

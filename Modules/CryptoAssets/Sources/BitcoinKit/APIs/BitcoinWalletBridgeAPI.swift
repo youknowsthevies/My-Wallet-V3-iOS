@@ -58,9 +58,9 @@ public protocol BitcoinWalletBridgeAPI: AnyObject {
 
     var wallets: Single<[BitcoinWalletAccount]> { get }
 
-    func memo(for transactionHash: String) -> Single<String?>
+    func note(for transactionHash: String) -> Single<String?>
 
-    func updateMemo(for transactionHash: String, memo: String?) -> Completable
+    func updateNote(for transactionHash: String, note: String?) -> Completable
 
     func receiveAddress(forXPub xpub: String) -> Single<String>
 

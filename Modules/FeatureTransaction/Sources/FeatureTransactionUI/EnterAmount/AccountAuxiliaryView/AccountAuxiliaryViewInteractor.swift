@@ -36,6 +36,18 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
         let imageResource: ImageResource
         let isEnabled: Bool
 
+        init(
+            title: String,
+            subtitle: String,
+            imageResource: ImageResource,
+            isEnabled: Bool = true
+        ) {
+            self.title = title
+            self.subtitle = subtitle
+            self.imageResource = imageResource
+            self.isEnabled = isEnabled
+        }
+
         static let empty: State = .init(
             title: "",
             subtitle: "",
@@ -62,44 +74,36 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
 
     // MARK: - Connect API
 
-    func connect(stream: Observable<BlockchainAccount>, availableAccounts: Observable<[Account]>) -> Disposable {
-        Observable.zip(
-            stream,
-            availableAccounts
-                .map(\.count)
-                .map { $0 > 1 }
-        )
-        .map { account, tapEnabled -> State in
-            switch account {
-            case let bank as LinkedBankAccount:
-                let type = bank.accountType.title
-                let description = type + (type.isEmpty ? "" : " ") + "\(LocalizationIds.account) -"
-                let subtitle = description + " \(bank.accountNumber)"
-                return .init(
-                    title: bank.label,
-                    subtitle: subtitle,
-                    imageResource: bank.logoResource,
-                    isEnabled: tapEnabled
-                )
+    func connect(stream: Observable<BlockchainAccount>) -> Disposable {
+        stream
+            .map { account -> State in
+                switch account {
+                case let bank as LinkedBankAccount:
+                    let type = bank.accountType.title
+                    let description = type + (type.isEmpty ? "" : " ") + "\(LocalizationIds.account) -"
+                    let subtitle = description + " \(bank.accountNumber)"
+                    return .init(
+                        title: bank.label,
+                        subtitle: subtitle,
+                        imageResource: bank.logoResource
+                    )
 
-            case let linkablePayment as FeatureTransactionDomain.PaymentAccount:
-                return .init(
-                    title: linkablePayment.label,
-                    subtitle: linkablePayment.paymentMethod.max.displayString,
-                    imageResource: linkablePayment.logoResource,
-                    isEnabled: tapEnabled
-                )
-            case let fiatAccount as FiatAccount:
-                return .init(
-                    title: fiatAccount.label,
-                    subtitle: "",
-                    imageResource: fiatAccount.logoResource,
-                    isEnabled: tapEnabled
-                )
-            default:
-                unimplemented()
+                case let linkablePayment as FeatureTransactionDomain.PaymentMethodAccount:
+                    return .init(
+                        title: linkablePayment.label,
+                        subtitle: linkablePayment.paymentMethod.max.displayString,
+                        imageResource: linkablePayment.logoResource
+                    )
+                case let fiatAccount as FiatAccount:
+                    return .init(
+                        title: fiatAccount.label,
+                        subtitle: "",
+                        imageResource: fiatAccount.logoResource
+                    )
+                default:
+                    unimplemented()
+                }
             }
-        }
-        .bindAndCatch(to: stateRelay)
+            .bindAndCatch(to: stateRelay)
     }
 }

@@ -8,11 +8,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public protocol PasteboardLineItemPresenting: AnyObject {
-    var pasteboardValue: String { get }
-}
-
-public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, PasteboardLineItemPresenting {
+public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting {
 
     // MARK: - Input
 
@@ -61,10 +57,6 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
     /// This is fixed at 22px for pasteboard line items
     public let imageWidth: Driver<CGFloat>
 
-    public var identifier: String {
-        pasteboardValue
-    }
-
     /// The background color relay
     let imageRelay = BehaviorRelay<UIImage?>(value: #imageLiteral(resourceName: "clipboard"))
 
@@ -72,7 +64,6 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
 
     /// Streams events when the component is being tapped
     public let tapRelay = PublishRelay<Void>()
-    public let pasteboardValue: String
 
     // MARK: - Private Properties
 
@@ -90,7 +81,6 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
         accessibilityIdPrefix: String
     ) {
         self.analyticsRecorder = analyticsRecorder
-        pasteboardValue = input.description
 
         let titleInteractor = PasteboardLabelContentInteractor(
             text: input.title,
@@ -145,7 +135,8 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
             .disposed(by: disposeBag)
 
         tapRelay
-            .bind { pasteboard.string = input.description }
+            .withLatestFrom(descriptionInteractor.originalValueState)
+            .bind { state in pasteboard.string = state.value?.text ?? input.description }
             .disposed(by: disposeBag)
 
         tapRelay

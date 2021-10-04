@@ -57,7 +57,7 @@ final class StellarActivityDetailsInteractor {
         priceService.price(
             of: CurrencyType.crypto(.coin(.stellar)),
             in: fiatCurrency,
-            at: date
+            at: .time(date)
         )
         .asSingle()
     }

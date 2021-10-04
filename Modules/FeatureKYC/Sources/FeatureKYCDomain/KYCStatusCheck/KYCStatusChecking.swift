@@ -45,6 +45,7 @@ final class KYCStatusChecker: KYCStatusChecking {
         let isCompletingKyc: Single<Bool> = kycSettings.isCompletingKyc
         let hasAnyApprovedKYCTier: Single<Bool> = kycTiersService
             .fetchTiers()
+            .asSingle()
             .map { $0.latestApprovedTier > .tier0 }
 
         return Single.zip(hasAnyApprovedKYCTier, isCompletingKyc)

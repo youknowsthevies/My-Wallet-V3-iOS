@@ -1,18 +1,24 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinChainKit
+import Combine
 import DIKit
-import NetworkKit
+import NetworkError
 import PlatformKit
-import RxSwift
 
 protocol APIClientAPI {
 
-    func multiAddress(for addresses: [XPub]) -> Single<BitcoinMultiAddressResponse>
+    func multiAddress(
+        for addresses: [XPub]
+    ) -> AnyPublisher<BitcoinMultiAddressResponse, NetworkError>
 
-    func balances(for addresses: [XPub]) -> Single<BitcoinBalanceResponse>
+    func balances(
+        for addresses: [XPub]
+    ) -> AnyPublisher<BitcoinBalanceResponse, NetworkError>
 
-    func unspentOutputs(for addresses: [XPub]) -> Single<UnspentOutputsResponse>
+    func unspentOutputs(
+        for addresses: [XPub]
+    ) -> AnyPublisher<UnspentOutputsResponse, NetworkError>
 }
 
 final class APIClient: APIClientAPI {
@@ -27,15 +33,21 @@ final class APIClient: APIClientAPI {
 
     // MARK: - APIClientAPI
 
-    func unspentOutputs(for addresses: [XPub]) -> Single<UnspentOutputsResponse> {
+    func unspentOutputs(
+        for addresses: [XPub]
+    ) -> AnyPublisher<UnspentOutputsResponse, NetworkError> {
         client.unspentOutputs(for: addresses)
     }
 
-    func multiAddress(for addresses: [XPub]) -> Single<BitcoinMultiAddressResponse> {
+    func multiAddress(
+        for addresses: [XPub]
+    ) -> AnyPublisher<BitcoinMultiAddressResponse, NetworkError> {
         client.multiAddress(for: addresses)
     }
 
-    func balances(for addresses: [XPub]) -> Single<BitcoinBalanceResponse> {
+    func balances(
+        for addresses: [XPub]
+    ) -> AnyPublisher<BitcoinBalanceResponse, NetworkError> {
         client.balances(for: addresses)
     }
 }

@@ -2,6 +2,7 @@
 
 import Combine
 import FeatureTransactionDomain
+import NabuNetworkError
 import PlatformKit
 
 protocol OrderCreationClientAPI {
@@ -12,6 +13,13 @@ protocol OrderCreationClientAPI {
         volume: MoneyValue,
         destinationAddress: String?,
         refundAddress: String?
+    ) -> AnyPublisher<SwapActivityItemEvent, NabuNetworkError>
+
+    func create(
+        direction: OrderDirection,
+        quoteIdentifier: String,
+        volume: MoneyValue,
+        ccy: String?
     ) -> AnyPublisher<SwapActivityItemEvent, NabuNetworkError>
 }
 

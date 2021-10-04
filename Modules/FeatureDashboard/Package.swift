@@ -21,7 +21,6 @@ let package = Package(
             from: "4.0.1"
         ),
         .package(path: "../FeatureTransaction"),
-        .package(path: "../Network"),
         .package(path: "../Platform"),
         .package(path: "../Tool")
     ],
@@ -30,7 +29,6 @@ let package = Package(
             name: "FeatureDashboardUI",
             dependencies: [
                 .product(name: "FeatureTransactionUI", package: "FeatureTransaction"),
-                .product(name: "NetworkKit", package: "Network"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "RxCocoa", package: "RxSwift"),

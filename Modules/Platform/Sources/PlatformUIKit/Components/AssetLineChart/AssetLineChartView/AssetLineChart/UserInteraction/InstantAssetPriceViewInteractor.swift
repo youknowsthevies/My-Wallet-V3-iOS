@@ -20,6 +20,8 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
             .observeOn(MainScheduler.instance)
     }
 
+    public func refresh() {}
+
     // MARK: - Private Accessors
 
     private lazy var setup: Void = {
@@ -43,7 +45,7 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let currentPrice = result.currentFiatValue
                     let fiatChange = FiatValue.create(
                         major: result.historicalPrices.fiatChange,
-                        currency: result.currentFiatValue.currencyType
+                        currency: result.currentFiatValue.currency
                     )
                     return .loaded(
                         next: .init(
@@ -57,10 +59,12 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let historicalPrices = result.historicalPrices
                     let currentFiatValue = result.currentFiatValue
                     let prices = Array(historicalPrices.prices[0...min(index, historicalPrices.prices.count - 1)])
-                    let fiatCurrency = currentFiatValue.currencyType
+                    let fiatCurrency = currentFiatValue.currency
                     guard let selected = prices.last else { return .loading }
-                    let priceInFiatValue = try PriceQuoteAtTime(response: selected, currency: fiatCurrency)
-                    let adjusted = HistoricalPriceSeries(currency: historicalPrices.currency, prices: prices)
+                    let adjusted = HistoricalPriceSeries(
+                        currency: historicalPrices.currency,
+                        prices: prices
+                    )
 
                     let fiatChange = FiatValue.create(
                         major: adjusted.fiatChange,
@@ -70,7 +74,7 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     return .loaded(
                         next: .init(
                             time: .timestamp(selected.timestamp),
-                            fiatValue: priceInFiatValue.moneyValue.fiatValue!,
+                            fiatValue: selected.moneyValue.fiatValue!,
                             changePercentage: adjusted.delta,
                             fiatChange: fiatChange
                         )

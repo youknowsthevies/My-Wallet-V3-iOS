@@ -54,14 +54,14 @@ public final class FundsAndBankOrderCheckoutInteractor {
         let quote = orderQuoteService
             .getQuote(
                 for: action,
-                cryptoCurrency: crypto.currencyType,
+                cryptoCurrency: crypto.currency,
                 fiatValue: fiat
             )
 
         let finalCheckoutData: Single<CheckoutData>
         if checkoutData.order.paymentMethod.isBankAccount {
             finalCheckoutData = paymentAccountService
-                .paymentAccount(for: fiat.currencyType)
+                .paymentAccount(for: fiat.currency)
                 .map { checkoutData.checkoutData(byAppending: $0) }
         } else if checkoutData.order.paymentMethod.isBankTransfer, let authData = checkoutData.order.authorizationData {
             finalCheckoutData = linkedBanksService

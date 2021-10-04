@@ -18,7 +18,6 @@ public struct Quote {
     // MARK: - Types
 
     enum SetupError: Error {
-        case createFromMajorValue
         case dateFormatting
         case rateParsing
         case feeParsing
@@ -47,13 +46,11 @@ public struct Quote {
         }
         let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: rate)
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        guard let estimatedAmount = CryptoValue.create(major: "\(majorEstimatedAmount)", currency: cryptoCurrency)
-        else { throw SetupError.createFromMajorValue }
-        self.estimatedAmount = estimatedAmount
+        estimatedAmount = CryptoValue.create(major: majorEstimatedAmount, currency: cryptoCurrency)
         let feeAmountMinor = feeRateMinor * estimatedAmount.displayMajorValue
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        fee = FiatValue.create(minor: "\(feeAmountMinor)", currency: amount.currencyType)!
+        fee = FiatValue.create(minor: feeAmountMinor, currency: amount.currency)
         self.time = time
-        self.rate = FiatValue.create(minor: response.rate, currency: amount.currencyType)!
+        self.rate = FiatValue.create(minor: rate, currency: amount.currency)
     }
 }
