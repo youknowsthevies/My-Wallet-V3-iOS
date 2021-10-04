@@ -1,12 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import FeatureAuthenticationData
-import FeatureAuthenticationDomain
-import Foundation
+import CombineExt
+@testable import FeatureAuthenticationDomain
 import RxSwift
+import ToolKit
 
-final class MockWalletRepository: WalletPayloadService.WalletRepositoryAPI {
+final class MockWalletRepository: WalletRepositoryAPI {
 
     var expectedSessionToken: String?
     var expectedAuthenticatorType: WalletAuthenticatorType = .standard
@@ -15,6 +15,7 @@ final class MockWalletRepository: WalletPayloadService.WalletRepositoryAPI {
     var expectedSharedKey: String?
     var expectedPassword: String?
     var expectedSyncPubKeys = false
+    var expectedOfflineToken: Result<NabuOfflineToken, MissingCredentialsError>!
 
     var sessionToken: Single<String?> { .just(expectedSessionToken) }
     var payload: Single<String?> { .just(expectedPayload) }
@@ -101,6 +102,11 @@ final class MockWalletRepository: WalletPayloadService.WalletRepositoryAPI {
             }
             .eraseToAnyPublisher()
     }
+}
+
+// MARK: - MockWalletRepositoryCombineAPI
+
+extension MockWalletRepository {
 
     var authenticatorTypePublisher: AnyPublisher<WalletAuthenticatorType, Never> {
         .just(expectedAuthenticatorType)
@@ -117,7 +123,7 @@ final class MockWalletRepository: WalletPayloadService.WalletRepositoryAPI {
     }
 
     var hasPasswordPublisher: AnyPublisher<Bool, Never> {
-        .just(false)
+        hasPassword.asPublisher().ignoreFailure()
     }
 
     var passwordPublisher: AnyPublisher<String?, Never> {
@@ -179,6 +185,18 @@ final class MockWalletRepository: WalletPayloadService.WalletRepositoryAPI {
     func setPublisher(guid: String) -> AnyPublisher<Void, Never> {
         perform { [weak self] in
             self?.expectedGuid = guid
+        }
+    }
+
+    var offlineToken: AnyPublisher<NabuOfflineToken, MissingCredentialsError> {
+        expectedOfflineToken.publisher
+    }
+
+    func set(
+        offlineToken: NabuOfflineToken
+    ) -> AnyPublisher<Void, CredentialWritingError> {
+        perform { [weak self] in
+            self?.expectedOfflineToken = .success(offlineToken)
         }
     }
 }

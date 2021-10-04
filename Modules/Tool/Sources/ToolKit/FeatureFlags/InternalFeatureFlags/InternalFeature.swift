@@ -14,9 +14,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Uses the Transactions Flow implementation of Buy when enabled
     case useTransactionsFlowToBuyCrypto
 
-    /// Uses the Transactions Flow implementation of Sell when enabled
-    case useTransactionsFlowToSellCrypto
-
     /// Enable interest withdraw and deposit
     case interestWithdrawAndDeposit
 
@@ -36,6 +33,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable new Onboarding Tour on the Welcome Flow
     case newOnboardingTour
 
+    /// Enable unified sign in (account upgrade)
+    case unifiedSignIn
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -47,7 +47,7 @@ public enum InternalFeature: String, CaseIterable {
              .requestConsoleLogging,
              .secureChannel,
              .useTransactionsFlowToBuyCrypto,
-             .useTransactionsFlowToSellCrypto:
+             .unifiedSignIn:
             return false
         case .splitDashboard:
             return true
@@ -72,8 +72,6 @@ extension InternalFeature {
             return "Enable Network Request Console Logs"
         case .useTransactionsFlowToBuyCrypto:
             return "Buy: Uses Transactions Flow to Buy Crypto"
-        case .useTransactionsFlowToSellCrypto:
-            return "Sell: Uses Transactions Flow to Sell Crypto"
         case .disableGUIDLogin:
             return "Disable manual (guid) login option"
         case .splitDashboard:
@@ -84,6 +82,8 @@ extension InternalFeature {
             return "Load All ERC20 Tokens"
         case .newOnboardingTour:
             return "New Onboarding Tour"
+        case .unifiedSignIn:
+            return "Unified Sign In"
         }
     }
 }

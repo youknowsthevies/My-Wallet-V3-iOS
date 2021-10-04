@@ -38,7 +38,7 @@ final class InfoAuxiliaryViewPresenter: AuxiliaryViewPresenting {
             .id(Accessibility.Identifier.ContentLabelView.description)
                 .copy(label: topSelectionSubtitle)
         )
-        topInfoView.viewModel.isButtonEnabledRelay.accept(transactionState.nextEnabled)
+        topInfoView.viewModel.isButtonEnabledRelay.accept(false)
         topInfoView.viewModel.leadingContentTypeRelay.accept(.none)
 
         let transactionImageViewModel = TransactionDescriptorViewModel(

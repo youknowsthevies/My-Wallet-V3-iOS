@@ -15,6 +15,7 @@ public enum WelcomeAction: Equatable {
     case restoreWallet(SeedPhraseAction)
     case deeplinkReceived(URL)
     case requestedToDecryptWallet(String)
+    case requestedToRestoreWallet(WalletRecovery)
     /// should only be used on internal builds
     case manualPairing(CredentialsAction)
     case secondPasswordNotice(SecondPasswordNotice.Action)
@@ -30,6 +31,7 @@ public struct WelcomeState: Equatable {
         case welcomeScreen
         case createWalletScreen
         case emailLoginScreen
+        case restoreScreen
         case restoreWalletScreen
         case legacyRestoreWalletScreen
         /// this should only be used for internal builds
@@ -71,6 +73,7 @@ public struct WelcomeEnvironment {
     let deviceVerificationService: DeviceVerificationServiceAPI
     let buildVersionProvider: () -> String
     let featureFlags: InternalFeatureFlagServiceAPI
+    let appFeatureConfigurator: FeatureConfiguratorAPI
     let errorRecorder: ErrorRecording
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -80,6 +83,7 @@ public struct WelcomeEnvironment {
         sessionTokenService: SessionTokenServiceAPI = resolve(),
         deviceVerificationService: DeviceVerificationServiceAPI = resolve(),
         featureFlags: InternalFeatureFlagServiceAPI,
+        appFeatureConfigurator: FeatureConfiguratorAPI,
         buildVersionProvider: @escaping () -> String,
         errorRecorder: ErrorRecording = resolve(),
         externalAppOpener: ExternalAppOpener = resolve(),
@@ -90,6 +94,7 @@ public struct WelcomeEnvironment {
         self.deviceVerificationService = deviceVerificationService
         self.buildVersionProvider = buildVersionProvider
         self.featureFlags = featureFlags
+        self.appFeatureConfigurator = appFeatureConfigurator
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
@@ -107,6 +112,7 @@ public let welcomeReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     sessionTokenService: $0.sessionTokenService,
                     deviceVerificationService: $0.deviceVerificationService,
+                    appFeatureConfigurator: $0.appFeatureConfigurator,
                     errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder
                 )
@@ -119,7 +125,9 @@ public let welcomeReducer = Reducer.combine(
             action: /WelcomeAction.restoreWallet,
             environment: {
                 SeedPhraseEnvironment(
-                    mainQueue: $0.mainQueue
+                    mainQueue: $0.mainQueue,
+                    externalAppOpener: $0.externalAppOpener,
+                    analyticsRecorder: $0.analyticsRecorder
                 )
             }
         ),
@@ -133,6 +141,7 @@ public let welcomeReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder,
+                    appFeatureConfigurator: $0.appFeatureConfigurator,
                     analyticsRecorder: $0.analyticsRecorder
                 )
             }
@@ -154,17 +163,24 @@ public let welcomeReducer = Reducer.combine(
         WelcomeEnvironment
     > { state, action, environment in
         switch action {
+
         case .start:
             state.buildVersion = environment.buildVersionProvider()
             if BuildFlag.isInternal {
                 state.manualPairingEnabled = !environment.featureFlags.isEnabled(.disableGUIDLogin)
             }
             return .none
+
         case .presentScreenFlow(let screenFlow):
             state.screenFlow = screenFlow
             switch screenFlow {
             case .emailLoginScreen:
                 state.emailLoginState = .init()
+            case .restoreScreen:
+                guard environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled else {
+                    return Effect(value: .presentScreenFlow(.legacyRestoreWalletScreen))
+                }
+                return Effect(value: .presentScreenFlow(.restoreWalletScreen))
             case .restoreWalletScreen:
                 state.restoreWalletState = .init()
             case .welcomeScreen, .createWalletScreen, .manualLoginScreen, .legacyRestoreWalletScreen:
@@ -172,9 +188,13 @@ public let welcomeReducer = Reducer.combine(
                 state.restoreWalletState = nil
             }
             if BuildFlag.isInternal, screenFlow == .manualLoginScreen {
-                state.manualCredentialsState = .init()
+                state.manualCredentialsState = .init(
+                    accountRecoveryEnabled:
+                    environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled
+                )
             }
             return .none
+
         case .deeplinkReceived(let url):
             // we currently only support deeplink if we're on the verify device screen
             guard let loginState = state.emailLoginState,
@@ -183,37 +203,54 @@ public let welcomeReducer = Reducer.combine(
                 return .none
             }
             return Effect(value: .emailLogin(.verifyDevice(.didReceiveWalletInfoDeeplink(url))))
-        case .requestedToDecryptWallet(let password):
+
+        case .requestedToDecryptWallet,
+             .requestedToRestoreWallet:
             // handled in core coordinator
             return .none
+
         case .emailLogin(.closeButtonTapped):
             state.screenFlow = .welcomeScreen
             state.emailLoginState = nil
             return .none
+
         case .emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))):
             return Effect(value: .requestedToDecryptWallet(password))
+
+        case .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restoreWallet(let walletRecovery))))):
+            return Effect(value: .requestedToRestoreWallet(walletRecovery))
+
+        case .restoreWallet(.restoreWallet(let walletRecovery)):
+            return Effect(value: .requestedToRestoreWallet(walletRecovery))
+
         case .emailLogin:
             // handled in email login reducer
             return .none
 
         case .manualPairing(.walletPairing(.decryptWalletWithPassword(let password))):
             return Effect(value: .requestedToDecryptWallet(password))
+
         case .manualPairing(.closeButtonTapped):
             state.screenFlow = .welcomeScreen
             return .none
+
         case .manualPairing:
             return .none
+
         case .restoreWallet(.closeButtonTapped):
             state.screenFlow = .welcomeScreen
             state.restoreWalletState = .init()
             return .none
+
         case .restoreWallet:
             return .none
+
         case .informSecondPasswordDetected:
             state.screenFlow = .welcomeScreen
             state.modals = .secondPasswordNoticeScreen
             state.secondPasswordNoticeState = .init()
             return .none
+
         case .secondPasswordNotice(.closeButtonTapped):
             state.screenFlow = .welcomeScreen
             state.modals = .none
@@ -221,8 +258,10 @@ public let welcomeReducer = Reducer.combine(
             state.manualCredentialsState = nil
             state.secondPasswordNoticeState = nil
             return .none
+
         case .secondPasswordNotice:
             return .none
+
         case .modalDismissed(.secondPasswordNoticeScreen) where state.secondPasswordNoticeState != nil:
             state.screenFlow = .welcomeScreen
             state.modals = .none
@@ -230,6 +269,7 @@ public let welcomeReducer = Reducer.combine(
             state.manualCredentialsState = nil
             state.secondPasswordNoticeState = nil
             return .none
+
         case .modalDismissed:
             return .none
         }
@@ -253,6 +293,11 @@ extension Reducer where
                 case .presentScreenFlow(.emailLoginScreen):
                     environment.analyticsRecorder.record(
                         event: .loginClicked()
+                    )
+                    return .none
+                case .presentScreenFlow(.restoreWalletScreen):
+                    environment.analyticsRecorder.record(
+                        event: .recoveryOptionSelected
                     )
                     return .none
                 default:

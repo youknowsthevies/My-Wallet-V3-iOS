@@ -1,13 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-final class AccountPickerHeaderView: UIView {
-    private let patternImageView = UIImageView()
-    private let assetImageView = UIImageView()
-    private let titleLabel = UILabel()
-    private let subtitleLabel = UILabel()
-    private let selectWalletLabel = UILabel()
-    private let separator = UIView()
-    private let fadeMask = CAGradientLayer()
+import UIComponentsKit
+import UIKit
+
+final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
+
+    // MARK: Properties
 
     var model: AccountPickerHeaderModel! {
         didSet {
@@ -22,9 +20,30 @@ final class AccountPickerHeaderView: UIView {
             titleLabel.content = model.titleLabel
             subtitleLabel.content = model.subtitleLabel
             selectWalletLabel.content = model.tableTitleLabel ?? .empty
-            separator.isHidden = model.tableTitleLabel == nil
+            separator.isHidden = model.tableTitleLabel == nil || model.searchable
+            uiSearchBar.isHidden = !model.searchable
+            selectWalletLabel.isHidden = model.searchable
         }
     }
+
+    // MARK: Properties - AccountPickerHeaderViewAPI
+
+    var searchBar: UISearchBar? {
+        uiSearchBar
+    }
+
+    // MARK: Private Properties
+
+    private let patternImageView = UIImageView()
+    private let assetImageView = UIImageView()
+    private let titleLabel = UILabel()
+    private let subtitleLabel = UILabel()
+    private let selectWalletLabel = UILabel()
+    private let separator = UIView()
+    private let fadeMask = CAGradientLayer()
+    private let uiSearchBar = UISearchBar()
+
+    // MARK: Int
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -36,19 +55,28 @@ final class AccountPickerHeaderView: UIView {
         setup()
     }
 
-    private func setup() {
+    // MARK: Methods
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        fadeMask.frame = patternImageView.bounds
+    }
+
+    // MARK: Private Methods
+
+    private func setup() {
         addSubview(patternImageView)
         addSubview(assetImageView)
         addSubview(titleLabel)
         addSubview(subtitleLabel)
         addSubview(selectWalletLabel)
         addSubview(separator)
+        addSubview(uiSearchBar)
 
-        // MARK: Background Image Vie
+        // MARK: Background Image View
 
         patternImageView.layoutToSuperview(.leading, .trailing, .top, .bottom)
-        patternImageView.image = UIImage(named: "link-pattern", in: .platformUIKit, compatibleWith: nil)
+        patternImageView.set(ImageViewContent(imageResource: ImageAsset.linkPattern.imageResource))
         patternImageView.contentMode = .scaleAspectFill
 
         // MARK: Asset Image View
@@ -81,6 +109,12 @@ final class AccountPickerHeaderView: UIView {
         separator.layoutToSuperview(.trailing)
         separator.layout(edge: .bottom, to: .lastBaseline, of: selectWalletLabel)
 
+        // MARK: Search Bar
+
+        uiSearchBar.searchBarStyle = .minimal
+        uiSearchBar.layoutToSuperview(axis: .horizontal, offset: 24)
+        uiSearchBar.layoutToSuperview(.bottom, offset: -4)
+
         // MARK: Fading Mask
 
         fadeMask.colors = [
@@ -95,12 +129,8 @@ final class AccountPickerHeaderView: UIView {
 
         // MARK: Setup
 
+        backgroundColor = .white
         clipsToBounds = true
         model = nil
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        fadeMask.frame = patternImageView.bounds
     }
 }

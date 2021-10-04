@@ -17,9 +17,9 @@ final class NewAssetAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
 
     var viewModel: AnnouncementCardViewModel {
 
-        let title = String(format: LocalizedString.title, cryptoCurrency!.name, cryptoCurrency!.code)
-        let description = String(format: LocalizedString.description, cryptoCurrency!.code)
-        let buttonTitle = String(format: LocalizedString.ctaButton, cryptoCurrency!.code)
+        let title = String(format: LocalizedString.title, cryptoCurrency!.name, cryptoCurrency!.displayCode)
+        let description = String(format: LocalizedString.description, cryptoCurrency!.displayCode)
+        let buttonTitle = String(format: LocalizedString.ctaButton, cryptoCurrency!.displayCode)
 
         let button = ButtonViewModel.primary(
             with: buttonTitle,
@@ -43,7 +43,7 @@ final class NewAssetAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
                 image: cryptoCurrency!.logoResource,
                 contentColor: nil,
                 backgroundColor: .clear,
-                cornerRadius: .none,
+                cornerRadius: .round,
                 size: .edge(40)
             ),
             title: title,

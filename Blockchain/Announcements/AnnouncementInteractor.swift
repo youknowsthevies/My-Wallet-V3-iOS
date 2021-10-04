@@ -23,21 +23,64 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             return Single.error(AnnouncementError.uninitializedWallet)
         }
 
-        let nabuUser = userService.user.asSingle()
-        let tiers = tiersService.tiers.asSingle()
-        let sddEligibility = tiersService.checkSimplifiedDueDiligenceEligibility()
-            .asObservable()
-            .asSingle()
-        let countries = infoService.countries
-        let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails
+        let assetRename: Single<AnnouncementPreliminaryData.AssetRename?> = featureFetcher
+            .fetchString(for: .assetRenameAnnouncement)
+            .map { [enabledCurrenciesService] code -> CryptoCurrency? in
+                CryptoCurrency(
+                    code: code,
+                    enabledCurrenciesService: enabledCurrenciesService
+                )
+            }
+            .flatMap { [coincore] cryptoCurrency -> Single<AnnouncementPreliminaryData.AssetRename?> in
+                guard let cryptoCurrency = cryptoCurrency else {
+                    return .just(nil)
+                }
+                return coincore[cryptoCurrency]
+                    .accountGroup(filter: .all)
+                    .asSingle()
+                    .flatMap(\.balance)
+                    .map { balance in
+                        AnnouncementPreliminaryData.AssetRename(
+                            asset: cryptoCurrency,
+                            balance: balance
+                        )
+                    }
+            }
+            .catchErrorJustReturn(nil)
 
+        let hasLinkedBanks = beneficiariesService.hasLinkedBank
+            .take(1)
+            .asSingle()
         let isSimpleBuyAvailable = supportedPairsInteractor.pairs
             .map { !$0.pairs.isEmpty }
             .take(1)
             .asSingle()
+        let isSimpleBuyEligible = simpleBuyEligibilityService.isEligible
+        let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails
+
+        let simpleBuy: Single<AnnouncementPreliminaryData.SimpleBuy> = Single
+            .zip(
+                hasLinkedBanks,
+                isSimpleBuyAvailable,
+                isSimpleBuyEligible,
+                simpleBuyOrderDetails
+            )
+            .map { hasLinkedBanks, isSimpleBuyAvailable, isSimpleBuyEligible, simpleBuyOrderDetails in
+                AnnouncementPreliminaryData.SimpleBuy(
+                    hasLinkedBanks: hasLinkedBanks,
+                    isAvailable: isSimpleBuyAvailable,
+                    isEligible: isSimpleBuyEligible,
+                    pendingOrderDetails: simpleBuyOrderDetails
+                )
+            }
+
+        let nabuUser = userService.user.asSingle()
+        let tiers = tiersService.tiers.asSingle()
+        let sddEligibility = tiersService.checkSimplifiedDueDiligenceEligibility()
+            .asSingle()
+        let countries = infoService.countries
 
         let hasAnyWalletBalance = coincore.allAccounts
-            .asObservable()
             .asSingle()
             .map(\.accounts)
             .flatMap { accounts -> Single<[Bool]> in
@@ -47,60 +90,54 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 values.contains(true)
             }
 
-        let hasLinkedBanks = beneficiariesService.hasLinkedBank.take(1).asSingle()
-        let isSimpleBuyEligible = simpleBuyEligibilityService.isEligible
         let authenticatorType = repository.authenticatorType
-        let announcementAsset: Single<CryptoCurrency?> = featureFetcher
-            .fetchString(for: .announcementAsset)
-            .optional()
-            .catchErrorJustReturn(nil)
+        let newAsset: Single<CryptoCurrency?> = featureFetcher
+            .fetchString(for: .newAssetAnnouncement)
             .map { [enabledCurrenciesService] code -> CryptoCurrency? in
-                guard let code = code else {
-                    return nil
-                }
-                return CryptoCurrency(
+                CryptoCurrency(
                     code: code,
                     enabledCurrenciesService: enabledCurrenciesService
                 )
             }
+            .catchErrorJustReturn(nil)
 
         return Single.zip(
             nabuUser,
             tiers,
-            sddEligibility,
             countries,
             authenticatorType,
             hasAnyWalletBalance,
             Single.zip(
-                announcementAsset,
-                isSimpleBuyAvailable,
-                simpleBuyOrderDetails,
-                hasLinkedBanks,
-                isSimpleBuyEligible
+                newAsset,
+                assetRename,
+                simpleBuy,
+                sddEligibility
             )
         )
         .map { payload -> AnnouncementPreliminaryData in
             let (
                 user,
                 tiers,
-                isSDDEligible,
                 countries,
                 authenticatorType,
                 hasAnyWalletBalance,
-                (announcementAsset, isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks, isSimpleBuyEligible)
+                (
+                    newAsset,
+                    assetRename,
+                    simpleBuy,
+                    isSDDEligible
+                )
             ) = payload
             return AnnouncementPreliminaryData(
                 user: user,
                 tiers: tiers,
                 isSDDEligible: isSDDEligible,
-                hasLinkedBanks: hasLinkedBanks,
                 countries: countries,
                 authenticatorType: authenticatorType,
-                pendingOrderDetails: pendingOrderDetails,
-                isSimpleBuyAvailable: isSimpleBuyAvailable,
-                isSimpleBuyEligible: isSimpleBuyEligible,
                 hasAnyWalletBalance: hasAnyWalletBalance,
-                announcementAsset: announcementAsset
+                newAsset: newAsset,
+                assetRename: assetRename,
+                simpleBuy: simpleBuy
             )
         }
         .observeOn(MainScheduler.instance)

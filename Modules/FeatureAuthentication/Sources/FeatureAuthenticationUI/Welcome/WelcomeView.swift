@@ -199,7 +199,7 @@ public struct WelcomeView: View {
     private var supplementarySection: some View {
         HStack {
             Button(LocalizedString.Button.restoreWallet) {
-                viewStore.send(.presentScreenFlow(.legacyRestoreWalletScreen))
+                viewStore.send(.presentScreenFlow(.restoreScreen))
             }
             .font(Font(weight: .semibold, size: Layout.supplmentaryTextFontSize))
             .foregroundColor(.buttonLinkText)
@@ -243,6 +243,7 @@ struct WelcomeView_Previews: PreviewProvider {
                     sessionTokenService: NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlags: NoOpInternalFeatureFlagService(),
+                    appFeatureConfigurator: NoOpFeatureConfigurator(),
                     buildVersionProvider: { "Test version" }
                 )
             )

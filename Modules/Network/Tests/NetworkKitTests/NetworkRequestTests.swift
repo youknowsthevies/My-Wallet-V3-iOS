@@ -9,7 +9,6 @@ final class NetworkRequestTests: XCTestCase {
 
     func test_get_request_description_unauthenticated() throws {
         let request = NetworkRequest.MockBuilder().with(method: .get).with(authenticated: false).build()
-        print("TTT \(request.description)")
         XCTAssertEqual(request.description, "GET https://blockchain.com (unauthenticated)")
     }
 

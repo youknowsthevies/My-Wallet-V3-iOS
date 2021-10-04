@@ -37,6 +37,7 @@ final class WelcomeReducerTests: XCTestCase {
                 sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
                 featureFlags: mockInternalFeatureFlagService,
+                appFeatureConfigurator: NoOpFeatureConfigurator(),
                 buildVersionProvider: { "Test Version" },
                 errorRecorder: MockErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),
@@ -77,7 +78,8 @@ final class WelcomeReducerTests: XCTestCase {
             .welcomeScreen,
             .createWalletScreen,
             .emailLoginScreen,
-            .restoreWalletScreen
+            .restoreWalletScreen,
+            .legacyRestoreWalletScreen
         ]
         screenFlows.forEach { screenFlow in
             testStore.send(.presentScreenFlow(screenFlow)) { state in
@@ -86,9 +88,9 @@ final class WelcomeReducerTests: XCTestCase {
                     state.emailLoginState = .init()
                 case .restoreWalletScreen:
                     state.restoreWalletState = .init()
-                case .createWalletScreen, .manualLoginScreen, .legacyRestoreWalletScreen:
+                case .createWalletScreen, .manualLoginScreen, .restoreScreen:
                     break
-                case .welcomeScreen:
+                case .welcomeScreen, .legacyRestoreWalletScreen:
                     state.emailLoginState = nil
                     state.restoreWalletState = nil
                 }
@@ -112,7 +114,7 @@ final class WelcomeReducerTests: XCTestCase {
         // given (we're in a flow)
         testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
             state.screenFlow = .manualLoginScreen
-            state.manualCredentialsState = .init()
+            state.manualCredentialsState = .init(accountRecoveryEnabled: false)
         }
 
         // when
@@ -127,7 +129,7 @@ final class WelcomeReducerTests: XCTestCase {
         // given (we're in a flow)
         testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
             state.screenFlow = .manualLoginScreen
-            state.manualCredentialsState = .init()
+            state.manualCredentialsState = .init(accountRecoveryEnabled: false)
         }
 
         // when
@@ -151,7 +153,7 @@ final class WelcomeReducerTests: XCTestCase {
         // given (we're in a flow)
         testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
             state.screenFlow = .manualLoginScreen
-            state.manualCredentialsState = .init()
+            state.manualCredentialsState = .init(accountRecoveryEnabled: false)
         }
 
         // when

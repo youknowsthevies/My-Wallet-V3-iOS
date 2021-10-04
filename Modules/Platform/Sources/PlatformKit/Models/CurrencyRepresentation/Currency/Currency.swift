@@ -225,3 +225,16 @@ extension FiatValue {
         currency.currencyType
     }
 }
+
+extension Currency {
+
+    public func matchSearch(_ searchString: String?) -> Bool {
+        guard let searchString = searchString,
+              !searchString.isEmpty
+        else {
+            return true
+        }
+        return name.localizedCaseInsensitiveContains(searchString)
+            || code.localizedCaseInsensitiveContains(searchString)
+    }
+}

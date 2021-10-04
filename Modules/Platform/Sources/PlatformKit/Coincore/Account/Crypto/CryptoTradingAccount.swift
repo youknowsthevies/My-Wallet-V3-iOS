@@ -87,7 +87,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             guard let self = self else {
                 return .error(PlatformKitError.default)
             }
-            guard case .hashed(let hash, let amount) = result else {
+            guard case .hashed(let hash, let amount, _) = result else {
                 return .error(PlatformKitError.default)
             }
             guard amount.isCrypto else {
@@ -128,7 +128,8 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .zip(
                 buySellActivity.buySellActivityEvents(cryptoCurrency: asset),
                 ordersActivity.activity(cryptoCurrency: asset).catchErrorJustReturn([]),
-                swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal]).catchErrorJustReturn([])
+                swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal])
+                    .catchErrorJustReturn([])
             )
             .map { buySellActivity, ordersActivity, swapActivity -> [ActivityItemEvent] in
                 let swapAndSellActivityItemsEvents: [ActivityItemEvent] = swapActivity

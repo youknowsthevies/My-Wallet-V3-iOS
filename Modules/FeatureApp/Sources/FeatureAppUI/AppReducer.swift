@@ -45,7 +45,8 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     customerSupportChatService: $0.customerSupportChatService,
                     blurEffectHandler: $0.blurEffectHandler,
                     backgroundAppHandler: $0.backgroundAppHandler,
-                    supportedAssetsRemoteService: $0.supportedAssetsRemoteService
+                    supportedAssetsRemoteService: $0.supportedAssetsRemoteService,
+                    mainQueue: $0.mainQueue
                 )
             }
         ),
@@ -59,20 +60,24 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     deeplinkHandler: $0.deeplinkHandler,
                     deeplinkRouter: $0.deeplinkRouter,
                     walletManager: $0.walletManager,
+                    mobileAuthSyncService: $0.mobileAuthSyncService,
+                    resetPasswordService: $0.resetPasswordService,
+                    accountRecoveryService: $0.accountRecoveryService,
                     featureFlagsService: $0.featureFlagsService,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
                     internalFeatureService: $0.internalFeatureService,
                     fiatCurrencySettingsService: $0.fiatCurrencySettingsService,
                     blockchainSettings: $0.blockchainSettings,
                     credentialsStore: $0.credentialsStore,
-                    alertPresenter: resolve(),
+                    alertPresenter: $0.alertViewPresenter,
                     walletUpgradeService: $0.walletUpgradeService,
                     exchangeRepository: $0.exchangeRepository,
                     remoteNotificationServiceContainer: $0.remoteNotificationServiceContainer,
-                    coincore: resolve(),
+                    coincore: $0.coincore,
+                    erc20CryptoAssetService: $0.erc20CryptoAssetService,
                     sharedContainer: $0.sharedContainer,
                     analyticsRecorder: $0.analyticsRecorder,
-                    siftService: resolve(),
+                    siftService: $0.siftService,
                     onboardingSettings: $0.onboardingSettings,
                     mainQueue: $0.mainQueue,
                     appStoreOpener: $0.appStoreOpener,
@@ -85,7 +90,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
 
 let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, action, environment in
     switch action {
-    case .appDelegate(.didFinishLaunching(let window)):
+    case .appDelegate(.didFinishLaunching):
         return .init(value: .core(.start))
     case .appDelegate(.didEnterBackground):
         return .fireAndForget {

@@ -32,6 +32,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
             environment: .init(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 deviceVerificationService: MockDeviceVerificationService(),
+                appFeatureConfigurator: NoOpFeatureConfigurator(),
                 errorRecorder: NoOpErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder()
@@ -61,6 +62,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
             },
             .receive(.setCredentialsScreenVisible(true)) { state in
                 state.credentialsState = CredentialsState(
+                    accountRecoveryEnabled: false,
                     walletPairingState: WalletPairingState(
                         emailAddress: MockDeviceVerificationService.mockWalletInfo.email!,
                         emailCode: MockDeviceVerificationService.mockWalletInfo.emailCode,
@@ -80,6 +82,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
         }
         testStore.receive(.setCredentialsScreenVisible(true)) { state in
             state.credentialsState = CredentialsState(
+                accountRecoveryEnabled: false,
                 walletPairingState: WalletPairingState(
                     emailAddress: "",
                     walletGuid: MockDeviceVerificationService.mockWalletInfo.guid
@@ -96,7 +99,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
             state.credentialsContext = .walletIdentifier(guid: "")
         }
         testStore.receive(.setCredentialsScreenVisible(true)) { state in
-            state.credentialsState = .init()
+            state.credentialsState = .init(accountRecoveryEnabled: false)
             state.isCredentialsScreenVisible = true
         }
     }

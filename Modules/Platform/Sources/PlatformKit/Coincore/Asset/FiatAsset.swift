@@ -19,10 +19,6 @@ final class FiatAsset: Asset {
 
     // MARK: - Asset
 
-    func initialize() -> AnyPublisher<Void, AssetError> {
-        .empty()
-    }
-
     func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
         switch filter {
         case .all,

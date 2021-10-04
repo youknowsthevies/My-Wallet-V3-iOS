@@ -60,7 +60,10 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let feePresenter: LineItemCellPresenting
     private let paymentMethodPresenter: LineItemCellPresenting
 
-    init(event: BuySellActivityItemEvent, interactor: BuySellActivityDetailsInteractor = .init()) {
+    init(
+        event: BuySellActivityItemEvent,
+        interactor: BuySellActivityDetailsInteractor = .init()
+    ) {
         self.interactor = interactor
         self.event = event
 
@@ -184,6 +187,8 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 .lineItem(exchangeRatePresenter),
                 .separator,
                 .lineItem(totalPresenter),
+                .separator,
+                .lineItem(feePresenter),
                 .separator,
                 .lineItem(toPresenter),
                 .separator,

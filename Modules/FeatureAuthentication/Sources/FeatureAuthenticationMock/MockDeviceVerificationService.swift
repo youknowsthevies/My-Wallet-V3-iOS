@@ -17,7 +17,8 @@ final class MockDeviceVerificationService: DeviceVerificationServiceAPI {
         email: "test@example.com",
         emailCode: "example email code",
         isMobileSetup: false,
-        hasCloudBackup: false
+        hasCloudBackup: false,
+        nabuInfo: nil
     )
 
     static let mockWalletInfoWithGuidOnly = WalletInfo(

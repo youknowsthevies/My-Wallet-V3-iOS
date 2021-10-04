@@ -9,7 +9,7 @@ extension DependencyContainer {
 
     public static var featureAuthenticationData = module {
 
-        // MARK: - NetworkClients
+        // MARK: - WalletNetworkClients
 
         factory { AutoWalletPairingClient() as AutoWalletPairingClientAPI }
 
@@ -27,11 +27,31 @@ extension DependencyContainer {
 
         factory { PushNotificationsClient() as PushNotificationsClientAPI }
 
+        factory { MobileAuthSyncClient() as MobileAuthSyncClientAPI }
+
+        // MARK: - NabuNetworkClients
+
+        factory { JWTClient() as JWTClientAPI }
+
+        factory { NabuUserCreationClient() as NabuUserCreationClientAPI }
+
+        factory { NabuSessionTokenClient() as NabuSessionTokenClientAPI }
+
+        factory { NabuUserRecoveryClient() as NabuUserRecoveryClientAPI }
+
+        factory { NabuResetUserClient() as NabuResetUserClientAPI }
+
         // MARK: - Repositories
+
+        factory { JWTRepository() as JWTRepositoryAPI }
+
+        factory { AccountRecoveryRepository() as AccountRecoveryRepositoryAPI }
 
         factory { DeviceVerificationRepository() as DeviceVerificationRepositoryAPI }
 
         factory { RemoteSessionTokenRepository() as RemoteSessionTokenRepositoryAPI }
+
+        factory { MobileAuthSyncRepository() as MobileAuthSyncRepositoryAPI }
 
         factory { PushNotificationsRepository() as PushNotificationsRepositoryAPI }
     }

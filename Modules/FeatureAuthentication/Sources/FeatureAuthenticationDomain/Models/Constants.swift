@@ -37,6 +37,12 @@ public enum Constants {
             /// A url string that points to Blockchain support page for enabling 2FA
             public static let twoFASupport = "https://support.blockchain.com/hc/en-us/articles/211164103"
         }
+
+        public enum ResetAccount {
+            public static let recoveryFailureSupport = "https://support.blockchain.com/hc/en-us/requests/new?ticket_form_id=360003112491"
+            public static let learnMore = "https://support.blockchain.com/hc/en-us/articles/4404679303700"
+            public static let contactSupport = "https://support.blockchain.com/hc/en-us"
+        }
     }
 }
 

@@ -264,7 +264,9 @@ public final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    public func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError> {
+    public func checkSimplifiedDueDiligenceEligibility()
+        -> AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError>
+    {
         let request = requestBuilder.get(
             path: Path.simplifiedDueDiligenceEligibility,
             authenticated: true
@@ -272,7 +274,9 @@ public final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    public func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> {
+    public func checkSimplifiedDueDiligenceVerification()
+        -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError>
+    {
         let request = requestBuilder.get(
             path: Path.simplifiedDueDiligenceVerification,
             authenticated: true

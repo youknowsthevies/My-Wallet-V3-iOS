@@ -38,10 +38,10 @@ final class PriceRepository: PriceRepositoryAPI {
                     .price(of: key.base, in: key.quote.code, time: key.time.timestamp)
                     .map(\.entries)
                     .map { entries in
-                        entries.mapValues { item in
+                        entries.compactMapValues { item in
                             PriceQuoteAtTime(
-                                timestamp: item.timestamp,
-                                moneyValue: .create(major: item.price, currency: key.quote.currencyType)
+                                response: item,
+                                currency: key.quote.currencyType
                             )
                         }
                     }
@@ -112,7 +112,7 @@ extension HistoricalPriceSeries {
     init(baseCurrency: CryptoCurrency, quoteCurrency: Currency, prices: [PriceResponse.Item]) {
         self.init(
             currency: baseCurrency,
-            prices: prices.map { item in
+            prices: prices.compactMap { item in
                 PriceQuoteAtTime(response: item, currency: quoteCurrency)
             }
         )
@@ -121,10 +121,13 @@ extension HistoricalPriceSeries {
 
 extension PriceQuoteAtTime {
 
-    init(response: PriceResponse.Item, currency: Currency) {
+    init?(response: PriceResponse.Item, currency: Currency) {
+        guard let price = response.price else {
+            return nil
+        }
         self.init(
             timestamp: response.timestamp,
-            moneyValue: .create(major: response.price, currency: currency.currencyType)
+            moneyValue: .create(major: price, currency: currency.currencyType)
         )
     }
 }

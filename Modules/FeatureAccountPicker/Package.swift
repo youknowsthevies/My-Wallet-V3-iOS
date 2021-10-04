@@ -56,7 +56,8 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "CombineSchedulers", package: "combine-schedulers")
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "PlatformKit", package: "Platform")
             ],
             path: "UI"
         ),
@@ -69,7 +70,8 @@ let package = Package(
                 .product(name: "SnapshotTesting", package: "SnapshotTesting"),
                 .product(name: "TestKit", package: "Test"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "PlatformUIKit", package: "Platform")
+                .product(name: "PlatformUIKit", package: "Platform"),
+                .product(name: "UIComponents", package: "UIComponents")
             ],
             path: "Tests",
             exclude: ["__Snapshots__"]

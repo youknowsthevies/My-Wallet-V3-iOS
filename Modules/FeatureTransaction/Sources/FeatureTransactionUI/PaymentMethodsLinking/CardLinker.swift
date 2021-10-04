@@ -50,14 +50,14 @@ final class CardLinker: CardLinkerAPI {
         interactor
             .completionCardData
             .asPublisher()
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] completionResult in
+                self?.cleanUp()
                 if case .failure(let error) = completionResult {
                     Logger.shared.error(error)
                     completion(.abandoned)
                 }
-                self?.cleanUp()
-            } receiveValue: { cardData in
-                Logger.shared.info("Linked card data: \(cardData)")
+            } receiveValue: { _ in
                 completion(.completed)
             }
             .store(in: &cancellables)
@@ -66,11 +66,16 @@ final class CardLinker: CardLinkerAPI {
             .cancellation
             .asPublisher()
             .replaceError(with: ())
-            .sink(receiveCompletion: { [weak self] _ in
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completionResult in
                 self?.cleanUp()
-            }, receiveValue: { _ in
+                if case .failure(let error) = completionResult {
+                    Logger.shared.error(error)
+                    completion(.abandoned)
+                }
+            } receiveValue: { _ in
                 completion(.abandoned)
-            })
+            }
             .store(in: &cancellables)
 
         let builder = CardComponentBuilder(

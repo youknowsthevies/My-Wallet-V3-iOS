@@ -20,6 +20,7 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
 
     // MARK: - Private Properties
 
+    private let searchRelay: PublishRelay<String?> = .init()
     private let accountProvider: AccountPickerAccountProviding
     private let didSelect: AccountPickerDidSelect?
     private let disposeBag = DisposeBag()
@@ -59,9 +60,21 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
                 .disposeOnDeactivate(interactor: self)
         }
 
-        let interactorState: Driver<State> = accountProvider.accounts
-            .map { accounts -> [AccountPickerCellItem.Interactor] in
-                accounts.map(\.accountPickerCellItemInteractor)
+        let searchObservable = searchRelay.asObservable()
+            .startWith(nil)
+            .distinctUntilChanged()
+
+        let interactorState: Driver<State> = Observable
+            .combineLatest(
+                accountProvider.accounts,
+                searchObservable
+            )
+            .map { accounts, searchString -> [AccountPickerCellItem.Interactor] in
+                accounts
+                    .filter { account in
+                        account.currencyType.matchSearch(searchString)
+                    }
+                    .map(\.accountPickerCellItemInteractor)
             }
             .map { accounts in
                 if let button = button {
@@ -92,6 +105,8 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
             listener?.didTapBack()
         case .closed:
             listener?.didTapClose()
+        case .filter(let string):
+            searchRelay.accept(string)
         case .none:
             break
         }
@@ -108,6 +123,7 @@ extension AccountPickerInteractor {
         case select(BlockchainAccount)
         case back
         case closed
+        case filter(String?)
         case none
     }
 }

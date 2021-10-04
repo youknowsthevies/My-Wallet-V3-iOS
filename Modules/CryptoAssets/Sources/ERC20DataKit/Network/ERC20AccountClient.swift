@@ -7,7 +7,7 @@ import NetworkKit
 /// A client in charge of interacting with the ethereum backend service, in order to fetch ERC-20 data.
 ///
 /// - Note: The `New` suffix should be removed after `ERC20DataKit` data layer migration has been completed.
-protocol ERC20AccountClientAPINew {
+protocol ERC20AccountClientAPI {
 
     /// Fetches the ERC-20 token accounts associated with the given ethereum account address.
     ///
@@ -18,7 +18,7 @@ protocol ERC20AccountClientAPINew {
 }
 
 /// The client in charge of interacting with the ethereum backend service, in order to fetch ERC-20 data.
-final class ERC20AccountClient: ERC20AccountClientAPINew {
+final class ERC20AccountClient: ERC20AccountClientAPI {
 
     // MARK: - Private Types
 

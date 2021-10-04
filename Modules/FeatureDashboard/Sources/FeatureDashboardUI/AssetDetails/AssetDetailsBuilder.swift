@@ -5,13 +5,13 @@ import PlatformKit
 import PlatformUIKit
 import UIKit
 
-final class AssetDetailsBuilder {
+public final class AssetDetailsBuilder {
 
     private let accountsRouter: AccountsRouting
     private let currency: CryptoCurrency
     private let exchangeProviding: ExchangeProviding
 
-    init(
+    public init(
         accountsRouter: AccountsRouting,
         currency: CryptoCurrency,
         exchangeProviding: ExchangeProviding
@@ -21,7 +21,7 @@ final class AssetDetailsBuilder {
         self.exchangeProviding = exchangeProviding
     }
 
-    func build() -> UIViewController {
+    public func build() -> UIViewController {
         let interactor = AssetDetailsScreenInteractor(
             currency: currency,
             pairExchangeService: exchangeProviding[currency]

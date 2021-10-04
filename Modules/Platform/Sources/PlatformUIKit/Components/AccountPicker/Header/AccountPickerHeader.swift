@@ -3,7 +3,7 @@
 import Foundation
 
 /// The type of Header the screen should show
-public enum AccountPickerHeaderType {
+public enum AccountPickerHeaderType: Equatable {
     /// No header will be shown
     case none
     /// A simple Title + Subtitle header

@@ -42,7 +42,9 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     private let topMostViewControllerProvider: TopMostViewControllerProviding
 
     private let disposeBag = DisposeBag()
+
     private var linkBankFlowRouter: LinkBankFlowStarter?
+    private var securityRouter: PaymentSecurityRouter?
 
     var isDisplayingRootViewController: Bool {
         viewController.uiviewController.presentedViewController == nil
@@ -225,15 +227,16 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                 switch result {
                 case .abandoned:
                     transactionModel.process(action: .returnToPreviousStep)
-                case .completed(let paymentMethod) where paymentMethod.type.isCard:
-                    transactionModel.process(action: .showCardLinkingFlow)
-                case .completed(let paymentMethod) where paymentMethod.type.isBankAccount:
-                    transactionModel.process(action: .showBankLinkingFlow)
-                case .completed(let paymentMethod) where paymentMethod.type.isBankTransfer:
-                    // TODO: IOS-5300 Show wiring instructions instead
-                    transactionModel.process(action: .showBankLinkingFlow)
-                default:
-                    unimplemented("TODO")
+                case .completed(let paymentMethod):
+                    switch paymentMethod.type {
+                    case .bankAccount, .bankTransfer:
+                        transactionModel.process(action: .showBankLinkingFlow)
+                    case .card:
+                        transactionModel.process(action: .showCardLinkingFlow)
+                    case .funds:
+                        // TODO: IOS-5300 Show wiring instructions instead
+                        transactionModel.process(action: .showBankLinkingFlow)
+                    }
                 }
             }
         }
@@ -309,6 +312,40 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     func presentKYCFlowIfNeeded(completion: @escaping (Bool) -> Void) {
         let presenter = topMostViewControllerProvider.topMostViewController ?? viewController.uiviewController
         interactor.listener?.presentKYCFlowIfNeeded(from: presenter, completion: completion)
+    }
+
+    func routeToSecurityChecks(transactionModel: TransactionModel) {
+        let presenter = topMostViewControllerProvider.topMostViewController ?? viewController.uiviewController
+        securityRouter = PaymentSecurityRouter { result in
+            Logger.shared.debug(String(describing: result))
+            presenter.dismiss(animated: true) {
+                switch result {
+                case .abandoned, .failed:
+                    transactionModel.process(action: .returnToPreviousStep)
+                case .pending, .completed:
+                    transactionModel.process(action: .securityChecksCompleted)
+                }
+            }
+        }
+        transactionModel
+            .state
+            .take(1)
+            .asSingle()
+            .observeOn(MainScheduler.instance)
+            .subscribe { [securityRouter, showFailure] transactionState in
+                guard let authorizationData = transactionState.order?.authorizationData else {
+                    let error = FatalTransactionError.message("Order should contain authorization data.")
+                    showFailure(error)
+                    return
+                }
+                securityRouter?.presentPaymentSecurity(
+                    from: presenter,
+                    authorizationData: authorizationData
+                )
+            } onError: { [showFailure] error in
+                showFailure(error)
+            }
+            .disposed(by: disposeBag)
     }
 
     // MARK: - Private Functions

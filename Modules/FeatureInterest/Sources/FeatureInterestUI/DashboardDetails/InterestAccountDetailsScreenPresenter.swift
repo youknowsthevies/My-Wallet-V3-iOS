@@ -78,7 +78,7 @@ public final class InterestAccountDetailsScreenPresenter {
         footerPresenter = .init(
             text: String(
                 format: LocalizationId.Cell.Footer.title,
-                interactor.cryptoCurrency.code
+                interactor.cryptoCurrency.displayCode
             ),
             accessibility: .id(AccessibilityId.footerCellTitle)
         )

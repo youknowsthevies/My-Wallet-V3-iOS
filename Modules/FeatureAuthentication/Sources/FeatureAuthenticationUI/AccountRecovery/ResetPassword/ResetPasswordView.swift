@@ -28,7 +28,9 @@ struct ResetPasswordView: View {
     @State private var isPasswordVisible: Bool = false
     @State private var isConfirmNewPasswordVisible: Bool = false
 
-    init(store: Store<ResetPasswordState, ResetPasswordAction>) {
+    init(
+        store: Store<ResetPasswordState, ResetPasswordAction>
+    ) {
         self.store = store
         viewStore = ViewStore(store)
     }
@@ -60,11 +62,28 @@ struct ResetPasswordView: View {
             Spacer()
 
             PrimaryButton(title: LocalizedString.Button.resetPassword) {
-                // TODO: reset password operation
+                viewStore.send(.resetButtonTapped)
             }
             .disabled(viewStore.newPassword.isEmpty || viewStore.newPassword != viewStore.confirmNewPassword ||
                 viewStore.passwordStrength != .strong)
             .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.resetPasswordButton)
+
+            NavigationLink(
+                destination: IfLetStore(
+                    store.scope(
+                        state: \.resetAccountFailureState,
+                        action: ResetPasswordAction.resetAccountFailure
+                    ),
+                    then: { store in
+                        ResetAccountFailureView(store: store)
+                    }
+                ),
+                isActive: viewStore.binding(
+                    get: \.isResetAccountFailureVisible,
+                    send: ResetPasswordAction.setResetAccountFailureVisible(_:)
+                ),
+                label: EmptyView.init
+            )
         }
         .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
         .hideBackButtonTitle()
@@ -76,9 +95,6 @@ struct ResetPasswordView: View {
                 trailing: Layout.trailingPadding
             )
         )
-        .onDisappear {
-            viewStore.send(.didDisappear)
-        }
     }
 
     private var newPasswordField: some View {

@@ -2,6 +2,7 @@
 
 import BitcoinKit
 import DIKit
+import FeatureAuthenticationDomain
 import FeatureSettingsDomain
 import JavaScriptCore
 import PlatformKit

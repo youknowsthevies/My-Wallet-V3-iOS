@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import RxSwift
 
+/// Used to create a pending order when the user confirms the transaction
 public protocol OrderCreationServiceAPI: AnyObject {
     func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<CheckoutData>
 }

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import Localization
 import SwiftUI
@@ -33,7 +34,7 @@ struct LostFundsWarningView: View {
     var body: some View {
         VStack {
             Spacer()
-            Image.CircleIcon.lostFundWarning
+            Image.CircleIcon.warning
                 .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
                 .accessibility(identifier: AccessibilityIdentifiers.LostFundsWarningScreen.lostFundsWarningImage)
 
@@ -59,6 +60,23 @@ struct LostFundsWarningView: View {
                 viewStore.send(.goBackButtonTapped)
             }
             .accessibility(identifier: AccessibilityIdentifiers.LostFundsWarningScreen.goBackButton)
+
+            NavigationLink(
+                destination: IfLetStore(
+                    store.scope(
+                        state: \.resetPasswordState,
+                        action: LostFundsWarningAction.resetPassword
+                    ),
+                    then: { store in
+                        ResetPasswordView(store: store)
+                    }
+                ),
+                isActive: viewStore.binding(
+                    get: \.isResetPasswordScreenVisible,
+                    send: LostFundsWarningAction.setResetPasswordScreenVisible(_:)
+                ),
+                label: EmptyView.init
+            )
         }
         .multilineTextAlignment(.center)
         .padding(
@@ -79,7 +97,10 @@ struct LostFundsWarningView_Previews: PreviewProvider {
             store: .init(
                 initialState: .init(),
                 reducer: lostFundsWarningReducer,
-                environment: .init()
+                environment: .init(
+                    mainQueue: .main,
+                    analyticsRecorder: NoOpAnalyticsRecorder()
+                )
             )
         )
     }

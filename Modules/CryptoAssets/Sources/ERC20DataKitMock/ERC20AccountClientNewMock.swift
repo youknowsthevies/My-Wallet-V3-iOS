@@ -5,7 +5,7 @@ import Combine
 import NetworkError
 import PlatformKit
 
-final class ERC20AccountClientNewMock: ERC20AccountClientAPINew {
+final class ERC20AccountClientNewMock: ERC20AccountClientAPI {
 
     // MARK: - Private Properties
 

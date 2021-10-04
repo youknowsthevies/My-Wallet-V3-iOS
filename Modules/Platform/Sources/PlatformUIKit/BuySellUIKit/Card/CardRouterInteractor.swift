@@ -91,8 +91,22 @@ public final class CardRouterInteractor: Interactor {
             .take(1)
     }
 
+    public var pending: Observable<String> {
+        action
+            .compactMap { action in
+                switch action {
+                case .next(to: .pendingCardState(let cardId)):
+                    return cardId
+                default:
+                    return nil
+                }
+            }
+            .take(1)
+    }
+
     public var cancellation: Observable<Void> {
-        cancellationRelay.take(1)
+        cancellationRelay
+            .take(1)
     }
 
     var action: Observable<Action> {

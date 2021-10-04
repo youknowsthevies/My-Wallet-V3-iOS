@@ -153,8 +153,8 @@ public final class TransactionProcessor {
                         throw PlatformKitError.illegalStateException(message: "PendingTx is not executable")
                     }
                 })
-                .flatMap(weak: self) { (self, transaction) -> Single<TransactionResult> in
-                    self.engine.execute(pendingTransaction: transaction, secondPassword: secondPassword)
+                .flatMap { [engine] transaction -> Single<TransactionResult> in
+                    engine.execute(pendingTransaction: transaction, secondPassword: secondPassword)
                 }
         } catch {
             return .error(error)

@@ -16,6 +16,7 @@ public enum PriceServiceError: Error {
     case networkError(NetworkError)
 }
 
+/// Used to convert fiat <-> crypto
 public protocol PriceServiceAPI {
 
     /// Gets the money value pair of the given fiat value and crypto currency.

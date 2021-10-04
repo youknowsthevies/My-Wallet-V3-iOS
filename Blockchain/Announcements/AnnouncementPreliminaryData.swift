@@ -7,8 +7,27 @@ import PlatformKit
 /// Contains any needed remotely fetched data before displaying announcements.
 struct AnnouncementPreliminaryData {
 
-    /// Announcement Asset
-    let announcementAsset: CryptoCurrency?
+    // MARK: Types
+
+    struct AssetRename {
+        let asset: CryptoCurrency
+        let balance: MoneyValue
+    }
+
+    struct SimpleBuy {
+        let hasLinkedBanks: Bool
+        let isAvailable: Bool
+        let isEligible: Bool
+        let pendingOrderDetails: OrderDetails?
+    }
+
+    // MARK: Properties
+
+    /// Announcement New Asset
+    let newAsset: CryptoCurrency?
+
+    /// Announcement Asset Rename
+    let assetRename: AssetRename?
 
     /// The nabu user
     let user: NabuUser
@@ -18,8 +37,6 @@ struct AnnouncementPreliminaryData {
 
     /// User Simplified Due Diligence Eligibility
     let isSDDEligible: Bool
-
-    let hasLinkedBanks: Bool
 
     let country: CountryData?
 
@@ -38,45 +55,38 @@ struct AnnouncementPreliminaryData {
         authenticatorType != .standard
     }
 
+    let simpleBuy: SimpleBuy
+
     var hasIncompleteBuyFlow: Bool {
-        simpleBuyEventCache[.hasShownBuyScreen] && isSimpleBuyAvailable
+        simpleBuyEventCache[.hasShownBuyScreen] && simpleBuy.isAvailable
     }
-
-    let isSimpleBuyEligible: Bool
-
-    let pendingOrderDetails: OrderDetails?
 
     /// Whether the user has a wallet balance in any account.
     let hasAnyWalletBalance: Bool
 
-    private let isSimpleBuyAvailable: Bool
     private let simpleBuyEventCache: EventCache
 
     init(
         user: NabuUser,
         tiers: KYC.UserTiers,
         isSDDEligible: Bool,
-        hasLinkedBanks: Bool,
         countries: [CountryData],
         simpleBuyEventCache: EventCache = resolve(),
         authenticatorType: WalletAuthenticatorType,
-        pendingOrderDetails: OrderDetails?,
-        isSimpleBuyAvailable: Bool,
-        isSimpleBuyEligible: Bool,
         hasAnyWalletBalance: Bool,
-        announcementAsset: CryptoCurrency?
+        newAsset: CryptoCurrency?,
+        assetRename: AssetRename?,
+        simpleBuy: SimpleBuy
     ) {
         self.user = user
         self.tiers = tiers
         self.isSDDEligible = isSDDEligible
-        self.hasLinkedBanks = hasLinkedBanks
         self.simpleBuyEventCache = simpleBuyEventCache
         self.authenticatorType = authenticatorType
-        self.pendingOrderDetails = pendingOrderDetails
-        self.isSimpleBuyAvailable = isSimpleBuyAvailable
-        self.isSimpleBuyEligible = isSimpleBuyEligible
         self.hasAnyWalletBalance = hasAnyWalletBalance
-        self.announcementAsset = announcementAsset
+        self.newAsset = newAsset
+        self.assetRename = assetRename
+        self.simpleBuy = simpleBuy
         country = countries.first { $0.code == user.address?.countryCode }
     }
 }
