@@ -1,3 +1,4 @@
+import Combine
 import XCTest
 import Session
 
@@ -79,6 +80,46 @@ final class SessionTests: XCTestCase {
         }
 
         try XCTAssertEqual(state.get("value"), true)
+    }
 
+    func test_concurrency() throws {
+
+        let iterations = 5_000
+
+        DispatchQueue.concurrentPerform(iterations: iterations) { i in
+            state.set("\(i % 10)", to: i % 10)
+        }
+
+        DispatchQueue.concurrentPerform(iterations: iterations) { i in
+            do {
+                let value: Int = try state.get("\(i % 10)")
+                XCTAssertEqual(value, i % 10)
+            } catch {
+                XCTFail()
+            }
+        }
+
+        DispatchQueue.concurrentPerform(iterations: iterations) { i in
+            state.clear("\(i % 10)")
+        }
+
+        DispatchQueue.concurrentPerform(iterations: iterations) { i in
+            XCTAssertFalse(state.contains("\(i % 10)"))
+        }
+    }
+
+    func test_stress() {
+        DispatchQueue.concurrentPerform(iterations: 10_000) { i in
+            var rng: Int { Int.random(in: 0...100) }
+            state.set("\(rng)", to: rng)
+            _ = state.contains("\(rng)")
+            state.clear("\(rng)")
+            _ = try? state.get("\(rng)")
+            state.transaction { state in
+                state.set("\(rng)", to: rng)
+                state.clear("\(rng)")
+            }
+            _ = state.publisher(for: "\(rng)")
+        }
     }
 }
