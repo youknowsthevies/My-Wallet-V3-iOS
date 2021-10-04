@@ -187,7 +187,6 @@ public let welcomeReducer = Reducer.combine(
                 state.emailLoginState = nil
                 state.restoreWalletState = nil
             }
-
             if BuildFlag.isInternal, screenFlow == .manualLoginScreen {
                 state.manualCredentialsState = .init(
                     accountRecoveryEnabled:

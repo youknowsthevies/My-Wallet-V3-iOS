@@ -162,9 +162,11 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
         case .welcomeScreen(.presentScreenFlow(.emailLoginScreen)):
             state.walletCreationContext = .existing
             return .none
+
         case .welcomeScreen(.presentScreenFlow(.restoreWalletScreen)):
             state.walletCreationContext = .recovery
             return .none
+
         case .welcomeScreen(.presentScreenFlow(.legacyRestoreWalletScreen)):
             state.showLegacyRecoverWalletScreen = true
             state.walletCreationContext = .recovery
