@@ -78,7 +78,10 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
         return viewController
     }
 
-    public func billingAddress(for cardData: CardData, navigationControllerAPI: NavigationControllerAPI) -> UIViewController {
+    public func billingAddress(
+        for cardData: CardData,
+        navigationControllerAPI: NavigationControllerAPI
+    ) -> UIViewController {
         let selectionRouter = SelectionRouter(parent: navigationControllerAPI)
         let interactor = BillingAddressScreenInteractor(
             cardData: cardData,
