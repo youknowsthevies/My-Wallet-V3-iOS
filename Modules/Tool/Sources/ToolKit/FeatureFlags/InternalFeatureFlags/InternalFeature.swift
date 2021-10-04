@@ -36,6 +36,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable new Onboarding Tour on the Welcome Flow
     case newOnboardingTour
 
+    /// Enable unified sign in (account upgrade)
+    case unifiedSignIn
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -47,7 +50,8 @@ public enum InternalFeature: String, CaseIterable {
              .requestConsoleLogging,
              .secureChannel,
              .useTransactionsFlowToBuyCrypto,
-             .useTransactionsFlowToSellCrypto:
+             .useTransactionsFlowToSellCrypto,
+             .unifiedSignIn:
             return false
         case .splitDashboard:
             return true
@@ -84,6 +88,8 @@ extension InternalFeature {
             return "Load All ERC20 Tokens"
         case .newOnboardingTour:
             return "New Onboarding Tour"
+        case .unifiedSignIn:
+            return "Unified Sign In"
         }
     }
 }
