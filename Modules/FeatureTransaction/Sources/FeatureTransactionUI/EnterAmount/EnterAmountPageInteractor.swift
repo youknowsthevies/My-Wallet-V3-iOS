@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import Localization
@@ -36,6 +37,11 @@ protocol AuxiliaryViewPresenting: AnyObject {
     func makeViewController() -> UIViewController
 }
 
+protocol AuxiliaryViewPresentingDelegate: AnyObject {
+
+    func auxiliaryViewTapped(_ presenter: AuxiliaryViewPresenting, state: TransactionState)
+}
+
 final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePresentable>, EnterAmountPageInteractable {
 
     weak var router: EnterAmountPageRouting?
@@ -54,9 +60,11 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let amountViewInteractor: AmountViewInteracting
 
     private let transactionModel: TransactionModel
-    private let analyticsHook: TransactionAnalyticsHook
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
+
+    private let tiersService: KYCTiersServiceAPI
+    private let analyticsHook: TransactionAnalyticsHook
 
     init(
         transactionModel: TransactionModel,
@@ -64,12 +72,14 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         amountInteractor: AmountViewInteracting,
         action: AssetAction,
         navigationModel: ScreenNavigationModel,
+        tiersService: KYCTiersServiceAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve()
     ) {
         self.action = action
         self.transactionModel = transactionModel
         amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
+        self.tiersService = tiersService
         self.analyticsHook = analyticsHook
         sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
         sendAuxiliaryViewPresenter = SendAuxiliaryViewPresenter(
@@ -154,15 +164,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             })
             .disposeOnDeactivate(interactor: self)
 
-        let availableSources = transactionState
-            .map(\.availableSources)
-            .share(scope: .whileConnected)
-
-        let availableTargets = transactionState
-            .map(\.availableTargets)
-            .map { $0.compactMap { $0 as? BlockchainAccount } }
-            .share(scope: .whileConnected)
-
         let fee = transactionState
             .takeWhile { $0.action == .send }
             .compactMap(\.pendingTransaction)
@@ -189,9 +190,42 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .compactMap { $0 }
             .share(scope: .whileConnected)
 
+        let availableSources = transactionState
+            .map(\.availableSources)
+            .share(scope: .whileConnected)
+
+        let availableTargets = transactionState
+            .map(\.availableTargets)
+            .share(scope: .whileConnected)
+
+        let bottomAuxiliaryViewEnabled = Observable
+            .zip(
+                availableSources,
+                availableTargets
+            )
+            .map { [action] availableSources, availableTargets -> [Account] in
+                guard action == .buy || action == .deposit else {
+                    return availableTargets
+                }
+                return availableSources
+            }
+            .map(\.count)
+            .flatMap { [action, tiersService] accountsCount -> Observable<Bool> in
+                tiersService
+                    .fetchTiers()
+                    .asObservable()
+                    .map { userTiers -> Bool in
+                        if action == .buy {
+                            return userTiers.latestApprovedTier == .tier2
+                        }
+                        return accountsCount > 0
+                    }
+            }
+
         accountAuxiliaryViewInteractor
             .connect(
-                stream: auxiliaryViewAccount
+                stream: auxiliaryViewAccount,
+                tapEnabled: bottomAuxiliaryViewEnabled
             )
             .disposeOnDeactivate(interactor: self)
 
@@ -319,7 +353,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
     }
 
-    func handleTopAuxiliaryViewTapped(state: TransactionState) {
+    // MARK: - Private methods
+
+    private func handleTopAuxiliaryViewTapped(state: TransactionState) {
         switch state.action {
         case .buy:
             transactionModel.process(action: .showTargetSelection)
@@ -337,11 +373,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
              .withdraw:
             transactionModel.process(action: .showTargetSelection)
         default:
-            unimplemented("This view only supports withdraw and deposit at this time")
+            unimplemented()
         }
     }
-
-    // MARK: - Private methods
 
     private func calculateNextState(
         with state: State,
@@ -356,8 +390,10 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private func topAuxiliaryView(for transactionState: TransactionState) -> AuxiliaryViewPresenting? {
         let presenter: AuxiliaryViewPresenting?
         if transactionState.action.supportsTopAccountsView {
-            let interactor = TargetAuxiliaryViewInteractor(enterAmountInteractor: self)
-            presenter = TargetAuxiliaryViewPresenter(interactor: interactor, transactionState: transactionState)
+            presenter = TargetAuxiliaryViewPresenter(
+                delegate: self,
+                transactionState: transactionState
+            )
         } else {
             presenter = InfoAuxiliaryViewPresenter(transactionState: transactionState)
         }
@@ -413,6 +449,17 @@ extension EnterAmountPageInteractor {
             navigationModel: navigationModel,
             canContinue: false
         )
+    }
+}
+
+extension EnterAmountPageInteractor: AuxiliaryViewPresentingDelegate {
+
+    func auxiliaryViewTapped(_ presenter: AuxiliaryViewPresenting, state: TransactionState) {
+        if presenter === topAuxiliaryViewPresenter {
+            handleTopAuxiliaryViewTapped(state: state)
+        } else {
+            handleBottomAuxiliaryViewTapped(state: state)
+        }
     }
 }
 
