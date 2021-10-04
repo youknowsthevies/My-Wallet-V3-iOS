@@ -28,7 +28,8 @@ public struct Quote {
     public let time: Date
     public let fee: FiatValue
     public let rate: FiatValue
-    public let estimatedAmount: CryptoValue
+    public let estimatedCryptoAmount: CryptoValue
+    public let estimatedFiatAmount: FiatValue
 
     private let dateFormatter = DateFormatter.sessionDateFormat
 
@@ -46,11 +47,12 @@ public struct Quote {
         }
         let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: rate)
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        estimatedAmount = CryptoValue.create(major: majorEstimatedAmount, currency: cryptoCurrency)
-        let feeAmountMinor = feeRateMinor * estimatedAmount.displayMajorValue
+        estimatedCryptoAmount = CryptoValue.create(major: majorEstimatedAmount, currency: cryptoCurrency)
+        let feeAmountMinor = feeRateMinor * estimatedCryptoAmount.displayMajorValue
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         fee = FiatValue.create(minor: feeAmountMinor, currency: amount.currency)
         self.time = time
         self.rate = FiatValue.create(minor: rate, currency: amount.currency)
+        estimatedFiatAmount = estimatedCryptoAmount.convertToFiatValue(exchangeRate: self.rate)
     }
 }

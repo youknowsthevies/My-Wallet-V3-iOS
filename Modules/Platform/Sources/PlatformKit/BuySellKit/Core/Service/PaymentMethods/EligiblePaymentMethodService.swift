@@ -122,7 +122,6 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         for currency: FiatCurrency
     ) -> Single<[PaymentMethod]> {
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
-        let bankTransferEligibleFiatCurrencies = enabledCurrenciesService.bankTransferEligibleFiatCurrencies
         return Single
             .just(currency)
             .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Single<[PaymentMethod]> in

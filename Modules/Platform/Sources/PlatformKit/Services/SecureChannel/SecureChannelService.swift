@@ -3,6 +3,7 @@
 import Combine
 import CommonCryptoKit
 import DIKit
+import FeatureAuthenticationDomain
 import RxSwift
 
 public protocol SecureChannelAPI: AnyObject {

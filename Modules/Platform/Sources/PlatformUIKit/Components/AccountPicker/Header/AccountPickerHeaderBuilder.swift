@@ -1,6 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public struct AccountPickerHeaderBuilder: HeaderBuilder {
+import UIKit
+
+public protocol AccountPickerHeaderViewAPI: UIView {
+    var searchBar: UISearchBar? { get }
+}
+
+public struct AccountPickerHeaderBuilder {
 
     private let headerType: AccountPickerHeaderType
 
@@ -8,31 +14,46 @@ public struct AccountPickerHeaderBuilder: HeaderBuilder {
         self.headerType = headerType
     }
 
+    var isAlwaysVisible: Bool {
+        switch headerType {
+        case .none, .simple:
+            return false
+        case .default(let model):
+            return model.searchable
+        }
+    }
+
     public var defaultHeight: CGFloat {
         switch headerType {
         case .none:
             return 0
-        case .default:
-            return AccountPickerHeaderModel.defaultHeight
+        case .default(let model):
+            return model.height
         case .simple:
             return AccountPickerSimpleHeaderModel.defaultHeight
         }
     }
 
-    public func view(fittingWidth width: CGFloat, customHeight: CGFloat?) -> UIView? {
+    public func headerView(fittingWidth width: CGFloat, customHeight: CGFloat?) -> AccountPickerHeaderViewAPI? {
         let height = customHeight ?? defaultHeight
         let frame = CGRect(x: 0, y: 0, width: width, height: height)
         switch headerType {
         case .none:
             return nil
         case .default(let model):
-            let headerView = AccountPickerHeaderView(frame: frame)
-            headerView.model = model
-            return headerView
+            let view = AccountPickerHeaderView(frame: frame)
+            view.model = model
+            return view
         case .simple(let model):
-            let headerView = AccountPickerSimpleHeaderView(frame: frame)
-            headerView.model = model
-            return headerView
+            let view = AccountPickerSimpleHeaderView(frame: frame)
+            view.model = model
+            return view
         }
+    }
+}
+
+extension AccountPickerHeaderBuilder: HeaderBuilder {
+    public func view(fittingWidth width: CGFloat, customHeight: CGFloat?) -> UIView? {
+        headerView(fittingWidth: width, customHeight: customHeight)
     }
 }

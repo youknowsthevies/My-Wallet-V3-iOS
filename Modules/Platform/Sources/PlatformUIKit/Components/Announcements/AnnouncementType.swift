@@ -5,6 +5,7 @@ import ToolKit
 
 /// The announcement types as defined remotely
 public enum AnnouncementType: String, Codable {
+    case resubmitDocumentsAfterRecovery = "kyc_recovery_resubmission"
     case sddUsersFirstBuy = "sdd_users_buy"
     case simpleBuyKYCIncomplete = "sb_finish_signup"
     case simpleBuyPendingTransaction = "sb_pending_buy"
@@ -29,6 +30,8 @@ public enum AnnouncementType: String, Codable {
     /// The key identifying the announcement in cache
     var key: AnnouncementRecord.Key {
         switch self {
+        case .resubmitDocumentsAfterRecovery:
+            return .resubmitDocumentsAfterRecovery
         case .sddUsersFirstBuy:
             return .sddUsersFirstBuy
         case .newSwap:

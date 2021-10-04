@@ -3,6 +3,7 @@
 import ComposableArchitecture
 
 private struct UpdateSubscriptionId: Hashable {}
+private struct UpdateHeaderId: Hashable {}
 
 let accountPickerReducer = Reducer<AccountPickerState, AccountPickerAction, AccountPickerEnvironment>.combine(
     Reducer { state, action, environment in
@@ -12,26 +13,44 @@ let accountPickerReducer = Reducer<AccountPickerState, AccountPickerAction, Acco
             environment.rowSelected(id)
             return .none
 
-        case .update(rows: let rows):
+        case .updateRows(rows: let rows):
             state.rows = IdentifiedArrayOf(uniqueElements: rows)
+            return Effect(value: .subscribeToUpdates)
+
+        case .updateHeader(header: let header):
+            state.header = header
             return Effect(value: .subscribeToUpdates)
 
         case .failedToUpdate:
             return .none
 
         case .subscribeToUpdates:
-            return environment.sections()
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .cancellable(id: UpdateSubscriptionId(), cancelInFlight: true)
-                .map { result in
-                    switch result {
-                    case .success(let rows):
-                        return .update(rows: rows)
-                    case .failure(let error):
-                        return .failedToUpdate(error)
+            return .merge(
+                environment.sections()
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .cancellable(id: UpdateSubscriptionId(), cancelInFlight: true)
+                    .map { result in
+                        switch result {
+                        case .success(let rows):
+                            return .updateRows(rows)
+                        case .failure(let error):
+                            return .failedToUpdate(error)
+                        }
+                    },
+                environment.header()
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .cancellable(id: UpdateHeaderId(), cancelInFlight: true)
+                    .map { result in
+                        switch result {
+                        case .success(let header):
+                            return .updateHeader(header)
+                        case .failure(let error):
+                            return .failedToUpdate(error)
+                        }
                     }
-                }
+            )
 
         default:
             return .none

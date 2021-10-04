@@ -3,6 +3,8 @@
 import AnalyticsKit
 import ComposableArchitecture
 import DIKit
+import ERC20Kit
+import FeatureAuthenticationDomain
 import FeatureDebugUI
 import FeatureSettingsDomain
 import NetworkKit
@@ -26,6 +28,9 @@ public struct AppEnvironment {
     var deeplinkRouter: DeepLinkRouting
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var portfolioSyncingService: BalanceSharingSettingsServiceAPI
+    var mobileAuthSyncService: MobileAuthSyncServiceAPI
+    var resetPasswordService: ResetPasswordServiceAPI
+    var accountRecoveryService: AccountRecoveryServiceAPI
     var featureFlagsService: FeatureFlagsServiceAPI
     var internalFeatureService: InternalFeatureFlagServiceAPI // TODO: deprecated, use featureFlagsService instead
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
@@ -35,6 +40,7 @@ public struct AppEnvironment {
     var analyticsRecorder: AnalyticsEventRecorderAPI
 
     var coincore: CoincoreAPI
+    var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
 
     var walletManager: WalletManagerAPI
     var walletUpgradeService: WalletUpgradeServicing
@@ -63,18 +69,22 @@ public struct AppEnvironment {
         deeplinkRouter: DeepLinkRouting,
         backgroundAppHandler: BackgroundAppHandlerAPI,
         portfolioSyncingService: BalanceSharingSettingsServiceAPI,
+        mobileAuthSyncService: MobileAuthSyncServiceAPI,
+        resetPasswordService: ResetPasswordServiceAPI,
+        accountRecoveryService: AccountRecoveryServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
-        internalFeatureService: InternalFeatureFlagServiceAPI, // TODO: deprecated, use featureFlagsService instead,
+        internalFeatureService: InternalFeatureFlagServiceAPI,
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI,
         supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI,
         customerSupportChatService: CustomerSupportChatServiceAPI,
         sharedContainer: SharedContainerUserDefaults,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         coincore: CoincoreAPI,
+        erc20CryptoAssetService: ERC20CryptoAssetServiceAPI,
         walletManager: WalletManagerAPI,
         walletUpgradeService: WalletUpgradeServicing,
         exchangeRepository: ExchangeAccountRepositoryAPI,
-        appFeatureConfigurator: FeatureConfiguratorAPI, // TODO: deprecated, use featureFlagsService instead,
+        appFeatureConfigurator: FeatureConfiguratorAPI,
         blockchainSettings: BlockchainSettings.App,
         credentialsStore: CredentialsStoreAPI,
         urlSession: URLSession,
@@ -95,6 +105,9 @@ public struct AppEnvironment {
         self.deeplinkRouter = deeplinkRouter
         self.backgroundAppHandler = backgroundAppHandler
         self.portfolioSyncingService = portfolioSyncingService
+        self.mobileAuthSyncService = mobileAuthSyncService
+        self.resetPasswordService = resetPasswordService
+        self.accountRecoveryService = accountRecoveryService
         self.featureFlagsService = featureFlagsService
         self.internalFeatureService = internalFeatureService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
@@ -102,17 +115,14 @@ public struct AppEnvironment {
         self.customerSupportChatService = customerSupportChatService
         self.sharedContainer = sharedContainer
         self.analyticsRecorder = analyticsRecorder
-
         self.coincore = coincore
-
+        self.erc20CryptoAssetService = erc20CryptoAssetService
         self.walletManager = walletManager
         self.walletUpgradeService = walletUpgradeService
         self.exchangeRepository = exchangeRepository
-
         self.appFeatureConfigurator = appFeatureConfigurator
         self.blockchainSettings = blockchainSettings
         self.credentialsStore = credentialsStore
-
         self.urlSession = urlSession
         self.mainQueue = mainQueue
         self.appStoreOpener = appStoreOpener

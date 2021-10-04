@@ -335,6 +335,21 @@ extension LocalizationConstants {
             )
         }
 
+        public enum ResubmitDocumentsAfterRecovery {
+            public static let title = NSLocalizedString(
+                "Documents Needed",
+                comment: "The title of the action on the announcement card for when a user needs to submit documents to re-verify their identity."
+            )
+            public static let description = NSLocalizedString(
+                "Please re-verify your identity to complete account recovery. Some features may not be available until you do.",
+                comment: "The description on the announcement card for when a user needs to submit documents to re-verify their identity."
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Re-verify Now",
+                comment: "The title of the action on the announcement card for when a user needs to submit documents to re-verify their identity."
+            )
+        }
+
         public enum KycAirdrop {
             public static let title = NSLocalizedString(
                 "Want Free Crypto?",

@@ -11,7 +11,10 @@ import ToolKit
 
 public enum Onboarding {
     public enum Alert: Equatable {
+        case proceedToLoggedIn(ProceedToLoggedInError)
         case walletAuthentication(AuthenticationError)
+        case walletCreation(WalletCreationError)
+        case walletRecovery(WalletRecoveryError)
     }
 
     public enum Action: Equatable {
@@ -23,6 +26,7 @@ public enum Onboarding {
         case informSecondPasswordDetected
         case forgetWallet
         case createAccountScreenClosed
+        case legacyRecoverWalletScreenClosed
     }
 
     public struct State: Equatable {
@@ -32,8 +36,12 @@ public enum Onboarding {
         public var welcomeState: WelcomeState?
         public var displayAlert: Alert?
         public var showLegacyCreateWalletScreen: Bool = false
+        public var showLegacyRecoverWalletScreen: Bool = false
         public var deeplinkContent: URIContent?
         public var walletCreationContext: WalletCreationContext?
+        public var walletRecoveryContext: WalletRecoveryContext?
+        public var newPasswordForWalletRecovery: String?
+        public var nabuInfoForResetAccount: WalletInfo.NabuInfo?
 
         /// Helper method to toggle any visible legacy screen if needed
         /// ugly, yeah, I know, but we need to check which current screen is presented
@@ -41,6 +49,9 @@ public enum Onboarding {
         mutating func hideLegacyScreenIfNeeded() {
             if showLegacyCreateWalletScreen {
                 showLegacyCreateWalletScreen = false
+            }
+            if showLegacyRecoverWalletScreen {
+                showLegacyRecoverWalletScreen = false
             }
         }
 
@@ -70,6 +81,7 @@ public enum Onboarding {
         var alertPresenter: AlertViewPresenterAPI
         var mainQueue: AnySchedulerOf<DispatchQueue>
         let featureFlags: InternalFeatureFlagServiceAPI
+        var appFeatureConfigurator: FeatureConfiguratorAPI
         var buildVersionProvider: () -> String
     }
 }
@@ -85,6 +97,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 WelcomeEnvironment(
                     mainQueue: $0.mainQueue,
                     featureFlags: $0.featureFlags,
+                    appFeatureConfigurator: $0.appFeatureConfigurator,
                     buildVersionProvider: $0.buildVersionProvider
                 )
             }
@@ -132,9 +145,13 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             state.showLegacyCreateWalletScreen = false
             state.walletCreationContext = nil
             return .none
+        case .legacyRecoverWalletScreenClosed:
+            state.showLegacyRecoverWalletScreen = false
+            state.walletCreationContext = nil
+            return .none
         case .welcomeScreen(.presentScreenFlow(.welcomeScreen)):
-            // don't clear the state if the state is not .existing when dismissing the modal by setting the screen flow back to welcome screen
-            if state.walletCreationContext == .existing {
+            // don't clear the state if the state is .new when dismissing the modal by setting the screen flow back to welcome screen
+            if state.walletCreationContext == .existing || state.walletCreationContext == .recovery {
                 state.walletCreationContext = nil
             }
             return .none
@@ -144,6 +161,13 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return .none
         case .welcomeScreen(.presentScreenFlow(.emailLoginScreen)):
             state.walletCreationContext = .existing
+            return .none
+        case .welcomeScreen(.presentScreenFlow(.restoreWalletScreen)):
+            state.walletCreationContext = .recovery
+            return .none
+        case .welcomeScreen(.presentScreenFlow(.legacyRestoreWalletScreen)):
+            state.showLegacyRecoverWalletScreen = true
+            state.walletCreationContext = .recovery
             return .none
         case .welcomeScreen:
             return .none

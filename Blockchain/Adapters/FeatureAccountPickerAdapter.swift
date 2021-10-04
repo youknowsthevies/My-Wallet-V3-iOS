@@ -15,11 +15,11 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
     fileprivate var disposeBag = DisposeBag()
     var shouldOverrideNavigationEffects: Bool = false
 
-    fileprivate let headerRelay = BehaviorRelay<HeaderBuilder?>(value: nil)
     fileprivate let modelSelectedRelay = PublishRelay<AccountPickerCellItem>()
     fileprivate let backButtonRelay = PublishRelay<Void>()
     fileprivate let closeButtonRelay = PublishRelay<Void>()
     fileprivate let sections = PassthroughSubject<[AccountPickerRow], Never>()
+    fileprivate let header = PassthroughSubject<Header, Error>()
 
     fileprivate lazy var environment = AccountPickerEnvironment(
         rowSelected: { [unowned self] identifier in
@@ -75,7 +75,8 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                     return group
                 }
                 .eraseToAnyPublisher()
-        }
+        },
+        header: { [header] in header.eraseToAnyPublisher() }
     )
 
     fileprivate var models: [AccountPickerSectionViewModel] = []
@@ -226,8 +227,23 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
             .disposed(by: disposeBag)
 
         stateWait.map(\.headerModel)
-            .map { AccountPickerHeaderBuilder(headerType: $0) }
-            .drive(headerRelay)
+            .drive(weak: self) { (self, headerType) in
+                let header: Header
+                switch headerType {
+                case .default(let model):
+                    header = .normal(
+                        title: model.title,
+                        subtitle: model.subtitle,
+                        image: model.imageContent.imageResource?.image,
+                        tableTitle: model.tableTitle
+                    )
+                case .simple(let model):
+                    header = .simple(subtitle: model.subtitle)
+                case .none:
+                    header = .none
+                }
+                self.header.send(header)
+            }
             .disposed(by: disposeBag)
 
         stateWait.map(\.sections)

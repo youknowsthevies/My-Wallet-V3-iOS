@@ -7,6 +7,7 @@ import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 final class ReceiveScreenViewController: BaseScreenViewController {
     private typealias LocalizedString = LocalizationConstants.Receive

@@ -85,7 +85,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
                 let interactionData = CheckoutInteractionData(
                     time: payload.quote.time,
                     fee: payload.checkoutData.order.fee ?? MoneyValue(fiatValue: payload.quote.fee),
-                    amount: MoneyValue(cryptoValue: payload.quote.estimatedAmount),
+                    amount: MoneyValue(cryptoValue: payload.quote.estimatedCryptoAmount),
                     exchangeRate: MoneyValue(fiatValue: payload.quote.rate),
                     card: nil,
                     bankTransferData: payload.checkoutData.linkedBankData,

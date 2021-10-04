@@ -57,7 +57,6 @@ public enum LoggedIn {
         var remoteNotificationTokenSender: RemoteNotificationTokenSending
         var remoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting
         var walletManager: WalletManagerAPI
-        var coincore: CoincoreAPI
         var appSettings: BlockchainSettingsAppAPI
         var deeplinkRouter: DeepLinkRouting
         var featureFlagsService: FeatureFlagsServiceAPI
@@ -125,9 +124,6 @@ let loggedInReducer = Reducer<
                 .fireAndForget(),
             environment.remoteNotificationAuthorizer
                 .requestAuthorizationIfNeededPublisher()
-                .catchToEffect()
-                .fireAndForget(),
-            environment.coincore.initialize()
                 .catchToEffect()
                 .fireAndForget(),
             .fireAndForget {

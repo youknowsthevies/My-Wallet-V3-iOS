@@ -45,6 +45,7 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     var pinRouter: PinRouter?
 
     @LazyInject var transactionsAdapter: TransactionsAdapterAPI
+    @LazyInject var nabuAuthenticationErrorReceiver: NabuAuthenticationErrorReceiverAPI
 
     init(
         store: Store<LoggedIn.State, LoggedIn.Action>,
@@ -83,6 +84,16 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
         sideMenuViewController?.slidingViewController = slidingViewController
 
         setupBindings()
+
+        nabuAuthenticationErrorReceiver
+            .userAlreadyRestored
+            .receive(on: RunLoop.main)
+            // make sure we only receive the value once so that the error is not shown more than one time
+            .prefix(1)
+            .sink(receiveValue: { walletIdHint in
+                self.showNabuUserConflictErrorIfNeeded(walletIdHint: walletIdHint)
+            })
+            .store(in: &cancellables)
     }
 
     func clear() {

@@ -46,6 +46,13 @@ public struct LinkedBankData {
         state == .active
     }
 
+    public var label: String {
+        guard let account = account else {
+            return identifier
+        }
+        return "\(account.bankName) \(account.type.title) \(account.number)"
+    }
+
     init?(response: LinkedBankResponse) {
         identifier = response.id
         account = Account(response: response)

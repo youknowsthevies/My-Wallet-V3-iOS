@@ -5,6 +5,7 @@ import Localization
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import UIComponentsKit
 
 protocol SendRootInteractable: Interactable, TransactionFlowListener {
     var router: SendRootRouting? { get set }
@@ -38,13 +39,13 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
 
     func routeToSendLanding() {
         let header = AccountPickerHeaderModel(
-            title: LocalizedSend.Header.sendCryptoNow,
-            subtitle: LocalizedSend.Header.chooseAWalletToSendFrom,
             imageContent: .init(
                 imageResource: ImageAsset.iconSend.imageResource,
                 accessibility: .none,
                 renderingMode: .normal
-            )
+            ),
+            subtitle: LocalizedSend.Header.chooseWalletToSend,
+            title: LocalizedSend.Header.sendCryptoNow
         )
         let navigationModel = ScreenNavigationModel(
             leadingButton: .drawer,

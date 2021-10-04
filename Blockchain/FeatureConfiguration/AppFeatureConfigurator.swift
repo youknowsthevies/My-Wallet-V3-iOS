@@ -146,7 +146,10 @@ extension AppFeatureConfigurator: FeatureVariantFetching {
             .map { FeatureTestingVariant(rawValue: $0) ?? .variantA }
     }
 
-    func fetchTestingVariant(for key: AppFeature, onErrorReturn defaultVariant: FeatureTestingVariant) -> Single<FeatureTestingVariant> {
+    func fetchTestingVariant(
+        for key: AppFeature,
+        onErrorReturn defaultVariant: FeatureTestingVariant
+    ) -> Single<FeatureTestingVariant> {
         fetchString(for: key)
             .map { FeatureTestingVariant(rawValue: $0) ?? defaultVariant }
             .catchErrorJustReturn(defaultVariant)

@@ -59,8 +59,6 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
         case .fiat:
             return coincore.fiatAsset
                 .accountGroup(filter: .all)
-                .asObservable()
-                .asSingle()
                 .map(\.accounts)
                 .map { accounts in
                     accounts.filter { $0.currencyType == currency }
@@ -68,11 +66,10 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
                 .map { accounts in
                     accounts as [BlockchainAccount]
                 }
-                .catchErrorJustReturn([])
+                .replaceError(with: [])
+                .asSingle()
         case .crypto(let cryptoCurrency):
-            guard let cryptoAsset = coincore.cryptoAssets.first(where: { $0.asset == cryptoCurrency }) else {
-                return .just([])
-            }
+            let cryptoAsset = coincore[cryptoCurrency]
             let filter: AssetFilter
 
             switch accountType {
@@ -88,8 +85,6 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
             }
             return cryptoAsset
                 .accountGroup(filter: filter)
-                .asObservable()
-                .asSingle()
                 .map(\.accounts)
                 .map { accounts in
                     accounts.filter { $0.currencyType == currency }
@@ -97,7 +92,8 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
                 .map { accounts in
                     accounts as [BlockchainAccount]
                 }
-                .catchErrorJustReturn([])
+                .replaceError(with: [])
+                .asSingle()
         }
     }
 

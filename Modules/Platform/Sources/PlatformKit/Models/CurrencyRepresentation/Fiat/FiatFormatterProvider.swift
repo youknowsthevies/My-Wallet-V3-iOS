@@ -30,7 +30,7 @@ final class FiatFormatterProvider {
             } else {
                 let formatter = NumberFormatter(
                     locale: locale,
-                    currencyCode: fiatCurrency.code,
+                    currencyCode: fiatCurrency.displayCode,
                     maxFractionDigits: maxFractionDigits
                 )
                 self.formatters[key] = formatter

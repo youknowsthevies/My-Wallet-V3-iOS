@@ -2,6 +2,7 @@
 
 import BitcoinKit
 import DIKit
+import FeatureAuthenticationDomain
 import FeatureSettingsDomain
 import JavaScriptCore
 import PlatformKit
@@ -179,6 +180,18 @@ extension WalletManager {
 
     func markWalletAsNew() {
         wallet.isNew = true
+    }
+
+    func recoverFromMetadata(seedPhrase: String) {
+        wallet.recoverFromMetadata(withMnemonicPassphrase: seedPhrase)
+    }
+
+    func recover(email: String, password: String, seedPhrase: String) {
+        wallet.recover(
+            withEmail: email,
+            password: password,
+            mnemonicPassphrase: seedPhrase
+        )
     }
 }
 

@@ -8,6 +8,7 @@ import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
+import UIComponentsKit
 
 protocol SwapLandingRouting: ViewableRouting {}
 
@@ -185,14 +186,14 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
 extension SwapLandingInteractor {
     struct State {
         var header: AccountPickerHeaderModel = .init(
-            title: LocalizationId.Header.title,
-            subtitle: LocalizationId.Header.description,
             imageContent: .init(
-                imageResource: .local(name: "icon_swap_transaction", bundle: .featureTransactionUI),
+                imageResource: ImageAsset.iconSwapTransaction.imageResource,
                 accessibility: .none,
                 renderingMode: .normal
             ),
-            tableTitle: LocalizationId.trending
+            subtitle: LocalizationId.Header.description,
+            tableTitle: LocalizationId.trending,
+            title: LocalizationId.Header.title
         )
         var pairViewModels: [SwapTrendingPairViewModel]
     }

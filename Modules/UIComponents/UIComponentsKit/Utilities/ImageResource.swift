@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import SwiftUI
 import UIKit
 
 public enum ImageResource: Hashable {
@@ -24,5 +25,13 @@ public enum ImageResource: Hashable {
             }
             return .url(url)
         }
+    }
+
+    public var image: Image? {
+        guard case .image(let image) = resource else {
+            return nil
+        }
+
+        return Image(uiImage: image)
     }
 }

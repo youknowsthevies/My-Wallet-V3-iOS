@@ -63,6 +63,7 @@ final class PricesViewController: BaseScreenViewController {
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorColor = .clear
+        tableView.keyboardDismissMode = .onDrag
 
         tableView.register(LabelTableViewCell.self, forCellReuseIdentifier: LabelTableViewCell.identifier)
         tableView.register(PricesTableViewCell.self, forCellReuseIdentifier: PricesTableViewCell.identifier)

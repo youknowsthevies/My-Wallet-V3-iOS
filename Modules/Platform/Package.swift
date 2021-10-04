@@ -84,7 +84,8 @@ let package = Package(
                 .product(name: "RxCombine", package: "RxCombine"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
-                .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
+                // TODO: refactor this to use `FeatureAuthenticationDomain` as this shouldn't depend on DataKit
+                .product(name: "FeatureAuthentication", package: "FeatureAuthentication"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
@@ -147,6 +148,7 @@ let package = Package(
             dependencies: [
                 .target(name: "PlatformKit"),
                 .target(name: "PlatformKitMock"),
+                .product(name: "FeatureAuthenticationMock", package: "FeatureAuthentication"),
                 .product(name: "NabuNetworkErrorMock", package: "NetworkErrors"),
                 .product(name: "NetworkKitMock", package: "Network"),
                 .product(name: "ToolKitMock", package: "Tool"),

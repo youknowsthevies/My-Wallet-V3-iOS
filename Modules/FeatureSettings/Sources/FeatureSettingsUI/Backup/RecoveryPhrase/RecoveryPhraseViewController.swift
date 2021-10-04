@@ -38,6 +38,11 @@ final class RecoveryPhraseViewController: BaseScreenViewController {
         nextButtonView.viewModel = presenter.nextViewModel
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        presenter.viewDidAppear()
+    }
+
     private func setupNavigationBar() {
         titleViewStyle = presenter.titleView
         set(

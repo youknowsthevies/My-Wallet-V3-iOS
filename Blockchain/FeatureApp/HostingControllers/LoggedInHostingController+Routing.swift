@@ -2,14 +2,16 @@
 
 import Combine
 import DIKit
+import FeatureAuthenticationUI
 import FeatureDashboardUI
 import FeatureSettingsUI
 import PlatformKit
 import PlatformUIKit
+import SwiftUI
 import ToolKit
 
 // Provides necessary methods for several protocols and tab swapping
-// most, if not all, is copied over from `AppCoordinator`
+// most, if not all, is copied over from `AppCoordinator`, which was deprecated and removed
 extension LoggedInHostingController {
 
     func handleAirdrops() {
@@ -43,7 +45,7 @@ extension LoggedInHostingController {
             // No camera access, an alert will be displayed automatically.
             return
         }
-        UIApplication.shared.topMostViewController?.present(
+        topMostViewController?.present(
             viewController,
             animated: true
         )
@@ -87,7 +89,7 @@ extension LoggedInHostingController {
         let presenter = WebLoginScreenPresenter()
         let viewController = WebLoginScreenViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
-        UIApplication.shared.topMostViewController?.present(
+        topMostViewController?.present(
             navigationController,
             animated: true
         )
@@ -164,7 +166,7 @@ extension LoggedInHostingController {
             }
         )
         alert.addAction(UIAlertAction(title: LocalizationConstants.cancel, style: .cancel))
-        present(alert, animated: true)
+        topMostViewController?.present(alert, animated: true)
     }
 
     /// Starts Buy Crypto flow.
@@ -219,5 +221,22 @@ extension LoggedInHostingController {
             for: fiatCurrency,
             isOriginDeposit: isOriginDeposit
         )
+    }
+
+    func showNabuUserConflictErrorIfNeeded(walletIdHint: String) {
+        let warningView = UIHostingController(
+            rootView: TradingAccountWarningView(
+                walletIdHint: walletIdHint
+            )
+        )
+        warningView.isModalInPresentation = true
+        warningView.rootView.logoutButtonTapped = { [weak self] in
+            guard let self = self else { return }
+            self.handleLogout()
+        }
+        warningView.rootView.cancelButtonTapped = {
+            warningView.dismiss(animated: true, completion: nil)
+        }
+        topMostViewController?.present(warningView, animated: true)
     }
 }

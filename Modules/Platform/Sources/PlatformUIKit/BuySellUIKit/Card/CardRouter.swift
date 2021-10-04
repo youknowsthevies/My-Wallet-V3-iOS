@@ -14,10 +14,9 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
 
     private let routingType: RoutingType
     private let navigationRouter: NavigationRouterAPI
+    private let builder: CardComponentBuilderAPI
 
     private let disposeBag = DisposeBag()
-    private let internalInteractor: CardRouterInteractor
-    private let builder: CardComponentBuilderAPI
 
     public init(
         interactor: CardRouterInteractor,
@@ -26,7 +25,6 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
         navigationRouter: NavigationRouterAPI = NavigationRouter()
     ) {
         self.builder = builder
-        internalInteractor = interactor
         self.navigationRouter = navigationRouter
         self.routingType = routingType
         super.init(interactor: interactor)

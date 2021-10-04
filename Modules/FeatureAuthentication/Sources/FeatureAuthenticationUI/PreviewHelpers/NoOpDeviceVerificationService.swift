@@ -49,3 +49,17 @@ final class NoOpInternalFeatureFlagService: InternalFeatureFlagServiceAPI {
 
     func disable(_ feature: InternalFeature) {}
 }
+
+final class NoOpFeatureConfigurator: FeatureConfiguratorAPI {
+    func initialize() {}
+
+    func configuration(for feature: AppFeature) -> AppFeatureConfiguration {
+        AppFeatureConfiguration(isEnabled: false)
+    }
+
+    func configuration<Feature>(
+        for feature: AppFeature
+    ) -> Result<Feature, FeatureConfigurationError> where Feature: Decodable {
+        .failure(.missingValue)
+    }
+}

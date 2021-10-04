@@ -4,7 +4,7 @@ import Combine
 import PlatformKit
 import RxSwift
 
-class MockCoincore: CoincoreAPI {
+final class MockCoincore: CoincoreAPI {
 
     var allAccounts: AnyPublisher<AccountGroup, CoincoreError> = .empty()
     var allAssets: [Asset] = []
@@ -13,9 +13,9 @@ class MockCoincore: CoincoreAPI {
 
     var initializePublisherCalled = false
 
-    func initialize() -> AnyPublisher<Never, CoincoreError> {
+    func initialize() -> AnyPublisher<Void, CoincoreError> {
         initializePublisherCalled = true
-        return .empty()
+        return .just(())
     }
 
     func getTransactionTargets(
@@ -33,10 +33,6 @@ class MockCoincore: CoincoreAPI {
 }
 
 class MockAsset: Asset {
-
-    func initialize() -> AnyPublisher<Void, AssetError> {
-        .empty()
-    }
 
     func accountGroup(filter: AssetFilter) -> AnyPublisher<AccountGroup, Never> {
         .empty()

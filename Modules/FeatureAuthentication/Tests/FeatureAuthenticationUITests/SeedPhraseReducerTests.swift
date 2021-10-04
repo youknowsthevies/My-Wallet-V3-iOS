@@ -6,6 +6,9 @@ import ComposableArchitecture
 import HDWalletKit
 import XCTest
 
+@testable import AnalyticsKitMock
+@testable import ToolKitMock
+
 final class SeedPhraseReducerTests: XCTestCase {
 
     private var mockMainQueue: TestSchedulerOf<DispatchQueue>!
@@ -25,7 +28,9 @@ final class SeedPhraseReducerTests: XCTestCase {
             reducer: seedPhraseReducer,
             environment: SeedPhraseEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
-                validator: SeedPhraseValidator(words: Set(WordList.default.words))
+                validator: SeedPhraseValidator(words: Set(WordList.default.words)),
+                externalAppOpener: MockExternalAppOpener(),
+                analyticsRecorder: MockAnalyticsRecorder()
             )
         )
     }

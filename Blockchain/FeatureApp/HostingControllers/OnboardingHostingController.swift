@@ -67,6 +67,21 @@ final class OnboardingHostingController: UIViewController {
             }
             .store(in: &cancellables)
 
+        viewStore.publisher
+            .showLegacyRecoverWalletScreen
+            .removeDuplicates()
+            .sink { [weak self] shouldPresent in
+                guard let self = self else { return }
+                guard shouldPresent else {
+                    self.recoverWalletNavigationController?.dismiss(animated: true) {
+                        self.recoverWalletNavigationController = nil
+                    }
+                    return
+                }
+                self.presentRecoverFunds()
+            }
+            .store(in: &cancellables)
+
         store
             .scope(state: \.welcomeState, action: Onboarding.Action.welcomeScreen)
             .ifLet(then: { [weak self] authStore in
@@ -187,10 +202,76 @@ final class OnboardingHostingController: UIViewController {
         present(navigationController, animated: true, completion: nil)
     }
 
+    // MARK: Recover Wallet
+
+    private func presentRecoverFunds() {
+        let presenter = RecoverFundsScreenPresenter(
+            navBarStyle: .darkContent(),
+            leadingButton: .none,
+            trailingButton: .close
+        )
+        let cancellable = presenter.continueTappedRelay
+            .asPublisher()
+            .ignoreFailure()
+            .sink(receiveValue: { [weak self] mnemonic in
+                self?.navigateToCreateRecoveryWalletScreen(mnemonic)
+            })
+        let dismissHandler: () -> Void = { [weak self] in
+            cancellable.cancel()
+            self?.viewStore.send(.legacyRecoverWalletScreenClosed)
+        }
+        let controller = RecoverFundsViewController(presenter: presenter, dismissHandler: dismissHandler)
+        // disallow swipe down to dismiss
+        controller.isModalInPresentation = true
+        let navigationController = UINavigationController(rootViewController: controller)
+        present(navigationController, animated: true, completion: nil)
+        recoverWalletNavigationController = navigationController
+    }
+
+    private func navigateToCreateRecoveryWalletScreen(_ mnemonic: String) {
+        let interactor = RecoverWalletInteractor(passphrase: mnemonic)
+        let presenter = RegisterWalletScreenPresenter(
+            interactor: interactor,
+            type: .recovery,
+            navBarStyle: .darkContent(),
+            leadingButton: .none,
+            trailingButton: .close
+        )
+        let cancellable = presenter.webViewLaunchRelay
+            .asObservable()
+            .asPublisher()
+            .ignoreFailure()
+            .sink { [weak self] url in
+                guard let self = self else { return }
+                guard let navController = self.recoverWalletNavigationController else { return }
+                self.webViewService.openSafari(url: url, from: navController)
+            }
+        let dismissHandler = { [weak self] in
+            cancellable.cancel()
+            self?.viewStore.send(.legacyRecoverWalletScreenClosed)
+        }
+        let viewController = RegisterWalletViewController(presenter: presenter, dismissHandler: dismissHandler)
+        // disallow swipe down to dismiss
+        viewController.isModalInPresentation = true
+        recoverWalletNavigationController?.pushViewController(viewController, animated: true)
+    }
+
     // MARK: Alerts
 
     private func showAlert(type: Onboarding.Alert) {
         switch type {
+        case .proceedToLoggedIn(.coincore(let error)):
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.genericError + " " + error.localizedDescription
+            )
+            alertViewPresenter.notify(content: content, in: self)
+        case .proceedToLoggedIn(.erc20Service(let error)):
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.genericError + " " + error.localizedDescription
+            )
+            alertViewPresenter.notify(content: content, in: self)
         case .walletAuthentication(let error) where error.code == .failedToLoadWallet:
             handleFailedToLoadWalletAlert()
         case .walletAuthentication(let error) where error.code == .noInternet:
@@ -207,6 +288,18 @@ final class OnboardingHostingController: UIViewController {
                 )
                 alertViewPresenter.notify(content: content, in: self)
             }
+        case .walletCreation(let error):
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: error.localizedDescription
+            )
+            alertViewPresenter.notify(content: content, in: self)
+        case .walletRecovery(let error):
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: error.localizedDescription
+            )
+            alertViewPresenter.notify(content: content, in: self)
         }
     }
 }

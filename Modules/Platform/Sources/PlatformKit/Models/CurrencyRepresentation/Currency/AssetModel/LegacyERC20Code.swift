@@ -6,8 +6,8 @@ import Foundation
 public enum NonCustodialCoinCode: String, CaseIterable {
     case bitcoin = "BTC"
     case bitcoinCash = "BCH"
-    case stellar = "XLM"
     case ethereum = "ETH"
+    case stellar = "XLM"
 }
 
 /// An enumeration of the hardcoded ERC20 assets.

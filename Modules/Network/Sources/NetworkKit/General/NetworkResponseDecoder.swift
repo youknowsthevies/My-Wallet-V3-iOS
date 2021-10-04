@@ -162,8 +162,8 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         for request: NetworkRequest,
         emptyPayloadHandler: (ServerResponse) -> Result<ResponseType, NetworkError>
     ) -> Result<ResponseType, NetworkError> {
-        #if INTERNAL_BUILD
-        let consoleLoggingEnabled = interalFeatureFlagService.isEnabled(.requestConsoleLogging)
+        #if DEBUG || INTERNAL_BUILD
+        let consoleLoggingEnabled = interalFeatureFlagService.isEnabled(.requestConsoleLogging) || request.isDebugging.response
         if let data = response.payload, consoleLoggingEnabled {
             if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
                 Logger.shared.debug("""

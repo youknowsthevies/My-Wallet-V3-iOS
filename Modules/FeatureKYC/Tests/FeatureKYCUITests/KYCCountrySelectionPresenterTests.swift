@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import FeatureAuthenticationMock
 @testable import FeatureKYCUI
 import PlatformKit
 @testable import PlatformKitMock

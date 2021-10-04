@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import Localization
 import SwiftUI
@@ -97,7 +98,9 @@ struct ImportWalletView_Previews: PreviewProvider {
             store: .init(
                 initialState: .init(),
                 reducer: importWalletReducer,
-                environment: .init()
+                environment: .init(
+                    analyticsRecorder: NoOpAnalyticsRecorder()
+                )
             )
         )
     }
