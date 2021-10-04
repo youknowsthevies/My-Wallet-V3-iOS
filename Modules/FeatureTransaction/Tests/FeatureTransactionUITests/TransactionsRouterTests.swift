@@ -16,13 +16,13 @@ final class TransactionsRouterTests: XCTestCase {
     private var router: TransactionsRouter!
     private var mockLegacyBuyFlowPresenter: MockLegacyBuyFlowPresenter!
     private var mockCryptoCurrencyService: MockCryptoCurrenciesService!
-    private var mockFeatureFlagsService: InternalFeatureFlagServiceMock!
+    private var mockFeatureFlagsService: MockFeatureFlagsService!
     private var mockKYCService: MockKYCSDDService!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockCryptoCurrencyService = MockCryptoCurrenciesService()
-        mockFeatureFlagsService = InternalFeatureFlagServiceMock()
+        mockFeatureFlagsService = MockFeatureFlagsService()
         mockKYCService = MockKYCSDDService()
         mockLegacyBuyFlowPresenter = MockLegacyBuyFlowPresenter(
             cryptoCurrenciesService: mockCryptoCurrencyService,
@@ -45,7 +45,7 @@ final class TransactionsRouterTests: XCTestCase {
 
     func test_routesTo_legacyBuyFlow_forCryptoAccount_featueFlagOff() throws {
         throw XCTSkip("This test crashes due to DIKit. It will require more mocks. Will do later.")
-        mockFeatureFlagsService.disable(.useTransactionsFlowToBuyCrypto)
+        mockFeatureFlagsService.disable(.local(.useTransactionsFlowToBuyCrypto))
         let mockViewController = MockViewController()
         let cryptoAccount = CryptoInterestAccount(asset: .coin(.bitcoin))
         let cancellable = router.presentTransactionFlow(to: .buy(cryptoAccount), from: mockViewController)
@@ -59,7 +59,7 @@ final class TransactionsRouterTests: XCTestCase {
     }
 
     func test_routesTo_legacyBuyFlow_nilAccount_featueFlagOff() throws {
-        mockFeatureFlagsService.disable(.useTransactionsFlowToBuyCrypto)
+        mockFeatureFlagsService.disable(.local(.useTransactionsFlowToBuyCrypto))
         let mockViewController = MockViewController()
         let cancellable = router.presentTransactionFlow(to: .buy(nil), from: mockViewController)
             .sink { _ in
@@ -73,7 +73,7 @@ final class TransactionsRouterTests: XCTestCase {
 
     func test_routesTo_legacyBuyFlow_featueFlagOn() throws {
         throw XCTSkip("This test crashes due to DIKit. It will require more mocks and refactoring. Will do later.")
-        mockFeatureFlagsService.enable(.useTransactionsFlowToBuyCrypto)
+        mockFeatureFlagsService.enable(.local(.useTransactionsFlowToBuyCrypto))
         let mockViewController = MockViewController()
         let cancellable = router.presentTransactionFlow(to: .buy(nil), from: mockViewController)
             .sink { _ in

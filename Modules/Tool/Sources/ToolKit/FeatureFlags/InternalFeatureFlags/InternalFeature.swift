@@ -14,9 +14,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Uses the Transactions Flow implementation of Buy when enabled
     case useTransactionsFlowToBuyCrypto
 
-    /// Uses the Transactions Flow implementation of Sell when enabled
-    case useTransactionsFlowToSellCrypto
-
     /// Enable interest withdraw and deposit
     case interestWithdrawAndDeposit
 
@@ -50,7 +47,6 @@ public enum InternalFeature: String, CaseIterable {
              .requestConsoleLogging,
              .secureChannel,
              .useTransactionsFlowToBuyCrypto,
-             .useTransactionsFlowToSellCrypto,
              .unifiedSignIn:
             return false
         case .splitDashboard:
@@ -76,8 +72,6 @@ extension InternalFeature {
             return "Enable Network Request Console Logs"
         case .useTransactionsFlowToBuyCrypto:
             return "Buy: Uses Transactions Flow to Buy Crypto"
-        case .useTransactionsFlowToSellCrypto:
-            return "Sell: Uses Transactions Flow to Sell Crypto"
         case .disableGUIDLogin:
             return "Disable manual (guid) login option"
         case .splitDashboard:

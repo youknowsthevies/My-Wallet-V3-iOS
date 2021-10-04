@@ -56,6 +56,9 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable Zen-Desk Messaging for Gold Verified Users
     case customerSupportChat
+
+    /// Enable new Sell Transaction flow
+    case sellUsingTransactionFlowEnabled
 }
 
 extension AppFeature {
@@ -92,6 +95,8 @@ extension AppFeature {
             return "sdd_enabled_ios"
         case .customerSupportChat:
             return "customer_support_chat_ios"
+        case .sellUsingTransactionFlowEnabled:
+            return "sell_using_transaction_flow_enabled_ios"
         }
     }
 
@@ -128,6 +133,8 @@ extension AppFeature {
             return false
         case .customerSupportChat:
             return false
+        case .sellUsingTransactionFlowEnabled:
+            return true
         }
     }
 }
