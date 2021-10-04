@@ -102,6 +102,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         amountViewInteractor
             .amount
             .debounce(.milliseconds(250), scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+            .distinctUntilChanged()
             .flatMap { amount -> Observable<MoneyValue> in
                 transactionState
                     .take(1)
