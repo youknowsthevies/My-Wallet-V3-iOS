@@ -143,31 +143,29 @@ final class PriceService: PriceServiceAPI {
                 )
             )
         }
-        return AnyPublisher<[Currency], Never>
-            .create { [enabledCurrenciesService] subscriber in
+        return Deferred { [enabledCurrenciesService] in
+            Future<[Currency], Never> { promise in
                 if time.isSpecificDate {
-                    subscriber.send([base])
+                    promise(.success([base]))
                 } else {
-                    subscriber.send(
-                        enabledCurrenciesService
-                            .allEnabledCurrencies
-                            .filter { $0.code != quote.code }
-                    )
+                    let currencies = enabledCurrenciesService
+                        .allEnabledCurrencies
+                        .filter { $0.code != quote.code }
+                    promise(.success(currencies))
                 }
-                subscriber.send(completion: .finished)
-                return AnyCancellable {}
             }
-            .subscribe(on: scheduler)
-            .flatMap { [repository] bases in
-                repository.prices(of: bases, in: quote, at: time)
-            }
-            .mapError(PriceServiceError.networkError)
-            .map { prices in
-                // Get price of pair.
-                prices["\(baseCode)-\(quoteCode)"]
-            }
-            .onNil(PriceServiceError.missingPrice)
-            .eraseToAnyPublisher()
+        }
+        .subscribe(on: scheduler)
+        .flatMap { [repository] bases in
+            repository.prices(of: bases, in: quote, at: time)
+        }
+        .mapError(PriceServiceError.networkError)
+        .map { prices in
+            // Get price of pair.
+            prices["\(baseCode)-\(quoteCode)"]
+        }
+        .onNil(PriceServiceError.missingPrice)
+        .eraseToAnyPublisher()
     }
 
     func priceSeries(
