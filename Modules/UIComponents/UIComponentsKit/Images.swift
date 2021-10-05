@@ -11,6 +11,8 @@ public enum ImageAsset: String {
 
     case linkPattern = "link-pattern"
 
+    case emptyActivity = "empty_activity"
+
     public var imageResource: ImageResource {
         .local(name: rawValue, bundle: .module)
     }
