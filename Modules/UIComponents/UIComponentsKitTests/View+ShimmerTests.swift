@@ -26,4 +26,9 @@ final class ViewShimmerTests: XCTestCase {
         let enabled = view.shimmer(enabled: true, cornerRadius: 16.0)
         assertSnapshot(matching: enabled, as: .image)
     }
+
+    func testShimmerCustomSizing() {
+        let view = Text("").shimmer(width: 100, height: 100)
+        assertSnapshot(matching: view, as: .image)
+    }
 }

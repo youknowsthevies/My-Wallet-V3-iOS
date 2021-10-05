@@ -99,21 +99,23 @@ private struct AccountGroupRow: View {
                         Text(model.title)
                             .textStyle(.heading)
                         Spacer()
-                        // Note the constant placeholder text is never displayed to the user,
-                        // instead it is hidden and used for sizing the shimmering view
-                        Text(model.fiatBalance.value ?? "Placeholder")
+                        Text(model.fiatBalance.value ?? " ")
                             .textStyle(.heading)
-                            .shimmer(enabled: model.fiatBalance.isLoading)
+                            .shimmer(
+                                enabled: model.fiatBalance.isLoading,
+                                width: 90
+                            )
                     }
                     HStack {
                         Text(model.description)
                             .textStyle(.subheading)
                         Spacer()
-                        // Note the constant placeholder text is never displayed to the user,
-                        // instead it is hidden and used for sizing the shimmering view
-                        Text(model.currencyCode.value ?? "Placeholder")
+                        Text(model.currencyCode.value ?? " ")
                             .textStyle(.subheading)
-                            .shimmer(enabled: model.currencyCode.isLoading)
+                            .shimmer(
+                                enabled: model.currencyCode.isLoading,
+                                width: 100
+                            )
                     }
                 }
             }
@@ -211,14 +213,18 @@ private struct SingleAccountRow: View {
                         }
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
-                            // Note the constant placeholder text is never displayed to the user,
-                            // instead it is hidden and used for sizing the shimmering view
-                            Text(model.fiatBalance.value ?? "Loading")
+                            Text(model.fiatBalance.value ?? " ")
                                 .textStyle(.heading)
-                                .shimmer(enabled: model.fiatBalance.isLoading)
-                            Text(model.cryptoBalance.value ?? "Placeholder")
+                                .shimmer(
+                                    enabled: model.fiatBalance.isLoading,
+                                    width: 90
+                                )
+                            Text(model.cryptoBalance.value ?? "")
                                 .textStyle(.subheading)
-                                .shimmer(enabled: model.cryptoBalance.isLoading)
+                                .shimmer(
+                                    enabled: model.cryptoBalance.isLoading,
+                                    width: 100
+                                )
                         }
                     }
                 }
