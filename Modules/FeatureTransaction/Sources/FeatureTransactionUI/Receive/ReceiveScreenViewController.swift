@@ -17,7 +17,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
 
     private let nameLabel = UILabel()
     private let balanceLabel = UILabel()
-    private let assetImageView = UIImageView()
+    private let assetImageView = BadgeImageView()
     private let thumbImageView = UIImageView()
 
     private let qrCodeImageView = UIImageView()
@@ -140,7 +140,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         shareButton.viewModel = presenter.shareButton
 
         presenter.assetImage
-            .drive(assetImageView.rx.content)
+            .drive(assetImageView.rx.viewModel)
             .disposed(by: disposeBag)
     }
 
