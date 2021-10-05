@@ -1,29 +1,34 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import SwiftUI
+
+#if canImport(UIKit)
 import UIKit
+public typealias UniversalImage = UIImage
+#elseif canImport(AppKit)
+import AppKit
+public typealias UniversalImage = NSImage
+#endif
 
 public enum ImageResource: Hashable {
+
     public enum Resource {
-        case image(UIImage)
+        case image(UniversalImage)
         case url(URL)
     }
 
     case local(name: String, bundle: Bundle)
-    case remote(url: String)
+    case remote(url: URL)
+    case systemName(String)
 
     public var resource: Resource? {
         switch self {
         case .local(let name, let bundle):
-            guard let image = UIImage(named: name, in: bundle, compatibleWith: nil) else {
-                return nil
-            }
-            return .image(image)
-        case .remote(let urlString):
-            guard let url = URL(string: urlString) else {
-                return nil
-            }
+            return UniversalImage(named: name, in: bundle, compatibleWith: nil).map(Resource.image)
+        case .remote(let url):
             return .url(url)
+        case .systemName(let name):
+            return UniversalImage(systemName: name).map(Resource.image)
         }
     }
 
@@ -31,7 +36,10 @@ public enum ImageResource: Hashable {
         guard case .image(let image) = resource else {
             return nil
         }
-
+        #if canImport(UIKit)
         return Image(uiImage: image)
+        #elseif canImport(AppKit)
+        return Image(nsImage: image)
+        #endif
     }
 }

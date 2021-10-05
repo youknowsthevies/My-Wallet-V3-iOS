@@ -42,13 +42,13 @@ extension CryptoCurrency {
             case NonCustodialCoinCode.stellar.rawValue:
                 return .local(name: "crypto-xlm", bundle: .platformUIKit)
             default:
-                guard let logoPngUrl = model.logoPngUrl else {
+                guard let logoPngUrl = model.logoPngUrl.flatMap(URL.init) else {
                     return .local(name: "crypto-placeholder", bundle: .platformUIKit)
                 }
                 return .remote(url: logoPngUrl)
             }
         case .erc20(let model):
-            guard let logoPngUrl = model.logoPngUrl else {
+            guard let logoPngUrl = model.logoPngUrl.flatMap(URL.init) else {
                 return .local(name: "crypto-placeholder", bundle: .platformUIKit)
             }
             return .remote(url: logoPngUrl)
