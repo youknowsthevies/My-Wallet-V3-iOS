@@ -41,6 +41,8 @@ struct AccountPickerRowView: View {
                     .foregroundColor(.viewPrimaryBackground)
                     .contentShape(Rectangle())
                 switch viewStore.state {
+                case .label(let model):
+                    Text(model.text)
                 case .accountGroup(let model):
                     AccountGroupRow(
                         model: model,

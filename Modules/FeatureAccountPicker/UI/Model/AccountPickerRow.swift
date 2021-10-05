@@ -5,6 +5,7 @@ import SwiftUI
 
 public enum AccountPickerRow: Equatable, Identifiable {
 
+    case label(Label)
     case button(Button)
     case linkedBankAccount(LinkedBankAccount)
     case accountGroup(AccountGroup)
@@ -12,6 +13,8 @@ public enum AccountPickerRow: Equatable, Identifiable {
 
     public var id: AnyHashable {
         switch self {
+        case .label(let model):
+            return model.id
         case .button(let model):
             return model.id
         case .linkedBankAccount(let model):

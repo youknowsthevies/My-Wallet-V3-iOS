@@ -29,6 +29,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
 
     /// Store current header view so we can remove it when a new one is going to be displayed.
     private weak var headerView: UIView?
+    private let headerLayoutGuide = UILayoutGuide()
     private var disposeBag = DisposeBag()
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let headerRelay = BehaviorRelay<AccountPickerHeaderBuilder?>(value: nil)
@@ -37,18 +38,42 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     private let searchRelay = PublishRelay<String?>()
 
     private lazy var dataSource: RxDataSource = {
-        RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
-            guard let self = self else { return UITableViewCell() }
+        RxDataSource(configureCell: { [weak self] _, tableView, indexPath, item in
+            guard let self = self else {
+                return UITableViewCell()
+            }
             let cell: UITableViewCell
             switch item.presenter {
+            case .emptyState(let content):
+                cell = self.labelContentCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    content: content
+                )
             case .button(let viewModel):
-                cell = self.buttonTableViewCell(for: indexPath, viewModel: viewModel)
+                cell = self.buttonTableViewCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    viewModel: viewModel
+                )
             case .linkedBankAccount(let presenter):
-                cell = self.linkedBankCell(for: indexPath, presenter: presenter)
+                cell = self.linkedBankCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    presenter: presenter
+                )
             case .accountGroup(let presenter):
-                cell = self.totalBalanceCell(for: indexPath, presenter: presenter)
+                cell = self.totalBalanceCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    presenter: presenter
+                )
             case .singleAccount(let presenter):
-                cell = self.balanceCell(for: indexPath, presenter: presenter)
+                cell = self.balanceCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    presenter: presenter
+                )
             }
             cell.selectionStyle = .none
             return cell
@@ -62,6 +87,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         tableView.separatorColor = .clear
         tableView.alwaysBounceVertical = true
         tableView.keyboardDismissMode = .onDrag
+        tableView.register(LabelTableViewCell.self)
         tableView.register(LinkedBankAccountTableViewCell.self)
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self, in: .module)
@@ -80,8 +106,21 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     override public func viewDidLoad() {
         super.viewDidLoad()
         _ = setupTableView
+
+        view.addLayoutGuide(headerLayoutGuide)
         view.addSubview(tableView)
-        tableView.layoutToSuperview(.top, .bottom, .leading, .trailing)
+
+        let headerLayoutGuideHeight = headerLayoutGuide.heightAnchor.constraint(equalToConstant: 0)
+        headerLayoutGuideHeight.priority = .defaultHigh
+
+        NSLayoutConstraint.activate([
+            headerLayoutGuideHeight,
+            headerLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
+            headerLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerLayoutGuide.bottomAnchor.constraint(equalTo: tableView.topAnchor)
+        ])
+        tableView.layoutToSuperview(.bottom, .leading, .trailing)
     }
 
     // MARK: - Methods
@@ -169,15 +208,14 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
             .text
             .bind(to: searchRelay)
             .disposed(by: disposeBag)
-        headerView.layout(dimension: .height, to: headerBuilder.defaultHeight)
         view.addSubview(headerView)
-        headerView.layoutToSuperview(.leading, .top, .trailing)
-        tableView.contentInset = UIEdgeInsets(
-            top: headerBuilder.defaultHeight,
-            left: 0,
-            bottom: 0,
-            right: 0
-        )
+
+        NSLayoutConstraint.activate([
+            headerView.topAnchor.constraint(equalTo: headerLayoutGuide.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: headerLayoutGuide.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: headerLayoutGuide.trailingAnchor),
+            headerView.bottomAnchor.constraint(equalTo: headerLayoutGuide.bottomAnchor)
+        ])
     }
 
     override public func navigationBarLeadingButtonPressed() {
@@ -210,7 +248,18 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
 
     // MARK: - Private Methods
 
+    private func labelContentCell(
+        tableView: UITableView,
+        for indexPath: IndexPath,
+        content: LabelContent
+    ) -> UITableViewCell {
+        let cell = tableView.dequeue(LabelTableViewCell.self, for: indexPath)
+        cell.content = content
+        return cell
+    }
+
     private func linkedBankCell(
+        tableView: UITableView,
         for indexPath: IndexPath,
         presenter: LinkedBankAccountCellPresenter
     ) -> UITableViewCell {
@@ -220,6 +269,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     }
 
     private func balanceCell(
+        tableView: UITableView,
         for indexPath: IndexPath,
         presenter: CurrentBalanceCellPresenting
     ) -> UITableViewCell {
@@ -229,6 +279,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     }
 
     private func totalBalanceCell(
+        tableView: UITableView,
         for indexPath: IndexPath,
         presenter: AccountGroupBalanceCellPresenter
     ) -> AccountGroupBalanceTableViewCell {
@@ -238,6 +289,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     }
 
     private func buttonTableViewCell(
+        tableView: UITableView,
         for indexPath: IndexPath,
         viewModel: ButtonViewModel
     ) -> UITableViewCell {

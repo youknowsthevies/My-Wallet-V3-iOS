@@ -1,11 +1,21 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import RxCocoa
+import RxSwift
 import UIComponentsKit
 import UIKit
 
 final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
 
-    // MARK: Properties
+    // MARK: - Types
+
+    private enum Constants {
+        static let animationDuration: TimeInterval = 0.25
+        static let defaultHeight: CGFloat = 169
+        static let heightSearchBarFocus: CGFloat = 64
+    }
+
+    // MARK: - Properties
 
     var model: AccountPickerHeaderModel! {
         didSet {
@@ -23,17 +33,20 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
             separator.isHidden = model.tableTitleLabel == nil || model.searchable
             uiSearchBar.isHidden = !model.searchable
             selectWalletLabel.isHidden = model.searchable
+            heightConstraint?.constant = model.height
         }
     }
 
-    // MARK: Properties - AccountPickerHeaderViewAPI
+    // MARK: AccountPickerHeaderViewAPI
 
     var searchBar: UISearchBar? {
         uiSearchBar
     }
 
-    // MARK: Private Properties
+    // MARK: - Private Properties
 
+    private var heightConstraint: NSLayoutConstraint?
+    private let disposeBag = DisposeBag()
     private let patternImageView = UIImageView()
     private let assetImageView = UIImageView()
     private let titleLabel = UILabel()
@@ -43,7 +56,7 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
     private let fadeMask = CAGradientLayer()
     private let uiSearchBar = UISearchBar()
 
-    // MARK: Int
+    // MARK: - Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -55,23 +68,27 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
         setup()
     }
 
-    // MARK: Methods
+    // MARK: - Methods
 
     override func layoutSubviews() {
         super.layoutSubviews()
         fadeMask.frame = patternImageView.bounds
     }
 
-    // MARK: Private Methods
+    // MARK: - Private Methods
+
+    // MARK: Setup
 
     private func setup() {
+        heightConstraint = layout(dimension: .height, to: Constants.defaultHeight)
+
+        addSubview(uiSearchBar)
         addSubview(patternImageView)
         addSubview(assetImageView)
         addSubview(titleLabel)
         addSubview(subtitleLabel)
         addSubview(selectWalletLabel)
         addSubview(separator)
-        addSubview(uiSearchBar)
 
         // MARK: Background Image View
 
@@ -111,8 +128,11 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
 
         // MARK: Search Bar
 
+        uiSearchBar.autocapitalizationType = .none
+        uiSearchBar.autocorrectionType = .no
+        uiSearchBar.showsCancelButton = true
         uiSearchBar.searchBarStyle = .minimal
-        uiSearchBar.layoutToSuperview(axis: .horizontal, offset: 24)
+        uiSearchBar.layoutToSuperview(axis: .horizontal, offset: 14)
         uiSearchBar.layoutToSuperview(.bottom, offset: -4)
 
         // MARK: Fading Mask
@@ -132,5 +152,86 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
         backgroundColor = .white
         clipsToBounds = true
         model = nil
+
+        Observable<Void>
+            .merge(
+                uiSearchBar.rx.cancelButtonClicked.asObservable(),
+                uiSearchBar.rx.searchButtonClicked.asObservable()
+            )
+            .bind(onNext: { [weak self] _ in
+                self?.searchBar?.resignFirstResponder()
+            })
+            .disposed(by: disposeBag)
+
+        uiSearchBar.rx.textDidBeginEditing
+            .bind(onNext: { [weak self] _ in
+                self?.enableSearch()
+            })
+            .disposed(by: disposeBag)
+
+        uiSearchBar.rx.textDidEndEditing
+            .bind(onNext: { [weak self] _ in
+                self?.disableSearch()
+            })
+            .disposed(by: disposeBag)
+    }
+
+    // MARK: Search
+
+    private func enableSearch() {
+        heightConstraint?.constant = Constants.heightSearchBarFocus
+        UIView.animate(
+            withDuration: Constants.animationDuration,
+            animations: { [weak self] in
+                self?.enableSearchAnimation()
+            },
+            completion: { [weak self] _ in
+                self?.enableSearchCompletion()
+            }
+        )
+    }
+
+    private func disableSearch() {
+        heightConstraint?.constant = model?.height ?? Constants.defaultHeight
+        UIView.animate(
+            withDuration: Constants.animationDuration,
+            animations: { [weak self] in
+                self?.disableSearchAnimation()
+            }
+        )
+    }
+
+    /// Calls layoutIfNeeded in superview, or in self if superview is nil.
+    private func layoutForAnimations() {
+        (superview ?? self)
+            .layoutIfNeeded()
+    }
+
+    /// Enable search animation block
+    private func enableSearchAnimation() {
+        patternImageView.alpha = 0
+        assetImageView.alpha = 0
+        titleLabel.alpha = 0
+        subtitleLabel.alpha = 0
+        layoutForAnimations()
+    }
+
+    /// Enable search completion block
+    private func enableSearchCompletion() {
+        assetImageView.isHidden = true
+        titleLabel.isHidden = true
+        subtitleLabel.isHidden = true
+    }
+
+    /// Disable search animation block
+    private func disableSearchAnimation() {
+        assetImageView.isHidden = false
+        titleLabel.isHidden = false
+        subtitleLabel.isHidden = false
+        patternImageView.alpha = 1
+        assetImageView.alpha = 1
+        titleLabel.alpha = 1
+        subtitleLabel.alpha = 1
+        layoutForAnimations()
     }
 }

@@ -63,28 +63,34 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
         let searchObservable = searchRelay.asObservable()
             .startWith(nil)
             .distinctUntilChanged()
+            .debounce(.milliseconds(350), scheduler: MainScheduler.asyncInstance)
 
         let interactorState: Driver<State> = Observable
             .combineLatest(
                 accountProvider.accounts,
                 searchObservable
             )
-            .map { accounts, searchString -> [AccountPickerCellItem.Interactor] in
-                accounts
+            .map { [button] accounts, searchString -> State in
+                let isFiltering = searchString
+                    .flatMap { !$0.isEmpty } ?? false
+
+                var interactors = accounts
                     .filter { account in
                         account.currencyType.matchSearch(searchString)
                     }
                     .map(\.accountPickerCellItemInteractor)
-            }
-            .map { accounts in
-                if let button = button {
-                    return accounts + [.button(button)]
-                } else {
-                    return accounts
+
+                if interactors.isEmpty {
+                    interactors.append(.emptyState)
                 }
-            }
-            .map { interactors -> State in
-                State(interactors: interactors)
+                if let button = button {
+                    interactors.append(.button(button))
+                }
+
+                return State(
+                    isFiltering: isFiltering,
+                    interactors: interactors
+                )
             }
             .asDriver(onErrorJustReturn: .empty)
 
@@ -115,7 +121,8 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
 
 extension AccountPickerInteractor {
     public struct State {
-        static let empty = State(interactors: [])
+        static let empty = State(isFiltering: false, interactors: [])
+        let isFiltering: Bool
         let interactors: [AccountPickerCellItem.Interactor]
     }
 

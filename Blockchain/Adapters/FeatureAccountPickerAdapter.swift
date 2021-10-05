@@ -253,6 +253,13 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                     .flatMap(\.items)
                     .map { (item: AccountPickerCellItem) -> AccountPickerRow in
                         switch item.presenter {
+                        case .emptyState(let labelContent):
+                            return .label(
+                                .init(
+                                    id: item.identity,
+                                    text: labelContent.text
+                                )
+                            )
                         case .button(let viewModel):
                             return .button(
                                 .init(

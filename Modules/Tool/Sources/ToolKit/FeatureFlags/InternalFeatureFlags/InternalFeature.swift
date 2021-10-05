@@ -41,7 +41,6 @@ public enum InternalFeature: String, CaseIterable {
         switch self {
         case .disableGUIDLogin,
              .interestWithdrawAndDeposit,
-             .loadAllERC20Tokens,
              .newAccountPicker,
              .newOnboardingTour,
              .requestConsoleLogging,
@@ -49,7 +48,8 @@ public enum InternalFeature: String, CaseIterable {
              .useTransactionsFlowToBuyCrypto,
              .unifiedSignIn:
             return false
-        case .splitDashboard:
+        case .splitDashboard,
+             .loadAllERC20Tokens:
             return true
         }
     }
