@@ -23,6 +23,9 @@ struct AnnouncementPreliminaryData {
 
     // MARK: Properties
 
+    /// CeloEUR CryptoCurrency if it exists.
+    let celoEUR: CryptoCurrency?
+
     /// Announcement New Asset
     let newAsset: CryptoCurrency?
 
@@ -76,7 +79,8 @@ struct AnnouncementPreliminaryData {
         hasAnyWalletBalance: Bool,
         newAsset: CryptoCurrency?,
         assetRename: AssetRename?,
-        simpleBuy: SimpleBuy
+        simpleBuy: SimpleBuy,
+        celoEUR: CryptoCurrency?
     ) {
         self.user = user
         self.tiers = tiers
@@ -87,6 +91,7 @@ struct AnnouncementPreliminaryData {
         self.newAsset = newAsset
         self.assetRename = assetRename
         self.simpleBuy = simpleBuy
+        self.celoEUR = celoEUR
         country = countries.first { $0.code == user.address?.countryCode }
     }
 }

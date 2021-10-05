@@ -101,6 +101,13 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             }
             .catchErrorJustReturn(nil)
 
+        let celoEUR: CryptoCurrency? = enabledCurrenciesService
+            .allEnabledCryptoCurrencies
+            .first { cryptoCurrency in
+                cryptoCurrency.isCoin
+                    && cryptoCurrency.code.uppercased() == "CEUR"
+            }
+
         return Single.zip(
             nabuUser,
             tiers,
@@ -137,7 +144,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 hasAnyWalletBalance: hasAnyWalletBalance,
                 newAsset: newAsset,
                 assetRename: assetRename,
-                simpleBuy: simpleBuy
+                simpleBuy: simpleBuy,
+                celoEUR: celoEUR
             )
         }
         .observeOn(MainScheduler.instance)

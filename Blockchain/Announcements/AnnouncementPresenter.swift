@@ -210,6 +210,10 @@ final class AnnouncementPresenter {
                 announcement = assetRename(
                     data: preliminaryData.assetRename
                 )
+            case .celoEUR:
+                announcement = assetRename(
+                    data: preliminaryData.assetRename
+                )
             }
             // Return the first different announcement that should show
             if announcement.shouldShow {
@@ -400,6 +404,31 @@ extension AnnouncementPresenter {
                     return
                 }
                 self?.showAssetDetailsScreen(for: asset)
+            }
+        )
+    }
+
+    /// Computes CeloEUR card announcement.
+    private func celoEUR(
+        celoEUR: CryptoCurrency?,
+        user: NabuUser,
+        tiers: KYC.UserTiers
+    ) -> Announcement {
+        CeloEURAnnouncement(
+            celoEUR: celoEUR,
+            tiers: tiers,
+            userCountry: user.address?.country,
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [topMostViewControllerProvider, webViewServiceAPI] in
+                guard let topMostViewController = topMostViewControllerProvider.topMostViewController else {
+                    return
+                }
+                webViewServiceAPI.openSafari(
+                    url: "https://blockchain.com/celo",
+                    from: topMostViewController
+                )
             }
         )
     }

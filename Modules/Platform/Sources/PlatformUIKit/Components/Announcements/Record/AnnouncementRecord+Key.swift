@@ -41,6 +41,7 @@ extension AnnouncementRecord {
         case interestFunds
         case newAsset(code: String)
         case assetRename(code: String)
+        case celoEUR
 
         var string: String {
             let prefix = "announcement-"
@@ -100,6 +101,8 @@ extension AnnouncementRecord {
                 key = "cache-new-asset-\(code)"
             case .assetRename(let code):
                 key = "cache-asset-rename-\(code)"
+            case .celoEUR:
+                key = "cache-celo-eur"
             }
 
             return prefix + key
