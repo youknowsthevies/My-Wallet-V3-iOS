@@ -62,7 +62,8 @@ public struct WelcomeView: View {
                     || viewStore.modals == .secondPasswordNoticeScreen
             ),
             onDismiss: {
-                if viewStore.screenFlow == .emailLoginScreen {
+                // TODO: This is ugly, refactor by navigation routes extension by Oliver (PR #2791)
+                if viewStore.screenFlow == .emailLoginScreen || viewStore.screenFlow == .restoreWalletScreen {
                     viewStore.send(.presentScreenFlow(.welcomeScreen))
                 } else if viewStore.modals == .secondPasswordNoticeScreen {
                     viewStore.send(.modalDismissed(.secondPasswordNoticeScreen))
