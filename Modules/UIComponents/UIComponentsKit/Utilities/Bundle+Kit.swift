@@ -1,9 +1,9 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 import Foundation
+import ToolKit
 
+private class BundleFinder {}
 extension Bundle {
-
-    static var current: Bundle {
-        class BundleFinder {}
-        return Bundle(for: BundleFinder.self)
-    }
+    public static let UIComponents = Bundle.find("UIComponents_UIComponentsKit.bundle", in: BundleFinder.self)
 }

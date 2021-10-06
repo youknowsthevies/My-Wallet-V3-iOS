@@ -53,7 +53,7 @@ extension UIFont {
         registerFont(fileName: InterType.bold.rawValue)
     }
 
-    static func registerFont(fileName: String, bundle: Bundle = Bundle.module) {
+    static func registerFont(fileName: String, bundle: Bundle = Bundle.UIComponents) {
         guard let fontURL = bundle.url(forResource: fileName, withExtension: "ttf") else {
             print("No font named \(fileName).ttf was found in the module bundle")
             return

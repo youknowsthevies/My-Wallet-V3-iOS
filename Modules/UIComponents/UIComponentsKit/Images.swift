@@ -14,10 +14,10 @@ public enum ImageAsset: String {
     case emptyActivity = "empty_activity"
 
     public var imageResource: ImageResource {
-        .local(name: rawValue, bundle: .module)
+        .local(name: rawValue, bundle: .UIComponents)
     }
 
     public var image: Image {
-        Image(rawValue, bundle: .module)
+        Image(rawValue, bundle: .UIComponents)
     }
 }

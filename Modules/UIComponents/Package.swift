@@ -26,7 +26,9 @@ let package = Package(
             name: "UIComponentsKit",
             dependencies: [.product(name: "ToolKit", package: "Tool")],
             path: "UIComponentsKit",
-            resources: [.process("Fonts")]
+            resources: [
+                .process("Fonts")
+            ]
         ),
         .testTarget(
             name: "UIComponentsKitTests",

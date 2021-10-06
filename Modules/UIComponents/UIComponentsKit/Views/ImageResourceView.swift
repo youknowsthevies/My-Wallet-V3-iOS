@@ -196,7 +196,7 @@ private class ImageLoader: ObservableObject {
 struct ImageResourceView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
-            ImageResourceView(named: "cancel_icon", in: .module)
+            ImageResourceView(named: "cancel_icon", in: .UIComponents)
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 20)
             ImageResourceView(
