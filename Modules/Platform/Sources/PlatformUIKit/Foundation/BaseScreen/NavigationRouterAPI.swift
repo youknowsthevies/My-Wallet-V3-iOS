@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Foundation
 import RxRelay
+import ToolKit
 
 /// Emits a command to return to the previous state
 public protocol RoutingPreviousStateEmitterAPI: AnyObject {
@@ -87,19 +89,19 @@ public class NavigationRouter: NavigationRouterAPI {
         case .modal(from: let parentViewController):
             presentModal(viewController: viewController, in: parentViewController)
         case .navigation(from: let originViewController):
-            #if INTERNAL_BUILD
-            if originViewController.navigationControllerAPI == nil {
-                // swiftlint:disable line_length
-                fatalError("When presenting a \(type(of: viewController)), originViewController \(type(of: originViewController)), originViewController.navigationControllerAPI was nil.")
+            if BuildFlag.isInternal {
+                if originViewController.navigationControllerAPI == nil {
+                    // swiftlint:disable line_length
+                    fatalError("When presenting a \(type(of: viewController)), originViewController \(type(of: originViewController)), originViewController.navigationControllerAPI was nil.")
+                }
             }
-            #endif
             originViewController.navigationControllerAPI?.pushViewController(viewController, animated: true)
         case .navigationFromCurrent:
-            #if INTERNAL_BUILD
-            if navigationControllerAPI == nil {
-                fatalError("When presenting a \(type(of: viewController)), navigationControllerAPI was nil.")
+            if BuildFlag.isInternal {
+                if navigationControllerAPI == nil {
+                    fatalError("When presenting a \(type(of: viewController)), navigationControllerAPI was nil.")
+                }
             }
-            #endif
             navigationControllerAPI?.pushViewController(viewController, animated: true)
         case .modalOverTopMost:
             if let parentViewController = topMostViewControllerProvider.topMostViewController {

@@ -75,17 +75,15 @@ public enum AnnouncementType: String, Codable {
         case .celoEUR:
             return .celoEUR
         case .newAsset:
-            #if INTERNAL_BUILD
-            unimplemented("AnnouncementType.newAsset does not have a default key.")
-            #else
+            if BuildFlag.isInternal {
+                unimplemented("AnnouncementType.newAsset does not have a default key.")
+            }
             return .newAsset(code: "")
-            #endif
         case .assetRename:
-            #if INTERNAL_BUILD
-            unimplemented("AnnouncementType.assetRename does not have a default key.")
-            #else
+            if BuildFlag.isInternal {
+                unimplemented("AnnouncementType.assetRename does not have a default key.")
+            }
             return .assetRename(code: "")
-            #endif
         }
     }
 }

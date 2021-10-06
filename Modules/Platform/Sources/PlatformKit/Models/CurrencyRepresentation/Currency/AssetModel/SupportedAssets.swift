@@ -1,5 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+import ToolKit
+
 /// A list of supported assets.
 struct SupportedAssets {
 
@@ -30,11 +33,10 @@ struct SupportedAssets {
                 case SupportedAssetsResponse.Asset.AssetType.Name.fiat.rawValue:
                     return FiatAssetModel(assetResponse: asset)
                 default:
-                    #if INTERNAL_BUILD
-                    fatalError("Unrecognized asset type \(asset.type.name)")
-                    #else
+                    if BuildFlag.isInternal {
+                        fatalError("Unrecognized asset type \(asset.type.name)")
+                    }
                     return nil
-                    #endif
                 }
             }
     }

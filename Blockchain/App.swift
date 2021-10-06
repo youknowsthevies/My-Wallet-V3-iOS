@@ -1,4 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+// swiftformat:disable redundantSelf
 
 import ComposableArchitecture
 import DIKit
@@ -123,6 +124,13 @@ func defineDependencies() {
 private func bootstrap() {
     BuildFlag.isInternal = {
         #if INTERNAL_BUILD
+        true
+        #else
+        false
+        #endif
+    }()
+    BuildFlag.isAlpha = {
+        #if ALPHA_BUILD
         true
         #else
         false

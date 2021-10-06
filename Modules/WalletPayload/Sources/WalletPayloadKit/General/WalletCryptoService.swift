@@ -64,9 +64,9 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
                             // For now log the error only
                             self.recorder.error(payloadDecryptionError)
                             // Crash for internal builds if JS decryption succeeds but native decryption fails
-                            #if INTERNAL_BUILD
-                            fatalError("Native decryption failed. Error: \(String(describing: payloadDecryptionError))")
-                            #endif
+                            if BuildFlag.isInternal {
+                                fatalError("Native decryption failed. Error: \(String(describing: payloadDecryptionError))")
+                            }
                         })
                 }
             }
