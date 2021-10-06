@@ -114,6 +114,19 @@ extension ActionableView where Content == AnyView {
     }
 }
 
+extension ActionableView where Content == VStack<TupleView<(Spacer, InfoView, Spacer)>> {
+
+    public init(_ model: InfoView.Model, buttons: [ButtonState], in bundle: Bundle = .main) {
+        self.init {
+            VStack(alignment: .center) {
+                Spacer()
+                InfoView(model, in: bundle)
+                Spacer()
+            }
+        }
+    }
+}
+
 #if DEBUG
 struct ActionableView_Previews: PreviewProvider {
     static var previews: some View {
