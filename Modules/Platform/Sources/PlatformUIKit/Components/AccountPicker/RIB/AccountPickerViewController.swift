@@ -80,7 +80,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         })
     }()
 
-    private lazy var setupTableView: Void = {
+    private func setupTableView() {
         tableView.backgroundColor = .white
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
@@ -92,7 +92,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
-    }()
+    }
 
     public init() {
         super.init(nibName: nil, bundle: nil)
@@ -105,7 +105,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        _ = setupTableView
+        setupTableView()
 
         view.addLayoutGuide(headerLayoutGuide)
         view.addSubview(tableView)
