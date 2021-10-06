@@ -14,13 +14,13 @@ final class PortfolioEmptyStatePresenter {
     let title = LabelContent(
         text: "Welcome to Blockchain.com!",
         font: .main(.semibold, 20),
-        color: .titleText,
+        color: .darkTitleText,
         alignment: .center
     )
     let subtitle = LabelContent(
         text: "All your crypto balances will show up here once you buy or receive.",
         font: .main(.medium, 14),
-        color: .titleText,
+        color: .darkTitleText,
         alignment: .center
     )
     let cta = ButtonViewModel.primary(with: "Buy Crypto")
