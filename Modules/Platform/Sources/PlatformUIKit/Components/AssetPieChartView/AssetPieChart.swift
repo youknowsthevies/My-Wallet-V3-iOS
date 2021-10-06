@@ -43,7 +43,7 @@ public enum AssetPieChart {
 
             public init(value: Interaction) {
                 debugDescription = value.asset.displayCode
-                color = value.asset.brandColor
+                color = value.asset.brandUIColor
                 percentage = value.percentage
             }
         }

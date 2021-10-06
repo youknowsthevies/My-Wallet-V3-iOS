@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import FeatureAuthenticationUI
 import FeatureDashboardUI
+import FeatureInterestUI
 import FeatureSettingsUI
 import PlatformKit
 import PlatformUIKit
@@ -73,7 +74,12 @@ extension LoggedInHostingController {
     }
 
     func handleInterest() {
-        unimplemented()
+        let interestAccountList = InterestAccountListHostingController()
+        interestAccountList.modalPresentationStyle = .fullScreen
+        topMostViewController?.present(
+            interestAccountList,
+            animated: true
+        )
     }
 
     func handleSettings() {

@@ -149,15 +149,15 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case (.failed, _):
                 return .destructive
             case (_, true):
-                return orderDetails.outputValue.currency.brandColor
+                return orderDetails.outputValue.currency.brandUIColor
             case (_, false):
-                return orderDetails.inputValue.currency.brandColor
+                return orderDetails.inputValue.currency.brandUIColor
             }
         case .swap(let event):
             if event.status == .failed {
                 return .destructive
             }
-            return event.pair.inputCurrencyType.brandColor
+            return event.pair.inputCurrencyType.brandUIColor
         case .fiat(let event):
             switch event.state {
             case .failed:
@@ -165,7 +165,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case .pending:
                 return .mutedText
             case .completed:
-                return event.amount.currencyType.brandColor
+                return event.amount.currency.brandColor
             }
         case .crypto(let event):
             switch event.state {
@@ -174,12 +174,12 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case .pending:
                 return .mutedText
             case .completed:
-                return event.amount.currencyType.brandColor
+                return event.amount.currencyType.brandUIColor
             }
         case .transactional(let event):
             switch event.status {
             case .complete:
-                return event.currency.brandColor
+                return event.currency.brandUIColor
             case .pending:
                 return .mutedText
             }

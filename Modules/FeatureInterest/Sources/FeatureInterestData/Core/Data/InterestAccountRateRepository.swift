@@ -23,7 +23,18 @@ final class InterestAccountRateRepository: InterestAccountRateRepositoryAPI {
 
     // MARK: - InterestAccountLimitsRepositoryAPI
 
-    func fetchInteretAccountRateForCryptoCurrency(
+    func fetchAllInterestAccountRates()
+        -> AnyPublisher<[InterestAccountRate], InterestAccountRateError>
+    {
+        client
+            .fetchAllInterestAccountRates()
+            .map(\.rates)
+            .mapError(InterestAccountRateError.networkError)
+            .map { $0.map(InterestAccountRate.init) }
+            .eraseToAnyPublisher()
+    }
+
+    func fetchInterestAccountRateForCryptoCurrency(
         _ currency: CryptoCurrency
     ) -> AnyPublisher<InterestAccountRate, InterestAccountRateError> {
         client

@@ -94,7 +94,7 @@ class AccountPickerRowViewTests: XCTestCase {
             iconView: { _ in
                 let model: BadgeImageViewModel = .template(
                     image: .local(name: "ic-private-account", bundle: .platformUIKit),
-                    templateColor: CryptoCurrency.coin(.bitcoin).brandColor,
+                    templateColor: CryptoCurrency.coin(.bitcoin).brandUIColor,
                     backgroundColor: .white,
                     cornerRadius: .round,
                     accessibilityIdSuffix: ""

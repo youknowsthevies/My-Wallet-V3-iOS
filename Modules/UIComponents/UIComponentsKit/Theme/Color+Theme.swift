@@ -11,6 +11,7 @@ extension Color {
 
     // MARK: Backgrounds
 
+    public static let lightContentBackground = Color(paletteColor: .grey900)
     public static let viewPrimaryBackground = Color(paletteColor: .white)
 
     public static let shimmeringLight = Color(paletteColor: .grey000)

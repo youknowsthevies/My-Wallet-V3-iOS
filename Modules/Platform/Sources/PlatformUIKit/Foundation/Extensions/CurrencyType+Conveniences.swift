@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
+import SwiftUI
 
 extension CurrencyType {
 
@@ -13,10 +14,14 @@ extension CurrencyType {
         }
     }
 
-    public var brandColor: UIColor {
+    public var brandColor: SwiftUI.Color {
+        .init(brandUIColor)
+    }
+
+    public var brandUIColor: UIColor {
         switch self {
         case .crypto(let currency):
-            return currency.brandColor
+            return currency.brandUIColor
         case .fiat(let currency):
             return currency.brandColor
         }

@@ -49,7 +49,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                         .primary(
                             image: currency.logoResource,
                             contentColor: .white,
-                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
                             cornerRadius: currency.isFiatCurrency ? .roundedHigh : .round,
                             accessibilityIdSuffix: "PendingTransactionSuccessBadge"
                         )
@@ -80,7 +80,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                         .primary(
                             image: currency.logoResource,
                             contentColor: .white,
-                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
                             cornerRadius: currency.isFiatCurrency ? .roundedHigh : .round,
                             accessibilityIdSuffix: "PendingTransactionPendingBadge"
                         )
@@ -105,7 +105,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                         .primary(
                             image: currency.logoResource,
                             contentColor: .white,
-                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
                             cornerRadius: currency.isFiatCurrency ? .roundedHigh : .round,
                             accessibilityIdSuffix: "PendingTransactionFailureBadge"
                         )

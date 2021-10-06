@@ -35,6 +35,8 @@ extension DependencyContainer {
 
         factory { InterestAccountEligibilityRepository() as InterestAccountEligibilityRepositoryAPI }
 
+        factory { InterestAccountOverviewRepository() as InterestAccountOverviewRepositoryAPI }
+
         factory { InterestAccountLimitsRepository() as InterestAccountLimitsRepositoryAPI }
 
         single { InterestAccountBalanceRepository() as InterestAccountBalanceRepositoryAPI }

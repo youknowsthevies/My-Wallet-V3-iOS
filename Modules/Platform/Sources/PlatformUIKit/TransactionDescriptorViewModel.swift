@@ -18,7 +18,7 @@ struct BadgeImageAttributes {
 
     init(_ currencyType: CurrencyType) {
         imageResource = currencyType.logoResource
-        brandColor = currencyType.brandColor
+        brandColor = currencyType.brandUIColor
         isFiat = currencyType.isFiatCurrency
     }
 

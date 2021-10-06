@@ -143,7 +143,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         case (.nonCustodial, .crypto(let cryptoCurrency)):
             model = .template(
                 image: .local(name: "ic-private-account", bundle: .platformUIKit),
-                templateColor: currency.brandColor,
+                templateColor: currency.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
@@ -152,7 +152,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         case (.custodial(.trading), .crypto(let cryptoCurrency)):
             model = .template(
                 image: .local(name: "ic-trading-account", bundle: .platformUIKit),
-                templateColor: currency.brandColor,
+                templateColor: currency.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
@@ -161,7 +161,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         case (.custodial(.savings), .crypto(let cryptoCurrency)):
             model = .template(
                 image: .local(name: "ic-interest-account", bundle: .platformUIKit),
-                templateColor: currency.brandColor,
+                templateColor: currency.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""

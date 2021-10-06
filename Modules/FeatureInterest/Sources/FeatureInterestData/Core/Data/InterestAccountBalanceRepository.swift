@@ -36,7 +36,7 @@ final class InterestAccountBalanceRepository: InterestAccountBalanceRepositoryAP
         )
     }
 
-    func interestAccountsBalance(
+    func fetchInterestAccountsBalance(
         fiatCurrency: FiatCurrency
     ) -> AnyPublisher<InterestAccountBalances, InterestAccountBalanceRepositoryError> {
         cachedValue.get(key: fiatCurrency)

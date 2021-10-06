@@ -14,6 +14,11 @@ let package = Package(
     ],
     dependencies: [
         .package(
+            name: "swift-composable-architecture",
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
+            from: "0.28.1"
+        ),
+        .package(
             name: "DIKit",
             url: "https://github.com/jackpooleybc/DIKit.git",
             .branch("safe-property-wrappers")
@@ -26,6 +31,8 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../FeatureTransaction"),
         .package(path: "../Network"),
+        .package(path: "../NetworkErrors"),
+        .package(path: "../UIComponents"),
         .package(path: "../Platform"),
         .package(path: "../Tool")
     ],
@@ -36,6 +43,8 @@ let package = Package(
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network")
             ]
         ),
@@ -44,6 +53,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureInterestDomain"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network")
             ]
         ),
@@ -51,8 +61,11 @@ let package = Package(
             name: "FeatureInterestUI",
             dependencies: [
                 .target(name: "FeatureInterestDomain"),
+                .product(name: "DIKit", package: "DIKit"),
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformUIKit", package: "Platform"),
+                .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),

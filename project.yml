@@ -388,6 +388,7 @@ targets:
       - package: DIKit
       - package: Nuke
       - package: NukeUI
+      - package: Lottie
       - package: RIBs
       - package: RxCombine
       - package: RxDataSources

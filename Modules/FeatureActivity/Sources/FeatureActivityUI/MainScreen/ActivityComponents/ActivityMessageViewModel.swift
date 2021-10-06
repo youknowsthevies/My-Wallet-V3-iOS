@@ -43,7 +43,7 @@ final class ActivityMessageViewModel {
 
         badgeImageViewModel = .template(
             image: .local(name: imageName, bundle: .platformUIKit),
-            templateColor: currency.brandColor,
+            templateColor: currency.brandUIColor,
             backgroundColor: currency.accentColor,
             cornerRadius: .round,
             accessibilityIdSuffix: ""

@@ -1,7 +1,31 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxSwift
+
+public enum BlockchainAccounRepositoryError: Error {
+    case coinCoreError(Error)
+    case noAccount
+}
+
+public protocol BlockchainAccountRepositoryAPI: AnyObject {
+    func accountsWithCurrencyType(
+        _ currency: CurrencyType
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError>
+
+    func accountsWithSingleAccountType(
+        _ accountType: SingleAccountType
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError>
+
+    func accountsWithCurrencyType(
+        _ currency: CurrencyType, accountType: SingleAccountType
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError>
+
+    func accountWithCurrencyType(
+        _ currency: CurrencyType, accountType: SingleAccountType
+    ) -> AnyPublisher<BlockchainAccount, BlockchainAccounRepositoryError>
+}
 
 public protocol BlockchainAccountProviding: AnyObject {
     func accounts(for currency: CurrencyType) -> Single<[BlockchainAccount]>
@@ -14,12 +38,111 @@ public enum BlockchainAccountProvidingError: Error {
     case doesNotExist
 }
 
-final class BlockchainAccountProvider: BlockchainAccountProviding {
+final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAccountRepositoryAPI {
     private let coincore: CoincoreAPI
 
     init(coincore: CoincoreAPI = resolve()) {
         self.coincore = coincore
     }
+
+    // MARK: - BlockchainAccountRepositoryAPI
+
+    func accountsWithCurrencyType(
+        _ currency: CurrencyType
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError> {
+        coincore
+            .allAccounts
+            .map { $0.accounts.filter { $0.currencyType == currency } }
+            .mapError(BlockchainAccounRepositoryError.coinCoreError)
+            .eraseToAnyPublisher()
+    }
+
+    func accountsWithSingleAccountType(
+        _ accountType: SingleAccountType
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError> {
+        coincore
+            .allAccounts
+            .map(\.accounts)
+            .map { accounts in
+                accounts.filter { account in
+                    switch accountType {
+                    case .nonCustodial:
+                        return account is NonCustodialAccount
+                    case .custodial(let type):
+                        switch type {
+                        case .savings:
+                            return account is CryptoInterestAccount
+                        case .trading:
+                            return account is TradingAccount
+                        }
+                    }
+                }
+            }
+            .mapError(BlockchainAccounRepositoryError.coinCoreError)
+            .eraseToAnyPublisher()
+    }
+
+    func accountsWithCurrencyType(
+        _ currency: CurrencyType, accountType: SingleAccountType
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError> {
+        switch currency {
+        case .fiat:
+            return coincore.fiatAsset
+                .accountGroup(filter: .all)
+                .map(\.accounts)
+                .map { accounts in
+                    accounts.filter { $0.currencyType == currency }
+                }
+                .map { accounts in
+                    accounts as [BlockchainAccount]
+                }
+                .mapError(BlockchainAccounRepositoryError.coinCoreError)
+                .eraseToAnyPublisher()
+        case .crypto(let cryptoCurrency):
+            guard let cryptoAsset = coincore.cryptoAssets.first(where: { $0.asset == cryptoCurrency }) else {
+                return .just([])
+            }
+            let filter: AssetFilter
+
+            switch accountType {
+            case .nonCustodial:
+                filter = .nonCustodial
+            case .custodial(let type):
+                switch type {
+                case .savings:
+                    filter = .interest
+                case .trading:
+                    filter = .custodial
+                }
+            }
+            return cryptoAsset
+                .accountGroup(filter: filter)
+                .map(\.accounts)
+                .map { accounts in
+                    accounts.filter { $0.currencyType == currency }
+                }
+                .map { accounts in
+                    accounts as [BlockchainAccount]
+                }
+                .mapError(BlockchainAccounRepositoryError.coinCoreError)
+                .eraseToAnyPublisher()
+        }
+    }
+
+    func accountWithCurrencyType(
+        _ currency: CurrencyType, accountType: SingleAccountType
+    ) -> AnyPublisher<BlockchainAccount, BlockchainAccounRepositoryError> {
+        accountsWithCurrencyType(currency, accountType: accountType)
+            .flatMap { accounts -> AnyPublisher<BlockchainAccount, BlockchainAccounRepositoryError> in
+                guard let value = accounts.first else {
+                    return .failure(BlockchainAccounRepositoryError.noAccount)
+                }
+                return .just(value)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    // MARK: - BlockchainAccountProviding
 
     func accounts(for currency: CurrencyType) -> Single<[BlockchainAccount]> {
         coincore

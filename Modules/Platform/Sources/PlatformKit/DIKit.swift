@@ -143,6 +143,8 @@ extension DependencyContainer {
 
         single { ReactiveWallet() as ReactiveWalletAPI }
 
+        factory { BlockchainAccountProvider() as BlockchainAccountRepositoryAPI }
+
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }
 
         single { WalletService() as WalletOptionsAPI }

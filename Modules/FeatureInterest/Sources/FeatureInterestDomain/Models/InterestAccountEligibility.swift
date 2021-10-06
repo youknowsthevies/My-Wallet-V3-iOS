@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-public struct InterestAccountEligibility {
+public struct InterestAccountEligibility: Equatable {
 
     public let currencyType: CurrencyType
     public let isEligible: Bool

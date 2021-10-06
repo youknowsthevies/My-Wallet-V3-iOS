@@ -92,6 +92,18 @@ final class APIClient: FeatureInterestDataAPIClient {
             .perform(request: request)
     }
 
+    func fetchAllInterestAccountRates()
+        -> AnyPublisher<SupportedInterestAccountRatesResponse, NabuNetworkError>
+    {
+        let request = requestBuilder.get(
+            path: Path.rate,
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request)
+    }
+
     func fetchInterestAccountRateForCurrencyCode(
         _ currencyCode: String
     ) -> AnyPublisher<InterestAccountRateResponse, NabuNetworkError> {

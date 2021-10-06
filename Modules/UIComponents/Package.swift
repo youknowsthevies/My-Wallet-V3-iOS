@@ -14,6 +14,7 @@ let package = Package(
         )
     ],
     dependencies: [
+        .package(name: "Lottie", url: "https://github.com/airbnb/lottie-ios.git", from: "3.2.0"),
         .package(
             name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
@@ -31,6 +32,7 @@ let package = Package(
             name: "UIComponentsKit",
             dependencies: [
                 .product(name: "CasePaths", package: "swift-case-paths"),
+                .product(name: "Lottie", package: "Lottie"),
                 .product(name: "ToolKit", package: "Tool")
             ],
             path: "UIComponentsKit",

@@ -18,3 +18,14 @@ public struct InterestAccountRate {
         self.rate = rate
     }
 }
+
+extension InterestAccountRate: Equatable {
+
+    public static func == (
+        lhs: InterestAccountRate,
+        rhs: InterestAccountRate
+    ) -> Bool {
+        lhs.cryptoCurrency == rhs.cryptoCurrency &&
+            lhs.rate == rhs.rate
+    }
+}
