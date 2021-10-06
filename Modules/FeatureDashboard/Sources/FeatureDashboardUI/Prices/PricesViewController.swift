@@ -56,7 +56,7 @@ final class PricesViewController: BaseScreenViewController {
         searchBar.searchBarStyle = .minimal
         searchBar.layoutToSuperview(axis: .horizontal, offset: 12)
         tableView.layoutToSuperview(axis: .horizontal)
-        searchBar.layoutToSuperview(.top)
+        searchBar.layoutToSuperview(.top, offset: 14)
         searchBar.layout(edge: .bottom, to: .top, of: tableView)
         tableView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
         tableView.tableFooterView = UIView()

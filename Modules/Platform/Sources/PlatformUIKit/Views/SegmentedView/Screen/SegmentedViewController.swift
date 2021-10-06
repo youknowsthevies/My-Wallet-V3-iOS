@@ -50,8 +50,8 @@ public final class SegmentedViewController: BaseScreenViewController {
             rootView.layoutToSuperview(.leading, .bottom, .trailing)
             rootView.layoutToSuperview(.top, relation: .equal, usesSafeAreaLayoutGuide: false, offset: 64)
             segmentedView.layoutToSuperview(axis: .horizontal, offset: 24)
-            segmentedView.layout(dimension: .height, to: 36)
-            segmentedView.layout(edge: .bottom, to: .top, of: rootView)
+            segmentedView.layout(dimension: .height, to: 40)
+            segmentedView.layoutToSuperview(.top, offset: 24)
         }
     }
 
