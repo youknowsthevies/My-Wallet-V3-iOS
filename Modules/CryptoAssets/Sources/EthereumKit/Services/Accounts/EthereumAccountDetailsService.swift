@@ -25,11 +25,16 @@ final class EthereumAccountDetailsService: EthereumAccountDetailsServiceAPI {
     init(
         accountRepository: EthereumWalletAccountRepositoryAPI = resolve(),
         client: BalanceClientAPI = resolve(),
-        scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
+        scheduler: SchedulerType = CachedValueConfiguration.generateScheduler(identifier: "EthereumAccountDetailsService")
     ) {
         self.accountRepository = accountRepository
         self.client = client
-        cache = .init(configuration: .periodic(30, scheduler: scheduler))
+        cache = CachedValue(
+            configuration: .periodic(
+                seconds: 30,
+                scheduler: scheduler
+            )
+        )
         cache.setFetch { [accountRepository, client] in
             accountRepository.defaultAccount
                 .eraseError()

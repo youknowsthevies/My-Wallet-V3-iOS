@@ -71,7 +71,12 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.transactionBuildingService = transactionBuildingService
         self.transactionsService = transactionsService
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
-        feeCache = CachedValue(configuration: .periodic(90))
+        feeCache = CachedValue(
+            configuration: .periodic(
+                seconds: 90,
+                schedulerIdentifier: "EthereumOnChainTransactionEngine"
+            )
+        )
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
             self.feeService.fees(cryptoCurrency: .coin(.ethereum))
         }

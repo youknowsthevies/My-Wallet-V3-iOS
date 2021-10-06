@@ -1,4 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+// swiftformat:disable redundantSelf
 
 import Combine
 import DIKit
@@ -100,7 +101,12 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
         self.swapTransactionsService = swapTransactionsService
         self.operationsService = operationsService
         self.priceService = priceService
-        accountCache = .init(configuration: .init(refreshType: .periodic(seconds: 20)))
+        accountCache = CachedValue(
+            configuration: .periodic(
+                seconds: 20,
+                schedulerIdentifier: "StellarCryptoAccount"
+            )
+        )
         accountCache.setFetch(weak: self) { (self) -> Single<StellarAccountDetails> in
             self.accountDetailsService.accountDetails(for: publicKey)
         }
