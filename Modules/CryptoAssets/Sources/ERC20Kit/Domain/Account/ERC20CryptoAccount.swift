@@ -34,14 +34,17 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     var actions: Single<AvailableActions> {
         Single
-            .zip(isFunded, isPairToFiatAvailable)
-            .map { isFunded, isPairToFiatAvailable -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive, .send]
+            .zip(isFunded, isPairToFiatAvailable, hasHistory.asSingle())
+            .map { isFunded, isPairToFiatAvailable, hasHistory -> AvailableActions in
+                var base: AvailableActions = [.receive]
+                if hasHistory || isFunded {
+                    base.insert(.viewActivity)
+                }
                 if isPairToFiatAvailable {
                     base.insert(.buy)
                 }
                 if isFunded {
-                    base.insert(.swap)
+                    base.formUnion([.send, .swap])
                 }
                 return base
             }
@@ -74,8 +77,20 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             .catchErrorJustReturn([])
     }
 
+    /// Stream a boolean indicating if this ERC20 token has ever been transacted,
+    private var hasHistory: AnyPublisher<Bool, Never> {
+        erc20TokenAccountsRepository
+            .tokens(for: EthereumAddress(address: publicKey)!)
+            .map { [erc20Token] tokens in
+                tokens[erc20Token.cryptoCurrency] != nil
+            }
+            .replaceError(with: false)
+            .ignoreFailure()
+    }
+
     private let publicKey: String
     private let erc20Token: ERC20AssetModel
+    private let erc20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI
     private let balanceService: ERC20BalanceServiceAPI
     private let featureFetcher: FeatureFetching
     private let priceService: PriceServiceAPI
@@ -86,6 +101,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     init(
         publicKey: String,
         erc20Token: ERC20AssetModel,
+        erc20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI = resolve(),
         featureFetcher: FeatureFetching = resolve(),
         balanceService: ERC20BalanceServiceAPI = resolve(),
         transactionsService: ERC20HistoricalTransactionServiceAPI = resolve(),
@@ -103,6 +119,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         self.swapTransactionsService = swapTransactionsService
         self.priceService = priceService
         self.supportedPairsInteractorService = supportedPairsInteractorService
+        self.erc20TokenAccountsRepository = erc20TokenAccountsRepository
     }
 
     private var isPairToFiatAvailable: Single<Bool> {
@@ -118,22 +135,19 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     func can(perform action: AssetAction) -> Single<Bool> {
         switch action {
-        case .receive,
-             .viewActivity,
-             .send:
+        case .receive:
             return .just(true)
         case .deposit,
-             .withdraw:
+             .withdraw,
+             .sell:
             return .just(false)
+        case .viewActivity:
+            return hasHistory.asSingle()
+        case .send,
+             .swap:
+            return isFunded
         case .buy:
             return isPairToFiatAvailable
-        case .sell:
-            return .just(false)
-//            return Single.zip(isPairToFiatAvailable, isFunded).map {
-//                $0.0 && $0.1
-//            }
-        case .swap:
-            return isFunded
         }
     }
 
