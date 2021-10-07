@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Card announcement for announcing Cash feature + KYC
-final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     private typealias LocalizationId = LocalizationConstants.AnnouncementCards.CashIdentityVerification
 

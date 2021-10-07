@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Enable 2-FA announcement
-final class Enable2FAAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
+final class Enable2FAAnnouncement: PeriodicAnnouncement, ActionableAnnouncement {
 
     // MARK: - Properties
 

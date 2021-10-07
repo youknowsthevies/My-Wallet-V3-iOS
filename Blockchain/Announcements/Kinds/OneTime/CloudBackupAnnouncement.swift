@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Announcement that introduces Cloud Backup
-final class CloudBackupAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class CloudBackupAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     private typealias LocalizedString = LocalizationConstants.AnnouncementCards.CloudBackup
 

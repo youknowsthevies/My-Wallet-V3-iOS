@@ -14,7 +14,7 @@ protocol InterestIdentityVerificationAnnouncementRouting: AnyObject {
 }
 
 /// Interest announcement for announcing Interest Account feature + KYC
-final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     private typealias LocalizationId = LocalizationConstants.AnnouncementCards.InterestIdentityVerification
 

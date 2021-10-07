@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Verify identity announcement
-final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class VerifyIdentityAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     // MARK: - Properties
 

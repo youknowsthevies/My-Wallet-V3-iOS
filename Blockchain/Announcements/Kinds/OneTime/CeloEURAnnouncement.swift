@@ -9,7 +9,7 @@ import SwiftUI
 import ToolKit
 
 /// This is an announcement that introduces CeloEUR draw.
-final class CeloEURAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class CeloEURAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     private typealias LocalizedString = LocalizationConstants.AnnouncementCards.CeloEUR
 

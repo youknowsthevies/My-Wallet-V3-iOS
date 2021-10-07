@@ -9,7 +9,7 @@ import SwiftUI
 import ToolKit
 
 /// This is a generic announcement that introduces change in the name of a crypto currency.
-final class AssetRenameAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class AssetRenameAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     private typealias LocalizedString = LocalizationConstants.AnnouncementCards.AssetRename
 

@@ -9,7 +9,7 @@ import SwiftUI
 import ToolKit
 
 /// This is a generic announcement that introduces a new crypto currency.
-final class NewAssetAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class NewAssetAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     private typealias LocalizedString = LocalizationConstants.AnnouncementCards.NewAsset
 

@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Transfer in crypto announcement
-final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
+final class TransferInCryptoAnnouncement: PeriodicAnnouncement, ActionableAnnouncement {
 
     // MARK: - Properties
 

@@ -9,17 +9,15 @@ import RxSwift
 import SwiftUI
 import ToolKit
 
-final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & ActionableAnnouncement {
-
-    // MARK: - Types
-
-    private typealias LocalizedString = LocalizationConstants.AnnouncementCards.SimpleBuyFinishSignup
+/// Verify email announcement is a persistent announcement that should persist
+/// as long as the user email is not verified.
+final class VerifyEmailAnnouncement: PeriodicAnnouncement, ActionableAnnouncement {
 
     // MARK: - Properties
 
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
-            with: LocalizedString.ctaButton
+            with: LocalizationConstants.AnnouncementCards.VerifyEmail.ctaButton
         )
         button.tapRelay
             .bind { [weak self] in
@@ -32,14 +30,14 @@ final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & Actionab
         return AnnouncementCardViewModel(
             type: type,
             badgeImage: .init(
-                image: .local(name: "card-icon-v", bundle: .main),
+                image: .local(name: "card-icon-email", bundle: .main),
                 contentColor: nil,
                 backgroundColor: .clear,
                 cornerRadius: .none,
                 size: .edge(40)
             ),
-            title: LocalizedString.title,
-            description: LocalizedString.description,
+            title: LocalizationConstants.AnnouncementCards.VerifyEmail.title,
+            description: LocalizationConstants.AnnouncementCards.VerifyEmail.description,
             buttons: [button],
             dismissState: .undismissible,
             didAppear: { [weak self] in
@@ -50,46 +48,54 @@ final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & Actionab
     }
 
     var shouldShow: Bool {
-        hasIncompleteBuyFlow && canCompleteTier2
+        !isEmailVerified
     }
 
-    let type = AnnouncementType.simpleBuyPendingTransaction
+    let type = AnnouncementType.verifyEmail
     let analyticsRecorder: AnalyticsEventRecorderAPI
+
+    let dismiss: CardAnnouncementAction
+    let recorder: AnnouncementRecorder
+    let appearanceRules: PeriodicAnnouncementAppearanceRules
 
     let action: CardAnnouncementAction
 
-    private let hasIncompleteBuyFlow: Bool
-    private let canCompleteTier2: Bool
+    private let isEmailVerified: Bool
 
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
     init(
-        canCompleteTier2: Bool,
-        hasIncompleteBuyFlow: Bool,
+        isEmailVerified: Bool,
+        cacheSuite: CacheSuite = resolve(),
+        reappearanceTimeInterval: TimeInterval,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-        action: @escaping CardAnnouncementAction
+        action: @escaping CardAnnouncementAction,
+        dismiss: @escaping CardAnnouncementAction
     ) {
-        self.canCompleteTier2 = canCompleteTier2
-        self.hasIncompleteBuyFlow = hasIncompleteBuyFlow
+        self.isEmailVerified = isEmailVerified
         self.action = action
+        self.dismiss = dismiss
         self.analyticsRecorder = analyticsRecorder
+        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
     }
 }
 
 // MARK: SwiftUI Preview
 
 #if DEBUG
-struct SimpleBuyFinishSignupAnnouncementContainer: UIViewRepresentable {
+struct VerifyEmailAnnouncementContainer: UIViewRepresentable {
     typealias UIViewType = AnnouncementCardView
 
     func makeUIView(context: Context) -> UIViewType {
-        let presenter = SimpleBuyFinishSignupAnnouncement(
-            canCompleteTier2: true,
-            hasIncompleteBuyFlow: true,
-            action: {}
+        let presenter = VerifyEmailAnnouncement(
+            isEmailVerified: false,
+            reappearanceTimeInterval: 0,
+            action: {},
+            dismiss: {}
         )
         return AnnouncementCardView(using: presenter.viewModel)
     }
@@ -97,10 +103,10 @@ struct SimpleBuyFinishSignupAnnouncementContainer: UIViewRepresentable {
     func updateUIView(_ uiView: UIViewType, context: Context) {}
 }
 
-struct SimpleBuyFinishSignupAnnouncementContainer_Previews: PreviewProvider {
+struct VerifyEmailAnnouncementContainer_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            SimpleBuyFinishSignupAnnouncementContainer().colorScheme(.light)
+            VerifyEmailAnnouncementContainer().colorScheme(.light)
         }.previewLayout(.fixed(width: 375, height: 250))
     }
 }
