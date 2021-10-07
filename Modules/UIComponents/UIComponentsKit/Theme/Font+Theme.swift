@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-public enum FontWeight {
+public enum FontWeight: String, Hashable, Codable {
     case regular
     case medium
     case semibold
@@ -39,7 +39,7 @@ extension UIFont {
     }
 
     public static func main(_ weight: FontWeight, _ size: CGFloat) -> UIFont {
-        DispatchQueue.once(block: UIFont.loadCustomFonts)
+        UIFont.loadCustomFonts()
         return UIFont(name: InterType.of(weight).rawValue, size: size) ?? UIFont.systemFont(ofSize: size)
     }
 }
@@ -47,10 +47,12 @@ extension UIFont {
 extension UIFont {
 
     static func loadCustomFonts() {
-        registerFont(fileName: InterType.regular.rawValue)
-        registerFont(fileName: InterType.medium.rawValue)
-        registerFont(fileName: InterType.semibold.rawValue)
-        registerFont(fileName: InterType.bold.rawValue)
+        DispatchQueue.once {
+            registerFont(fileName: InterType.regular.rawValue)
+            registerFont(fileName: InterType.medium.rawValue)
+            registerFont(fileName: InterType.semibold.rawValue)
+            registerFont(fileName: InterType.bold.rawValue)
+        }
     }
 
     static func registerFont(fileName: String, bundle: Bundle = Bundle.UIComponents) {

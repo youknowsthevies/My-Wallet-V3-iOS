@@ -20,6 +20,32 @@ public enum Length: Hashable {
     case pmax(CGFloat)
 }
 
+extension Length: CustomStringConvertible {
+
+    public var description: String {
+        switch self {
+        case .pt(let o):
+            return "\(o)pt"
+        case .vw(let o):
+            return "\(o)vw"
+        case .vh(let o):
+            return "\(o)vh"
+        case .vmin(let o):
+            return "\(o)vmin"
+        case .vmax(let o):
+            return "\(o)vmax"
+        case .pw(let o):
+            return "\(o)pw"
+        case .ph(let o):
+            return "\(o)ph"
+        case .pmin(let o):
+            return "\(o)pmin"
+        case .pmax(let o):
+            return "\(o)pmax"
+        }
+    }
+}
+
 public struct Size: Hashable, Codable {
 
     public var width: Length
