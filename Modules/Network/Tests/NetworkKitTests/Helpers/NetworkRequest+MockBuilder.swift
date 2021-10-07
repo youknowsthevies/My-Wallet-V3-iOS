@@ -23,10 +23,7 @@ extension NetworkRequest {
         private var headers: HTTPHeaders = [:]
         private var authenticated: Bool = false
         private var contentType: ContentType = .json
-        private var decoder: NetworkResponseDecoderAPI =
-            NetworkResponseDecoder(
-                interalFeatureFlagService: InternalFeatureFlagServiceMock()
-            )
+        private var decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder()
         private var responseHandler: NetworkResponseHandlerAPI = NetworkResponseHandler()
         private var recordErrors: Bool = true
 
@@ -84,7 +81,6 @@ extension NetworkRequest {
                 authenticated: authenticated,
                 contentType: contentType,
                 decoder: decoder,
-                responseHandler: responseHandler,
                 recordErrors: recordErrors
             )
         }

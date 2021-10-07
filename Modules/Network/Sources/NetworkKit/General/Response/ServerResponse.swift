@@ -3,6 +3,6 @@
 import Foundation
 
 public struct ServerResponse {
-    let payload: Data?
-    let response: HTTPURLResponse
+    public let payload: Data?
+    public let response: HTTPURLResponse
 }
