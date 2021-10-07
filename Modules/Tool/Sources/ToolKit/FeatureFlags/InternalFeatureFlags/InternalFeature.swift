@@ -36,6 +36,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable unified sign in (account upgrade)
     case unifiedSignIn
 
+    /// Enables native wallet payload instead of JS
+    case nativeWalletPayload
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -46,7 +49,8 @@ public enum InternalFeature: String, CaseIterable {
              .requestConsoleLogging,
              .secureChannel,
              .useTransactionsFlowToBuyCrypto,
-             .unifiedSignIn:
+             .unifiedSignIn,
+             .nativeWalletPayload:
             return false
         case .splitDashboard,
              .loadAllERC20Tokens:
@@ -84,6 +88,8 @@ extension InternalFeature {
             return "New Onboarding Tour"
         case .unifiedSignIn:
             return "Unified Sign In"
+        case .nativeWalletPayload:
+            return "Native Wallet Payload"
         }
     }
 }
