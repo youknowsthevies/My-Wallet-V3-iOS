@@ -3,6 +3,7 @@
 import ComposableArchitecture
 @testable import FeatureAccountPickerUI
 @testable import PlatformKit
+@testable import PlatformKitMock
 @testable import PlatformUIKit
 import RxSwift
 import SnapshotTesting
@@ -70,7 +71,8 @@ class AccountPickerRowViewTests: XCTestCase {
             min: .init(amount: 500, currency: .GBP),
             isEligible: true,
             isVisible: true
-        )
+        ),
+        priceService: PriceServiceMock()
     )
 
     let paymentMethodCard = PaymentMethodAccount(
@@ -88,7 +90,8 @@ class AccountPickerRowViewTests: XCTestCase {
             min: .init(amount: 500, currency: .USD),
             isEligible: true,
             isVisible: true
-        )
+        ),
+        priceService: PriceServiceMock()
     )
 
     private func paymentMethodRowModel(for account: PaymentMethodAccount) -> AccountPickerRow.PaymentMethod {

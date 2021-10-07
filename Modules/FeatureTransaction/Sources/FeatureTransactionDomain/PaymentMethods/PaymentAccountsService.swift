@@ -21,13 +21,41 @@ public protocol PaymentAccountsServiceAPI {
 final class PaymentAccountsService: PaymentAccountsServiceAPI {
 
     let paymentMethodsService: PaymentMethodTypesServiceAPI
+    let fiatCurrencyService: FiatCurrencyServiceAPI
 
-    init(paymentMethodsService: PaymentMethodTypesServiceAPI = resolve()) {
+    init(
+        paymentMethodsService: PaymentMethodTypesServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
         self.paymentMethodsService = paymentMethodsService
+        self.fiatCurrencyService = fiatCurrencyService
     }
 
     func fetchPaymentMethodAccounts(
-        for currency: CryptoCurrency,
+        for cryptoCurrency: CryptoCurrency,
+        amount: MoneyValue
+    ) -> AnyPublisher<[PaymentMethodAccount], NetworkError> {
+        // STEP 1: Fetch the user's preferred currency. We'll need that to fetch payment methods with correct limits.
+        fiatCurrencyService
+            .fiatCurrency
+            .asPublisher()
+            // fiatCurrency should never fail, but better be safe than sorry
+            .replaceError(with: amount.fiatValue?.currency ?? .locale)
+            .setFailureType(to: NetworkError.self)
+            .flatMap { defaultFiatCurrency in
+                // STEP 2: Fetch the payment methods using the fiat currency we got from the the user
+                self.fetchPaymentMethodAccounts(
+                    for: cryptoCurrency,
+                    fiatCurrency: defaultFiatCurrency,
+                    amount: amount
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private func fetchPaymentMethodAccounts(
+        for cryptoCurrency: CryptoCurrency,
+        fiatCurrency: FiatCurrency,
         amount: MoneyValue
     ) -> AnyPublisher<[PaymentMethodAccount], NetworkError> {
         // NOTE: currency and amount are ignored until new API is ready to use
@@ -39,7 +67,7 @@ final class PaymentAccountsService: PaymentAccountsServiceAPI {
             .asPublisher()
             .zip(
                 paymentMethodsService
-                    .eligiblePaymentMethods(for: .locale)
+                    .eligiblePaymentMethods(for: fiatCurrency)
                     .asPublisher()
             )
             .map { paymentMethodTypes, elibiblePaymentMethods -> [PaymentMethodAccount] in

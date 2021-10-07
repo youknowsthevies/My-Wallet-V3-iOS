@@ -1,20 +1,25 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import DIKit
 import RxSwift
 import ToolKit
 
 /// A type that represents a payment method as a `BlockchainAccount`.
-public struct PaymentMethodAccount: FiatAccount {
+public final class PaymentMethodAccount: FiatAccount {
 
     public let paymentMethodType: PaymentMethodType
     public let paymentMethod: PaymentMethod
+    public let priceService: PriceServiceAPI
 
     public init(
         paymentMethodType: PaymentMethodType,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
+        priceService: PriceServiceAPI = resolve()
     ) {
         self.paymentMethodType = paymentMethodType
         self.paymentMethod = paymentMethod
+        self.priceService = priceService
     }
 
     public let isDefault: Bool = false
@@ -56,5 +61,16 @@ public struct PaymentMethodAccount: FiatAccount {
 
     public func can(perform action: AssetAction) -> Single<Bool> {
         .just(action == .buy)
+    }
+
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: self.fiatCurrency, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
+            }
+            .eraseToAnyPublisher()
     }
 }

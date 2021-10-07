@@ -166,6 +166,10 @@ extension DependencyContainer {
 
         factory { PriceService() as PriceServiceAPI }
 
+        factory { () -> CurrencyConversionServiceAPI in
+            CurrencyConversionService(priceService: DIKit.resolve())
+        }
+
         factory { CryptoReceiveAddressFactoryService() }
 
         factory { BlockchainAccountFetcher() as BlockchainAccountFetching }
