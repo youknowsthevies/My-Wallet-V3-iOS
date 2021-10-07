@@ -9,10 +9,6 @@ import RxSwift
 import SwiftUI
 import ToolKit
 
-protocol CashIdentityVerificationAnnouncementRouting: AnyObject {
-    func showCashIdentityVerificationScreen()
-}
-
 /// Card announcement for announcing Cash feature + KYC
 final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
 

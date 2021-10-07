@@ -24,14 +24,31 @@ final class PortfolioEmptyStatePresenter {
         alignment: .center
     )
     let cta = ButtonViewModel.primary(with: "Buy Crypto")
+    let didTapReceive: PublishRelay<Void> = .init()
+    let didTapDeposit: PublishRelay<Void> = .init()
 
+    private let interactor: PortfolioEmptyStateInteractor
     private let disposeBag: DisposeBag = .init()
 
-    init(walletOperating: WalletOperationsRouting = resolve()) {
+    init(interactor: PortfolioEmptyStateInteractor = .init()) {
+        self.interactor = interactor
+
+        didTapReceive
+            .bind { [interactor] _ in
+                interactor.switchTabToReceive()
+            }
+            .disposed(by: disposeBag)
+
         cta.tap
-            .emit(onNext: { [walletOperating] _ in
-                walletOperating.handleBuyCrypto(currency: .coin(.bitcoin))
+            .emit(onNext: { [interactor] _ in
+                interactor.handleBuy()
             })
+            .disposed(by: disposeBag)
+
+        didTapDeposit
+            .bind { [interactor] _ in
+                interactor.handleDeposit()
+            }
             .disposed(by: disposeBag)
     }
 }
