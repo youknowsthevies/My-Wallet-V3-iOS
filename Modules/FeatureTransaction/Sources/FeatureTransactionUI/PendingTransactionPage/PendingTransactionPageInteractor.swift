@@ -31,6 +31,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     private let sendEmailNotificationService: SendEmailNotificationServiceAPI
 
     private var cancellables = Set<AnyCancellable>()
+    private var disposeBag = DisposeBag()
 
     init(
         transactionModel: TransactionModel,
@@ -68,17 +69,18 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
             .asObservable()
             .withLatestFrom(transactionState) { ($0, $1) }
             .subscribe(onNext: { [weak self] executionStatus, transactionState in
+                guard let self = self else { return }
                 switch executionStatus {
                 case .inProgress, .notStarted:
                     break
                 case .error:
-                    self?.analyticsHook.onTransactionFailure(with: transactionState)
+                    self.analyticsHook.onTransactionFailure(with: transactionState)
                 case .completed:
-                    self?.analyticsHook.onTransactionSuccess(with: transactionState)
-                    self?.triggerSendEmailNotification(transactionState)
+                    self.analyticsHook.onTransactionSuccess(with: transactionState)
+                    self.triggerSendEmailNotification(transactionState)
                 }
             })
-            .disposeOnDeactivate(interactor: self)
+            .disposed(by: disposeBag)
 
         let completion = executionStatus
             .map(\.isComplete)
