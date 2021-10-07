@@ -461,8 +461,8 @@ extension Observable {
         self.do(onError: { [weak handler] error in
             handler?.handleCurrency(error: error)
         })
-            .catchError { _ in
-                Observable<Element>.empty()
-            }
+        .catchError { _ in
+            Observable<Element>.empty()
+        }
     }
 }

@@ -147,8 +147,8 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         let sourceAccount = data.source
         let sourceAccountCurrency = sourceAccount.currencyType
         let destinationAccountCurrency = data.destination.currencyType
-        let priceService = self.priceService
-        let amountTranslationInteractor = self.amountTranslationInteractor
+        let priceService = priceService
+        let amountTranslationInteractor = amountTranslationInteractor
 
         let balance: Observable<MoneyValuePair> = fiatCurrencyService
             .fiatCurrencyObservable

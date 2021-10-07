@@ -84,7 +84,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
 
     private var offlineTokenPublisher: AnyPublisher<String?, WalletError> {
-        let jsContextProvider = self.jsContextProvider
+        let jsContextProvider = jsContextProvider
         return Deferred {
             Future { [jsContextProvider] promise in
                 guard WalletManager.shared.wallet.isInitialized() else {
@@ -118,7 +118,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
 
     private var userIdPublisher: AnyPublisher<String?, WalletError> {
-        let jsContextProvider = self.jsContextProvider
+        let jsContextProvider = jsContextProvider
         return Deferred {
             Future { [jsContextProvider] promise in
                 guard WalletManager.shared.wallet.isInitialized() else {
@@ -446,7 +446,7 @@ extension WalletRepository {
 extension WalletRepository {
 
     var guidPublisher: AnyPublisher<String?, Never> {
-        let settings = self.settings
+        let settings = settings
         return Deferred {
             Future { [settings] promise in
                 promise(.success(settings.guid))
@@ -522,8 +522,8 @@ extension WalletRepository {
 extension WalletRepository {
 
     var offlineToken: AnyPublisher<NabuOfflineToken, MissingCredentialsError> {
-        let userIdPublisher = self.userIdPublisher
-        let offlineTokenPublisher = self.offlineTokenPublisher
+        let userIdPublisher = userIdPublisher
+        let offlineTokenPublisher = offlineTokenPublisher
         return reactiveWallet.waitUntilInitializedSinglePublisher
             .mapError()
             .flatMap { [userIdPublisher, offlineTokenPublisher] _ -> AnyPublisher<(String?, String?), WalletError> in
@@ -547,7 +547,7 @@ extension WalletRepository {
     }
 
     func set(offlineToken: NabuOfflineToken) -> AnyPublisher<Void, CredentialWritingError> {
-        let jsContextProvider = self.jsContextProvider
+        let jsContextProvider = jsContextProvider
         return Deferred {
             Future { [jsContextProvider] promise in
                 jsContextProvider.jsContext.invokeOnce(

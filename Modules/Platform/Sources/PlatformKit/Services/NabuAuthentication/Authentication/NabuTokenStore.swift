@@ -27,7 +27,7 @@ public final class NabuTokenStore {
     }
 
     func invalidate() -> AnyPublisher<Void, Never> {
-        let sessionTokenData = self.sessionTokenData
+        let sessionTokenData = sessionTokenData
         return Deferred {
             Future { [sessionTokenData] promise in
                 sessionTokenData.mutate { $0 = nil }

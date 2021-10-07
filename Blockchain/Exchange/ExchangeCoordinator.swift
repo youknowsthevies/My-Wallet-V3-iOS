@@ -69,7 +69,7 @@ final class ExchangeCoordinator {
         }, onError: { error in
             Logger.shared.error(error)
         })
-            .disposed(by: bag)
+        .disposed(by: bag)
 
         appSettings.didTapOnExchangeDeepLink = false
     }

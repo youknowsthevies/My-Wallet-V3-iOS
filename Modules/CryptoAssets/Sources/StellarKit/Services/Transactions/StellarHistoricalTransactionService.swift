@@ -116,10 +116,10 @@ extension OperationResponse {
 
         switch operationType {
         case .accountCreated:
-            guard let self = self as? AccountCreatedOperationResponse else {
+            guard let accountCreatedOperationResponse = self as? AccountCreatedOperationResponse else {
                 return nil
             }
-            let data = self.accountCreated(
+            let data = accountCreatedOperationResponse.accountCreated(
                 accountID: accountID,
                 feeCharged: Int(transaction.feeCharged ?? "0"),
                 memo: transaction.memo?.textMemo
@@ -127,10 +127,10 @@ extension OperationResponse {
             return .accountCreated(data)
 
         case .payment:
-            guard let self = self as? PaymentOperationResponse else {
+            guard let operationResponse = self as? PaymentOperationResponse else {
                 return nil
             }
-            let data = self.payment(
+            let data = operationResponse.payment(
                 accountID: accountID,
                 feeCharged: Int(transaction.feeCharged ?? "0"),
                 memo: transaction.memo?.textMemo

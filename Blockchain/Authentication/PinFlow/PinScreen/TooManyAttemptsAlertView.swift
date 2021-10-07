@@ -41,7 +41,7 @@ private struct TooManyAttemptsAlertView: View {
             PrimaryButton(title: LocalizationConstants.okString, action: {
                 okPressed?()
             })
-                .padding(.bottom, 5)
+            .padding(.bottom, 5)
         }
         .padding(EdgeInsets(top: 34, leading: 24, bottom: 0, trailing: 24))
     }

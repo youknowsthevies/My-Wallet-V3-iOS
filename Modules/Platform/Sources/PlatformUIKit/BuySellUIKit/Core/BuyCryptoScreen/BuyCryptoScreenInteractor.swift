@@ -182,8 +182,8 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     override func didLoad() {
 
-        let cryptoCurrencySelectionService = self.cryptoCurrencySelectionService
-        let fiatCurrencyService = self.fiatCurrencyService
+        let cryptoCurrencySelectionService = cryptoCurrencySelectionService
+        let fiatCurrencyService = fiatCurrencyService
 
         amountTranslationInteractor.effect
             .map(\.toBuyCryptoInteractorEffect)

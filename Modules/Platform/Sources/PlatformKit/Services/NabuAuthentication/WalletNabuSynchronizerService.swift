@@ -37,7 +37,7 @@ final class WalletNabuSynchronizerService: WalletNabuSynchronizerServiceAPI {
     // MARK: - Methods
 
     func sync() -> AnyPublisher<Void, WalletNabuSynchronizerServiceError> {
-        let updateUserInformationClient = self.updateUserInformationClient
+        let updateUserInformationClient = updateUserInformationClient
         return jwtService.token
             .replaceError(with: .failedToRetrieveToken)
             .flatMap { [updateUserInformationClient] jwtToken

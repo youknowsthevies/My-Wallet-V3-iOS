@@ -300,7 +300,7 @@ public final class StateService: StateServiceAPI {
     }
 
     private func startFlow() {
-        let cache = self.cache
+        let cache = cache
         let isFiatCurrencySupported: Single<Bool> = supportedPairsInteractor.pairs
             .take(1)
             .asSingle()

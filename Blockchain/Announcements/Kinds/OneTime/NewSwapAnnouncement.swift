@@ -58,7 +58,7 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     // MARK: - Properties
 
     var viewModel: AnnouncementCardViewModel {
-        let style = self.style
+        let style = style
         let button = ButtonViewModel.primary(
             with: style.cta
         )

@@ -143,7 +143,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
             .bindAndCatch(to: topSelectionButtonViewModel.accessibilityContentRelay)
             .disposed(by: disposeBag)
 
-        let displayBundle = self.displayBundle
+        let displayBundle = displayBundle
 
         interactor.selectedCurrencyType
             .map { displayBundle.events.sourceAccountChanged($0.code) }

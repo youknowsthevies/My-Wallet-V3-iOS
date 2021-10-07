@@ -51,7 +51,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
         guard let authenticator = authenticator else {
             fatalError("Authenticator missing")
         }
-        let execute = self.execute
+        let execute = execute
         return authenticator
             .authenticate { [execute] token in
                 execute(request.adding(authenticationToken: token))

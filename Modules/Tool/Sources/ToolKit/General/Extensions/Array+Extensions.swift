@@ -27,7 +27,7 @@ extension Array where Element: Hashable {
 
 extension Array where Element: Equatable {
     public var areAllElementsEqual: Bool {
-        guard let first = self.first else { return true }
+        guard let first = first else { return true }
         return !dropFirst().contains { $0 != first }
     }
 

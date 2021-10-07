@@ -148,7 +148,7 @@ extension NabuUser {
     /// Else use value of `NabuUserSettings`s `mercuryEmailVerified`.
     /// Both `ProductsUsed` and `NabuUserSettings` are optionally present.
     public var hasLinkedExchangeAccount: Bool {
-        if let productsUsed = self.productsUsed {
+        if let productsUsed = productsUsed {
             return productsUsed.exchange
         } else if let mercuryEmailVerified = settings?.mercuryEmailVerified {
             return mercuryEmailVerified

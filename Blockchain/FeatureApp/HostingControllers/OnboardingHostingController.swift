@@ -153,7 +153,7 @@ final class OnboardingHostingController: UIViewController {
 
     /// Transition from the current controller, if any to the specified controller.
     private func transitionFromCurrentController(to controller: UIViewController) {
-        if let currentController = self.currentController {
+        if let currentController = currentController {
             transition(
                 from: currentController,
                 to: controller,

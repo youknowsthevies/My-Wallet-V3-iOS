@@ -116,13 +116,13 @@ final class AssetDetailsScreenPresenter {
         var cellTypes: [CellType] = []
         cellTypes.append(.priceAlert)
         cellTypes.append(.chart)
-        if let walletBalance = self.walletBalance {
+        if let walletBalance = walletBalance {
             cellTypes.append(.balance(walletBalance.account))
         }
-        if let tradingBalance = self.tradingBalance {
+        if let tradingBalance = tradingBalance {
             cellTypes.append(.balance(tradingBalance.account))
         }
-        if let savingsBalance = self.savingsBalance {
+        if let savingsBalance = savingsBalance {
             cellTypes.append(.balance(savingsBalance.account))
         }
         return cellTypes

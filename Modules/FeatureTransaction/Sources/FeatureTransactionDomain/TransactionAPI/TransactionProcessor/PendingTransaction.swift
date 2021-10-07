@@ -14,7 +14,7 @@ public struct PendingTransaction: Equatable {
     /// The maximum amount the user can spend. We compare the amount entered to the
     /// `maximumLimit` as `CryptoValues` and return whichever is smaller.
     public var maxSpendable: MoneyValue {
-        guard let maximumLimit = self.maximumLimit else {
+        guard let maximumLimit = maximumLimit else {
             return available
         }
         guard let availableMaximumLimit = try? maximumLimit - feeAmount else {
