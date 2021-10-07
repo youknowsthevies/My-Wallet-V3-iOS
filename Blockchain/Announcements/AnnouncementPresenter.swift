@@ -164,7 +164,10 @@ final class AnnouncementPresenter {
                     hasLinkedBanks: preliminaryData.simpleBuy.hasLinkedBanks
                 )
             case .verifyEmail:
-                announcement = verifyEmail(user: preliminaryData.user)
+                announcement = verifyEmail(
+                    user: preliminaryData.user,
+                    reappearanceTimeInterval: metadata.interval
+                )
             case .walletIntro:
                 announcement = walletIntro(reappearanceTimeInterval: metadata.interval)
             case .twoFA:
@@ -195,12 +198,14 @@ final class AnnouncementPresenter {
                 announcement = resubmitDocuments(user: preliminaryData.user)
             case .simpleBuyPendingTransaction:
                 announcement = simpleBuyPendingTransaction(
-                    for: preliminaryData.simpleBuy.pendingOrderDetails
+                    for: preliminaryData.simpleBuy.pendingOrderDetails,
+                    reappearanceTimeInterval: metadata.interval
                 )
             case .simpleBuyKYCIncomplete:
                 announcement = simpleBuyFinishSignup(
                     tiers: preliminaryData.tiers,
-                    hasIncompleteBuyFlow: preliminaryData.hasIncompleteBuyFlow
+                    hasIncompleteBuyFlow: preliminaryData.hasIncompleteBuyFlow,
+                    reappearanceTimeInterval: metadata.interval
                 )
             case .newSwap:
                 announcement = newSwap(using: preliminaryData, reappearanceTimeInterval: metadata.interval)
@@ -242,20 +247,34 @@ final class AnnouncementPresenter {
 extension AnnouncementPresenter {
 
     /// Computes email verification announcement
-    private func verifyEmail(user: NabuUser) -> Announcement {
+    private func verifyEmail(
+        user: NabuUser,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
         VerifyEmailAnnouncement(
             isEmailVerified: user.email.verified,
-            action: UIApplication.shared.openMailApplication
+            reappearanceTimeInterval: reappearanceTimeInterval,
+            action: UIApplication.shared.openMailApplication,
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            }
         )
     }
 
     /// Computes Simple Buy Pending Transaction Announcement
-    private func simpleBuyPendingTransaction(for order: OrderDetails?) -> Announcement {
+    private func simpleBuyPendingTransaction(
+        for order: OrderDetails?,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
         SimpleBuyPendingTransactionAnnouncement(
             orderDetails: order,
+            reappearanceTimeInterval: reappearanceTimeInterval,
             action: { [weak self] in
                 self?.hideAnnouncement()
                 self?.handleBuyCrypto()
+            },
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
             }
         )
     }
@@ -263,15 +282,20 @@ extension AnnouncementPresenter {
     /// Computes Simple Buy Finish Signup Announcement
     private func simpleBuyFinishSignup(
         tiers: KYC.UserTiers,
-        hasIncompleteBuyFlow: Bool
+        hasIncompleteBuyFlow: Bool,
+        reappearanceTimeInterval: TimeInterval
     ) -> Announcement {
         SimpleBuyFinishSignupAnnouncement(
             canCompleteTier2: tiers.canCompleteTier2,
             hasIncompleteBuyFlow: hasIncompleteBuyFlow,
+            reappearanceTimeInterval: reappearanceTimeInterval,
             action: { [weak self] in
                 guard let self = self else { return }
                 self.hideAnnouncement()
                 self.handleBuyCrypto()
+            },
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
             }
         )
     }

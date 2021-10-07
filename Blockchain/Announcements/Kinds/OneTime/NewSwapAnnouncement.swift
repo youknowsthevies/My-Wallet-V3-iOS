@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Swap 2.0 announcement is a periodic announcement that introduces the user to in-wallet asset trading
-final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class NewSwapAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     // MARK: - Types
 
@@ -58,9 +58,9 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     // MARK: - Properties
 
     var viewModel: AnnouncementCardViewModel {
-        let style = style
+        let activeStyle = style
         let button = ButtonViewModel.primary(
-            with: style.cta
+            with: activeStyle.cta
         )
         button.tapRelay
             .bind { [weak self] in
@@ -80,8 +80,8 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
                 cornerRadius: .none,
                 size: .edge(40)
             ),
-            title: style.title,
-            description: style.description,
+            title: activeStyle.title,
+            description: activeStyle.description,
             buttons: [button],
             dismissState: .dismissible { [weak self] in
                 guard let self = self else { return }

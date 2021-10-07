@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 // swiftlint:disable type_name
-final class ResubmitDocumentsAfterRecoveryAnnouncement: PersistentAnnouncement & ActionableAnnouncement {
+final class ResubmitDocumentsAfterRecoveryAnnouncement: PersistentAnnouncement, ActionableAnnouncement {
 
     // MARK: - Types
 

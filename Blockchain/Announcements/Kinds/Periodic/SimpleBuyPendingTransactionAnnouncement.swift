@@ -9,7 +9,7 @@ import RxSwift
 import SwiftUI
 import ToolKit
 
-final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & ActionableAnnouncement {
+final class SimpleBuyPendingTransactionAnnouncement: PeriodicAnnouncement, ActionableAnnouncement {
 
     struct Order {
         let isBankWire: Bool
@@ -81,6 +81,10 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
     let type = AnnouncementType.simpleBuyPendingTransaction
     let analyticsRecorder: AnalyticsEventRecorderAPI
 
+    let dismiss: CardAnnouncementAction
+    let recorder: AnnouncementRecorder
+    let appearanceRules: PeriodicAnnouncementAppearanceRules
+
     let action: CardAnnouncementAction
 
     private let order: Order?
@@ -91,22 +95,28 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
 
     init(
         order: Order?,
+        cacheSuite: CacheSuite = resolve(),
+        reappearanceTimeInterval: TimeInterval,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-        action: @escaping CardAnnouncementAction
+        action: @escaping CardAnnouncementAction,
+        dismiss: @escaping CardAnnouncementAction
     ) {
         self.order = order
         self.action = action
+        self.dismiss = dismiss
         self.analyticsRecorder = analyticsRecorder
+        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        appearanceRules = PeriodicAnnouncementAppearanceRules(recessDurationBetweenDismissals: reappearanceTimeInterval)
     }
 
-    init(
+    convenience init(
         orderDetails: OrderDetails?,
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-        action: @escaping CardAnnouncementAction
+        reappearanceTimeInterval: TimeInterval,
+        action: @escaping CardAnnouncementAction,
+        dismiss: @escaping CardAnnouncementAction
     ) {
-        order = orderDetails
+        let order: Order? = orderDetails
             .flatMap { orderDetails in
                 Order(
                     isBankWire: orderDetails.isBankWire,
@@ -114,8 +124,12 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
                     isPendingDeposit: orderDetails.state == .pendingDeposit
                 )
             }
-        self.action = action
-        self.analyticsRecorder = analyticsRecorder
+        self.init(
+            order: order,
+            reappearanceTimeInterval: reappearanceTimeInterval,
+            action: action,
+            dismiss: dismiss
+        )
     }
 }
 
@@ -128,7 +142,9 @@ struct SimpleBuyPendingTransactionAnnouncementContainer: UIViewRepresentable {
     func makeUIView(context: Context) -> UIViewType {
         let presenter = SimpleBuyPendingTransactionAnnouncement(
             order: .init(isBankWire: true, currencyCode: "BTC", isPendingDeposit: true),
-            action: {}
+            reappearanceTimeInterval: 0,
+            action: {},
+            dismiss: {}
         )
         return AnnouncementCardView(using: presenter.viewModel)
     }

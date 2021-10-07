@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Wallet Intro announcement is a periodic announcement that can also be entirely removed
-final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncement & ActionableAnnouncement {
+final class WalletIntroAnnouncement: PeriodicAnnouncement, RemovableAnnouncement, ActionableAnnouncement {
 
     // MARK: - Properties
 

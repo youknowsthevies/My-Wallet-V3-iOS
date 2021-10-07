@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Announcement for funds backup
-final class BackupFundsAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
+final class BackupFundsAnnouncement: PeriodicAnnouncement, ActionableAnnouncement {
 
     // MARK: - Properties
 
