@@ -4,19 +4,33 @@ import SwiftUI
 
 public struct MinimalDoubleButton: View {
 
-    private let leftButton: (title: String, action: () -> Void)
-    private let rightButton: (title: String, action: () -> Void)
+    private struct ButtonData {
+        let image: ImageResource?
+        let title: String
+        let action: () -> Void
+    }
+
+    private let leftButton: ButtonData
+    private let rightButton: ButtonData
 
     public init(
+        leftImage: ImageResource? = nil,
         leftTitle: String,
         leftAction: @escaping () -> Void,
+        rightImage: ImageResource? = nil,
         rightTitle: String,
         rightAction: @escaping () -> Void
     ) {
-        leftButton.title = leftTitle
-        leftButton.action = leftAction
-        rightButton.title = rightTitle
-        rightButton.action = rightAction
+        leftButton = ButtonData(
+            image: leftImage,
+            title: leftTitle,
+            action: leftAction
+        )
+        rightButton = ButtonData(
+            image: rightImage,
+            title: rightTitle,
+            action: rightAction
+        )
     }
 
     public var body: some View {
@@ -24,14 +38,31 @@ public struct MinimalDoubleButton: View {
             action: {},
             label: {
                 HStack(spacing: 0) {
-                    Button(leftButton.title, action: leftButton.action)
+                    button(data: leftButton)
                     Color.dividerLine.frame(width: 1, height: 32)
-                    Button(rightButton.title, action: rightButton.action)
+                    button(data: rightButton)
                 }
                 .buttonStyle(MinimalButtonStyle())
             }
         )
         .buttonStyle(MinimalDoubleButtonStyle())
+    }
+
+    private func button(
+        data: ButtonData
+    ) -> some View {
+        Button(action: data.action) {
+            HStack(spacing: 10) {
+                if let image = data.image {
+                    ImageResourceView(image)
+                        .resizable()
+                        .renderingMode(.template)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 16, height: 16)
+                }
+                Text(data.title)
+            }
+        }
     }
 }
 
@@ -89,6 +120,29 @@ struct SwiftUIView_Previews: PreviewProvider {
             .disabled(true)
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Disabled")
+
+            MinimalDoubleButton(
+                leftImage: .systemName("pencil"),
+                leftTitle: "Restore",
+                leftAction: {},
+                rightImage: .systemName("applelogo"),
+                rightTitle: "Log In ->",
+                rightAction: {}
+            )
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("Image + Enabled")
+
+            MinimalDoubleButton(
+                leftImage: .systemName("pencil"),
+                leftTitle: "Restore",
+                leftAction: {},
+                rightImage: .systemName("applelogo"),
+                rightTitle: "Log In ->",
+                rightAction: {}
+            )
+            .disabled(true)
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("Image + Disabled")
         }
         .padding()
     }

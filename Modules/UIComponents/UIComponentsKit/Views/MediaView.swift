@@ -104,15 +104,20 @@ public struct MediaView<Failure: View>: View {
         if let url = image.url {
             if let name = image.placeholder?.name, UniversalImage(named: name, in: bundle, with: nil) != nil {
                 ImageResourceView(url: url, placeholder: SwiftUI.Image(name, bundle: bundle))
+                    .resizable()
             } else if let systemName = image.placeholder?.systemName {
                 ImageResourceView(url: url, placeholder: SwiftUI.Image(systemName: systemName))
+                    .resizable()
             } else {
                 ImageResourceView(url: url, placeholder: failure())
+                    .resizable()
             }
         } else if let name = image.name {
-            ImageResourceView(named: name, in: bundle, placeholder: failure)
+            ImageResourceView(named: name, in: bundle, placeholder: failure)?
+                .resizable()
         } else if let systemName = image.systemName {
-            ImageResourceView(systemName: systemName, placeholder: failure)
+            ImageResourceView(systemName: systemName, placeholder: failure)?
+                .resizable()
         } else {
             failure()
         }
