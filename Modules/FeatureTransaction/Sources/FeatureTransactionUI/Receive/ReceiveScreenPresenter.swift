@@ -216,7 +216,11 @@ final class ReceiveScreenPresenter {
             .withLatestFrom(qrCodeMetadata)
             .subscribe(onNext: { [weak self] metadata in
                 guard let self = self else { return }
-                self.interactor.receiveRouter.shareDetails(for: metadata)
+                let currencyType = self.interactor.account.currencyType
+                self.interactor.receiveRouter.shareDetails(
+                    for: metadata,
+                    currencyType: currencyType
+                )
             })
             .disposed(by: disposeBag)
     }

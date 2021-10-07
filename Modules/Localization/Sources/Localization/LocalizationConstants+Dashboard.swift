@@ -62,6 +62,10 @@ extension LocalizationConstants.Dashboard.Portfolio {
 }
 
 extension LocalizationConstants.Dashboard.Prices {
+    public static let searchPlaceholder = NSLocalizedString(
+        "Search Coins",
+        comment: "Dashboard: Prices - search placeholder."
+    )
     public static let noResults = NSLocalizedString(
         "No Results",
         comment: "Dashboard: Prices - no results when filtering."
