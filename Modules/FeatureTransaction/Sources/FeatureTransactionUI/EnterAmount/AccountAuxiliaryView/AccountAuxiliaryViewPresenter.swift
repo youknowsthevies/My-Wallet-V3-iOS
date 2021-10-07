@@ -34,10 +34,13 @@ final class AccountAuxiliaryViewPresenter {
 
         badgeImageViewModel = interactor
             .state
-            .map(\.imageResource)
+            .map {
+                ($0.imageResource, $0.imageBackgroundColor)
+            }
             .map {
                 BadgeImageViewModel.default(
                     image: $0,
+                    backgroundColor: $1,
                     cornerRadius: .round,
                     accessibilityIdSuffix: "AccountAuxiliaryViewBadge"
                 )

@@ -62,6 +62,12 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
                     for: indexPath,
                     presenter: presenter
                 )
+            case .paymentMethodAccount(let presenter):
+                cell = self.paymentMethodCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    presenter: presenter
+                )
             case .accountGroup(let presenter):
                 cell = self.totalBalanceCell(
                     tableView: tableView,
@@ -89,6 +95,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         tableView.keyboardDismissMode = .onDrag
         tableView.register(LabelTableViewCell.self)
         tableView.register(LinkedBankAccountTableViewCell.self)
+        tableView.register(PaymentMethodCell.self)
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
@@ -264,6 +271,16 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         presenter: LinkedBankAccountCellPresenter
     ) -> UITableViewCell {
         let cell = tableView.dequeue(LinkedBankAccountTableViewCell.self, for: indexPath)
+        cell.presenter = presenter
+        return cell
+    }
+
+    private func paymentMethodCell(
+        tableView: UITableView,
+        for indexPath: IndexPath,
+        presenter: PaymentMethodCellPresenter
+    ) -> UITableViewCell {
+        let cell = tableView.dequeue(PaymentMethodCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }

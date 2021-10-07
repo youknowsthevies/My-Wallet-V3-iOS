@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
 import RxSwift
 import ToolKit
 
@@ -9,6 +8,14 @@ public struct PaymentMethodAccount: FiatAccount {
 
     public let paymentMethodType: PaymentMethodType
     public let paymentMethod: PaymentMethod
+
+    public init(
+        paymentMethodType: PaymentMethodType,
+        paymentMethod: PaymentMethod
+    ) {
+        self.paymentMethodType = paymentMethodType
+        self.paymentMethod = paymentMethod
+    }
 
     public let isDefault: Bool = false
 

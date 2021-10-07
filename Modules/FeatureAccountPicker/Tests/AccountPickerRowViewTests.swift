@@ -52,7 +52,56 @@ class AccountPickerRowViewTests: XCTestCase {
         withdrawServiceAPI: MockWithdrawalServiceAPI()
     )
 
-    @ViewBuilder func view(row: AccountPickerRow) -> some View {
+    let paymentMethodFunds = PaymentMethodAccount(
+        paymentMethodType: .account(
+            FundData(
+                balance: .init(
+                    currency: .fiat(.GBP),
+                    available: .init(amount: 2500000, currency: .fiat(.GBP)),
+                    withdrawable: .init(amount: 2500000, currency: .fiat(.GBP)),
+                    pending: .zero(currency: .GBP)
+                ),
+                max: .init(amount: 100000000, currency: .GBP)
+            )
+        ),
+        paymentMethod: .init(
+            type: .funds(.fiat(.GBP)),
+            max: .init(amount: 1000000, currency: .GBP),
+            min: .init(amount: 500, currency: .GBP),
+            isEligible: true,
+            isVisible: true
+        )
+    )
+
+    let paymentMethodCard = PaymentMethodAccount(
+        paymentMethodType: .card(
+            CardData(
+                ownerName: "John Smith",
+                number: "4000 0000 0000 0000",
+                expirationDate: "12/30",
+                cvv: "000"
+            )!
+        ),
+        paymentMethod: .init(
+            type: .card([.visa]),
+            max: .init(amount: 120000, currency: .USD),
+            min: .init(amount: 500, currency: .USD),
+            isEligible: true,
+            isVisible: true
+        )
+    )
+
+    private func paymentMethodRowModel(for account: PaymentMethodAccount) -> AccountPickerRow.PaymentMethod {
+        AccountPickerRow.PaymentMethod(
+            id: account.identifier,
+            title: account.label,
+            description: account.paymentMethodType.balance.displayString,
+            badgeView: account.logoResource.image,
+            badgeBackground: Color(account.logoBackgroundColor)
+        )
+    }
+
+    @ViewBuilder private func view(row: AccountPickerRow) -> some View {
         AccountPickerRowView(
             store: Store(
                 initialState: row,
@@ -206,6 +255,20 @@ class AccountPickerRowViewTests: XCTestCase {
 
         isShowingMultiBadge = true
 
+        assertSnapshot(matching: view(row: linkedAccountRow), as: .image)
+    }
+
+    func testPaymentMethod_funds() {
+        let linkedAccountRow = AccountPickerRow.paymentMethodAccount(
+            paymentMethodRowModel(for: paymentMethodFunds)
+        )
+        assertSnapshot(matching: view(row: linkedAccountRow), as: .image)
+    }
+
+    func testPaymentMethod_card() {
+        let linkedAccountRow = AccountPickerRow.paymentMethodAccount(
+            paymentMethodRowModel(for: paymentMethodCard)
+        )
         assertSnapshot(matching: view(row: linkedAccountRow), as: .image)
     }
 }

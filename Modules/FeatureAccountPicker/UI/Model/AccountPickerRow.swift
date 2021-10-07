@@ -8,6 +8,7 @@ public enum AccountPickerRow: Equatable, Identifiable {
     case label(Label)
     case button(Button)
     case linkedBankAccount(LinkedBankAccount)
+    case paymentMethodAccount(PaymentMethod)
     case accountGroup(AccountGroup)
     case singleAccount(SingleAccount)
 
@@ -18,6 +19,8 @@ public enum AccountPickerRow: Equatable, Identifiable {
         case .button(let model):
             return model.id
         case .linkedBankAccount(let model):
+            return model.id
+        case .paymentMethodAccount(let model):
             return model.id
         case .accountGroup(let model):
             return model.id
