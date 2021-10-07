@@ -95,7 +95,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 setupBitPay(on: presenter)
                 return .lineItem(presenter)
             }
-        if bitpayItemIfNeeded.count > 0 {
+        if !bitpayItemIfNeeded.isEmpty {
             bitpayItemIfNeeded.append(.separator)
         }
 

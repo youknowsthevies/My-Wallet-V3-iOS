@@ -185,14 +185,12 @@ extension SwapTransactionEngine {
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
                     .networkFee(.init(
-                        fee: pricedQuote.networkFee,
-                        feeType: .withdrawalFee,
-                        asset: targetAsset.currencyType
+                        primaryCurrencyFee: pricedQuote.networkFee,
+                        feeType: .withdrawalFee
                     )),
                     .networkFee(.init(
-                        fee: pendingTransaction.feeAmount,
-                        feeType: .depositFee,
-                        asset: sourceAsset.currencyType
+                        primaryCurrencyFee: pendingTransaction.feeAmount,
+                        feeType: .depositFee
                     ))
                 ]
 
@@ -231,9 +229,8 @@ extension SwapTransactionEngine {
             .asSingle()
             .map { [targetAsset, sourceAsset] pricedQuote -> PendingTransaction in
                 let networkFee = TransactionConfirmation.Model.NetworkFee(
-                    fee: pricedQuote.networkFee,
-                    feeType: .withdrawalFee,
-                    asset: targetAsset.currencyType
+                    primaryCurrencyFee: pricedQuote.networkFee,
+                    feeType: .withdrawalFee
                 )
                 let resultValue = CryptoValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let swapExchangeRate = TransactionConfirmation.Model.SwapExchangeRate(

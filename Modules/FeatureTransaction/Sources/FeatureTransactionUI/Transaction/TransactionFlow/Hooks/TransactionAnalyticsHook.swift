@@ -184,10 +184,10 @@ final class TransactionAnalyticsHook {
             }
             let networkFeeInputAmount = confirmations?.first(where: {
                 $0.feeType == .withdrawalFee
-            })?.fee.displayMajorValue.doubleValue ?? 0
+            })?.primaryCurrencyFee.displayMajorValue.doubleValue ?? 0
             let networkFeeOutputAmount = confirmations?.first(where: {
                 $0.feeType == .depositFee
-            })?.fee.displayMajorValue.doubleValue ?? 0
+            })?.primaryCurrencyFee.displayMajorValue.doubleValue ?? 0
             analyticsRecorder.record(events: [
                 SwapAnalyticsEvent.transactionSuccess(
                     asset: state.asset,

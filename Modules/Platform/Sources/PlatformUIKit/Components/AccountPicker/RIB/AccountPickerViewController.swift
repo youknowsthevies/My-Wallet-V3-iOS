@@ -36,11 +36,18 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     private let backButtonRelay = PublishRelay<Void>()
     private let closeButtonRelay = PublishRelay<Void>()
     private let searchRelay = PublishRelay<String?>()
+    private var activityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView()
+        activityIndicatorView.startAnimating()
+        return activityIndicatorView
+    }()
 
     private lazy var dataSource: RxDataSource = {
         RxDataSource(configureCell: { [weak self] _, tableView, indexPath, item in
-            guard let self = self else {
-                return UITableViewCell()
+            guard let self = self else { return UITableViewCell() }
+            if !self.activityIndicatorView.isHidden {
+                self.activityIndicatorView.isHidden = true
+                self.activityIndicatorView.stopAnimating()
             }
             let cell: UITableViewCell
             switch item.presenter {
@@ -116,18 +123,9 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
 
         view.addLayoutGuide(headerLayoutGuide)
         view.addSubview(tableView)
-
-        let headerLayoutGuideHeight = headerLayoutGuide.heightAnchor.constraint(equalToConstant: 0)
-        headerLayoutGuideHeight.priority = .defaultHigh
-
-        NSLayoutConstraint.activate([
-            headerLayoutGuideHeight,
-            headerLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
-            headerLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerLayoutGuide.bottomAnchor.constraint(equalTo: tableView.topAnchor)
-        ])
-        tableView.layoutToSuperview(.bottom, .leading, .trailing)
+        tableView.layoutToSuperview(.top, .bottom, .leading, .trailing)
+        tableView.addSubview(activityIndicatorView)
+        activityIndicatorView.layoutToSuperviewCenter()
     }
 
     // MARK: - Methods

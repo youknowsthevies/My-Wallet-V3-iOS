@@ -32,6 +32,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case buyPaymentMethod(TransactionConfirmation.Model.BuyPaymentMethodValue)
 
     case total(TransactionConfirmation.Model.Total)
+    case totalCost(TransactionConfirmation.Model.TotalCost)
 
     public var type: TransactionConfirmation.Kind {
         switch self {
@@ -82,6 +83,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .buyCryptoValue(let value):
             return value.type
         case .buyPaymentMethod(let value):
+            return value.type
+        case .totalCost(let value):
             return value.type
         }
     }
@@ -136,6 +139,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
             return value.formatted
         case .buyPaymentMethod(let value):
             return value.formatted
+        case .totalCost(let value):
+            return value.formatted
         }
     }
 
@@ -158,6 +163,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
              (.swapExchangeRate, .swapExchangeRate),
              (.swapSourceValue, .swapSourceValue),
              (.total, .total),
+             (.totalCost, .totalCost),
              (.transactionFee, .transactionFee),
              (.arrivalDate, .arrivalDate):
             return true

@@ -44,7 +44,7 @@ final class SwapQuotesEngine {
             quote(direction: direction, pair: pair),
             amountObservable
         )
-        .map { quote, amount in
+        .map { (quote: OrderQuotePayload, amount: BigInt) in
             let interpolator = PricesInterpolator(prices: quote.quote.priceTiers)
             return PricedQuote(
                 price: interpolator.rate(amount: amount),
