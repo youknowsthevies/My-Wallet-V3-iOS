@@ -110,7 +110,7 @@ final class TransactionInteractor {
     }
 
     func getAvailableSourceAccounts(action: AssetAction) -> Single<[SingleAccount]> {
-        let allEligibleCryptoAccounts = coincore.allAccounts
+        let allEligibleCryptoAccounts: Single<[CryptoAccount]> = coincore.allAccounts
             .eraseError()
             .map(\.accounts)
             .flatMapFilter(
@@ -130,7 +130,6 @@ final class TransactionInteractor {
                     account as? CryptoAccount
                 }
             }
-            .asObservable()
             .asSingle()
         switch action {
         case .buy:
@@ -145,43 +144,7 @@ final class TransactionInteractor {
                     }
                 }
         case .sell:
-            return coincore.allAccounts
-                .eraseError()
-                .map(\.accounts)
-                .flatMapFilter(
-                    action: .buy,
-                    failSequence: false,
-                    onError: { [errorRecorder] account, error in
-                        let error: Error = .loadingFailed(
-                            account: account,
-                            action: action,
-                            error: String(describing: error)
-                        )
-                        errorRecorder.error(error)
-                    }
-                )
-                .map { accounts in
-                    accounts.compactMap { account in
-                        account as? CryptoAccount
-                    }
-                }
-                .flatMap { accounts in
-                    Publishers.MergeMany(
-                        accounts.map { account in
-                            Publishers.Zip(
-                                account.isFunded.asPublisher(),
-                                account.actionableBalance.asPublisher()
-                            )
-                            .compactMap { isFunded, actionableBalance in
-                                isFunded && actionableBalance.amount > BigInt(0) ? account : nil
-                            }
-                            .eraseToAnyPublisher()
-                        }
-                    )
-                    .collect()
-                }
-                .eraseToAnyPublisher()
-                .asSingle()
+            return allEligibleCryptoAccounts.map { $0 as [SingleAccount] }
         case .deposit:
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         default:

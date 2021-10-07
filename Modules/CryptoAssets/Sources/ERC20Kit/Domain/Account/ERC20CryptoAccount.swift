@@ -33,18 +33,25 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     var actions: Single<AvailableActions> {
-        Single
-            .zip(isFunded, isPairToFiatAvailable)
-            .map { isFunded, isPairToFiatAvailable -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive, .send]
-                if isPairToFiatAvailable {
-                    base.insert(.buy)
-                }
-                if isFunded {
-                    base.insert(.swap)
-                }
-                return base
+        Single.zip(
+            isFunded,
+            isPairToFiatAvailable,
+            featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
+        )
+        .map { isFunded, isPairToFiatAvailable, isSellEnabled -> AvailableActions in
+            var base: AvailableActions = [.viewActivity, .receive, .send]
+            if isPairToFiatAvailable {
+                base.insert(.buy)
             }
+            if isFunded {
+                base.insert(.swap)
+                if isSellEnabled {
+                    base.insert(.sell)
+                }
+            }
+            return base
+        }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
@@ -82,6 +89,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     private let transactionsService: ERC20HistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         publicKey: String,
@@ -91,7 +99,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         transactionsService: ERC20HistoricalTransactionServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
-        supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve()
+        supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.publicKey = publicKey
         self.erc20Token = erc20Token
@@ -103,6 +112,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         self.swapTransactionsService = swapTransactionsService
         self.priceService = priceService
         self.supportedPairsInteractorService = supportedPairsInteractorService
+        self.featureFlagsService = featureFlagsService
     }
 
     private var isPairToFiatAvailable: Single<Bool> {
@@ -128,10 +138,14 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         case .buy:
             return isPairToFiatAvailable
         case .sell:
-            return .just(false)
-//            return Single.zip(isPairToFiatAvailable, isFunded).map {
-//                $0.0 && $0.1
-//            }
+            return featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled))
+                .asSingle()
+                .flatMap(weak: self) { (self, _) in
+                    Single.zip(self.isPairToFiatAvailable, self.isFunded).map {
+                        $0.0 && $0.1
+                    }
+                }
         case .swap:
             return isFunded
         }

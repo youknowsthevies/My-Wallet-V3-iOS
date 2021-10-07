@@ -120,8 +120,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
                     // Not possible for a Non Custodial wallet to 'interest'.
                     break
                 case .sell:
-                    // Not possible for a Non Custodial wallet to 'sell'.
-                    break
+                    stateService.selectionRelay.accept(.next(.sell))
                 case .withdraw:
                     // Not possible for a Non Custodial wallet to 'withdraw'.
                     break

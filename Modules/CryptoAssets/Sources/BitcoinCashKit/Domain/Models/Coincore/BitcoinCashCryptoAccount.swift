@@ -35,14 +35,21 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var actions: Single<AvailableActions> {
-        isFunded
-            .map { isFunded -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
-                if isFunded {
-                    base.insert(.swap)
+        Single.zip(
+            isFunded,
+            featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
+        )
+        .map { isFunded, isSellEnabled -> AvailableActions in
+            var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
+            if isFunded {
+                base.insert(.swap)
+                if isSellEnabled {
+                    base.insert(.sell)
                 }
-                return base
             }
+            return base
+        }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
@@ -100,6 +107,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     private let bridge: BitcoinCashWalletBridgeAPI
     private let transactionsService: BitcoinCashHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         xPub: XPub,
@@ -110,7 +118,8 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
         transactionsService: BitcoinCashHistoricalTransactionServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
-        bridge: BitcoinCashWalletBridgeAPI = resolve()
+        bridge: BitcoinCashWalletBridgeAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.xPub = xPub
         self.label = label ?? CryptoCurrency.coin(.bitcoinCash).defaultWalletName
@@ -121,6 +130,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
         self.transactionsService = transactionsService
         self.swapTransactionsService = swapTransactionsService
         self.bridge = bridge
+        self.featureFlagsService = featureFlagsService
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -131,9 +141,17 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
              .viewActivity:
             return .just(true)
         case .deposit,
-             .withdraw,
-             .sell:
+             .withdraw:
             return .just(false)
+        case .sell:
+            return featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled))
+                .asSingle()
+                .flatMap(weak: self) { _, isEnabled in
+                    isEnabled
+                        ? self.isFunded
+                        : .just(false)
+                }
         case .swap:
             return isFunded
         }
