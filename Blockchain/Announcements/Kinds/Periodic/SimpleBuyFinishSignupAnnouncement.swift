@@ -41,7 +41,11 @@ final class SimpleBuyFinishSignupAnnouncement: PeriodicAnnouncement, ActionableA
             title: LocalizedString.title,
             description: LocalizedString.description,
             buttons: [button],
-            dismissState: .undismissible,
+            dismissState: .dismissible { [weak self] in
+                guard let self = self else { return }
+                self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
+                self.dismiss()
+            },
             didAppear: { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.didAppearAnalyticsEvent)

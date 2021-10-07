@@ -39,7 +39,11 @@ final class VerifyEmailAnnouncement: PeriodicAnnouncement, ActionableAnnouncemen
             title: LocalizationConstants.AnnouncementCards.VerifyEmail.title,
             description: LocalizationConstants.AnnouncementCards.VerifyEmail.description,
             buttons: [button],
-            dismissState: .undismissible,
+            dismissState: .dismissible { [weak self] in
+                guard let self = self else { return }
+                self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
+                self.dismiss()
+            },
             didAppear: { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.didAppearAnalyticsEvent)

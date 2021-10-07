@@ -32,6 +32,13 @@ public enum ERC20Code: String, CaseIterable {
     case yearnFinance = "YFI"
     case zrx = "ZRX"
 
+    public static func spotColor(code: String) -> String {
+        ERC20Code.allCases
+            .first(where: { $0.rawValue == code })?
+            .spotColor
+            ?? "0C6CF2"
+    }
+
     public var spotColor: String {
         switch self {
         case .aave:
