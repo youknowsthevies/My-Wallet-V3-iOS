@@ -16,6 +16,7 @@ public struct ImageResourceView<Loading: View, Placeholder: View>: View {
     private let placeholder: () -> Placeholder
     private let loading: () -> Loading
     private var image: (UniversalImage) -> Image = makeImage
+    fileprivate var configurations: [(Image) -> Image] = []
 
     public init(
         resource: ImageResource,
@@ -35,10 +36,62 @@ public struct ImageResourceView<Loading: View, Placeholder: View>: View {
         if loader.isLoading {
             loading()
         } else if let o = loader.image {
-            image(o).resizable()
+            configurations.reduce(image(o)) { previous, configuration in
+                configuration(previous)
+            }
         } else {
             placeholder()
         }
+    }
+}
+
+extension ImageResourceView {
+    private func configure(_ block: @escaping (Image) -> Image) -> ImageResourceView {
+        var result = self
+        result.configurations.append(block)
+        return result
+    }
+
+    /// Sets the mode by which SwiftUI resizes an image to fit its space.
+    /// - Parameters:
+    ///   - capInsets: Inset values that indicate a portion of the image that
+    ///   SwiftUI doesn't resize.
+    ///   - resizingMode: The mode by which SwiftUI resizes the image.
+    /// - Returns: An image, with the new resizing behavior set.
+    public func resizable(
+        capInsets: EdgeInsets = EdgeInsets(),
+        resizingMode: Image.ResizingMode = .stretch
+    ) -> ImageResourceView {
+        configure { $0.resizable(capInsets: capInsets, resizingMode: resizingMode) }
+    }
+
+    /// Indicates whether SwiftUI renders an image as-is, or
+    /// by using a different mode.
+    /// - Parameter renderingMode: The rendering mode
+    public func renderingMode(_ renderingMode: Image.TemplateRenderingMode?) -> ImageResourceView {
+        configure { $0.renderingMode(renderingMode) }
+    }
+
+    /// Specifies the current level of quality for rendering an
+    /// image that requires interpolation.
+    ///
+    /// See the article <doc:Fitting-Images-into-Available-Space> for examples
+    /// of using `interpolation(_:)` when scaling an ``Image``.
+    /// - Parameter interpolation: The quality level, expressed as a value of
+    /// the `Interpolation` type, that SwiftUI applies when interpolating
+    /// an image.
+    /// - Returns: An image with the given interpolation value set.
+    public func interpolation(_ interpolation: Image.Interpolation) -> ImageResourceView {
+        configure { $0.interpolation(interpolation) }
+    }
+
+    /// Specifies whether SwiftUI applies antialiasing when rendering
+    /// the image.
+    /// - Parameter isAntialiased: A Boolean value that specifies whether to
+    /// allow antialiasing. Pass `true` to allow antialising, `false` otherwise.
+    /// - Returns: An image with the antialiasing behavior set.
+    public func antialiased(_ isAntialiased: Bool) -> ImageResourceView {
+        configure { $0.antialiased(isAntialiased) }
     }
 }
 
@@ -197,11 +250,13 @@ struct ImageResourceView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
             ImageResourceView(named: "cancel_icon", in: .UIComponents)
+                .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 20)
             ImageResourceView(
                 url: URL(string: "https://www.blockchain.com/static/img/home/products/wallet-buy@2x.png")!
             )
+            .resizable()
             .aspectRatio(contentMode: .fit)
         }
     }
