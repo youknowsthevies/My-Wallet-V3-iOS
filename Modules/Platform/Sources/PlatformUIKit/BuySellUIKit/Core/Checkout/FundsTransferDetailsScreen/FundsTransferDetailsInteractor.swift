@@ -7,23 +7,23 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-typealias FundsTransferDetailsInteractionState = ValueCalculationState<PaymentAccountDescribing>
+public typealias FundsTransferDetailsInteractionState = ValueCalculationState<PaymentAccountDescribing>
 
-protocol FundsTransferDetailsInteractorAPI: AnyObject {
+public protocol FundsTransferDetailsInteractorAPI: AnyObject {
     var state: Observable<FundsTransferDetailsInteractionState> { get }
     var fiatCurrency: FiatCurrency { get }
 }
 
-final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInteractorAPI {
+public final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInteractorAPI {
 
     // MARK: - Properties
 
-    var state: Observable<FundsTransferDetailsInteractionState> {
+    public var state: Observable<FundsTransferDetailsInteractionState> {
         _ = setup
         return paymentAccountRelay.compactMap { $0 }
     }
 
-    let fiatCurrency: FiatCurrency
+    public let fiatCurrency: FiatCurrency
 
     private let paymentAccountService: PaymentAccountServiceAPI
     private let paymentAccountRelay = BehaviorRelay<FundsTransferDetailsInteractionState>(value: .invalid(.empty))
@@ -41,7 +41,7 @@ final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInter
 
     // MARK: - Setup
 
-    init(
+    public init(
         paymentAccountService: PaymentAccountServiceAPI = resolve(),
         fiatCurrency: FiatCurrency
     ) {

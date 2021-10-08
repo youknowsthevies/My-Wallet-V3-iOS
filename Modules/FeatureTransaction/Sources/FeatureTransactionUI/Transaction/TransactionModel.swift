@@ -93,6 +93,9 @@ final class TransactionModel {
              .bankLinkingFlowDismissed:
             return nil
 
+        case .showBankWiringInstructions:
+            return nil
+
         case .initialiseWithSourceAccount(let action, let sourceAccount, _):
             return processTargetAccountsListUpdate(fromAccount: sourceAccount, action: action)
         case .targetAccountSelected(let destinationAccount):

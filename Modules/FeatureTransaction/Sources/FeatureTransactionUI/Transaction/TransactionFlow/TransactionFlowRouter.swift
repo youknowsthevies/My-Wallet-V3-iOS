@@ -37,6 +37,7 @@ typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable
 final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRouting {
 
     private var paymentMethodLinker: PaymentMethodLinkerAPI
+    private var bankWireLinker: BankWireLinkerAPI
     private var cardLinker: CardLinkerAPI
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
@@ -54,11 +55,13 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         interactor: TransactionFlowInteractable,
         viewController: TransactionFlowViewControllable,
         paymentMethodLinker: PaymentMethodLinkerAPI = resolve(),
+        bankWireLinker: BankWireLinkerAPI = resolve(),
         cardLinker: CardLinkerAPI = resolve(),
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve()
     ) {
         self.paymentMethodLinker = paymentMethodLinker
+        self.bankWireLinker = bankWireLinker
         self.cardLinker = cardLinker
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
@@ -234,8 +237,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                     case .card:
                         transactionModel.process(action: .showCardLinkingFlow)
                     case .funds:
-                        // TODO: IOS-5300 Show wiring instructions instead
-                        transactionModel.process(action: .showBankLinkingFlow)
+                        transactionModel.process(action: .showBankWiringInstructions)
                     }
                 }
             }
@@ -279,6 +281,16 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                 }
             })
             .disposed(by: disposeBag)
+    }
+
+    func presentBankWiringInstructions(transactionModel: TransactionModel) {
+        let presenter = viewController.uiviewController.topMostViewController ?? viewController.uiviewController
+        // NOTE: using [weak presenter] to avoid a memory leak
+        bankWireLinker.present(from: presenter) { [weak presenter] in
+            presenter?.dismiss(animated: true) {
+                transactionModel.process(action: .returnToPreviousStep)
+            }
+        }
     }
 
     func routeToPriceInput(

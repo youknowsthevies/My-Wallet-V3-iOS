@@ -71,6 +71,9 @@ protocol TransactionFlowRouting: Routing {
     /// Present the bank linking flow modally over the current screen
     func presentLinkABank(transactionModel: TransactionModel)
 
+    /// Present wiring instructions so users can deposit funds into their wallet
+    func presentBankWiringInstructions(transactionModel: TransactionModel)
+
     /// Route to the in progress screen. This pushes onto the navigation stack.
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
 
@@ -368,6 +371,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .linkABank:
             router?.presentLinkABank(transactionModel: transactionModel)
 
+        case .linkBankViaWire:
+            router?.presentBankWiringInstructions(transactionModel: transactionModel)
+
         case .enterPassword:
             unimplemented()
 
@@ -528,8 +534,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .bankAccount:
             transactionModel.process(action: .showBankLinkingFlow)
         case .bankTransfer:
-            // TODO: present bank wiring instructions
-            transactionModel.process(action: .prepareTransaction)
+            transactionModel.process(action: .showBankWiringInstructions)
         case .card:
             transactionModel.process(action: .showCardLinkingFlow)
         case .funds:

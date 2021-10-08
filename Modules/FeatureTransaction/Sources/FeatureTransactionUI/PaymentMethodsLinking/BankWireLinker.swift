@@ -2,53 +2,64 @@
 
 import AnalyticsKit
 import DIKit
+import Foundation
 import PlatformKit
+import PlatformUIKit
 import RxSwift
 import ToolKit
 import UIKit
 
-public protocol Buildable: AnyObject {
-
-    var stateService: StateServiceAPI { get }
-
-    func fundsTransferDetailsViewController() -> Single<UIViewController>
-    func fundsTransferDetailsViewController(for fiatCurrency: FiatCurrency, isOriginDeposit: Bool) -> UIViewController
+protocol BankWireLinkerAPI {
+    func present(from presenter: UIViewController, completion: @escaping () -> Void)
 }
 
-public final class Builder: Buildable {
-
-    public let stateService: StateServiceAPI
-    private let disposeBag = DisposeBag()
+final class BankWireLinker: BankWireLinkerAPI {
 
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let analytics: AnalyticsEventRecorderAPI
+    private var disposeBag: DisposeBag!
 
-    public init(
+    init(
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        stateService: StateServiceAPI,
         analytics: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.fiatCurrencyService = fiatCurrencyService
-        self.stateService = stateService
         self.analytics = analytics
+    }
+
+    func present(from presenter: UIViewController, completion: @escaping () -> Void) {
+        disposeBag = DisposeBag() // avoid memory leak when binding completion
+        fundsTransferDetailsViewController(completion: completion)
+            .subscribeOn(MainScheduler.instance)
+            .subscribe { viewController in
+                presenter.present(viewController, animated: true)
+            } onError: { error in
+                Logger.shared.error(error)
+            }
+            .disposed(by: disposeBag)
     }
 
     /// Generates and returns the `DetailsScreenViewController` for funds transfer
     /// The screen matches the wallet's currency
     /// - Returns: `Single<UIViewController>`
-    public func fundsTransferDetailsViewController() -> Single<UIViewController> {
+    private func fundsTransferDetailsViewController(completion: @escaping () -> Void) -> Single<UIViewController> {
         fiatCurrencyService.fiatCurrency
             .map(weak: self) { (self, fiatCurrency) in
-                self.fundsTransferDetailsViewController(for: fiatCurrency, isOriginDeposit: false)
+                self.fundsTransferDetailsViewController(
+                    for: fiatCurrency,
+                    isOriginDeposit: false,
+                    completion: completion
+                )
             }
     }
 
     /// Generates and returns the `DetailsScreenViewController` for funds transfer
     /// - Parameter fiatCurrency: The fiat currency for which the transfer details will be retrieved
     /// - Returns: A `DetailsScreenViewController` that shows the funds transfer details
-    public func fundsTransferDetailsViewController(
+    private func fundsTransferDetailsViewController(
         for fiatCurrency: FiatCurrency,
-        isOriginDeposit: Bool
+        isOriginDeposit: Bool,
+        completion: @escaping () -> Void
     ) -> UIViewController {
         let interactor = InteractiveFundsTransferDetailsInteractor(
             fiatCurrency: fiatCurrency
@@ -67,7 +78,7 @@ public final class Builder: Buildable {
             isOriginDeposit: isOriginDeposit
         )
         presenter.backRelay
-            .bind(to: stateService.previousRelay)
+            .bind(onNext: completion)
             .disposed(by: disposeBag)
 
         let viewController = DetailsScreenViewController(presenter: presenter)

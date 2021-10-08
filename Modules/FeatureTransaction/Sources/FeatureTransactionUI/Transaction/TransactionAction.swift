@@ -30,6 +30,7 @@ enum TransactionAction: MviAction {
     case showBankLinkingFlow
     case bankAccountLinkedFromSource(BlockchainAccount, AssetAction)
     case bankAccountLinked(AssetAction)
+    case showBankWiringInstructions
     case sourceAccountSelected(BlockchainAccount)
     case targetAccountSelected(TransactionTarget)
     case availableSourceAccountsListUpdated([BlockchainAccount])
@@ -123,6 +124,9 @@ extension TransactionAction {
                 unimplemented()
             }
             return newState
+
+        case .showBankWiringInstructions:
+            return oldState.stateForMovingForward(to: .linkBankViaWire)
 
         case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, let passwordRequired):
             // If the user scans a BitPay QR code, the account will be a BitPayInvoiceTarget.
