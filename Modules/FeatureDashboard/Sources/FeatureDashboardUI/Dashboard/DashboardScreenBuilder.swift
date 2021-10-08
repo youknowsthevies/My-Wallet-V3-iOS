@@ -23,7 +23,7 @@ public final class DashboardScreenBuilder {
     }
 
     public func build() -> UIViewController {
-        switch internalFeatureFlagService.isEnabled(.splitDashboard) {
+        switch StaticFeatureFlags.isDynamicAssetsEnabled {
         case true:
             return SegmentedViewController(
                 presenter: DashboardSegmentedViewScreenPresenter(

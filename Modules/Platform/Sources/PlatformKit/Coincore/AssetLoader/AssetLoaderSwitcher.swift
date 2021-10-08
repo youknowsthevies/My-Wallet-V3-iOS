@@ -20,7 +20,9 @@ final class AssetLoaderSwitcher: AssetLoader {
     private let dynamicLoader: DynamicAssetLoader
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let staticLoader: StaticAssetLoader
-    private lazy var useDynamicLoader: Bool = internalFeatureFlagService.isEnabled(.loadAllERC20Tokens)
+    private var useDynamicLoader: Bool {
+        StaticFeatureFlags.isDynamicAssetsEnabled
+    }
 
     // MARK: Init
 

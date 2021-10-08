@@ -24,7 +24,7 @@ public final class ReceiveBuilder {
     var receiveAccountPickerRouter: AccountPickerRouting!
 
     public func receive() -> UIViewController {
-        let searchable = internalFeatureFlagService.isEnabled(.loadAllERC20Tokens)
+        let searchable = StaticFeatureFlags.isDynamicAssetsEnabled
         let header = AccountPickerHeaderModel(
             imageContent: .init(
                 imageResource: ImageAsset.iconReceive.imageResource,

@@ -59,6 +59,9 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable new Sell Transaction flow
     case sellUsingTransactionFlowEnabled
+
+    /// Enable Dynamic Assets
+    case dynamicAssetsEnabled
 }
 
 extension AppFeature {
@@ -97,6 +100,8 @@ extension AppFeature {
             return "customer_support_chat_ios"
         case .sellUsingTransactionFlowEnabled:
             return "sell_using_transaction_flow_enabled_ios"
+        case .dynamicAssetsEnabled:
+            return "dynamic_assets_ios"
         }
     }
 
@@ -133,7 +138,8 @@ extension AppFeature {
             return false
         case .customerSupportChat:
             return false
-        case .sellUsingTransactionFlowEnabled:
+        case .sellUsingTransactionFlowEnabled,
+             .dynamicAssetsEnabled:
             return true
         }
     }

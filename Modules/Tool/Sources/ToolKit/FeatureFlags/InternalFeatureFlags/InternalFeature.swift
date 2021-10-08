@@ -21,14 +21,8 @@ public enum InternalFeature: String, CaseIterable {
     /// - Note: Old manual guid login screen is used only for internal builds
     case disableGUIDLogin
 
-    /// Enable split dashboard screen.
-    case splitDashboard
-
     /// Enable new account SwiftUI picker.
     case newAccountPicker
-
-    /// Load All ERC20 Tokens.
-    case loadAllERC20Tokens
 
     /// Enable new Onboarding Tour on the Welcome Flow
     case newOnboardingTour
@@ -48,9 +42,6 @@ public enum InternalFeature: String, CaseIterable {
              .useTransactionsFlowToBuyCrypto,
              .unifiedSignIn:
             return false
-        case .splitDashboard,
-             .loadAllERC20Tokens:
-            return true
         }
     }
 }
@@ -74,12 +65,8 @@ extension InternalFeature {
             return "Buy: Uses Transactions Flow to Buy Crypto"
         case .disableGUIDLogin:
             return "Disable manual (guid) login option"
-        case .splitDashboard:
-            return "Split Dashboard Screen"
         case .newAccountPicker:
             return "New SwiftUI Account Picker"
-        case .loadAllERC20Tokens:
-            return "Load All ERC20 Tokens"
         case .newOnboardingTour:
             return "New Onboarding Tour"
         case .unifiedSignIn:
