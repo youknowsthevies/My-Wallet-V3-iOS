@@ -80,7 +80,8 @@ final class BuyTransactionEngine: TransactionEngine {
             .share(replay: 1, scope: .whileConnected)
     }
 
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)! // TODO: use this
+    // Unused but required by `TransactionEngine` protocol
+    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
 
     func assertInputsValid() {
         assert(sourceAccount is PaymentMethodAccount)
@@ -161,14 +162,24 @@ final class BuyTransactionEngine: TransactionEngine {
         return fetchQuote(for: pendingTransaction.amount)
             // STEP 2: Create an Order for the transaction
             .flatMap { [orderCreationService] refreshedQuote -> Single<CheckoutData> in
+                let paymentMethodId: String?
+                if sourceAccount.paymentMethod.type.isFunds {
+                    // NOTE: This fixes IOS-5389
+                    paymentMethodId = nil
+                } else {
+                    paymentMethodId = sourceAccount.paymentMethodType.id
+                }
                 let orderDetails = CandidateOrderDetails.buy(
                     paymentMethod: sourceAccount.paymentMethodType,
                     fiatValue: refreshedQuote.estimatedFiatAmount,
                     cryptoValue: refreshedQuote.estimatedCryptoAmount,
-                    paymentMethodId: sourceAccount.paymentMethodType.id
+                    paymentMethodId: paymentMethodId
                 )
                 return orderCreationService.create(using: orderDetails)
             }
+            .do(onError: { error in
+                Logger.shared.error("[BUY] Order creation failed \(String(describing: error))")
+            })
             // STEP 3: Execute the order
             .flatMap { [orderConfirmationService] checkoutData -> Single<CheckoutData> in
                 Logger.shared.info("[BUY] Order creation successful \(String(describing: checkoutData))")
@@ -184,7 +195,7 @@ final class BuyTransactionEngine: TransactionEngine {
                 )
             }
             .do(onError: { error in
-                Logger.shared.error("[BUY] Order failed \(String(describing: error))")
+                Logger.shared.error("[BUY] Order confirmation failed \(String(describing: error))")
             })
     }
 
