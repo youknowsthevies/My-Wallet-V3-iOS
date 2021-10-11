@@ -10,10 +10,22 @@ final class ComposableNavigationTests: XCTestCase {
         var state = TestState()
 
         _ = testReducer.run(&state, .navigate(to: .test), ())
-        XCTAssertEqual(state.route, RouteIntent(value: .test, action: .navigateTo))
+        XCTAssertEqual(state.route, RouteIntent(route: .test, action: .navigateTo))
 
         _ = testReducer.run(&state, .enter(into: .story), ())
-        XCTAssertEqual(state.route, RouteIntent(value: .story, action: .enterInto))
+        XCTAssertEqual(state.route, RouteIntent(route: .story, action: .enterInto(fullScreen: false)))
+
+        _ = testReducer.run(&state, .route(nil), ())
+        XCTAssertNil(state.route)
+
+        _ = testReducer.run(&state, .enter(into: .story, fullScreen: true), ())
+        XCTAssertEqual(state.route, RouteIntent(route: .story, action: .enterInto(fullScreen: true)))
+
+        _ = testReducer.run(&state, .route(nil), ())
+        XCTAssertNil(state.route)
+
+        _ = testReducer.run(&state, .enter(into: .context("Context")), ())
+        XCTAssertEqual(state.route, RouteIntent(route: .context("Context"), action: .enterInto()))
     }
 }
 
@@ -25,13 +37,14 @@ enum TestAction: NavigationAction {
     case route(RouteIntent<TestRoute>?)
 }
 
-enum TestRoute: String, NavigationRoute, CaseIterable {
+enum TestRoute: NavigationRoute {
 
     case test
     case story
+    case context(String)
 
     func destination(in store: Store<TestState, TestAction>) -> some View {
-        Text(rawValue)
+        Text(String(describing: self))
     }
 }
 

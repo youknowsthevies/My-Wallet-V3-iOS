@@ -16,7 +16,7 @@ case let .select(institution):
 
 **Define a NavigationRoute**
 ```swift
-public enum InstitutionListRoute: CaseIterable, NavigationRoute {
+public enum InstitutionListRoute: NavigationRoute {
 
     case approve
 
@@ -50,11 +50,12 @@ enum ExampleAction: NavigationAction {
     ...
 ```
 
-2. Create a new type which conforms to `NavigationRoute`, you will also be required to conform to `CaseIterable` or implement `allRoutes`
+2. Create a new type which conforms to `NavigationRoute`
 
 ```swift
 enum ExampleRoute: NavigationRoute {
-    case a
+
+    case a(context: String)
     
     @ViewBuilder
     func destination(in store: Store<ExampleState, ExampleAction>) -> some View {
@@ -79,7 +80,7 @@ VStack {
 let exampleReducer = Reducer<ExampleState, ExampleAction, Void> { state, action, _ in
     switch action {
     case exampleAction:
-        return .navigate(to: .a)
+        return .navigate(to: .a(context: "Hello World!"))
     case .route(let o):
         state.route = o
         return .none
@@ -88,5 +89,5 @@ let exampleReducer = Reducer<ExampleState, ExampleAction, Void> { state, action,
 ```
 
 ```swift
-viewStore.send(.enter(into: .a))
+viewStore.send(.enter(into: .a(context: "Hello World!")))
 ```
