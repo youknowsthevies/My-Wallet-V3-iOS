@@ -52,7 +52,11 @@ final class WalletIntroAnnouncement: PeriodicAnnouncement, RemovableAnnouncement
             title: LocalizationConstants.AnnouncementCards.Welcome.title,
             description: LocalizationConstants.AnnouncementCards.Welcome.description,
             buttons: [ctaButton, skipButton],
-            dismissState: .undismissible,
+            dismissState: .dismissible { [weak self] in
+                guard let self = self else { return }
+                self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
+                self.dismiss()
+            },
             didAppear: { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: AnalyticsEvents.WalletIntro.walletIntroOffered)

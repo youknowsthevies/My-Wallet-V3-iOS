@@ -20,10 +20,8 @@ extension CryptoCurrency {
             }
             return model.spotColor.flatMap(UIColor.init(hex:)) ?? .black
         case .erc20(let model):
-            if let match = ERC20Code.allCases.first(where: { $0.rawValue == model.code }) {
-                return UIColor(hex: match.spotColor) ?? .black
-            }
-            return model.spotColor.flatMap(UIColor.init(hex:)) ?? UIColor(hex: "473BCB")!
+            return model.spotColor.flatMap(UIColor.init(hex:))
+                ?? UIColor(hex: ERC20Code.spotColor(code: model.code))!
         }
     }
 
