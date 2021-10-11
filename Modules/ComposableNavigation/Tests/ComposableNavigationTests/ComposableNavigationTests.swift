@@ -10,22 +10,26 @@ final class ComposableNavigationTests: XCTestCase {
         var state = TestState()
 
         _ = testReducer.run(&state, .navigate(to: .test), ())
-        XCTAssertEqual(state.route, RouteIntent(route: .test, action: .navigateTo))
+        XCTAssertEqual(state.route?.action, .navigateTo)
+        XCTAssertEqual(state.route?.route, .test)
 
         _ = testReducer.run(&state, .enter(into: .story), ())
-        XCTAssertEqual(state.route, RouteIntent(route: .story, action: .enterInto(fullScreen: false)))
+        XCTAssertEqual(state.route?.action, .enterInto(fullScreen: false))
+        XCTAssertEqual(state.route?.route, .story)
 
         _ = testReducer.run(&state, .route(nil), ())
         XCTAssertNil(state.route)
 
         _ = testReducer.run(&state, .enter(into: .story, fullScreen: true), ())
-        XCTAssertEqual(state.route, RouteIntent(route: .story, action: .enterInto(fullScreen: true)))
+        XCTAssertEqual(state.route?.action, .enterInto(fullScreen: true))
+        XCTAssertEqual(state.route?.route, .story)
 
         _ = testReducer.run(&state, .route(nil), ())
         XCTAssertNil(state.route)
 
         _ = testReducer.run(&state, .enter(into: .context("Context")), ())
-        XCTAssertEqual(state.route, RouteIntent(route: .context("Context"), action: .enterInto()))
+        XCTAssertEqual(state.route?.action, .enterInto(fullScreen: false))
+        XCTAssertEqual(state.route?.route, .context("Context"))
     }
 }
 

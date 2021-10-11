@@ -33,15 +33,19 @@ indirect enum ExampleAction: NavigationAction {
     case end(EndAction)
 }
 
-let exampleReducer = Reducer<ExampleState, ExampleAction, Void> { state, action, _ in
-    switch action {
-    case .route(let route):
-        state.route = route
-        return .none
-    case .end(.onAppear):
-        return .fireAndForget { print("✅") }
-    }
-}
+let exampleReducer = Reducer<ExampleState, ExampleAction, Void>
+    .combine(
+        .init { state, action, _ in
+            switch action {
+            case .route(let route):
+                state.route = route
+                return .none
+            case .end:
+                return .fireAndForget { print("✅") }
+            }
+        }
+        .debug()
+    )
 
 enum ExampleRoute: NavigationRoute, CaseIterable {
 
@@ -52,9 +56,9 @@ enum ExampleRoute: NavigationRoute, CaseIterable {
 
     @ViewBuilder
     func destination(in store: Store<ExampleState, ExampleAction>) -> some View {
+        let viewStore = ViewStore(store)
         switch self {
         case .a, .b, .c:
-            let viewStore = ViewStore(store)
             ContentView(
                 store: .init(
                     initialState: ExampleState(
@@ -67,7 +71,7 @@ enum ExampleRoute: NavigationRoute, CaseIterable {
             )
         case .end:
             EndContentView(
-                store: store.scope(state: \.end, action: ExampleAction.end)
+                store: .init(initialState: .init(name: "End"), reducer: endReducer, environment: .init(dismiss: { viewStore.send(.route(nil)) }))
             )
         }
     }
@@ -105,16 +109,26 @@ struct ContentView: View {
     }
 }
 
+struct EndEnvironment {
+    var dismiss: () -> Void
+}
+
 struct EndState: Equatable {
     var name: String
 }
 
 enum EndAction {
+    case dismiss
     case onAppear
 }
 
-let endReducer = Reducer<EndState, EndAction, Void> { _, _, _ in
-    .none
+let endReducer = Reducer<EndState, EndAction, EndEnvironment> { _, action, environment in
+    switch action {
+    case .dismiss:
+        return .fireAndForget(environment.dismiss)
+    case .onAppear:
+        return .none
+    }
 }
 
 struct EndContentView: View {
@@ -131,6 +145,9 @@ struct EndContentView: View {
                 .onAppear {
                     view.send(.onAppear)
                 }
+            Button("dismiss") {
+                view.send(.dismiss)
+            }
         }
     }
 }

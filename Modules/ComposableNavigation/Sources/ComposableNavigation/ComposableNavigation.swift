@@ -4,7 +4,7 @@ import ComposableArchitecture
 import SwiftUI
 
 /// An intent of navigation used to determine the route and the action performed to arrive there
-public struct RouteIntent<R: NavigationRoute>: Hashable {
+public struct RouteIntent<R: NavigationRoute>: Hashable, Identifiable {
 
     public enum Action: Hashable {
 
@@ -16,6 +16,7 @@ public struct RouteIntent<R: NavigationRoute>: Hashable {
         case enterInto(fullScreen: Bool = false)
     }
 
+    public private(set) var id = UUID()
     public var route: R
     public var action: Action
 }
@@ -191,11 +192,7 @@ extension Binding where Value == Bool {
     ) where S.Element == E {
         self.init(
             get: { source.wrappedValue == element && ready.wrappedValue.contains(element) },
-            set: { isPresented in
-                source.wrappedValue = isPresented ? element : nil
-                guard !isPresented else { return }
-                ready.wrappedValue.remove(element)
-            }
+            set: { source.wrappedValue = $0 ? element : nil }
         )
     }
 }
