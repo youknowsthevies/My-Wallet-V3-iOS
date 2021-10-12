@@ -99,7 +99,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         amountTranslationPresenter = AmountTranslationPresenter(
             interactor: interactor.amountTranslationInteractor,
             displayBundle: displayBundle.amountDisplayBundle,
-            inputTypeToggleVisiblity: inputTypeToggleVisibility
+            inputTypeToggleVisibility: inputTypeToggleVisibility
         )
         digitPadViewModel = EnterAmountScreenPresenter.digitPadViewModel()
         continueButtonViewModel = .primary(with: displayBundle.strings.ctaButton)

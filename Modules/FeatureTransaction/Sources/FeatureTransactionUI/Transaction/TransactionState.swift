@@ -191,7 +191,7 @@ extension TransactionState {
             exchange.quote.cryptoValue
         ) {
         case (.none, .some(let fiat), .some(let cryptoPrice)):
-            /// Conver the `fiatValue` amount entered into
+            /// Convert the `fiatValue` amount entered into
             /// a `CryptoValue`
             return .success(
                 fiat.convertToCryptoValue(

@@ -75,7 +75,7 @@ final class TransactionInteractor {
 
     deinit {
         reset()
-        self.transactionProcessor = nil
+        transactionProcessor = nil
     }
 
     func invalidateTransaction() -> Completable {

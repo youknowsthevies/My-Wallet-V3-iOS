@@ -71,7 +71,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
-                inputTypeToggleVisiblity: .visible
+                inputTypeToggleVisibility: .visible
             )
 
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
@@ -105,7 +105,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
-                inputTypeToggleVisiblity: .visible
+                inputTypeToggleVisibility: .visible
             )
 
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)

@@ -164,6 +164,16 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             })
             .disposeOnDeactivate(interactor: self)
 
+        amountViewInteractor.maxAmountSelected
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: analyticsHook.onMinSelected(state:))
+            .disposeOnDeactivate(interactor: self)
+
+        amountViewInteractor.minAmountSelected
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: analyticsHook.onMinSelected(state:))
+            .disposeOnDeactivate(interactor: self)
+
         let fee = transactionState
             .takeWhile { $0.action == .send }
             .compactMap(\.pendingTransaction)

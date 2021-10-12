@@ -11,6 +11,7 @@ final class TransactionAnalyticsHook {
     typealias SwapAnalyticsEvent = AnalyticsEvents.Swap
     typealias NewSwapAnalyticsEvent = AnalyticsEvents.New.Swap
     typealias NewSendAnalyticsEvent = AnalyticsEvents.New.Send
+    typealias NewSellAnalyticsEvent = AnalyticsEvents.New.Sell
     typealias NewReceiveAnalyticsEvent = AnalyticsEvents.New.Receive
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -48,6 +49,16 @@ final class TransactionAnalyticsHook {
         case .receive:
             analyticsRecorder.record(event:
                 NewReceiveAnalyticsEvent.receiveCurrencySelected(accountType: .init(account), currency: account.currencyType.code)
+            )
+        case .sell:
+            guard let account = account as? CryptoAccount else {
+                return
+            }
+            analyticsRecorder.record(event:
+                NewSellAnalyticsEvent.sellFromSelected(
+                    fromAccountType: .init(account),
+                    inputCurrency: account.currencyType.code
+                )
             )
         default:
             return
@@ -107,6 +118,41 @@ final class TransactionAnalyticsHook {
         }
     }
 
+    func onMinSelected(state: TransactionState) {
+        switch state.action {
+        case .swap:
+            guard let target = state.destination as? CryptoAccount,
+                  let source = state.source as? CryptoAccount
+            else {
+                return
+            }
+            analyticsRecorder.record(events: [
+                NewSwapAnalyticsEvent.swapAmountMinClicked(
+                    amountCurrency: state.maxSpendable.code,
+                    inputCurrency: source.currencyType.code,
+                    inputType: .init(source),
+                    outputCurrency: target.currencyType.code,
+                    outputType: .init(target)
+                )
+            ])
+        case .sell:
+            guard let source = state.source as? CryptoAccount,
+                  let target = state.destination as? FiatAccount
+            else {
+                return
+            }
+            analyticsRecorder.record(event:
+                NewSellAnalyticsEvent.sellAmountMinClicked(
+                    fromAccountType: .init(source),
+                    inputCurrency: source.currencyType.code,
+                    outputCurrency: target.currencyType.code
+                )
+            )
+        default:
+            return
+        }
+    }
+
     func onMaxSelected(state: TransactionState) {
         switch state.action {
         case .swap:
@@ -135,6 +181,19 @@ final class TransactionAnalyticsHook {
                 fromAccountType: .init(source),
                 toAccountType: .init(target)
             ))
+        case .sell:
+            guard let source = state.source as? CryptoAccount,
+                  let target = state.destination as? FiatAccount
+            else {
+                return
+            }
+            analyticsRecorder.record(event:
+                NewSellAnalyticsEvent.sellAmountMaxClicked(
+                    fromAccountType: .init(source),
+                    inputCurrency: source.currencyType.code,
+                    outputCurrency: target.currencyType.code
+                )
+            )
         default:
             return
         }
@@ -161,6 +220,20 @@ final class TransactionAnalyticsHook {
                     outputType: .init(target)
                 )
             ])
+        case .sell:
+            guard let source = state.source as? CryptoAccount,
+                  let target = state.destination as? FiatAccount
+            else {
+                return
+            }
+            analyticsRecorder.record(event:
+                NewSellAnalyticsEvent.sellAmountEntered(
+                    fromAccountType: .init(source),
+                    inputAmount: state.amount.displayMajorValue.doubleValue,
+                    inputCurrency: source.currencyType.code,
+                    outputCurrency: target.currencyType.code
+                )
+            )
         default:
             return
         }
