@@ -450,7 +450,7 @@ extension AnnouncementPresenter {
                     return
                 }
                 webViewServiceAPI.openSafari(
-                    url: "https://blockchain.com/celo",
+                    url: "https://why.blockchain.com/celo",
                     from: topMostViewController
                 )
             }

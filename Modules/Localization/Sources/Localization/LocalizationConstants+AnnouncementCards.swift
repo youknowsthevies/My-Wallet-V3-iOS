@@ -171,11 +171,11 @@ extension LocalizationConstants {
 
         public enum CeloEUR {
             public static let title = NSLocalizedString(
-                "Win up to €500K in cEUR",
+                "Earn up to 4% in cEUR Rewards",
                 comment: "CeloEUR announcement card title."
             )
             public static let description = NSLocalizedString(
-                "Buy €100 or more in cEUR for your chance to win up to €500K in cEUR.",
+                "Buy cEUR with no fees and earn up to 4% in annual rewards, paid monthly.",
                 comment: "CeloEUR announcement card description."
             )
             public static let ctaButton = NSLocalizedString(
