@@ -11,35 +11,39 @@ public struct TourViewAdapter: View {
 
     public init(store: Store<WelcomeState, WelcomeAction>) {
         self.store = store
+        let viewStore = ViewStore(store)
+        tourView = TourView(
+            environment: TourEnvironment(
+                createAccountAction: { viewStore.send(.presentScreenFlow(.createWalletScreen)) },
+                restoreAction: { viewStore.send(.presentScreenFlow(.restoreWalletScreen)) },
+                logInAction: { viewStore.send(.presentScreenFlow(.emailLoginScreen)) }
+            )
+        )
     }
+
+    private let tourView: TourView
 
     public var body: some View {
         WithViewStore(self.store) { viewStore in
-            TourView(
-                environment: TourEnvironment(
-                    createAccountAction: { viewStore.send(.presentScreenFlow(.createWalletScreen)) },
-                    restoreAction: { viewStore.send(.presentScreenFlow(.restoreWalletScreen)) },
-                    logInAction: { viewStore.send(.presentScreenFlow(.emailLoginScreen)) }
-                )
-            )
-            .sheet(
-                isPresented: .constant(
-                    viewStore.screenFlow == .emailLoginScreen
-                        || viewStore.screenFlow == .restoreWalletScreen
-                        || viewStore.screenFlow == .manualLoginScreen
-                        || viewStore.modals == .secondPasswordNoticeScreen
-                ),
-                onDismiss: {
-                    if viewStore.screenFlow == .emailLoginScreen {
-                        viewStore.send(.presentScreenFlow(.welcomeScreen))
-                    } else if viewStore.modals == .secondPasswordNoticeScreen {
-                        viewStore.send(.modalDismissed(.secondPasswordNoticeScreen))
+            tourView
+                .sheet(
+                    isPresented: .constant(
+                        viewStore.screenFlow == .emailLoginScreen
+                            || viewStore.screenFlow == .restoreWalletScreen
+                            || viewStore.screenFlow == .manualLoginScreen
+                            || viewStore.modals == .secondPasswordNoticeScreen
+                    ),
+                    onDismiss: {
+                        if viewStore.screenFlow == .emailLoginScreen {
+                            viewStore.send(.presentScreenFlow(.welcomeScreen))
+                        } else if viewStore.modals == .secondPasswordNoticeScreen {
+                            viewStore.send(.modalDismissed(.secondPasswordNoticeScreen))
+                        }
+                    },
+                    content: {
+                        makeContent(viewStore)
                     }
-                },
-                content: {
-                    makeContent(viewStore)
-                }
-            )
+                )
         }
     }
 

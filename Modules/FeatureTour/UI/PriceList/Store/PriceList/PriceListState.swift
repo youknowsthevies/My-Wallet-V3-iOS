@@ -3,6 +3,6 @@
 import ComposableArchitecture
 
 struct PriceListState: Equatable {
-    var items: IdentifiedArrayOf<Price>
+    var items = IdentifiedArrayOf<Price>()
     var onTop = true
 }

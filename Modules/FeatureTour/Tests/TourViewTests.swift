@@ -1,10 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import FeatureTourUI
+import ComposableArchitecture
+import DIKit
+@testable import FeatureTourUI
+import PlatformKit
 import SnapshotTesting
 import XCTest
 
 class TourViewTests: XCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        DependencyContainer.defined(by: modules {
+            DependencyContainer.mockDependencyContainer
+        })
+    }
 
     func testTourView() {
         let view = TourView(
@@ -25,7 +35,39 @@ class TourViewTests: XCTestCase {
         let keysView = TourView.Carousel.keys.makeView()
         assertSnapshot(matching: keysView, as: .image(layout: .device(config: .iPhone8)))
 
-        let pricesView = TourView.Carousel.prices.makeView()
+        let items = [
+            Price(currency: .coin(.bitcoin), value: .loaded(next: "$55,343.76"), deltaPercentage: .loaded(next: 7.88)),
+            Price(currency: .coin(.ethereum), value: .loaded(next: "$3,585.69"), deltaPercentage: .loaded(next: 1.82)),
+            Price(currency: .coin(.bitcoinCash), value: .loaded(next: "$618.05"), deltaPercentage: .loaded(next: -3.46)),
+            Price(currency: .coin(.stellar), value: .loaded(next: "$0.36"), deltaPercentage: .loaded(next: 12.50))
+        ]
+        var priceListState = PriceListState()
+        priceListState.items = IdentifiedArray(uniqueElements: items)
+        let mockPriceListReducer: Reducer<PriceListState, PriceListAction, PriceListEnvironment> = Reducer { _, _, _ in
+            .none
+        }
+        let pricesView = PriceListView(
+            store: Store(
+                initialState: priceListState,
+                reducer: mockPriceListReducer,
+                environment: PriceListEnvironment()
+            )
+        )
         assertSnapshot(matching: pricesView, as: .image(layout: .device(config: .iPhone8)))
+    }
+}
+
+/// This is needed in order to resolve the dependencies
+struct MockEnabledCurrenciesServiceAPI: EnabledCurrenciesServiceAPI {
+    var allEnabledCurrencies: [CurrencyType] { [] }
+    var allEnabledCryptoCurrencies: [CryptoCurrency] { [] }
+    var allEnabledFiatCurrencies: [FiatCurrency] { [] }
+    var bankTransferEligibleFiatCurrencies: [FiatCurrency] { [] }
+}
+
+extension DependencyContainer {
+
+    static var mockDependencyContainer = module {
+        factory { MockEnabledCurrenciesServiceAPI() as EnabledCurrenciesServiceAPI }
     }
 }
