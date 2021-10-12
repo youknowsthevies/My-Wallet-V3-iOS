@@ -98,6 +98,10 @@ final class OnboardingHostingController: UIViewController {
             .ifLet(then: { [weak self] pinStore in
                 guard let self = self else { return }
                 let pinHostingController = PinHostingController(store: pinStore)
+                // TODO: Dismiss the alert in the respective presenting view (credentials view). This is a temporary solution until the alert state issue is resolved
+                if self.topMostViewController != self.currentController {
+                    self.topMostViewController?.dismiss(animated: true, completion: nil)
+                }
                 self.transitionFromCurrentController(to: pinHostingController)
                 self.currentController = pinHostingController
             })
