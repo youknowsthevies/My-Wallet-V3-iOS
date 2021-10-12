@@ -24,7 +24,6 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
     func accounts(for currency: CurrencyType) -> Single<[BlockchainAccount]> {
         coincore
             .allAccounts
-            .asObservable()
             .asSingle()
             .map { $0.accounts.filter { $0.currencyType == currency } }
             .catchErrorJustReturn([])
@@ -33,7 +32,6 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
     func accounts(accountType: SingleAccountType) -> Single<[BlockchainAccount]> {
         coincore
             .allAccounts
-            .asObservable()
             .asSingle()
             .map(\.accounts)
             .map { accounts in
