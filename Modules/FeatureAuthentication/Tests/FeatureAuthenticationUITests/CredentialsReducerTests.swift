@@ -77,7 +77,6 @@ final class CredentialsReducerTests: XCTestCase {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
         testStore.assert(
             .send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
-                state.isTroubleLoggingInScreenVisible = false
                 state.walletPairingState.emailAddress = mockWalletInfo.email!
                 state.walletPairingState.walletGuid = mockWalletInfo.guid
                 state.walletPairingState.emailCode = mockWalletInfo.emailCode
@@ -89,7 +88,6 @@ final class CredentialsReducerTests: XCTestCase {
         let mockWalletGuid = MockDeviceVerificationService.mockWalletInfo.guid
         testStore.assert(
             .send(.didAppear(context: .walletIdentifier(guid: mockWalletGuid))) { state in
-                state.isTroubleLoggingInScreenVisible = false
                 state.walletPairingState.walletGuid = mockWalletGuid
             }
         )
@@ -98,7 +96,6 @@ final class CredentialsReducerTests: XCTestCase {
     func test_manual_screen_did_appear_should_setup_session_token() {
         testStore.assert(
             .send(.didAppear(context: .manualPairing)) { state in
-                state.isTroubleLoggingInScreenVisible = false
                 state.walletPairingState.emailAddress = "not available on manual pairing"
                 state.isManualPairing = true
             },

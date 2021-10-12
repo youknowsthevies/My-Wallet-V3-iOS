@@ -216,7 +216,6 @@ let credentialsReducer = Reducer.combine(
             return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
 
         case .didAppear(.walletInfo(let info)):
-            state.isTroubleLoggingInScreenVisible = false
             state.walletPairingState.emailAddress = info.email ?? ""
             state.walletPairingState.walletGuid = info.guid
             state.walletPairingState.emailCode = info.emailCode
@@ -226,12 +225,10 @@ let credentialsReducer = Reducer.combine(
             return .none
 
         case .didAppear(.walletIdentifier(let guid)):
-            state.isTroubleLoggingInScreenVisible = false
             state.walletPairingState.walletGuid = guid ?? ""
             return .none
 
         case .didAppear(.manualPairing):
-            state.isTroubleLoggingInScreenVisible = false
             state.walletPairingState.emailAddress = "not available on manual pairing"
             state.isManualPairing = true
             return Effect(value: .walletPairing(.setupSessionToken))
