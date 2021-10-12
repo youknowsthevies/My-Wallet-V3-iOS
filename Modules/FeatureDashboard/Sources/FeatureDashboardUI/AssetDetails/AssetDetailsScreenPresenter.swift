@@ -201,18 +201,9 @@ final class AssetDetailsScreenPresenter {
 
     private func setupWalletBalancePresenter() {
         interactor.nonCustodialAccount
-            .flatMap(weak: self) { (self, account) -> Single<BalancePresentationState> in
-                account
-                    .can(perform: .viewActivity)
-                    .map(weak: self) { (self, supported) in
-                        switch supported {
-                        case false:
-                            return .hidden
-                        case true:
-                            let presenter = self.balanceCellPresenter(account: account)
-                            return .visible(presenter, account)
-                        }
-                    }
+            .map(weak: self) { (self, account) -> BalancePresentationState in
+                let presenter = self.balanceCellPresenter(account: account)
+                return .visible(presenter, account)
             }
             .asObservable()
             .catchErrorJustReturn(.hidden)
