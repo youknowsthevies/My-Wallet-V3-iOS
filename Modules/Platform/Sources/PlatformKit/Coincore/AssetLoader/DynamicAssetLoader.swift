@@ -37,25 +37,37 @@ final class DynamicAssetLoader: AssetLoader {
     // MARK: Methods
 
     func initAndPreload() -> AnyPublisher<Void, Never> {
-        Deferred { [storage, enabledCurrenciesService] in
+        Deferred { [storage, enabledCurrenciesService, erc20AssetFactory] in
             Future<Void, Never> { subscriber in
                 let allEnabledCryptoCurrencies = enabledCurrenciesService.allEnabledCryptoCurrencies
                 let nonCustodialCoinCodes = NonCustodialCoinCode.allCases.map(\.rawValue)
 
                 // Crypto Assets for coins with Non Custodial support (BTC, BCH, ETH, XLM)
-                let nonCustodialAssets = allEnabledCryptoCurrencies
+                let nonCustodialAssets: [CryptoAsset] = allEnabledCryptoCurrencies
                     .filter(\.isCoin)
                     .filter { nonCustodialCoinCodes.contains($0.code) }
                     .map { cryptoCurrency -> CryptoAsset in
                         DIKit.resolve(tag: cryptoCurrency)
                     }
 
-                // Crypto Assets for coins without Non Custodial support, non-ERC20.
-                let custodialAssets = allEnabledCryptoCurrencies
-                    .filter(\.isCoin)
-                    .filter { !nonCustodialCoinCodes.contains($0.code) }
-                    .map { cryptoCurrency -> CryptoAsset in
-                        CustodialCryptoAsset(asset: cryptoCurrency)
+                // Crypto Currencies with Custodial support.
+                let custodialCryptoCurrencies: [CryptoCurrency] = allEnabledCryptoCurrencies
+                    .filter { cryptoCurrency in
+                        cryptoCurrency.supports(product: .custodialWalletBalance)
+                    }
+                    .filter { cryptoCurrency in
+                        !nonCustodialCoinCodes.contains(cryptoCurrency.code)
+                    }
+
+                // Crypto Assets for any currency with Custodial support.
+                let custodialAssets: [CryptoAsset] = custodialCryptoCurrencies
+                    .map { [erc20AssetFactory] cryptoCurrency -> CryptoAsset in
+                        switch cryptoCurrency {
+                        case .coin:
+                            return CustodialCryptoAsset(asset: cryptoCurrency)
+                        case .erc20(let erc20AssetModel):
+                            return erc20AssetFactory.erc20Asset(erc20AssetModel: erc20AssetModel)
+                        }
                     }
 
                 storage.mutate { storage in
