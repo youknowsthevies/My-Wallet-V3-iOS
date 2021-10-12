@@ -124,7 +124,7 @@ final class PortfolioScreenPresenter {
     private let coincore: CoincoreAPI
 
     private var cryptoCurrencies: Observable<CurrencyBalance> {
-        guard internalFeatureFlagService.isEnabled(.splitDashboard) else {
+        guard StaticFeatureFlags.isDynamicAssetsEnabled else {
             return Observable<CryptoCurrency>
                 .from(interactor.enabledCryptoCurrencies, scheduler: MainScheduler.asyncInstance)
                 .map { (currency: $0, hasBalance: true) }
