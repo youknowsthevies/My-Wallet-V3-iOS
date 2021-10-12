@@ -17,8 +17,8 @@ final class AssetRenameAnnouncement: OneTimeAnnouncement, ActionableAnnouncement
 
     var viewModel: AnnouncementCardViewModel {
 
-        let title = String(format: LocalizedString.title, data!.asset.code)
-        let description = String(format: LocalizedString.description, data!.asset.code, data!.asset.displayCode)
+        let title = String(format: LocalizedString.title, data!.oldTicker)
+        let description = String(format: LocalizedString.description, data!.oldTicker, data!.asset.displayCode)
         let buttonTitle = String(format: LocalizedString.ctaButton, data!.asset.displayCode)
 
         let button = ButtonViewModel.primary(
@@ -108,7 +108,11 @@ struct AssetRenameAnnouncementContainer: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIViewType {
         let presenter = AssetRenameAnnouncement(
-            data: .init(asset: .coin(.bitcoin), balance: .one(currency: .coin(.bitcoin))),
+            data: .init(
+                asset: .coin(.bitcoin),
+                oldTicker: "OLD",
+                balance: .one(currency: .coin(.bitcoin))
+            ),
             dismiss: {},
             action: {}
         )

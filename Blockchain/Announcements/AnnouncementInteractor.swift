@@ -23,16 +23,14 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             return Single.error(AnnouncementError.uninitializedWallet)
         }
 
-        let assetRename: Single<AnnouncementPreliminaryData.AssetRename?> = featureFetcher
-            .fetchString(for: .assetRenameAnnouncement)
-            .map { [enabledCurrenciesService] code -> CryptoCurrency? in
-                CryptoCurrency(
-                    code: code,
+        let assetRenameAnnouncement: Single<AssetRenameAnnouncementFeature> = featureFetcher
+            .fetch(for: .assetRenameAnnouncement)
+        let assetRename: Single<AnnouncementPreliminaryData.AssetRename?> = assetRenameAnnouncement
+            .flatMap { [enabledCurrenciesService, coincore] data -> Single<AnnouncementPreliminaryData.AssetRename?> in
+                guard let cryptoCurrency = CryptoCurrency(
+                    code: data.networkTicker,
                     enabledCurrenciesService: enabledCurrenciesService
-                )
-            }
-            .flatMap { [coincore] cryptoCurrency -> Single<AnnouncementPreliminaryData.AssetRename?> in
-                guard let cryptoCurrency = cryptoCurrency else {
+                ) else {
                     return .just(nil)
                 }
                 return coincore[cryptoCurrency]
@@ -42,6 +40,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                     .map { balance in
                         AnnouncementPreliminaryData.AssetRename(
                             asset: cryptoCurrency,
+                            oldTicker: data.oldTicker,
                             balance: balance
                         )
                     }

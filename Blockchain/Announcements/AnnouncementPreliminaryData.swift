@@ -11,6 +11,7 @@ struct AnnouncementPreliminaryData {
 
     struct AssetRename {
         let asset: CryptoCurrency
+        let oldTicker: String
         let balance: MoneyValue
     }
 
