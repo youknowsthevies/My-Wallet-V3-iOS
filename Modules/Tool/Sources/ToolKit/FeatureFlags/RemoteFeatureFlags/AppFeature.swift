@@ -144,3 +144,8 @@ extension AppFeature {
         }
     }
 }
+
+public struct AssetRenameAnnouncementFeature: Decodable {
+    public let networkTicker: String
+    public let oldTicker: String
+}
