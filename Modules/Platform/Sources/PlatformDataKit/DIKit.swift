@@ -19,7 +19,14 @@ extension DependencyContainer {
             return client as InterestAccountEligibilityClientAPI
         }
 
+        factory { () -> InterestAccountReceiveAddressClientAPI in
+            let client: PlatformDataAPIClient = DIKit.resolve()
+            return client as InterestAccountReceiveAddressClientAPI
+        }
+
         factory { InterestAccountEligibilityRepository() as InterestAccountEligibilityRepositoryAPI }
+
+        factory { InterestAccountReceiveAddressRepository() as InterestAccountReceiveAddressRepositoryAPI }
 
         // MARK: - Price
 

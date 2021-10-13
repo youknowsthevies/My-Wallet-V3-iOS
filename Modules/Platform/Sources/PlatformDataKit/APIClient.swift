@@ -7,11 +7,14 @@ import NetworkKit
 import PlatformKit
 import ToolKit
 
-typealias PlatformDataAPIClient = InterestAccountEligibilityClientAPI & PriceClientAPI
+typealias PlatformDataAPIClient = InterestAccountEligibilityClientAPI &
+    PriceClientAPI &
+    InterestAccountReceiveAddressClientAPI
 
 final class APIClient: PlatformDataAPIClient {
 
     private enum Path {
+        static let interestReceiveAddress = ["payments", "accounts", "savings"]
         static let interestEligibility = ["eligible", "product", "savings"]
     }
 
@@ -40,6 +43,20 @@ final class APIClient: PlatformDataAPIClient {
         self.requestBuilder = requestBuilder
         self.priceNetworkAdapter = priceNetworkAdapter
         self.priceRequestBuilder = priceRequestBuilder
+    }
+
+    // MARK: - InterestAccountReceiveAddressClientAPI
+
+    func fetchInterestAccountReceiveAddressResponse()
+        -> AnyPublisher<InterestReceiveAddressResponse, NabuNetworkError>
+    {
+        let request = requestBuilder.get(
+            path: Path.interestReceiveAddress,
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request)
     }
 
     // MARK: - InterestAccountEligibilityClientAPI

@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-
 public struct InterestAccountEligibility: Equatable {
 
     public let currencyType: CurrencyType

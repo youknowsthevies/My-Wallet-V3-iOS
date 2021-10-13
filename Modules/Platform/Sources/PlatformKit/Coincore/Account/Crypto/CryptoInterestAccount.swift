@@ -49,6 +49,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     }
 
     private let priceService: PriceServiceAPI
+    private let receiveAddressRepository: InterestAccountReceiveAddressRepositoryAPI
     private let balanceService: InterestAccountOverviewAPI
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset)
@@ -56,11 +57,13 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
 
     public init(
         asset: CryptoCurrency,
+        receiveAddressRepository: InterestAccountReceiveAddressRepositoryAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         balanceService: InterestAccountOverviewAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve()
     ) {
         label = asset.defaultInterestWalletName
+        self.receiveAddressRepository = receiveAddressRepository
         self.asset = asset
         self.balanceService = balanceService
         self.priceService = priceService
