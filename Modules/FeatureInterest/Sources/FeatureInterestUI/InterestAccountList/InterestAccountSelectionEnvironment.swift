@@ -6,15 +6,12 @@ import DIKit
 import FeatureInterestDomain
 import PlatformKit
 
-enum InterestAccountSelectionError: Error {
-    case unknown
-}
-
 struct InterestAccountSelectionEnvironment {
     let fiatCurrencyService: FiatCurrencyPublisherAPI
     let accountOverviewRepository: InterestAccountOverviewRepositoryAPI
     let accountBalanceRepository: InterestAccountBalanceRepositoryAPI
     let accountRepository: BlockchainAccountRepositoryAPI
+    let priceService: PriceServiceAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
@@ -24,6 +21,7 @@ extension InterestAccountSelectionEnvironment {
         accountOverviewRepository: resolve(),
         accountBalanceRepository: resolve(),
         accountRepository: resolve(),
+        priceService: resolve(),
         mainQueue: .main
     )
 }

@@ -8,7 +8,6 @@ import PlatformKit
 import ToolKit
 
 typealias FeatureInterestDataAPIClient =
-    InterestAccountEligibilityClientAPI &
     InterestAccountLimitsClientAPI &
     InterestAccountRateClientAPI &
     InterestAccountBalanceClientAPI
@@ -16,7 +15,6 @@ typealias FeatureInterestDataAPIClient =
 final class APIClient: FeatureInterestDataAPIClient {
 
     private enum Path {
-        static let interestEligibility = ["eligible", "product", "savings"]
         static let balance = ["accounts", "savings"]
         static let rate = ["savings", "rates"]
         static let limits = ["savings", "limits"]
@@ -54,18 +52,6 @@ final class APIClient: FeatureInterestDataAPIClient {
         let request = requestBuilder.get(
             path: Path.balance,
             parameters: parameters,
-            authenticated: true
-        )!
-
-        return networkAdapter
-            .perform(request: request)
-    }
-
-    func fetchInterestAccountEligibilityResponse()
-        -> AnyPublisher<InterestEligibilityResponse, NabuNetworkError>
-    {
-        let request = requestBuilder.get(
-            path: Path.interestEligibility,
             authenticated: true
         )!
 

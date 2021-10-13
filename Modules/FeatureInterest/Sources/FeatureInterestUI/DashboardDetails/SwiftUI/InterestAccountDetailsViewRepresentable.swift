@@ -4,7 +4,7 @@ import PlatformKit
 import SwiftUI
 import ToolKit
 
-struct InterestAccountDetailsView: UIViewControllerRepresentable {
+struct InterestAccountDetailsViewRepresentable: UIViewControllerRepresentable {
 
     typealias UIViewControllerType = InterestAccountDetailsViewController
 
@@ -15,7 +15,7 @@ struct InterestAccountDetailsView: UIViewControllerRepresentable {
     }
 
     func makeUIViewController(
-        context: UIViewControllerRepresentableContext<InterestAccountDetailsView>
+        context: UIViewControllerRepresentableContext<InterestAccountDetailsViewRepresentable>
     ) -> InterestAccountDetailsViewController {
         let interactor = InterestAccountDetailsScreenInteractor(account: account)
         let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)

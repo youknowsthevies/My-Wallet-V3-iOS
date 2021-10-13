@@ -13,11 +13,6 @@ extension DependencyContainer {
 
         factory { APIClient() as FeatureInterestDataAPIClient }
 
-        factory { () -> InterestAccountEligibilityClientAPI in
-            let client: FeatureInterestDataAPIClient = DIKit.resolve()
-            return client as InterestAccountEligibilityClientAPI
-        }
-
         factory { () -> InterestAccountBalanceClientAPI in
             let client: FeatureInterestDataAPIClient = DIKit.resolve()
             return client as InterestAccountBalanceClientAPI
@@ -32,8 +27,6 @@ extension DependencyContainer {
             let client: FeatureInterestDataAPIClient = DIKit.resolve()
             return client as InterestAccountRateClientAPI
         }
-
-        factory { InterestAccountEligibilityRepository() as InterestAccountEligibilityRepositoryAPI }
 
         factory { InterestAccountOverviewRepository() as InterestAccountOverviewRepositoryAPI }
 

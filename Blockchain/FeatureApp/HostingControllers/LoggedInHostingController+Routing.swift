@@ -75,7 +75,6 @@ extension LoggedInHostingController {
 
     func handleInterest() {
         let interestAccountList = InterestAccountListHostingController()
-        interestAccountList.modalPresentationStyle = .fullScreen
         topMostViewController?.present(
             interestAccountList,
             animated: true

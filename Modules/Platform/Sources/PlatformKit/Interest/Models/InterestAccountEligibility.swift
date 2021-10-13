@@ -8,7 +8,7 @@ public struct InterestAccountEligibility: Equatable {
     public let isEligible: Bool
     public let ineligibilityReason: InterestAccountIneligibilityReason
 
-    init(
+    public init(
         currencyType: CurrencyType,
         isEligible: Bool,
         ineligibilityReason: InterestAccountIneligibilityReason

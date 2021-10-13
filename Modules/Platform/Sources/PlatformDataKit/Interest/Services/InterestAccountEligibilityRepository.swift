@@ -2,7 +2,6 @@
 
 import Combine
 import DIKit
-import FeatureInterestDomain
 import PlatformKit
 
 final class InterestAccountEligibilityRepository: InterestAccountEligibilityRepositoryAPI {

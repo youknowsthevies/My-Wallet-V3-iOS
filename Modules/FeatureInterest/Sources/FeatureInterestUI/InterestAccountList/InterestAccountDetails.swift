@@ -35,7 +35,7 @@ struct InterestAccountDetails: Equatable, Identifiable {
 
     var actions: [InterestAccountListItemAction] {
         guard isEligible else { return [] }
-        return [balance.isPositive ? .viewInterestButtonTapped(currency) : .earnInterestButtonTapped]
+        return [balance.isPositive ? .viewInterestButtonTapped(self) : .earnInterestButtonTapped]
     }
 
     let ineligibilityReason: InterestAccountIneligibilityReason

@@ -33,6 +33,7 @@ let package = Package(
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
         .package(path: "../UIComponents"),
+        .package(path: "../ComposableNavigation"),
         .package(path: "../Platform"),
         .package(path: "../Tool")
     ],
@@ -62,6 +63,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureInterestDomain"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "ComposableNavigation", package: "ComposableNavigation"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformUIKit", package: "Platform"),

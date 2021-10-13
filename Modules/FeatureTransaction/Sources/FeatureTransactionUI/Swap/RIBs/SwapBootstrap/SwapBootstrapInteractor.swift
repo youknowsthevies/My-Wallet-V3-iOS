@@ -64,12 +64,12 @@ final class SwapBootstrapInteractor: PresentableInteractor<SwapBootstrapPresenta
         kycStatusChecker.checkStatus(whileLoading: { [weak presenter] in
             presenter?.showLoading()
         })
-        .flatMap(weak: self) { (self, status) -> Single<Action> in
+        .flatMap { [kycTiersPageModelFactory] status -> Single<Action> in
             switch status {
             case .unverified:
                 return .just(.userMustKYCForSwap)
             case .verifying:
-                return self.kycTiersPageModelFactory
+                return kycTiersPageModelFactory
                     .tiersPageModel(suppressCTA: true)
                     .map { model -> Action in
                         .userMustCompleteKYC(model: model)
@@ -81,14 +81,14 @@ final class SwapBootstrapInteractor: PresentableInteractor<SwapBootstrapPresenta
                 return .just(.kycCheckError)
             }
         }
-        .subscribe(onSuccess: { [weak self] action in
+        .subscribe(onSuccess: { [listener] action in
             switch action {
             case .userMustKYCForSwap:
-                self?.listener?.userMustKYCForSwap()
+                listener?.userMustKYCForSwap()
             case .userMustCompleteKYC(let model):
-                self?.listener?.userMustCompleteKYC(model: model)
+                listener?.userMustCompleteKYC(model: model)
             case .userReadyForSwap:
-                self?.listener?.userReadyForSwap()
+                listener?.userReadyForSwap()
             case .kycCheckError:
                 break
             }

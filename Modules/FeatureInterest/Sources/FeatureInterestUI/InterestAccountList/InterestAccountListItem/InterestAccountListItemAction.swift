@@ -4,5 +4,5 @@ import PlatformKit
 
 enum InterestAccountListItemAction: Equatable {
     case earnInterestButtonTapped
-    case viewInterestButtonTapped(CurrencyType)
+    case viewInterestButtonTapped(InterestAccountDetails)
 }

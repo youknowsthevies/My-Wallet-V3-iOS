@@ -77,6 +77,7 @@ extension Color {
 
     // MARK: Other Elements
 
+    public static let backgroundFiat = Color(paletteColor: .green500)
     public static let positiveTrend = Color(paletteColor: .green600)
     public static let negativeTrend = Color(paletteColor: .red600)
     public static let neutralTrend = Color(paletteColor: .grey600)

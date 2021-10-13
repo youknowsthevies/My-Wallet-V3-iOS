@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import ComposableNavigation
 import FeatureInterestDomain
 import Localization
 import PlatformKit
@@ -9,8 +10,11 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-struct InterestAccountListState: Equatable {
+struct InterestAccountListState: Equatable, NavigationState {
+    var route: RouteIntent<InterestAccountListRoute>?
+    var interestAccountOverviews: [InterestAccountOverview] = []
     var interestAccountDetails: IdentifiedArrayOf<InterestAccountDetails> = []
+    var interestAccountDetailsState: InterestAccountDetailsState?
     var loadingInterestAccountList: Bool = false
     var loadingErrorAlert: AlertState<InterestAccountListAction>?
 }
@@ -34,12 +38,11 @@ struct InterestAccountListView: View {
                         InterestAccountListItem(store: cellStore)
                     }
                 }
-                .trailingNavigationButton(.close) {
-                    viewStore.send(.closeButtonTapped)
-                }
+                .whiteNavigationBarStyle()
                 .listStyle(PlainListStyle())
                 .navigationTitle(LocalizationId.title)
                 .navigationBarTitleDisplayMode(.inline)
+                .navigationRoute(in: store)
             }
             .onAppear {
                 viewStore.send(.loadInterestAccounts)
@@ -73,6 +76,7 @@ struct InterestAccountListView_Previews: PreviewProvider {
                     accountOverviewRepository: NoOpInterestAccountOverviewRepository(),
                     accountBalanceRepository: NoOpInterestAccountBalanceRepository(),
                     accountRepository: NoOpBlockchainAccountRepository(),
+                    priceService: NoOpPriceService(),
                     mainQueue: .main
                 )
             )

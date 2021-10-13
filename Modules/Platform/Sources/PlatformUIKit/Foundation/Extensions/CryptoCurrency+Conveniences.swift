@@ -32,6 +32,10 @@ extension CryptoCurrency {
 
     // MARK: Logo Image `ImageResource`
 
+    public var image: Image {
+        logoResource.image ?? Image("crypto-btc", bundle: .platformUIKit)
+    }
+
     public var logoResource: ImageResource {
         switch self {
         case .coin(let model):

@@ -75,7 +75,7 @@ struct InterestAccountListItem: View {
                                 .frame(width: 14.0, height: 14.0)
                             Text(viewStore.ineligibilityReason.displayString)
                                 .fixedSize()
-                                .textStyle(.heading)
+                                .font(Font(weight: .semibold, size: 16.0))
                                 .foregroundColor(.white)
                         }
                         .padding()
