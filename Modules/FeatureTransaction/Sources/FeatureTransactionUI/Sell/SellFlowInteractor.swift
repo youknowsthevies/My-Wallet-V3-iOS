@@ -6,6 +6,7 @@ import FeatureTransactionDomain
 import Foundation
 import PlatformKit
 import RIBs
+import ToolKit
 import UIKit
 
 final class SellFlowInteractor: Interactor {
@@ -21,7 +22,13 @@ final class SellFlowInteractor: Interactor {
 
 extension SellFlowInteractor: TransactionFlowListener {
 
-    func presentKYCFlowIfNeeded(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {}
+    func presentKYCFlowIfNeeded(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
+        unimplemented()
+    }
+
+    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
+        unimplemented()
+    }
 
     func dismissTransactionFlow() {
         listener?.sellFlowDidComplete(with: .abandoned)

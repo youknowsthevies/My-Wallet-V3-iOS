@@ -14,6 +14,7 @@ protocol PendingTransactionPageRouting: Routing {}
 
 protocol PendingTransactionPageListener: AnyObject {
     func closeFlow()
+    func showKYCUpgradePrompt()
 }
 
 protocol PendingTransactionPagePresentable: Presentable, PendingTransactionPageViewControllable {
@@ -105,6 +106,8 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
         switch effect {
         case .close:
             listener?.closeFlow()
+        case .upgradeKYCTier:
+            listener?.showKYCUpgradePrompt()
         case .none:
             break
         }

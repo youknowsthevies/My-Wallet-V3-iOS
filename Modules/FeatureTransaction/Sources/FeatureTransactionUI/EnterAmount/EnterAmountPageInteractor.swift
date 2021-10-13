@@ -63,7 +63,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
 
-    private let tiersService: KYCTiersServiceAPI
     private let analyticsHook: TransactionAnalyticsHook
 
     init(
@@ -72,14 +71,12 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         amountInteractor: AmountViewInteracting,
         action: AssetAction,
         navigationModel: ScreenNavigationModel,
-        tiersService: KYCTiersServiceAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve()
     ) {
         self.action = action
         self.transactionModel = transactionModel
         amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
-        self.tiersService = tiersService
         self.analyticsHook = analyticsHook
         sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
         sendAuxiliaryViewPresenter = SendAuxiliaryViewPresenter(
@@ -220,17 +217,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 return availableSources
             }
             .map(\.count)
-            .flatMap { [action, tiersService] accountsCount -> Observable<Bool> in
-                tiersService
-                    .fetchTiers()
-                    .asObservable()
-                    .map { userTiers -> Bool in
-                        if action == .buy {
-                            return userTiers.latestApprovedTier == .tier2
-                        }
-                        return accountsCount > 0
-                    }
-            }
+            .map { $0 > 1 }
 
         accountAuxiliaryViewInteractor
             .connect(

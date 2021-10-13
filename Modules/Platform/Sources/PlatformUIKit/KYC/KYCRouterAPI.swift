@@ -58,4 +58,8 @@ public protocol KYCRouting {
         from presenter: UIViewController,
         requiredTier: KYC.Tier
     ) -> AnyPublisher<KYCRoutingResult, KYCRouterError>
+
+    func presentKYCUpgradeFlow(
+        from presenter: UIViewController
+    ) -> AnyPublisher<KYCRoutingResult, Never>
 }

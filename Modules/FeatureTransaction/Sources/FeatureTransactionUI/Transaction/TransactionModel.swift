@@ -135,6 +135,10 @@ final class TransactionModel {
             return processFiatRatePairs()
         case .fetchTargetRates:
             return processTransactionRatePair()
+        case .fetchUserKYCInfo:
+            return processFetchKYCStatus()
+        case .userKYCInfoFetched:
+            return nil
         case .transactionFiatRatePairs:
             return nil
         case .sourceDestinationPair:
@@ -331,6 +335,7 @@ final class TransactionModel {
         process(action: .pendingTransactionStarted(allowFiatInput: interactor.canTransactFiat))
         process(action: .fetchFiatRates)
         process(action: .fetchTargetRates)
+        process(action: .fetchUserKYCInfo)
         process(action: .updateAmount(amount))
     }
 
@@ -355,6 +360,16 @@ final class TransactionModel {
             .startCryptoRatePairFetch
             .subscribe { [weak self] moneyValuePair in
                 self?.process(action: .sourceDestinationPair(moneyValuePair))
+            }
+    }
+
+    private func processFetchKYCStatus() -> Disposable {
+        interactor
+            .fetchUserKYCStatus()
+            .asSingle()
+            .compactMap { $0 }
+            .subscribe { [weak self] userKYCTier in
+                self?.process(action: .userKYCInfoFetched(userKYCTier))
             }
     }
 

@@ -39,6 +39,8 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
         guard let destinationCurrency = state.destination?.currencyType else {
             impossible("Expected a destination to there for a transaction that has succeeded")
         }
+        // just not to show the secondary button if for some reason we don't have the info
+        let canUpgradeTier = (state.userKYCTiers?.latestApprovedTier ?? .tier2) < .tier2
         return .init(
             title: String(
                 format: LocalizationIds.Success.title,
@@ -60,7 +62,8 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationIds.Success.action)
+            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action),
+            secondaryButtonViewModel: canUpgradeTier ? .secondary(with: LocalizationIds.Success.upgrade) : nil
         )
     }
 
@@ -108,8 +111,7 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                     backgroundColor: .primaryButton,
                     cornerRadiusRatio: 0.5
                 )
-            ),
-            buttonViewModel: nil
+            )
         )
     }
 
@@ -129,7 +131,7 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 }

@@ -40,17 +40,16 @@ protocol TransactionFlowRouting: Routing {
     func didTapBack()
 
     /// Show the `source` selection screen. This replaces the root.
-    func routeToSourceAccountPicker(transactionModel: TransactionModel, action: AssetAction)
-
-    /// Present the destination account picker modally over the current screen
-    func presentSourceAccountPicker(transactionModel: TransactionModel, action: AssetAction)
+    func routeToSourceAccountPicker(
+        transitionType: TransitionType,
+        transactionModel: TransactionModel,
+        action: AssetAction,
+        canAddMoreSources: Bool
+    )
 
     /// Show the target selection screen (currently only used in `Send`).
     /// This pushes onto the prior screen.
     func routeToTargetSelectionPicker(transactionModel: TransactionModel, action: AssetAction)
-
-    /// Show the destination account picker without routing from a prior screen
-    func showDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
 
     /// Route to the destination account picker from the target selection screen
     func routeToDestinationAccountPicker(
@@ -58,9 +57,6 @@ protocol TransactionFlowRouting: Routing {
         transactionModel: TransactionModel,
         action: AssetAction
     )
-
-    /// Present the destination account picker modally over the current screen
-    func presentDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
 
     /// Present the payment method linking flow modally over the current screen
     func presentLinkPaymentMethod(transactionModel: TransactionModel)
@@ -94,10 +90,16 @@ protocol TransactionFlowRouting: Routing {
 
     /// Presents the KYC Flow if needed or progresses the transactionModel to the next step otherwise
     func presentKYCFlowIfNeeded(completion: @escaping (Bool) -> Void)
+
+    /// Presents the KYC Upgrade Flow.
+    /// - Parameters:
+    ///  - completion: A closure that is called with `true` if the user completed the KYC flow to move to the next tier.
+    func presentKYCUpgradeFlow(completion: @escaping (Bool) -> Void)
 }
 
 protocol TransactionFlowListener: AnyObject {
     func presentKYCFlowIfNeeded(from viewController: UIViewController, completion: @escaping (Bool) -> Void)
+    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void)
     func dismissTransactionFlow()
 }
 
@@ -287,6 +289,14 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         analyticsHook.onClose(action: action)
     }
 
+    func showKYCUpgradePrompt() {
+        router?.presentKYCUpgradeFlow { [weak self] didUpgrade in
+            if didUpgrade {
+                self?.closeFlow()
+            }
+        }
+    }
+
     func checkoutDidTapBack() {
         transactionModel.process(action: .returnToPreviousStep)
     }
@@ -398,7 +408,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             case .withdraw:
                 // `Withdraw` shows the destination screen modally. It does not
                 // present over another screen (and thus replaces the root).
-                router?.showDestinationAccountPicker(
+                router?.routeToDestinationAccountPicker(
+                    transitionType: .replaceRoot,
                     transactionModel: transactionModel,
                     action: action
                 )
@@ -442,30 +453,29 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             )
 
         case .selectSource:
+            let canAddMoreSources = newState.userKYCTiers?.isTier2Approved ?? false
             switch action {
-            case .buy:
-                if newState.stepsBackStack.contains(.enterAmount) {
-                    router?.presentSourceAccountPicker(
-                        transactionModel: transactionModel,
-                        action: action
-                    )
-                } else {
-                    router?.routeToSourceAccountPicker(
-                        transactionModel: transactionModel,
-                        action: action
-                    )
-                }
+            case .buy where newState.stepsBackStack.contains(.enterAmount):
+                router?.routeToSourceAccountPicker(
+                    transitionType: .modal,
+                    transactionModel: transactionModel,
+                    action: action,
+                    canAddMoreSources: canAddMoreSources
+                )
 
             case .deposit,
                  .withdraw,
+                 .buy,
                  .sell,
                  .swap,
                  .send,
                  .receive,
                  .viewActivity:
                 router?.routeToSourceAccountPicker(
+                    transitionType: .replaceRoot,
                     transactionModel: transactionModel,
-                    action: action
+                    action: action,
+                    canAddMoreSources: canAddMoreSources
                 )
             }
 

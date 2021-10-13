@@ -60,7 +60,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 
@@ -87,8 +87,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
                 )
-            ),
-            buttonViewModel: nil
+            )
         )
     }
 
@@ -115,7 +114,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 }

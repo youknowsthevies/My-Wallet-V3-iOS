@@ -676,6 +676,10 @@ extension LocalizationConstants.Transaction.Buy.Completion.Success {
         "OK",
         comment: "OK"
     )
+    public static let upgrade = NSLocalizedString(
+        "Want to buy more?",
+        comment: "Prompt to upgrade to a higher KYC Tier"
+    )
 }
 
 extension LocalizationConstants.Transaction.Buy.Completion.Pending {
@@ -686,6 +690,10 @@ extension LocalizationConstants.Transaction.Buy.Completion.Pending {
     public static let description = NSLocalizedString(
         "We're completing your buy order now.",
         comment: "We're completing your buy order now."
+    )
+    public static let upgrade = NSLocalizedString(
+        "Want to buy more?",
+        comment: "Prompt to upgrade to a higher KYC Tier"
     )
 }
 

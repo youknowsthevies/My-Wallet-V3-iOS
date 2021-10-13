@@ -46,6 +46,8 @@ enum TransactionAction: MviAction {
     case updateTransactionComplete(TransactionResult)
     case fetchFiatRates
     case fetchTargetRates
+    case fetchUserKYCInfo
+    case userKYCInfoFetched(KYC.UserTiers)
     case updateFeeLevelAndAmount(FeeLevel, MoneyValue?)
     case sourceDestinationPair(MoneyValuePair)
     case transactionFiatRatePairs(TransactionMoneyValuePairs)
@@ -180,10 +182,19 @@ extension TransactionAction {
                 source: sourceAccount,
                 passwordRequired: passwordRequired
             )
+
         case .fetchFiatRates:
             return oldState
+
         case .fetchTargetRates:
             return oldState
+
+        case .fetchUserKYCInfo:
+            return oldState
+
+        case .userKYCInfoFetched(let tiers):
+            return oldState.update(keyPath: \.userKYCTiers, value: tiers)
+
         case .sourceDestinationPair(let pair):
             var newState = oldState
             newState.sourceDestinationPair = pair

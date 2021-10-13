@@ -31,6 +31,7 @@ final class TransactionInteractor {
     private let swapEligibilityService: EligibilityServiceAPI
     private let paymentMethodsService: PaymentAccountsServiceAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
+    private let userTiersService: KYCTiersServiceAPI
     private let errorRecorder: ErrorRecording
     private var transactionProcessor: TransactionProcessor?
 
@@ -43,6 +44,7 @@ final class TransactionInteractor {
         swapEligibilityService: EligibilityServiceAPI = resolve(),
         paymentMethodsService: PaymentAccountsServiceAPI = resolve(),
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
+        userTiersService: KYCTiersServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve()
     ) {
         self.coincore = coincore
@@ -51,6 +53,7 @@ final class TransactionInteractor {
         self.swapEligibilityService = swapEligibilityService
         self.paymentMethodsService = paymentMethodsService
         self.linkedBanksFactory = linkedBanksFactory
+        self.userTiersService = userTiersService
     }
 
     func initializeTransaction(
@@ -231,6 +234,14 @@ final class TransactionInteractor {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.validateAll()
+    }
+
+    func fetchUserKYCStatus() -> AnyPublisher<KYC.UserTiers?, Never> {
+        userTiersService.tiers
+            .map { $0 } // make it optional
+            .replaceError(with: nil)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Functions
