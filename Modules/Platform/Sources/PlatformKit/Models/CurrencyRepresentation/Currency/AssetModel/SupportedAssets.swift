@@ -33,9 +33,6 @@ struct SupportedAssets {
                 case SupportedAssetsResponse.Asset.AssetType.Name.fiat.rawValue:
                     return FiatAssetModel(assetResponse: asset)
                 default:
-                    if BuildFlag.isInternal {
-                        fatalError("Unrecognized asset type \(asset.type.name)")
-                    }
                     return nil
                 }
             }
