@@ -23,7 +23,7 @@ final class ReplayNetworkCommunicatorTests: XCTestCase {
 
         try XCTAssertEqual(trueResult.wait().payload, ["success": true].data())
 
-        let falseResult = try comunicator.dataTaskPublisher(
+        let falseResult = comunicator.dataTaskPublisher(
             for: NetworkRequest(endpoint: "https://api.blockchain.info/example-request-false", method: .get)
         )
 

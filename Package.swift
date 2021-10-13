@@ -13,18 +13,13 @@ let package = Package(
             targets: ["AnalyticsKit"]
         )
     ],
-    dependencies: [
-        .package(url: "git@github.com:CombineCommunity/CombineExt.git", from: "1.2.0")
-    ],
     targets: [
         .target(
             name: "AnalyticsKit",
-            dependencies: ["CombineExt"],
             path: "Modules/Analytics/Sources/AnalyticsKit"
         ),
         .testTarget(
             name: "AnalyticsKitTests",
-            dependencies: ["CombineExt"],
             path: "Modules/Analytics/Tests/AnalyticsKitTests"
         )
     ],

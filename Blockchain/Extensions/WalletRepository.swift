@@ -312,15 +312,13 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
 
     fileprivate func perform(_ operation: @escaping () -> Void) -> AnyPublisher<Void, Never> {
-        AnyPublisher<Void, Never>
-            .create { observer -> AnyCancellable in
-                operation()
-                observer.send(())
-                observer.send(completion: .finished)
-                return AnyCancellable {}
+        Deferred {
+            Future { promise in
+                promise(.success(operation()))
             }
-            .subscribe(on: combineJSScheduler)
-            .eraseToAnyPublisher()
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
     }
 
     fileprivate func perform<E: Error>(_ operation: @escaping () -> Void) -> AnyPublisher<Void, E> {

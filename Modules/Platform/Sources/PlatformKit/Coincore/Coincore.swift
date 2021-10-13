@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import DIKit
 import RxSwift
 import ToolKit
@@ -46,7 +45,7 @@ final class Coincore: CoincoreAPI {
                     .map { asset in
                         asset.accountGroup(filter: .all)
                     }
-                    .zipMany()
+                    .zip()
             }
             .map { accountGroups -> [SingleAccount] in
                 accountGroups
@@ -102,7 +101,7 @@ final class Coincore: CoincoreAPI {
                             }
                             .eraseToAnyPublisher()
                     }
-                    .zipMany()
+                    .zip()
                     .mapToVoid()
                     .eraseToAnyPublisher()
             }

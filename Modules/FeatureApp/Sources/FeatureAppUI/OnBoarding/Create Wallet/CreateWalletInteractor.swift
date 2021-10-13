@@ -2,7 +2,6 @@
 
 import AnalyticsKit
 import Combine
-import CombineExt
 import DIKit
 import FeatureSettingsDomain
 import Localization
@@ -49,7 +48,7 @@ public final class CreateWalletInteractor: RegisterWalletScreenInteracting {
         // Handle creation of new account
 
         let accountCreated = walletManager.didCreateNewAccount
-            .share(replay: 1)
+            .shareReplay()
 
         // we're listening to the walletJSReady callback
         // capturing the latest from content, which contains password and email

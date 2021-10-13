@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import DIKit
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
@@ -155,7 +154,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                     .map { Token(sessionToken: $0, offlineToken: offlineToken) }
                     .eraseToAnyPublisher()
             }
-            .share(replay: 1)
+            .shareReplay()
             .eraseToAnyPublisher()
     }
 
