@@ -123,6 +123,17 @@ extension KYCAdapter: PlatformUIKit.KYCRouting {
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
+
+    func presentKYCUpgradeFlowIfNeeded(
+        from presenter: UIViewController,
+        requiredTier: KYC.Tier
+    ) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
+        router.presentPromptToUnlockMoreTradingIfNeeded(from: presenter, requiredTier: requiredTier)
+            .mapError(KYCRouterError.init)
+            .map(KYCRoutingResult.init)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - FeatureOnboardingUI.EmailVerificationRouterAPI

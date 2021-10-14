@@ -23,11 +23,11 @@ final class SellFlowInteractor: Interactor {
 extension SellFlowInteractor: TransactionFlowListener {
 
     func presentKYCFlowIfNeeded(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
-        unimplemented()
+        listener?.presentKYCFlow(from: viewController, completion: completion)
     }
 
     func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
-        unimplemented()
+        listener?.presentKYCUpgradeFlow(from: viewController, completion: completion)
     }
 
     func dismissTransactionFlow() {

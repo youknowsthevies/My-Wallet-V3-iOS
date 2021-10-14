@@ -41,6 +41,11 @@ final class SellFlowRouter: RIBs.Router<SellFlowInteractor>, SellFlowRouting {
         attachChild(router)
         let viewController = router.viewControllable.uiviewController
         presenter.present(viewController, animated: true)
+        interactor.presentKYCFlowIfNeeded(from: viewController) { completed in
+            if !completed {
+                presenter.dismiss(animated: true, completion: nil)
+            }
+        }
     }
 
     private func dismissLoadingView() {
