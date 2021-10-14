@@ -17,6 +17,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
             .map(weak: self) { (self, state) in
                 switch state.executionStatus {
                 case .notStarted,
+                     .pending,
                      .inProgress:
                     return self.pending(state: state)
                 case .error:

@@ -17,6 +17,7 @@ final class SellPendingTransactionStateProvider: PendingTransactionStateProvidin
             .map(weak: self) { (self, state) in
                 switch state.executionStatus {
                 case .inProgress,
+                     .pending,
                      .notStarted:
                     return self.pending(state: state)
                 case .completed:

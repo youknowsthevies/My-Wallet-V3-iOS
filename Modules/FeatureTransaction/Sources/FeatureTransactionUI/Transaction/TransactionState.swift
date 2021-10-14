@@ -414,6 +414,7 @@ enum TransactionExecutionStatus {
     case inProgress
     case error
     case completed
+    case pending
 
     var isComplete: Bool {
         self == .completed

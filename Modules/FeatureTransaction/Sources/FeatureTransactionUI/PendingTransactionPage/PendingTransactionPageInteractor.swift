@@ -72,7 +72,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
             .subscribe(onNext: { [weak self] executionStatus, transactionState in
                 guard let self = self else { return }
                 switch executionStatus {
-                case .inProgress, .notStarted:
+                case .inProgress, .notStarted, .pending:
                     break
                 case .error:
                     self.analyticsHook.onTransactionFailure(with: transactionState)

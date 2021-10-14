@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import FeatureTransactionDomain
+import Localization
 import PlatformKit
 import RxCocoa
 import RxRelay
@@ -129,6 +130,8 @@ final class TransactionModel {
             return nil
         case .executeTransaction:
             return processExecuteTransaction(secondPassword: previousState.secondPassword)
+        case .updateTransactionPending:
+            return nil
         case .updateTransactionComplete:
             return nil
         case .fetchFiatRates:
@@ -188,12 +191,13 @@ final class TransactionModel {
         case .performSecurityChecksForTransaction:
             return nil
         case .securityChecksCompleted:
-            process(
-                action: .updateTransactionComplete(
-                    .unHashed(amount: previousState.amount)
+            guard let order = previousState.order else {
+                return perform(
+                    previousState: previousState,
+                    action: .updateTransactionComplete
                 )
-            )
-            return nil
+            }
+            return processPollOrderStatus(order: order)
         case .invalidateTransaction:
             return processInvalidateTransaction()
         case .showSourceSelection:
@@ -267,12 +271,41 @@ final class TransactionModel {
                 case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
                     self?.process(action: .performSecurityChecksForTransaction(result))
                 default:
-                    self?.process(action: .updateTransactionComplete(result))
+                    self?.process(action: .updateTransactionComplete)
                 }
             }, onError: { [weak self] error in
                 Logger.shared.error("!TRANSACTION!> Unable to processExecuteTransaction: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))
             })
+    }
+
+    private func processPollOrderStatus(order: OrderDetails) -> Disposable? {
+        interactor
+            .pollOrderStatusUntilDoneOrTimeout(orderId: order.identifier)
+            .asSingle()
+            .subscribeOn(MainScheduler.instance)
+            .subscribe { [weak self] finalOrderStatus in
+                switch finalOrderStatus {
+                case .cancelled, .expired:
+                    self?.process(
+                        action: .fatalTransactionError(
+                            FatalTransactionError.message(LocalizationConstants.Transaction.Error.unknownError)
+                        )
+                    )
+                case .failed:
+                    self?.process(
+                        action: .fatalTransactionError(
+                            FatalTransactionError.message(LocalizationConstants.Transaction.Error.generic)
+                        )
+                    )
+                case .depositMatched, .pendingConfirmation, .pendingDeposit:
+                    self?.process(action: .updateTransactionPending)
+                case .finished:
+                    self?.process(action: .updateTransactionComplete)
+                }
+            } onError: { [weak self] error in
+                self?.process(action: .fatalTransactionError(error))
+            }
     }
 
     private func processAmountChanged(amount: MoneyValue) -> Disposable? {

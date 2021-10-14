@@ -43,7 +43,8 @@ enum TransactionAction: MviAction {
     case executeTransaction
     case performSecurityChecksForTransaction(TransactionResult)
     case securityChecksCompleted
-    case updateTransactionComplete(TransactionResult)
+    case updateTransactionPending
+    case updateTransactionComplete
     case fetchFiatRates
     case fetchTargetRates
     case fetchUserKYCInfo
@@ -316,11 +317,18 @@ extension TransactionAction {
         case .securityChecksCompleted:
             return oldState.stateForMovingOneStepBack()
 
+        case .updateTransactionPending:
+            return oldState
+                .update(keyPath: \.nextEnabled, value: true)
+                .update(keyPath: \.executionStatus, value: .pending)
+                .withUpdatedBackstack(oldState: oldState)
+
         case .updateTransactionComplete:
             var newState = oldState
             newState.nextEnabled = true
             newState.executionStatus = .completed
             return newState.withUpdatedBackstack(oldState: oldState)
+
         case .fatalTransactionError(let error):
             Logger.shared.error(String(describing: error))
             var newState = oldState
@@ -329,8 +337,10 @@ extension TransactionAction {
             newState.errorState = .fatalError(FatalTransactionError(error: error))
             newState.executionStatus = .error
             return newState.withUpdatedBackstack(oldState: oldState)
+
         case .validateTransaction:
             return oldState
+
         case .resetFlow:
             var newState = oldState
             newState.step = .closed

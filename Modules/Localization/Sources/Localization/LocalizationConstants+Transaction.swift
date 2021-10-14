@@ -37,6 +37,7 @@ extension LocalizationConstants {
             }
 
             public enum Completion {
+                public enum InProgress {}
                 public enum Pending {}
                 public enum Success {}
                 public enum Failure {}
@@ -682,7 +683,7 @@ extension LocalizationConstants.Transaction.Buy.Completion.Success {
     )
 }
 
-extension LocalizationConstants.Transaction.Buy.Completion.Pending {
+extension LocalizationConstants.Transaction.Buy.Completion.InProgress {
     public static let title = NSLocalizedString(
         "Buying %@ with %@",
         comment: "Buying [target crypto] with [source fiat]"
@@ -690,6 +691,21 @@ extension LocalizationConstants.Transaction.Buy.Completion.Pending {
     public static let description = NSLocalizedString(
         "We're completing your buy order now.",
         comment: "We're completing your buy order now."
+    )
+    public static let upgrade = NSLocalizedString(
+        "Want to buy more?",
+        comment: "Prompt to upgrade to a higher KYC Tier"
+    )
+}
+
+extension LocalizationConstants.Transaction.Buy.Completion.Pending {
+    public static let title = NSLocalizedString(
+        "We're still processing your order.",
+        comment: "Order pending title"
+    )
+    public static let description = NSLocalizedString(
+        "This may take some time. We'll let you know when it's done.",
+        comment: "Order peding message."
     )
     public static let upgrade = NSLocalizedString(
         "Want to buy more?",

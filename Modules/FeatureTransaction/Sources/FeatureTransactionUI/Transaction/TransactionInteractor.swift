@@ -32,6 +32,7 @@ final class TransactionInteractor {
     private let paymentMethodsService: PaymentAccountsServiceAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let userTiersService: KYCTiersServiceAPI
+    private let ordersService: OrdersServiceAPI
     private let errorRecorder: ErrorRecording
     private var transactionProcessor: TransactionProcessor?
 
@@ -45,6 +46,7 @@ final class TransactionInteractor {
         paymentMethodsService: PaymentAccountsServiceAPI = resolve(),
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
         userTiersService: KYCTiersServiceAPI = resolve(),
+        ordersService: OrdersServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve()
     ) {
         self.coincore = coincore
@@ -54,6 +56,7 @@ final class TransactionInteractor {
         self.paymentMethodsService = paymentMethodsService
         self.linkedBanksFactory = linkedBanksFactory
         self.userTiersService = userTiersService
+        self.ordersService = ordersService
     }
 
     func initializeTransaction(
@@ -251,6 +254,19 @@ final class TransactionInteractor {
             .map { $0 } // make it optional
             .replaceError(with: nil)
             .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+
+    func pollOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<OrderDetails.State, Never> {
+        ordersService
+            .fetchOrder(with: orderId)
+            .asPublisher()
+            .startPolling(
+                timeoutInterval: .seconds(30),
+                until: { $0.isFinal }
+            )
+            .map(\.state)
+            .replaceError(with: .pendingConfirmation)
             .eraseToAnyPublisher()
     }
 
