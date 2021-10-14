@@ -4,7 +4,7 @@ import ComposableArchitecture
 import SwiftUI
 
 /// An intent of navigation used to determine the route and the action performed to arrive there
-public struct RouteIntent<R: NavigationRoute>: Hashable, Identifiable {
+public struct RouteIntent<R: NavigationRoute>: Hashable {
 
     public enum Action: Hashable {
 
@@ -16,7 +16,6 @@ public struct RouteIntent<R: NavigationRoute>: Hashable, Identifiable {
         case enterInto(fullScreen: Bool = false)
     }
 
-    public private(set) var id = UUID()
     public var route: R
     public var action: Action
 }
@@ -104,70 +103,72 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
     public typealias Action = Route.Action
 
     public let store: Store<State, Action>
-    @SwiftUI.State private var isReady: Set<RouteIntent<Route>> = []
+
+    @ObservedObject private var viewStore: ViewStore<RouteIntent<Route>?, Action>
+
+    @SwiftUI.State private var intent: Identified<UUID, RouteIntent<Route>>?
+    @SwiftUI.State private var isReady: Identified<UUID, RouteIntent<Route>>?
 
     public init(_ store: Store<State, Action>) {
         self.store = store
+        viewStore = ViewStore(store.scope(state: \.route))
     }
 
     public func body(content: Content) -> some View {
         content.background(
-            WithViewStore(store) { viewStore in
-                if let intent = viewStore.route {
-                    Group {
-                        switch intent.action {
-                        case .navigateTo:
-                            let navigateTo = viewStore.binding(
-                                get: \.__navigateTo,
-                                send: Action.route
-                            )
-                            NavigationLink(
-                                destination: intent.route.destination(in: store),
-                                isActive: Binding(navigateTo, to: intent, isReady: $isReady),
-                                label: EmptyView.init
-                            )
-
-                        case .enterInto(fullScreen: false):
-                            let enterInto = viewStore.binding(
-                                get: \.__enterInto,
-                                send: Action.route
-                            )
-                            EmptyView()
-                                .sheet(
-                                    isPresented: Binding(enterInto, to: intent, isReady: $isReady),
-                                    content: {
-                                        NavigationView { intent.route.destination(in: store) }
-                                    }
-                                )
-
-                        case .enterInto(fullScreen: true):
-                            let enterIntoFullScreen = viewStore.binding(
-                                get: \.__enterIntoFullScreen,
-                                send: Action.route
-                            )
-                            #if os(macOS)
-                            EmptyView()
-                                .sheet(
-                                    isPresented: Binding(enterIntoFullScreen, to: intent, isReady: $isReady),
-                                    content: {
-                                        NavigationView { intent.route.destination(in: store) }
-                                    }
-                                )
-                            #else
-                            EmptyView()
-                                .fullScreenCover(
-                                    isPresented: Binding(enterIntoFullScreen, to: intent, isReady: $isReady),
-                                    content: {
-                                        NavigationView { intent.route.destination(in: store) }
-                                    }
-                                )
-                            #endif
-                        }
-                    }
-                    .inserting(intent, into: $isReady)
+            Group {
+                if let intent = intent {
+                    create(intent).inserting(intent, into: $isReady)
                 }
             }
         )
+        .onReceive(viewStore.publisher) { state in
+            guard state != intent?.value else { return }
+            intent = state.map { .init($0, id: UUID()) }
+        }
+    }
+
+    @ViewBuilder private func create(_ intent: Identified<UUID, RouteIntent<Route>>) -> some View {
+        let binding = viewStore.binding(
+            get: { $0 },
+            send: Action.route
+        )
+        switch intent.value.action {
+        case .navigateTo:
+            NavigationLink(
+                destination: intent.value.route.destination(in: store),
+                isActive: Binding(binding, to: intent, isReady: $isReady),
+                label: EmptyView.init
+            )
+
+        case .enterInto(fullScreen: false):
+            EmptyView()
+                .sheet(
+                    isPresented: Binding(binding, to: intent, isReady: $isReady),
+                    content: {
+                        NavigationView { intent.value.route.destination(in: store) }
+                    }
+                )
+
+        case .enterInto(fullScreen: true):
+            #if os(macOS)
+            EmptyView()
+                .sheet(
+                    isPresented: Binding(binding, to: key, isReady: $isReady),
+                    content: {
+                        NavigationView { intent.value.route.destination(in: store) }
+                    }
+                )
+            #else
+            EmptyView()
+                .fullScreenCover(
+                    isPresented: Binding(binding, to: intent, isReady: $isReady),
+                    content: {
+                        NavigationView { intent.value.route.destination(in: store) }
+                    }
+                )
+            #endif
+        }
     }
 }
 
@@ -175,42 +176,24 @@ extension View {
 
     @ViewBuilder fileprivate func inserting<E>(
         _ element: E,
-        into binding: Binding<Set<E>>
+        into binding: Binding<E?>
     ) -> some View where E: Hashable {
         onAppear {
-            DispatchQueue.main.async { binding.wrappedValue.insert(element) }
+            DispatchQueue.main.async { binding.wrappedValue = element }
         }
     }
 }
 
 extension Binding where Value == Bool {
 
-    fileprivate init<E: Equatable, S: SetAlgebra>(
+    fileprivate init<E: Equatable>(
         _ source: Binding<E?>,
-        to element: E,
-        isReady ready: Binding<S>
-    ) where S.Element == E {
+        to element: Identified<UUID, E>,
+        isReady ready: Binding<Identified<UUID, E>?>
+    ) {
         self.init(
-            get: { source.wrappedValue == element && ready.wrappedValue.contains(element) },
-            set: { source.wrappedValue = $0 ? element : nil }
+            get: { source.wrappedValue == element.value && ready.wrappedValue == element },
+            set: { source.wrappedValue = $0 ? element.value : nil }
         )
-    }
-}
-
-extension NavigationState {
-
-    fileprivate var __navigateTo: RouteIntent<RouteType>? {
-        guard let intent = route, intent.action == .navigateTo else { return nil }
-        return intent
-    }
-
-    fileprivate var __enterInto: RouteIntent<RouteType>? {
-        guard let intent = route, case .enterInto(false) = intent.action else { return nil }
-        return intent
-    }
-
-    fileprivate var __enterIntoFullScreen: RouteIntent<RouteType>? {
-        guard let intent = route, case .enterInto(true) = intent.action else { return nil }
-        return intent
     }
 }
