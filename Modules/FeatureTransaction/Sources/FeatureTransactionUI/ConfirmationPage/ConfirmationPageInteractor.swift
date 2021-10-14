@@ -65,6 +65,10 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
         case .updateMemo(let memo, let oldModel):
             let model = TransactionConfirmation.Model.Memo(textMemo: memo, required: oldModel.required)
             transactionModel.process(action: .modifyTransactionConfirmation(.memo(model)))
+        case .toggleToSAgreement(let value):
+            unimplemented()
+        case .toggleHoldPeriodAgreement(let value):
+            unimplemented()
         }
     }
 }
@@ -79,5 +83,7 @@ extension ConfirmationPageInteractor {
         case close
         case back
         case updateMemo(String?, oldModel: TransactionConfirmation.Model.Memo)
+        case toggleToSAgreement(Bool)
+        case toggleHoldPeriodAgreement(Bool)
     }
 }

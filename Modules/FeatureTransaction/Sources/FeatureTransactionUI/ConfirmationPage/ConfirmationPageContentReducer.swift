@@ -162,8 +162,12 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             )
             disclaimer.append(.staticLabel(content))
         }
+
         let restItems: [DetailsScreen.CellType] = memoModels + errorModels + disclaimer
-        cells = [.separator] + bitpayItemIfNeeded + confirmationLineItems + restItems
+        cells = [.separator] +
+            bitpayItemIfNeeded +
+            confirmationLineItems +
+            restItems
     }
 
     static func confirmCtaText(state: TransactionState) -> String {

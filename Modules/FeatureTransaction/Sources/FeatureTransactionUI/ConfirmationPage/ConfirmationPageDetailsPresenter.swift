@@ -109,6 +109,9 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             .map { ConfirmationPageInteractor.Effects.back }
             .asDriverCatchError()
 
+        // TODO: Include ToS CheckboxViewModel Effect
+        // TODO: Include Hold Period CheckboxViewModel Effect
+
         let memoChanged = contentReducer
             .memoUpdated
             .map { text, oldModel in
