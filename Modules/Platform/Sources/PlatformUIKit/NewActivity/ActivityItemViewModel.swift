@@ -41,18 +41,21 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
         var text = ""
         switch event {
         case .buySell(let orderDetails):
-            let prefix = orderDetails.isBuy ? LocalizationStrings.buy : LocalizationStrings.sell
-            let postfix = orderDetails.isBuy
-                ? orderDetails.outputValue.currency.code
-                : orderDetails.inputValue.currency.code
-            text = "\(prefix) \(postfix)"
+            if orderDetails.isBuy {
+                text = "\(LocalizationStrings.buy) \(orderDetails.outputValue.currency.code)"
+            } else {
+                text = "\(LocalizationStrings.sell) "
+                    + "\(orderDetails.inputValue.currency.code) -> \(orderDetails.outputValue.currency.code)"
+            }
         case .swap(let event):
             let pair = event.pair
             switch pair.outputCurrencyType {
             case .crypto:
-                text = "\(LocalizationStrings.swap) \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
+                text = "\(LocalizationStrings.swap) "
+                    + "\(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
             case .fiat:
-                text = "\(LocalizationStrings.sell) \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
+                text = "\(LocalizationStrings.sell) "
+                    + "\(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
             }
 
         case .transactional(let event):

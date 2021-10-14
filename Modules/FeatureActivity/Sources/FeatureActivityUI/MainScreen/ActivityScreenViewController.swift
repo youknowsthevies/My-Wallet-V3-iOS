@@ -187,13 +187,18 @@ public final class ActivityScreenViewController: BaseScreenViewController {
         return cell
     }
 
-    private func activityItemTableViewCell(for indexPath: IndexPath, presenter: ActivityItemPresenter) -> ActivityItemTableViewCell {
+    private func activityItemTableViewCell(
+        for indexPath: IndexPath,
+        presenter: ActivityItemPresenter
+    ) -> ActivityItemTableViewCell {
         let cell = tableView.dequeue(ActivityItemTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func selectionButtonTableViewCell(for indexPath: IndexPath, viewModel: SelectionButtonViewModel) -> SelectionButtonTableViewCell {
+    private func selectionButtonTableViewCell(
+        for indexPath: IndexPath, viewModel: SelectionButtonViewModel
+    ) -> SelectionButtonTableViewCell {
         let cell = tableView.dequeue(
             SelectionButtonTableViewCell.self,
             for: indexPath
