@@ -71,7 +71,7 @@ final class MobileAuthSyncClient: MobileAuthSyncClientAPI {
         let parameters = [
             URLQueryItem(
                 name: Parameters.UpdateMobileSetup.method,
-                value: "update_mobile_setup"
+                value: "update-mobile-setup"
             ),
             URLQueryItem(
                 name: Parameters.UpdateMobileSetup.guid,
@@ -107,7 +107,7 @@ final class MobileAuthSyncClient: MobileAuthSyncClientAPI {
         let parameters = [
             URLQueryItem(
                 name: Parameters.VerifyCloudBackup.method,
-                value: "verify_cloud_backup"
+                value: "verify-cloud-backup"
             ),
             URLQueryItem(
                 name: Parameters.VerifyCloudBackup.guid,
