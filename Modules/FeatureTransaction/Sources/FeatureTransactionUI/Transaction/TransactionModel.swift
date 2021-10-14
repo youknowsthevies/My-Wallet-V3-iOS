@@ -77,7 +77,7 @@ final class TransactionModel {
             return nil
 
         case .cardLinkingFlowCompleted:
-            return processCardLinkingCompletion(state: previousState)
+            return processSourceAccountsListUpdate(action: previousState.action)
 
         case .bankAccountLinked(let action):
             return processSourceAccountsListUpdate(action: action)
@@ -127,6 +127,8 @@ final class TransactionModel {
         case .validateSourceAccount:
             return nil
         case .prepareTransaction:
+            return processValidateTransactionForCheckout(oldState: previousState)
+        case .showCheckout:
             return nil
         case .executeTransaction:
             return processExecuteTransaction(secondPassword: previousState.secondPassword)
@@ -262,6 +264,17 @@ final class TransactionModel {
                 Logger.shared.error("!TRANSACTION!> Unable to processValidateTransaction: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))
             })
+    }
+
+    private func processValidateTransactionForCheckout(oldState: TransactionState) -> Disposable {
+        interactor.validateTransaction
+            .subscribe { [weak self] in
+                self?.process(action: .showCheckout)
+            } onError: { [weak self] error in
+                Logger.shared.debug("!TRANSACTION!> Invalid transaction: \(String(describing: error))")
+                // HACK: update the transaction to show errors.
+                self?.process(action: .updateAmount(oldState.amount))
+            }
     }
 
     private func processExecuteTransaction(secondPassword: String) -> Disposable {
@@ -432,14 +445,5 @@ final class TransactionModel {
                 })
         }
         return nil
-    }
-
-    private func processCardLinkingCompletion(state: TransactionState) -> Disposable? {
-        switch state.action {
-        case .buy:
-            return processSourceAccountsListUpdate(action: state.action)
-        default:
-            return nil
-        }
     }
 }

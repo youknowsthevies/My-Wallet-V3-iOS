@@ -113,7 +113,7 @@ final class BuyTransactionEngine: TransactionEngine {
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        .just(pendingTransaction)
+        validateAmount(pendingTransaction: pendingTransaction)
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
     }
 

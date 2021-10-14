@@ -57,6 +57,7 @@ enum TransactionAction: MviAction {
     case resetFlow
     case showSourceSelection
     case showTargetSelection
+    case showCheckout
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
     case modifyTransactionConfirmation(TransactionConfirmation)
@@ -296,8 +297,10 @@ extension TransactionAction {
         case .prepareTransaction:
             var newState = oldState
             newState.nextEnabled = false // Don't enable until we get a validated pendingTx from the interactor
-            newState.step = .confirmDetail
-            return newState.withUpdatedBackstack(oldState: oldState)
+            return newState
+
+        case .showCheckout:
+            return oldState.stateForMovingForward(to: .confirmDetail)
 
         case .executeTransaction:
             var newState = oldState
@@ -351,6 +354,7 @@ extension TransactionAction {
 
         case .modifyTransactionConfirmation:
             return oldState
+
         case .invalidateTransaction:
             return oldState
                 .update(keyPath: \.pendingTransaction, value: nil)
