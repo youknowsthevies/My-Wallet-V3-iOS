@@ -313,6 +313,8 @@ packages:
     path: Modules/UIComponents
   WalletPayload:
     path: Modules/WalletPayload
+  ComponentLibrary:
+    path: Modules/ComponentLibrary
 targets:
   Blockchain:
     configFiles:

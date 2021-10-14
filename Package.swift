@@ -5,12 +5,16 @@ import PackageDescription
 let package = Package(
     name: "Blockchain",
     platforms: [
-        .iOS(.v13)
+        .iOS(.v14)
     ],
     products: [
         .library(
             name: "AnalyticsKit",
             targets: ["AnalyticsKit"]
+        ),
+        .library(
+            name: "SharedComponentLibrary",
+            targets: ["SharedComponentLibrary"]
         )
     ],
     targets: [
@@ -21,6 +25,14 @@ let package = Package(
         .testTarget(
             name: "AnalyticsKitTests",
             path: "Modules/Analytics/Tests/AnalyticsKitTests"
+        ),
+        .target(
+            name: "SharedComponentLibrary",
+            path: "Modules/ComponentLibrary/Sources/ComponentLibrary"
+        ),
+        .testTarget(
+            name: "SharedComponentLibraryTests",
+            path: "Modules/ComponentLibrary/Tests/ComponentLibraryTests"
         )
     ],
     swiftLanguageVersions: [.v5]
