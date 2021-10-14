@@ -405,7 +405,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     transactionModel: transactionModel,
                     action: action
                 )
-            case .withdraw:
+            case .withdraw,
+                 .interestWithdraw:
                 // `Withdraw` shows the destination screen modally. It does not
                 // present over another screen (and thus replaces the root).
                 router?.routeToDestinationAccountPicker(
@@ -415,6 +416,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 )
             case .viewActivity,
                  .deposit,
+                 .interestDeposit,
                  .sell,
                  .receive,
                  .swap:
@@ -464,8 +466,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 )
 
             case .deposit,
+                 .interestDeposit,
                  .withdraw,
                  .buy,
+                 .interestWithdraw,
                  .sell,
                  .swap,
                  .send,

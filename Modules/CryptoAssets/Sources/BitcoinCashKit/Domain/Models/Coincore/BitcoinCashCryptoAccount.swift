@@ -141,7 +141,9 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
              .viewActivity:
             return .just(true)
         case .deposit,
-             .withdraw:
+             .interestDeposit,
+             .withdraw,
+             .interestWithdraw:
             return .just(false)
         case .sell:
             return featureFlagsService

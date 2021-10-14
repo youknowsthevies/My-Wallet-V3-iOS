@@ -70,12 +70,14 @@ struct InterestAccountDetailsView: View {
                     .init(
                         title: LocalizationIds.withdraw,
                         action: {
+                            presentationMode.wrappedValue.dismiss()
                             viewStore.send(.startInterestWithdraw)
                         }
                     ),
                     .init(
                         title: LocalizationIds.deposit,
                         action: {
+                            presentationMode.wrappedValue.dismiss()
                             viewStore.send(.startInterestDeposit)
                         },
                         style: .secondary

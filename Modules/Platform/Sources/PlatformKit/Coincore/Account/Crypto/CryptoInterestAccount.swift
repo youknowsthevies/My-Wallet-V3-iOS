@@ -7,6 +7,18 @@ import RxSwift
 import ToolKit
 
 public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
+
+    private enum Error: LocalizedError {
+        case loadingFailed(asset: String, label: String, action: AssetAction, error: String)
+
+        var errorDescription: String? {
+            switch self {
+            case .loadingFailed(let asset, let label, let action, let error):
+                return "Failed to load: 'CryptoInterestAccount' asset '\(asset)' label '\(label)' action '\(action)' error '\(error)' ."
+            }
+        }
+    }
+
     public private(set) lazy var identifier: AnyHashable = "CryptoInterestAccount." + asset.code
     public let label: String
     public let asset: CryptoCurrency
@@ -36,6 +48,13 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .onNilJustReturn(.zero(currency: currencyType))
     }
 
+    public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Swift.Error> {
+        interestEligibilityRepository
+            .fetchInterestAccountEligibilityForCurrencyCode(currencyType.code)
+            .map(\.ineligibilityReason)
+            .eraseError()
+    }
+
     public var actionableBalance: Single<MoneyValue> {
         balance
     }
@@ -48,7 +67,9 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         .just([])
     }
 
+    private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
+    private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
     private let receiveAddressRepository: InterestAccountReceiveAddressRepositoryAPI
     private let balanceService: InterestAccountOverviewAPI
     private var balances: Single<CustodialAccountBalanceState> {
@@ -59,21 +80,42 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         asset: CryptoCurrency,
         receiveAddressRepository: InterestAccountReceiveAddressRepositoryAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
+        errorRecorder: ErrorRecording = resolve(),
         balanceService: InterestAccountOverviewAPI = resolve(),
-        exchangeProviding: ExchangeProviding = resolve()
+        exchangeProviding: ExchangeProviding = resolve(),
+        interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve()
     ) {
         label = asset.defaultInterestWalletName
         self.receiveAddressRepository = receiveAddressRepository
         self.asset = asset
+        self.errorRecorder = errorRecorder
         self.balanceService = balanceService
         self.priceService = priceService
+        self.interestEligibilityRepository = interestEligibilityRepository
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
-        .just(false)
+        switch action {
+        case .interestDeposit:
+            return canPerformInterestDeposit()
+        case .interestWithdraw:
+            return canPerformInterestWithdraw()
+        case .send,
+             .swap,
+             .deposit,
+             .buy,
+             .withdraw,
+             .sell,
+             .receive,
+             .viewActivity:
+            return .just(false)
+        }
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+    public func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Swift.Error> {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
@@ -82,5 +124,45 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
             .eraseToAnyPublisher()
+    }
+
+    private func canPerformInterestDeposit() -> Single<Bool> {
+        disabledReason
+            .map(\.isEligible)
+            .asSingle()
+            .catchError { [label, asset] error in
+                throw Error.loadingFailed(
+                    asset: asset.code,
+                    label: label,
+                    action: .interestDeposit,
+                    error: String(describing: error)
+                )
+            }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(false)
+    }
+
+    private func canPerformInterestWithdraw() -> Single<Bool> {
+        balance
+            .map(\.isPositive)
+            .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in
+                guard isPositive else {
+                    return .just(false)
+                }
+                return self
+                    .disabledReason
+                    .map(\.isEligible)
+                    .asSingle()
+            }
+            .catchError { [label, asset] error in
+                throw Error.loadingFailed(
+                    asset: asset.code,
+                    label: label,
+                    action: .interestWithdraw,
+                    error: String(describing: error)
+                )
+            }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(false)
     }
 }

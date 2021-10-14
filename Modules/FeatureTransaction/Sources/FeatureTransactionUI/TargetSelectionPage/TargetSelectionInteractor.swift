@@ -35,7 +35,9 @@ final class TargetSelectionInteractor {
     ) -> Single<[SingleAccount]> {
         switch action {
         case .swap,
-             .send:
+             .send,
+             .interestWithdraw,
+             .interestDeposit:
             return Single.just(sourceAccount)
                 .flatMap(weak: self) { (self, account) -> Single<[SingleAccount]> in
                     self.coincore.getTransactionTargets(sourceAccount: account, action: action)

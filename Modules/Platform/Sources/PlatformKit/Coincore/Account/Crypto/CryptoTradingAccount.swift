@@ -213,18 +213,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         case .viewActivity:
             return .just(true)
         case .send:
-            return balance
-                .map(\.isPositive)
-                .catchError { [label, asset] error in
-                    throw Error.loadingFailed(
-                        asset: asset.code,
-                        label: label,
-                        action: action,
-                        error: String(describing: error)
-                    )
-                }
-                .recordErrors(on: errorRecorder)
-                .catchErrorJustReturn(false)
+            return canPerformSend()
         case .buy:
             return isPairToFiatAvailable
         case .sell:
@@ -232,33 +221,21 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 $0.0 && $0.1
             }
         case .swap:
-            return balance
-                .map(\.isPositive)
-                .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in
-                    guard isPositive else {
-                        return .just(false)
-                    }
-                    return self.eligibilityService.isEligible
-                }
-                .catchError { [label, asset] error in
-                    throw Error.loadingFailed(
-                        asset: asset.code,
-                        label: label,
-                        action: action,
-                        error: String(describing: error)
-                    )
-                }
-                .recordErrors(on: errorRecorder)
-                .catchErrorJustReturn(false)
+            return canPerformSwap()
         case .receive:
             return .just(true)
         case .deposit,
-             .withdraw:
+             .withdraw,
+             .interestDeposit,
+             .interestWithdraw:
             return .just(false)
         }
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Swift.Error> {
+    public func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Swift.Error> {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
@@ -267,5 +244,43 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
             .eraseToAnyPublisher()
+    }
+
+    // MARK: - Private Functions
+
+    private func canPerformSwap() -> Single<Bool> {
+        balance
+            .map(\.isPositive)
+            .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in
+                guard isPositive else {
+                    return .just(false)
+                }
+                return self.eligibilityService.isEligible
+            }
+            .catchError { [label, asset] error in
+                throw Error.loadingFailed(
+                    asset: asset.code,
+                    label: label,
+                    action: .swap,
+                    error: String(describing: error)
+                )
+            }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(false)
+    }
+
+    private func canPerformSend() -> Single<Bool> {
+        balance
+            .map(\.isPositive)
+            .catchError { [label, asset] error in
+                throw Error.loadingFailed(
+                    asset: asset.code,
+                    label: label,
+                    action: .send,
+                    error: String(describing: error)
+                )
+            }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(false)
     }
 }

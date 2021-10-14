@@ -405,7 +405,9 @@ extension AssetAction {
              .receive,
              .send,
              .swap,
-             .viewActivity:
+             .viewActivity,
+             .interestWithdraw,
+             .interestDeposit:
             return false
         }
     }

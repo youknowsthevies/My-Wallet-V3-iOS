@@ -149,7 +149,9 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         case .receive:
             return .just(true)
         case .deposit,
-             .withdraw:
+             .interestDeposit,
+             .withdraw,
+             .interestWithdraw:
             return .just(false)
         case .viewActivity:
             return hasHistory.asSingle()

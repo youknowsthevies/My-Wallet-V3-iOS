@@ -28,12 +28,18 @@ enum TransactionFlowDescriptor {
                     return prefix
                 }
                 return prefix + source.label
+            case .interestWithdraw:
+                guard let source = state.source as? CryptoAccount else {
+                    fatalError("Expected a FiatAccount")
+                }
+                return "\(source.currencyType.code) " + LocalizedString.Withdraw.account
             case .withdraw:
                 guard let source = state.source as? FiatAccount else {
                     fatalError("Expected a FiatAccount")
                 }
                 return "\(source.fiatCurrency.code) " + LocalizedString.Withdraw.account
-            case .deposit:
+            case .deposit,
+                 .interestDeposit:
                 return LocalizedString.Deposit.dailyLimit
             case .buy:
                 guard let source = state.source, let destination = state.destination else {
@@ -71,9 +77,11 @@ enum TransactionFlowDescriptor {
                     return prefix
                 }
                 return prefix + account.label
-            case .withdraw:
+            case .withdraw,
+                 .interestWithdraw:
                 return formatForHeader(moneyValue: state.availableBalance)
-            case .deposit:
+            case .deposit,
+                 .interestDeposit:
                 return "\(state.maxDaily.displayString)"
             case .buy:
                 let prefix = "\(LocalizedString.Buy.title):"
@@ -107,7 +115,9 @@ enum TransactionFlowDescriptor {
             case .receive,
                  .send,
                  .viewActivity,
-                 .withdraw:
+                 .withdraw,
+                 .interestWithdraw,
+                 .interestDeposit:
                 return ""
             }
         }
@@ -123,7 +133,9 @@ enum TransactionFlowDescriptor {
                  .receive,
                  .buy,
                  .send,
-                 .viewActivity:
+                 .viewActivity,
+                 .interestWithdraw,
+                 .interestDeposit:
                 return ""
             }
         }
@@ -141,7 +153,9 @@ enum TransactionFlowDescriptor {
             case .deposit,
                  .receive,
                  .send,
-                 .viewActivity:
+                 .viewActivity,
+                 .interestWithdraw,
+                 .interestDeposit:
                 return ""
             }
         }
@@ -157,7 +171,9 @@ enum TransactionFlowDescriptor {
                  .buy,
                  .send,
                  .viewActivity,
-                 .withdraw:
+                 .withdraw,
+                 .interestWithdraw,
+                 .interestDeposit:
                 return ""
             }
         }
@@ -170,8 +186,11 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.newSwap
             case .send:
                 return LocalizedString.Send.send
-            case .withdraw:
+            case .withdraw,
+                 .interestWithdraw:
                 return LocalizedString.Withdraw.withdraw
+            case .interestDeposit:
+                return LocalizedString.deposit
             case .deposit,
                  .receive,
                  .buy,
@@ -200,7 +219,9 @@ enum TransactionFlowDescriptor {
              .receive,
              .sell,
              .send,
-             .viewActivity:
+             .viewActivity,
+             .interestWithdraw,
+             .interestDeposit:
             return false
         }
     }
@@ -217,7 +238,9 @@ enum TransactionFlowDescriptor {
              .receive,
              .sell,
              .send,
-             .viewActivity:
+             .viewActivity,
+             .interestWithdraw,
+             .interestDeposit:
             return ""
         }
     }

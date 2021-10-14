@@ -144,7 +144,12 @@ extension CoincoreAPI {
             unimplemented("This should not be needed as the Buy engine should process the transaction")
         case .sell:
             return createTradingProcessorSell(with: account, target: target)
-        case .deposit, .receive, .viewActivity, .withdraw:
+        case .deposit,
+             .receive,
+             .viewActivity,
+             .withdraw,
+             .interestWithdraw,
+             .interestDeposit:
             unimplemented()
         }
     }

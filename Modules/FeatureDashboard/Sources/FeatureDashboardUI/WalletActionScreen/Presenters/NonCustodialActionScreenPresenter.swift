@@ -133,6 +133,9 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
 extension AssetAction {
     fileprivate var walletAction: WalletAction {
         switch self {
+        case .interestWithdraw,
+             .interestDeposit:
+            unimplemented()
         case .viewActivity:
             return .activity
         case .buy:

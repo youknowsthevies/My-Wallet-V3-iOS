@@ -11,6 +11,8 @@ public enum AssetAction: Equatable {
     case receive
     case swap
     case withdraw
+    case interestWithdraw
+    case interestDeposit
 }
 
 extension AssetAction: CustomStringConvertible, CustomDebugStringConvertible {
@@ -33,6 +35,10 @@ extension AssetAction: CustomStringConvertible, CustomDebugStringConvertible {
             return "swap"
         case .withdraw:
             return "withdraw"
+        case .interestWithdraw:
+            return "interestWithdraw"
+        case .interestDeposit:
+            return "interestDeposit"
         }
     }
 

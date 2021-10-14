@@ -8,6 +8,7 @@ import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import ToolKit
 
 final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
 
@@ -142,6 +143,9 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
 extension AssetAction {
     fileprivate var walletAction: WalletAction {
         switch self {
+        case .interestDeposit,
+             .interestWithdraw:
+            unimplemented()
         case .viewActivity:
             return .activity
         case .buy:

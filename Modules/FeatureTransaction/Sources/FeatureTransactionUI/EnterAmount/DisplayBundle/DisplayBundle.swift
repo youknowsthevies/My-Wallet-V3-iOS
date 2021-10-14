@@ -25,9 +25,11 @@ struct DisplayBundle {
             return .swap(sourceAccount: sourceAccount)
         case .send:
             return .send(sourceAccount: sourceAccount)
-        case .withdraw:
+        case .withdraw,
+             .interestWithdraw:
             return .withdraw(sourceAccount: sourceAccount)
-        case .deposit:
+        case .deposit,
+             .interestDeposit:
             return .deposit(sourceAccount: sourceAccount)
         case .buy:
             return .buy(sourceAccount: sourceAccount)

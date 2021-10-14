@@ -182,10 +182,12 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .map { state -> BlockchainAccount? in
                 switch state.action {
                 case .buy,
-                     .deposit:
+                     .deposit,
+                     .interestDeposit:
                     return state.source
                 case .sell,
-                     .withdraw:
+                     .withdraw,
+                     .interestWithdraw:
                     return state.destination as? BlockchainAccount
                 case .viewActivity,
                      .send,

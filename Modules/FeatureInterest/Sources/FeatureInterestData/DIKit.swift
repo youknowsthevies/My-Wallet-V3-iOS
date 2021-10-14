@@ -18,6 +18,11 @@ extension DependencyContainer {
             return client as InterestAccountBalanceClientAPI
         }
 
+        factory { () -> InterestAccountWithdrawClientAPI in
+            let client: FeatureInterestDataAPIClient = DIKit.resolve()
+            return client as InterestAccountWithdrawClientAPI
+        }
+
         factory { () -> InterestAccountLimitsClientAPI in
             let client: FeatureInterestDataAPIClient = DIKit.resolve()
             return client as InterestAccountLimitsClientAPI
@@ -27,6 +32,8 @@ extension DependencyContainer {
             let client: FeatureInterestDataAPIClient = DIKit.resolve()
             return client as InterestAccountRateClientAPI
         }
+
+        factory { InterestAccountWithdrawRepository() as InterestAccountWithdrawRepositoryAPI }
 
         factory { InterestAccountOverviewRepository() as InterestAccountOverviewRepositoryAPI }
 

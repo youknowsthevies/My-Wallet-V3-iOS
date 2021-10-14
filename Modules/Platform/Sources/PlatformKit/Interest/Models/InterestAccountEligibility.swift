@@ -44,4 +44,8 @@ public enum InterestAccountIneligibilityReason: String {
     public init(ineligibilityReason: String?) {
         self = .init(rawValue: ineligibilityReason ?? "NONE") ?? .eligible
     }
+
+    public var isEligible: Bool {
+        self == .eligible
+    }
 }

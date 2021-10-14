@@ -10,11 +10,13 @@ import ToolKit
 typealias FeatureInterestDataAPIClient =
     InterestAccountLimitsClientAPI &
     InterestAccountRateClientAPI &
-    InterestAccountBalanceClientAPI
+    InterestAccountBalanceClientAPI &
+    InterestAccountWithdrawClientAPI
 
 final class APIClient: FeatureInterestDataAPIClient {
 
     private enum Path {
+        static let withdraw = ["savings", "withdrawals"]
         static let balance = ["accounts", "savings"]
         static let rate = ["savings", "rates"]
         static let limits = ["savings", "limits"]
@@ -38,6 +40,26 @@ final class APIClient: FeatureInterestDataAPIClient {
     ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
+    }
+
+    func createInterestAccountWithdrawal(
+        _ amount: MoneyValue,
+        address: String,
+        currencyCode: String
+    ) -> AnyPublisher<Void, NabuNetworkError> {
+        let body = InterestAccountWithdrawRequest(
+            withdrawalAddress: address,
+            amount: amount.minorString,
+            currency: currencyCode
+        )
+        let request = requestBuilder.post(
+            path: Path.withdraw,
+            body: try? body.encode(),
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request)
     }
 
     func fetchBalanceWithFiatCurrency(

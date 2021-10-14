@@ -162,6 +162,16 @@ final class TransactionInteractor {
                 fatalError("Expected a CryptoAccount.")
             }
             return swapTargets(sourceAccount: cryptoAccount)
+        case .interestDeposit:
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected a CryptoAccount.")
+            }
+            return interestDepositTargets(sourceAccount: cryptoAccount)
+        case .interestWithdraw:
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected a CryptoAccount.")
+            }
+            return interestWithdrawTargets(sourceAccount: cryptoAccount)
         case .send:
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected a CryptoAccount.")
@@ -245,6 +255,24 @@ final class TransactionInteractor {
     }
 
     // MARK: - Private Functions
+
+    private func interestWithdrawTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
+        coincore
+            .getTransactionTargets(
+                sourceAccount: sourceAccount,
+                action: .interestWithdraw
+            )
+            .asSingle()
+    }
+
+    private func interestDepositTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
+        coincore
+            .getTransactionTargets(
+                sourceAccount: sourceAccount,
+                action: .interestDeposit
+            )
+            .asSingle()
+    }
 
     private func sendTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
         coincore

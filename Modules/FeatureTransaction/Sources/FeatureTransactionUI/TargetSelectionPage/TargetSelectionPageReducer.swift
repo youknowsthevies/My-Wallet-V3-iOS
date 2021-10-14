@@ -118,7 +118,8 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 )
             )
         case .send,
-             .withdraw:
+             .withdraw,
+             .interestWithdraw:
             return TargetSelectionHeaderBuilder(
                 headerType: .section(
                     .init(
@@ -127,6 +128,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 )
             )
         case .deposit,
+             .interestDeposit,
              .receive,
              .buy,
              .sell,

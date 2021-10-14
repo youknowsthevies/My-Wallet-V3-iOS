@@ -180,9 +180,11 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             return LocalizedString.Swap.buyNow
         case .sell:
             return LocalizedString.Swap.sellNow
-        case .deposit:
+        case .deposit,
+             .interestDeposit:
             return LocalizedString.Deposit.depositNow
-        case .withdraw:
+        case .withdraw,
+             .interestWithdraw:
             return LocalizedString.Withdraw.withdrawNow
         case .receive,
              .viewActivity:

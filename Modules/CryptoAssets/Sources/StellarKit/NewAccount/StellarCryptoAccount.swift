@@ -130,7 +130,9 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
              .buy:
             return .just(true)
         case .deposit,
-             .withdraw:
+             .withdraw,
+             .interestDeposit,
+             .interestWithdraw:
             return .just(false)
         case .sell:
             return featureFlagsService
