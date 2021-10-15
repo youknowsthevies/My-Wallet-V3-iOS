@@ -1,4 +1,4 @@
-import UIComponentsKit
+import ComponentLibrary
 import XCTest
 
 final class LengthTests: XCTestCase {
@@ -46,5 +46,45 @@ final class LengthTests: XCTestCase {
         XCTAssertEqual(8.vmax.in(frame), (2048 / 100) * 8)
 
         XCTAssertEqual(8.pt.in(frame), 8)
+    }
+}
+
+// JSON mocking helpers from toolkit, potential for shared utilities
+
+extension Decodable {
+
+    init(json any: Any, using decoder: JSONDecoder = .init()) throws {
+        let data = try JSONSerialization.data(withJSONObject: any, options: .fragmentsAllowed)
+        self = try decoder.decode(Self.self, from: data)
+    }
+}
+
+extension Encodable {
+
+    func data(using encoder: JSONEncoder = .init()) throws -> Data {
+        try encoder.encode(self)
+    }
+
+    func json(using encoder: JSONEncoder = .init()) throws -> Any {
+        try data(using: encoder).json()
+    }
+}
+
+extension Data {
+
+    func json() throws -> Any {
+        try JSONSerialization.jsonObject(with: self, options: .allowFragments)
+    }
+}
+
+extension Optional where Wrapped == Data {
+
+    func json() throws -> Any {
+        switch self {
+        case nil:
+            return NSNull()
+        case let wrapped?:
+            return try wrapped.json()
+        }
     }
 }

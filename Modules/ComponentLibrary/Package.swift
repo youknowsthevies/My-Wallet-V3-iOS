@@ -29,12 +29,22 @@ let package = Package(
             name: "SnapshotTesting",
             url: "https://github.com/pointfreeco/swift-snapshot-testing.git",
             from: "1.9.0"
+        ),
+        .package(
+            name: "swift-case-paths",
+            url: "https://github.com/pointfreeco/swift-case-paths",
+            from: "0.7.0"
         )
     ],
     targets: [
         .target(
             name: "ComponentLibrary",
-            dependencies: []
+            dependencies: [
+                .product(name: "CasePaths", package: "swift-case-paths")
+            ],
+            resources: [
+                .process("Resources/Fonts")
+            ]
         ),
         .testTarget(
             name: "ComponentLibraryTests",
@@ -43,7 +53,12 @@ let package = Package(
                 "SnapshotTesting",
                 "Examples"
             ],
-            exclude: ["__Snapshots__"]
+            exclude: [
+                "__Snapshots__",
+                "1 - Base/__Snapshots__",
+                "2 - Primitives/__Snapshots__",
+                "3 - Compositions/__Snapshots__"
+            ]
         ),
         .target(
             name: "Examples",

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import SwiftUI
 
 public enum FontWeight: String, Hashable, Codable {
@@ -55,7 +56,7 @@ extension UIFont {
         }
     }
 
-    static func registerFont(fileName: String, bundle: Bundle = Bundle.UIComponents) {
+    static func registerFont(fileName: String, bundle: Bundle = Bundle.componentLibrary) {
         guard let fontURL = bundle.url(forResource: fileName, withExtension: "ttf") else {
             print("No font named \(fileName).ttf was found in the module bundle")
             return

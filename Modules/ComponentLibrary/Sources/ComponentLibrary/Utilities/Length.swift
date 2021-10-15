@@ -2,7 +2,12 @@
 
 import CasePaths
 import SwiftUI
-import ToolKit
+
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 // https://developer.mozilla.org/en-US/docs/Web/CSS/length
 public enum Length: Hashable {
@@ -63,33 +68,41 @@ public struct Size: Hashable, Codable {
 }
 
 extension BinaryInteger {
+    public var cgFloat: CGFloat { CGFloat(self) }
+}
 
-    public var pt: Length { .pt(cg) }
+extension BinaryFloatingPoint {
+    public var cgFloat: CGFloat { CGFloat(self) }
+}
 
-    public var vw: Length { .vw(cg) }
-    public var vh: Length { .vh(cg) }
-    public var vmin: Length { .vmin(cg) }
-    public var vmax: Length { .vmax(cg) }
+extension BinaryInteger {
 
-    public var pw: Length { .pw(cg) }
-    public var ph: Length { .ph(cg) }
-    public var pmin: Length { .pmin(cg) }
-    public var pmax: Length { .pmax(cg) }
+    public var pt: Length { .pt(cgFloat) }
+
+    public var vw: Length { .vw(cgFloat) }
+    public var vh: Length { .vh(cgFloat) }
+    public var vmin: Length { .vmin(cgFloat) }
+    public var vmax: Length { .vmax(cgFloat) }
+
+    public var pw: Length { .pw(cgFloat) }
+    public var ph: Length { .ph(cgFloat) }
+    public var pmin: Length { .pmin(cgFloat) }
+    public var pmax: Length { .pmax(cgFloat) }
 }
 
 extension BinaryFloatingPoint {
 
-    public var pt: Length { .pt(cg) }
+    public var pt: Length { .pt(cgFloat) }
 
-    public var vw: Length { .vw(cg) }
-    public var vh: Length { .vh(cg) }
-    public var vmin: Length { .vmin(cg) }
-    public var vmax: Length { .vmax(cg) }
+    public var vw: Length { .vw(cgFloat) }
+    public var vh: Length { .vh(cgFloat) }
+    public var vmin: Length { .vmin(cgFloat) }
+    public var vmax: Length { .vmax(cgFloat) }
 
-    public var pw: Length { .pw(cg) }
-    public var ph: Length { .ph(cg) }
-    public var pmin: Length { .pmin(cg) }
-    public var pmax: Length { .pmax(cg) }
+    public var pw: Length { .pw(cgFloat) }
+    public var ph: Length { .ph(cgFloat) }
+    public var pmin: Length { .pmin(cgFloat) }
+    public var pmax: Length { .pmax(cgFloat) }
 }
 
 extension CGRect {
@@ -98,9 +111,14 @@ extension CGRect {
         #if canImport(UIKit)
         UIScreen.main.bounds
         #elseif canImport(AppKit)
-        NSScreen.main.bounds
+        NSScreen.main?.frame ?? .zero
         #endif
     }
+}
+
+extension CGSize {
+    @usableFromInline var min: CGFloat { Swift.min(width, height) }
+    @usableFromInline var max: CGFloat { Swift.max(width, height) }
 }
 
 extension Length {

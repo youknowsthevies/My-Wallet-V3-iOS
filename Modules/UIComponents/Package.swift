@@ -39,7 +39,8 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-case-paths",
             from: "0.7.0"
         ),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../ComponentLibrary")
     ],
     targets: [
         .target(
@@ -49,12 +50,10 @@ let package = Package(
                 .product(name: "Lottie", package: "Lottie"),
                 .product(name: "Nuke", package: "Nuke"),
                 .product(name: "NukeUI", package: "NukeUI"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "ComponentLibrary", package: "ComponentLibrary")
             ],
-            path: "UIComponentsKit",
-            resources: [
-                .process("Fonts")
-            ]
+            path: "UIComponentsKit"
         ),
         .testTarget(
             name: "UIComponentsKitTests",
