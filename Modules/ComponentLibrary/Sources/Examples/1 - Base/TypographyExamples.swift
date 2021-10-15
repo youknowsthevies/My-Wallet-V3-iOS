@@ -4,11 +4,9 @@
 import SwiftUI
 
 struct TypographyExamplesView: View {
-    static let title = "🔠 Typography"
 
     var body: some View {
         Typography_Previews.previews
-            .navigationTitle(Self.title)
     }
 }
 

@@ -11,12 +11,22 @@ public struct RootView: View {
     let listStyle = InsetListStyle()
     #endif
 
+    private let data: NavigationLinkProviderList = [
+        "1 - Base": [
+            NavigationLinkProvider(view: TypographyExamplesView(), title: "🔠 Typography")
+        ],
+        "2 - Primitives": [
+            NavigationLinkProvider(view: SampleView())
+        ],
+        "3 - Compositions": [
+            NavigationLinkProvider(view: Text("Composition Example"))
+        ]
+    ]
+
     public var body: some View {
         NavigationView {
             List {
-                Section(header: Text("Base")) {
-                    NavigationLink(destination: TypographyExamplesView()) { Text(TypographyExamplesView.title) }
-                }
+                NavigationLinkProvider.sections(for: data)
             }
             .listStyle(listStyle)
             .navigationTitle("Component Library")
@@ -26,6 +36,10 @@ public struct RootView: View {
 
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
-        RootView()
+        ForEach(
+            ColorScheme.allCases,
+            id: \.self,
+            content: RootView().preferredColorScheme
+        )
     }
 }
