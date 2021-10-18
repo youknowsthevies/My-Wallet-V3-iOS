@@ -70,15 +70,17 @@ struct InterestAccountDetailsView: View {
                     .init(
                         title: LocalizationIds.withdraw,
                         action: {
-                            presentationMode.wrappedValue.dismiss()
-                            viewStore.send(.startInterestWithdraw)
+                            viewStore.send(
+                                .interestWithdrawTapped(viewStore.interestAccountOverview.currency)
+                            )
                         }
                     ),
                     .init(
                         title: LocalizationIds.deposit,
                         action: {
-                            presentationMode.wrappedValue.dismiss()
-                            viewStore.send(.startInterestDeposit)
+                            viewStore.send(
+                                .interestTransferTapped(viewStore.interestAccountOverview.currency)
+                            )
                         },
                         style: .secondary
                     )
@@ -90,6 +92,28 @@ struct InterestAccountDetailsView: View {
             .whiteNavigationBarStyle()
             .navigationTitle(LocalizationIds.rewardsSummary)
             .navigationBarTitleDisplayMode(.inline)
+            .onDisappear {
+                if let actionSelection = viewStore.interestAccountActionSelection {
+                    switch actionSelection.action {
+                    case .interestWithdraw:
+                        viewStore.send(
+                            .loadCryptoInterestAccount(
+                                isTransfer: false,
+                                actionSelection.currency
+                            )
+                        )
+                    case .interestTransfer:
+                        viewStore.send(
+                            .loadCryptoInterestAccount(
+                                isTransfer: true,
+                                actionSelection.currency
+                            )
+                        )
+                    default:
+                        unimplemented()
+                    }
+                }
+            }
             .onAppear {
                 viewStore.send(.loadInterestAccountBalanceInfo)
             }

@@ -10,6 +10,7 @@ enum InterestAccountListAction: Equatable, NavigationAction {
     case dismissLoadingInterestAccountsAlert
     case loadInterestAccounts
     case interestAccountDetails(InterestAccountDetailsAction)
+    case interestTransactionStateFetched(InterestTransactionState)
     case interestAccountButtonTapped(InterestAccountOverview.ID, InterestAccountListItemAction)
     case route(RouteIntent<InterestAccountListRoute>?)
 }

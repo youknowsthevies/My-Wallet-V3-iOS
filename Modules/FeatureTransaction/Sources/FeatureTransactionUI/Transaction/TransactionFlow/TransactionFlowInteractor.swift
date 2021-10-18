@@ -97,7 +97,7 @@ protocol TransactionFlowRouting: Routing {
     func presentKYCUpgradeFlow(completion: @escaping (Bool) -> Void)
 }
 
-protocol TransactionFlowListener: AnyObject {
+public protocol TransactionFlowListener: AnyObject {
     func presentKYCFlowIfNeeded(from viewController: UIViewController, completion: @escaping (Bool) -> Void)
     func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void)
     func dismissTransactionFlow()
@@ -416,7 +416,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 )
             case .viewActivity,
                  .deposit,
-                 .interestDeposit,
+                 .interestTransfer,
                  .sell,
                  .receive,
                  .swap:
@@ -466,7 +466,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 )
 
             case .deposit,
-                 .interestDeposit,
+                 .interestTransfer,
                  .withdraw,
                  .buy,
                  .interestWithdraw,

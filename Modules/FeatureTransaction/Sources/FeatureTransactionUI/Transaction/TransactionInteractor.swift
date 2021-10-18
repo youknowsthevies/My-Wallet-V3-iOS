@@ -115,7 +115,10 @@ final class TransactionInteractor {
             .asSingle()
     }
 
-    func getAvailableSourceAccounts(action: AssetAction) -> Single<[SingleAccount]> {
+    func getAvailableSourceAccounts(
+        action: AssetAction,
+        transactionTarget: TransactionTarget?
+    ) -> Single<[SingleAccount]> {
         let allEligibleCryptoAccounts: Single<[CryptoAccount]> = coincore.allAccounts
             .eraseError()
             .map(\.accounts)
@@ -138,6 +141,15 @@ final class TransactionInteractor {
             }
             .asSingle()
         switch action {
+        case .interestTransfer:
+            guard let account = transactionTarget as? BlockchainAccount else {
+                impossible("A target account is required for this.")
+            }
+            return coincore
+                .cryptoAccounts(supporting: .interestTransfer)
+                .asSingle()
+                .map { $0.filter { $0.currencyType == account.currencyType } }
+
         case .buy:
             // TODO: the new limits API will require an amount
             return fetchPaymentAccounts(for: .coin(.bitcoin), amount: nil)
@@ -165,7 +177,7 @@ final class TransactionInteractor {
                 fatalError("Expected a CryptoAccount.")
             }
             return swapTargets(sourceAccount: cryptoAccount)
-        case .interestDeposit:
+        case .interestTransfer:
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected a CryptoAccount.")
             }
@@ -285,7 +297,7 @@ final class TransactionInteractor {
         coincore
             .getTransactionTargets(
                 sourceAccount: sourceAccount,
-                action: .interestDeposit
+                action: .interestTransfer
             )
             .asSingle()
     }

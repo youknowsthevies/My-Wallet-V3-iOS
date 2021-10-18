@@ -107,7 +107,7 @@ private func provideSectionHeader(action: AssetAction, title: TargetDestinationT
             )
         )
     case .deposit,
-         .interestDeposit,
+         .interestTransfer,
          .withdraw,
          .interestWithdraw,
          .receive,

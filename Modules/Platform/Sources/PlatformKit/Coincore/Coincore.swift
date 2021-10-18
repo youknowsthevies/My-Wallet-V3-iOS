@@ -120,7 +120,7 @@ final class Coincore: CoincoreAPI {
     ) -> AnyPublisher<[SingleAccount], CoincoreError> {
         switch action {
         case .swap,
-             .interestDeposit,
+             .interestTransfer,
              .interestWithdraw:
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
@@ -172,7 +172,7 @@ final class Coincore: CoincoreAPI {
         switch action {
         case .buy:
             unimplemented("WIP")
-        case .interestDeposit:
+        case .interestTransfer:
             return true
         case .interestWithdraw:
             guard let cryptoAccount = destinationAccount as? CryptoAccount else {

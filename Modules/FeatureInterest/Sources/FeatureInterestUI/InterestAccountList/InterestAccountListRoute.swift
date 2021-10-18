@@ -7,6 +7,7 @@ import SwiftUI
 enum InterestAccountListRoute: NavigationRoute, CaseIterable {
 
     case details
+    case transaction
 
     @ViewBuilder
     func destination(in store: Store<InterestAccountListState, InterestAccountListAction>) -> some View {
@@ -19,6 +20,10 @@ enum InterestAccountListRoute: NavigationRoute, CaseIterable {
                 ),
                 then: InterestAccountDetailsView.init(store:)
             )
+        case .transaction:
+            WithViewStore(store) { viewStore in
+                InterestTransactionHostingView(state: viewStore.interestTransactionState!)
+            }
         }
     }
 }

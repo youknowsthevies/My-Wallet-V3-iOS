@@ -14,6 +14,12 @@ public struct RouteIntent<R: NavigationRoute>: Hashable {
         /// A navigation action that enters a new user journey context, on iOS this will present a modal,
         /// on macOS it will show a new screen and on watchOS it will enter into a new screen entirely.
         case enterInto(fullScreen: Bool = false)
+
+        /// A navigation action that enters a new user journey context, on iOS this will present a modal,
+        /// on macOS it will show a new screen and on watchOS it will enter into a new screen entirely.
+        /// This will **not** wrap the view in a `NavigationView`. This may not be necessary long term,
+        /// but it is necessary for the TxFlow.
+        case sheet(fullScreen: Bool = false)
     }
 
     public var route: R
@@ -61,6 +67,14 @@ extension NavigationAction {
         enter(into: route, fullScreen: false)
     }
 
+    public static func sheet(into route: RouteType?) -> Self {
+        sheet(into: route, fullScreen: false)
+    }
+
+    public static func sheet(into route: RouteType?, fullScreen: Bool) -> Self {
+        .route(route.map { RouteIntent(route: $0, action: .sheet(fullScreen: fullScreen)) })
+    }
+
     public static func enter(into route: RouteType?, fullScreen: Bool) -> Self {
         .route(route.map { RouteIntent(route: $0, action: .enterInto(fullScreen: fullScreen)) })
     }
@@ -93,6 +107,11 @@ extension Effect where Output: NavigationAction {
     /// A navigation effect that enters a new user journey context.
     public static func enter(into route: Output.RouteType?, fullScreen: Bool = false) -> Self {
         Effect(value: .enter(into: route, fullScreen: fullScreen))
+    }
+
+    /// A navigation effect that enters a new user journey context.
+    public static func sheet(into route: Output.RouteType?, fullScreen: Bool = false) -> Self {
+        Effect(value: .sheet(into: route))
     }
 }
 
@@ -140,6 +159,33 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
                 isActive: Binding(binding, to: intent, isReady: $isReady),
                 label: EmptyView.init
             )
+
+        case .sheet(fullScreen: false):
+            EmptyView()
+                .sheet(
+                    isPresented: Binding(binding, to: intent, isReady: $isReady),
+                    content: {
+                        intent.value.route.destination(in: store)
+                    }
+                )
+        case .sheet(fullScreen: true):
+            #if os(macOS)
+            EmptyView()
+                .sheet(
+                    isPresented: Binding(binding, to: key, isReady: $isReady),
+                    content: {
+                        intent.value.route.destination(in: store)
+                    }
+                )
+            #else
+            EmptyView()
+                .fullScreenCover(
+                    isPresented: Binding(binding, to: intent, isReady: $isReady),
+                    content: {
+                        intent.value.route.destination(in: store)
+                    }
+                )
+            #endif
 
         case .enterInto(fullScreen: false):
             EmptyView()

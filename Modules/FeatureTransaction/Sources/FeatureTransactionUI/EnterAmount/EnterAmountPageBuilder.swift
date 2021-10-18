@@ -77,7 +77,9 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
 
         case .deposit,
-             .withdraw:
+             .withdraw,
+             .interestWithdraw,
+             .interestTransfer:
             amountViewInteracting = SingleAmountInteractor(
                 currencyService: fiatCurrencyService,
                 inputCurrency: sourceAccount.currencyType

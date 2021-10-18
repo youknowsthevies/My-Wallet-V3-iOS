@@ -47,11 +47,18 @@ final class APIClient: PlatformDataAPIClient {
 
     // MARK: - InterestAccountReceiveAddressClientAPI
 
-    func fetchInterestAccountReceiveAddressResponse()
-        -> AnyPublisher<InterestReceiveAddressResponse, NabuNetworkError>
-    {
+    func fetchInterestAccountReceiveAddressResponse(
+        _ currencyCode: String
+    ) -> AnyPublisher<InterestReceiveAddressResponse, NabuNetworkError> {
+        let parameters = [
+            URLQueryItem(
+                name: Parameter.ccy,
+                value: currencyCode
+            )
+        ]
         let request = requestBuilder.get(
             path: Path.interestReceiveAddress,
+            parameters: parameters,
             authenticated: true
         )!
 

@@ -12,6 +12,7 @@ import UIComponentsKit
 
 struct InterestAccountListState: Equatable, NavigationState {
     var route: RouteIntent<InterestAccountListRoute>?
+    var interestTransactionState: InterestTransactionState?
     var interestAccountOverviews: [InterestAccountOverview] = []
     var interestAccountDetails: IdentifiedArrayOf<InterestAccountDetails> = []
     var interestAccountDetailsState: InterestAccountDetailsState?
@@ -77,6 +78,7 @@ struct InterestAccountListView_Previews: PreviewProvider {
                     accountBalanceRepository: NoOpInterestAccountBalanceRepository(),
                     accountRepository: NoOpBlockchainAccountRepository(),
                     priceService: NoOpPriceService(),
+                    blockchainAccountRepository: NoOpBlockchainAccountRepository(),
                     mainQueue: .main
                 )
             )

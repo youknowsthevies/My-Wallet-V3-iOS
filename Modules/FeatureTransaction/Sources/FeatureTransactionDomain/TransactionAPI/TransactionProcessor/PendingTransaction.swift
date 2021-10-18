@@ -23,6 +23,26 @@ public struct PendingTransaction: Equatable {
         return (try? .min(available, availableMaximumLimit)) ?? .zero(currency: amount.currency)
     }
 
+    public var termsOptionValue: Bool {
+        guard let confirmation = confirmations
+            .first(where: { $0.type == .agreementInterestTandC })
+        else {
+            return false
+        }
+        guard case .termsOfService(let option) = confirmation else { return false }
+        return option.value ?? false
+    }
+
+    public var agreementOptionValue: Bool {
+        guard let confirmation = confirmations
+            .first(where: { $0.type == .agreementInterestTransfer })
+        else {
+            return false
+        }
+        guard case .transferAgreement(let option) = confirmation else { return false }
+        return option.value
+    }
+
     public var feeLevel: FeeLevel {
         feeSelection.selectedLevel
     }

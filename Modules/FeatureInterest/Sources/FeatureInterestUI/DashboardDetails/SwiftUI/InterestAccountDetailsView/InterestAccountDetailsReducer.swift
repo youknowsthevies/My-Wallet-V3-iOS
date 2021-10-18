@@ -13,8 +13,6 @@ typealias InterestAccountDetailsReducer = Reducer<
 
 let interestAccountDetailsReducer = InterestAccountDetailsReducer { state, action, environment in
     switch action {
-    case .closeButtonTapped:
-        return .none
     case .loadInterestAccountBalanceInfo:
         let priceService = environment.priceService
         let overview = state.interestAccountOverview
@@ -60,11 +58,24 @@ let interestAccountDetailsReducer = InterestAccountDetailsReducer { state, actio
             fiatBalance: moneyValue.displayString
         )
         return .none
-    case .startInterestDeposit:
-        return .none
-    case .startInterestWithdraw:
-        return .none
-    case .interestAccountDescriptorTapped(id: _, action: _):
+    case .interestTransferTapped:
+        state.interestAccountActionSelection = .init(
+            currency: state.interestAccountOverview.currency,
+            action: .interestTransfer
+        )
+        return Effect(value: .dismissInterestDetailsScreen)
+    case .interestWithdrawTapped:
+        state.interestAccountActionSelection = .init(
+            currency: state.interestAccountOverview.currency,
+            action: .interestWithdraw
+        )
+        return Effect(value: .dismissInterestDetailsScreen)
+    case .loadCryptoInterestAccount,
+         .startInterestTransfer,
+         .startInterestWithdraw,
+         .closeButtonTapped,
+         .interestAccountDescriptorTapped,
+         .dismissInterestDetailsScreen:
         return .none
     }
 }

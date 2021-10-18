@@ -65,6 +65,7 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "ComposableNavigation", package: "ComposableNavigation"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "FeatureTransactionUI", package: "FeatureTransaction"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "UIComponents", package: "UIComponents"),

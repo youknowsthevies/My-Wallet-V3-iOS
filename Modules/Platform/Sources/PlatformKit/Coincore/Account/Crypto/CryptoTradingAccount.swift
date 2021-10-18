@@ -105,22 +105,37 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         }
     }
 
+    public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Swift.Error> {
+        interestEligibilityRepository
+            .fetchInterestAccountEligibilityForCurrencyCode(currencyType.code)
+            .map(\.ineligibilityReason)
+            .eraseError()
+    }
+
     public var actions: Single<AvailableActions> {
-        Single.zip(balance, eligibilityService.isEligible, isPairToFiatAvailable)
-            .map { balance, isEligible, isPairToFiatAvailable -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive]
-                if isPairToFiatAvailable {
-                    base.insert(.buy)
-                }
-                if balance.isPositive {
-                    base.insert(.send)
-                }
-                if balance.isPositive, isEligible {
-                    base.insert(.sell)
-                    base.insert(.swap)
-                }
-                return base
+        Single.zip(
+            balance,
+            eligibilityService.isEligible,
+            isPairToFiatAvailable,
+            canPerformInterestTransfer()
+        )
+        .map { balance, isEligible, isPairToFiatAvailable, interestTransferAvailable -> AvailableActions in
+            var base: AvailableActions = [.viewActivity, .receive]
+            if isPairToFiatAvailable {
+                base.insert(.buy)
             }
+            if balance.isPositive {
+                base.insert(.send)
+            }
+            if interestTransferAvailable {
+                base.insert(.interestTransfer)
+            }
+            if balance.isPositive, isEligible {
+                base.insert(.sell)
+                base.insert(.swap)
+            }
+            return base
+        }
     }
 
     public var activity: Single<[ActivityItemEvent]> {
@@ -159,6 +174,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let swapActivity: SwapActivityServiceAPI
     private let buySellActivity: BuySellActivityItemEventServiceAPI
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
+    private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
 
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset.currencyType)
@@ -178,10 +194,12 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         custodialPendingDepositService: CustodialPendingDepositServiceAPI = resolve(),
         eligibilityService: EligibilityServiceAPI = resolve(),
         supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve()
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve()
     ) {
         self.asset = asset
         label = asset.defaultTradingWalletName
+        self.interestEligibilityRepository = interestEligibilityRepository
         self.ordersActivity = ordersActivity
         self.swapActivity = swapActivity
         self.buySellActivity = buySellActivity
@@ -224,9 +242,10 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             return canPerformSwap()
         case .receive:
             return .just(true)
+        case .interestTransfer:
+            return canPerformInterestTransfer()
         case .deposit,
              .withdraw,
-             .interestDeposit,
              .interestWithdraw:
             return .just(false)
         }
@@ -262,6 +281,22 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                     asset: asset.code,
                     label: label,
                     action: .swap,
+                    error: String(describing: error)
+                )
+            }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(false)
+    }
+
+    private func canPerformInterestTransfer() -> Single<Bool> {
+        disabledReason
+            .map(\.isEligible)
+            .asSingle()
+            .catchError { [label, asset] error in
+                throw Error.loadingFailed(
+                    asset: asset.code,
+                    label: label,
+                    action: .interestTransfer,
                     error: String(describing: error)
                 )
             }

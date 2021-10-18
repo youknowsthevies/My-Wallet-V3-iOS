@@ -143,7 +143,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
 extension AssetAction {
     fileprivate var walletAction: WalletAction {
         switch self {
-        case .interestDeposit,
+        case .interestTransfer,
              .interestWithdraw:
             unimplemented()
         case .viewActivity:

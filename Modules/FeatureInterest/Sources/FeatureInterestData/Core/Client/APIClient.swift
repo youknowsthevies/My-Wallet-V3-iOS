@@ -11,7 +11,8 @@ typealias FeatureInterestDataAPIClient =
     InterestAccountLimitsClientAPI &
     InterestAccountRateClientAPI &
     InterestAccountBalanceClientAPI &
-    InterestAccountWithdrawClientAPI
+    InterestAccountWithdrawClientAPI &
+    InterestAccountTransferClientAPI
 
 final class APIClient: FeatureInterestDataAPIClient {
 
@@ -20,6 +21,7 @@ final class APIClient: FeatureInterestDataAPIClient {
         static let balance = ["accounts", "savings"]
         static let rate = ["savings", "rates"]
         static let limits = ["savings", "limits"]
+        static let transfer = ["custodial", "transfer"]
     }
 
     private enum Parameter {
@@ -129,5 +131,30 @@ final class APIClient: FeatureInterestDataAPIClient {
 
         return networkAdapter
             .perform(request: request)
+    }
+
+    func createInterestAccountCustodialTransfer(
+        _ amount: MoneyValue
+    ) -> AnyPublisher<Void, NabuNetworkError> {
+        let body = InterestAccountTransferRequest
+            .createTransferRequestWithAmount(
+                amount.minorString,
+                currencyCode: amount.code
+            )
+
+        let request = requestBuilder
+            .post(
+                path: Path.transfer,
+                authenticated: true
+            )!
+
+        return networkAdapter
+            .perform(request: request)
+    }
+
+    func createInterestAccountCustodialWithdraw(
+        _ amount: MoneyValue
+    ) -> AnyPublisher<Void, NabuNetworkError> {
+        unimplemented()
     }
 }

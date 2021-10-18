@@ -6,6 +6,12 @@ import PlatformKit
 
 struct InterestAccountDetailsState: Equatable {
 
+    struct InterestAccountActionSelection: Equatable {
+        let currency: CurrencyType
+        let action: AssetAction
+    }
+
+    var interestAccountActionSelection: InterestAccountActionSelection?
     var interestAccountBalanceSummary: InterestAccountOverviewBalanceSummary?
     var interestAccountRowItems: IdentifiedArrayOf<InterestAccountOverviewRowItem> {
         IdentifiedArrayOf(uniqueElements: interestAccountOverview.items)

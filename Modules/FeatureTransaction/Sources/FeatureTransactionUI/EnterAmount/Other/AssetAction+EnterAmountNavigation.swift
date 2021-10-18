@@ -15,7 +15,7 @@ extension AssetAction {
              .withdraw,
              .viewActivity,
              .interestWithdraw,
-             .interestDeposit:
+             .interestTransfer:
             return true
         }
     }

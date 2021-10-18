@@ -6,7 +6,7 @@ import FeatureInterestDomain
 import PlatformKit
 import ToolKit
 
-public final class InterestAccountOverviewRepository: InterestAccountOverviewRepositoryAPI {
+final class InterestAccountOverviewRepository: InterestAccountOverviewRepositoryAPI {
 
     // MARK: - Private Properties
 

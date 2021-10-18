@@ -37,15 +37,19 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     var actions: Single<AvailableActions> {
         Single.zip(
             isFunded,
+            canPerformInterestTransfer(),
             featureFlagsService
                 .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
         )
-        .map { isFunded, isSellEnabled -> AvailableActions in
+        .map { isFunded, isInterestTransferEnabled, isSellEnabled -> AvailableActions in
             var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
             if isFunded {
                 base.insert(.swap)
                 if isSellEnabled {
                     base.insert(.sell)
+                }
+                if isInterestTransferEnabled {
+                    base.insert(.interestTransfer)
                 }
             }
             return base
@@ -130,8 +134,12 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
              .buy,
              .viewActivity:
             return .just(true)
+        case .interestTransfer:
+            return canPerformInterestTransfer()
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
+                }
         case .deposit,
-             .interestDeposit,
              .withdraw,
              .interestWithdraw:
             return .just(false)

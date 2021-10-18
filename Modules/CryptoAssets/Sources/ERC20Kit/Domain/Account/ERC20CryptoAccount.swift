@@ -37,10 +37,11 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             isFunded,
             isPairToFiatAvailable,
             hasHistory.asSingle(),
+            canPerformInterestTransfer(),
             featureFlagsService
                 .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
         )
-        .map { isFunded, isPairToFiatAvailable, hasHistory, isSellEnabled -> AvailableActions in
+        .map { isFunded, isPairToFiatAvailable, hasHistory, isInterestEnabled, isSellEnabled -> AvailableActions in
             var base: AvailableActions = [.receive]
             if hasHistory || isFunded {
                 base.insert(.viewActivity)
@@ -53,6 +54,9 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             }
             if isFunded, isSellEnabled {
                 base.insert(.sell)
+            }
+            if isFunded, isInterestEnabled {
+                base.insert(.interestTransfer)
             }
             return base
         }
@@ -148,8 +152,12 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         switch action {
         case .receive:
             return .just(true)
+        case .interestTransfer:
+            return canPerformInterestTransfer()
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
+                }
         case .deposit,
-             .interestDeposit,
              .withdraw,
              .interestWithdraw:
             return .just(false)

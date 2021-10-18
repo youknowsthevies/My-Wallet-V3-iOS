@@ -407,7 +407,7 @@ extension AssetAction {
              .swap,
              .viewActivity,
              .interestWithdraw,
-             .interestDeposit:
+             .interestTransfer:
             return false
         }
     }

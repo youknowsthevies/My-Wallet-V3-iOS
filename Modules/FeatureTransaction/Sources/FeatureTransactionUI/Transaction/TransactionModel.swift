@@ -60,10 +60,16 @@ final class TransactionModel {
                 amount: .zero(currency: sourceAccount.currencyType),
                 action: action
             )
-        case .initialiseWithTargetAndNoSource(let action, _, _),
-             .initialiseWithNoSourceOrTargetAccount(let action, _):
-            return processSourceAccountsListUpdate(action: action)
-
+        case .initialiseWithNoSourceOrTargetAccount(let action, _):
+            return processSourceAccountsListUpdate(
+                action: action,
+                targetAccount: nil
+            )
+        case .initialiseWithTargetAndNoSource(let action, let target, _):
+            return processSourceAccountsListUpdate(
+                action: action,
+                targetAccount: target
+            )
         case .availableSourceAccountsListUpdated:
             return nil
 
@@ -77,10 +83,13 @@ final class TransactionModel {
             return nil
 
         case .cardLinkingFlowCompleted:
-            return processSourceAccountsListUpdate(action: previousState.action)
+            return processSourceAccountsListUpdate(
+                action: previousState.action,
+                targetAccount: nil
+            )
 
         case .bankAccountLinked(let action):
-            return processSourceAccountsListUpdate(action: action)
+            return processSourceAccountsListUpdate(action: action, targetAccount: nil)
 
         case .bankAccountLinkedFromSource(let source, let action):
             switch action {
@@ -236,8 +245,15 @@ final class TransactionModel {
             })
     }
 
-    private func processSourceAccountsListUpdate(action: AssetAction) -> Disposable {
-        interactor.getAvailableSourceAccounts(action: action)
+    private func processSourceAccountsListUpdate(
+        action: AssetAction,
+        targetAccount: TransactionTarget?
+    ) -> Disposable {
+        interactor
+            .getAvailableSourceAccounts(
+                action: action,
+                transactionTarget: targetAccount
+            )
             .subscribe(
                 onSuccess: { [weak self] sourceAccounts in
                     self?.process(action: .availableSourceAccountsListUpdated(sourceAccounts))
@@ -432,7 +448,7 @@ final class TransactionModel {
     }
 
     private func processAvailableDestinationAccountsListUpdated(state: TransactionState) -> Disposable? {
-        if let destination = state.destination {
+        if let destination = state.destination, state.action == .buy {
             // If we refreshed the list of possible accounts we need to proceed to enter amount
             // That said, the current implementation doesn't initialize a `PendingTransaction` until
             // a target is selected. A target was already selected in this case, but the exchange rate data

@@ -109,8 +109,19 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             .map { ConfirmationPageInteractor.Effects.back }
             .asDriverCatchError()
 
-        // TODO: Include ToS CheckboxViewModel Effect
-        // TODO: Include Hold Period CheckboxViewModel Effect
+        let termsChanged = contentReducer
+            .termsUpdated
+            .map { value in
+                ConfirmationPageInteractor.Effects.toggleToSAgreement(value)
+            }
+            .asDriverCatchError()
+
+        let transferAgreementChanged = contentReducer
+            .transferAgreementUpdated
+            .map { value in
+                ConfirmationPageInteractor.Effects.toggleHoldPeriodAgreement(value)
+            }
+            .asDriverCatchError()
 
         let memoChanged = contentReducer
             .memoUpdated
@@ -119,7 +130,13 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             }
             .asDriverCatchError()
 
-        return .merge(closeTapped, backTapped, memoChanged)
+        return .merge(
+            closeTapped,
+            backTapped,
+            memoChanged,
+            transferAgreementChanged,
+            termsChanged
+        )
     }
 
     private func setup(state: TransactionState) {

@@ -66,9 +66,17 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
             let model = TransactionConfirmation.Model.Memo(textMemo: memo, required: oldModel.required)
             transactionModel.process(action: .modifyTransactionConfirmation(.memo(model)))
         case .toggleToSAgreement(let value):
-            unimplemented()
+            let model = TransactionConfirmation.Model.AnyBoolOption<Bool>(
+                value: value,
+                type: .agreementInterestTandC
+            )
+            transactionModel.process(action: .modifyTransactionConfirmation(.termsOfService(model)))
         case .toggleHoldPeriodAgreement(let value):
-            unimplemented()
+            let model = TransactionConfirmation.Model.AnyBoolOption<Bool>(
+                value: value,
+                type: .agreementInterestTransfer
+            )
+            transactionModel.process(action: .modifyTransactionConfirmation(.transferAgreement(model)))
         }
     }
 }

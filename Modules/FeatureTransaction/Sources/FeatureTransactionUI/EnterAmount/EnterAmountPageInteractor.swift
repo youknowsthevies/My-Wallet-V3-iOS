@@ -183,7 +183,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 switch state.action {
                 case .buy,
                      .deposit,
-                     .interestDeposit:
+                     .interestTransfer:
                     return state.source
                 case .sell,
                      .withdraw,

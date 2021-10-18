@@ -177,7 +177,7 @@ extension AssetAction {
     fileprivate var assetImageName: String {
         switch self {
         case .deposit,
-             .interestDeposit:
+             .interestTransfer:
             return "deposit-icon"
         case .receive:
             return "receive-icon"

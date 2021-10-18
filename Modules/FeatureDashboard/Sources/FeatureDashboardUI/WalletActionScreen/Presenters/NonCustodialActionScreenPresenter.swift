@@ -134,7 +134,7 @@ extension AssetAction {
     fileprivate var walletAction: WalletAction {
         switch self {
         case .interestWithdraw,
-             .interestDeposit:
+             .interestTransfer:
             unimplemented()
         case .viewActivity:
             return .activity

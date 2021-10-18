@@ -34,15 +34,19 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     var actions: Single<AvailableActions> {
         Single.zip(
             isFunded,
+            canPerformInterestTransfer(),
             featureFlagsService
                 .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
         )
-        .map { isFunded, isSellEnabled -> AvailableActions in
+        .map { isFunded, isInterestEnabled, isSellEnabled -> AvailableActions in
             var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
             if isFunded {
                 base.insert(.swap)
                 if isSellEnabled {
                     base.insert(.sell)
+                }
+                if isInterestEnabled {
+                    base.insert(.interestTransfer)
                 }
             }
             return base
@@ -117,8 +121,12 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
              .viewActivity,
              .buy:
             return .just(true)
+        case .interestTransfer:
+            return canPerformInterestTransfer()
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
+                }
         case .deposit,
-             .interestDeposit,
              .withdraw,
              .interestWithdraw:
             return .just(false)

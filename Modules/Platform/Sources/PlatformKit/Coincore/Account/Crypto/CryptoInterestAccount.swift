@@ -25,7 +25,21 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     public let isDefault: Bool = false
 
     public var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
+        receiveAddressRepository
+            .fetchInterestAccountReceiveAddressForCurrencyCode(asset.code)
+            .eraseToAnyPublisher()
+            .asSingle()
+            .flatMap { [cryptoReceiveAddressFactory, onTxCompleted, asset] addressString in
+                cryptoReceiveAddressFactory
+                    .makeExternalAssetAddress(
+                        asset: asset,
+                        address: addressString,
+                        label: "",
+                        onTxCompleted: onTxCompleted
+                    )
+                    .single
+            }
+            .map { $0 as ReceiveAddress }
     }
 
     public var requireSecondPassword: Single<Bool> {
@@ -60,13 +74,17 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     }
 
     public var actions: Single<AvailableActions> {
-        .just([])
+        canPerformInterestWithdraw()
+            .map { canPerformWithdraw in
+                canPerformWithdraw ? [.interestWithdraw] : []
+            }
     }
 
     public var activity: Single<[ActivityItemEvent]> {
         .just([])
     }
 
+    let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
     private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
     private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
@@ -83,9 +101,11 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         errorRecorder: ErrorRecording = resolve(),
         balanceService: InterestAccountOverviewAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve(),
-        interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve()
+        interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve(),
+        cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()
     ) {
         label = asset.defaultInterestWalletName
+        self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
         self.receiveAddressRepository = receiveAddressRepository
         self.asset = asset
         self.errorRecorder = errorRecorder
@@ -96,8 +116,6 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
 
     public func can(perform action: AssetAction) -> Single<Bool> {
         switch action {
-        case .interestDeposit:
-            return canPerformInterestDeposit()
         case .interestWithdraw:
             return canPerformInterestWithdraw()
         case .send,
@@ -107,7 +125,8 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
              .withdraw,
              .sell,
              .receive,
-             .viewActivity:
+             .viewActivity,
+             .interestTransfer:
             return .just(false)
         }
     }
@@ -124,22 +143,6 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
             .eraseToAnyPublisher()
-    }
-
-    private func canPerformInterestDeposit() -> Single<Bool> {
-        disabledReason
-            .map(\.isEligible)
-            .asSingle()
-            .catchError { [label, asset] error in
-                throw Error.loadingFailed(
-                    asset: asset.code,
-                    label: label,
-                    action: .interestDeposit,
-                    error: String(describing: error)
-                )
-            }
-            .recordErrors(on: errorRecorder)
-            .catchErrorJustReturn(false)
     }
 
     private func canPerformInterestWithdraw() -> Single<Bool> {

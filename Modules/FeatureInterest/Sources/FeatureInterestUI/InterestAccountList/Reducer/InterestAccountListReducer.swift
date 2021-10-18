@@ -4,6 +4,9 @@ import Combine
 import ComposableArchitecture
 import FeatureInterestDomain
 import PlatformKit
+import ToolKit
+
+struct TransactionFetchIdentifier: Hashable {}
 
 typealias InterestAccountListReducer = Reducer<
     InterestAccountListState,
@@ -92,6 +95,73 @@ let interestAccountListReducer = Reducer.combine(
         case .route(let route):
             state.route = route
             return .none
+        case .interestTransactionStateFetched(let transactionState):
+            state.interestTransactionState = transactionState
+            let isTransfer = transactionState.action == .interestTransfer
+            return .merge(
+                .cancel(id: TransactionFetchIdentifier()),
+                Effect(
+                    value: .interestAccountDetails(
+                        isTransfer ? .startInterestTransfer : .startInterestWithdraw
+                    )
+                )
+            )
         }
-    }
+    },
+    interestReducerCore
 )
+
+let interestReducerCore = Reducer<
+    InterestAccountListState,
+    InterestAccountListAction,
+    InterestAccountSelectionEnvironment
+> { _, action, environment in
+    switch action {
+    case .interestAccountDetails(.dismissInterestDetailsScreen):
+        return .enter(into: nil)
+    case .interestAccountDetails(
+        .loadCryptoInterestAccount(
+            isTransfer: let isTransfer,
+            let currency
+        )
+    ):
+        return .merge(
+            environment
+                .blockchainAccountRepository
+                .accountWithCurrencyType(
+                    currency,
+                    accountType: .custodial(.savings)
+                )
+                .compactMap { $0 as? CryptoInterestAccount }
+                .map { account in
+                    InterestTransactionState(
+                        account: account,
+                        action: isTransfer ? .interestTransfer : .interestWithdraw
+                    )
+                }
+                .catchToEffect()
+                .cancellable(id: TransactionFetchIdentifier())
+                .map { transactionState in
+                    guard let value = transactionState.successData else {
+                        unimplemented()
+                    }
+                    return value
+                }
+                .map { transactionState -> InterestAccountListAction in
+                    .interestTransactionStateFetched(transactionState)
+                }
+        )
+    case .interestAccountDetails(.startInterestWithdraw):
+        return .merge(
+            .enter(into: nil),
+            .sheet(into: .transaction)
+        )
+    case .interestAccountDetails(.startInterestTransfer):
+        return .merge(
+            .enter(into: nil),
+            .sheet(into: .transaction)
+        )
+    default:
+        return .none
+    }
+}

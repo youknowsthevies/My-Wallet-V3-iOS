@@ -4,6 +4,7 @@ import Combine
 import NabuNetworkError
 
 protocol InterestAccountReceiveAddressClientAPI {
-    func fetchInterestAccountReceiveAddressResponse()
-        -> AnyPublisher<InterestReceiveAddressResponse, NabuNetworkError>
+    func fetchInterestAccountReceiveAddressResponse(
+        _ currencyCode: String
+    ) -> AnyPublisher<InterestReceiveAddressResponse, NabuNetworkError>
 }

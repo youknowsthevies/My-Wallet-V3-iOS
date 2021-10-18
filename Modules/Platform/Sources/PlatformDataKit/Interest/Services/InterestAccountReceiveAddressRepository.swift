@@ -18,7 +18,7 @@ final class InterestAccountReceiveAddressRepository: InterestAccountReceiveAddre
         _ code: String
     ) -> AnyPublisher<String, InterestAccountReceiveAddressError> {
         client
-            .fetchInterestAccountReceiveAddressResponse()
+            .fetchInterestAccountReceiveAddressResponse(code)
             .mapError(InterestAccountReceiveAddressError.networkError)
             .map(\.accountRef)
             .eraseToAnyPublisher()

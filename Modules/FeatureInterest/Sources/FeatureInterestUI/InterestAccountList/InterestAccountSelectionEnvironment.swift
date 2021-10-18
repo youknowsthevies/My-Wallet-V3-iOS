@@ -12,6 +12,7 @@ struct InterestAccountSelectionEnvironment {
     let accountBalanceRepository: InterestAccountBalanceRepositoryAPI
     let accountRepository: BlockchainAccountRepositoryAPI
     let priceService: PriceServiceAPI
+    let blockchainAccountRepository: BlockchainAccountRepositoryAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
@@ -22,6 +23,7 @@ extension InterestAccountSelectionEnvironment {
         accountBalanceRepository: resolve(),
         accountRepository: resolve(),
         priceService: resolve(),
+        blockchainAccountRepository: resolve(),
         mainQueue: .main
     )
 }
