@@ -67,7 +67,10 @@ final class ActivityMessageViewModel {
         )
 
         let transactionHash = transaction.transactionHash
-        guard let url = transactionDetailService.transactionDetailURL(for: transactionHash, cryptoCurrency: transaction.currency) else { return nil }
+        guard let url = transactionDetailService.transactionDetailURL(
+            for: transactionHash,
+            cryptoCurrency: transaction.currency
+        ) else { return nil }
         image = QRCode(string: url)?.image
 
         logoImage = .init(
@@ -76,7 +79,7 @@ final class ActivityMessageViewModel {
             renderingMode: .normal
         )
         cryptoAmountLabelContent = .init(
-            text: event.amount.toDisplayString(includeSymbol: true),
+            text: event.inputAmount.toDisplayString(includeSymbol: true),
             font: .main(.semibold, 14.0),
             color: .descriptionText,
             alignment: .left,

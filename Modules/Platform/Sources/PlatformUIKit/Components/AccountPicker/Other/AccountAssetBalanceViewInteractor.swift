@@ -59,7 +59,7 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
                     next: AssetBalanceViewModel.Value.Interaction(
                         fiatValue: moneyValuePair.quote,
                         cryptoValue: moneyValuePair.base,
-                        pendingValue: .zero(currency: moneyValuePair.base.currency)
+                        pendingValue: nil
                     )
                 )
             }

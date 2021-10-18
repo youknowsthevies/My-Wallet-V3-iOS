@@ -33,7 +33,7 @@ public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteractin
                         next: .init(
                             fiatValue: result.quote,
                             cryptoValue: result.base,
-                            pendingValue: .zero(currency: result.base.currency)
+                            pendingValue: nil
                         )
                     )
                 }

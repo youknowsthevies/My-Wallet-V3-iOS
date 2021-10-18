@@ -73,7 +73,13 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             .assetBalanceViewInteractor
             .state
             .compactMap(\.value)
-            .map { $0.pendingValue.isZero ? .hidden : .visible }
+            .map {
+                if let pendingValue = $0.pendingValue, !pendingValue.isZero {
+                    return .visible
+                } else {
+                    return .hidden
+                }
+            }
             .catchErrorJustReturn(.hidden)
             .bindAndCatch(to: pendingLabelVisibilityRelay)
             .disposed(by: disposeBag)
