@@ -103,7 +103,7 @@ extension Money {
         toDisplayString(includeSymbol: true)
     }
 
-    @available(*, deprecated, message: "please use `displayString` instead")
+    /// Used for analytics purposes only, for other things use `displayString` instead.
     public var displayMajorValue: Decimal {
         amount.toDecimalMajor(
             baseDecimalPlaces: currencyType.precision,

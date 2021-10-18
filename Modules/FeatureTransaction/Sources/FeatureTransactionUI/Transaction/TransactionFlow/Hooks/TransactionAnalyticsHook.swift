@@ -12,6 +12,7 @@ final class TransactionAnalyticsHook {
     typealias NewSwapAnalyticsEvent = AnalyticsEvents.New.Swap
     typealias NewSendAnalyticsEvent = AnalyticsEvents.New.Send
     typealias NewSellAnalyticsEvent = AnalyticsEvents.New.Sell
+    typealias NewBuyAnalyticsEvent = AnalyticsEvents.New.SimpleBuy
     typealias NewReceiveAnalyticsEvent = AnalyticsEvents.New.Receive
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -31,6 +32,15 @@ final class TransactionAnalyticsHook {
 
     func onFromAccountSelected(_ account: BlockchainAccount, action: AssetAction) {
         switch action {
+        case .buy:
+            guard let paymentMethod = (account as? PaymentMethodAccount)?.paymentMethod else {
+                return
+            }
+            analyticsRecorder.record(event:
+                NewBuyAnalyticsEvent.buyPaymentMethodSelected(
+                    paymentType: .init(paymentMethod: paymentMethod)
+                )
+            )
         case .swap:
             analyticsRecorder.record(events: [
                 SwapAnalyticsEvent.fromAccountSelected,
@@ -44,11 +54,17 @@ final class TransactionAnalyticsHook {
                 return
             }
             analyticsRecorder.record(event:
-                NewSendAnalyticsEvent.sendFromSelected(currency: account.currencyType.code, fromAccountType: .init(account))
+                NewSendAnalyticsEvent.sendFromSelected(
+                    currency: account.currencyType.code,
+                    fromAccountType: .init(account)
+                )
             )
         case .receive:
             analyticsRecorder.record(event:
-                NewReceiveAnalyticsEvent.receiveCurrencySelected(accountType: .init(account), currency: account.currencyType.code)
+                NewReceiveAnalyticsEvent.receiveCurrencySelected(
+                    accountType: .init(account),
+                    currency: account.currencyType.code
+                )
             )
         case .sell:
             guard let account = account as? CryptoAccount else {
@@ -120,6 +136,14 @@ final class TransactionAnalyticsHook {
 
     func onMinSelected(state: TransactionState) {
         switch state.action {
+        case .buy:
+            analyticsRecorder.record(event:
+                NewBuyAnalyticsEvent.buyAmountMinClicked(
+                    amountCurrency: nil,
+                    inputCurrency: state.source?.currencyType.code ?? "",
+                    outputCurrency: state.destination?.currencyType.code ?? ""
+                )
+            )
         case .swap:
             guard let target = state.destination as? CryptoAccount,
                   let source = state.source as? CryptoAccount
@@ -155,6 +179,14 @@ final class TransactionAnalyticsHook {
 
     func onMaxSelected(state: TransactionState) {
         switch state.action {
+        case .buy:
+            analyticsRecorder.record(event:
+                NewBuyAnalyticsEvent.buyAmountMaxClicked(
+                    amountCurrency: nil,
+                    inputCurrency: state.source?.currencyType.code ?? "",
+                    outputCurrency: state.destination?.currencyType.code ?? ""
+                )
+            )
         case .swap:
             guard let target = state.destination as? CryptoAccount,
                   let source = state.source as? CryptoAccount
@@ -201,6 +233,17 @@ final class TransactionAnalyticsHook {
 
     func onEnterAmountContinue(with state: TransactionState) {
         switch state.action {
+        case .buy:
+            let paymentMethod = (state.source as? PaymentMethodAccount)?.paymentMethod
+            let maxCardLimit = paymentMethod?.type.isCard == true ? paymentMethod?.max : nil
+            analyticsRecorder.record(event:
+                NewBuyAnalyticsEvent.buyAmountEntered(
+                    inputAmount: state.amount.displayMajorValue.doubleValue,
+                    inputCurrency: state.source?.currencyType.code ?? "",
+                    maxCardLimit: maxCardLimit?.displayMajorValue.doubleValue,
+                    outputCurrency: state.destination?.currencyType.code ?? ""
+                )
+            )
         case .swap:
             guard let target = state.destination as? CryptoAccount,
                   let source = state.source as? CryptoAccount,
@@ -248,13 +291,15 @@ final class TransactionAnalyticsHook {
             else {
                 return
             }
-            let confirmations = state.pendingTransaction?.confirmations.compactMap { confirmation -> TransactionConfirmation.Model.NetworkFee? in
-                if case .networkFee(let fee) = confirmation {
-                    return fee
-                } else {
-                    return nil
+            let confirmations = state.pendingTransaction?
+                .confirmations
+                .compactMap { confirmation -> TransactionConfirmation.Model.NetworkFee? in
+                    if case .networkFee(let fee) = confirmation {
+                        return fee
+                    } else {
+                        return nil
+                    }
                 }
-            }
             let networkFeeInputAmount = confirmations?.first(where: {
                 $0.feeType == .withdrawalFee
             })?.primaryCurrencyFee.displayMajorValue.doubleValue ?? 0
@@ -305,7 +350,13 @@ final class TransactionAnalyticsHook {
         let target = state.destination?.label
         switch state.action {
         case .swap:
-            analyticsRecorder.record(event: SwapAnalyticsEvent.transactionFailed(asset: state.asset, target: target, source: state.asset.name))
+            analyticsRecorder.record(event:
+                SwapAnalyticsEvent.transactionFailed(
+                    asset: state.asset,
+                    target: target,
+                    source: state.asset.name
+                )
+            )
         default:
             break
         }

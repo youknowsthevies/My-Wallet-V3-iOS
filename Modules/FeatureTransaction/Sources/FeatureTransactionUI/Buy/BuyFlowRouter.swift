@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
+import DIKit
 import PlatformKit
 import RIBs
 import UIKit
@@ -11,7 +13,20 @@ protocol BuyFlowRouting: Routing {
 
 final class BuyFlowRouter: RIBs.Router<BuyFlowInteractor>, BuyFlowRouting {
 
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
+
+    init(
+        interactor: BuyFlowInteractor,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
+        self.analyticsRecorder = analyticsRecorder
+        super.init(interactor: interactor)
+    }
+
     func start(with cryptoAccount: CryptoAccount?, from presenter: UIViewController) {
+        analyticsRecorder.record(event:
+            AnalyticsEvents.New.SimpleBuy.buySellViewed(type: .buy)
+        )
         let builder = TransactionFlowBuilder()
         let router = builder.build(
             withListener: interactor,
