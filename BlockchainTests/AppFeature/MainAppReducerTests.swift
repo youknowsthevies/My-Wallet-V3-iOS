@@ -14,6 +14,7 @@ import WalletPayloadKit
 import XCTest
 
 @testable import Blockchain
+@testable import ComposableNavigation
 @testable import FeatureAppUI
 @testable import FeatureAuthenticationMock
 @testable import FeatureAuthenticationUI
@@ -492,19 +493,19 @@ final class MainAppReducerTests: XCTestCase {
             state.onboarding?.walletCreationContext = .existing
         }
 
-        testStore.send(.onboarding(.welcomeScreen(.emailLogin(.setVerifyDeviceScreenVisible(true))))) { state in
-            state.onboarding?.welcomeState?.emailLoginState?.isVerifyDeviceScreenVisible = true
+        testStore.send(.onboarding(.welcomeScreen(.emailLogin(.navigate(to: .verifyDevice))))) { state in
             state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState = .init(emailAddress: "")
+            state.onboarding?.welcomeState?.emailLoginState?.route = RouteIntent(route: .verifyDevice, action: .navigateTo)
         }
 
         testStore.send(
             .onboarding(
-                .welcomeScreen(.emailLogin(.verifyDevice(.setCredentialsScreenVisible(true))))
+                .welcomeScreen(.emailLogin(.verifyDevice(.navigate(to: .credentials))))
             )
         ) { state in
-            state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?.isCredentialsScreenVisible = true
             state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?
                 .credentialsState = .init(accountRecoveryEnabled: false)
+            state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?.route = RouteIntent(route: .credentials, action: .navigateTo)
         }
 
         testStore.send(
@@ -698,19 +699,20 @@ final class MainAppReducerTests: XCTestCase {
             state.onboarding?.walletCreationContext = .existing
         }
 
-        testStore.send(.onboarding(.welcomeScreen(.emailLogin(.setVerifyDeviceScreenVisible(true))))) { state in
-            state.onboarding?.welcomeState?.emailLoginState?.isVerifyDeviceScreenVisible = true
+        testStore.send(.onboarding(.welcomeScreen(.emailLogin(.navigate(to: .verifyDevice))))) { state in
             state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState = .init(emailAddress: "")
+            state.onboarding?.welcomeState?.emailLoginState?.route = RouteIntent(route: .verifyDevice, action: .navigateTo)
         }
 
         testStore.send(
             .onboarding(
-                .welcomeScreen(.emailLogin(.verifyDevice(.setCredentialsScreenVisible(true))))
+                .welcomeScreen(.emailLogin(.verifyDevice(.navigate(to: .credentials))))
             )
         ) { state in
-            state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?.isCredentialsScreenVisible = true
             state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?
                 .credentialsState = .init(accountRecoveryEnabled: false)
+            state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?
+                .route = RouteIntent(route: .credentials, action: .navigateTo)
         }
 
         testStore.send(

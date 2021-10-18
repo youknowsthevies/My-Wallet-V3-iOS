@@ -39,7 +39,7 @@ public enum CredentialsContext: Equatable {
     case none
 }
 
-private typealias CredentialsLocalization = LocalizationConstants.CredentialsForm
+private typealias CredentialsLocalization = LocalizationConstants.FeatureAuthentication.EmailLogin
 
 // MARK: - Properties
 
@@ -194,6 +194,7 @@ let credentialsReducer = Reducer.combine(
         CredentialsState,
         CredentialsAction,
         CredentialsEnvironment
+            // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
         case .alert(.show(let title, let message)):

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+@testable import ComposableNavigation
 @testable import FeatureAuthenticationDomain
 @testable import FeatureAuthenticationUI
 import Localization
@@ -49,8 +50,8 @@ final class VerifyDeviceReducerTests: XCTestCase {
     func test_verify_initial_state_is_correct() {
         let state = VerifyDeviceState(emailAddress: "")
         XCTAssertNil(state.credentialsState)
+        XCTAssertNil(state.route)
         XCTAssertEqual(state.credentialsContext, .none)
-        XCTAssertFalse(state.isCredentialsScreenVisible)
     }
 
     func test_receive_valid_wallet_deeplink_should_update_wallet_info() {
@@ -60,7 +61,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
             .receive(.didExtractWalletInfo(MockDeviceVerificationService.mockWalletInfo)) { state in
                 state.credentialsContext = .walletInfo(MockDeviceVerificationService.mockWalletInfo)
             },
-            .receive(.setCredentialsScreenVisible(true)) { state in
+            .receive(.navigate(to: .credentials)) { state in
                 state.credentialsState = CredentialsState(
                     accountRecoveryEnabled: false,
                     walletPairingState: WalletPairingState(
@@ -69,7 +70,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
                         walletGuid: MockDeviceVerificationService.mockWalletInfo.guid
                     )
                 )
-                state.isCredentialsScreenVisible = true
+                state.route = RouteIntent(route: .credentials, action: .navigateTo)
             }
         )
 
@@ -80,7 +81,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
                 guid: MockDeviceVerificationService.mockWalletInfoWithGuidOnly.guid
             )
         }
-        testStore.receive(.setCredentialsScreenVisible(true)) { state in
+        testStore.receive(.navigate(to: .credentials)) { state in
             state.credentialsState = CredentialsState(
                 accountRecoveryEnabled: false,
                 walletPairingState: WalletPairingState(
@@ -88,7 +89,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
                     walletGuid: MockDeviceVerificationService.mockWalletInfo.guid
                 )
             )
-            state.isCredentialsScreenVisible = true
         }
     }
 
@@ -98,9 +98,9 @@ final class VerifyDeviceReducerTests: XCTestCase {
         testStore.receive(.fallbackToWalletIdentifier) { state in
             state.credentialsContext = .walletIdentifier(guid: "")
         }
-        testStore.receive(.setCredentialsScreenVisible(true)) { state in
+        testStore.receive(.navigate(to: .credentials)) { state in
             state.credentialsState = .init(accountRecoveryEnabled: false)
-            state.isCredentialsScreenVisible = true
+            state.route = RouteIntent(route: .credentials, action: .navigateTo)
         }
     }
 }

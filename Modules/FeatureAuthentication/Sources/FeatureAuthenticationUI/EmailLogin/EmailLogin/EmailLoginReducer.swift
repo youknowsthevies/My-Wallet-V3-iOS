@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import ComposableArchitecture
+import ComposableNavigation
 import DIKit
 import FeatureAuthenticationDomain
 import Localization
@@ -9,42 +10,75 @@ import ToolKit
 
 // MARK: - Type
 
-private typealias EmailLoginLocalization = LocalizationConstants.EmailLogin
+public enum EmailLoginAction: Equatable, NavigationAction {
 
-public enum EmailLoginAction: Equatable {
+    // MARK: - Alert
+
     public enum AlertAction: Equatable {
         case show(title: String, message: String)
         case dismiss
     }
 
-    case closeButtonTapped
-    case onAppear
-    case didChangeEmailAddress(String)
-    case didSendDeviceVerificationEmail(Result<EmptyValue, DeviceVerificationServiceError>)
     case alert(AlertAction)
-    case setupSessionToken
+
+    // MARK: - Transitions and Navigations
+
+    case onAppear
+    case closeButtonTapped
+    case route(RouteIntent<EmailLoginRoute>?)
+
+    // MARK: - Email
+
+    case didChangeEmailAddress(String)
+
+    // MARK: - Device Verification
+
     case sendDeviceVerificationEmail
-    case setVerifyDeviceScreenVisible(Bool)
+    case didSendDeviceVerificationEmail(Result<EmptyValue, DeviceVerificationServiceError>)
+    case setupSessionToken
+
+    // MARK: - Local Actions
+
     case verifyDevice(VerifyDeviceAction)
+
+    // MARK: - Utils
+
     case none
 }
 
+private typealias EmailLoginLocalization = LocalizationConstants.FeatureAuthentication.EmailLogin
+
 // MARK: - Properties
 
-public struct EmailLoginState: Equatable {
+public struct EmailLoginState: Equatable, NavigationState {
+
+    // MARK: - Navigation State
+
+    public var route: RouteIntent<EmailLoginRoute>?
+
+    // MARK: - Alert State
+
+    var alert: AlertState<EmailLoginAction>?
+
+    // MARK: - Email
+
     var emailAddress: String
     var isEmailValid: Bool
-    var isVerifyDeviceScreenVisible: Bool
-    var verifyDeviceState: VerifyDeviceState?
-    var emailLoginFailureAlert: AlertState<EmailLoginAction>?
+
+    // MARK: - Loading State
+
     var isLoading: Bool
 
+    // MARK: - Local States
+
+    var verifyDeviceState: VerifyDeviceState?
+
     init() {
-        verifyDeviceState = nil
+        route = nil
         emailAddress = ""
         isEmailValid = false
-        isVerifyDeviceScreenVisible = false
         isLoading = false
+        verifyDeviceState = nil
     }
 }
 
@@ -96,48 +130,14 @@ let emailLoginReducer = Reducer.combine(
         EmailLoginState,
         EmailLoginAction,
         EmailLoginEnvironment
+            // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
-        case .closeButtonTapped:
-            // handled in welcome reducer
-            return .none
 
-        case .onAppear:
-            environment.analyticsRecorder.record(
-                event: .loginViewed
-            )
-            return Effect(value: .setupSessionToken)
-
-        case .didChangeEmailAddress(let emailAddress):
-            state.emailAddress = emailAddress
-            state.isEmailValid = environment.validateEmail(emailAddress)
-            return .none
-
-        case .didSendDeviceVerificationEmail(let response):
-            state.isLoading = false
-            state.verifyDeviceState?.sendEmailButtonIsLoading = false
-            if case .failure(let error) = response {
-                switch error {
-                case .recaptchaError,
-                     .missingSessionToken:
-                    return Effect(
-                        value: .alert(
-                            .show(
-                                title: EmailLoginLocalization.Alerts.SignInError.title,
-                                message: EmailLoginLocalization.Alerts.SignInError.message
-                            )
-                        )
-                    )
-                case .networkError,
-                     .expiredEmailCode:
-                    // still go to verify device screen if there is network error
-                    break
-                }
-            }
-            return Effect(value: .setVerifyDeviceScreenVisible(true))
+        // MARK: - Alert
 
         case .alert(.show(let title, let message)):
-            state.emailLoginFailureAlert = AlertState(
+            state.alert = AlertState(
                 title: TextState(verbatim: title),
                 message: TextState(verbatim: message),
                 dismissButton: .default(
@@ -148,27 +148,38 @@ let emailLoginReducer = Reducer.combine(
             return .none
 
         case .alert(.dismiss):
-            state.emailLoginFailureAlert = nil
+            state.alert = nil
             return .none
 
-        case .setupSessionToken:
-            return environment
-                .sessionTokenService
-                .setupSessionToken()
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .map { result -> EmailLoginAction in
-                    if case .failure(let error) = result {
-                        environment.errorRecorder.error(error)
-                        return .alert(
-                            .show(
-                                title: EmailLoginLocalization.Alerts.GenericNetworkError.title,
-                                message: EmailLoginLocalization.Alerts.GenericNetworkError.message
-                            )
-                        )
-                    }
-                    return .none
-                }
+        // MARK: - Transitions and Navigations
+
+        case .onAppear:
+            environment.analyticsRecorder.record(
+                event: .loginViewed
+            )
+            return Effect(value: .setupSessionToken)
+
+        case .closeButtonTapped:
+            // handled in welcome reducer
+            return .none
+
+        case .route(let route):
+            if let routeValue = route?.route {
+                state.verifyDeviceState = .init(emailAddress: state.emailAddress)
+            } else {
+                state.verifyDeviceState = nil
+            }
+            state.route = route
+            return .none
+
+        // MARK: - Email
+
+        case .didChangeEmailAddress(let emailAddress):
+            state.emailAddress = emailAddress
+            state.isEmailValid = environment.validateEmail(emailAddress)
+            return .none
+
+        // MARK: - Device Verification
 
         case .sendDeviceVerificationEmail,
              .verifyDevice(.sendDeviceVerificationEmail):
@@ -191,16 +202,55 @@ let emailLoginReducer = Reducer.combine(
                     }
                 }
 
-        case .setVerifyDeviceScreenVisible(let isVisible):
-            state.isVerifyDeviceScreenVisible = isVisible
-            if isVisible {
-                state.verifyDeviceState = .init(emailAddress: state.emailAddress)
+        case .didSendDeviceVerificationEmail(let response):
+            state.isLoading = false
+            state.verifyDeviceState?.sendEmailButtonIsLoading = false
+            if case .failure(let error) = response {
+                switch error {
+                case .recaptchaError,
+                     .missingSessionToken:
+                    return Effect(
+                        value: .alert(
+                            .show(
+                                title: EmailLoginLocalization.Alerts.SignInError.title,
+                                message: EmailLoginLocalization.Alerts.SignInError.message
+                            )
+                        )
+                    )
+                case .networkError,
+                     .expiredEmailCode:
+                    // still go to verify device screen if there is network error
+                    break
+                }
             }
-            return .none
+            return Effect(value: .navigate(to: .verifyDevice))
+
+        case .setupSessionToken:
+            return environment
+                .sessionTokenService
+                .setupSessionToken()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map { result -> EmailLoginAction in
+                    if case .failure(let error) = result {
+                        environment.errorRecorder.error(error)
+                        return .alert(
+                            .show(
+                                title: EmailLoginLocalization.Alerts.GenericNetworkError.title,
+                                message: EmailLoginLocalization.Alerts.GenericNetworkError.message
+                            )
+                        )
+                    }
+                    return .none
+                }
+
+        // MARK: - Local Reducers
 
         case .verifyDevice:
             // handled in verify device reducer
             return .none
+
+        // MARK: - Utils
 
         case .none:
             return .none

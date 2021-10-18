@@ -327,14 +327,14 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 amountIsZero: Bool,
                 networkFeeAdjustmentSupported: Bool
             )? in
-            guard let pendingTransaction = state.pendingTransaction else {
-                return nil
-            }
-            return (
-                state.action,
-                state.amount.isZero,
-                pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported
-            )
+                guard let pendingTransaction = state.pendingTransaction else {
+                    return nil
+                }
+                return (
+                    state.action,
+                    state.amount.isZero,
+                    pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported
+                )
             }
             .map { action, amountIsZero, networkFeeAdjustmentSupported in
                 (action, (networkFeeAdjustmentSupported && action == .send && !amountIsZero) ? .visible : .hidden)
