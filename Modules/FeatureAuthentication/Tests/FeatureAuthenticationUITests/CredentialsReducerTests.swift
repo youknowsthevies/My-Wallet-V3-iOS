@@ -183,8 +183,8 @@ final class CredentialsReducerTests: XCTestCase {
                 // polling should happen after 1 more second (2 seconds in total)
                 self.mockPollingQueue.advance(by: 1)
             },
-            .receive(.walletPairing(.pollWalletIdentifier)),
             .do { self.mockMainQueue.advance() },
+            .receive(.walletPairing(.pollWalletIdentifier)),
             .receive(.walletPairing(.authenticate(""))) { state in
                 state.isLoading = true
             },
