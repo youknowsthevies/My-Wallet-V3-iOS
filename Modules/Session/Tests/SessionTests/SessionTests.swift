@@ -87,7 +87,7 @@ final class SessionTests: XCTestCase {
             throw Explicit.error
         }
 
-        try XCTAssertEqual(state.get("value"), true)
+        try XCTAssertTrue(state.get("value"))
     }
 
     func test_concurrency() throws {
