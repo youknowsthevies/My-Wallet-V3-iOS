@@ -10,6 +10,10 @@ let package = Package(
         .library(
             name: "OpenBanking",
             targets: ["OpenBanking"]
+        ),
+        .library(
+            name: "OpenBankingUI",
+            targets: ["OpenBankingUI"]
         )
     ],
     dependencies: [
@@ -18,10 +22,19 @@ let package = Package(
             url: "https://github.com/pointfreeco/combine-schedulers",
             from: "0.5.0"
         ),
+        .package(
+            name: "swift-composable-architecture",
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
+            from: "0.28.1"
+        ),
+        .package(path: "../ComposableNavigation"),
+        .package(path: "../Localization"),
         .package(path: "../Network"),
+        .package(path: "../Platform"),
         .package(path: "../Session"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
+        .package(path: "../UIComponents")
     ],
     targets: [
         .target(
@@ -31,6 +44,17 @@ let package = Package(
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "Session", package: "Session"),
                 .product(name: "ToolKit", package: "Tool")
+            ]
+        ),
+        .target(
+            name: "OpenBankingUI",
+            dependencies: [
+                .target(name: "OpenBanking"),
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "ComposableNavigation", package: "ComposableNavigation"),
+                .product(name: "Localization", package: "Localization"),
+                .product(name: "PlatformUIKit", package: "Platform"),
+                .product(name: "UIComponents", package: "UIComponents")
             ]
         ),
         .testTarget(
