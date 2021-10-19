@@ -59,7 +59,7 @@ As part of this work a sequence diagram was created in order to understand the f
 <details>
   <summary>Click to see!</summary>
   
-  ![Alt text](.resources/diagram.png "Sequence Diagram")
+  ![Sequence Diagram](.resources/diagram.png?raw=true)
   
   ```
   sequenceDiagram
