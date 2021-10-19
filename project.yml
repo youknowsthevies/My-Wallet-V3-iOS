@@ -1,5 +1,7 @@
 attributes:
   ORGANIZATIONNAME: Blockchain Luxembourg S.A
+include:
+  Modules/ComponentLibrary/project.yml
 configs:
   Debug Dev: debug
   Debug Production: debug
