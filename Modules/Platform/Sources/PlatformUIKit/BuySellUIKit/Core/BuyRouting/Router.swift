@@ -188,11 +188,7 @@ public final class Router: RouterAPI {
             showPaymentMethodsScreen()
         case .bankTransferDetails(let data):
             showBankTransferDetailScreen(with: data)
-        case .fundsTransferDetails(
-            let currency,
-            isOriginPaymentMethods: let isOriginPaymentMethods,
-            let isOriginDeposit
-        ):
+        case .fundsTransferDetails(let currency, let isOriginPaymentMethods, let isOriginDeposit):
             guard let fiatCurrency = currency.fiatCurrency else { return }
             showFundsTransferDetailsScreen(
                 with: fiatCurrency,
@@ -213,6 +209,8 @@ public final class Router: RouterAPI {
             showPendingKycApprovalScreen()
         case .linkBank:
             showLinkBankFlow()
+        case .linkCard:
+            showLinkCardFlow()
         case .addCard(let data):
             startCardAdditionFlow(with: data)
         case .inactive:
@@ -235,7 +233,17 @@ public final class Router: RouterAPI {
         }
     }
 
-    private func startCardAdditionFlow(with checkoutData: CheckoutData) {
+    private func showLinkCardFlow() {
+        if navigationRouter.navigationControllerAPI?.presentedViewControllerAPI != nil {
+            navigationRouter.dismiss { [weak self] in
+                self?.startCardAdditionFlow(with: nil)
+            }
+        } else {
+            startCardAdditionFlow(with: nil)
+        }
+    }
+
+    private func startCardAdditionFlow(with checkoutData: CheckoutData?) {
         let interactor = stateService.cardRoutingInteractor(
             with: checkoutData
         )
@@ -248,10 +256,8 @@ public final class Router: RouterAPI {
             builder: builder,
             routingType: .modal
         )
-
-        // TODO: This is a temporary patch of the card router intialization, and should not be called directly.
-        /// The reason that it is called directly now is that the `Self` is not a RIBs based. Once BuySell's router
-        /// moves into RIBs we will delete that like
+        // NOTE: This is a temporary patch of the card router intialization, and should not be called directly.
+        // The reason that it is called directly now is that the `Self` is not a RIBs based.
         cardRouter.load()
     }
 
@@ -659,6 +665,7 @@ public final class Router: RouterAPI {
         } else {
             tiersService
                 .tiers
+                .asSingle()
                 .subscribe { [kycRouter] tiersResponse in
                     kycRouter.start(
                         tier: tiersResponse.latestApprovedTier,

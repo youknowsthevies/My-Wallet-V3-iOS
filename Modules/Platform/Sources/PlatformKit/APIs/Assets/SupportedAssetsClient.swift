@@ -7,6 +7,7 @@ import NetworkKit
 
 protocol SupportedAssetsClientAPI {
     var custodialAssets: AnyPublisher<SupportedAssetsResponse, NetworkError> { get }
+    var erc20Assets: AnyPublisher<SupportedAssetsResponse, NetworkError> { get }
 }
 
 final class SupportedAssetsClient: SupportedAssetsClientAPI {
@@ -24,6 +25,12 @@ final class SupportedAssetsClient: SupportedAssetsClientAPI {
     var custodialAssets: AnyPublisher<SupportedAssetsResponse, NetworkError> {
         networkAdapter.perform(
             request: requestBuilder.get(path: Endpoint.custodial)!
+        )
+    }
+
+    var erc20Assets: AnyPublisher<SupportedAssetsResponse, NetworkError> {
+        networkAdapter.perform(
+            request: requestBuilder.get(path: Endpoint.erc20)!
         )
     }
 

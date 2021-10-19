@@ -23,7 +23,7 @@ extension BuySellActivityItemEvent {
             status: orderDetails.eventStatus,
             inputValue: orderDetails.inputValue,
             outputValue: orderDetails.outputValue,
-            fee: orderDetails.fee ?? MoneyValue.zero(currency: orderDetails.inputValue.currencyType),
+            fee: orderDetails.fee ?? .zero(currency: orderDetails.inputValue.currency),
             isBuy: orderDetails.isBuy,
             paymentMethod: paymentMethod
         )

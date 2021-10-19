@@ -34,26 +34,27 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Private Properties
 
-    private let disposeBag: DisposeBag = .init()
+    private let disposeBag = DisposeBag()
 
     // MARK: Private Properties (LabelContentPresenting)
 
     private let cryptoAmountLabelPresenter: LabelContentPresenting
 
-    // MARK: Private Properties (LineItemCellPresenting)
-
-    private let dateCreatedPresenter: LineItemCellPresenting
-    private let valuePresenter: LineItemCellPresenting
-    private let amountFromPresenter: LineItemCellPresenting
-    private let amountForPresenter: LineItemCellPresenting
-    private let toPresenter: LineItemCellPresenting
-    private let fromPresenter: LineItemCellPresenting
-    private let orderIDPresenter: LineItemCellPresenting
-
     // MARK: Private Properties (Badge Model)
 
     private let badgesModel = MultiBadgeViewModel()
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
+
+    // MARK: Private Properties (LineItemCellPresenting)
+
+    private let orderIDPresenter: LineItemCellPresenting
+    private let dateCreatedPresenter: LineItemCellPresenting
+    private let exchangeRatePresenter: LineItemCellPresenting
+    private let totalPresenter: LineItemCellPresenting
+    private let amountFromPresenter: LineItemCellPresenting
+    private let amountForPresenter: LineItemCellPresenting
+    private let toPresenter: LineItemCellPresenting
+    private let fromPresenter: LineItemCellPresenting
 
     // MARK: - Init
 
@@ -61,64 +62,96 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
         event: SwapActivityItemEvent,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
+        titleViewRelay.accept(.text(value: LocalizedString.Title.swap))
+
         cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
-            knownValue: event.amounts.withdrawal.toDisplayString(includeSymbol: true),
+            knownValue: event.amounts.withdrawal.displayString,
             descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
-        dateCreatedPresenter = TransactionalLineItem.date(DateFormatter.elegantDateFormatter.string(from: event.date))
-            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
-        valuePresenter = TransactionalLineItem
-            .value(event.amounts.fiatValue.displayString)
-            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
-        amountFromPresenter = TransactionalLineItem
-            .amount(event.amounts.deposit.toDisplayString(includeSymbol: true))
-            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
-        amountForPresenter = TransactionalLineItem
-            .for(event.amounts.withdrawal.toDisplayString(includeSymbol: true))
-            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
+
+        let statusDescription = event.status.localizedDescription
+        let badgeType: BadgeType
+        switch event.status {
+        case .complete:
+            badgeType = .verified
+        case .delayed,
+             .inProgress,
+             .none,
+             .pendingRefund:
+            badgeType = .default(accessibilitySuffix: statusDescription)
+        case .expired,
+             .failed,
+             .refunded:
+            badgeType = .destructive
+        }
+        badgesModel.badgesRelay.accept([statusBadge])
+        statusBadge.interactor.stateRelay.accept(
+            .loaded(
+                next: .init(
+                    type: badgeType,
+                    description: statusDescription
+                )
+            )
+        )
+
         orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
+        let date = DateFormatter.elegantDateFormatter.string(from: event.date)
+        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let amountFrom = event.amounts.withdrawal.displayString
+        amountFromPresenter = TransactionalLineItem.amount(amountFrom).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let amountFor = event.amounts.deposit.displayString
+        amountForPresenter = TransactionalLineItem.for(amountFor).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let pair = MoneyValuePair(base: event.amounts.withdrawal, quote: event.amounts.deposit)
+        let exchangeRate = pair.exchangeRate
+        let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.code)"
+        exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let total = event.amounts.fiatValue.displayString
+        totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
         switch event.isNonCustodial {
         case true:
-            toPresenter = TransactionalLineItem.to(event.kind.withdrawalAddress).defaultCopyablePresenter(
+            let destination = event.kind.withdrawalAddress
+            toPresenter = TransactionalLineItem.to(destination).defaultCopyablePresenter(
                 analyticsRecorder: analyticsRecorder,
                 accessibilityIdPrefix: AccessibilityId.lineItemPrefix
             )
-            fromPresenter = TransactionalLineItem.from(event.depositTxHash ?? "")
-                .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
+
+            let source = event.depositTxHash ?? ""
+            fromPresenter = TransactionalLineItem.from(source).defaultCopyablePresenter(
+                analyticsRecorder: analyticsRecorder,
+                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            )
         case false:
-            let source = event.pair.inputCurrencyType.displayCode
-            let destination = event.pair.outputCurrencyType.displayCode
-            toPresenter = TransactionalLineItem.to("\(destination) \(LocalizedString.wallet)")
-                .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
-            fromPresenter = TransactionalLineItem.from("\(source) \(LocalizedString.wallet)")
-                .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
+            let destination = "\(event.pair.outputCurrencyType.displayCode) \(LocalizedString.wallet)"
+            toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            )
+
+            let source = "\(event.pair.inputCurrencyType.displayCode) \(LocalizedString.wallet)"
+            fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
+                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            )
         }
 
-        titleViewRelay
-            .accept(.text(value: LocalizedString.Title.swap))
-        let statusDescription = event.status.localizedDescription
-        let badgeType: BadgeType = event.status == .complete ? .verified : .default(accessibilitySuffix: statusDescription)
-        let badgeItem: BadgeItem = .init(
-            type: badgeType,
-            description: statusDescription
-        )
-        statusBadge
-            .interactor
-            .stateRelay
-            .accept(
-                .loaded(
-                    next: badgeItem
-                )
-            )
-        badgesModel
-            .badgesRelay
-            .accept([statusBadge])
-
-        var values: [DetailsScreen.CellType] = [
+        cells = [
             .label(cryptoAmountLabelPresenter),
             .badges(badgesModel),
             .separator,
@@ -130,25 +163,14 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .separator,
             .lineItem(amountForPresenter),
             .separator,
-            .lineItem(valuePresenter),
+            .lineItem(exchangeRatePresenter),
+            .separator,
+            .lineItem(totalPresenter),
+            .separator,
+            .lineItem(toPresenter),
+            .separator,
+            .lineItem(fromPresenter),
             .separator
         ]
-
-        switch event.isCustodial {
-        case true:
-            values.append(contentsOf: [
-                .lineItem(fromPresenter),
-                .separator,
-                .lineItem(toPresenter),
-                .separator
-            ])
-        case false:
-            values.append(contentsOf: [
-                .lineItem(toPresenter),
-                .separator
-            ])
-        }
-
-        cells = values
     }
 }

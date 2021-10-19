@@ -15,7 +15,7 @@ public final class WalletBalanceViewInteractor {
         let fiatValue: FiatValue
         /// The wallet's fiat currency code
         var fiatCurrency: FiatCurrency {
-            fiatValue.currencyType
+            fiatValue.currency
         }
 
         public init(fiatValue: FiatValue) {
@@ -49,8 +49,8 @@ public final class WalletBalanceViewInteractor {
     ) {
         stateObservableProvider = {
             fiatCurrencyService.fiatCurrencyObservable
-                .flatMap { fiatCurrency in
-                    account.fiatBalance(fiatCurrency: fiatCurrency)
+                .flatMapLatest { fiatCurrency in
+                    account.fiatBalance(fiatCurrency: fiatCurrency).asObservable()
                 }
                 .map { moneyValue -> InteractionState in
                     .loaded(next: WalletBalance(fiatValue: moneyValue.fiatValue!))

@@ -8,6 +8,7 @@ final class MoneyValueConvertTests: XCTestCase {
     var mockCoin6Precision: CoinAssetModel {
         CoinAssetModel(
             code: "MOCK",
+            displayCode: "MOCK",
             name: "Mock Coin",
             precision: 6,
             products: [],
@@ -18,7 +19,7 @@ final class MoneyValueConvertTests: XCTestCase {
         )
     }
 
-    func testConvertingALGOIntoBTCUsingBTCExchangeRate() throws {
+    func testConvertingALGOIntoBTCUsingBTCExchangeRate() {
         let exchangeRate = CryptoValue(
             amount: 400,
             currency: .coin(.bitcoin)
@@ -31,11 +32,11 @@ final class MoneyValueConvertTests: XCTestCase {
             amount: 4,
             currency: .coin(.bitcoin)
         ).moneyValue
-        let result = try value.convert(using: exchangeRate)
+        let result = value.convert(using: exchangeRate)
         XCTAssertEqual(result, expected)
     }
 
-    func testConvertingBTCIntoALGOUsingBTCExchangeRate() throws {
+    func testConvertingBTCIntoALGOUsingBTCExchangeRate() {
         let exchangeRate = CryptoValue(
             amount: 400,
             currency: .coin(.bitcoin)
@@ -48,7 +49,7 @@ final class MoneyValueConvertTests: XCTestCase {
             amount: 10000,
             currency: .coin(mockCoin6Precision)
         ).moneyValue
-        let result = try value.convert(
+        let result = value.convert(
             usingInverse: exchangeRate,
             currencyType: .crypto(.coin(mockCoin6Precision))
         )

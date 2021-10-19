@@ -5,9 +5,11 @@ import PlatformKit
 import XCTest
 
 @testable import Blockchain
+@testable import FeatureAppUI
 
 class CoreDeeplinkHandlerTests: XCTestCase {
 
+    var isBitPayURL = false
     var isPinSetMock = false
     var sut: CoreDeeplinkHandler!
 
@@ -17,13 +19,17 @@ class CoreDeeplinkHandlerTests: XCTestCase {
         cancellables = []
         isPinSetMock = false
         sut = CoreDeeplinkHandler(
-            bitpayService: BitpayService.shared,
+            markBitpayUrl: { BitpayService.shared.contentRelay.accept($0) },
+            isBitPayURL: { [unowned self] _ in self.isBitPayURL },
             isPinSet: { [unowned self] in self.isPinSetMock }
         )
     }
 
     override func tearDown() {
+        isBitPayURL = false
+        isPinSetMock = false
         BitpayService.shared.contentRelay.accept(nil)
+        super.tearDown()
     }
 
     func test_canHandle_when_isPinSet_returns_false() {
@@ -119,6 +125,7 @@ class CoreDeeplinkHandlerTests: XCTestCase {
     func test_sends_correct_outputs_for_bitpay_urls() {
         // when
         isPinSetMock = true
+        isBitPayURL = true
         let url = URL(string: "https://bitpay.com/")!
 
         var expectedOutcome: DeeplinkOutcome?

@@ -48,6 +48,8 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     }
 
     public let multiBadgeViewModel = MultiBadgeViewModel()
+
+    public let viewAccessibilitySuffix: String
     public let titleAccessibilitySuffix: String
     public let descriptionAccessibilitySuffix: String
     public let pendingAccessibilitySuffix: String
@@ -71,7 +73,13 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             .assetBalanceViewInteractor
             .state
             .compactMap(\.value)
-            .map { $0.pendingValue.isZero ? .hidden : .visible }
+            .map {
+                if let pendingValue = $0.pendingValue, !pendingValue.isZero {
+                    return .visible
+                } else {
+                    return .hidden
+                }
+            }
             .catchErrorJustReturn(.hidden)
             .bindAndCatch(to: pendingLabelVisibilityRelay)
             .disposed(by: disposeBag)
@@ -80,7 +88,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     private let badgeRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
     private let separatorVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let iconImageViewContentRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
-    private let pendingLabelVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    public let pendingLabelVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let titleRelay = BehaviorRelay<String>(value: "")
     private let descriptionRelay = BehaviorRelay<String>(value: "")
     private let interactor: CurrentBalanceCellInteracting
@@ -93,11 +101,13 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         descriptionValue: @escaping DescriptionValue,
         currency: CurrencyType,
         separatorVisibility: Visibility = .hidden,
+        viewAccessibilitySuffix: String,
         titleAccessibilitySuffix: String,
         descriptionAccessibilitySuffix: String,
         pendingAccessibilitySuffix: String,
         descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors
     ) {
+        self.viewAccessibilitySuffix = viewAccessibilitySuffix
         self.titleAccessibilitySuffix = titleAccessibilitySuffix
         self.descriptionAccessibilitySuffix = descriptionAccessibilitySuffix
         self.pendingAccessibilitySuffix = pendingAccessibilitySuffix
@@ -139,7 +149,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         case (.nonCustodial, .crypto(let cryptoCurrency)):
             model = .template(
                 image: .local(name: "ic-private-account", bundle: .platformUIKit),
-                templateColor: currency.brandColor,
+                templateColor: currency.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
@@ -148,7 +158,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         case (.custodial(.trading), .crypto(let cryptoCurrency)):
             model = .template(
                 image: .local(name: "ic-trading-account", bundle: .platformUIKit),
-                templateColor: currency.brandColor,
+                templateColor: currency.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
@@ -157,7 +167,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         case (.custodial(.savings), .crypto(let cryptoCurrency)):
             model = .template(
                 image: .local(name: "ic-interest-account", bundle: .platformUIKit),
-                templateColor: currency.brandColor,
+                templateColor: currency.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""

@@ -16,10 +16,12 @@ public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteractin
 
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
+    private let balanceFetch: ActivityItemBalanceFetching
 
     // MARK: - Setup
 
     public init(activityItemBalanceFetching: ActivityItemBalanceFetching) {
+        balanceFetch = activityItemBalanceFetching
         activityItemBalanceFetching
             .calculationState
             .map { state -> InteractionState in
@@ -31,7 +33,7 @@ public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteractin
                         next: .init(
                             fiatValue: result.quote,
                             cryptoValue: result.base,
-                            pendingValue: .zero(currency: result.base.currency)
+                            pendingValue: nil
                         )
                     )
                 }

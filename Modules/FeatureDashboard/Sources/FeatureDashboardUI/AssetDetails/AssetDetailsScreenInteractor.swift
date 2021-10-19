@@ -11,17 +11,17 @@ final class AssetDetailsScreenInteractor {
 
     var nonCustodialAccount: Single<BlockchainAccount> {
         blockchainAccountFetcher
-            .account(for: currency.currency, accountType: .nonCustodial)
+            .account(for: currency.currencyType, accountType: .nonCustodial)
     }
 
     var tradingAccount: Single<BlockchainAccount> {
         blockchainAccountFetcher
-            .account(for: currency.currency, accountType: .custodial(.trading))
+            .account(for: currency.currencyType, accountType: .custodial(.trading))
     }
 
     var interestAccountIfFunded: Single<BlockchainAccount?> {
         blockchainAccountFetcher
-            .account(for: currency.currency, accountType: .custodial(.savings))
+            .account(for: currency.currencyType, accountType: .custodial(.savings))
             .flatMap { account -> Single<BlockchainAccount?> in
                 account.isFunded.map { isFunded -> BlockchainAccount? in
                     isFunded ? account : nil
@@ -34,7 +34,7 @@ final class AssetDetailsScreenInteractor {
             .rate(for: currency)
     }
 
-    let priceServiceAPI: HistoricalFiatPriceServiceAPI
+    let historicalFiatPriceService: HistoricalFiatPriceServiceAPI
     let fiatCurrencyService: FiatCurrencyServiceAPI
 
     // MARK: - Private Properties
@@ -53,21 +53,19 @@ final class AssetDetailsScreenInteractor {
         savingsAccountService: InterestAccountOverviewAPI = resolve(),
         blockchainAccountFetcher: BlockchainAccountFetching = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        exchangeAPI: PairExchangeServiceAPI
+        pairExchangeService: PairExchangeServiceAPI
     ) {
         self.coincore = coincore
         self.blockchainAccountFetcher = blockchainAccountFetcher
         self.currency = currency
         self.savingsAccountService = savingsAccountService
-        priceServiceAPI = HistoricalFiatPriceService(
+        historicalFiatPriceService = HistoricalFiatPriceService(
             cryptoCurrency: currency,
-            exchangeAPI: exchangeAPI,
+            pairExchangeService: pairExchangeService,
             fiatCurrencyService: fiatCurrencyService
         )
         recoveryPhraseStatus = resolve()
         self.fiatCurrencyService = fiatCurrencyService
-
-        priceServiceAPI.fetchTriggerRelay.accept(.week(.oneHour))
     }
 
     func refresh() {

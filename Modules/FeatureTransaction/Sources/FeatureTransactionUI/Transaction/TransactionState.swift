@@ -28,6 +28,8 @@ struct TransactionState: StateType {
     var pendingTransaction: PendingTransaction?
     var executionStatus: TransactionExecutionStatus = .notStarted
     var errorState: TransactionErrorState = .none // TODO: make it associated data of execution status, if related?
+    var order: OrderDetails?
+    var userKYCTiers: KYC.UserTiers?
 
     // MARK: UI Supporting Data
 
@@ -47,6 +49,12 @@ struct TransactionState: StateType {
         didSet {
             isGoingBack = false
         }
+    }
+
+    var termsAndAgreementsAreValid: Bool {
+        guard action == .interestTransfer else { return true }
+        guard let pendingTx = pendingTransaction else { return false }
+        return pendingTx.agreementOptionValue && pendingTx.termsOptionValue
     }
 
     var stepsBackStack: [TransactionFlowStep] = []
@@ -132,7 +140,7 @@ extension TransactionState {
             /// deposit or a withdraw.
             return .success(amount)
         }
-        guard let currencyType = rate.base.cryptoValue?.currencyType else {
+        guard let currency = rate.base.cryptoValue?.currency else {
             return .failure(.unexpectedMoneyValueType(rate.base))
         }
         guard let quote = rate.quote.fiatValue else {
@@ -149,14 +157,14 @@ extension TransactionState {
             return .success(amount
                 .convertToCryptoValue(
                     exchangeRate: quote,
-                    cryptoCurrency: currencyType
+                    cryptoCurrency: currency
                 )
                 .moneyValue
             )
         default:
             break
         }
-        return .success(.zero(currency: currencyType))
+        return .success(.zero(currency: currency))
     }
 
     /// The `MoneyValue` representing the amount received
@@ -167,15 +175,15 @@ extension TransactionState {
         case let account as SingleAccount:
             currencyType = account.currencyType
         case let receiveAddress as CryptoReceiveAddress:
-            currencyType = receiveAddress.asset.currency
+            currencyType = receiveAddress.asset.currencyType
         default:
             return .failure(.unexpectedDestinationAccountType)
         }
         guard let exchange = sourceDestinationPair else {
             return .success(.zero(currency: currencyType))
         }
-        guard case .crypto(let currency) = exchange.quote.currencyType else {
-            return .failure(.unexpectedCurrencyType(exchange.quote.currencyType))
+        guard case .crypto(let currency) = exchange.quote.currency else {
+            return .failure(.unexpectedCurrencyType(exchange.quote.currency))
         }
         guard let sourceQuote = sourceToFiatPair?.quote.fiatValue else {
             return .failure(.emptySourceExchangeRate)
@@ -190,12 +198,12 @@ extension TransactionState {
             exchange.quote.cryptoValue
         ) {
         case (.none, .some(let fiat), .some(let cryptoPrice)):
-            /// Conver the `fiatValue` amount entered into
+            /// Convert the `fiatValue` amount entered into
             /// a `CryptoValue`
             return .success(
                 fiat.convertToCryptoValue(
                     exchangeRate: destinationQuote,
-                    cryptoCurrency: cryptoPrice.currencyType
+                    cryptoCurrency: cryptoPrice.currency
                 )
                 .moneyValue
             )
@@ -217,14 +225,14 @@ extension TransactionState {
     }
 
     /// Converts an FiatValue `available` into CryptoValue if necessary.
-    private func availableToAmountCurrency(available: MoneyValue, amount: MoneyValue) throws -> MoneyValue {
+    private func availableToAmountCurrency(available: MoneyValue, amount: MoneyValue) -> MoneyValue {
         guard amount.isFiat else {
             return available
         }
         guard let rate = sourceToFiatPair else {
             return .zero(currency: amount.currency)
         }
-        return try available.convert(using: rate.quote)
+        return available.convert(using: rate.quote)
     }
 }
 
@@ -279,6 +287,9 @@ extension TransactionState {
                 return transactionErrorDescriptionForError(nabu.code)
             case .rxError:
                 return LocalizationIds.unknownError
+
+            case .message(let message):
+                return message
             }
         case .unknownError:
             return LocalizationIds.unknownError
@@ -339,29 +350,66 @@ enum TransactionFlowStep: Equatable {
     case initial
     case enterPassword
     case selectSource
+    case linkPaymentMethod
+    case linkACard
     case linkABank
+    case linkBankViaWire
     case enterAddress
     case selectTarget
     case enterAmount
     case kycChecks
+    case validateSource
     case confirmDetail
     case inProgress
+    case securityConfirmation
     case closed
+}
+
+extension TransactionFlowStep {
 
     var addToBackStack: Bool {
         switch self {
         case .selectSource,
              .selectTarget,
              .enterAddress,
-             .enterAmount:
+             .enterAmount,
+             .inProgress,
+             .linkBankViaWire,
+             .confirmDetail:
+            return true
+        case .closed,
+             .enterPassword,
+             .initial,
+             .kycChecks,
+             .validateSource,
+             .linkPaymentMethod,
+             .linkACard,
+             .linkABank,
+             .securityConfirmation:
+            return false
+        }
+    }
+
+    /// Returning `true` indicates that the flow gets automatically dismissed. This is usually the case for independent modal flows.
+    var goingBackSkipsNavigation: Bool {
+        switch self {
+        case .kycChecks,
+             .linkPaymentMethod,
+             .linkACard,
+             .linkABank,
+             .linkBankViaWire,
+             .securityConfirmation:
             return true
         case .closed,
              .confirmDetail,
+             .enterAddress,
+             .enterAmount,
              .enterPassword,
              .inProgress,
              .initial,
-             .kycChecks,
-             .linkABank:
+             .selectSource,
+             .selectTarget,
+             .validateSource:
             return false
         }
     }
@@ -372,6 +420,7 @@ enum TransactionExecutionStatus {
     case inProgress
     case error
     case completed
+    case pending
 
     var isComplete: Bool {
         self == .completed

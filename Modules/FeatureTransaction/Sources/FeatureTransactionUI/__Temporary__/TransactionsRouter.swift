@@ -18,11 +18,14 @@ public enum TransactionFlowAction: Equatable {
     case buy(CryptoAccount?)
     /// Performs a sell. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
     case sell(CryptoAccount?)
+    /// Performs a swap. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
+    case swap(CryptoAccount?)
 
     public static func == (lhs: TransactionFlowAction, rhs: TransactionFlowAction) -> Bool {
         switch (lhs, rhs) {
         case (.buy(let lhsAccount), .buy(let rhsAccount)),
-             (.sell(let lhsAccount), .sell(let rhsAccount)):
+             (.sell(let lhsAccount), .sell(let rhsAccount)),
+             (.swap(let lhsAccount), .swap(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
         default:
             return false
@@ -53,7 +56,7 @@ public protocol KYCSDDServiceAPI {
 
 internal final class TransactionsRouter: TransactionsRouterAPI {
 
-    private let featureFlagsService: InternalFeatureFlagServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let legacyBuyPresenter: LegacyBuyFlowPresenter
     private var sellRouter: LegacySellRouter?
     private let buyFlowBuilder: BuyFlowBuildable
@@ -63,7 +66,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private var currentRIBRouter: RIBs.Routing?
 
     init(
-        featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         legacyBuyPresenter: LegacyBuyFlowPresenter = .init(),
         buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(),
         sellFlowBuilder: SellFlowBuilder = SellFlowBuilder()
@@ -79,18 +82,28 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         switch action {
-        case .buy(let cryptoAccount):
-            if featureFlagsService.isEnabled(.useTransactionsFlowToBuyCrypto) {
-                return presentNewTransactionFlow(.buy(cryptoAccount), from: presenter)
-            } else {
-                return presentLegacyTransactionFlow(.buy(cryptoAccount), from: presenter)
-            }
-        case .sell(let cryptoAccount):
-            if featureFlagsService.isEnabled(.useTransactionsFlowToSellCrypto) {
-                return presentNewTransactionFlow(.sell(cryptoAccount), from: presenter)
-            } else {
-                return presentLegacyTransactionFlow(.sell(cryptoAccount), from: presenter)
-            }
+        case .buy:
+            return featureFlagsService.isEnabled(.local(.useTransactionsFlowToBuyCrypto))
+                .flatMap { [weak self] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in
+                    if isEnabled {
+                        return self?.presentNewTransactionFlow(action, from: presenter) ?? .empty()
+                    } else {
+                        return self?.presentLegacyTransactionFlow(action, from: presenter) ?? .empty()
+                    }
+                }
+                .eraseToAnyPublisher()
+        case .sell:
+            return featureFlagsService.isEnabled(.remote(.sellUsingTransactionFlowEnabled))
+                .flatMap { [weak self] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in
+                    if isEnabled {
+                        return self?.presentNewTransactionFlow(action, from: presenter) ?? .empty()
+                    } else {
+                        return self?.presentLegacyTransactionFlow(action, from: presenter) ?? .empty()
+                    }
+                }
+                .eraseToAnyPublisher()
+        case .swap:
+            return presentNewTransactionFlow(action, from: presenter)
         }
     }
 }
@@ -130,6 +143,18 @@ extension TransactionsRouter {
             router.start(with: cryptoAccount, from: presenter)
             mimicRIBAttachment(router: router)
             return listener.publisher
+        case .swap(let cryptoAccount):
+            let listener = SwapRootInteractor()
+            let builder = TransactionFlowBuilder()
+            let router = builder.build(
+                withListener: listener,
+                action: .swap,
+                sourceAccount: cryptoAccount,
+                target: nil
+            )
+            presenter.present(router.viewControllable.uiviewController, animated: true)
+            mimicRIBAttachment(router: router)
+            return .empty()
         }
     }
 
@@ -165,6 +190,8 @@ extension TransactionsRouter {
             sellRouter = PlatformUIKit.LegacySellRouter(builder: builder)
             sellRouter?.load()
             return .just(.abandoned)
+        case .swap:
+            unimplemented("There is no legacy swap flow.")
         }
     }
 }

@@ -34,13 +34,16 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     init(
         with bridge: BitcoinWalletBridgeAPI = resolve(),
         client: APIClientAPI = resolve(),
-        scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
+        scheduler: SchedulerType = CachedValueConfiguration.generateScheduler(identifier: "UnspentOutputRepository")
     ) {
         self.bridge = bridge
         self.client = client
 
-        cachedUnspentOutputs = CachedValue<UnspentOutputs>(
-            configuration: .periodic(10, scheduler: scheduler)
+        cachedUnspentOutputs = CachedValue(
+            configuration: .periodic(
+                seconds: 10,
+                scheduler: scheduler
+            )
         )
 
         cachedUnspentOutputs.setFetch { [weak self] () -> Single<UnspentOutputs> in

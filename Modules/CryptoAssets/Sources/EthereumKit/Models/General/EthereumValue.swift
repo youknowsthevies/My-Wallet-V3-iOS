@@ -9,16 +9,12 @@ enum EthereumValueError: Error {
 
 public struct EthereumValue: CryptoMoney {
 
-    public let currency: CurrencyType = .crypto(.coin(.ethereum))
+    public let currencyType: CurrencyType = .crypto(.coin(.ethereum))
 
-    public let currencyType: CryptoCurrency = .coin(.ethereum)
+    public let currency: CryptoCurrency = .coin(.ethereum)
 
     public var amount: BigInt {
         crypto.amount
-    }
-
-    public var value: CryptoValue {
-        crypto.value
     }
 
     private let crypto: CryptoMoney

@@ -23,10 +23,14 @@ enum TransactionAction: MviAction {
         passwordRequired: Bool
     )
     case initialiseWithTargetAndNoSource(action: AssetAction, target: TransactionTarget, passwordRequired: Bool)
+    case showAddAccountFlow
+    case showCardLinkingFlow
+    case cardLinkingFlowCompleted
     case bankLinkingFlowDismissed(AssetAction)
     case showBankLinkingFlow
     case bankAccountLinkedFromSource(BlockchainAccount, AssetAction)
     case bankAccountLinked(AssetAction)
+    case showBankWiringInstructions
     case sourceAccountSelected(BlockchainAccount)
     case targetAccountSelected(TransactionTarget)
     case availableSourceAccountsListUpdated([BlockchainAccount])
@@ -34,11 +38,17 @@ enum TransactionAction: MviAction {
     case updateAmount(MoneyValue) // Anytime the amount changes
     case pendingTransactionUpdated(PendingTransaction)
     case performKYCChecks
+    case validateSourceAccount // e.g. Give an opportunity to link a payment method
     case prepareTransaction // When continue button is tapped on enter amount screen
     case executeTransaction
-    case updateTransactionComplete(TransactionResult)
+    case performSecurityChecksForTransaction(TransactionResult)
+    case securityChecksCompleted
+    case updateTransactionPending
+    case updateTransactionComplete
     case fetchFiatRates
     case fetchTargetRates
+    case fetchUserKYCInfo
+    case userKYCInfoFetched(KYC.UserTiers)
     case updateFeeLevelAndAmount(FeeLevel, MoneyValue?)
     case sourceDestinationPair(MoneyValuePair)
     case transactionFiatRatePairs(TransactionMoneyValuePairs)
@@ -47,6 +57,7 @@ enum TransactionAction: MviAction {
     case resetFlow
     case showSourceSelection
     case showTargetSelection
+    case showCheckout
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
     case modifyTransactionConfirmation(TransactionConfirmation)
@@ -59,7 +70,7 @@ extension TransactionAction {
     // swiftlint:disable function_body_length
     // swiftlint:disable cyclomatic_complexity
     func reduce(oldState: TransactionState) -> TransactionState {
-        Logger.shared.debug("[Transaction Flow] Readucing Action: \(self)")
+        Logger.shared.debug("[Transaction Flow] Reducing Action: \(self)")
         switch self {
         case .pendingTransactionStarted(let allowFiatInput):
             var newState = oldState
@@ -69,18 +80,41 @@ extension TransactionAction {
             return newState.withUpdatedBackstack(oldState: oldState)
         case .updateFeeLevelAndAmount:
             return oldState
+
+        case .showAddAccountFlow:
+            switch oldState.action {
+            case .buy:
+                return oldState.stateForMovingForward(to: .linkPaymentMethod)
+            case .withdraw, .deposit:
+                return TransactionAction.showBankLinkingFlow.reduce(oldState: oldState)
+            default:
+                unimplemented()
+            }
+
+        case .showCardLinkingFlow:
+            return oldState.stateForMovingForward(to: .linkACard)
+
+        case .cardLinkingFlowCompleted:
+            return oldState.stateForMovingOneStepBack()
+
         case .showBankLinkingFlow:
-            var newState = oldState
-            newState.step = .linkABank
-            return newState.withUpdatedBackstack(oldState: oldState)
-        case .bankAccountLinkedFromSource:
-            var newState = oldState
-            newState.step = .selectTarget
-            return newState.withUpdatedBackstack(oldState: oldState)
-        case .bankAccountLinked:
-            var newState = oldState
-            newState.step = .selectTarget
-            return newState.withUpdatedBackstack(oldState: oldState)
+            return oldState.stateForMovingForward(to: .linkABank)
+
+        case .bankAccountLinkedFromSource,
+             .bankAccountLinked:
+            switch oldState.action {
+            case .buy:
+                return oldState.stateForMovingOneStepBack()
+
+            case .deposit, .withdraw:
+                var newState = oldState
+                newState.step = .selectTarget
+                return newState.withUpdatedBackstack(oldState: oldState)
+
+            default:
+                unimplemented()
+            }
+
         case .bankLinkingFlowDismissed(let action):
             var newState = oldState
             switch action {
@@ -88,10 +122,15 @@ extension TransactionAction {
                 newState.step = .selectTarget
             case .deposit:
                 newState.step = .selectSource
+            case .buy:
+                newState = oldState.stateForMovingOneStepBack()
             default:
                 unimplemented()
             }
             return newState
+
+        case .showBankWiringInstructions:
+            return oldState.stateForMovingForward(to: .linkBankViaWire)
 
         case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, let passwordRequired):
             // If the user scans a BitPay QR code, the account will be a BitPayInvoiceTarget.
@@ -145,10 +184,19 @@ extension TransactionAction {
                 source: sourceAccount,
                 passwordRequired: passwordRequired
             )
+
         case .fetchFiatRates:
             return oldState
+
         case .fetchTargetRates:
             return oldState
+
+        case .fetchUserKYCInfo:
+            return oldState
+
+        case .userKYCInfoFetched(let tiers):
+            return oldState.update(keyPath: \.userKYCTiers, value: tiers)
+
         case .sourceDestinationPair(let pair):
             var newState = oldState
             newState.sourceDestinationPair = pair
@@ -241,30 +289,49 @@ extension TransactionAction {
                 .withUpdatedBackstack(oldState: oldState)
 
         case .performKYCChecks:
-            return oldState
-                // KYC is shown and dismissed by a separate module so not for us to dismiss the modal
-                .update(keyPath: \.step, value: .kycChecks)
-                // Ensure this is threated as a step forward (although it won't be added to the back stack)
-                .update(keyPath: \.isGoingBack, value: false)
-                // Ensure the previoust step is in the back step
-                .withUpdatedBackstack(oldState: oldState)
+            return oldState.stateForMovingForward(to: .kycChecks)
+
+        case .validateSourceAccount:
+            return oldState.stateForMovingForward(to: .validateSource)
 
         case .prepareTransaction:
             var newState = oldState
             newState.nextEnabled = false // Don't enable until we get a validated pendingTx from the interactor
-            newState.step = .confirmDetail
-            return newState.withUpdatedBackstack(oldState: oldState)
+            return newState
+
+        case .showCheckout:
+            return oldState.stateForMovingForward(to: .confirmDetail)
+
         case .executeTransaction:
             var newState = oldState
             newState.nextEnabled = false
             newState.step = .inProgress
             newState.executionStatus = .inProgress
             return newState.withUpdatedBackstack(oldState: oldState)
+
+        case .performSecurityChecksForTransaction(let transactionResult):
+            guard case .hashed(_, _, let order) = transactionResult else {
+                impossible("This should only ever happen for transactions requiring 3D Secure or similar checks")
+            }
+            return oldState
+                .update(keyPath: \.order, value: order)
+                .stateForMovingForward(to: .securityConfirmation)
+
+        case .securityChecksCompleted:
+            return oldState.stateForMovingOneStepBack()
+
+        case .updateTransactionPending:
+            return oldState
+                .update(keyPath: \.nextEnabled, value: true)
+                .update(keyPath: \.executionStatus, value: .pending)
+                .withUpdatedBackstack(oldState: oldState)
+
         case .updateTransactionComplete:
             var newState = oldState
             newState.nextEnabled = true
             newState.executionStatus = .completed
             return newState.withUpdatedBackstack(oldState: oldState)
+
         case .fatalTransactionError(let error):
             Logger.shared.error(String(describing: error))
             var newState = oldState
@@ -273,22 +340,21 @@ extension TransactionAction {
             newState.errorState = .fatalError(FatalTransactionError(error: error))
             newState.executionStatus = .error
             return newState.withUpdatedBackstack(oldState: oldState)
+
         case .validateTransaction:
             return oldState
+
         case .resetFlow:
             var newState = oldState
             newState.step = .closed
             return newState
+
         case .returnToPreviousStep:
-            var stepsBackStack = oldState.stepsBackStack
-            let previousStep = stepsBackStack.popLast() ?? .initial
-            return oldState
-                .update(keyPath: \.stepsBackStack, value: stepsBackStack)
-                .update(keyPath: \.step, value: previousStep)
-                .update(keyPath: \.isGoingBack, value: true)
-                .update(keyPath: \.errorState, value: .none)
+            return oldState.stateForMovingOneStepBack()
+
         case .modifyTransactionConfirmation:
             return oldState
+
         case .invalidateTransaction:
             return oldState
                 .update(keyPath: \.pendingTransaction, value: nil)
@@ -311,6 +377,7 @@ extension TransactionAction {
 enum FatalTransactionError: Error, Equatable {
     case rxError(RxError)
     case generic(Error)
+    case message(String)
 
     /// Initializes the enum with the given error, this check if it's an RxError and assigns correctly
     /// - Parameter error: An `Error` to be assigned
@@ -326,7 +393,7 @@ enum FatalTransactionError: Error, Equatable {
         switch self {
         case .rxError(let error):
             return error
-        case .generic:
+        default:
             return nil
         }
     }
@@ -337,6 +404,8 @@ enum FatalTransactionError: Error, Equatable {
             return "\(LocalizationConstants.Errors.genericError) \n\(error.debugDescription)"
         case .generic(let error):
             return String(describing: error)
+        case .message(let message):
+            return message
         }
     }
 
@@ -346,6 +415,8 @@ enum FatalTransactionError: Error, Equatable {
             return left.debugDescription == right.localizedDescription
         case (.generic(let left), .generic(let right)):
             return left.localizedDescription == right.localizedDescription
+        case (.message(let lhs), .message(let rhs)):
+            return lhs == rhs
         default:
             return false
         }
@@ -354,7 +425,26 @@ enum FatalTransactionError: Error, Equatable {
 
 extension TransactionState {
 
-    func withUpdatedBackstack(oldState: TransactionState) -> TransactionState {
+    fileprivate func stateForMovingForward(to nextStep: TransactionFlowStep) -> TransactionState {
+        var newStepsBackStack = stepsBackStack
+        if step.addToBackStack {
+            newStepsBackStack.append(step)
+        }
+        return update(keyPath: \.isGoingBack, value: false)
+            .update(keyPath: \.step, value: nextStep)
+            .update(keyPath: \.stepsBackStack, value: newStepsBackStack)
+    }
+
+    fileprivate func stateForMovingOneStepBack() -> TransactionState {
+        var stepsBackStack = stepsBackStack
+        let previousStep = stepsBackStack.popLast() ?? .initial
+        return update(keyPath: \.stepsBackStack, value: stepsBackStack)
+            .update(keyPath: \.step, value: previousStep)
+            .update(keyPath: \.isGoingBack, value: true)
+            .update(keyPath: \.errorState, value: .none)
+    }
+
+    fileprivate func withUpdatedBackstack(oldState: TransactionState) -> TransactionState {
         if !isGoingBack, oldState.step != step, oldState.step.addToBackStack {
             var newState = self
             var newStack = oldState.stepsBackStack

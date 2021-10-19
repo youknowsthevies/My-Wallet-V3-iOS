@@ -75,7 +75,7 @@ public enum LocalizationConstants {
 
     public enum Errors {
         public static let genericError = NSLocalizedString(
-            "An error occured. Please try again.",
+            "An error occurred. Please try again.",
             comment: "Generic error message displayed when an error occurs."
         )
         public static let error = NSLocalizedString("Error", comment: "")
@@ -650,14 +650,14 @@ public enum LocalizationConstants {
             "Sell Crypto",
             comment: "Item displayed on the side menu of the app for when the user wants to sell crypto."
         )
-        public static let earnInterest = NSLocalizedString("Earn Interest", comment: "Earn Interest")
+        public static let earnInterest = NSLocalizedString("Earn Rewards", comment: "Earn Rewards")
         public static let addresses = NSLocalizedString(
             "Addresses",
             comment: "Item displayed on the side menu of the app for when the user wants to view their crypto addresses."
         )
         public static let backupFunds = NSLocalizedString(
             "Secret Private Key Recovery Phrase",
-            comment: "Item displayed on the side menu of the app for when the user wants to back up their funds by saving their 12 word mneumonic phrase."
+            comment: "Item displayed on the side menu of the app for when the user wants to back up their funds by saving their 12 word mnemonic phrase."
         )
         public static let airdrops = NSLocalizedString(
             "Airdrops",
@@ -678,10 +678,6 @@ public enum LocalizationConstants {
         public static let new = NSLocalizedString(
             "New",
             comment: "New tag shown for menu items that are new."
-        )
-        public static let lockbox = NSLocalizedString(
-            "Lockbox",
-            comment: "Lockbox menu item title."
         )
         public static let exchange = NSLocalizedString(
             "Exchange",
@@ -802,45 +798,6 @@ public enum LocalizationConstants {
         public static let yesterday = NSLocalizedString("Yesterday", comment: "text shown when a transaction has completed yesterday")
     }
 
-    public enum Lockbox {
-        public static let getYourLockbox = NSLocalizedString(
-            "Get Your Lockbox",
-            comment: "Title prompting the user to buy a lockbox."
-        )
-        public static let safelyStoreYourLockbox = NSLocalizedString(
-            "Safely store your crypto currency offline.",
-            comment: "Subtitle prompting the user to buy a lockbox."
-        )
-        public static let buyNow = NSLocalizedString(
-            "Buy Now",
-            comment: "Buy now CTA for a lockbox device."
-        )
-        public static let alreadyOwnOne = NSLocalizedString(
-            "Already own one?",
-            comment: "Title for anouncement card for the lockbox."
-        )
-        public static let announcementCardSubtitle = NSLocalizedString(
-            "From your computer log into blockchain.com and connect your Lockbox.",
-            comment: "Subtitle for anouncement card for the lockbox."
-        )
-        public static let balancesComingSoon = NSLocalizedString(
-            "Balances Coming Soon",
-            comment: "Title displayed to the user when they have a synced lockbox."
-        )
-        public static let balancesComingSoonSubtitle = NSLocalizedString(
-            "We are unable to display your Lockbox balance at this time. Don’t worry, your funds are safe. We’ll be adding this feature soon. While you wait, you can check your balance on the web.",
-            comment: "Subtitle display to the user when they have a synced lockbox."
-        )
-        public static let checkMyBalance = NSLocalizedString(
-            "Check My Balance",
-            comment: "CTA for when the user has a synced lockbox."
-        )
-        public static let wantToLearnMoreX = NSLocalizedString(
-            "Want to learn more? Tap here to visit %@",
-            comment: "Footer text in the lockbox view."
-        )
-    }
-
     public enum Stellar {
         public static let required = NSLocalizedString("Required", comment: "Required")
         public static let memoPlaceholder = NSLocalizedString("Used to identify transactions", comment: "Used to identify transactions")
@@ -947,7 +904,7 @@ public enum LocalizationConstants {
             public enum Deposit {
                 public static let title = NSLocalizedString("Deposit", comment: "Deposit")
                 public enum Crypto {
-                    public static let description = NSLocalizedString("Add %@ to your Interest Account", comment: "Add %@ to your Interest Account")
+                    public static let description = NSLocalizedString("Add %@ to your Rewards Account", comment: "Add %@ to your Rewards Account")
                 }
 
                 public enum Fiat {
@@ -966,8 +923,8 @@ public enum LocalizationConstants {
             }
 
             public enum Interest {
-                public static let title = NSLocalizedString("Interest Summary", comment: "Interest Summary")
-                public static let description = NSLocalizedString("View your accrued %@ Interest", comment: "View your accrued %@ Interest")
+                public static let title = NSLocalizedString("Rewards Summary", comment: "Rewards Summary")
+                public static let description = NSLocalizedString("View your accrued %@ Rewards", comment: "View your accrued %@ Rewards")
             }
 
             public enum Activity {

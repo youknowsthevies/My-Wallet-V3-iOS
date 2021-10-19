@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import ToolKit
 
 public enum PaymentMethodPayloadType: String, CaseIterable, Encodable {
@@ -104,17 +105,17 @@ public struct PaymentMethod: Equatable, Comparable {
                 guard supportedFiatCurrencies.contains(currency) else {
                     return nil
                 }
-                self = .bankAccount(currency.currency)
+                self = .bankAccount(currency.currencyType)
             case .bankTransfer:
                 guard supportedFiatCurrencies.contains(currency) else {
                     return nil
                 }
-                self = .bankTransfer(currency.currency)
+                self = .bankTransfer(currency.currencyType)
             case .funds:
                 guard supportedFiatCurrencies.contains(currency) else {
                     return nil
                 }
-                self = .funds(currency.currency)
+                self = .funds(currency.currencyType)
             }
         }
 
@@ -192,7 +193,7 @@ public struct PaymentMethod: Equatable, Comparable {
             }
             return fiat
         case .card:
-            return max.currencyType
+            return max.currency
         }
     }
 
@@ -202,6 +203,25 @@ public struct PaymentMethod: Equatable, Comparable {
 
     public static func < (lhs: PaymentMethod, rhs: PaymentMethod) -> Bool {
         lhs.type < rhs.type
+    }
+
+    public var label: String {
+        let localizedString: String
+        let localizationSpace = LocalizationConstants.SimpleBuy.AddPaymentMethodSelectionScreen.self
+        switch type {
+        case .bankAccount:
+            localizedString = localizationSpace.Types.bankAccount
+
+        case .bankTransfer:
+            localizedString = localizationSpace.Types.bankWireTitle
+
+        case .card:
+            localizedString = localizationSpace.Types.cardTitle
+
+        case .funds:
+            localizedString = localizationSpace.DepositCash.title
+        }
+        return localizedString
     }
 
     public init(

@@ -20,7 +20,7 @@ public struct EthereumHistoricalTransaction {
     public var transactionHash: String
     public var createdAt: Date
     public var fee: CryptoValue?
-    public var memo: String?
+    public var note: String?
     public var confirmations: Int
     public var state: EthereumTransactionState
     public let data: String?
@@ -34,7 +34,7 @@ public struct EthereumHistoricalTransaction {
         transactionHash: String,
         createdAt: Date,
         fee: CryptoValue?,
-        memo: String?,
+        note: String?,
         confirmations: Int,
         data: String?,
         state: EthereumTransactionState
@@ -47,7 +47,7 @@ public struct EthereumHistoricalTransaction {
         self.transactionHash = transactionHash
         self.createdAt = createdAt
         self.fee = fee
-        self.memo = memo
+        self.note = note
         self.confirmations = confirmations
         self.state = state
         self.data = data
@@ -55,7 +55,7 @@ public struct EthereumHistoricalTransaction {
 
     public init(
         response: EthereumHistoricalTransactionResponse,
-        memo: String? = nil,
+        note: String? = nil,
         accountAddress: String,
         latestBlock: Int
     ) {
@@ -74,7 +74,7 @@ public struct EthereumHistoricalTransaction {
             gasPrice: response.gasPrice,
             gasUsed: response.gasUsed
         )
-        self.memo = memo
+        self.note = note
         confirmations = EthereumHistoricalTransaction.confirmations(
             latestBlock: latestBlock,
             blockNumber: response.blockNumber
@@ -101,10 +101,10 @@ public struct EthereumHistoricalTransaction {
 
     private static func fee(gasPrice: String, gasUsed: String?) -> CryptoValue {
         guard let gasUsed = gasUsed else {
-            return CryptoValue.zero(currency: CryptoCurrency.coin(.ethereum))
+            return .zero(currency: .coin(.ethereum))
         }
         let fee = BigInt(stringLiteral: gasPrice) * BigInt(stringLiteral: gasUsed)
-        return CryptoValue.create(minor: fee, currency: CryptoCurrency.coin(.ethereum))
+        return CryptoValue.create(minor: fee, currency: .coin(.ethereum))
     }
 
     private static func confirmations(latestBlock: Int, blockNumber: String?) -> Int {

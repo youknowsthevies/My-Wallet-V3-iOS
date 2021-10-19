@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import DIKit
+import FeatureAppUI
 import FeatureDebugUI
 import PlatformKit
 import ToolKit
@@ -12,7 +13,7 @@ extension AppEnvironment {
         AppEnvironment(
             loadingViewPresenter: resolve(),
             onboardingSettings: resolve(),
-            blurEffectHandler: .init(),
+            blurEffectHandler: resolve(),
             cacheSuite: resolve(),
             remoteNotificationServiceContainer: resolve(),
             certificatePinner: resolve(),
@@ -23,6 +24,9 @@ extension AppEnvironment {
             deeplinkRouter: resolve(),
             backgroundAppHandler: resolve(),
             portfolioSyncingService: resolve(),
+            mobileAuthSyncService: resolve(),
+            resetPasswordService: resolve(),
+            accountRecoveryService: resolve(),
             featureFlagsService: resolve(),
             internalFeatureService: resolve(),
             fiatCurrencySettingsService: resolve(),
@@ -31,7 +35,8 @@ extension AppEnvironment {
             sharedContainer: .default,
             analyticsRecorder: resolve(),
             coincore: resolve(),
-            walletManager: .shared,
+            erc20CryptoAssetService: resolve(),
+            walletManager: resolve(),
             walletUpgradeService: resolve(),
             exchangeRepository: ExchangeAccountRepository(),
             appFeatureConfigurator: resolve(),
@@ -39,6 +44,7 @@ extension AppEnvironment {
             credentialsStore: resolve(),
             urlSession: resolve(),
             mainQueue: .main,
+            appStoreOpener: resolve(),
             buildVersionProvider: Bundle.versionAndBuildNumber
         )
     }

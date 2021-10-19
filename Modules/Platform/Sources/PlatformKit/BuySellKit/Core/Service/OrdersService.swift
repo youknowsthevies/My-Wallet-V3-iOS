@@ -34,7 +34,10 @@ final class OrdersService: OrdersServiceAPI {
     }
 
     private let ordersCachedValue = CachedValue<[OrderDetails]>(
-        configuration: .periodic(60)
+        configuration: .periodic(
+            seconds: 60,
+            schedulerIdentifier: "OrdersService"
+        )
     )
 
     // MARK: - Injected

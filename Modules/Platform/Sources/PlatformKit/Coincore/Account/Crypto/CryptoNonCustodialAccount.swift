@@ -37,6 +37,13 @@ extension CryptoNonCustodialAccount {
         .just(())
     }
 
+    public func canPerformInterestTransfer() -> Single<Bool> {
+        disabledReason
+            .map(\.isEligible)
+            .asSingle()
+            .catchErrorJustReturn(false)
+    }
+
     /// The `OrderDirection` for which an `CryptoNonCustodialAccount` could have custodial events.
     public var custodialDirections: Set<OrderDirection> {
         [.fromUserKey, .onChain]
@@ -47,19 +54,12 @@ extension CryptoNonCustodialAccount {
         swapEvents: [SwapActivityItemEvent],
         noncustodial: [TransactionalActivityItemEvent]
     ) -> [ActivityItemEvent] {
-        noncustodial.map { event -> ActivityItemEvent in
-            guard event.type == .send else {
-                return .transactional(event)
-            }
-            guard let swap = swapEvents.first(where: { swapEvent in
-                guard let transactionID = swapEvent.kind.depositTxHash else {
-                    return false
+        (noncustodial.map(ActivityItemEvent.transactional) + swapEvents.map(ActivityItemEvent.swap))
+            .map { event in
+                if case .swap(let swapEvent) = event, swapEvent.pair.outputCurrencyType.isFiatCurrency {
+                    return .buySell(.init(swapActivityItemEvent: swapEvent))
                 }
-                return transactionID.caseInsensitiveCompare(event.identifier) == .orderedSame
-            }) else {
-                return .transactional(event)
+                return event
             }
-            return .swap(swap)
-        }
     }
 }

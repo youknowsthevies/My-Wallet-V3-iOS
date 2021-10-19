@@ -14,12 +14,12 @@ extension LocalizationConstants {
 extension LocalizationConstants.Dashboard.BalanceCell {
     public enum Title {
         public static let trading = NSLocalizedString("Trading", comment: "Trading")
-        public static let savings = NSLocalizedString("Interest", comment: "Interest")
+        public static let savings = NSLocalizedString("Rewards", comment: "Rewards")
     }
 
     public enum Description {
-        public static let savingsPrefix = NSLocalizedString("Earn", comment: "Earn 3% APY")
-        public static let savingsSuffix = NSLocalizedString("% APY", comment: "Earn 3% APY")
+        public static let savingsPrefix = NSLocalizedString("Earn", comment: "Earn 3% annually")
+        public static let savingsSuffix = NSLocalizedString("% annually", comment: "Earn 3% annually")
     }
 
     public static let pending = NSLocalizedString("Pending", comment: "Pending")
@@ -62,6 +62,10 @@ extension LocalizationConstants.Dashboard.Portfolio {
 }
 
 extension LocalizationConstants.Dashboard.Prices {
+    public static let searchPlaceholder = NSLocalizedString(
+        "Search Coins",
+        comment: "Dashboard: Prices - search placeholder."
+    )
     public static let noResults = NSLocalizedString(
         "No Results",
         comment: "Dashboard: Prices - no results when filtering."

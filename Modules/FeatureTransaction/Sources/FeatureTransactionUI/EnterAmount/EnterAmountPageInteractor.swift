@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import Localization
@@ -36,6 +37,11 @@ protocol AuxiliaryViewPresenting: AnyObject {
     func makeViewController() -> UIViewController
 }
 
+protocol AuxiliaryViewPresentingDelegate: AnyObject {
+
+    func auxiliaryViewTapped(_ presenter: AuxiliaryViewPresenting, state: TransactionState)
+}
+
 final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePresentable>, EnterAmountPageInteractable {
 
     weak var router: EnterAmountPageRouting?
@@ -54,9 +60,10 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let amountViewInteractor: AmountViewInteracting
 
     private let transactionModel: TransactionModel
-    private let analyticsHook: TransactionAnalyticsHook
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
+
+    private let analyticsHook: TransactionAnalyticsHook
 
     init(
         transactionModel: TransactionModel,
@@ -102,6 +109,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         amountViewInteractor
             .amount
             .debounce(.milliseconds(250), scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+            .distinctUntilChanged()
             .flatMap { amount -> Observable<MoneyValue> in
                 transactionState
                     .take(1)
@@ -110,7 +118,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                         if let fiatValue = amount.fiatValue, !state.allowFiatInput {
                             // Fiat Input but state does not allow fiat
                             guard let sourceToFiatPair = state.sourceToFiatPair else {
-                                return MoneyValue.zero(currency: state.asset)
+                                return .zero(currency: state.asset)
                             }
                             return MoneyValuePair(
                                 fiatValue: fiatValue,
@@ -153,14 +161,15 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             })
             .disposeOnDeactivate(interactor: self)
 
-        let availableSources = transactionState
-            .map(\.availableSources)
-            .share(scope: .whileConnected)
+        amountViewInteractor.maxAmountSelected
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: analyticsHook.onMinSelected(state:))
+            .disposeOnDeactivate(interactor: self)
 
-        let availableTargets = transactionState
-            .map(\.availableTargets)
-            .map { $0.compactMap { $0 as? BlockchainAccount } }
-            .share(scope: .whileConnected)
+        amountViewInteractor.minAmountSelected
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: analyticsHook.onMinSelected(state:))
+            .disposeOnDeactivate(interactor: self)
 
         let fee = transactionState
             .takeWhile { $0.action == .send }
@@ -173,10 +182,12 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .map { state -> BlockchainAccount? in
                 switch state.action {
                 case .buy,
-                     .deposit:
+                     .deposit,
+                     .interestTransfer:
                     return state.source
                 case .sell,
-                     .withdraw:
+                     .withdraw,
+                     .interestWithdraw:
                     return state.destination as? BlockchainAccount
                 case .viewActivity,
                      .send,
@@ -188,21 +199,32 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .compactMap { $0 }
             .share(scope: .whileConnected)
 
-        let bottomAuxiliaryViewAccounts = Observable.combineLatest(
-            availableSources,
-            availableTargets
-        )
-        .map { [action] availableSources, availableTargets -> [Account] in
-            guard action == .buy || action == .deposit else {
-                return availableTargets
+        let availableSources = transactionState
+            .map(\.availableSources)
+            .share(scope: .whileConnected)
+
+        let availableTargets = transactionState
+            .map(\.availableTargets)
+            .share(scope: .whileConnected)
+
+        let bottomAuxiliaryViewEnabled = Observable
+            .zip(
+                availableSources,
+                availableTargets
+            )
+            .map { [action] availableSources, availableTargets -> [Account] in
+                guard action == .buy || action == .deposit else {
+                    return availableTargets
+                }
+                return availableSources
             }
-            return availableSources
-        }
+            .map(\.count)
+            .map { $0 > 1 }
 
         accountAuxiliaryViewInteractor
             .connect(
                 stream: auxiliaryViewAccount,
-                availableAccounts: bottomAuxiliaryViewAccounts
+                tapEnabled: bottomAuxiliaryViewEnabled
             )
             .disposeOnDeactivate(interactor: self)
 
@@ -305,14 +327,14 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 amountIsZero: Bool,
                 networkFeeAdjustmentSupported: Bool
             )? in
-            guard let pendingTransaction = state.pendingTransaction else {
-                return nil
-            }
-            return (
-                state.action,
-                state.amount.isZero,
-                pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported
-            )
+                guard let pendingTransaction = state.pendingTransaction else {
+                    return nil
+                }
+                return (
+                    state.action,
+                    state.amount.isZero,
+                    pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported
+                )
             }
             .map { action, amountIsZero, networkFeeAdjustmentSupported in
                 (action, (networkFeeAdjustmentSupported && action == .send && !amountIsZero) ? .visible : .hidden)
@@ -330,7 +352,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
     }
 
-    func handleTopAuxiliaryViewTapped(state: TransactionState) {
+    // MARK: - Private methods
+
+    private func handleTopAuxiliaryViewTapped(state: TransactionState) {
         switch state.action {
         case .buy:
             transactionModel.process(action: .showTargetSelection)
@@ -348,11 +372,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
              .withdraw:
             transactionModel.process(action: .showTargetSelection)
         default:
-            unimplemented("This view only supports withdraw and deposit at this time")
+            unimplemented()
         }
     }
-
-    // MARK: - Private methods
 
     private func calculateNextState(
         with state: State,
@@ -367,8 +389,10 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private func topAuxiliaryView(for transactionState: TransactionState) -> AuxiliaryViewPresenting? {
         let presenter: AuxiliaryViewPresenting?
         if transactionState.action.supportsTopAccountsView {
-            let interactor = TargetAuxiliaryViewInteractor(enterAmountInteractor: self)
-            presenter = TargetAuxiliaryViewPresenter(interactor: interactor, transactionState: transactionState)
+            presenter = TargetAuxiliaryViewPresenter(
+                delegate: self,
+                transactionState: transactionState
+            )
         } else {
             presenter = InfoAuxiliaryViewPresenter(transactionState: transactionState)
         }
@@ -424,6 +448,17 @@ extension EnterAmountPageInteractor {
             navigationModel: navigationModel,
             canContinue: false
         )
+    }
+}
+
+extension EnterAmountPageInteractor: AuxiliaryViewPresentingDelegate {
+
+    func auxiliaryViewTapped(_ presenter: AuxiliaryViewPresenting, state: TransactionState) {
+        if presenter === topAuxiliaryViewPresenter {
+            handleTopAuxiliaryViewTapped(state: state)
+        } else {
+            handleBottomAuxiliaryViewTapped(state: state)
+        }
     }
 }
 
@@ -507,7 +542,7 @@ extension TransactionErrorState {
         exchangeRate: MoneyValuePair?,
         input: ActiveAmountInput
     ) -> MoneyValue {
-        switch (source.currencyType, input) {
+        switch (source.currency, input) {
         case (.crypto, .crypto),
              (.fiat, .fiat):
             return source
@@ -518,19 +553,14 @@ extension TransactionErrorState {
                 return source
             }
             // Convert crypto max amount into fiat amount.
-            guard let result = try? source.convert(using: exchangeRate.quote) else {
-                // Can't convert, use original value for error message.
-                return source
-            }
-            return result
+            return source.convert(using: exchangeRate.quote)
         case (.fiat, .crypto):
-            guard let quote = exchangeRate?.quote,
-                  let result = try? source.convert(usingInverse: quote, currencyType: source.currencyType)
-            else {
-                // Can't convert, use original value for error message.
+            guard let exchangeRate = exchangeRate else {
+                // No exchange rate yet, use original value for error message.
                 return source
             }
-            return result
+            // Convert fiat max amount into crypto amount.
+            return source.convert(usingInverse: exchangeRate.quote, currencyType: source.currency)
         }
     }
 }
@@ -549,7 +579,6 @@ extension AssetAction {
     fileprivate var supportsBottomAccountsView: Bool {
         switch self {
         case .buy,
-             .sell,
              .deposit,
              .withdraw:
             return true

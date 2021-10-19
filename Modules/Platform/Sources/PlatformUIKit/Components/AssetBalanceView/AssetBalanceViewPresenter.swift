@@ -7,11 +7,11 @@ import RxSwift
 
 public final class AssetBalanceViewPresenter {
 
-    typealias PresentationState = AssetBalanceViewModel.State.Presentation
+    public typealias PresentationState = AssetBalanceViewModel.State.Presentation
 
     // MARK: - Exposed Properties
 
-    var state: Observable<PresentationState> {
+    public var state: Observable<PresentationState> {
         _ = setup
         return stateRelay
             .observeOn(MainScheduler.instance)

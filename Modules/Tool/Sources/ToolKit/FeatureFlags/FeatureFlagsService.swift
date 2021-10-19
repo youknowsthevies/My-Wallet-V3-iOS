@@ -20,7 +20,8 @@ public enum FeatureFlag: Hashable {
 }
 
 public enum BuildFlag {
-    public static var isInternal: Bool = true
+    public static var isAlpha: Bool = false
+    public static var isInternal: Bool = false
 }
 
 public enum FeatureFlagError: Error {
@@ -74,11 +75,9 @@ class FeatureFlagsService: FeatureFlagsServiceAPI {
     }
 
     func isEnabled(_ feature: FeatureFlag) -> AnyPublisher<Bool, Never> {
-        #if ALPHA_BUILD
-        if feature.isAlphaReady {
+        if BuildFlag.isAlpha, feature.isAlphaReady {
             return .just(true)
         }
-        #endif
         switch feature {
         case .local(let featureFlag):
             return .just(localFeatureFlagsService.isEnabled(featureFlag))

@@ -120,9 +120,13 @@ final class WithdrawRootInteractor: Interactor,
                     fiatCurrency: fiatCurrency
                 )
             } else {
+                // If you want the TxFlow to go straight to the
+                // `Enter Amount` screen, pass in a `destination`.
+                // However, if you do this, the user will not be able to
+                // return to the prior screen to change the destination.
                 self.router?.startWithdraw(
                     sourceAccount: self.sourceAccount,
-                    destination: filteredLinkedBanks.count > 1 ? nil : filteredLinkedBanks.first
+                    destination: nil
                 )
             }
         })
@@ -167,6 +171,10 @@ final class WithdrawRootInteractor: Interactor,
     }
 
     func presentKYCFlowIfNeeded(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
+        unimplemented()
+    }
+
+    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
         unimplemented()
     }
 

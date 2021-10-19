@@ -30,7 +30,7 @@ class PaymentAccountGBPTests: XCTestCase {
 
         XCTAssertEqual(account!.identifier, mock.id, "its id comes from the response object")
         XCTAssertEqual(account!.state, mock.state, "its state comes from the response object")
-        XCTAssertEqual(account!.currency.currency, mock.currency, "its currency comes from the response object")
+        XCTAssertEqual(account!.currency.currencyType, mock.currency, "its currency comes from the response object")
 
         XCTAssertEqual(account!.accountNumber, mock.agent.account, "its accountNumber comes from response.agent")
         XCTAssertEqual(account!.sortCode, mock.agent.code, "its sortCode comes from response.agent")

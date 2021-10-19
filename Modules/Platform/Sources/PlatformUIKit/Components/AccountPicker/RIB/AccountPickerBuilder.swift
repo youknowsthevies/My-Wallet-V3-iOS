@@ -1,5 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import DIKit
+import Localization
 import PlatformKit
 import RIBs
 
@@ -34,6 +37,8 @@ public protocol AccountPickerListener: AnyObject {
 }
 
 public final class AccountPickerBuilder: AccountPickerBuildable {
+
+    @LazyInject var viewController: AccountPickerViewControllable
 
     // MARK: - Private Properties
 
@@ -77,9 +82,8 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
         case .simple:
             shouldOverrideNavigationEffects = false
         }
-        let viewController = AccountPickerViewController(
-            shouldOverrideNavigationEffects: shouldOverrideNavigationEffects
-        )
+
+        viewController.shouldOverrideNavigationEffects = shouldOverrideNavigationEffects
         let presenter = AccountPickerPresenter(
             viewController: viewController,
             action: action,

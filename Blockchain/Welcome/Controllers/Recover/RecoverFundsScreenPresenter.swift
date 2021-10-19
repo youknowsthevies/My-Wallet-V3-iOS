@@ -14,7 +14,7 @@ final class RecoverFundsScreenPresenter {
 
         /// The values associated with a `valid` state
         struct Values {
-            let mneumonic: String
+            let mnemonic: String
         }
 
         enum InvalidReason {
@@ -85,7 +85,7 @@ final class RecoverFundsScreenPresenter {
         let stateObservable = mnemonicTextViewModel.state.map { payload -> State in
             switch payload {
             case .valid(let value):
-                return .valid(.init(mneumonic: value.string))
+                return .valid(.init(mnemonic: value.string))
             case .incomplete:
                 return .invalid(.incompleteMnemonic)
             case .excess:
@@ -111,7 +111,7 @@ final class RecoverFundsScreenPresenter {
             guard case .valid(let values) = state else { return nil }
             self?.feedback.prepare()
             self?.feedback.notificationOccurred(.success)
-            return values.mneumonic
+            return values.mnemonic
         }
         .bindAndCatch(to: mnemonicEntryRelay)
         .disposed(by: disposeBag)

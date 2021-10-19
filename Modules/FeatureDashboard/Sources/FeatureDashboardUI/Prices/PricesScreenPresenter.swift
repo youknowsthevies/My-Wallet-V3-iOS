@@ -51,22 +51,19 @@ final class PricesScreenPresenter {
         let enabledCryptoCurrencies = interactor.enabledCryptoCurrencies
         reloadRelay
             .startWith(())
-            .throttle(.milliseconds(250), scheduler: MainScheduler.asyncInstance)
-            .flatMapLatest(weak: self) { (self, _) -> Observable<[CryptoCurrency]> in
-                self.searchRelay
-                    .asObservable()
-                    .map { searchText in
-                        guard !searchText.isEmpty else {
-                            return enabledCryptoCurrencies
-                        }
-                        let lowercased = searchText.lowercased()
-                        return enabledCryptoCurrencies.filter { cryptoCurrency in
-                            cryptoCurrency.name.lowercased().contains(lowercased)
-                                || cryptoCurrency.code.lowercased().contains(lowercased)
-                        }
-                    }
+            .throttle(.seconds(250), scheduler: MainScheduler.asyncInstance)
+            .flatMapLatest { [searchRelay] in
+                searchRelay.asObservable()
             }
-            .map(weak: self) { (self, filteredCurrencies) -> [PricesCellType] in
+            .map { searchText -> [CryptoCurrency] in
+                guard !searchText.isEmpty else {
+                    return enabledCryptoCurrencies
+                }
+                return enabledCryptoCurrencies.filter { cryptoCurrency in
+                    cryptoCurrency.matchSearch(searchText)
+                }
+            }
+            .map { [interactor] filteredCurrencies -> [PricesCellType] in
                 guard !filteredCurrencies.isEmpty else {
                     let labelContent = LabelContent(
                         text: LocalizedString.noResults,
@@ -78,13 +75,12 @@ final class PricesScreenPresenter {
                 }
                 return filteredCurrencies
                     .compactMap { cryptoCurrency in
-                        guard let interactor = self.interactor.priceInteractors[cryptoCurrency] else {
-                            return nil
+                        let presenter: () -> PricesTableViewCellPresenter = {
+                            PricesTableViewCellPresenter(
+                                cryptoCurrency: cryptoCurrency,
+                                interactor: interactor.assetPriceViewInteractor(for: cryptoCurrency)
+                            )
                         }
-                        let presenter = PricesTableViewCellPresenter(
-                            cryptoCurrency: cryptoCurrency,
-                            interactor: interactor
-                        )
                         return .currency(cryptoCurrency, presenter)
                     }
             }

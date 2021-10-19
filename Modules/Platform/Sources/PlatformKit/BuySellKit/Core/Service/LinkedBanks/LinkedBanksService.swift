@@ -51,7 +51,11 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
         self.client = client
         self.fiatCurrencyService = fiatCurrencyService
 
-        cachedValue = CachedValue<[LinkedBankData]>(configuration: .onSubscription())
+        cachedValue = CachedValue(
+            configuration: .onSubscription(
+                schedulerIdentifier: "LinkedBanksService"
+            )
+        )
 
         cachedValue.setFetch {
             client.linkedBanks()

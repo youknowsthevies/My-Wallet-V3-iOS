@@ -2,7 +2,7 @@
 
 import DIKit
 
-public struct NabuUser: Decodable {
+public struct NabuUser: Decodable, Equatable {
 
     // MARK: - Types
 
@@ -14,7 +14,7 @@ public struct NabuUser: Decodable {
     }
 
     /// Products used by the user
-    public struct ProductsUsed: Decodable {
+    public struct ProductsUsed: Decodable, Equatable {
 
         private enum CodingKeys: String, CodingKey {
             case exchange
@@ -148,7 +148,7 @@ extension NabuUser {
     /// Else use value of `NabuUserSettings`s `mercuryEmailVerified`.
     /// Both `ProductsUsed` and `NabuUserSettings` are optionally present.
     public var hasLinkedExchangeAccount: Bool {
-        if let productsUsed = self.productsUsed {
+        if let productsUsed = productsUsed {
             return productsUsed.exchange
         } else if let mercuryEmailVerified = settings?.mercuryEmailVerified {
             return mercuryEmailVerified
@@ -182,7 +182,7 @@ extension NabuUser: NabuUserSimpleBuyEnabled {
     }
 }
 
-public struct Mobile: Decodable {
+public struct Mobile: Decodable, Equatable {
     public let phone: String
     public let verified: Bool
 
@@ -203,7 +203,7 @@ public struct Mobile: Decodable {
     }
 }
 
-public struct Tags: Decodable {
+public struct Tags: Decodable, Equatable {
 
     private enum CodingKeys: String, CodingKey {
         case sunriver = "SUNRIVER"
@@ -237,7 +237,7 @@ public struct Tags: Decodable {
         self.simpleBuy = simpleBuy
     }
 
-    public struct Sunriver: Decodable {
+    public struct Sunriver: Decodable, Equatable {
         let campaignAddress: String
 
         private enum CodingKeys: String, CodingKey {
@@ -245,9 +245,9 @@ public struct Tags: Decodable {
         }
     }
 
-    public struct SimpleBuy: Decodable {}
+    public struct SimpleBuy: Decodable, Equatable {}
 
-    public struct Blockstack: Decodable {
+    public struct Blockstack: Decodable, Equatable {
         let campaignAddress: String
 
         private enum CodingKeys: String, CodingKey {
@@ -255,7 +255,7 @@ public struct Tags: Decodable {
         }
     }
 
-    public struct PowerPax: Decodable {
+    public struct PowerPax: Decodable, Equatable {
         let campaignAddress: String
 
         private enum CodingKeys: String, CodingKey {
@@ -268,7 +268,7 @@ public struct Tags: Decodable {
     }
 }
 
-public struct DocumentResubmission: Decodable {
+public struct DocumentResubmission: Decodable, Equatable {
     public let reason: Int
 
     private enum CodingKeys: String, CodingKey {
@@ -276,7 +276,7 @@ public struct DocumentResubmission: Decodable {
     }
 }
 
-public struct DepositAddress {
+public struct DepositAddress: Equatable {
     public let type: CryptoCurrency
     public let address: String
 
@@ -299,7 +299,7 @@ public struct DepositAddress {
     }
 }
 
-public struct NabuUserSettings: Decodable {
+public struct NabuUserSettings: Decodable, Equatable {
     public let mercuryEmailVerified: Bool?
 
     private enum CodingKeys: String, CodingKey {

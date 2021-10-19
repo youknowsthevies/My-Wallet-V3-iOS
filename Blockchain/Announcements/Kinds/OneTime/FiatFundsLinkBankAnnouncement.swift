@@ -12,7 +12,7 @@ import ToolKit
 /// Card announcement for announcing Cash feature.
 /// Should only show if the user has KYC'd and has not
 /// linked a bank.
-final class FiatFundsLinkBankAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class FiatFundsLinkBankAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     private typealias LocalizationId = LocalizationConstants.AnnouncementCards.FiatFundsLinkBank
 

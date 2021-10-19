@@ -5,19 +5,15 @@ import UIKit
 
 extension UIColor {
     convenience init(paletteColor: PaletteColor) {
-        guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else {
-            self.init(white: 0, alpha: 1)
-            return
-        }
         let colorName = paletteColor.rawValue.capitalizeFirstLetter
-        self.init(named: colorName, in: Bundle.module, compatibleWith: nil)!
+        self.init(named: colorName, in: Bundle.UIComponents, compatibleWith: nil)!
     }
 }
 
 extension Color {
     init(paletteColor: PaletteColor) {
         let colorName = paletteColor.rawValue.capitalizeFirstLetter
-        self.init(colorName, bundle: Bundle.module)
+        self.init(colorName, bundle: Bundle.UIComponents)
     }
 }
 

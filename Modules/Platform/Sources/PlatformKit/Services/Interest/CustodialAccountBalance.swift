@@ -3,7 +3,6 @@
 public struct CustodialAccountBalance: Equatable {
 
     public let currency: CurrencyType
-    public var symbol: String { currency.symbol }
     public let available: MoneyValue
     public let pending: MoneyValue
     public let withdrawable: MoneyValue

@@ -18,12 +18,12 @@ public final class InputAmountLabelInteractor {
 
     init(currency: Currency, integralPlacesLimit: Int = 10) {
         scanner = MoneyValueInputScanner(
-            maxDigits: .init(integral: integralPlacesLimit, fractional: currency.maxDisplayableDecimalPlaces)
+            maxDigits: .init(integral: integralPlacesLimit, fractional: currency.displayPrecision)
         )
         interactor = AmountLabelViewInteractor(currency: currency)
 
         interactor.currency
-            .map { .init(integral: integralPlacesLimit, fractional: $0.maxDisplayableDecimalPlaces) }
+            .map { .init(integral: integralPlacesLimit, fractional: $0.displayPrecision) }
             .bindAndCatch(to: scanner.maxDigitsRelay)
             .disposed(by: disposeBag)
     }

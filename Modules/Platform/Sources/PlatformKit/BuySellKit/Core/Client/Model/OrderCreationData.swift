@@ -77,10 +77,10 @@ enum OrderPayload {
             switch action {
             case .buy:
                 input = Input(
-                    symbol: fiatValue.currencyCode,
+                    symbol: fiatValue.code,
                     amount: fiatValue.minorString
                 )
-                output = Output(symbol: cryptoValue.currency.code)
+                output = Output(symbol: cryptoValue.code)
                 pair = "\(output.symbol)-\(input.symbol)"
             case .sell:
                 input = Input(

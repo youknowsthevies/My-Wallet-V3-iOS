@@ -10,7 +10,7 @@ extension SettingsSectionType {
         case .preferences:
             return LocalizationConstants.Settings.Section.preferences
         case .connect:
-            return LocalizationConstants.Settings.Section.walletConnect
+            return LocalizationConstants.Settings.Section.exchangeLink
         case .security:
             return LocalizationConstants.Settings.Section.security
         case .cards:

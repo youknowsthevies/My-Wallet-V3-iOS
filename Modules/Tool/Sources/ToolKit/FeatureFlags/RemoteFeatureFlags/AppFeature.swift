@@ -14,8 +14,11 @@ public enum AppFeature: Int, CaseIterable {
     /// The announcements
     case announcements
 
-    /// The announcements
-    case announcementAsset
+    /// The ticker for the new asset announcement.
+    case newAssetAnnouncement
+
+    /// The ticker for the asset rename announcement.
+    case assetRenameAnnouncement
 
     /// Sift Science SDK is enabled
     case siftScienceEnabled
@@ -34,7 +37,13 @@ public enum AppFeature: Int, CaseIterable {
     /// Shows Email Verification, if needed, when a user tries to make a purchase
     case showEmailVerificationInBuyFlow
 
-    // MARK: SDD
+    // MARK: - SSO
+
+    case accountRecovery
+
+    case unifiedSignIn
+
+    // MARK: - SDD
 
     /// Enables SDD checks. If `false`, all checks immediately fail
     case sddEnabled
@@ -47,6 +56,12 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable Zen-Desk Messaging for Gold Verified Users
     case customerSupportChat
+
+    /// Enable new Sell Transaction flow
+    case sellUsingTransactionFlowEnabled
+
+    /// Enable Dynamic Assets
+    case dynamicAssetsEnabled
 }
 
 extension AppFeature {
@@ -57,8 +72,10 @@ extension AppFeature {
             return "ios_interest_deposit_withdraw"
         case .announcements:
             return "announcements"
-        case .announcementAsset:
+        case .newAssetAnnouncement:
             return "new_asset_announcement_ticker"
+        case .assetRenameAnnouncement:
+            return "rename_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
         case .secureChannel:
@@ -73,17 +90,27 @@ extension AppFeature {
             return "show_email_verification_in_onboarding_ios"
         case .showEmailVerificationInBuyFlow:
             return "show_email_verification_in_buy_flow_ios"
+        case .accountRecovery:
+            return "sso_account_recovery_enabled_ios"
+        case .unifiedSignIn:
+            return "sso_unified_sign_in_enabled_ios"
         case .sddEnabled:
             return "sdd_enabled_ios"
         case .customerSupportChat:
             return "customer_support_chat_ios"
+        case .sellUsingTransactionFlowEnabled:
+            return "sell_using_transaction_flow_enabled_ios"
+        case .dynamicAssetsEnabled:
+            return "dynamic_assets_ios"
         }
     }
 
     /// Enables the feature for alpha release by overriding remote config settings.
     var isAlphaReady: Bool {
         switch self {
-        case .announcementAsset:
+        case .newAssetAnnouncement:
+            return false
+        case .assetRenameAnnouncement:
             return false
         case .interestWithdrawAndDeposit:
             return false
@@ -103,10 +130,22 @@ extension AppFeature {
             return false
         case .showEmailVerificationInBuyFlow:
             return false
+        case .accountRecovery:
+            return false
+        case .unifiedSignIn:
+            return false
         case .sddEnabled:
             return false
         case .customerSupportChat:
             return false
+        case .sellUsingTransactionFlowEnabled,
+             .dynamicAssetsEnabled:
+            return true
         }
     }
+}
+
+public struct AssetRenameAnnouncementFeature: Decodable {
+    public let networkTicker: String
+    public let oldTicker: String
 }

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinChainKit
+import Combine
 import DIKit
 import Localization
 import PlatformKit
@@ -29,18 +30,30 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     var balance: Single<MoneyValue> {
         balanceService
             .balances(for: walletAccount.publicKeys.xpubs)
+            .asSingle()
             .moneyValue
     }
 
     var actions: Single<AvailableActions> {
-        isFunded
-            .map { isFunded -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
-                if isFunded {
-                    base.insert(.swap)
+        Single.zip(
+            isFunded,
+            canPerformInterestTransfer(),
+            featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
+        )
+        .map { isFunded, isInterestTransferEnabled, isSellEnabled -> AvailableActions in
+            var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
+            if isFunded {
+                base.insert(.swap)
+                if isSellEnabled {
+                    base.insert(.sell)
                 }
-                return base
+                if isInterestTransferEnabled {
+                    base.insert(.interestTransfer)
+                }
             }
+            return base
+        }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
@@ -85,10 +98,11 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     private let balanceService: BalanceServiceAPI
     private let bridge: BitcoinWalletBridgeAPI
     private let hdAccountIndex: Int
-    private let fiatPriceService: FiatPriceServiceAPI
+    private let priceService: PriceServiceAPI
     private let walletAccount: BitcoinWalletAccount
     private let transactionsService: BitcoinHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         walletAccount: BitcoinWalletAccount,
@@ -96,19 +110,21 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainKit.BitcoinChainCoin.bitcoin),
         transactionsService: BitcoinHistoricalTransactionServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
-        fiatPriceService: FiatPriceServiceAPI = resolve(),
-        bridge: BitcoinWalletBridgeAPI = resolve()
+        priceService: PriceServiceAPI = resolve(),
+        bridge: BitcoinWalletBridgeAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         xPub = walletAccount.publicKeys.default
         hdAccountIndex = walletAccount.index
         label = walletAccount.label ?? CryptoCurrency.coin(.bitcoin).defaultWalletName
         self.isDefault = isDefault
         self.balanceService = balanceService
-        self.fiatPriceService = fiatPriceService
+        self.priceService = priceService
         self.transactionsService = transactionsService
         self.swapTransactionsService = swapTransactionsService
         self.bridge = bridge
         self.walletAccount = walletAccount
+        self.featureFlagsService = featureFlagsService
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -118,35 +134,38 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
              .buy,
              .viewActivity:
             return .just(true)
+        case .interestTransfer:
+            return canPerformInterestTransfer()
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
+                }
         case .deposit,
              .withdraw,
-             .sell:
+             .interestWithdraw:
             return .just(false)
+        case .sell:
+            return featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled))
+                .asSingle()
+                .flatMap(weak: self) { _, isEnabled in
+                    isEnabled
+                        ? self.isFunded
+                        : .just(false)
+                }
         case .swap:
             return isFunded
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: asset, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
-    }
-
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
-            }
+            .eraseToAnyPublisher()
     }
 
     func updateLabel(_ newLabel: String) -> Completable {

@@ -24,7 +24,6 @@ public final class ExchangeAccountStatusService: ExchangeAccountStatusServiceAPI
 
     public var hasLinkedExchangeAccount: AnyPublisher<Bool, ExchangeAccountStatusServiceError> {
         nabuUserService.user
-            .asPublisher()
             .mapError(ExchangeAccountStatusServiceError.unknown)
             .map(\.hasLinkedExchangeAccount)
             .eraseToAnyPublisher()
@@ -39,14 +38,14 @@ public final class ExchangeAccountStatusService: ExchangeAccountStatusServiceAPI
             // If an error is thrown when fetching accounts
             // parse the error to determine if it is because 2FA is
             // not enabled.
-            .catch { networkError -> AnyPublisher<Bool, NabuNetworkError> in
-                guard case .nabuError(let nabuError) = networkError else {
-                    return .failure(networkError)
+            .catch { error -> AnyPublisher<Bool, NabuNetworkError> in
+                switch error {
+                case .nabuError(let nabuError) where nabuError.code == .bad2fa:
+                    return .just(false)
+                case .communicatorError,
+                     .nabuError:
+                    return .failure(error)
                 }
-                guard nabuError.code == .bad2fa else {
-                    return .failure(networkError)
-                }
-                return .just(false)
             }
             .eraseToAnyPublisher()
     }

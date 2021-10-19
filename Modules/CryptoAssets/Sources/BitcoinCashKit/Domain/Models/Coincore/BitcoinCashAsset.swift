@@ -2,7 +2,6 @@
 
 import BitcoinChainKit
 import Combine
-import CombineExt
 import DIKit
 import PlatformKit
 import RxSwift

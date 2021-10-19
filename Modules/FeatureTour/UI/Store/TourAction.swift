@@ -2,4 +2,6 @@
 
 enum TourAction {
     case createAccount
+    case restore
+    case logIn
 }

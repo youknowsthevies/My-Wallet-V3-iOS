@@ -12,7 +12,7 @@ class EthereumAccountDetailsServiceTests: XCTestCase {
 
     var scheduler: TestScheduler!
     var disposeBag: DisposeBag!
-    var bridge: EthereumWalletBridgeMock!
+    var accountRepository: EthereumWalletAccountRepositoryMock!
     var client: BalanceClientAPIMock!
     var subject: EthereumAccountDetailsService!
 
@@ -21,9 +21,9 @@ class EthereumAccountDetailsServiceTests: XCTestCase {
         client = BalanceClientAPIMock()
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
-        bridge = EthereumWalletBridgeMock()
+        accountRepository = EthereumWalletAccountRepositoryMock()
         subject = EthereumAccountDetailsService(
-            with: bridge,
+            accountRepository: accountRepository,
             client: client,
             scheduler: scheduler
         )
@@ -33,20 +33,23 @@ class EthereumAccountDetailsServiceTests: XCTestCase {
         client = nil
         scheduler = nil
         disposeBag = nil
-        bridge = nil
+        accountRepository = nil
         subject = nil
         super.tearDown()
     }
 
     func test_get_account_details() {
         // Arrange
-        let account = EthereumAssetAccount(
-            walletIndex: 0,
-            accountAddress: MockEthereumWalletTestData.account,
-            name: CryptoCurrency.coin(.ethereum).defaultWalletName
+        let account = EthereumWalletAccount(
+            index: 0,
+            publicKey: MockEthereumWalletTestData.account,
+            label: CryptoCurrency.coin(.ethereum).defaultWalletName,
+            archived: false
         )
         let balanceDetails = BalanceDetailsResponse(balance: "2.0", nonce: 1)
+        accountRepository.underlyingDefaultAccount = account
         client.balanceDetailsValue = .just(balanceDetails)
+
         let expectedAccountDetails = EthereumAssetAccountDetails(
             account: account,
             balance: balanceDetails.cryptoValue,

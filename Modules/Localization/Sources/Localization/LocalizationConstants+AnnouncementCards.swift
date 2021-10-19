@@ -154,6 +154,36 @@ extension LocalizationConstants {
             )
         }
 
+        public enum AssetRename {
+            public static let title = NSLocalizedString(
+                "%@ has a new name",
+                comment: "Asset Rename announcement card title."
+            )
+            public static let description = NSLocalizedString(
+                "Heads up: %@ has renamed to %@. All balances are unaffected.",
+                comment: "Asset Rename announcement card description."
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Trade %@",
+                comment: "Asset Rename card CTA button title."
+            )
+        }
+
+        public enum CeloEUR {
+            public static let title = NSLocalizedString(
+                "Earn up to 4% in cEUR Rewards",
+                comment: "CeloEUR announcement card title."
+            )
+            public static let description = NSLocalizedString(
+                "Buy cEUR with no fees and earn up to 4% in annual rewards, paid monthly.",
+                comment: "CeloEUR announcement card description."
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Learn more",
+                comment: "CeloEUR card CTA button title."
+            )
+        }
+
         public enum CloudBackup {
             public static let title = NSLocalizedString(
                 "Introducing Cloud Backups",
@@ -195,15 +225,15 @@ extension LocalizationConstants {
         }
 
         public enum InterestIdentityVerification {
-            public static let title = NSLocalizedString("Earn 9.0% Interest", comment: "Earn 4.5% Interest")
+            public static let title = NSLocalizedString("Earn 9.0% Rewards", comment: "Earn 4.5% Rewards")
             public enum Description {
                 public static let kycd = NSLocalizedString(
-                    "Start earning up to 9.0% interest on your crypto.",
-                    comment: "Start earning up to 9.0% interest on your crypto."
+                    "Start earning up to 9.0% rewards on your crypto.",
+                    comment: "Start earning up to 9.0% rewards on your crypto."
                 )
                 public static let notKYCd = NSLocalizedString(
-                    "Verify your identity and start earning up to 9.0% interest on your crypto.",
-                    comment: "Verify your identity and start earning up to 9.0% interest on your crypto."
+                    "Verify your identity and start earning up to 9.0% rewards on your crypto.",
+                    comment: "Verify your identity and start earning up to 9.0% rewards on your crypto."
                 )
             }
 
@@ -332,6 +362,21 @@ extension LocalizationConstants {
             public static let ctaButton = NSLocalizedString(
                 "Upload Documents",
                 comment: "The title of the action on the announcement card for when a user needs to submit documents to verify their identity."
+            )
+        }
+
+        public enum ResubmitDocumentsAfterRecovery {
+            public static let title = NSLocalizedString(
+                "Documents Needed",
+                comment: "The title of the action on the announcement card for when a user needs to submit documents to re-verify their identity."
+            )
+            public static let description = NSLocalizedString(
+                "Please re-verify your identity to complete account recovery. Some features may not be available until you do.",
+                comment: "The description on the announcement card for when a user needs to submit documents to re-verify their identity."
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Re-verify Now",
+                comment: "The title of the action on the announcement card for when a user needs to submit documents to re-verify their identity."
             )
         }
 

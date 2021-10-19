@@ -8,7 +8,7 @@ import RxDataSources
 enum PricesCellType: Hashable, IdentifiableType {
 
     case emptyState(LabelContent)
-    case currency(CryptoCurrency, PricesTableViewCellPresenter)
+    case currency(CryptoCurrency, () -> PricesTableViewCellPresenter)
 
     var identity: String {
         switch self {

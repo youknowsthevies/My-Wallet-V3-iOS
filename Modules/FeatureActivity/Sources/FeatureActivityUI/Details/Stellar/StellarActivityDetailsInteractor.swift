@@ -31,7 +31,7 @@ final class StellarActivityDetailsInteractor {
     func details(identifier: String, createdAt: Date) -> Observable<StellarActivityDetailsViewModel> {
         let transaction = detailsService
             .details(for: identifier)
-        let price = self.price(at: createdAt)
+        let price = price(at: createdAt)
             .optional()
             .catchErrorJustReturn(nil)
 
@@ -57,7 +57,7 @@ final class StellarActivityDetailsInteractor {
         priceService.price(
             of: CurrencyType.crypto(.coin(.stellar)),
             in: fiatCurrency,
-            at: date
+            at: .time(date)
         )
         .asSingle()
     }

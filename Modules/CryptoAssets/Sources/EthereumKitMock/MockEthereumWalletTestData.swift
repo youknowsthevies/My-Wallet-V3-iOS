@@ -59,12 +59,13 @@ extension EthereumAssetAccountDetails {
     }
 }
 
-extension EthereumAssetAccount {
-    static var defaultMock: EthereumAssetAccount {
-        .init(
-            walletIndex: 0,
-            accountAddress: MockEthereumWalletTestData.account,
-            name: ""
+extension EthereumWalletAccount {
+    static var defaultMock: EthereumWalletAccount {
+        EthereumWalletAccount(
+            index: 0,
+            publicKey: MockEthereumWalletTestData.account,
+            label: "",
+            archived: false
         )
     }
 }

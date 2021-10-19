@@ -40,7 +40,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let priceService: PriceServiceAPI
     private let ethereumAccountDetails: EthereumAccountDetailsServiceAPI
-    private let erc20AccountService: ERC20AccountServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
@@ -58,7 +57,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         feeService: EthereumKit.EthereumFeeServiceAPI = resolve(),
         transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
-        erc20AccountService: ERC20AccountServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve()
     ) {
@@ -69,11 +67,14 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         self.requireSecondPassword = requireSecondPassword
         self.priceService = priceService
         self.transactionsService = transactionsService
-        self.erc20AccountService = erc20AccountService
         self.transactionBuildingService = transactionBuildingService
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
 
-        feeCache = .init(configuration: .onSubscription())
+        feeCache = CachedValue(
+            configuration: .onSubscription(
+                schedulerIdentifier: "ERC20OnChainTransactionEngine"
+            )
+        )
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
             self.feeService.fees(cryptoCurrency: self.sourceCryptoCurrency)
         }
@@ -201,8 +202,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAddresses()
-            .andThen(validateAmounts(pendingTransaction: pendingTransaction))
+        validateAmounts(pendingTransaction: pendingTransaction)
             .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
             .andThen(validateSufficientGas(pendingTransaction: pendingTransaction))
             .andThen(validateNoPendingTransaction())
@@ -252,7 +252,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable { [erc20Token] in
-            if try pendingTransaction.amount <= CryptoValue.zero(currency: erc20Token.cryptoCurrency).moneyValue {
+            if try pendingTransaction.amount <= .zero(currency: erc20Token.cryptoCurrency) {
                 throw TransactionValidationFailure(state: .invalidAmount)
             }
         }
@@ -282,17 +282,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 guard try absoluteFee <= balance else {
                     throw TransactionValidationFailure(state: .insufficientGas)
                 }
-            }
-            .asCompletable()
-    }
-
-    private func validateAddresses() -> Completable {
-        erc20AccountService.isContract(address: target.address)
-            .map { isContractAddress -> Bool in
-                guard !isContractAddress else {
-                    throw TransactionValidationFailure(state: .invalidAddress)
-                }
-                return isContractAddress
             }
             .asCompletable()
     }

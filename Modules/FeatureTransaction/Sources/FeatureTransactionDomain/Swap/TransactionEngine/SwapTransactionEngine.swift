@@ -36,8 +36,8 @@ extension SwapTransactionEngine {
 
     var pair: OrderPair {
         OrderPair(
-            sourceCurrencyType: sourceAsset.currency,
-            destinationCurrencyType: target.asset.currency
+            sourceCurrencyType: sourceAsset.currencyType,
+            destinationCurrencyType: target.asset.currencyType
         )
     }
 
@@ -79,7 +79,7 @@ extension SwapTransactionEngine {
                 MoneyValue(amount: pricedQuote.price, currency: self.target.currencyType)
             }
             .map(weak: self) { (self, rate) -> MoneyValuePair in
-                try MoneyValuePair(base: .one(currency: self.sourceAsset), exchangeRate: rate)
+                MoneyValuePair(base: .one(currency: self.sourceAsset), exchangeRate: rate)
             }
     }
 
@@ -107,10 +107,10 @@ extension SwapTransactionEngine {
     ) -> Single<PendingTransaction> {
         Single
             .zip(
-                kycTiersService.tiers,
+                kycTiersService.tiers.asSingle(),
                 tradeLimitsRepository.fetchTransactionLimits(
-                    currency: fiatCurrency.currency,
-                    networkFee: targetAsset.currency,
+                    currency: fiatCurrency.currencyType,
+                    networkFee: targetAsset.currencyType,
                     product: .swap(orderDirection)
                 )
                 .asObservable()
@@ -177,7 +177,7 @@ extension SwapTransactionEngine {
                 }
 
                 let resultValue = CryptoValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
-                let swapDestinationValue: MoneyValue = try pendingTransaction.amount.convert(using: resultValue)
+                let swapDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
                 let confirmations: [TransactionConfirmation] = [
                     .swapSourceValue(.init(cryptoValue: pendingTransaction.amount.cryptoValue!)),
                     .swapDestinationValue(.init(cryptoValue: swapDestinationValue.cryptoValue!)),
@@ -185,14 +185,12 @@ extension SwapTransactionEngine {
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
                     .networkFee(.init(
-                        fee: pricedQuote.networkFee,
-                        feeType: .withdrawalFee,
-                        asset: targetAsset.currency
+                        primaryCurrencyFee: pricedQuote.networkFee,
+                        feeType: .withdrawalFee
                     )),
                     .networkFee(.init(
-                        fee: pendingTransaction.feeAmount,
-                        feeType: .depositFee,
-                        asset: sourceAsset.currency
+                        primaryCurrencyFee: pendingTransaction.feeAmount,
+                        feeType: .depositFee
                     ))
                 ]
 
@@ -231,17 +229,16 @@ extension SwapTransactionEngine {
             .asSingle()
             .map { [targetAsset, sourceAsset] pricedQuote -> PendingTransaction in
                 let networkFee = TransactionConfirmation.Model.NetworkFee(
-                    fee: pricedQuote.networkFee,
-                    feeType: .withdrawalFee,
-                    asset: targetAsset.currency
+                    primaryCurrencyFee: pricedQuote.networkFee,
+                    feeType: .withdrawalFee
                 )
                 let resultValue = CryptoValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let swapExchangeRate = TransactionConfirmation.Model.SwapExchangeRate(
-                    baseValue: CryptoValue.one(currency: sourceAsset).moneyValue,
+                    baseValue: .one(currency: sourceAsset),
                     resultValue: resultValue
                 )
                 let swapDestinationValue = TransactionConfirmation.Model.SwapDestinationValue(
-                    cryptoValue: (try pendingTransaction.amount.convert(using: resultValue)).cryptoValue!
+                    cryptoValue: pendingTransaction.amount.convert(using: resultValue).cryptoValue!
                 )
 
                 var pendingTransaction = pendingTransaction
@@ -357,14 +354,14 @@ extension PendingTransaction {
 
     fileprivate func calculateMinimumLimit(for quote: PricedQuote) throws -> MoneyValue {
         guard let minimumApiLimit = minimumApiLimit else {
-            return MoneyValue.zero(currency: quote.networkFee.currencyType)
+            return .zero(currency: quote.networkFee.currency)
         }
-        let destination = quote.networkFee.currencyType
-        let source = amount.currencyType
+        let destination = quote.networkFee.currency
+        let source = amount.currency
         let price = MoneyValue(amount: quote.price, currency: destination)
-        let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destination)
-        let convertedFees = try totalFees.convert(usingInverse: price, currencyType: source)
-        return (try? minimumApiLimit + convertedFees) ?? MoneyValue.zero(currency: destination)
+        let totalFees = (try? quote.networkFee + quote.staticFee) ?? .zero(currency: destination)
+        let convertedFees = totalFees.convert(usingInverse: price, currencyType: source)
+        return (try? minimumApiLimit + convertedFees) ?? .zero(currency: destination)
     }
 }
 

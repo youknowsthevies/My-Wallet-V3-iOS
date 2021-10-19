@@ -4,6 +4,17 @@ import Combine
 import RxSwift
 import ToolKit
 
+/// An account group error.
+public enum AccountGroupError: Error {
+
+    case noBalance
+
+    case noReceiveAddress
+
+    /// No accounts in account group.
+    case noAccounts
+}
+
 /// A `BlockchainAccount` that represents a collection of accounts, opposed to a single account.
 public protocol AccountGroup: BlockchainAccount {
     var accounts: [SingleAccount] { get }
@@ -45,54 +56,30 @@ extension AccountGroup {
         return type
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        let balances: [Single<MoneyValue>] = accounts
+    public func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error> {
+        accounts
             .map { account in
-                account
-                    .fiatBalance(fiatCurrency: fiatCurrency)
+                account.fiatBalance(fiatCurrency: fiatCurrency, at: time)
+                    .replaceError(with: MoneyValue.zero(currency: fiatCurrency))
             }
-        return Single.zip(balances)
-            .map { balances in
+            .zip()
+            .tryMap { balances -> MoneyValue in
                 try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
             }
+            .eraseToAnyPublisher()
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValue> {
-        let balances: [Single<MoneyValue>] = accounts
+    public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        accounts
             .map { account in
-                account
-                    .fiatBalance(fiatCurrency: fiatCurrency, at: date)
+                account.balancePair(fiatCurrency: fiatCurrency, at: time)
+                    .replaceError(with: .zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currencyType))
             }
-        return Single.zip(balances)
-            .map { balances in
-                try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
+            .zip()
+            .tryMap { [currencyType] balancePairs in
+                try balancePairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType), +)
             }
-    }
-
-    public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        let balancePairs: [Single<MoneyValuePair>] = accounts
-            .map { account in
-                account
-                    .balancePair(fiatCurrency: fiatCurrency)
-                    .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
-            }
-        return Single.zip(balancePairs)
-            .map { [currencyType] pairs -> MoneyValuePair in
-                try pairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency), +)
-            }
-    }
-
-    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
-        let balancePairs: [Single<MoneyValuePair>] = accounts
-            .map { account in
-                account
-                    .balancePair(fiatCurrency: fiatCurrency, at: date)
-                    .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
-            }
-        return Single.zip(balancePairs)
-            .map { [currencyType] pairs -> MoneyValuePair in
-                try pairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency), +)
-            }
+            .eraseToAnyPublisher()
     }
 
     public func includes(account: BlockchainAccount) -> Bool {
@@ -111,11 +98,6 @@ extension AccountGroup {
             .just(accounts.map { $0.can(perform: action) })
             .flatMapConcatFirst()
     }
-}
-
-public enum AccountGroupError: Error {
-    case noBalance
-    case noReceiveAddress
 }
 
 extension AnyPublisher where Output == [AccountGroup] {

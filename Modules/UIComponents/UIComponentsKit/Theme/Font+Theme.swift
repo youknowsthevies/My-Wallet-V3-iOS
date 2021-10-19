@@ -1,8 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import SwiftUI
 
-public enum FontWeight {
+public enum FontWeight: String, Hashable, Codable {
     case regular
     case medium
     case semibold
@@ -39,7 +40,7 @@ extension UIFont {
     }
 
     public static func main(_ weight: FontWeight, _ size: CGFloat) -> UIFont {
-        DispatchQueue.once(block: UIFont.loadCustomFonts)
+        UIFont.loadCustomFonts()
         return UIFont(name: InterType.of(weight).rawValue, size: size) ?? UIFont.systemFont(ofSize: size)
     }
 }
@@ -47,13 +48,15 @@ extension UIFont {
 extension UIFont {
 
     static func loadCustomFonts() {
-        registerFont(fileName: InterType.regular.rawValue)
-        registerFont(fileName: InterType.medium.rawValue)
-        registerFont(fileName: InterType.semibold.rawValue)
-        registerFont(fileName: InterType.bold.rawValue)
+        DispatchQueue.once {
+            registerFont(fileName: InterType.regular.rawValue)
+            registerFont(fileName: InterType.medium.rawValue)
+            registerFont(fileName: InterType.semibold.rawValue)
+            registerFont(fileName: InterType.bold.rawValue)
+        }
     }
 
-    static func registerFont(fileName: String, bundle: Bundle = Bundle.safeModuleBundle) {
+    static func registerFont(fileName: String, bundle: Bundle = Bundle.componentLibrary) {
         guard let fontURL = bundle.url(forResource: fileName, withExtension: "ttf") else {
             print("No font named \(fileName).ttf was found in the module bundle")
             return
@@ -62,15 +65,5 @@ extension UIFont {
         var error: Unmanaged<CFError>?
         CTFontManagerRegisterFontsForURL(fontURL as CFURL, .process, &error)
         print(error ?? "Successfully registered font: \(fileName)")
-    }
-}
-
-extension Bundle {
-    /// If unit tests are running, returns main Bundle.
-    static var safeModuleBundle: Bundle {
-        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
-            return Bundle.main
-        }
-        return Bundle.module
     }
 }

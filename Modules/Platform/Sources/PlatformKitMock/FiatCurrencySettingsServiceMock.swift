@@ -9,6 +9,13 @@ final class FiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceAPI {
 
     private let fiatCurrencyRelay: BehaviorRelay<FiatCurrency>
 
+    var fiatCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
+        fiatCurrency
+            .asPublisher()
+            .replaceError(with: .USD)
+            .eraseToAnyPublisher()
+    }
+
     var fiatCurrencyObservable: Observable<FiatCurrency> {
         fiatCurrencyRelay.asObservable()
     }

@@ -18,11 +18,12 @@ public protocol CheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     var previousRelay: PublishRelay<Void> { get }
 
     func nextFromBuyCrypto(with checkoutData: CheckoutData)
+    func nextFromCardLinkSelection()
     func nextFromBankLinkSelection()
     func ineligible(with checkoutData: CheckoutData)
     func ineligible()
     func kyc(with checkoutData: CheckoutData)
-    func cardRoutingInteractor(with checkoutData: CheckoutData) -> CardRouterInteractor
+    func cardRoutingInteractor(with checkoutData: CheckoutData?) -> CardRouterInteractor
     func paymentMethods()
     func changeCurrency()
     func currencySelected()

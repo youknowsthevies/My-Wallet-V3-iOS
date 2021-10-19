@@ -1,0 +1,12 @@
+{
+  "seed_hex": "6a4d9524d413fdf69ca1b5664d1d6db0",
+  "passphrase": "",
+  "mnemonic_verified": false,
+  "default_account_idx": 0,
+  "accounts": [
+    {
+      "wrong": "BTC Private Key Wallet",
+      "structure": false
+    }
+  ]
+}

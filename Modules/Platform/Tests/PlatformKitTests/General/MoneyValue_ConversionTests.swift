@@ -8,7 +8,7 @@ final class MoneyValueConversionTests: XCTestCase {
     func test_converts_from_self_to_value_with_different_base_same_quote_currency() throws {
         // GIVEN: You want to convert 10 USD using a conversion rate of 1 USD = 0.00003357 BTC.
         let amount = MoneyValue(amount: 1000, currency: .fiat(.USD))
-        let exchangeRate = try MoneyValuePair(
+        let exchangeRate = MoneyValuePair(
             base: .one(currency: .USD),
             exchangeRate: MoneyValue(
                 amount: 000003357,
@@ -24,7 +24,7 @@ final class MoneyValueConversionTests: XCTestCase {
     func test_converts_from_self_to_value_with_same_base() throws {
         // GIVEN: You want to convert 10 USD using a conversion rate of 0.00003357 BTC = 1 USD.
         let amount = MoneyValue(amount: 1000, currency: .fiat(.USD))
-        let exchangeRate = try MoneyValuePair(
+        let exchangeRate = MoneyValuePair(
             base: MoneyValue(
                 amount: 000003357,
                 currency: .crypto(.coin(.bitcoin))
@@ -41,7 +41,7 @@ final class MoneyValueConversionTests: XCTestCase {
     func test_converts_from_self_to_value_with_different_base_different_quote_currency() throws {
         // GIVEN: You want to convert 10 USD using a conversion rate of 1 EUR = 0.00003357 BTC.
         let amount = MoneyValue(amount: 1000, currency: .fiat(.USD))
-        let exchangeRate = try MoneyValuePair(
+        let exchangeRate = MoneyValuePair(
             base: .one(currency: .EUR),
             exchangeRate: MoneyValue(
                 amount: 000003357,

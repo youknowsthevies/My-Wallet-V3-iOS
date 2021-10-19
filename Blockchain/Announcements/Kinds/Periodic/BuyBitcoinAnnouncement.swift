@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Buy bitcoin announcement
-final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
+final class BuyBitcoinAnnouncement: PeriodicAnnouncement, ActionableAnnouncement {
 
     // MARK: - Internal Properties
 

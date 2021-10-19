@@ -19,7 +19,7 @@ final class CertificateProvider: CertificateProviderAPI {
 
     /// Path to the local certificate file
     private lazy var localCertificateURL: URL? = {
-        Bundle.main.url(forResource: "blockchain", withExtension: "der")
+        MainBundleProvider.mainBundle.url(forResource: "blockchain", withExtension: "der")
     }()
 }
 

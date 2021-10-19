@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -13,6 +14,7 @@ final class PricesViewController: BaseScreenViewController {
 
     // MARK: - Private Types
 
+    private typealias LocalizedString = LocalizationConstants.Dashboard.Prices
     private typealias RxDataSource = RxTableViewSectionedAnimatedDataSource<PricesViewModel>
 
     // MARK: - Private Properties
@@ -53,16 +55,23 @@ final class PricesViewController: BaseScreenViewController {
     private func setupTableView() {
         view.addSubview(tableView)
         view.addSubview(searchBar)
+
+        searchBar.placeholder = LocalizedString.searchPlaceholder
+        searchBar.autocapitalizationType = .none
+        searchBar.autocorrectionType = .no
+        searchBar.showsCancelButton = true
         searchBar.searchBarStyle = .minimal
+
         searchBar.layoutToSuperview(axis: .horizontal, offset: 12)
         tableView.layoutToSuperview(axis: .horizontal)
-        searchBar.layoutToSuperview(.top)
+        searchBar.layoutToSuperview(.top, offset: 14)
         searchBar.layout(edge: .bottom, to: .top, of: tableView)
         tableView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 80
-        tableView.rowHeight = UITableView.automaticDimension
+        tableView.rowHeight = 80
         tableView.separatorColor = .clear
+        tableView.keyboardDismissMode = .onDrag
 
         tableView.register(LabelTableViewCell.self, forCellReuseIdentifier: LabelTableViewCell.identifier)
         tableView.register(PricesTableViewCell.self, forCellReuseIdentifier: PricesTableViewCell.identifier)
@@ -85,6 +94,16 @@ final class PricesViewController: BaseScreenViewController {
             .bind(to: presenter.searchRelay)
             .disposed(by: disposeBag)
 
+        Observable<Void>
+            .merge(
+                searchBar.rx.cancelButtonClicked.asObservable(),
+                searchBar.rx.searchButtonClicked.asObservable()
+            )
+            .bind(onNext: { [weak self] _ in
+                self?.searchBar.resignFirstResponder()
+            })
+            .disposed(by: disposeBag)
+
         let dataSource = RxDataSource(
             animationConfiguration: .init(insertAnimation: .fade, reloadAnimation: .fade, deleteAnimation: .fade),
             configureCell: { _, tableView, indexPath, item in
@@ -96,7 +115,7 @@ final class PricesViewController: BaseScreenViewController {
                     return cell
                 case .currency(_, let presenter):
                     let cell = tableView.dequeue(PricesTableViewCell.self, for: indexPath)
-                    cell.presenter = presenter
+                    cell.presenter = presenter()
                     return cell
                 }
             }

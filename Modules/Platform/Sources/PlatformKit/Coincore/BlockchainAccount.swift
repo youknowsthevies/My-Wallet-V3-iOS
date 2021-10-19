@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import RxSwift
 import ToolKit
 
@@ -39,17 +38,21 @@ public protocol BlockchainAccount: Account {
     /// Some accounts may be set as `isFunded` if they have ever had a positive balance in the past.
     var isFunded: Single<Bool> { get }
 
-    /// The balance of this account exchanged to the given fiat currency.
-    func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue>
+    /// The reason why the BlockchainAccount is ineligible for Interest.
+    /// This will be `.eligible` if the account is eligible
+    var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> { get }
 
     /// The balance of this account exchanged to the given fiat currency.
-    func fiatBalance(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValue>
+    func fiatBalance(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValue, Error>
 
     /// The balance of this account exchanged to the given fiat currency.
-    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair>
+    func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error>
 
     /// The balance of this account exchanged to the given fiat currency.
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair>
+    func balancePair(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValuePair, Error>
+
+    /// The balance of this account exchanged to the given fiat currency.
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error>
 
     /// Checks if this account can execute the given action.
     func can(perform action: AssetAction) -> Single<Bool>
@@ -74,12 +77,23 @@ extension BlockchainAccount {
 }
 
 extension BlockchainAccount {
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        balancePair(fiatCurrency: fiatCurrency).map(\.quote)
+
+    public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
+        .just(.eligible)
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValue> {
-        balancePair(fiatCurrency: fiatCurrency, at: date).map(\.quote)
+    public func balancePair(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValuePair, Error> {
+        balancePair(fiatCurrency: fiatCurrency, at: .now)
+    }
+
+    public func fiatBalance(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValue, Error> {
+        fiatBalance(fiatCurrency: fiatCurrency, at: .now)
+    }
+
+    public func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error> {
+        balancePair(fiatCurrency: fiatCurrency, at: time)
+            .map(\.quote)
+            .eraseToAnyPublisher()
     }
 }
 

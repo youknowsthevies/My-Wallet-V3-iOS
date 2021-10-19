@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import DIKit
 import FeatureTransactionDomain
@@ -16,21 +17,27 @@ protocol SellFlowRouting: Routing {
 
 final class SellFlowRouter: RIBs.Router<SellFlowInteractor>, SellFlowRouting {
 
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenterAPI
     private let loadingViewPresenter: LoadingViewPresenting
     private var cancellables = Set<AnyCancellable>()
 
     init(
         interactor: SellFlowInteractor,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         alertPresenter: AlertViewPresenterAPI = resolve(),
         loadingViewPresenter: LoadingViewPresenting = resolve()
     ) {
+        self.analyticsRecorder = analyticsRecorder
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter
         super.init(interactor: interactor)
     }
 
     func start(with currency: CryptoAccount?, from presenter: UIViewController) {
+        analyticsRecorder.record(event:
+            AnalyticsEvents.New.SimpleBuy.buySellViewed(type: .sell)
+        )
         let builder = TransactionFlowBuilder()
         let router = builder.build(
             withListener: interactor,
@@ -41,6 +48,11 @@ final class SellFlowRouter: RIBs.Router<SellFlowInteractor>, SellFlowRouting {
         attachChild(router)
         let viewController = router.viewControllable.uiviewController
         presenter.present(viewController, animated: true)
+        interactor.presentKYCFlowIfNeeded(from: viewController) { completed in
+            if !completed {
+                presenter.dismiss(animated: true, completion: nil)
+            }
+        }
     }
 
     private func dismissLoadingView() {

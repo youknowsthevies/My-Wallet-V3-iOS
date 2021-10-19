@@ -29,7 +29,9 @@ final class CredentialsReducerTests: XCTestCase {
         mockMainQueue = DispatchQueue.test
         mockPollingQueue = DispatchQueue.test
         testStore = TestStore(
-            initialState: .init(),
+            initialState: .init(
+                accountRecoveryEnabled: true
+            ),
             reducer: credentialsReducer,
             environment: .init(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
@@ -41,6 +43,7 @@ final class CredentialsReducerTests: XCTestCase {
                 loginService: MockLoginService(),
                 errorRecorder: NoOpErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),
+                appFeatureConfigurator: NoOpFeatureConfigurator(),
                 analyticsRecorder: MockAnalyticsRecorder()
             )
         )
@@ -54,7 +57,9 @@ final class CredentialsReducerTests: XCTestCase {
     }
 
     func test_verify_initial_state_is_correct() {
-        let state = CredentialsState()
+        let state = CredentialsState(
+            accountRecoveryEnabled: false
+        )
         XCTAssertNotNil(state.walletPairingState)
         XCTAssertNotNil(state.passwordState)
         XCTAssertNil(state.twoFAState)
@@ -72,7 +77,6 @@ final class CredentialsReducerTests: XCTestCase {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
         testStore.assert(
             .send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
-                state.isTroubleLoggingInScreenVisible = false
                 state.walletPairingState.emailAddress = mockWalletInfo.email!
                 state.walletPairingState.walletGuid = mockWalletInfo.guid
                 state.walletPairingState.emailCode = mockWalletInfo.emailCode
@@ -84,7 +88,6 @@ final class CredentialsReducerTests: XCTestCase {
         let mockWalletGuid = MockDeviceVerificationService.mockWalletInfo.guid
         testStore.assert(
             .send(.didAppear(context: .walletIdentifier(guid: mockWalletGuid))) { state in
-                state.isTroubleLoggingInScreenVisible = false
                 state.walletPairingState.walletGuid = mockWalletGuid
             }
         )
@@ -93,7 +96,6 @@ final class CredentialsReducerTests: XCTestCase {
     func test_manual_screen_did_appear_should_setup_session_token() {
         testStore.assert(
             .send(.didAppear(context: .manualPairing)) { state in
-                state.isTroubleLoggingInScreenVisible = false
                 state.walletPairingState.emailAddress = "not available on manual pairing"
                 state.isManualPairing = true
             },
@@ -181,8 +183,8 @@ final class CredentialsReducerTests: XCTestCase {
                 // polling should happen after 1 more second (2 seconds in total)
                 self.mockPollingQueue.advance(by: 1)
             },
-            .receive(.walletPairing(.pollWalletIdentifier)),
             .do { self.mockMainQueue.advance() },
+            .receive(.walletPairing(.pollWalletIdentifier)),
             .receive(.walletPairing(.authenticate(""))) { state in
                 state.isLoading = true
             },
@@ -243,14 +245,14 @@ final class CredentialsReducerTests: XCTestCase {
             .receive(
                 .alert(
                     .show(
-                        title: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.title,
-                        message: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.message
+                        title: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.title,
+                        message: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.message
                     )
                 )
             ) { state in
                 state.credentialsFailureAlert = AlertState(
-                    title: TextState(verbatim: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.title),
-                    message: TextState(verbatim: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.message),
+                    title: TextState(verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.title),
+                    message: TextState(verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.message),
                     dismissButton: .default(
                         TextState(LocalizationConstants.okString),
                         action: .send(.alert(.dismiss))

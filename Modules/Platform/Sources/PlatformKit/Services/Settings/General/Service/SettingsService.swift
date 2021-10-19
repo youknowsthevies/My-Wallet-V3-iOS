@@ -158,6 +158,13 @@ extension SettingsService {
 
 extension SettingsService: FiatCurrencySettingsServiceAPI {
 
+    var fiatCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
+        fiatCurrency
+            .asPublisher()
+            .replaceError(with: .USD)
+            .eraseToAnyPublisher()
+    }
+
     var fiatCurrencyObservable: Observable<FiatCurrency> {
         valueObservable
             .map { settings -> FiatCurrency in

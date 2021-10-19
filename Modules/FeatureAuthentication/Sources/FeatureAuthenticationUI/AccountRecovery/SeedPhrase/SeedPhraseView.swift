@@ -1,12 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import FeatureAuthenticationDomain
 import Localization
 import SwiftUI
+import ToolKit
 import UIComponentsKit
 
-struct SeedPhraseView: View {
+public struct SeedPhraseView: View {
 
     // MARK: - Type
 
@@ -49,7 +51,7 @@ struct SeedPhraseView: View {
 
     // MARK: - Setup
 
-    init(context: AccountRecoveryContext, store: Store<SeedPhraseState, SeedPhraseAction>) {
+    public init(context: AccountRecoveryContext, store: Store<SeedPhraseState, SeedPhraseAction>) {
         self.context = context
         self.store = store
         viewStore = ViewStore(store)
@@ -57,7 +59,7 @@ struct SeedPhraseView: View {
 
     // MARK: - SwiftUI
 
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading) {
             instructionText
                 .padding(.bottom, Layout.instructionBottomPadding)
@@ -224,12 +226,21 @@ struct SeedPhraseView: View {
                 .foregroundColor(.textSubheading)
                 .accessibility(identifier: AccessibilityIdentifiers.SeedPhraseScreen.resetAccountPromptText)
 
-            Button(LocalizedString.resetAccountLink) {
-                viewStore.send(.setResetAccountBottomSheetVisible(true))
+            if viewStore.accountResettable {
+                Button(LocalizedString.resetAccountLink) {
+                    viewStore.send(.setResetAccountBottomSheetVisible(true))
+                }
+                .font(Font(weight: .medium, size: Layout.fontSize))
+                .foregroundColor(Color.buttonPrimaryBackground)
+                .accessibility(identifier: AccessibilityIdentifiers.SeedPhraseScreen.resetAccountButton)
+            } else {
+                Button(LocalizedString.contactSupportLink) {
+                    viewStore.send(.open(urlContent: .contactSupport))
+                }
+                .font(Font(weight: .medium, size: Layout.fontSize))
+                .foregroundColor(Color.buttonPrimaryBackground)
+                .accessibility(identifier: AccessibilityIdentifiers.SeedPhraseScreen.contactSupportButton)
             }
-            .font(Font(weight: .medium, size: Layout.fontSize))
-            .foregroundColor(Color.buttonPrimaryBackground)
-            .accessibility(identifier: AccessibilityIdentifiers.SeedPhraseScreen.resetAccountButton)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
@@ -246,10 +257,12 @@ struct SeedPhraseView_Previews: PreviewProvider {
         SeedPhraseView(
             context: .none,
             store: .init(
-                initialState: .init(),
+                initialState: .init(emailAddress: ""),
                 reducer: seedPhraseReducer,
                 environment: .init(
-                    mainQueue: .main
+                    mainQueue: .main,
+                    externalAppOpener: PrintAppOpen(),
+                    analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )
         )

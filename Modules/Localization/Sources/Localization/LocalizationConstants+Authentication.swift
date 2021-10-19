@@ -53,6 +53,10 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Create a Wallet",
                 comment: "Welcome screen: create wallet CTA button"
             )
+            public static let buyCryptoNow = NSLocalizedString(
+                "Buy Crypto Now",
+                comment: "Welcome screen: create wallet CTA button"
+            )
             public static let login = NSLocalizedString(
                 "Log In",
                 comment: "Welcome screen: login CTA button"
@@ -224,6 +228,71 @@ extension LocalizationConstants.FeatureAuthentication {
                 comment: "Login screen: resend SMS for 2FA CTA button"
             )
         }
+
+        public enum Alerts {
+            public enum SignInError {
+                public static let title = NSLocalizedString(
+                    "Error Signing In",
+                    comment: "Error alert title"
+                )
+                public static let message = NSLocalizedString(
+                    "For security reasons you cannot proceed with signing in.\nPlease try to log in on web.",
+                    comment: "Error alert message"
+                )
+                public static let continueTitle = NSLocalizedString(
+                    "Continue",
+                    comment: ""
+                )
+            }
+
+            public enum EmailAuthorizationAlert {
+                public static let title = NSLocalizedString(
+                    "Authorization Required",
+                    comment: "Title for email authorization alert"
+                )
+                public static let message = NSLocalizedString(
+                    "Please check your email to approve this login attempt.",
+                    comment: "Message for email authorization alert"
+                )
+            }
+
+            public enum SMSCode {
+                public enum Failure {
+                    public static let title = NSLocalizedString(
+                        "Error Sending SMS",
+                        comment: "Error alert title when sms failed"
+                    )
+
+                    public static let message = NSLocalizedString(
+                        "There was an error sending you the SMS message.\nPlease try again.",
+                        comment: "Error alert message when sms failed"
+                    )
+                }
+
+                public enum Success {
+                    public static let title = NSLocalizedString(
+                        "Message sent",
+                        comment: "Success alert title when sms sent"
+                    )
+
+                    public static let message = NSLocalizedString(
+                        "We have sent you a verification code message.",
+                        comment: "Success alert message when sms sent"
+                    )
+                }
+            }
+
+            public enum GenericNetworkError {
+                public static let title = NSLocalizedString(
+                    "Network Error",
+                    comment: ""
+                )
+                public static let message = NSLocalizedString(
+                    "We cannot establish a connection with our server.\nPlease try to sign in again.",
+                    comment: ""
+                )
+            }
+        }
     }
 
     // MARK: - Import Wallet
@@ -361,6 +430,10 @@ extension LocalizationConstants.FeatureAuthentication {
             "Reset Account",
             comment: "Seed phrase screen: link for reset account"
         )
+        public static let contactSupportLink = NSLocalizedString(
+            "Contact Support",
+            comment: "Seed phrase screen: link for contact support"
+        )
         public static let loginInButton = NSLocalizedString(
             "Log In",
             comment: "Seed phrase screen: login CTA button"
@@ -379,6 +452,10 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Resetting Account May Result In\nLost Funds",
                 comment: "Lost Fund Warning: title"
             )
+            public static let recoveryFailed = NSLocalizedString(
+                "Fund Recovery Failed",
+                comment: "Fund Recovery Failed: title"
+            )
         }
 
         public enum Message {
@@ -390,7 +467,16 @@ extension LocalizationConstants.FeatureAuthentication {
                 "This means that if you lose your recovery phrase, you will lose access to your Private Key Wallet funds. You can always restore your Private Key Wallet funds later if you find your recovery phrase.",
                 comment: "Lost fund warning: message"
             )
+            public static let recoveryFailed = NSLocalizedString(
+                "Don’t worry, your account is safe. Please contact support to finish the Account Recovery process. Your account will not show balances or transaction history until you complete the recovery process.",
+                comment: "Fund Recovery Failed: message"
+            )
         }
+
+        public static let recoveryFailureCallout = NSLocalizedString(
+            "Fund recovery failures can happen for a number of reasons. Our support team is able to help recover your account.",
+            comment: "Fund Recovery Failed: callout message"
+        )
 
         public enum Button {
             public static let continueReset = NSLocalizedString(
@@ -408,6 +494,14 @@ extension LocalizationConstants.FeatureAuthentication {
             public static let goBack = NSLocalizedString(
                 "Go Back",
                 comment: "Go Back CTA Button"
+            )
+            public static let learnMore = NSLocalizedString(
+                "Learn more",
+                comment: "Learn more button"
+            )
+            public static let contactSupport = NSLocalizedString(
+                "Contact Support",
+                comment: "Contact Support CTA Button"
             )
         }
     }
@@ -450,7 +544,7 @@ extension LocalizationConstants.FeatureAuthentication {
             comment: "Reset password screen: passwords do not match error"
         )
         public static let securityCallOut = NSLocalizedString(
-            "For your security, you may have to re-verify your identity before accessing your trading or interest account.",
+            "For your security, you may have to re-verify your identity before accessing your trading or rewards account.",
             comment: "Seed phrase screen: callout message for the security measure"
         )
         public enum Button {
@@ -483,6 +577,112 @@ extension LocalizationConstants.FeatureAuthentication {
         public static let strong = NSLocalizedString(
             "Strong",
             comment: "Reset password screen: password strength indicator: strong"
+        )
+    }
+
+    // MARK: - Trading Account Warning
+
+    public enum TradingAccountWarning {
+        public static let title = NSLocalizedString(
+            "Your Trading Account is Linked to another wallet",
+            comment: "Trading Account Warning: title"
+        )
+
+        public static let message = NSLocalizedString(
+            "Your Blockchain.com trading account is associated with another wallet. Please log into the wallet referenced below for account access.",
+            comment: "Trading Account Warning: message"
+        )
+
+        public static let walletIdMessagePrefix = NSLocalizedString(
+            "Wallet ID: ",
+            comment: "Trading Account Warning: wallet ID prefix"
+        )
+
+        public enum Button {
+            public static let logout = NSLocalizedString(
+                "Logout",
+                comment: "Trading Account Warning: logout button"
+            )
+
+            public static let cancel = NSLocalizedString(
+                "Cancel",
+                comment: "Trading Account Warning: cancel button"
+            )
+        }
+    }
+
+    // MARK: - Skip Upgrade Screen
+
+    public enum SkipUpgrade {
+        public static let title = NSLocalizedString(
+            "Skip Upgrade",
+            comment: "Skip Upgrade screen: title"
+        )
+        public static let message = NSLocalizedString(
+            "Looks like you don’t have a Blockchain.com Wallet setup. If you continue to skip, you will be taken back to the log in screen.",
+            comment: "Skip Upgrade screen: message"
+        )
+        public enum Button {
+            public static let skipUpgrade = NSLocalizedString(
+                "Skip Upgrade",
+                comment: "Skip Upgrade CTA button"
+            )
+            public static let upgradeAccount = NSLocalizedString(
+                "Upgrade Account",
+                comment: "Upgrade Account CTA button"
+            )
+        }
+    }
+
+    // MARK: - Upgrade Account Screen
+
+    public enum UpgradeAccount {
+        public static let navigationTitle = NSLocalizedString(
+            "Upgrade Account",
+            comment: "Upgrade Account screen: navigation title"
+        )
+        public static let heading = NSLocalizedString(
+            "Upgrade to a Unified\nBlockchain Account",
+            comment: "Upgrade Account screen: heading"
+        )
+        public static let subheading = NSLocalizedString(
+            "Would you like to upgrade to a single login for all your Blockchain.com accounts?",
+            comment: "Upgrade Account screen: subheading"
+        )
+        public enum MessageList {
+            public static let headingOne = NSLocalizedString(
+                "One Login for All Accounts",
+                comment: "Upgrade Account screen: heading one"
+            )
+            public static let bodyOne = NSLocalizedString(
+                "Easily access your Blockchain.com Wallet and the Exchange with a single login.",
+                comment: "Upgrade Account screen: body one"
+            )
+            public static let headingTwo = NSLocalizedString(
+                "Greater Security Across Accounts",
+                comment: "Upgrade Account screen: heading two"
+            )
+            public static let bodyTwo = NSLocalizedString(
+                "Secure your investments across all Blockchain.com products.",
+                comment: "Upgrade Account screen: body two"
+            )
+            public static let headingThree = NSLocalizedString(
+                "Free Blockchain.com Wallet",
+                comment: "Upgrade Account screen: heading three"
+            )
+            public static let bodyThree = NSLocalizedString(
+                "Create a free Wallet account to do even more with your crypto.",
+                comment: "Upgrade Account screen: body three"
+            )
+        }
+
+        public static let upgradeAccountButton = NSLocalizedString(
+            "Upgrade My Account",
+            comment: "Upgrade Account CTA button"
+        )
+        public static let skipButton = NSLocalizedString(
+            "I’ll Do This Later",
+            comment: "Skip Upgrade CTA button"
         )
     }
 }

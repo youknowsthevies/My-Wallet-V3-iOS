@@ -12,7 +12,7 @@ public final class SelectionRouter: SelectionRouterAPI {
 
     // MARK: - Properties
 
-    private let parent: ViewControllerAPI
+    private weak var parent: ViewControllerAPI?
 
     // MARK: - Setup
 
@@ -35,6 +35,6 @@ public final class SelectionRouter: SelectionRouterAPI {
         )
         let viewController = SelectionScreenViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
-        parent.present(navigationController, animated: true, completion: nil)
+        parent?.present(navigationController, animated: true, completion: nil)
     }
 }

@@ -7,6 +7,7 @@ extension ERC20AssetModel {
         ERC20AssetModel(
             assetResponse: .init(
                 symbol: name,
+                displaySymbol: name,
                 name: name,
                 precision: precision,
                 products: [],
@@ -30,6 +31,7 @@ extension CoinAssetModel {
         CoinAssetModel(
             assetResponse: .init(
                 symbol: name,
+                displaySymbol: name,
                 name: name,
                 precision: precision,
                 products: [],
@@ -44,6 +46,6 @@ extension CoinAssetModel {
                 )
             ),
             sortIndex: sortIndex
-        )!
+        )
     }
 }

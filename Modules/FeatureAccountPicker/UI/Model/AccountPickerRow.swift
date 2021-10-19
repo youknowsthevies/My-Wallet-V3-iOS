@@ -3,20 +3,29 @@
 import ComposableArchitecture
 import SwiftUI
 
-public struct AccountPickerRow: Equatable, Identifiable {
+public enum AccountPickerRow: Equatable, Identifiable {
 
-    public enum Kind: Equatable {
-        case button(ButtonModel)
-        case linkedBankAccount(LinkedBankAccountModel)
-        case accountGroup(AccountGroupModel)
-        case singleAccount(SingleAccountModel)
+    case label(Label)
+    case button(Button)
+    case linkedBankAccount(LinkedBankAccount)
+    case paymentMethodAccount(PaymentMethod)
+    case accountGroup(AccountGroup)
+    case singleAccount(SingleAccount)
+
+    public var id: AnyHashable {
+        switch self {
+        case .label(let model):
+            return model.id
+        case .button(let model):
+            return model.id
+        case .linkedBankAccount(let model):
+            return model.id
+        case .paymentMethodAccount(let model):
+            return model.id
+        case .accountGroup(let model):
+            return model.id
+        case .singleAccount(let model):
+            return model.id
+        }
     }
-
-    public init(id: AnyHashable = UUID(), kind: Kind) {
-        self.id = id
-        self.kind = kind
-    }
-
-    public var id: AnyHashable
-    public var kind: Kind
 }

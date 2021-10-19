@@ -12,7 +12,7 @@ public struct SupportedPairs: Equatable {
 
         /// The fiat currency type
         public var fiatCurrency: FiatCurrency {
-            minFiatValue.currencyType
+            minFiatValue.currency
         }
 
         /// The minimum fiat value to buy
@@ -31,7 +31,7 @@ public struct SupportedPairs: Equatable {
     }
 
     var fiatCurrencySet: Set<FiatCurrency> {
-        Set(pairs.map(\.minFiatValue.currencyType))
+        Set(pairs.map(\.minFiatValue.currency))
     }
 
     public var cryptoCurrencySet: Set<CryptoCurrency> {

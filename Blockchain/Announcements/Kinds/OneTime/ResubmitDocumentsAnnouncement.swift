@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Let the user know that something went wrong during KYC, and that he needs to send his docs once more
-final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     // MARK: - Properties
 

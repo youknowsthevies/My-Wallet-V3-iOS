@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureAppUI
 import FeatureSettingsDomain
 import Foundation
 import PlatformKit

@@ -36,33 +36,47 @@ final class ERC20ActivityDetailsInteractor {
     func details(identifier: String, createdAt: Date) -> Observable<ERC20ActivityDetailsViewModel> {
         let transaction = detailsService
             .details(for: identifier)
-        let price = self.price(at: createdAt)
+        let price = price(of: cryptoCurrency, at: createdAt)
+            .optional()
+            .catchErrorJustReturn(nil)
+        let feePrice = self.price(of: .coin(.ethereum), at: createdAt)
             .optional()
             .catchErrorJustReturn(nil)
 
         return Observable
             .combineLatest(
                 transaction,
-                price.asObservable()
+                price.asObservable(),
+                feePrice.asObservable()
             )
-            .map { ERC20ActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue) }
+            .map {
+                ERC20ActivityDetailsViewModel(
+                    details: $0,
+                    price: $1?.moneyValue.fiatValue,
+                    feePrice: $2?.moneyValue.fiatValue
+                )
+            }
     }
 
     // MARK: - Private Functions
 
-    private func price(at date: Date) -> Single<PriceQuoteAtTime> {
+    private func price(of cryptoCurrency: CryptoCurrency, at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) in
-                self.price(at: date, in: fiatCurrency)
+                self.price(of: cryptoCurrency, in: fiatCurrency, at: date)
             }
     }
 
-    private func price(at date: Date, in fiatCurrency: FiatCurrency) -> Single<PriceQuoteAtTime> {
+    private func price(
+        of cryptoCurrency: CryptoCurrency,
+        in fiatCurrency: FiatCurrency,
+        at date: Date
+    ) -> Single<PriceQuoteAtTime> {
         priceService.price(
             of: cryptoCurrency,
             in: fiatCurrency,
-            at: date
+            at: .time(date)
         )
         .asSingle()
     }

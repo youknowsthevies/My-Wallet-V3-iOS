@@ -133,7 +133,7 @@ final class BankTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     // MARK: - View Life Cycle
 
     func viewDidLoad() {
-        let currencyCode = interactor.checkoutData.order.inputValue.currencyCode
+        let currencyCode = interactor.checkoutData.order.inputValue.code
         analyticsRecorder.record(event: AnalyticsEvent.sbBankDetailsShown(currencyCode: currencyCode))
     }
 }
@@ -155,11 +155,11 @@ extension BankTransferDetailScreenPresenter {
         ) {
             typealias SummaryString = LocalizedString.Summary
             typealias TitleString = LocalizedString.Title
-            let currency = data.order.inputValue.currencyType
-            let currencyString = "\(currency.name) (\(currency.symbol))"
+            let inputCurrency = data.order.inputValue.currency
+            let currencyString = "\(inputCurrency.name) (\(inputCurrency.displaySymbol))"
 
             title = TitleString.checkout
-            switch data.order.inputValue.currencyType {
+            switch inputCurrency {
             case .crypto:
                 summary = "\(SummaryString.AnyFiat.prefix) \(currencyString) \(SummaryString.AnyFiat.suffix)"
             case .fiat(let fiatType):
@@ -175,9 +175,9 @@ extension BankTransferDetailScreenPresenter {
             let account = data.paymentAccount!
             lineItems = account.fields.transferDetailsCellsPresenting(analyticsRecorder: analyticsRecorder)
 
-            switch currency {
-            case .fiat(let fiatType):
-                switch fiatType {
+            switch inputCurrency {
+            case .fiat(let fiatCurrency):
+                switch fiatCurrency {
                 case .GBP:
                     typealias LinkString = LocalizedString.TermsLink.GBP
                     let font = UIFont.main(.medium, 12)
@@ -203,7 +203,9 @@ extension BankTransferDetailScreenPresenter {
 extension Array where Element == PaymentAccountProperty.Field {
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
 
-    fileprivate func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecorderAPI) -> [LineItemCellPresenting] {
+    fileprivate func transferDetailsCellsPresenting(
+        analyticsRecorder: AnalyticsEventRecorderAPI
+    ) -> [LineItemCellPresenting] {
 
         func isCopyable(field: TransactionalLineItem) -> Bool {
             switch field {

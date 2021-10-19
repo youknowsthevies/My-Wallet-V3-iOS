@@ -12,6 +12,7 @@ import WalletPayloadKit
 import XCTest
 
 @testable import Blockchain
+@testable import FeatureAppUI
 
 // swiftlint:disable type_body_length
 final class LoggedInReducerTests: XCTestCase {
@@ -24,7 +25,6 @@ final class LoggedInReducerTests: XCTestCase {
     var mockExchangeAccountRepository: MockExchangeAccountRepository!
     var mockRemoteNotificationAuthorizer: MockRemoteNotificationAuthorizer!
     var mockRemoteNotificationServiceContainer: MockRemoteNotificationServiceContainer!
-    var mockCoincore: MockCoincore!
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
     var onboardingSettings: MockOnboardingSettings!
     var mockAppDeeplinkHandler: MockAppDeeplinkHandler!
@@ -59,7 +59,6 @@ final class LoggedInReducerTests: XCTestCase {
         mockRemoteNotificationServiceContainer = MockRemoteNotificationServiceContainer(
             authorizer: mockRemoteNotificationAuthorizer
         )
-        mockCoincore = MockCoincore()
         mockAnalyticsRecorder = MockAnalyticsRecorder()
         onboardingSettings = MockOnboardingSettings()
         mockAppDeeplinkHandler = MockAppDeeplinkHandler()
@@ -79,7 +78,6 @@ final class LoggedInReducerTests: XCTestCase {
                 remoteNotificationTokenSender: mockRemoteNotificationServiceContainer.tokenSender,
                 remoteNotificationAuthorizer: mockRemoteNotificationServiceContainer.authorizer,
                 walletManager: mockWalletManager,
-                coincore: mockCoincore,
                 appSettings: mockSettingsApp,
                 deeplinkRouter: mockDeepLinkRouter,
                 featureFlagsService: mockFeatureFlagsService,
@@ -94,7 +92,6 @@ final class LoggedInReducerTests: XCTestCase {
         mockExchangeAccountRepository = nil
         mockRemoteNotificationAuthorizer = nil
         mockRemoteNotificationServiceContainer = nil
-        mockCoincore = nil
         mockAnalyticsRecorder = nil
         onboardingSettings = nil
         mockAppDeeplinkHandler = nil
@@ -116,7 +113,7 @@ final class LoggedInReducerTests: XCTestCase {
     }
 
     func test_calling_start_on_reducer_should_post_login_notification() {
-        let expectation = self.expectation(forNotification: .login, object: nil)
+        let expectation = expectation(forNotification: .login, object: nil)
 
         testStore.send(.start(.none))
         mockMainQueue.advance()
@@ -134,8 +131,6 @@ final class LoggedInReducerTests: XCTestCase {
         XCTAssertTrue(mockRemoteNotificationServiceContainer.sendTokenIfNeededPublisherCalled)
 
         XCTAssertTrue(mockRemoteNotificationAuthorizer.requestAuthorizationIfNeededPublisherCalled)
-
-        XCTAssertTrue(mockCoincore.initializePublisherCalled)
 
         testStore.send(.logout)
     }

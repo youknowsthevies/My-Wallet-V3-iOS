@@ -1,13 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureAppUI
 import Foundation
-
-protocol OnboardingSettingsAPI {
-    var walletIntroLatestLocation: WalletIntroductionLocation? { get set }
-    var firstRun: Bool { get set }
-
-    func reset()
-}
+import PlatformKit
 
 /// Encapsulates all onboarding-related settings for the user
 final class OnboardingSettings: OnboardingSettingsAPI {

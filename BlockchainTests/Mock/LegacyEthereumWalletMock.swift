@@ -41,7 +41,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         underlyingGetEthereumAddress!(secondPassword, success, error)
     }
 
-    func getEthereumMemo(
+    func getEthereumNote(
         for transaction: String,
         success: @escaping (String?) -> Void,
         error: @escaping (String) -> Void
@@ -49,7 +49,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         unimplemented()
     }
 
-    func setEthereumMemo(for transaction: String, memo: String?) {
+    func setEthereumNote(for transaction: String, note: String?) {
         unimplemented()
     }
 

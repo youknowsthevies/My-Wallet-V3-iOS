@@ -13,6 +13,7 @@ final class HistoricalBalanceCellInteractor {
     let sparklineInteractor: SparklineInteracting
     let priceInteractor: AssetPriceViewInteracting
     let balanceInteractor: AssetBalanceViewInteracting
+    let historicalFiatPriceService: HistoricalFiatPriceServiceAPI
     let cryptoCurrency: CryptoCurrency
 
     // MARK: - Setup
@@ -23,11 +24,12 @@ final class HistoricalBalanceCellInteractor {
         fiatCurrencyService: FiatCurrencyServiceAPI
     ) {
         cryptoCurrency = cryptoAsset.asset
+        self.historicalFiatPriceService = historicalFiatPriceService
         sparklineInteractor = SparklineInteractor(
             priceService: historicalFiatPriceService,
             cryptoCurrency: cryptoCurrency
         )
-        priceInteractor = AssetPriceViewInteractor(
+        priceInteractor = AssetPriceViewHistoricalInteractor(
             historicalPriceProvider: historicalFiatPriceService
         )
         balanceInteractor = AccountAssetBalanceViewInteractor(
@@ -37,6 +39,7 @@ final class HistoricalBalanceCellInteractor {
     }
 
     func refresh() {
+        historicalFiatPriceService.fetchTriggerRelay.accept(.day(.oneHour))
         balanceInteractor.refresh()
     }
 }

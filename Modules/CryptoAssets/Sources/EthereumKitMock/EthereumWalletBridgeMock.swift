@@ -1,120 +1,42 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BigInt
+import Combine
 @testable import EthereumKit
 import PlatformKit
-import RxRelay
 import RxSwift
 
-enum EthereumWalletBridgeMockError: Error {
-    case mockError
+final class EthereumWalletAccountBridgeMock: EthereumWalletAccountBridgeAPI {
+
+    var underlyingWallets: AnyPublisher<[EthereumWalletAccount], Error> = .just([])
+
+    var wallets: AnyPublisher<[EthereumWalletAccount], Error> {
+        underlyingWallets
+    }
 }
 
-class EthereumWalletBridgeMock: EthereumWalletBridgeAPI,
-    EthereumWalletAccountBridgeAPI,
-    MnemonicAccessAPI,
-    PasswordAccessAPI
-{
-    func update(accountIndex: Int, label: String) -> Completable {
-        .empty()
+final class EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
+
+    var underlyingNote: Single<String?> = .just(nil)
+
+    func note(for transactionHash: String) -> Single<String?> {
+        underlyingNote
     }
 
-    var balance: Single<CryptoValue> {
-        balanceValue
+    var underlyingUpdateNote: Completable = .never()
+
+    func updateNote(for transactionHash: String, note: String?) -> Completable {
+        underlyingUpdateNote
     }
 
-    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
-        .empty()
-    }
-
-    func memo(for transactionHash: String) -> Single<String?> {
-        .just(nil)
-    }
-
-    var historyValue = Single.just(())
-    var history: Single<Void> {
-        historyValue
-    }
-
-    func fetchHistory() -> Single<Void> {
-        history
-    }
-
-    var fetchBalanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .coin(.ethereum))!)
-    var fetchBalance: Single<CryptoValue> {
-        fetchBalanceValue
-    }
-
-    var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .coin(.ethereum))!)
-
-    var balanceMoneyObservable: Observable<MoneyValue> {
-        balance.asObservable().moneyValue
-    }
-
-    let balanceFetchTriggerRelay = PublishRelay<Void>()
-
-    var nameValue: Single<String> = Single.just(CryptoCurrency.coin(.ethereum).defaultWalletName)
-    var name: Single<String> {
-        nameValue
-    }
-
-    var addressValue: Single<EthereumAddress> = .just(EthereumAddress(address: MockEthereumWalletTestData.account)!)
-    var address: Single<EthereumAddress> {
-        addressValue
-    }
-
-    var transactionsValue: Single<[EthereumHistoricalTransaction]> = Single.just([])
-    var transactions: Single<[EthereumHistoricalTransaction]> {
-        transactionsValue
-    }
-
-    var accountValue: Single<EthereumAssetAccount> = Single.just(
-        EthereumAssetAccount(
-            walletIndex: 0,
-            accountAddress: MockEthereumWalletTestData.account,
-            name: CryptoCurrency.coin(.ethereum).defaultWalletName
-        )
-    )
-    var account: Single<EthereumAssetAccount> {
-        accountValue
-    }
-
-    var recordLastTransactionValue = Single<EthereumTransactionPublished>.error(EthereumKitError.unknown)
-    var lastRecordedTransaction: EthereumTransactionPublished?
+    var underlyingRecordLast: Single<EthereumTransactionPublished> = .never()
 
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
-        lastRecordedTransaction = transaction
-        return recordLastTransactionValue
+        underlyingRecordLast
     }
 
-    // MARK: - EthereumWalletAccountBridgeAPI
+    var underlyingUpdate: Completable = .never()
 
-    var wallets: Single<[EthereumWalletAccount]> {
-        Single.just([])
-    }
-
-    func save(keyPair: EthereumKeyPair, label: String) -> Completable {
-        Completable.empty()
-    }
-
-    // MARK: - MnemonicAccessAPI
-
-    var mnemonic: Maybe<String> {
-        Maybe.just("")
-    }
-
-    var mnemonicPromptingIfNeeded: Maybe<String> {
-        Maybe.just("")
-    }
-
-    func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
-        .just("")
-    }
-
-    // MARK: - PasswordAccessAPI
-
-    var passwordMaybe = Maybe.just("password")
-    var password: Maybe<String> {
-        passwordMaybe
+    func update(accountIndex: Int, label: String) -> Completable {
+        underlyingUpdate
     }
 }

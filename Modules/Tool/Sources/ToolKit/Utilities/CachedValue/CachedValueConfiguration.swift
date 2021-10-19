@@ -35,7 +35,7 @@ public struct CachedValueConfiguration {
      */
     public init(
         refreshType: RefreshType,
-        scheduler: SchedulerType = generateScheduler(),
+        scheduler: SchedulerType,
         flushNotificationNames: [Notification.Name] = [],
         fetchNotificationNames: [Notification.Name] = []
     ) {
@@ -47,7 +47,9 @@ public struct CachedValueConfiguration {
 }
 
 extension CachedValueConfiguration {
-    public static func generateScheduler() -> SchedulerType {
-        SerialDispatchQueueScheduler(internalSerialQueueName: "internal-\(UUID().uuidString)")
+    public static func generateScheduler(identifier: String) -> SchedulerType {
+        SerialDispatchQueueScheduler(
+            internalSerialQueueName: "cached-value-\(identifier)-\(UUID().uuidString)"
+        )
     }
 }

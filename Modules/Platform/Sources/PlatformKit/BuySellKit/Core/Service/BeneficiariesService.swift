@@ -152,7 +152,7 @@ private func concat(
     var limitsByBaseFiat: [FiatCurrency: FiatValue] = [:]
     let topLimits = methodTypes.accounts.map(\.topLimit)
     for limit in topLimits {
-        limitsByBaseFiat[limit.currencyType] = limit
+        limitsByBaseFiat[limit.currency] = limit
     }
     let activeLinkedBank = linkedBanks.filter(\.isActive)
 

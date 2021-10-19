@@ -14,6 +14,7 @@ extension AnnouncementRecord {
         case sddUsersFirstBuy
         case walletIntro
         case verifyEmail
+        case resubmitDocumentsAfterRecovery
         case blockstackAirdropRegisteredMini
         case simpleBuyPendingTransaction
         case simpleBuyKYCIncomplete
@@ -39,6 +40,8 @@ extension AnnouncementRecord {
         case cloudBackup
         case interestFunds
         case newAsset(code: String)
+        case assetRename(code: String)
+        case celoEUR
 
         var string: String {
             let prefix = "announcement-"
@@ -50,6 +53,8 @@ extension AnnouncementRecord {
                 key = "cache-wallet-intro"
             case .verifyEmail:
                 key = "cache-email-verification"
+            case .resubmitDocumentsAfterRecovery:
+                key = "cache-resubmit-documents-after-recovery"
             case .blockstackAirdropRegisteredMini:
                 key = "cache-stx-registered-airdrop-mini"
             case .simpleBuyPendingTransaction:
@@ -94,6 +99,10 @@ extension AnnouncementRecord {
                 key = "cache-interest-funds"
             case .newAsset(let code):
                 key = "cache-new-asset-\(code)"
+            case .assetRename(let code):
+                key = "cache-asset-rename-\(code)"
+            case .celoEUR:
+                key = "cache-celo-eur"
             }
 
             return prefix + key

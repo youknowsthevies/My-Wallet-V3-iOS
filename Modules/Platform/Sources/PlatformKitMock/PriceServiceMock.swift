@@ -4,39 +4,60 @@ import Combine
 import NetworkError
 import PlatformKit
 
-final class PriceServiceMock: PriceServiceAPI {
-    var moneyValuePair: MoneyValuePair!
-    var historicalPriceSeries: HistoricalPriceSeries!
-    var priceQuoteAtTime: PriceQuoteAtTime!
+public final class PriceServiceMock: PriceServiceAPI {
 
-    func moneyValuePair(
+    public struct StubbedResults {
+        public var moneyValuePair = MoneyValuePair(
+            base: .one(currency: .coin(.bitcoin)),
+            quote: MoneyValue(amount: 10000000, currency: .fiat(.USD))
+        )
+        public var historicalPriceSeries = HistoricalPriceSeries(
+            currency: .coin(.bitcoin),
+            prices: [
+                PriceQuoteAtTime(
+                    timestamp: Date(),
+                    moneyValue: MoneyValue(amount: 10000000, currency: .fiat(.USD))
+                )
+            ]
+        )
+        public var priceQuoteAtTime = PriceQuoteAtTime(
+            timestamp: Date(),
+            moneyValue: MoneyValue(amount: 10000000, currency: .fiat(.USD))
+        )
+    }
+
+    public var stubbedResults = StubbedResults()
+
+    public init() {}
+
+    public func moneyValuePair(
         fiatValue: FiatValue,
         cryptoCurrency: CryptoCurrency,
         usesFiatAsBase: Bool
-    ) -> AnyPublisher<MoneyValuePair, NetworkError> {
-        .just(moneyValuePair)
+    ) -> AnyPublisher<MoneyValuePair, PriceServiceError> {
+        .just(stubbedResults.moneyValuePair)
     }
 
-    func price(
-        of baseCurrency: Currency,
-        in quoteCurrency: Currency
-    ) -> AnyPublisher<PriceQuoteAtTime, NetworkError> {
-        .just(priceQuoteAtTime)
+    public func price(
+        of base: Currency,
+        in quote: Currency
+    ) -> AnyPublisher<PriceQuoteAtTime, PriceServiceError> {
+        .just(stubbedResults.priceQuoteAtTime)
     }
 
-    func price(
-        of baseCurrency: Currency,
-        in quoteCurrency: Currency,
-        at date: Date?
-    ) -> AnyPublisher<PriceQuoteAtTime, NetworkError> {
-        .just(priceQuoteAtTime)
+    public func price(
+        of base: Currency,
+        in quote: Currency,
+        at time: PriceTime
+    ) -> AnyPublisher<PriceQuoteAtTime, PriceServiceError> {
+        .just(stubbedResults.priceQuoteAtTime)
     }
 
-    func priceSeries(
+    public func priceSeries(
         of baseCurrency: CryptoCurrency,
         in quoteCurrency: FiatCurrency,
         within window: PriceWindow
-    ) -> AnyPublisher<HistoricalPriceSeries, NetworkError> {
-        .just(historicalPriceSeries)
+    ) -> AnyPublisher<HistoricalPriceSeries, PriceServiceError> {
+        .just(stubbedResults.historicalPriceSeries)
     }
 }

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import ToolKit
 
 public final class AuthenticationKeys: NSObject {
 
@@ -14,7 +15,7 @@ private enum InfoDictionaryHelper {
         case googleRecaptchaSiteKey = "GOOGLE_RECAPTCHA_SITE_KEY"
     }
 
-    private static let infoDictionary = Bundle.main.infoDictionary
+    private static let infoDictionary = MainBundleProvider.mainBundle.infoDictionary
 
     static func value(for key: Key) -> String! {
         infoDictionary?[key.rawValue] as? String

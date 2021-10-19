@@ -9,9 +9,10 @@ public final class BuySellIneligibleScreenInteractor {
     // MARK: - Public
 
     var region: Single<String> {
-        dataRepositoryAPI
-            .userSingle
-            .map { $0.address?.state ?? (Country.current ?? .US).name }
+        dataRepositoryAPI.user
+            .map(\.address?.state)
+            .replaceNil(with: Country.current?.name ?? Country.US.name)
+            .asSingle()
     }
 
     // MARK: - Injected

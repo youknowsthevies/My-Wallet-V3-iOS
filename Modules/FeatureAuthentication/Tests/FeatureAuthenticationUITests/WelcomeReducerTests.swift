@@ -37,6 +37,7 @@ final class WelcomeReducerTests: XCTestCase {
                 sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
                 featureFlags: mockInternalFeatureFlagService,
+                appFeatureConfigurator: NoOpFeatureConfigurator(),
                 buildVersionProvider: { "Test Version" },
                 errorRecorder: MockErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),
@@ -46,6 +47,7 @@ final class WelcomeReducerTests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
+        BuildFlag.isInternal = false
         mockMainQueue = nil
         testStore = nil
         mockInternalFeatureFlagService = nil
@@ -64,11 +66,21 @@ final class WelcomeReducerTests: XCTestCase {
         }
     }
 
-    func test_start_shows_manual_pairing_when_feature_flag_is_not_enabled() {
+    func test_start_shows_manual_pairing_when_feature_flag_is_not_enabled_and_build_is_internal() {
+        BuildFlag.isInternal = true
         mockInternalFeatureFlagService.disable(.disableGUIDLogin)
         testStore.send(.start) { state in
             state.buildVersion = "Test Version"
             state.manualPairingEnabled = true
+        }
+    }
+
+    func test_start_does_not_shows_manual_pairing_when_feature_flag_is_not_enabled_and_build_is_not_internal() {
+        BuildFlag.isInternal = false
+        mockInternalFeatureFlagService.disable(.disableGUIDLogin)
+        testStore.send(.start) { state in
+            state.buildVersion = "Test Version"
+            state.manualPairingEnabled = false
         }
     }
 
@@ -77,7 +89,8 @@ final class WelcomeReducerTests: XCTestCase {
             .welcomeScreen,
             .createWalletScreen,
             .emailLoginScreen,
-            .restoreWalletScreen
+            .restoreWalletScreen,
+            .legacyRestoreWalletScreen
         ]
         screenFlows.forEach { screenFlow in
             testStore.send(.presentScreenFlow(screenFlow)) { state in
@@ -86,9 +99,9 @@ final class WelcomeReducerTests: XCTestCase {
                     state.emailLoginState = .init()
                 case .restoreWalletScreen:
                     state.restoreWalletState = .init()
-                case .createWalletScreen, .manualLoginScreen:
+                case .createWalletScreen, .manualLoginScreen, .restoreScreen:
                     break
-                case .welcomeScreen:
+                case .welcomeScreen, .legacyRestoreWalletScreen:
                     state.emailLoginState = nil
                     state.restoreWalletState = nil
                 }
@@ -110,9 +123,10 @@ final class WelcomeReducerTests: XCTestCase {
 
     func test_secondPassword_modal_can_be_presented() {
         // given (we're in a flow)
+        BuildFlag.isInternal = true
         testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
             state.screenFlow = .manualLoginScreen
-            state.manualCredentialsState = .init()
+            state.manualCredentialsState = .init(accountRecoveryEnabled: false)
         }
 
         // when
@@ -125,9 +139,10 @@ final class WelcomeReducerTests: XCTestCase {
 
     func test_secondPassword_modal_can_be_dismissed_from_close_button() {
         // given (we're in a flow)
+        BuildFlag.isInternal = true
         testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
             state.screenFlow = .manualLoginScreen
-            state.manualCredentialsState = .init()
+            state.manualCredentialsState = .init(accountRecoveryEnabled: false)
         }
 
         // when
@@ -149,9 +164,10 @@ final class WelcomeReducerTests: XCTestCase {
 
     func test_secondPassword_modal_can_be_dismissed_interactively() {
         // given (we're in a flow)
+        BuildFlag.isInternal = true
         testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
             state.screenFlow = .manualLoginScreen
-            state.manualCredentialsState = .init()
+            state.manualCredentialsState = .init(accountRecoveryEnabled: false)
         }
 
         // when

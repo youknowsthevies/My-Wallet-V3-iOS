@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import RxSwift
 
+/// Used to execute the order once created
 public protocol OrderConfirmationServiceAPI: AnyObject {
     func confirm(checkoutData: CheckoutData) -> Single<CheckoutData>
 }

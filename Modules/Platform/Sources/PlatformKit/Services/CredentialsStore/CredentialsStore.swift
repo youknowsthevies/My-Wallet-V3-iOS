@@ -55,8 +55,8 @@ final class CredentialsStore: CredentialsStoreAPI {
     }
 
     func backup(pinDecryptionKey: String) -> Completable {
-        let pinData = Single.just(self.pinData())
-        let walletData = self.walletData(pinDecryptionKey: pinDecryptionKey)
+        let pinData = Single.just(pinData())
+        let walletData = walletData(pinDecryptionKey: pinDecryptionKey)
             .optional()
             .catchErrorJustReturn(nil)
         return Single

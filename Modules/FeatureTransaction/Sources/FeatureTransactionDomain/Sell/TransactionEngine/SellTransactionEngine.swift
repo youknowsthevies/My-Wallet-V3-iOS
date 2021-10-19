@@ -27,8 +27,8 @@ extension SellTransactionEngine {
 
     var pair: OrderPair {
         OrderPair(
-            sourceCurrencyType: sourceAsset.currency,
-            destinationCurrencyType: target.fiatCurrency.currency
+            sourceCurrencyType: sourceAsset.currencyType,
+            destinationCurrencyType: target.fiatCurrency.currencyType
         )
     }
 
@@ -93,7 +93,7 @@ extension SellTransactionEngine {
                 MoneyValue(amount: pricedQuote.price, currency: target.currencyType)
             }
             .map { [sourceAsset] rate -> MoneyValuePair in
-                try MoneyValuePair(base: .one(currency: sourceAsset), exchangeRate: rate)
+                MoneyValuePair(base: .one(currency: sourceAsset), exchangeRate: rate)
             }
     }
 
@@ -104,10 +104,10 @@ extension SellTransactionEngine {
     ) -> Single<PendingTransaction> {
         Single
             .zip(
-                kycTiersService.tiers,
+                kycTiersService.tiers.asSingle(),
                 tradeLimitsRepository.fetchTransactionLimits(
-                    currency: fiatCurrency.currency,
-                    networkFee: targetAsset.currency,
+                    currency: fiatCurrency.currencyType,
+                    networkFee: targetAsset.currencyType,
                     product: .sell(orderDirection)
                 )
                 .asObservable()
@@ -116,26 +116,25 @@ extension SellTransactionEngine {
             .map { tiers, limits -> (tiers: KYC.UserTiers, min: FiatValue, max: FiatValue) in
                 (tiers, limits.minOrder, limits.maxOrder)
             }
-            .flatMap { [sourceCryptoCurrency, priceService, sourceAsset] values -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
+            .flatMap { [weak self] values -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
+                guard let self = self else { return .never() }
                 let (tiers, min, max) = values
-                return priceService
+                return self.priceService
                     .price(
-                        of: sourceAsset,
+                        of: self.sourceAsset,
                         in: fiatCurrency
                     )
-                    .asObservable()
-                    .take(1)
                     .asSingle()
                     .map(\.moneyValue)
                     .map { $0.fiatValue ?? .zero(currency: fiatCurrency) }
                     .map { quote -> (KYC.UserTiers, MoneyValue, MoneyValue) in
                         let minCrypto = min.convertToCryptoValue(
                             exchangeRate: quote,
-                            cryptoCurrency: sourceCryptoCurrency
+                            cryptoCurrency: self.sourceCryptoCurrency
                         )
                         let maxCrypto = max.convertToCryptoValue(
                             exchangeRate: quote,
-                            cryptoCurrency: sourceCryptoCurrency
+                            cryptoCurrency: self.sourceCryptoCurrency
                         )
                         return (tiers, .init(cryptoValue: minCrypto), .init(cryptoValue: maxCrypto))
                     }
@@ -160,29 +159,20 @@ extension SellTransactionEngine {
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SellOrder> {
         sourceAccount.receiveAddress
-            .flatMap {
-                [
-                    orderQuoteRepository,
-                    orderCreationRepository,
-                    orderDirection,
-                    sourceAsset,
-                    target
-                ] _ -> Single<SellOrder> in
-                orderQuoteRepository.fetchQuote(
-                    direction: orderDirection,
-                    sourceCurrencyType: sourceAsset.currency,
-                    destinationCurrencyType: target.currencyType
+            .flatMap(weak: self) { (self, _) -> Single<SellOrder> in
+                self.orderQuoteRepository.fetchQuote(
+                    direction: self.orderDirection,
+                    sourceCurrencyType: self.sourceAsset.currencyType,
+                    destinationCurrencyType: self.target.currencyType
                 )
-                .asObservable()
                 .asSingle()
-                .flatMap { [orderDirection, target] quote -> Single<SellOrder> in
-                    orderCreationRepository.createOrder(
-                        direction: orderDirection,
+                .flatMap(weak: self) { (self, quote) -> Single<SellOrder> in
+                    self.orderCreationRepository.createOrder(
+                        direction: self.orderDirection,
                         quoteIdentifier: quote.identifier,
                         volume: pendingTransaction.amount,
-                        ccy: target.currencyType.code
+                        ccy: self.target.currencyType.code
                     )
-                    .asObservable()
                     .asSingle()
                 }
             }
@@ -207,7 +197,7 @@ extension PendingTransaction {
         let source = amount.currencyType
         let price = MoneyValue(amount: quote.price, currency: destination)
         let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destination)
-        let convertedFees = try totalFees.convert(usingInverse: price, currencyType: source)
+        let convertedFees = totalFees.convert(usingInverse: price, currencyType: source)
         return (try? minimumApiLimit + convertedFees) ?? MoneyValue.zero(currency: destination)
     }
 }

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import EthereumKit
 import PlatformKit
@@ -32,18 +33,33 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     var actions: Single<AvailableActions> {
-        Single
-            .zip(isFunded, isPairToFiatAvailable)
-            .map { isFunded, isPairToFiatAvailable -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive, .send]
-                if isPairToFiatAvailable {
-                    base.insert(.buy)
-                }
-                if isFunded {
-                    base.insert(.swap)
-                }
-                return base
+        Single.zip(
+            isFunded,
+            isPairToFiatAvailable,
+            hasHistory.asSingle(),
+            canPerformInterestTransfer(),
+            featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
+        )
+        .map { isFunded, isPairToFiatAvailable, hasHistory, isInterestEnabled, isSellEnabled -> AvailableActions in
+            var base: AvailableActions = [.receive]
+            if hasHistory || isFunded {
+                base.insert(.viewActivity)
             }
+            if isPairToFiatAvailable {
+                base.insert(.buy)
+            }
+            if isFunded {
+                base.formUnion([.send, .swap])
+            }
+            if isFunded, isSellEnabled {
+                base.insert(.sell)
+            }
+            if isFunded, isInterestEnabled {
+                base.insert(.interestTransfer)
+            }
+            return base
+        }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
@@ -73,24 +89,39 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             .catchErrorJustReturn([])
     }
 
+    /// Stream a boolean indicating if this ERC20 token has ever been transacted,
+    private var hasHistory: AnyPublisher<Bool, Never> {
+        erc20TokenAccountsRepository
+            .tokens(for: EthereumAddress(address: publicKey)!)
+            .map { [erc20Token] tokens in
+                tokens[erc20Token.cryptoCurrency] != nil
+            }
+            .replaceError(with: false)
+            .ignoreFailure()
+    }
+
     private let publicKey: String
     private let erc20Token: ERC20AssetModel
+    private let erc20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI
     private let balanceService: ERC20BalanceServiceAPI
     private let featureFetcher: FeatureFetching
-    private let fiatPriceService: FiatPriceServiceAPI
+    private let priceService: PriceServiceAPI
     private let transactionsService: ERC20HistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         publicKey: String,
         erc20Token: ERC20AssetModel,
+        erc20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI = resolve(),
         featureFetcher: FeatureFetching = resolve(),
         balanceService: ERC20BalanceServiceAPI = resolve(),
         transactionsService: ERC20HistoricalTransactionServiceAPI = resolve(),
-        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
-        supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve()
+        supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.publicKey = publicKey
         self.erc20Token = erc20Token
@@ -100,8 +131,10 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         self.featureFetcher = featureFetcher
         self.transactionsService = transactionsService
         self.swapTransactionsService = swapTransactionsService
-        self.fiatPriceService = fiatPriceService
+        self.priceService = priceService
         self.supportedPairsInteractorService = supportedPairsInteractorService
+        self.featureFlagsService = featureFlagsService
+        self.erc20TokenAccountsRepository = erc20TokenAccountsRepository
     }
 
     private var isPairToFiatAvailable: Single<Bool> {
@@ -117,44 +150,44 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     func can(perform action: AssetAction) -> Single<Bool> {
         switch action {
-        case .receive,
-             .viewActivity,
-             .send:
+        case .receive:
             return .just(true)
+        case .interestTransfer:
+            return canPerformInterestTransfer()
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
+                }
         case .deposit,
-             .withdraw:
+             .withdraw,
+             .interestWithdraw:
             return .just(false)
+        case .viewActivity:
+            return hasHistory.asSingle()
+        case .send,
+             .swap:
+            return isFunded
         case .buy:
             return isPairToFiatAvailable
         case .sell:
-            return .just(false)
-//            return Single.zip(isPairToFiatAvailable, isFunded).map {
-//                $0.0 && $0.1
-//            }
-        case .swap:
-            return isFunded
+            return featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled))
+                .asSingle()
+                .flatMap(weak: self) { (self, _) in
+                    Single.zip(self.isPairToFiatAvailable, self.isFunded).map {
+                        $0.0 && $0.1
+                    }
+                }
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: asset, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
-    }
-
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
-            }
+            .eraseToAnyPublisher()
     }
 }

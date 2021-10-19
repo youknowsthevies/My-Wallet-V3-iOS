@@ -17,6 +17,7 @@ final class SellPendingTransactionStateProvider: PendingTransactionStateProvidin
             .map(weak: self) { (self, state) in
                 switch state.executionStatus {
                 case .inProgress,
+                     .pending,
                      .notStarted:
                     return self.pending(state: state)
                 case .completed:
@@ -37,7 +38,7 @@ final class SellPendingTransactionStateProvider: PendingTransactionStateProvidin
             ),
             subtitle: String(
                 format: LocalizationIds.Success.description,
-                state.amount.currency.name
+                state.destination?.currencyType.code ?? ""
             ),
             compositeViewType: .composite(
                 .init(
@@ -50,7 +51,7 @@ final class SellPendingTransactionStateProvider: PendingTransactionStateProvidin
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationIds.Success.action)
+            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action)
         )
     }
 
@@ -97,8 +98,7 @@ final class SellPendingTransactionStateProvider: PendingTransactionStateProvidin
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
                 )
-            ),
-            buttonViewModel: nil
+            )
         )
     }
 
@@ -117,7 +117,7 @@ final class SellPendingTransactionStateProvider: PendingTransactionStateProvidin
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 }

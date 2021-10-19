@@ -41,18 +41,21 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
         var text = ""
         switch event {
         case .buySell(let orderDetails):
-            let prefix = orderDetails.isBuy ? LocalizationStrings.buy : LocalizationStrings.sell
-            let postfix = orderDetails.isBuy
-                ? orderDetails.outputValue.currencyType.name
-                : orderDetails.inputValue.currencyType.name
-            text = "\(prefix) \(postfix)"
+            if orderDetails.isBuy {
+                text = "\(LocalizationStrings.buy) \(orderDetails.outputValue.currency.code)"
+            } else {
+                text = "\(LocalizationStrings.sell) "
+                    + "\(orderDetails.inputValue.currency.code) -> \(orderDetails.outputValue.currency.code)"
+            }
         case .swap(let event):
             let pair = event.pair
             switch pair.outputCurrencyType {
             case .crypto:
-                text = "\(LocalizationStrings.swap) \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
+                text = "\(LocalizationStrings.swap) "
+                    + "\(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
             case .fiat:
-                text = "\(LocalizationStrings.sell) \(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
+                text = "\(LocalizationStrings.sell) "
+                    + "\(pair.inputCurrencyType.displayCode) -> \(pair.outputCurrencyType.displayCode)"
             }
 
         case .transactional(let event):
@@ -149,15 +152,15 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case (.failed, _):
                 return .destructive
             case (_, true):
-                return orderDetails.outputValue.currencyType.brandColor
+                return orderDetails.outputValue.currency.brandUIColor
             case (_, false):
-                return orderDetails.inputValue.currencyType.brandColor
+                return orderDetails.inputValue.currency.brandUIColor
             }
         case .swap(let event):
             if event.status == .failed {
                 return .destructive
             }
-            return event.pair.inputCurrencyType.brandColor
+            return event.pair.inputCurrencyType.brandUIColor
         case .fiat(let event):
             switch event.state {
             case .failed:
@@ -165,7 +168,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case .pending:
                 return .mutedText
             case .completed:
-                return event.amount.currencyType.brandColor
+                return event.amount.currency.brandColor
             }
         case .crypto(let event):
             switch event.state {
@@ -174,12 +177,12 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case .pending:
                 return .mutedText
             case .completed:
-                return event.amount.currencyType.brandColor
+                return event.amount.currencyType.brandUIColor
             }
         case .transactional(let event):
             switch event.status {
             case .complete:
-                return event.currency.brandColor
+                return event.currency.brandUIColor
             case .pending:
                 return .mutedText
             }

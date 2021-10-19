@@ -71,6 +71,7 @@ public final class LineItemTableViewCell: UITableViewCell {
             anchorView: descriptionLabel,
             size: .init(width: 150, height: 24)
         )
+        descriptionLabel.numberOfLines = 0
     }
 }
 

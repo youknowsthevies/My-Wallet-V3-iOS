@@ -9,7 +9,7 @@ final class AddBankInteractor: AddSpecificPaymentMethodInteractorAPI {
     private let fiatCurrency: FiatCurrency
 
     var isAbleToAddNew: Observable<Bool> {
-        let fiatCurrency = self.fiatCurrency
+        let fiatCurrency = fiatCurrency
         return beneficiariesService.availableCurrenciesForBankLinkage
             .map { currencies -> Bool in
                 currencies.contains(fiatCurrency)

@@ -18,6 +18,7 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
             .map(weak: self) { (self, state) in
                 switch state.executionStatus {
                 case .inProgress,
+                     .pending,
                      .notStarted:
                     return self.pending(state: state)
                 case .completed:
@@ -53,7 +54,7 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 
@@ -63,7 +64,7 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
             format: LocalizationIds.Pending.title,
             sent.displayString
         )
-        let zeroSent = MoneyValue.zero(currency: sent.currencyType)
+        let zeroSent: MoneyValue = .zero(currency: sent.currency)
         if sent == zeroSent {
             title = String(
                 format: LocalizationIds.Pending.title,
@@ -79,8 +80,7 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
                 )
-            ),
-            buttonViewModel: nil
+            )
         )
     }
 
@@ -100,7 +100,7 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 }

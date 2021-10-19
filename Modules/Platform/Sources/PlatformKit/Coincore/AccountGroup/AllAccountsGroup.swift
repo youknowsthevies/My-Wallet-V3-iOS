@@ -38,34 +38,34 @@ public final class AllAccountsGroup: AccountGroup {
 
     public var pendingBalance: Single<MoneyValue> {
         guard !accounts.isEmpty else {
-            return .error(MoneyValueError.invalidInput)
+            return .error(AccountGroupError.noAccounts)
         }
         return Single
             .zip(accounts.map(\.pendingBalance))
             .map { [currencyType] values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: currencyType), +)
+                try values.reduce(.zero(currency: currencyType), +)
             }
     }
 
     public var balance: Single<MoneyValue> {
         guard !accounts.isEmpty else {
-            return .error(MoneyValueError.invalidInput)
+            return .error(AccountGroupError.noAccounts)
         }
         return Single
             .zip(accounts.map(\.balance))
             .map { [currencyType] values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: currencyType), +)
+                try values.reduce(.zero(currency: currencyType), +)
             }
     }
 
     public var actionableBalance: Single<MoneyValue> {
         guard !accounts.isEmpty else {
-            return .error(MoneyValueError.invalidInput)
+            return .error(AccountGroupError.noAccounts)
         }
         return Single
             .zip(accounts.map(\.actionableBalance))
             .map { [currencyType] values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: currencyType), +)
+                try values.reduce(.zero(currency: currencyType), +)
             }
     }
 

@@ -110,7 +110,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
     public init(
         fiatCurrencyService: FiatCurrencyServiceAPI,
         cryptoCurrencyService: CryptoCurrencyServiceAPI,
-        priceProvider: AmountTranslationPriceProviding = AmountTranslationPriceProvider(),
+        priceProvider: AmountTranslationPriceProviding,
         defaultFiatCurrency: FiatCurrency = .default,
         defaultCryptoCurrency: CryptoCurrency,
         initialActiveInput: ActiveAmountInput
@@ -131,19 +131,19 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         /// modify the fiat / crypto value
 
         // Fiat changes affect crypto
-        let failibleFiatCurrency = fiatCurrencyService.fiatCurrencyObservable
+        let fallibleFiatCurrency = fiatCurrencyService.fiatCurrencyObservable
             .map { $0 as Currency }
 
-        let failibleCryptoCurrency = cryptoCurrencyService.cryptoCurrencyObservable
+        let fallibleCryptoCurrency = cryptoCurrencyService.cryptoCurrencyObservable
             .map { $0 as Currency }
 
-        let fiatCurrency = failibleFiatCurrency
+        let fiatCurrency = fallibleFiatCurrency
             .catchError { _ -> Observable<Currency> in
                 .empty()
             }
             .share(replay: 1, scope: .whileConnected)
 
-        let cryptoCurrency = failibleCryptoCurrency
+        let cryptoCurrency = fallibleCryptoCurrency
             .catchError { _ -> Observable<Currency> in
                 .empty()
             }
@@ -159,7 +159,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
         // We need to keep any currency selection changes up to date with the input values
         // and eventually update the `cryptoAmountRelay` and `fiatAmountRelay`
-        let currenciesMerged = Observable.merge(failibleFiatCurrency, failibleCryptoCurrency)
+        let currenciesMerged = Observable.merge(fallibleFiatCurrency, fallibleCryptoCurrency)
             .consumeErrorToEffect(on: self)
             .share(replay: 1, scope: .whileConnected)
 
@@ -230,7 +230,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
         anyPair
             .bindAndCatch(weak: self) { (self, value) in
-                switch value.base.currencyType {
+                switch value.base.currency {
                 case .crypto:
                     self.cryptoAmountRelay.accept(value.base)
                     self.fiatAmountRelay.accept(value.quote)
@@ -265,8 +265,8 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
 
         let insertAction = appendNewRelay
             .map { MoneyValueInputScanner.Action.insert($0) }
-            .flatMap(weak: self) { (self, action) in
-                self.activeInput
+            .flatMap { [activeInput] action in
+                activeInput
                     .take(1)
                     .map { (activeInputType: $0, action: action) }
             }
@@ -356,11 +356,24 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
             .disposed(by: disposeBag)
     }
 
-    public let minAmountSelectedRelay = PublishRelay<Void>()
+    private let minAmountSelectedRelay = PublishRelay<Void>()
+    public var minAmountSelected: Observable<Void> {
+        minAmountSelectedRelay.asObservable()
+    }
 
     public func set(minAmount: MoneyValue) {
         minAmountSelectedRelay.accept(())
         set(amount: minAmount)
+    }
+
+    private let maxAmountSelectedRelay = PublishRelay<Void>()
+    public var maxAmountSelected: Observable<Void> {
+        maxAmountSelectedRelay.asObservable()
+    }
+
+    public func set(maxAmount: MoneyValue) {
+        maxAmountSelectedRelay.accept(())
+        set(amount: maxAmount)
     }
 
     private func invertInputIfNeeded(for amount: MoneyValue) -> Completable {
@@ -380,9 +393,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         Single.just(activeInput)
             .map(\.inverted)
             .observeOn(MainScheduler.asyncInstance)
-            .do(onSuccess: { [weak self] input in
-                self?.activeInputRelay.accept(input)
-            })
+            .do(onSuccess: activeInputRelay.accept)
             .asCompletable()
     }
 
@@ -463,8 +474,8 @@ extension Observable {
         self.do(onError: { [weak handler] error in
             handler?.handleCurrency(error: error)
         })
-            .catchError { _ in
-                Observable<Element>.empty()
-            }
+        .catchError { _ in
+            Observable<Element>.empty()
+        }
     }
 }

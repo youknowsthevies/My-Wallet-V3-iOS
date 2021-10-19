@@ -3,6 +3,7 @@
 import AnalyticsKit
 import Combine
 import ComposableArchitecture
+import ComposableNavigation
 import DIKit
 import FeatureAuthenticationDomain
 import Localization
@@ -10,38 +11,70 @@ import ToolKit
 
 // MARK: - Type
 
-public enum VerifyDeviceAction: Equatable {
+public enum VerifyDeviceAction: Equatable, NavigationAction {
+
+    // MARK: - Alert
+
     public enum AlertAction: Equatable {
         case show(title: String, message: String)
         case dismiss
     }
 
-    case credentials(CredentialsAction)
-    case didAppear
-    case fallbackToWalletIdentifier
-    case didExtractWalletInfo(WalletInfo)
+    case alert(AlertAction)
+
+    // MARK: - Navigation
+
+    case route(RouteIntent<VerifyDeviceRoute>?)
+
+    // MARK: - Deeplink handling
+
     case didReceiveWalletInfoDeeplink(URL)
-    case sendDeviceVerificationEmail
+    case didExtractWalletInfo(WalletInfo)
+    case fallbackToWalletIdentifier
+
+    // MARK: - Device Verification
+
     case openMailApp
-    case setCredentialsScreenVisible(Bool)
-    case verifyDeviceFailureAlert(AlertAction)
+    case sendDeviceVerificationEmail
+
+    // MARK: - Local Actions
+
+    case credentials(CredentialsAction)
+    case upgradeAccount(UpgradeAccountAction)
+
+    // MARK: - Utils
+
     case none
 }
 
 // MARK: - Properties
 
-struct VerifyDeviceState: Equatable {
-    var isCredentialsScreenVisible: Bool
-    var credentialsContext: CredentialsContext
-    var credentialsState: CredentialsState?
-    var verifyDeviceFailureAlert: AlertState<VerifyDeviceAction>?
+public struct VerifyDeviceState: Equatable, NavigationState {
+
+    // MARK: - Navigation State
+
+    public var route: RouteIntent<VerifyDeviceRoute>?
+
+    // MARK: - Alert State
+
+    var alert: AlertState<VerifyDeviceAction>?
+
+    // MARK: - Credentials
+
     var emailAddress: String
+    var credentialsContext: CredentialsContext
+
+    // MARK: - Loading State
+
     var sendEmailButtonIsLoading: Bool
+
+    // MARK: - Local States
+
+    var credentialsState: CredentialsState?
+    var upgradeAccountState: UpgradeAccountState?
 
     init(emailAddress: String) {
         self.emailAddress = emailAddress
-        credentialsState = nil
-        isCredentialsScreenVisible = false
         credentialsContext = .none
         sendEmailButtonIsLoading = false
     }
@@ -50,6 +83,7 @@ struct VerifyDeviceState: Equatable {
 struct VerifyDeviceEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let deviceVerificationService: DeviceVerificationServiceAPI
+    let appFeatureConfigurator: FeatureConfiguratorAPI
     let errorRecorder: ErrorRecording
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -57,12 +91,14 @@ struct VerifyDeviceEnvironment {
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         deviceVerificationService: DeviceVerificationServiceAPI,
+        appFeatureConfigurator: FeatureConfiguratorAPI,
         errorRecorder: ErrorRecording,
         externalAppOpener: ExternalAppOpener = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
+        self.appFeatureConfigurator = appFeatureConfigurator
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
@@ -81,6 +117,22 @@ let verifyDeviceReducer = Reducer.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder,
                     externalAppOpener: $0.externalAppOpener,
+                    appFeatureConfigurator: $0.appFeatureConfigurator,
+                    analyticsRecorder: $0.analyticsRecorder
+                )
+            }
+        ),
+    upgradeAccountReducer
+        .optional()
+        .pullback(
+            state: \.upgradeAccountState,
+            action: /VerifyDeviceAction.upgradeAccount,
+            environment: {
+                UpgradeAccountEnvironment(
+                    mainQueue: $0.mainQueue,
+                    deviceVerificationService: $0.deviceVerificationService,
+                    errorRecorder: $0.errorRecorder,
+                    appFeatureConfigurator: $0.appFeatureConfigurator,
                     analyticsRecorder: $0.analyticsRecorder
                 )
             }
@@ -89,28 +141,73 @@ let verifyDeviceReducer = Reducer.combine(
         VerifyDeviceState,
         VerifyDeviceAction,
         VerifyDeviceEnvironment
+            // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
-        case .didAppear:
-            // making sure credentials view is not immediately pushed when going to verify device view
-            state.isCredentialsScreenVisible = false
+
+        // MARK: - Alert
+
+        case .alert(.show(let title, let message)):
+            state.alert = AlertState(
+                title: TextState(verbatim: title),
+                message: TextState(verbatim: message),
+                dismissButton: .default(
+                    TextState(LocalizationConstants.okString),
+                    action: .send(.alert(.dismiss))
+                )
+            )
             return .none
 
-        case .credentials:
-            // handled in credentials reducer
+        case .alert(.dismiss):
+            state.alert = nil
             return .none
 
-        case .didExtractWalletInfo(let walletInfo):
-            guard walletInfo.email != nil, walletInfo.emailCode != nil else {
-                state.credentialsContext = .walletIdentifier(guid: walletInfo.guid)
-                return Effect(value: .setCredentialsScreenVisible(true))
+        // MARK: - Navigations
+
+        case .route(let route):
+            if let routeValue = route?.route {
+                switch routeValue {
+                case .credentials:
+                    switch state.credentialsContext {
+                    case .walletInfo(let walletInfo):
+                        state.credentialsState = CredentialsState(
+                            accountRecoveryEnabled:
+                            environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled,
+                            walletPairingState: WalletPairingState(
+                                emailAddress: walletInfo.email ?? "",
+                                emailCode: walletInfo.emailCode,
+                                walletGuid: walletInfo.guid
+                            )
+                        )
+                    case .walletIdentifier(let guid):
+                        state.credentialsState = CredentialsState(
+                            accountRecoveryEnabled:
+                            environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled,
+                            walletPairingState: WalletPairingState(
+                                walletGuid: guid ?? ""
+                            )
+                        )
+                    case .manualPairing, .none:
+                        state.credentialsState = .init(
+                            accountRecoveryEnabled:
+                            environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled
+                        )
+                    }
+                case .upgradeAccount:
+                    guard case .walletInfo(let info) = state.credentialsContext else {
+                        state.route = nil
+                        return .none
+                    }
+                    state.upgradeAccountState = .init(walletInfo: info)
+                }
+            } else {
+                state.credentialsState = nil
+                state.upgradeAccountState = nil
             }
-            state.credentialsContext = .walletInfo(walletInfo)
-            return Effect(value: .setCredentialsScreenVisible(true))
+            state.route = route
+            return .none
 
-        case .fallbackToWalletIdentifier:
-            state.credentialsContext = .walletIdentifier(guid: "")
-            return Effect(value: .setCredentialsScreenVisible(true))
+        // MARK: - Deeplink handling
 
         case .didReceiveWalletInfoDeeplink(let url):
             return environment
@@ -132,6 +229,20 @@ let verifyDeviceReducer = Reducer.combine(
                     }
                 }
 
+        case .didExtractWalletInfo(let walletInfo):
+            guard walletInfo.email != nil, walletInfo.emailCode != nil else {
+                state.credentialsContext = .walletIdentifier(guid: walletInfo.guid)
+                return Effect(value: .navigate(to: .credentials))
+            }
+            state.credentialsContext = .walletInfo(walletInfo)
+            return Effect(value: .navigate(to: .credentials))
+
+        case .fallbackToWalletIdentifier:
+            state.credentialsContext = .walletIdentifier(guid: "")
+            return Effect(value: .navigate(to: .credentials))
+
+        // MARK: - Device Verification
+
         case .sendDeviceVerificationEmail:
             // handled in email login reducer
             return .none
@@ -142,44 +253,18 @@ let verifyDeviceReducer = Reducer.combine(
                 .openMailApp { _ in }
             return .none
 
-        case .setCredentialsScreenVisible(let isVisible):
-            state.isCredentialsScreenVisible = isVisible
-            if isVisible {
-                switch state.credentialsContext {
-                case .walletInfo(let walletInfo):
-                    state.credentialsState = CredentialsState(
-                        walletPairingState: WalletPairingState(
-                            emailAddress: walletInfo.email ?? "",
-                            emailCode: walletInfo.emailCode,
-                            walletGuid: walletInfo.guid
-                        )
-                    )
-                case .walletIdentifier(let guid):
-                    state.credentialsState = CredentialsState(
-                        walletPairingState: WalletPairingState(
-                            walletGuid: guid ?? ""
-                        )
-                    )
-                case .manualPairing, .none:
-                    state.credentialsState = .init()
-                }
-            }
+        // MARK: - Local Reducers
+
+        case .credentials:
+            // handled in credentials reducer
             return .none
 
-        case .verifyDeviceFailureAlert(.show(let title, let message)):
-            state.verifyDeviceFailureAlert = AlertState(
-                title: TextState(verbatim: title),
-                message: TextState(verbatim: message),
-                dismissButton: .default(
-                    TextState(LocalizationConstants.okString),
-                    action: .send(.verifyDeviceFailureAlert(.dismiss))
-                )
-            )
+        case .upgradeAccount:
+            // handled in upgrade account reducer
             return .none
 
-        case .verifyDeviceFailureAlert(.dismiss):
-            state.verifyDeviceFailureAlert = nil
-            return .none
+        // MARK: - Utils
+
         case .none:
             return .none
         }

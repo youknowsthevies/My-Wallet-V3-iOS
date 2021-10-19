@@ -4,16 +4,26 @@ import Foundation
 
 extension NumberFormatter {
 
-    /// The format of a currency
+    // MARK: - Public Types
+
+    /// A currency format.
     public enum CurrencyFormat {
 
-        /// In case the rhs to the decimal separator is 0, it would be trimmed: e.g `23.00` -> `23`
+        /// If there are no fractional digits, the string would be shortened (e.g. `23.00` becomes `23`).
         case shortened
 
-        /// Doesn't get trimmed. e.g `23.00` -> `23.00`
+        /// The string would never be shortened (e.g. `23.00` stays `23.00`).
         case fullLength
     }
 
+    // MARK: - Setup
+
+    /// Creates a number formatter.
+    ///
+    /// - Parameters:
+    ///   - locale:            A locale.
+    ///   - currencyCode:      A currency code.
+    ///   - maxFractionDigits: The maximum number of digits after the decimal separator.
     public convenience init(locale: Locale, currencyCode: String, maxFractionDigits: Int) {
         self.init()
         usesGroupingSeparator = true
@@ -24,11 +34,18 @@ extension NumberFormatter {
         maximumFractionDigits = maxFractionDigits
     }
 
-    public func format(amount: Decimal, includeSymbol: Bool) -> String {
+    // MARK: - Public Methods
+
+    /// Returns a string containing the formatted amount, optionally including the symbol.
+    ///
+    /// - Parameters:
+    ///   - amount:        An amount in major units.
+    ///   - includeSymbol: Whether the symbol should be included.
+    public func format(major amount: Decimal, includeSymbol: Bool) -> String {
         let formattedString = string(from: NSDecimalNumber(decimal: amount)) ?? "\(amount)"
-        if let firstDigitIndex = formattedString.firstIndex(where: { $0.inSet(characterSet: .decimalDigits) }),
-           let lastDigitIndex = formattedString.lastIndex(where: { $0.inSet(characterSet: .decimalDigits) }),
-           !includeSymbol
+        if !includeSymbol,
+           let firstDigitIndex = formattedString.firstIndex(where: { $0.inSet(characterSet: .decimalDigits) }),
+           let lastDigitIndex = formattedString.lastIndex(where: { $0.inSet(characterSet: .decimalDigits) })
         {
             return String(formattedString[firstDigitIndex...lastDigitIndex])
         }

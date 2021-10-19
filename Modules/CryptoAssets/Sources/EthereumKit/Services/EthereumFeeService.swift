@@ -24,8 +24,8 @@ final class EthereumFeeService: EthereumFeeServiceAPI {
                     gasLimitContract: response.gasLimitContract
                 )
             }
+            .replaceError(with: .default)
             .asSingle()
-            .catchErrorJustReturn(.default)
     }
 
     // MARK: - Private Properties

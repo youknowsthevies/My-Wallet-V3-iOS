@@ -17,20 +17,11 @@ public protocol NetworkResponseHandlerAPI {
     ) -> AnyPublisher<ServerResponse, NetworkError>
 }
 
-extension Data {
-    private func unescapedJSONString() throws -> String {
-        let object = try JSONSerialization.jsonObject(with: self, options: .allowFragments)
-        let unescapedData = try JSONSerialization.data(withJSONObject: object, options: .withoutEscapingSlashes)
-        guard let string = String(data: unescapedData, encoding: .utf8) else {
-            throw NetworkError.payloadError(.badData(rawPayload: String(describing: object)))
-        }
-        return string
-    }
-}
+public final class NetworkResponseHandler: NetworkResponseHandlerAPI {
 
-final class NetworkResponseHandler: NetworkResponseHandlerAPI {
+    public init() {}
 
-    func handle(
+    public func handle(
         elements: (data: Data, response: URLResponse),
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {

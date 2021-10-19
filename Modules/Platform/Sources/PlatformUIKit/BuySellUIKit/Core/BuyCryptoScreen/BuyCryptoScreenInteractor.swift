@@ -44,7 +44,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     /// Exposes a stream of the currently selected `CryptoCurrency` value
     override var selectedCurrencyType: Observable<CurrencyType> {
-        cryptoCurrencySelectionService.selectedData.map(\.cryptoCurrency.currency).asObservable()
+        cryptoCurrencySelectionService.selectedData.map(\.cryptoCurrency.currencyType).asObservable()
     }
 
     /// The state of the screen with associated data
@@ -86,6 +86,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     /// Streams a `KycState` indicating whether the user should complete KYC
     var currentKycState: Single<Result<KycState, Error>> {
         kycTiersService.fetchTiers()
+            .asSingle()
             .map(\.isTier2Approved)
             .mapToResult(successMap: { $0 ? .completed : .shouldComplete })
     }
@@ -179,10 +180,12 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     // MARK: - Interactor
 
+    // swiftlint:disable:next cyclomatic_complexity
+    // swiftlint:disable function_body_length
     override func didLoad() {
 
-        let cryptoCurrencySelectionService = self.cryptoCurrencySelectionService
-        let fiatCurrencyService = self.fiatCurrencyService
+        let cryptoCurrencySelectionService = cryptoCurrencySelectionService
+        let fiatCurrencyService = fiatCurrencyService
 
         amountTranslationInteractor.effect
             .map(\.toBuyCryptoInteractorEffect)
@@ -190,6 +193,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .disposed(by: disposeBag)
 
         state
+            .observeOn(MainScheduler.asyncInstance)
             .flatMapLatest(weak: self) { (self, state) -> Observable<AmountInteractorState> in
                 Single
                     .zip(
@@ -285,6 +289,8 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                 let minFiatValue = pair.minFiatValue
                 let maxFiatValue: FiatValue
                 let paymentMethodId: String?
+                let hardCodedMinimum = (FiatValue.create(major: "10.00", currency: currency) ?? minFiatValue)
+                let maxMinFiatValue: FiatValue = try .max(hardCodedMinimum, minFiatValue)
 
                 switch preferredPaymentMethod {
                 case .card(let cardData):
@@ -297,23 +303,25 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     guard method.max.currency == pair.maxFiatValue.currency else {
                         return .empty(currency: currency)
                     }
-                    maxFiatValue = try FiatValue.min(pair.maxFiatValue, method.max)
+                    maxFiatValue = try .min(pair.maxFiatValue, method.max)
                     paymentMethodId = nil
                 case .linkedBank(let data):
                     maxFiatValue = data.topLimit
                     paymentMethodId = data.identifier
                 }
 
-                guard fiat.currencyType == minFiatValue.currencyType, fiat.currencyType == maxFiatValue.currencyType else {
+                guard fiat.currencyType == maxMinFiatValue.currencyType,
+                      fiat.currencyType == maxFiatValue.currencyType
+                else {
                     return .empty(currency: currency)
                 }
 
-                if fiat.amount.isZero {
+                if fiat.isZero {
                     return .empty(currency: currency)
                 } else if try fiat > maxFiatValue {
                     return .tooHigh(max: maxFiatValue)
-                } else if try fiat < minFiatValue {
-                    return .tooLow(min: minFiatValue)
+                } else if try fiat < maxMinFiatValue {
+                    return .tooLow(min: maxMinFiatValue)
                 }
                 let data: CandidateOrderDetails = .buy(
                     paymentMethod: preferredPaymentMethod,

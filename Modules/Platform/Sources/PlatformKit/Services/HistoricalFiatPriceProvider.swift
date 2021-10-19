@@ -2,6 +2,7 @@
 
 import DIKit
 import Foundation
+import ToolKit
 
 public protocol HistoricalFiatPriceProviding: AnyObject {
 
@@ -10,39 +11,47 @@ public protocol HistoricalFiatPriceProviding: AnyObject {
     func refresh(window: PriceWindow)
 }
 
-public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
+final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
 
-    public subscript(currency: CryptoCurrency) -> HistoricalFiatPriceServiceAPI {
-        services[currency]!
+    subscript(currency: CryptoCurrency) -> HistoricalFiatPriceServiceAPI {
+        retrieveOrCreate(currency: currency)
     }
 
     // MARK: - Services
 
-    private let services: [CryptoCurrency: HistoricalFiatPriceServiceAPI]
+    private let services: Atomic<[CryptoCurrency: HistoricalFiatPriceServiceAPI]>
+    private let exchangeProvider: ExchangeProviding
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
 
     // MARK: - Setup
 
-    public init(
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+    init(
         exchangeProvider: ExchangeProviding = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
-        services = enabledCurrenciesService
-            .allEnabledCryptoCurrencies
-            .reduce(into: [CryptoCurrency: HistoricalFiatPriceServiceAPI]()) { result, cryptoCurrency in
-                result[cryptoCurrency] = HistoricalFiatPriceService(
-                    cryptoCurrency: cryptoCurrency,
-                    exchangeAPI: exchangeProvider[cryptoCurrency],
-                    fiatCurrencyService: fiatCurrencyService
-                )
-            }
-
-        refresh()
+        services = Atomic([:])
+        self.exchangeProvider = exchangeProvider
+        self.fiatCurrencyService = fiatCurrencyService
     }
 
-    public func refresh(window: PriceWindow = .day(.oneHour)) {
-        services.values.forEach { service in
+    func refresh(window: PriceWindow) {
+        services.value.values.forEach { service in
             service.fetchTriggerRelay.accept(window)
+        }
+    }
+
+    private func retrieveOrCreate(currency: CryptoCurrency) -> HistoricalFiatPriceServiceAPI {
+        services.mutateAndReturn { services -> HistoricalFiatPriceServiceAPI in
+            if let service = services[currency] {
+                return service
+            }
+            let service = HistoricalFiatPriceService(
+                cryptoCurrency: currency,
+                pairExchangeService: exchangeProvider[currency],
+                fiatCurrencyService: fiatCurrencyService
+            )
+            services[currency] = service
+            return service
         }
     }
 }

@@ -54,8 +54,8 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     var pair: OrderPair {
         OrderPair(
-            sourceCurrencyType: sourceAsset.currency,
-            destinationCurrencyType: target.currencyType.currency
+            sourceCurrencyType: sourceAsset.currencyType,
+            destinationCurrencyType: target.currencyType
         )
     }
 
@@ -119,27 +119,19 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         quotesEngine.getRate(direction: orderDirection, pair: pair)
-            .first()
+            .take(1)
+            .asSingle()
             .map { [sourceAsset, targetAsset] pricedQuote -> PendingTransaction in
-                guard let pricedQuote = pricedQuote else {
-                    return pendingTransaction
-                }
-
                 let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let baseValue = MoneyValue.one(currency: pendingTransaction.amount.currency)
-                let sellDestinationValue: MoneyValue = try pendingTransaction.amount.convert(using: resultValue)
+                let sellDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
 
                 let confirmations: [TransactionConfirmation] = [
                     .sellSourceValue(.init(cryptoValue: pendingTransaction.amount.cryptoValue!)),
                     .sellDestinationValue(.init(fiatValue: sellDestinationValue.fiatValue!)),
                     .sellExchangeRateValue(.init(baseValue: baseValue, resultValue: resultValue)),
                     .source(.init(value: self.sourceAccount.label)),
-                    .destination(.init(value: self.target.label)),
-                    .networkFee(.init(
-                        fee: pendingTransaction.feeAmount,
-                        feeType: .depositFee,
-                        asset: sourceAsset.currency
-                    ))
+                    .destination(.init(value: self.target.label))
                 ]
 
                 var pendingTransaction = pendingTransaction.update(confirmations: confirmations)
@@ -203,7 +195,7 @@ extension PendingTransaction {
         let source = amount.currencyType
         let price = MoneyValue(amount: quote.price, currency: destination)
         let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destination)
-        let convertedFees = try totalFees.convert(usingInverse: price, currencyType: source)
+        let convertedFees = totalFees.convert(usingInverse: price, currencyType: source)
         return (try? minimumApiLimit + convertedFees) ?? MoneyValue.zero(currency: destination)
     }
 

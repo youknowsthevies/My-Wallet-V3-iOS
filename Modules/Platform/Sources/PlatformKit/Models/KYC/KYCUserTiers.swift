@@ -3,7 +3,7 @@
 import Foundation
 
 extension KYC {
-    public struct UserTiers: Decodable {
+    public struct UserTiers: Decodable, Equatable {
         public let tiers: [KYC.UserTier]
 
         public var isTier0: Bool {
@@ -12,11 +12,11 @@ extension KYC {
 
         /// `true` in case the user has a verified GOLD tier.
         public var isTier2Approved: Bool {
-            latestApprovedTier == .tier2
+            tierAccountStatus(for: .tier2) == .approved
         }
 
         public var isTier1Approved: Bool {
-            latestApprovedTier == .tier1
+            tierAccountStatus(for: .tier1) == .approved
         }
 
         public init(tiers: [KYC.UserTier]) {

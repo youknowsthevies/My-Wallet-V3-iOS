@@ -3,7 +3,7 @@
 import RxSwift
 
 public enum TransactionResult {
-    case hashed(txHash: String, amount: MoneyValue)
+    case hashed(txHash: String, amount: MoneyValue, order: OrderDetails? = nil)
     case unHashed(amount: MoneyValue)
 }
 
@@ -29,6 +29,6 @@ public protocol CryptoTarget: TransactionTarget {
 extension CryptoTarget {
 
     public var currencyType: CurrencyType {
-        asset.currency
+        asset.currencyType
     }
 }

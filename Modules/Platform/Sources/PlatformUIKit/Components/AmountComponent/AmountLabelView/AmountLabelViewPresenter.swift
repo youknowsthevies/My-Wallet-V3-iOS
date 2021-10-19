@@ -86,7 +86,7 @@ public final class AmountLabelViewPresenter {
                 AmountLabelContent(
                     input: input,
                     currencyCode: currency.displayCode,
-                    currencySymbol: currency.symbol,
+                    currencySymbol: currency.displaySymbol,
                     hasFocus: hasFocus
                 )
             }
@@ -153,7 +153,7 @@ extension AmountLabelViewPresenter {
             let amountComponents = input.amount.components(separatedBy: decimalSeparator)
 
             if let firstComponent = amountComponents.first, let decimal = Decimal(string: firstComponent) {
-                amount += formatter.format(amount: decimal, includeSymbol: false)
+                amount += formatter.format(major: decimal, includeSymbol: false)
             }
 
             if amountComponents.count == 2 {

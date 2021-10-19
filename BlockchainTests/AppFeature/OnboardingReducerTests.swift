@@ -9,28 +9,24 @@ import RxSwift
 import XCTest
 
 @testable import Blockchain
+@testable import FeatureAppUI
 @testable import FeatureAuthenticationUI
 
 class OnboardingReducerTests: XCTestCase {
 
-    var mockWalletManager: WalletManager!
-    var mockWallet: MockWallet!
     var settingsApp: MockBlockchainSettingsApp!
     var mockAlertPresenter: MockAlertViewPresenter!
     var mockInternalFeatureFlags: InternalFeatureFlagServiceMock!
+    var mockAppFeatureConfigurator: MockFeatureConfigurator!
     var mockQueue: TestSchedulerOf<DispatchQueue>!
 
     override func setUp() {
         super.setUp()
 
-        mockWallet = MockWallet()
         settingsApp = MockBlockchainSettingsApp()
-        mockWalletManager = WalletManager(
-            wallet: mockWallet,
-            appSettings: settingsApp,
-            reactiveWallet: MockReactiveWallet()
-        )
+
         mockInternalFeatureFlags = InternalFeatureFlagServiceMock()
+        mockAppFeatureConfigurator = MockFeatureConfigurator()
         mockAlertPresenter = MockAlertViewPresenter()
         mockQueue = DispatchQueue.test
 
@@ -39,9 +35,10 @@ class OnboardingReducerTests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
-        mockWallet = nil
         settingsApp = nil
         mockAlertPresenter = nil
+        mockInternalFeatureFlags = nil
+        mockAppFeatureConfigurator = nil
         mockQueue = nil
 
         try super.tearDownWithError()
@@ -59,10 +56,10 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
+                appFeatureConfigurator: mockAppFeatureConfigurator,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -87,10 +84,10 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
+                appFeatureConfigurator: mockAppFeatureConfigurator,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -117,10 +114,10 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
+                appFeatureConfigurator: mockAppFeatureConfigurator,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -145,10 +142,10 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
+                appFeatureConfigurator: mockAppFeatureConfigurator,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -175,10 +172,10 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
+                appFeatureConfigurator: mockAppFeatureConfigurator,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -207,10 +204,10 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
+                appFeatureConfigurator: mockAppFeatureConfigurator,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -246,10 +243,10 @@ class OnboardingReducerTests: XCTestCase {
             reducer: onBoardingReducer,
             environment: Onboarding.Environment(
                 appSettings: settingsApp,
-                walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
                 featureFlags: mockInternalFeatureFlags,
+                appFeatureConfigurator: mockAppFeatureConfigurator,
                 buildVersionProvider: { "v1.0.0" }
             )
         )

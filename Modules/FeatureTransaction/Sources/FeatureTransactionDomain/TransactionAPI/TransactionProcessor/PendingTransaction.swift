@@ -14,13 +14,33 @@ public struct PendingTransaction: Equatable {
     /// The maximum amount the user can spend. We compare the amount entered to the
     /// `maximumLimit` as `CryptoValues` and return whichever is smaller.
     public var maxSpendable: MoneyValue {
-        guard let maximumLimit = self.maximumLimit else {
+        guard let maximumLimit = maximumLimit else {
             return available
         }
         guard let availableMaximumLimit = try? maximumLimit - feeAmount else {
             return available
         }
-        return (try? MoneyValue.min(available, availableMaximumLimit)) ?? .zero(currency: amount.currencyType)
+        return (try? .min(available, availableMaximumLimit)) ?? .zero(currency: amount.currency)
+    }
+
+    public var termsOptionValue: Bool {
+        guard let confirmation = confirmations
+            .first(where: { $0.type == .agreementInterestTandC })
+        else {
+            return false
+        }
+        guard case .termsOfService(let option) = confirmation else { return false }
+        return option.value ?? false
+    }
+
+    public var agreementOptionValue: Bool {
+        guard let confirmation = confirmations
+            .first(where: { $0.type == .agreementInterestTransfer })
+        else {
+            return false
+        }
+        guard case .transferAgreement(let option) = confirmation else { return false }
+        return option.value
     }
 
     public var feeLevel: FeeLevel {

@@ -14,9 +14,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Uses the Transactions Flow implementation of Buy when enabled
     case useTransactionsFlowToBuyCrypto
 
-    /// Uses the Transactions Flow implementation of Sell when enabled
-    case useTransactionsFlowToSellCrypto
-
     /// Enable interest withdraw and deposit
     case interestWithdrawAndDeposit
 
@@ -24,26 +21,31 @@ public enum InternalFeature: String, CaseIterable {
     /// - Note: Old manual guid login screen is used only for internal builds
     case disableGUIDLogin
 
-    /// Enable split dashboard screen.
-    case splitDashboard
+    /// Enable new account SwiftUI picker.
+    case newAccountPicker
+
+    /// Enable new Onboarding Tour on the Welcome Flow
+    case newOnboardingTour
+
+    /// Enable unified sign in (account upgrade)
+    case unifiedSignIn
+
+    /// Enables native wallet payload instead of JS
+    case nativeWalletPayload
 
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .interestWithdrawAndDeposit:
+        case .disableGUIDLogin,
+             .interestWithdrawAndDeposit,
+             .newAccountPicker,
+             .newOnboardingTour,
+             .requestConsoleLogging,
+             .secureChannel,
+             .useTransactionsFlowToBuyCrypto,
+             .unifiedSignIn,
+             .nativeWalletPayload:
             return false
-        case .secureChannel:
-            return false
-        case .requestConsoleLogging:
-            return false
-        case .useTransactionsFlowToBuyCrypto:
-            return false
-        case .useTransactionsFlowToSellCrypto:
-            return false
-        case .disableGUIDLogin:
-            return false
-        case .splitDashboard:
-            return true
         }
     }
 }
@@ -58,19 +60,23 @@ extension InternalFeature {
     public var displayTitle: String {
         switch self {
         case .interestWithdrawAndDeposit:
-            return "Interest - Deposit and Withdraw"
+            return "Rewards - Deposit and Withdraw"
         case .secureChannel:
             return "Secure Channel"
         case .requestConsoleLogging:
             return "Enable Network Request Console Logs"
         case .useTransactionsFlowToBuyCrypto:
             return "Buy: Uses Transactions Flow to Buy Crypto"
-        case .useTransactionsFlowToSellCrypto:
-            return "Sell: Uses Transactions Flow to Sell Crypto"
         case .disableGUIDLogin:
             return "Disable manual (guid) login option"
-        case .splitDashboard:
-            return "Split Dashboard Screen"
+        case .newAccountPicker:
+            return "New SwiftUI Account Picker"
+        case .newOnboardingTour:
+            return "New Onboarding Tour"
+        case .unifiedSignIn:
+            return "Unified Sign In"
+        case .nativeWalletPayload:
+            return "Native Wallet Payload"
         }
     }
 }

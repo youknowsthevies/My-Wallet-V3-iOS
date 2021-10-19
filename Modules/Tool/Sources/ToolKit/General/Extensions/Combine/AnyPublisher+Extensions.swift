@@ -36,6 +36,19 @@ extension Publisher {
     }
 }
 
+extension Publisher where Output: OptionalType {
+
+    public func onNil(_ error: Failure) -> AnyPublisher<Output.Wrapped, Failure> {
+        flatMap { element -> AnyPublisher<Output.Wrapped, Failure> in
+            guard let value = element.value else {
+                return .failure(error)
+            }
+            return .just(value)
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
 extension Publisher where Failure == Never {
 
     public func mapError<E: Error>(to type: E.Type) -> AnyPublisher<Output, E> {

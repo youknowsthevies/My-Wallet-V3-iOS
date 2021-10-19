@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import Localization
 import RxSwift
@@ -14,6 +15,13 @@ final class FiatCustodialAccount: FiatAccount {
 
     var receiveAddress: Single<ReceiveAddress> {
         .error(ReceiveAddressError.notSupported)
+    }
+
+    var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
+        interestEligibilityRepository
+            .fetchInterestAccountEligibilityForCurrencyCode(currencyType.code)
+            .map(\.ineligibilityReason)
+            .eraseError()
     }
 
     var activity: Single<[ActivityItemEvent]> {
@@ -74,9 +82,10 @@ final class FiatCustodialAccount: FiatAccount {
         balance.map(\.isPositive)
     }
 
+    private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
     private let activityFetcher: OrdersActivityServiceAPI
     private let balanceService: TradingBalanceServiceAPI
-    private let exchange: PairExchangeServiceAPI
+    private let priceService: PriceServiceAPI
     private let paymentMethodService: PaymentMethodTypesServiceAPI
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: currencyType)
@@ -84,17 +93,19 @@ final class FiatCustodialAccount: FiatAccount {
 
     init(
         fiatCurrency: FiatCurrency,
+        interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve(),
         activityFetcher: OrdersActivityServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
-        exchangeProviding: ExchangeProviding = resolve(),
+        priceService: PriceServiceAPI = resolve(),
         paymentMethodService: PaymentMethodTypesServiceAPI = resolve()
     ) {
         label = fiatCurrency.defaultWalletName
+        self.interestEligibilityRepository = interestEligibilityRepository
         self.fiatCurrency = fiatCurrency
         self.activityFetcher = activityFetcher
         self.paymentMethodService = paymentMethodService
         self.balanceService = balanceService
-        exchange = exchangeProviding[fiatCurrency]
+        self.priceService = priceService
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -105,7 +116,9 @@ final class FiatCustodialAccount: FiatAccount {
              .send,
              .sell,
              .swap,
-             .receive:
+             .receive,
+             .interestTransfer,
+             .interestWithdraw:
             return .just(false)
         case .deposit:
             return paymentMethodService
@@ -123,24 +136,14 @@ final class FiatCustodialAccount: FiatAccount {
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        guard self.fiatCurrency != fiatCurrency else {
-            return balance
-                .map { balance in
-                    MoneyValuePair(base: balance, quote: balance)
-                }
-        }
-        return Single
-            .zip(
-                exchange.fiatPrice.take(1).asSingle(),
-                balance
-            )
-            .map { exchangeRate, balance -> MoneyValuePair in
-                try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
+    func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
+        priceService
+            .price(of: self.fiatCurrency, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
-    }
-
-    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
-        balancePair(fiatCurrency: fiatCurrency)
+            .eraseToAnyPublisher()
     }
 }

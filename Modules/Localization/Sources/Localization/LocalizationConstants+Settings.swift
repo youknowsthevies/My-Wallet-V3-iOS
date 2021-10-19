@@ -12,7 +12,7 @@ extension LocalizationConstants.Settings {
     public enum Section {
         public static let profile = NSLocalizedString("Profile", comment: "Profile")
         public static let preferences = NSLocalizedString("Preferences", comment: "Preferences")
-        public static let walletConnect = NSLocalizedString("Wallet Connect", comment: "Wallet Connect")
+        public static let exchangeLink = NSLocalizedString("Exchange Link", comment: "Exchange Link")
         public static let security = NSLocalizedString("Security", comment: "Security")
         public static let linkedCards = NSLocalizedString("Linked Cards", comment: "Linked Cards")
         public static let linkedBanks = NSLocalizedString("Linked Banks", comment: "Linked Banks")
@@ -30,7 +30,7 @@ extension LocalizationConstants.Settings {
         public static let mobileNumber = NSLocalizedString("Mobile Number", comment: "Mobile Number")
         public static let email = NSLocalizedString("Email", comment: "Email")
         public static let blockchainExchange = NSLocalizedString("Blockchain Exchange", comment: "Blockchain Exchange")
-        public static let recoveryPhrase = NSLocalizedString("Backup phrase", comment: "Backup phrase")
+        public static let recoveryPhrase = NSLocalizedString("Backup Phrase", comment: "Backup phrase")
         public static let confirmed = NSLocalizedString("Confirmed", comment: "Confirmed")
         public static let unconfirmed = NSLocalizedString("Unconfirmed", comment: "Unconfirmed")
         public static let localCurrency = NSLocalizedString("Local Currency", comment: "Local Currency")

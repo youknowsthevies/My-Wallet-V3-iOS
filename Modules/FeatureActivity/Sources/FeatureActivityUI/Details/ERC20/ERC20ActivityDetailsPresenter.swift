@@ -34,11 +34,12 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Private Properties
 
-    private let interactor: ERC20ActivityDetailsInteractor
     private let event: TransactionalActivityItemEvent
     private let router: ActivityRouterAPI
-    private let disposeBag: DisposeBag = .init()
+    private let interactor: ERC20ActivityDetailsInteractor
     private let alertViewPresenter: AlertViewPresenterAPI
+
+    private let disposeBag = DisposeBag()
 
     // MARK: Private Properties (Model Relay)
 
@@ -48,16 +49,6 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let cryptoAmountLabelPresenter: LabelContentPresenting
 
-    // MARK: Private Properties (LineItemCellPresenting)
-
-    private let dateCreatedPresenter: LineItemCellPresenting
-    private let amountPresenter: LineItemCellPresenting
-    private let valuePresenter: LineItemCellPresenting
-    private let fromPresenter: LineItemCellPresenting
-    private let toPresenter: LineItemCellPresenting
-    private let orderIDPresenter: LineItemCellPresenting
-    private let feePresenter: LineItemCellPresenting
-
     // MARK: Private Properties (Badge)
 
     private let badgesModel = MultiBadgeViewModel()
@@ -65,50 +56,62 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private let confirmingBadge: DefaultBadgeAssetPresenter = .init()
     private let badgeCircleModel: BadgeCircleViewModel = .init()
 
+    // MARK: Private Properties (LineItemCellPresenting)
+
+    private let orderIDPresenter: LineItemCellPresenting
+    private let dateCreatedPresenter: LineItemCellPresenting
+    private let totalPresenter: LineItemCellPresenting
+    private let networkFeePresenter: LineItemCellPresenting
+    private let toPresenter: LineItemCellPresenting
+    private let fromPresenter: LineItemCellPresenting
+
     // MARK: Private Properties (Explorer Button)
 
     private let explorerButton: ButtonViewModel
 
     init(
-        alertViewPresenter: AlertViewPresenterAPI = resolve(),
         event: TransactionalActivityItemEvent,
         router: ActivityRouterAPI,
         interactor: ERC20ActivityDetailsInteractor,
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        self.alertViewPresenter = alertViewPresenter
         self.event = event
-        self.interactor = interactor
         self.router = router
-        explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
-        buttons = [explorerButton]
-        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        self.interactor = interactor
+        self.alertViewPresenter = alertViewPresenter
+
+        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
         )
-        amountPresenter = TransactionalLineItem.amount().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        valuePresenter = TransactionalLineItem.value().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        feePresenter = TransactionalLineItem.fee().defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
-            analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
-            analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
+
         orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
-        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
-            descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
+
+        dateCreatedPresenter = TransactionalLineItem.date().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
+
+        totalPresenter = TransactionalLineItem.total().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        networkFeePresenter = TransactionalLineItem.networkFee().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        toPresenter = TransactionalLineItem.to().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        fromPresenter = TransactionalLineItem.from().defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
         cells = [
             .label(cryptoAmountLabelPresenter),
             .badges(badgesModel),
@@ -117,16 +120,24 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .separator,
             .lineItem(dateCreatedPresenter),
             .separator,
-            .lineItem(amountPresenter),
+            .lineItem(totalPresenter),
             .separator,
-            .lineItem(valuePresenter),
+            .lineItem(networkFeePresenter),
             .separator,
-            .lineItem(feePresenter),
+            .lineItem(toPresenter),
             .separator,
-            .lineItem(fromPresenter),
-            .separator,
-            .lineItem(toPresenter)
+            .lineItem(fromPresenter)
         ]
+
+        explorerButton = .secondary(with: LocalizedString.Button.viewOnExplorer)
+
+        switch event.type {
+        case .receive:
+            buttons = []
+        case .send:
+            buttons = [explorerButton]
+        }
+
         bindAll(event: event)
     }
 
@@ -154,11 +165,16 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
         }
         titleViewRelay.accept(.text(value: title))
 
-        explorerButton
-            .tapRelay
-            .bind { [weak self] in
-                self?.router.showBlockchainExplorer(for: event)
-            }
+        itemRelay
+            .map { $0?.amounts.gasFor?.cryptoAmount }
+            .mapToLabelContentStateInteraction()
+            .bindAndCatch(to: cryptoAmountLabelPresenter.interactor.stateRelay)
+            .disposed(by: disposeBag)
+
+        itemRelay
+            .compactMap { $0?.confirmation.statusBadge }
+            .map { .loaded(next: $0) }
+            .bindAndCatch(to: statusBadge.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -185,33 +201,21 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
 
         itemRelay
-            .map { $0?.amounts.gasFor?.cryptoAmount }
-            .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: cryptoAmountLabelPresenter.interactor.stateRelay)
-            .disposed(by: disposeBag)
-
-        itemRelay
             .map { $0?.dateCreated }
             .mapToLabelContentStateInteraction()
             .bindAndCatch(to: dateCreatedPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
-            .map { $0?.amounts.gasFor?.amount }
-            .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: amountPresenter.interactor.description.stateRelay)
-            .disposed(by: disposeBag)
-
-        itemRelay
             .map { $0?.amounts.gasFor?.value }
             .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: valuePresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: totalPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
-            .map { $0?.from }
+            .map { $0?.fee }
             .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: fromPresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: networkFeePresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
@@ -221,21 +225,22 @@ final class ERC20ActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .disposed(by: disposeBag)
 
         itemRelay
-            .compactMap { $0?.confirmation.statusBadge }
-            .map { .loaded(next: $0) }
-            .bindAndCatch(to: statusBadge.interactor.stateRelay)
-            .disposed(by: disposeBag)
-
-        itemRelay
-            .map { $0?.amounts.fee.cryptoAmount }
+            .map { $0?.from }
             .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: feePresenter.interactor.description.stateRelay)
+            .bindAndCatch(to: fromPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay
             .distinctUntilChanged()
             .mapToVoid()
             .bindAndCatch(to: reloadRelay)
+            .disposed(by: disposeBag)
+
+        explorerButton
+            .tapRelay
+            .bind { [weak self] in
+                self?.router.showBlockchainExplorer(for: event)
+            }
             .disposed(by: disposeBag)
     }
 }

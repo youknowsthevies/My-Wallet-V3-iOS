@@ -23,21 +23,63 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             return Single.error(AnnouncementError.uninitializedWallet)
         }
 
-        let nabuUser = dataRepository.nabuUserSingle
-        let tiers = tiersService.tiers
-        let sddEligibility = tiersService.checkSimplifiedDueDiligenceEligibility()
-            .asObservable()
-            .asSingle()
-        let countries = infoService.countries
-        let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails
+        let assetRenameAnnouncement: Single<AssetRenameAnnouncementFeature> = featureFetcher
+            .fetch(for: .assetRenameAnnouncement)
+        let assetRename: Single<AnnouncementPreliminaryData.AssetRename?> = assetRenameAnnouncement
+            .flatMap { [enabledCurrenciesService, coincore] data -> Single<AnnouncementPreliminaryData.AssetRename?> in
+                guard let cryptoCurrency = CryptoCurrency(
+                    code: data.networkTicker,
+                    enabledCurrenciesService: enabledCurrenciesService
+                ) else {
+                    return .just(nil)
+                }
+                return coincore[cryptoCurrency]
+                    .accountGroup(filter: .all)
+                    .asSingle()
+                    .flatMap(\.balance)
+                    .map { balance in
+                        AnnouncementPreliminaryData.AssetRename(
+                            asset: cryptoCurrency,
+                            oldTicker: data.oldTicker,
+                            balance: balance
+                        )
+                    }
+            }
+            .catchErrorJustReturn(nil)
 
+        let hasLinkedBanks = beneficiariesService.hasLinkedBank
+            .take(1)
+            .asSingle()
         let isSimpleBuyAvailable = supportedPairsInteractor.pairs
             .map { !$0.pairs.isEmpty }
             .take(1)
             .asSingle()
+        let isSimpleBuyEligible = simpleBuyEligibilityService.isEligible
+        let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails
+
+        let simpleBuy: Single<AnnouncementPreliminaryData.SimpleBuy> = Single
+            .zip(
+                hasLinkedBanks,
+                isSimpleBuyAvailable,
+                isSimpleBuyEligible,
+                simpleBuyOrderDetails
+            )
+            .map { hasLinkedBanks, isSimpleBuyAvailable, isSimpleBuyEligible, simpleBuyOrderDetails in
+                AnnouncementPreliminaryData.SimpleBuy(
+                    hasLinkedBanks: hasLinkedBanks,
+                    isAvailable: isSimpleBuyAvailable,
+                    isEligible: isSimpleBuyEligible,
+                    pendingOrderDetails: simpleBuyOrderDetails
+                )
+            }
+
+        let nabuUser = userService.user.asSingle()
+        let tiers = tiersService.tiers.asSingle()
+        let sddEligibility = tiersService.checkSimplifiedDueDiligenceEligibility()
+            .asSingle()
+        let countries = infoService.countries
 
         let hasAnyWalletBalance = coincore.allAccounts
-            .asObservable()
             .asSingle()
             .map(\.accounts)
             .flatMap { accounts -> Single<[Bool]> in
@@ -47,60 +89,62 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 values.contains(true)
             }
 
-        let hasLinkedBanks = beneficiariesService.hasLinkedBank.take(1).asSingle()
-        let isSimpleBuyEligible = simpleBuyEligibilityService.isEligible
         let authenticatorType = repository.authenticatorType
-        let announcementAsset: Single<CryptoCurrency?> = featureFetcher
-            .fetchString(for: .announcementAsset)
-            .optional()
-            .catchErrorJustReturn(nil)
+        let newAsset: Single<CryptoCurrency?> = featureFetcher
+            .fetchString(for: .newAssetAnnouncement)
             .map { [enabledCurrenciesService] code -> CryptoCurrency? in
-                guard let code = code else {
-                    return nil
-                }
-                return CryptoCurrency(
+                CryptoCurrency(
                     code: code,
                     enabledCurrenciesService: enabledCurrenciesService
                 )
+            }
+            .catchErrorJustReturn(nil)
+
+        let celoEUR: CryptoCurrency? = enabledCurrenciesService
+            .allEnabledCryptoCurrencies
+            .first { cryptoCurrency in
+                cryptoCurrency.isCoin
+                    && cryptoCurrency.code.uppercased() == "CEUR"
             }
 
         return Single.zip(
             nabuUser,
             tiers,
-            sddEligibility,
             countries,
             authenticatorType,
             hasAnyWalletBalance,
             Single.zip(
-                announcementAsset,
-                isSimpleBuyAvailable,
-                simpleBuyOrderDetails,
-                hasLinkedBanks,
-                isSimpleBuyEligible
+                newAsset,
+                assetRename,
+                simpleBuy,
+                sddEligibility
             )
         )
         .map { payload -> AnnouncementPreliminaryData in
             let (
                 user,
                 tiers,
-                isSDDEligible,
                 countries,
                 authenticatorType,
                 hasAnyWalletBalance,
-                (announcementAsset, isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks, isSimpleBuyEligible)
+                (
+                    newAsset,
+                    assetRename,
+                    simpleBuy,
+                    isSDDEligible
+                )
             ) = payload
             return AnnouncementPreliminaryData(
                 user: user,
                 tiers: tiers,
                 isSDDEligible: isSDDEligible,
-                hasLinkedBanks: hasLinkedBanks,
                 countries: countries,
                 authenticatorType: authenticatorType,
-                pendingOrderDetails: pendingOrderDetails,
-                isSimpleBuyAvailable: isSimpleBuyAvailable,
-                isSimpleBuyEligible: isSimpleBuyEligible,
                 hasAnyWalletBalance: hasAnyWalletBalance,
-                announcementAsset: announcementAsset
+                newAsset: newAsset,
+                assetRename: assetRename,
+                simpleBuy: simpleBuy,
+                celoEUR: celoEUR
             )
         }
         .observeOn(MainScheduler.instance)
@@ -110,7 +154,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
 
     private let repository: AuthenticatorRepositoryAPI
     private let wallet: WalletProtocol
-    private let dataRepository: BlockchainDataRepository
+    private let userService: NabuUserServiceAPI
     private let tiersService: KYCTiersServiceAPI
     private let infoService: GeneralInformationServiceAPI
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
@@ -126,7 +170,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     init(
         repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
         wallet: WalletProtocol = WalletManager.shared.wallet,
-        dataRepository: BlockchainDataRepository = .shared,
+        userService: NabuUserServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         featureFetcher: FeatureFetching = resolve(),
         infoService: GeneralInformationServiceAPI = resolve(),
@@ -139,7 +183,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     ) {
         self.repository = repository
         self.wallet = wallet
-        self.dataRepository = dataRepository
+        self.userService = userService
         self.tiersService = tiersService
         self.infoService = infoService
         self.supportedPairsInteractor = supportedPairsInteractor

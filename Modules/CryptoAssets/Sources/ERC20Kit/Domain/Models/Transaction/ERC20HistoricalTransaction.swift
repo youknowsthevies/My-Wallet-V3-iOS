@@ -24,7 +24,7 @@ public struct ERC20HistoricalTransaction: Hashable {
     public var createdAt: Date
     public var fee: CryptoValue?
     public var historicalFiatValue: FiatValue?
-    public var memo: String?
+    public var note: String?
 
     public init(
         fromAddress: EthereumAddress,
@@ -34,7 +34,7 @@ public struct ERC20HistoricalTransaction: Hashable {
         transactionHash: String,
         createdAt: Date,
         fee: CryptoValue?,
-        memo: String?
+        note: String?
     ) {
         self.fromAddress = fromAddress
         self.toAddress = toAddress
@@ -43,7 +43,7 @@ public struct ERC20HistoricalTransaction: Hashable {
         self.transactionHash = transactionHash
         self.createdAt = createdAt
         self.fee = fee
-        self.memo = memo
+        self.note = note
     }
 
     init(response: ERC20TransfersResponse.Transfer, cryptoCurrency: CryptoCurrency, source: EthereumAddress) {
@@ -62,7 +62,7 @@ public struct ERC20HistoricalTransaction: Hashable {
             transactionHash: response.transactionHash,
             createdAt: createdAt,
             fee: nil,
-            memo: nil
+            note: nil
         )
     }
 }

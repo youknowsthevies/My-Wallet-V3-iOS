@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureSettingsDomain
 import Localization
@@ -40,20 +41,24 @@ final class RecoveryPhraseScreenPresenter {
     // MARK: - Injected
 
     private let stateService: BackupRouterStateService
+    private let recoveryPhraseRepository: RecoveryPhraseRepositoryAPI
     private var recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI
 
     private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Init
 
     init(
         stateService: BackupRouterStateService,
         recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI,
+        recoveryPhraseRepository: RecoveryPhraseRepositoryAPI = resolve(),
         mnemonicAccess: MnemonicAccessAPI = resolve(),
         mnemonicComponentsProviding: MnemonicComponentsProviding = resolve()
     ) {
         self.stateService = stateService
         self.recoveryPhraseVerifying = recoveryPhraseVerifying
+        self.recoveryPhraseRepository = recoveryPhraseRepository
 
         recoveryViewModel = RecoveryPhraseViewModel(
             mnemonicAPI: mnemonicAccess,
@@ -87,6 +92,14 @@ final class RecoveryPhraseScreenPresenter {
                 stateService.nextRelay.accept(())
             }
             .disposed(by: disposeBag)
+    }
+
+    func viewDidAppear() {
+        recoveryPhraseRepository
+            .sendExposureAlertEmail()
+            .receive(on: RunLoop.main)
+            .subscribe()
+            .store(in: &cancellables)
     }
 
     func navigationBarLeadingButtonTapped() {

@@ -1,16 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
-
-/// Supported products list for an `AssetModel`.
+/// A product of an `AssetModel`.
 public enum AssetModelProduct: String, Hashable, CaseIterable {
+
     case privateKey = "PrivateKey"
+
     case mercuryDeposits = "MercuryDeposits"
+
     case mercuryWithdrawals = "MercuryWithdrawals"
+
     case interestBalance = "InterestBalance"
+
     case custodialWalletBalance = "CustodialWalletBalance"
 
-    /// Indicates that this `AssetModelProduct` causes its owner currency to be enabled in the wallet app.
+    /// Whether the current `AssetModelProduct` causes its owner currency to be enabled in the wallet app.
     fileprivate var enablesCurrency: Bool {
         switch self {
         case .custodialWalletBalance:
@@ -22,9 +25,11 @@ public enum AssetModelProduct: String, Hashable, CaseIterable {
 }
 
 extension Array where Element == AssetModelProduct {
+
+    /// Whether the list of supported products causes its owner currency to be enabled in the wallet app.
     var enablesCurrency: Bool {
-        contains { element in
-            element.enablesCurrency
+        contains { product in
+            product.enablesCurrency
         }
     }
 }

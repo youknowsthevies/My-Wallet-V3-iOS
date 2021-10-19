@@ -5,7 +5,10 @@ import RxSwift
 import ToolKit
 
 public protocol SwapActivityServiceAPI: AnyObject {
-    func fetchActivity(cryptoCurrency: CryptoCurrency, directions: Set<OrderDirection>) -> Single<[SwapActivityItemEvent]>
+    func fetchActivity(
+        cryptoCurrency: CryptoCurrency,
+        directions: Set<OrderDirection>
+    ) -> Single<[SwapActivityItemEvent]>
 }
 
 final class SwapActivityService: SwapActivityServiceAPI {
@@ -20,7 +23,12 @@ final class SwapActivityService: SwapActivityServiceAPI {
     ) {
         self.fiatCurrencyProvider = fiatCurrencyProvider
         self.client = client
-        cache = .init(configuration: .periodic(30))
+        cache = CachedValue(
+            configuration: .periodic(
+                seconds: 30,
+                schedulerIdentifier: "SwapActivityService"
+            )
+        )
         cache.setFetch {
             fiatCurrencyProvider.fiatCurrency
                 .flatMap { fiatCurrency -> Single<[SwapActivityItemEvent]> in

@@ -8,7 +8,18 @@ extension CachedValueConfiguration {
     /// Refresh `.onSubscription` (only when cache is empty) and
     /// flushes the cached value on login and logout.
     public static func onSubscription(
-        scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
+        schedulerIdentifier: String
+    ) -> CachedValueConfiguration {
+        onSubscription(
+            scheduler: CachedValueConfiguration
+                .generateScheduler(identifier: schedulerIdentifier)
+        )
+    }
+
+    /// Refresh `.onSubscription` (only when cache is empty) and
+    /// flushes the cached value on login and logout.
+    public static func onSubscription(
+        scheduler: SchedulerType
     ) -> CachedValueConfiguration {
         CachedValueConfiguration(
             refreshType: .onSubscription,
@@ -20,11 +31,24 @@ extension CachedValueConfiguration {
     /// Refresh `.periodic` by the given `TimeInterval` and
     /// flushes the cached value on login and logout.
     public static func periodic(
-        _ time: TimeInterval,
-        scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
+        seconds: TimeInterval,
+        schedulerIdentifier: String
+    ) -> CachedValueConfiguration {
+        periodic(
+            seconds: seconds,
+            scheduler: CachedValueConfiguration
+                .generateScheduler(identifier: schedulerIdentifier)
+        )
+    }
+
+    /// Refresh `.periodic` by the given `TimeInterval` and
+    /// flushes the cached value on login and logout.
+    public static func periodic(
+        seconds: TimeInterval,
+        scheduler: SchedulerType
     ) -> CachedValueConfiguration {
         CachedValueConfiguration(
-            refreshType: .periodic(seconds: time),
+            refreshType: .periodic(seconds: seconds),
             scheduler: scheduler,
             flushNotificationNames: [.login, .logout]
         )

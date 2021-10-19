@@ -83,26 +83,8 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             .asSingle()
     }
 
-    var offlineTokenResponse: Single<NabuOfflineTokenResponse> {
-        reactiveWallet
-            .waitUntilInitializedSingle
-            .flatMap(weak: self) { (self, _) in
-                Single.zip(self.userId, self.offlineToken)
-            }
-            .map { payload -> (userId: String, offlineToken: String) in
-                guard let userId = payload.0, !userId.isEmpty else {
-                    throw MissingCredentialsError.userId
-                }
-                guard let offlineToken = payload.1, !offlineToken.isEmpty else {
-                    throw MissingCredentialsError.offlineToken
-                }
-                return (userId, offlineToken)
-            }
-            .map { NabuOfflineTokenResponse(userId: $0.userId, token: $0.offlineToken) }
-    }
-
     private var offlineTokenPublisher: AnyPublisher<String?, WalletError> {
-        let jsContextProvider = self.jsContextProvider
+        let jsContextProvider = jsContextProvider
         return Deferred {
             Future { [jsContextProvider] promise in
                 guard WalletManager.shared.wallet.isInitialized() else {
@@ -135,33 +117,8 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         .eraseToAnyPublisher()
     }
 
-    private var offlineToken: Single<String?> {
-        Single.deferred { [weak self] in
-            guard WalletManager.shared.wallet.isInitialized() else {
-                return .error(WalletError.notInitialized)
-            }
-            guard let self = self else {
-                return .error(ToolKitError.nullReference(Self.self))
-            }
-            guard let jsValue = self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(JSSetter.offlineToken) else {
-                return Single.just(nil)
-            }
-            guard !jsValue.isNull, !jsValue.isUndefined else {
-                return .just(nil)
-            }
-            guard let string = jsValue.toString() else {
-                return .just(nil)
-            }
-            guard !string.isEmpty else {
-                return .just(nil)
-            }
-            return Single.just(string)
-        }
-        .subscribeOn(jsScheduler)
-    }
-
     private var userIdPublisher: AnyPublisher<String?, WalletError> {
-        let jsContextProvider = self.jsContextProvider
+        let jsContextProvider = jsContextProvider
         return Deferred {
             Future { [jsContextProvider] promise in
                 guard WalletManager.shared.wallet.isInitialized() else {
@@ -244,39 +201,6 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
 
     // MARK: - Wallet Setters
-
-    func set(offlineTokenResponse: NabuOfflineTokenResponse) -> Completable {
-        Completable
-            .create { [weak self] observer -> Disposable in
-                guard let self = self else {
-                    observer(.error(ToolKitError.nullReference(Self.self)))
-                    return Disposables.create()
-                }
-
-                self.jsContextProvider.jsContext.invokeOnce(
-                    functionBlock: {
-                        observer(.error(CredentialWritingError.offlineToken))
-                    },
-                    forJsFunctionName: JSCallback.updateUserCredentialsFailure as NSString
-                )
-
-                self.jsContextProvider.jsContext.invokeOnce(
-                    functionBlock: {
-                        observer(.completed)
-                    },
-                    forJsFunctionName: JSCallback.updateUserCredentialsSuccess as NSString
-                )
-
-                let userId = offlineTokenResponse.userId.escapedForJS()
-                let offlineToken = offlineTokenResponse.token.escapedForJS()
-                let script = String(format: JSSetter.updateUserCredentials, userId, offlineToken)
-
-                self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)?.toString()
-
-                return Disposables.create()
-            }
-            .subscribeOn(jsScheduler)
-    }
 
     /// Sets GUID
     func set(guid: String) -> Completable {
@@ -388,15 +312,13 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
 
     fileprivate func perform(_ operation: @escaping () -> Void) -> AnyPublisher<Void, Never> {
-        AnyPublisher<Void, Never>
-            .create { observer -> AnyCancellable in
-                operation()
-                observer.send(())
-                observer.send(completion: .finished)
-                return AnyCancellable {}
+        Deferred {
+            Future { promise in
+                promise(.success(operation()))
             }
-            .subscribe(on: combineJSScheduler)
-            .eraseToAnyPublisher()
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
     }
 
     fileprivate func perform<E: Error>(_ operation: @escaping () -> Void) -> AnyPublisher<Void, E> {
@@ -522,7 +444,7 @@ extension WalletRepository {
 extension WalletRepository {
 
     var guidPublisher: AnyPublisher<String?, Never> {
-        let settings = self.settings
+        let settings = settings
         return Deferred {
             Future { [settings] promise in
                 promise(.success(settings.guid))
@@ -597,9 +519,9 @@ extension WalletRepository {
 
 extension WalletRepository {
 
-    var offlineTokenResponsePublisher: AnyPublisher<NabuOfflineTokenResponse, MissingCredentialsError> {
-        let userIdPublisher = self.userIdPublisher
-        let offlineTokenPublisher = self.offlineTokenPublisher
+    var offlineToken: AnyPublisher<NabuOfflineToken, MissingCredentialsError> {
+        let userIdPublisher = userIdPublisher
+        let offlineTokenPublisher = offlineTokenPublisher
         return reactiveWallet.waitUntilInitializedSinglePublisher
             .mapError()
             .flatMap { [userIdPublisher, offlineTokenPublisher] _ -> AnyPublisher<(String?, String?), WalletError> in
@@ -609,21 +531,21 @@ extension WalletRepository {
             .eraseToAnyPublisher()
             .replaceError(with: MissingCredentialsError.offlineToken)
             .flatMap { userId, offlineToken
-                -> AnyPublisher<(userId: String, offlineToken: String), MissingCredentialsError> in
+                -> AnyPublisher<(userId: String, offlineToken: String, created: Bool?), MissingCredentialsError> in
                 guard let userId = userId else {
                     return .failure(.userId)
                 }
                 guard let offlineToken = offlineToken else {
                     return .failure(.offlineToken)
                 }
-                return .just((userId: userId, offlineToken: offlineToken))
+                return .just((userId: userId, offlineToken: offlineToken, created: nil))
             }
-            .map(NabuOfflineTokenResponse.init)
+            .map(NabuOfflineToken.init)
             .eraseToAnyPublisher()
     }
 
-    func setPublisher(offlineTokenResponse: NabuOfflineTokenResponse) -> AnyPublisher<Void, CredentialWritingError> {
-        let jsContextProvider = self.jsContextProvider
+    func set(offlineToken: NabuOfflineToken) -> AnyPublisher<Void, CredentialWritingError> {
+        let jsContextProvider = jsContextProvider
         return Deferred {
             Future { [jsContextProvider] promise in
                 jsContextProvider.jsContext.invokeOnce(
@@ -638,8 +560,8 @@ extension WalletRepository {
                     },
                     forJsFunctionName: JSCallback.updateUserCredentialsSuccess as NSString
                 )
-                let userId = offlineTokenResponse.userId.escapedForJS()
-                let offlineToken = offlineTokenResponse.token.escapedForJS()
+                let userId = offlineToken.userId.escapedForJS()
+                let offlineToken = offlineToken.token.escapedForJS()
                 let script = String(format: JSSetter.updateUserCredentials, userId, offlineToken)
                 jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)?.toString()
             }

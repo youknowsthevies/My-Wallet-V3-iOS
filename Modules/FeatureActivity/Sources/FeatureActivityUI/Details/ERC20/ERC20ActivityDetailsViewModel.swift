@@ -28,9 +28,8 @@ struct ERC20ActivityDetailsViewModel: Equatable {
         fileprivate static let empty: Amounts = .init(fee: .empty, gasFor: nil)
 
         struct Value: Equatable {
-            fileprivate static let empty: Value = .init(cryptoAmount: "", amount: "", value: "")
+            fileprivate static let empty: Value = .init(cryptoAmount: "", value: "")
             let cryptoAmount: String
-            let amount: String
             let value: String
         }
 
@@ -38,13 +37,14 @@ struct ERC20ActivityDetailsViewModel: Equatable {
         let gasFor: Value?
     }
 
-    let amounts: Amounts
     let confirmation: Confirmation
     let dateCreated: String
-    let from: String
     let to: String?
+    let from: String
+    let amounts: Amounts
+    let fee: String
 
-    init(details: EthereumActivityItemEventDetails, price: FiatValue?) {
+    init(details: EthereumActivityItemEventDetails, price: FiatValue?, feePrice: FiatValue?) {
         confirmation = Confirmation(
             needConfirmation: details.confirmation.needConfirmation,
             // swiftlint:disable line_length
@@ -52,33 +52,41 @@ struct ERC20ActivityDetailsViewModel: Equatable {
             factor: details.confirmation.factor,
             statusBadge: ERC20ActivityDetailsViewModel.statusBadge(for: details.confirmation.status)
         )
-        let gas = ERC20ContractGasActivityModel(details: details)
-        amounts = ERC20ActivityDetailsViewModel.amounts(details: details, gas: gas, price: price)
         dateCreated = DateFormatter.elegantDateFormatter.string(from: details.createdAt)
-        from = details.from.publicKey
+
+        let gas = ERC20ContractGasActivityModel(details: details)
+        amounts = ERC20ActivityDetailsViewModel.amounts(details: details, gas: gas, price: price, feePrice: feePrice)
+
         to = gas?.to?.publicKey
+        from = details.from.publicKey
+
+        fee = "\(amounts.fee.cryptoAmount) / \(amounts.fee.value)"
     }
 
-    private static func amounts(details: EthereumActivityItemEventDetails, gas: ERC20ContractGasActivityModel?, price: FiatValue?) -> Amounts {
-        func value(cryptoValue: CryptoValue) -> Amounts.Value {
-            let cryptoAmount = cryptoValue.toDisplayString(includeSymbol: true)
-            let amount: String
+    private static func amounts(
+        details: EthereumActivityItemEventDetails,
+        gas: ERC20ContractGasActivityModel?,
+        price: FiatValue?,
+        feePrice: FiatValue?
+    ) -> Amounts {
+        func value(cryptoValue: CryptoValue, price: FiatValue?) -> Amounts.Value {
+            let cryptoAmount = cryptoValue.displayString
             let value: String
             if let price = price {
-                amount = "\(cryptoAmount) at \(price.displayString)"
                 value = cryptoValue.convertToFiatValue(exchangeRate: price).displayString
             } else {
-                amount = cryptoAmount
                 value = ""
             }
-            return Amounts.Value(cryptoAmount: cryptoAmount, amount: amount, value: value)
+            return Amounts.Value(cryptoAmount: cryptoAmount, value: value)
         }
+
         var gasFor: Amounts.Value?
         if let gasCryptoValue = gas?.cryptoValue {
-            gasFor = value(cryptoValue: gasCryptoValue)
+            gasFor = value(cryptoValue: gasCryptoValue, price: price)
         }
+
         return Amounts(
-            fee: value(cryptoValue: details.fee),
+            fee: value(cryptoValue: details.fee, price: feePrice),
             gasFor: gasFor
         )
     }

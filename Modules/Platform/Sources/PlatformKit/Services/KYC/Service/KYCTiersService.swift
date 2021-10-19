@@ -16,13 +16,10 @@ public enum KYCTierServiceError: Error {
 public protocol KYCTiersServiceAPI: AnyObject {
 
     /// Returns the cached tiers. Fetches them if they are not already cached
-    var tiers: Single<KYC.UserTiers> { get }
+    var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> { get }
 
     /// Fetches the tiers from remote
-    func fetchTiers() -> Single<KYC.UserTiers>
-
-    /// Fetches the tiers from remote
-    func fetchTiersPublisher() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError>
+    func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError>
 
     /// Fetches the Simplified Due Diligence Eligibility Status returning the whole response
     func simplifiedDueDiligenceEligibility(for tier: KYC.Tier) -> AnyPublisher<SimplifiedDueDiligenceResponse, Never>
@@ -42,30 +39,14 @@ public protocol KYCTiersServiceAPI: AnyObject {
 
 final class KYCTiersService: KYCTiersServiceAPI {
 
+    // MARK: - Types
+
+    private struct Key: Hashable {}
+
     // MARK: - Exposed Properties
 
-    var tiers: Single<KYC.UserTiers> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
-            guard case .success = self.semaphore.wait(timeout: .now() + .seconds(30)) else {
-                observer(.error(ToolKitError.timedOut))
-                return Disposables.create()
-            }
-            let disposable = self.cachedTiers.valueSingle
-                .subscribe { event in
-                    switch event {
-                    case .success(let value):
-                        observer(.success(value))
-                    case .error(let value):
-                        observer(.error(value))
-                    }
-                }
-
-            return Disposables.create {
-                disposable.dispose()
-                self.semaphore.signal()
-            }
-        }
-        .subscribeOn(scheduler)
+    var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+        cachedTiers.get(key: Key())
     }
 
     // MARK: - Private Properties
@@ -73,8 +54,11 @@ final class KYCTiersService: KYCTiersServiceAPI {
     private let client: KYCClientAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscription())
-    private let semaphore = DispatchSemaphore(value: 1)
+    private let cachedTiers: CachedValueNew<
+        Key,
+        KYC.UserTiers,
+        KYCTierServiceError
+    >
     private let scheduler = SerialDispatchQueueScheduler(qos: .default)
 
     // MARK: - Setup
@@ -87,25 +71,30 @@ final class KYCTiersService: KYCTiersServiceAPI {
         self.client = client
         self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
-        cachedTiers.setFetch(weak: self) { (self) in
-            self.client.tiers().asSingle()
-        }
-    }
 
-    func fetchTiers() -> Single<KYC.UserTiers> {
-        cachedTiers.fetchValue
-    }
-
-    func fetchTiersPublisher() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
-        fetchTiers()
-            .asPublisher()
-            .mapError { error -> KYCTierServiceError in
-                guard let error = error as? NetworkError else {
-                    return .other(error)
-                }
-                return .networkError(error)
+        let cache: AnyCache<Key, KYC.UserTiers> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PerpetualCacheRefreshControl()
+        ).eraseToAnyCache()
+        cachedTiers = CachedValueNew(
+            cache: cache,
+            fetch: { _ in
+                client.tiers()
+                    .mapError { (error: NabuNetworkError) -> KYCTierServiceError in
+                        switch error {
+                        case .communicatorError(let networkError):
+                            return .networkError(networkError)
+                        case .nabuError:
+                            return .other(error)
+                        }
+                    }
+                    .eraseToAnyPublisher()
             }
-            .eraseToAnyPublisher()
+        )
+    }
+
+    func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
+        cachedTiers.get(key: Key(), forceFetch: true)
     }
 
     func simplifiedDueDiligenceEligibility(for tier: KYC.Tier) -> AnyPublisher<SimplifiedDueDiligenceResponse, Never> {
@@ -127,11 +116,11 @@ final class KYCTiersService: KYCTiersServiceAPI {
 
     func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never> {
         featureFlagsService.isEnabled(.remote(.sddEnabled))
-            .flatMap { [fetchTiersPublisher, simplifiedDueDiligenceEligibility] sddEnabled -> AnyPublisher<Bool, Never> in
+            .flatMap { [fetchTiers, simplifiedDueDiligenceEligibility] sddEnabled -> AnyPublisher<Bool, Never> in
                 guard sddEnabled else {
                     return .just(false)
                 }
-                return fetchTiersPublisher()
+                return fetchTiers()
                     .flatMap { userTiers -> AnyPublisher<Bool, KYCTierServiceError> in
                         simplifiedDueDiligenceEligibility(userTiers.latestApprovedTier)
                             .map(\.eligible)
@@ -155,35 +144,25 @@ final class KYCTiersService: KYCTiersServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    func checkSimplifiedDueDiligenceVerification(for tier: KYC.Tier, pollUntilComplete: Bool) -> AnyPublisher<Bool, Never> {
+    func checkSimplifiedDueDiligenceVerification(
+        for tier: KYC.Tier,
+        pollUntilComplete: Bool
+    ) -> AnyPublisher<Bool, Never> {
         guard tier != .tier2 else {
             // Tier 2 (Gold) verified users should be treated as SDD verified
             return .just(true)
         }
 
-        let timeout = Date(timeIntervalSinceNow: .minutes(2))
-        func pollingPublisher() -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> {
-            // Poll the API every 5 seconds until `taskComplete` is `true` or an error is returned from the upstream until timeout.
-            // This should only take a couple of seconds in reality.
-            client.checkSimplifiedDueDiligenceVerification()
-                .flatMap { [pollingPublisher] result -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> in
-                    let shouldRetry = pollUntilComplete && !result.taskComplete && Date() < timeout
-                    guard shouldRetry else {
-                        return .just(result)
-                    }
-                    return pollingPublisher()
-                        .delay(for: 5, scheduler: DispatchQueue.global(qos: .userInitiated))
-                        .eraseToAnyPublisher()
-                }
-                .eraseToAnyPublisher()
-        }
-
         return featureFlagsService.isEnabled(.remote(.sddEnabled))
-            .flatMap { [pollingPublisher] sddEnabled -> AnyPublisher<Bool, Never> in
+            .flatMap { [client] sddEnabled -> AnyPublisher<Bool, Never> in
                 guard sddEnabled else {
                     return .just(false)
                 }
-                return pollingPublisher()
+                return client
+                    .checkSimplifiedDueDiligenceVerification()
+                    .startPolling(until: { response in
+                        response.taskComplete || !pollUntilComplete
+                    })
                     .replaceError(with: SimplifiedDueDiligenceVerificationResponse(verified: false, taskComplete: true))
                     .map(\.verified)
                     .eraseToAnyPublisher()
@@ -199,11 +178,11 @@ final class KYCTiersService: KYCTiersServiceAPI {
     func checkSimplifiedDueDiligenceVerification(pollUntilComplete: Bool) -> AnyPublisher<Bool, Never> {
         let sddVerificationCheck = checkSimplifiedDueDiligenceVerification(for:pollUntilComplete:)
         return featureFlagsService.isEnabled(.remote(.sddEnabled))
-            .flatMap { [fetchTiersPublisher, sddVerificationCheck] sddEnabled -> AnyPublisher<Bool, Never> in
+            .flatMap { [fetchTiers, sddVerificationCheck] sddEnabled -> AnyPublisher<Bool, Never> in
                 guard sddEnabled else {
                     return .just(false)
                 }
-                return fetchTiersPublisher()
+                return fetchTiers()
                     .flatMap { userTiers -> AnyPublisher<Bool, KYCTierServiceError> in
                         sddVerificationCheck(userTiers.latestApprovedTier, pollUntilComplete)
                             .setFailureType(to: KYCTierServiceError.self)

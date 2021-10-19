@@ -6,7 +6,7 @@ import RxSwift
 import ToolKit
 
 /// The type of payment method
-public enum PaymentMethodType: Equatable {
+public enum PaymentMethodType: Equatable, Identifiable {
 
     /// A card payment method (from the user's buy data)
     case card(CardData)
@@ -25,11 +25,11 @@ public enum PaymentMethodType: Equatable {
         case .card(let data):
             return .card([data.type])
         case .account(let data):
-            return .funds(data.topLimit.currency)
+            return .funds(data.topLimit.currencyType)
         case .suggested(let method):
             return method.type
         case .linkedBank(let data):
-            return .bankTransfer(data.currency.currency)
+            return .bankTransfer(data.currency.currencyType)
         }
     }
 
@@ -38,11 +38,11 @@ public enum PaymentMethodType: Equatable {
         case .card(let data):
             return .fiat(data.currency)
         case .account(let data):
-            return data.topLimit.currency
+            return data.topLimit.currencyType
         case .suggested(let method):
-            return method.max.currency
+            return method.max.currencyType
         case .linkedBank(let bank):
-            return bank.currency.currency
+            return bank.currency.currencyType
         }
     }
 
@@ -57,6 +57,33 @@ public enum PaymentMethodType: Equatable {
         }
     }
 
+    public var label: String {
+        switch self {
+        case .account(let fundData):
+            return fundData.label
+        case .card(let card):
+            return card.displayLabel
+        case .linkedBank(let data):
+            return data.label
+        case .suggested(let paymentMethod):
+            return paymentMethod.label
+        }
+    }
+
+    public var id: String {
+        switch self {
+        case .account(let fundData):
+            return fundData.topLimit.currency.code
+        case .card(let card):
+            return card.identifier
+        case .linkedBank(let data):
+            return data.identifier
+        case .suggested:
+            return method.rawType.rawValue
+        }
+    }
+
+    @available(*, deprecated, message: "Use `id`, instead.")
     var methodId: String? {
         switch self {
         case .card(let card):
@@ -69,9 +96,37 @@ public enum PaymentMethodType: Equatable {
             return nil
         }
     }
+
+    public var balance: MoneyValue {
+        switch self {
+        case .account(let funds):
+            return funds.balance.moneyValue
+        case .card(let cardData):
+            return cardData.topLimit.moneyValue
+        case .linkedBank(let bankData):
+            return bankData.topLimit.moneyValue
+        case .suggested(let paymentMethod):
+            return paymentMethod.max.moneyValue
+        }
+    }
+
+    public var topLimit: MoneyValue {
+        switch self {
+        case .account(let funds):
+            return funds.topLimit.moneyValue
+        case .card(let cardData):
+            return cardData.topLimit.moneyValue
+        case .linkedBank(let bankData):
+            return bankData.topLimit.moneyValue
+        case .suggested(let paymentMethod):
+            return paymentMethod.max.moneyValue
+        }
+    }
 }
 
 public protocol PaymentMethodTypesServiceAPI {
+
+    var paymentMethodTypesValidForBuy: Single<[PaymentMethodType]> { get }
 
     var suggestedPaymentMethodTypes: Single<[PaymentMethodType]> { get }
 
@@ -128,6 +183,29 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
 
     // MARK: - Exposed
 
+    var paymentMethodTypesValidForBuy: Single<[PaymentMethodType]> {
+        Observable
+            .combineLatest(
+                fiatCurrencyService.fiatCurrencyObservable,
+                kycTiersService.tiers.map(\.isTier2Approved).asObservable()
+            )
+            .flatMap(weak: self) { (self, payload) in
+                let (fiatCurrency, isTier2Approved) = payload
+                // In case of no preselection we want the first eligible, if none present, check if available is only 1 and
+                // preselect it. Otherwise, don't preselect anything, this is in parallel with Android logic
+                return self.methodTypes
+                    .map { (types: [PaymentMethodType]) -> [PaymentMethodType] in
+                        // we filter valid methods for buy
+                        types.filterValidForBuy(
+                            currentWalletCurrency: fiatCurrency,
+                            accountForEligibility: isTier2Approved
+                        )
+                    }
+            }
+            .take(1)
+            .asSingle()
+    }
+
     var suggestedPaymentMethodTypes: Single<[PaymentMethodType]> {
         paymentMethodsService
             .paymentMethodsSingle
@@ -164,27 +242,10 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
 
     /// If there is no preferred `PaymentMethodType` selected, this is the value to which the stream should default to.
     private var defaultPaymentMethod: Observable<PaymentMethodType?> {
-        Observable
-            .combineLatest(
-                fiatCurrencyService.fiatCurrencyObservable,
-                kycTiersService.tiers.map(\.isTier2Approved).asObservable()
-            )
-            .flatMap(weak: self) { (self, payload) in
-                let (fiatCurrency, isTier2Approved) = payload
-                // In case of no preselection we want the first eligible, if none present, check if available is only 1 and
-                // preselect it. Otherwise, don't preselect anything, this is in parallel with Android logic
-                return self.methodTypes
-                    .map { (types: [PaymentMethodType]) -> [PaymentMethodType] in
-                        // we filter valid methods for buy
-                        types.filterValidForBuy(
-                            currentWalletCurrency: fiatCurrency,
-                            accountForEligibility: isTier2Approved
-                        )
-                    }
-                    .map(\.first)
-                    .asObservable()
-                    .catchErrorJustReturn(.none)
-            }
+        paymentMethodTypesValidForBuy
+            .map(\.first)
+            .asObservable()
+            .catchErrorJustReturn(.none)
     }
 
     // MARK: - Injected
@@ -571,14 +632,16 @@ extension Array where Element == PaymentMethodType {
                     return accountForEligibility ? (paymentMethod.isEligible && isFiatSupported) : isFiatSupported
                 case .funds(let currency):
                     guard accountForEligibility else {
-                        return currency == currentWalletCurrency.currency
+                        return currency == currentWalletCurrency.currencyType
                     }
-                    return currency == currentWalletCurrency.currency && paymentMethod.isEligible
+                    return currency == currentWalletCurrency.currencyType && paymentMethod.isEligible
                 case .card:
                     return accountForEligibility ? paymentMethod.isEligible : true
                 }
             case .card(let data):
                 return data.state == .active
+            case .linkedBank(let data) where data.partner == .yapily:
+                return false
             case .linkedBank(let data):
                 return data.state == .active && data.currency == currentWalletCurrency
             }

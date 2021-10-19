@@ -189,7 +189,7 @@ public final class SellRouterInteractor: Interactor {
         let eligibility: Single<Bool> = eligibilityService.fetch()
 
         Single.zip(
-            kycTiersService.fetchTiers(),
+            kycTiersService.fetchTiers().asSingle(),
             eligibility
         )
         .map { (tiers: $0.0, eligible: $0.1) }
@@ -250,6 +250,7 @@ public final class SellRouterInteractor: Interactor {
 
     public func nextFromKYC() {
         kycTiersService.fetchTiers()
+            .asSingle()
             .handleLoaderForLifecycle(
                 loader: loader,
                 style: .circle
@@ -274,12 +275,12 @@ public final class SellRouterInteractor: Interactor {
     }
 
     public func cancelSell(with checkoutData: CheckoutData) {
-        let states = self.states(byAppending: .cancel(checkoutData))
+        let states = states(byAppending: .cancel(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
 
     public func orderCompleted() {
-        let states = self.states(byAppending: .completed)
+        let states = states(byAppending: .completed)
         apply(action: .dismiss, states: states)
     }
 
@@ -306,7 +307,7 @@ public final class SellRouterInteractor: Interactor {
             fatalError("This should not happen.")
         }
 
-        let states = self.states(byAppending: state)
+        let states = states(byAppending: state)
         apply(action: .next(to: state), states: states)
     }
 

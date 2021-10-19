@@ -27,8 +27,10 @@ final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()
     ) {
 
-        cachedValue = .init(
-            configuration: .onSubscription()
+        cachedValue = CachedValue(
+            configuration: .onSubscription(
+                schedulerIdentifier: "SupportedCurrenciesService"
+            )
         )
 
         cachedValue

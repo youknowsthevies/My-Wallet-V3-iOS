@@ -64,7 +64,7 @@ class WalletOptionsVersionUpdateTests: XCTestCase {
                 ]
             ]
         ]
-        let options = WalletOptions(json: json)
+        let options = WalletOptions(dictionary: json)
         return options.updateType
     }
 }

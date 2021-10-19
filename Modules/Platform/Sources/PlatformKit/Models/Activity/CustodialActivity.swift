@@ -17,8 +17,9 @@ public enum CustodialActivityEvent {
         public let date: Date
         public let type: EventType
         public let state: State
-        public let receivingAddress: String
+        public let receivingAddress: String?
         public let fee: CryptoValue
+        public let price: FiatValue
         public let txHash: String
     }
 
@@ -85,7 +86,7 @@ extension CustodialActivityEvent.Fiat {
 }
 
 extension CustodialActivityEvent.Crypto {
-    init?(item: OrdersActivityResponse.Item, enabledCurrenciesService: EnabledCurrenciesServiceAPI) {
+    init?(item: OrdersActivityResponse.Item, price: FiatValue, enabledCurrenciesService: EnabledCurrenciesServiceAPI) {
         guard let state = item.custodialActivityState else {
             return nil
         }
@@ -110,8 +111,9 @@ extension CustodialActivityEvent.Crypto {
             date: date,
             type: eventType,
             state: state,
-            receivingAddress: item.extraAttributes?.beneficiary?.accountRef ?? "",
+            receivingAddress: item.extraAttributes?.beneficiary?.accountRef,
             fee: fee,
+            price: price,
             txHash: item.txHash ?? ""
         )
     }

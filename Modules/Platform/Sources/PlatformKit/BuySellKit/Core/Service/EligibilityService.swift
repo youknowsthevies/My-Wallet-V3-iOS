@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import DIKit
 import RxRelay
 import RxSwift
@@ -39,7 +38,10 @@ final class EligibilityService: EligibilityServiceAPI {
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencyService = fiatCurrencyService
         isEligibileValue = CachedValue(
-            configuration: .periodic(30)
+            configuration: .periodic(
+                seconds: 30,
+                schedulerIdentifier: "EligibilityService"
+            )
         )
 
         isEligibileValue.setFetch(weak: self) { (self) in

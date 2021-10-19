@@ -38,32 +38,27 @@ public protocol NetworkResponseDecoderAPI {
     func decodeFailureToString(errorResponse: ServerErrorResponse) -> String?
 }
 
-final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
+public final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
 
     // MARK: - Properties
 
-    private static let defaultJSONDecoder: JSONDecoder = {
+    public static let defaultJSONDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .secondsSince1970
         return decoder
     }()
 
     private let jsonDecoder: JSONDecoder
-    private let interalFeatureFlagService: InternalFeatureFlagServiceAPI
 
     // MARK: - Setup
 
-    init(
-        jsonDecoder: JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder,
-        interalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve()
-    ) {
+    public init(jsonDecoder: JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder) {
         self.jsonDecoder = jsonDecoder
-        self.interalFeatureFlagService = interalFeatureFlagService
     }
 
     // MARK: - NetworkResponseDecoderAPI
 
-    func decodeOptional<ResponseType: Decodable>(
+    public func decodeOptional<ResponseType: Decodable>(
         response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
@@ -80,7 +75,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         )
     }
 
-    func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
+    public func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
@@ -98,7 +93,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         .mapError(ErrorResponseType.from)
     }
 
-    func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
+    public func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         for request: NetworkRequest
     ) -> Result<ResponseType, ErrorResponseType> {
@@ -106,7 +101,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             .mapError(ErrorResponseType.from)
     }
 
-    func decode<ResponseType: Decodable>(
+    public func decode<ResponseType: Decodable>(
         response: ServerResponse,
         for request: NetworkRequest
     ) -> Result<ResponseType, NetworkError> {
@@ -119,7 +114,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         )
     }
 
-    func decode<ErrorResponseType: FromNetworkErrorConvertible>(
+    public func decode<ErrorResponseType: FromNetworkErrorConvertible>(
         error: ServerErrorResponse,
         for request: NetworkRequest
     ) -> ErrorResponseType {
@@ -140,15 +135,15 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             )
             Logger.shared.error(errorMessage)
             // TODO: Fix decoding errors then uncomment this: IOS-4501
-            // #if INTERNAL_BUILD
-            // fatalError(errorMessage)
-            // #endif
+            // if BuildFlag.isInternal {
+            //     fatalError(errorMessage)
+            // }
             return ErrorResponseType.from(.payloadError(.badData(rawPayload: rawPayload)))
         }
         return decodedErrorResponse
     }
 
-    func decodeFailureToString(errorResponse: ServerErrorResponse) -> String? {
+    public func decodeFailureToString(errorResponse: ServerErrorResponse) -> String? {
         guard let payload = errorResponse.payload else {
             return nil
         }
@@ -162,19 +157,6 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         for request: NetworkRequest,
         emptyPayloadHandler: (ServerResponse) -> Result<ResponseType, NetworkError>
     ) -> Result<ResponseType, NetworkError> {
-        #if INTERNAL_BUILD
-        let consoleLoggingEnabled = interalFeatureFlagService.isEnabled(.requestConsoleLogging)
-        if let data = response.payload, consoleLoggingEnabled {
-            if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
-                Logger.shared.debug("""
-                \n----------------------
-                🌎 ENDPOINT: \n\(response.response.url?.absoluteString ?? "Unknown")
-                📦 PAYLOAD: \n\(json)
-                ======================\n
-                """)
-            }
-        }
-        #endif
         guard ResponseType.self != EmptyNetworkResponse.self else {
             let emptyResponse: ResponseType = EmptyNetworkResponse() as! ResponseType
             return .success(emptyResponse)
@@ -203,9 +185,9 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                 )
                 Logger.shared.error(errorMessage)
                 // TODO: Fix decoding errors then uncomment this: IOS-4501
-                // #if INTERNAL_BUILD
-                // fatalError(errorMessage)
-                // #endif
+                // if BuildFlag.isInternal {
+                //     fatalError(errorMessage)
+                // }
                 return .failure(.payloadError(.badData(rawPayload: rawPayload)))
             }
     }

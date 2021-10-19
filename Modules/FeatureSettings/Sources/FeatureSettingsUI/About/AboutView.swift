@@ -40,7 +40,7 @@ final class AboutView: UIView {
         fromNib(named: AboutView.objectName, in: .module)
         logoImageView.tintColor = .textFieldText
         var hash = ""
-        if let info = Bundle.main.infoDictionary {
+        if let info = MainBundleProvider.mainBundle.infoDictionary {
             hash = (info[Constants.commitHash] as? String ?? "")
         }
         var version = LocalizationIDs.version + " " + "\(Bundle.applicationVersion ?? "")"

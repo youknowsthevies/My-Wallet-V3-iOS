@@ -18,7 +18,7 @@ public struct EthereumURLPayload: EIP67URI {
     public let includeScheme: Bool = false
 
     public var absoluteString: String {
-        var components = self.components
+        var components = components
         if !includeScheme {
             components.scheme = nil
         }

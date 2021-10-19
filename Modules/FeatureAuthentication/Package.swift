@@ -11,6 +11,10 @@ let package = Package(
             targets: ["FeatureAuthenticationData", "FeatureAuthenticationDomain", "FeatureAuthenticationUI"]
         ),
         .library(
+            name: "FeatureAuthenticationUI",
+            targets: ["FeatureAuthenticationUI"]
+        ),
+        .library(
             name: "FeatureAuthenticationDomain",
             targets: ["FeatureAuthenticationDomain"]
         ),
@@ -41,6 +45,7 @@ let package = Package(
             from: "5.1.3"
         ),
         .package(path: "../Analytics"),
+        .package(path: "../ComposableNavigation"),
         .package(path: "../HDWallet"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
@@ -75,6 +80,8 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureAuthenticationDomain"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "ComposableNavigation", package: "ComposableNavigation"),
+                .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
@@ -84,8 +91,8 @@ let package = Package(
         .target(
             name: "FeatureAuthenticationMock",
             dependencies: [
-                .target(name: "FeatureAuthenticationDomain"),
-                .target(name: "FeatureAuthenticationData")
+                .target(name: "FeatureAuthenticationData"),
+                .target(name: "FeatureAuthenticationDomain")
             ]
         ),
         .testTarget(

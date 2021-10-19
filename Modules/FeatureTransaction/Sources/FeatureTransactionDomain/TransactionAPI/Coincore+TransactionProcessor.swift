@@ -19,6 +19,12 @@ extension CoincoreAPI {
                 target: target,
                 action: action
             )
+        case is CryptoInterestAccount:
+            return createInterestWithdrawTradingProcessor(
+                with: account as! CryptoInterestAccount,
+                target: target,
+                action: action
+            )
         case is CryptoTradingAccount:
             return createTradingProcessor(
                 with: account as! CryptoTradingAccount,
@@ -51,7 +57,33 @@ extension CoincoreAPI {
         action: AssetAction
     ) -> Single<TransactionProcessor> {
         let factory = account.createTransactionEngine() as! OnChainTransactionEngineFactory
+        let interestOnChainFactory: InterestOnChainTransactionEngineFactoryAPI = resolve()
         switch (target, action) {
+        case (is CryptoInterestAccount, .interestTransfer):
+            guard let target = target as? CryptoInterestAccount else {
+                impossible()
+            }
+
+            return target
+                .receiveAddress
+                .flatMap { receiveAddress in
+                    account
+                        .requireSecondPassword
+                        .map { requiresSecondPassword -> TransactionProcessor in
+                            .init(
+                                sourceAccount: account,
+                                transactionTarget: receiveAddress,
+                                engine: interestOnChainFactory
+                                    .build(
+                                        requiresSecondPassword: requiresSecondPassword,
+                                        action: .interestTransfer,
+                                        onChainEngine: factory.build(
+                                            requiresSecondPassword: requiresSecondPassword
+                                        )
+                                    )
+                            )
+                        }
+                }
         case (is BitPayInvoiceTarget, .send):
             return account
                 .requireSecondPassword
@@ -112,7 +144,19 @@ extension CoincoreAPI {
                     )
                 }
         case (_, .sell):
-            unimplemented()
+            return account
+                .requireSecondPassword
+                .map { requiresSecondPassword -> TransactionProcessor in
+                    .init(
+                        sourceAccount: account,
+                        transactionTarget: target,
+                        engine: NonCustodialSellTransactionEngine(
+                            quotesEngine: SwapQuotesEngine(),
+                            requireSecondPassword: requiresSecondPassword,
+                            onChainEngine: factory.build(requiresSecondPassword: requiresSecondPassword)
+                        )
+                    )
+                }
         default:
             unimplemented()
         }
@@ -132,7 +176,13 @@ extension CoincoreAPI {
             unimplemented("This should not be needed as the Buy engine should process the transaction")
         case .sell:
             return createTradingProcessorSell(with: account, target: target)
-        case .deposit, .receive, .viewActivity, .withdraw:
+        case .interestTransfer:
+            return createInterestTransferTradingProcessor(with: account, target: target)
+        case .deposit,
+             .receive,
+             .viewActivity,
+             .withdraw,
+             .interestWithdraw:
             unimplemented()
         }
     }
@@ -189,6 +239,71 @@ extension CoincoreAPI {
                 )
             )
         )
+    }
+
+    private func createInterestTransferTradingProcessor(
+        with account: CryptoTradingAccount,
+        target: TransactionTarget
+    ) -> Single<TransactionProcessor> {
+        guard target is CryptoInterestAccount else {
+            impossible()
+        }
+        let factory: InterestTradingTransactionEngineFactoryAPI = resolve()
+        return .just(
+            .init(
+                sourceAccount: account,
+                transactionTarget: target,
+                engine: factory
+                    .build(
+                        requiresSecondPassword: false,
+                        action: .interestTransfer
+                    )
+            )
+        )
+    }
+
+    private func createInterestWithdrawTradingProcessor(
+        with account: CryptoInterestAccount,
+        target: TransactionTarget,
+        action: AssetAction
+    ) -> Single<TransactionProcessor> {
+        let tradingFactory: InterestTradingTransactionEngineFactoryAPI = resolve()
+        let onChainFactory: InterestOnChainTransactionEngineFactoryAPI = resolve()
+        switch target {
+        case is CryptoTradingAccount:
+            return Single.just(
+                TransactionProcessor(
+                    sourceAccount: account,
+                    transactionTarget: target,
+                    engine: tradingFactory
+                        .build(
+                            requiresSecondPassword: false,
+                            action: action
+                        )
+                )
+            )
+        case let account as CryptoNonCustodialAccount:
+            let factory = account.createTransactionEngine() as! OnChainTransactionEngineFactory
+            return account
+                .requireSecondPassword
+                .map { requiresSecondPassword in
+                    TransactionProcessor(
+                        sourceAccount: account,
+                        transactionTarget: target,
+                        engine: onChainFactory
+                            .build(
+                                requiresSecondPassword: requiresSecondPassword,
+                                action: action,
+                                onChainEngine: factory
+                                    .build(
+                                        requiresSecondPassword: requiresSecondPassword
+                                    )
+                            )
+                    )
+                }
+        default:
+            unimplemented()
+        }
     }
 
     private func createTradingProcessorSend(

@@ -6,14 +6,16 @@ import PlatformKit
 extension LineChartData {
     public convenience init(with value: AssetLineChart.Value.Interaction) {
         let presentationValue = AssetLineChart.Value.Presentation(value: value)
-        let entries = presentationValue.points.enumerated().map {
-            ChartDataEntry(
-                x: Double($0.element.x),
-                y: Double($0.element.y),
-                icon: nil,
-                data: NSNumber(integerLiteral: $0.offset)
-            )
-        }
+        let entries = presentationValue.points
+            .enumerated()
+            .map { offset, element in
+                ChartDataEntry(
+                    x: Double(element.x),
+                    y: Double(element.y),
+                    icon: nil,
+                    data: NSNumber(value: offset)
+                )
+            }
         let set = LineChartDataSet(entries: entries, label: nil)
         let gradients = [presentationValue.color.cgColor, UIColor.clear.cgColor] as CFArray
         let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: gradients, locations: [1.0, 0.0])!

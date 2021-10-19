@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import Blockchain
+import PlatformKit
 import XCTest
+
+@testable import Blockchain
 
 class WalletIntroductionLocationTests: XCTestCase {
 

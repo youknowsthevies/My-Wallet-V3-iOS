@@ -33,7 +33,7 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
         return Single
             .zip(accounts.map(\.actionableBalance))
             .map { [asset] values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: asset), +)
+                try values.reduce(.zero(currency: asset), +)
             }
     }
 
@@ -59,7 +59,7 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
         return Single
             .zip(accounts.map(\.pendingBalance))
             .map { [asset] values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: asset), +)
+                try values.reduce(.zero(currency: asset), +)
             }
     }
 
@@ -70,7 +70,7 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
         return Single
             .zip(accounts.map(\.balance))
             .map { [asset] values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: asset), +)
+                try values.reduce(.zero(currency: asset), +)
             }
     }
 

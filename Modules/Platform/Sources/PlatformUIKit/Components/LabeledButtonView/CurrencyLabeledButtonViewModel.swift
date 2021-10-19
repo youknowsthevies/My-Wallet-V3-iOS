@@ -18,7 +18,7 @@ public final class CurrencyLabeledButtonViewModel: LabeledButtonViewModelAPI {
     public let tapRelay = PublishRelay<Void>()
 
     public var elementOnTap: Signal<Element> {
-        let amount = self.amount
+        let amount = amount
         return tapRelay
             .asSignal()
             .map { amount }

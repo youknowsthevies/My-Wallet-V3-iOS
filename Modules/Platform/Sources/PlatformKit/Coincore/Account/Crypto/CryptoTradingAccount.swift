@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxSwift
 import ToolKit
@@ -86,7 +87,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             guard let self = self else {
                 return .error(PlatformKitError.default)
             }
-            guard case .hashed(let hash, let amount) = result else {
+            guard case .hashed(let hash, let amount, _) = result else {
                 return .error(PlatformKitError.default)
             }
             guard amount.isCrypto else {
@@ -104,22 +105,37 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         }
     }
 
+    public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Swift.Error> {
+        interestEligibilityRepository
+            .fetchInterestAccountEligibilityForCurrencyCode(currencyType.code)
+            .map(\.ineligibilityReason)
+            .eraseError()
+    }
+
     public var actions: Single<AvailableActions> {
-        Single.zip(balance, eligibilityService.isEligible, isPairToFiatAvailable)
-            .map { balance, isEligible, isPairToFiatAvailable -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive]
-                if isPairToFiatAvailable {
-                    base.insert(.buy)
-                }
-                if balance.isPositive {
-                    base.insert(.send)
-                }
-                if balance.isPositive, isEligible {
-                    base.insert(.sell)
-                    base.insert(.swap)
-                }
-                return base
+        Single.zip(
+            balance,
+            eligibilityService.isEligible,
+            isPairToFiatAvailable,
+            canPerformInterestTransfer()
+        )
+        .map { balance, isEligible, isPairToFiatAvailable, interestTransferAvailable -> AvailableActions in
+            var base: AvailableActions = [.viewActivity, .receive]
+            if isPairToFiatAvailable {
+                base.insert(.buy)
             }
+            if balance.isPositive {
+                base.insert(.send)
+            }
+            if interestTransferAvailable {
+                base.insert(.interestTransfer)
+            }
+            if balance.isPositive, isEligible {
+                base.insert(.sell)
+                base.insert(.swap)
+            }
+            return base
+        }
     }
 
     public var activity: Single<[ActivityItemEvent]> {
@@ -127,12 +143,21 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .zip(
                 buySellActivity.buySellActivityEvents(cryptoCurrency: asset),
                 ordersActivity.activity(cryptoCurrency: asset).catchErrorJustReturn([]),
-                swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal]).catchErrorJustReturn([])
+                swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal])
+                    .catchErrorJustReturn([])
             )
             .map { buySellActivity, ordersActivity, swapActivity -> [ActivityItemEvent] in
-                buySellActivity.map(ActivityItemEvent.buySell)
+                let swapAndSellActivityItemsEvents: [ActivityItemEvent] = swapActivity
+                    .map { item in
+                        if item.pair.outputCurrencyType.isFiatCurrency {
+                            return .buySell(.init(swapActivityItemEvent: item))
+                        }
+                        return .swap(item)
+                    }
+
+                return buySellActivity.map(ActivityItemEvent.buySell)
                     + ordersActivity.map(ActivityItemEvent.crypto)
-                    + swapActivity.map(ActivityItemEvent.swap)
+                    + swapAndSellActivityItemsEvents
             }
     }
 
@@ -142,16 +167,17 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let custodialPendingDepositService: CustodialPendingDepositServiceAPI
     private let eligibilityService: EligibilityServiceAPI
     private let errorRecorder: ErrorRecording
-    private let fiatPriceService: FiatPriceServiceAPI
+    private let priceService: PriceServiceAPI
     private let featureFetcher: FeatureFetching
     private let kycTiersService: KYCTiersServiceAPI
     private let ordersActivity: OrdersActivityServiceAPI
     private let swapActivity: SwapActivityServiceAPI
     private let buySellActivity: BuySellActivityItemEventServiceAPI
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
+    private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
 
     private var balances: Single<CustodialAccountBalanceState> {
-        balanceService.balance(for: asset.currency)
+        balanceService.balance(for: asset.currencyType)
     }
 
     public init(
@@ -161,21 +187,23 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         buySellActivity: BuySellActivityItemEventServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         featureFetcher: FeatureFetching = resolve(),
-        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve(),
         custodialAddressService: CustodialAddressServiceAPI = resolve(),
         custodialPendingDepositService: CustodialPendingDepositServiceAPI = resolve(),
         eligibilityService: EligibilityServiceAPI = resolve(),
         supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve()
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve()
     ) {
         self.asset = asset
         label = asset.defaultTradingWalletName
+        self.interestEligibilityRepository = interestEligibilityRepository
         self.ordersActivity = ordersActivity
         self.swapActivity = swapActivity
         self.buySellActivity = buySellActivity
-        self.fiatPriceService = fiatPriceService
+        self.priceService = priceService
         self.balanceService = balanceService
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
         self.custodialAddressService = custodialAddressService
@@ -203,18 +231,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         case .viewActivity:
             return .just(true)
         case .send:
-            return balance
-                .map(\.isPositive)
-                .catchError { [label, asset] error in
-                    throw Error.loadingFailed(
-                        asset: asset.code,
-                        label: label,
-                        action: action,
-                        error: String(describing: error)
-                    )
-                }
-                .recordErrors(on: errorRecorder)
-                .catchErrorJustReturn(false)
+            return canPerformSend()
         case .buy:
             return isPairToFiatAvailable
         case .sell:
@@ -222,51 +239,83 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 $0.0 && $0.1
             }
         case .swap:
-            return balance
-                .map(\.isPositive)
-                .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in
-                    guard isPositive else {
-                        return .just(false)
-                    }
-                    return self.eligibilityService.isEligible
-                }
-                .catchError { [label, asset] error in
-                    throw Error.loadingFailed(
-                        asset: asset.code,
-                        label: label,
-                        action: action,
-                        error: String(describing: error)
-                    )
-                }
-                .recordErrors(on: errorRecorder)
-                .catchErrorJustReturn(false)
+            return canPerformSwap()
         case .receive:
             return .just(true)
+        case .interestTransfer:
+            return canPerformInterestTransfer()
         case .deposit,
-             .withdraw:
+             .withdraw,
+             .interestWithdraw:
             return .just(false)
         }
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+    public func balancePair(
+        fiatCurrency: FiatCurrency,
+        at time: PriceTime
+    ) -> AnyPublisher<MoneyValuePair, Swift.Error> {
+        priceService
+            .price(of: asset, in: fiatCurrency, at: time)
+            .eraseError()
+            .zip(balance.asPublisher())
+            .tryMap { fiatPrice, balance in
+                MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
+            .eraseToAnyPublisher()
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
-        Single
-            .zip(
-                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
-                balance
-            )
-            .map { fiatPrice, balance in
-                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+    // MARK: - Private Functions
+
+    private func canPerformSwap() -> Single<Bool> {
+        balance
+            .map(\.isPositive)
+            .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in
+                guard isPositive else {
+                    return .just(false)
+                }
+                return self.eligibilityService.isEligible
             }
+            .catchError { [label, asset] error in
+                throw Error.loadingFailed(
+                    asset: asset.code,
+                    label: label,
+                    action: .swap,
+                    error: String(describing: error)
+                )
+            }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(false)
+    }
+
+    private func canPerformInterestTransfer() -> Single<Bool> {
+        disabledReason
+            .map(\.isEligible)
+            .asSingle()
+            .catchError { [label, asset] error in
+                throw Error.loadingFailed(
+                    asset: asset.code,
+                    label: label,
+                    action: .interestTransfer,
+                    error: String(describing: error)
+                )
+            }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(false)
+    }
+
+    private func canPerformSend() -> Single<Bool> {
+        balance
+            .map(\.isPositive)
+            .catchError { [label, asset] error in
+                throw Error.loadingFailed(
+                    asset: asset.code,
+                    label: label,
+                    action: .send,
+                    error: String(describing: error)
+                )
+            }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(false)
     }
 }

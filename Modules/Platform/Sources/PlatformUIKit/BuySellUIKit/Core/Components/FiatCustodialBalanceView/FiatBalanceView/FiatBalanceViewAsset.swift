@@ -81,7 +81,7 @@ public enum FiatBalanceViewAsset {
             // MARK: - Setup
 
             public init(with value: Interaction, descriptors: Descriptors) {
-                let showsQuoteValue = value.quote.currencyType != value.base.currencyType
+                let showsQuoteValue = value.quote.currency != value.base.currency
                 let baseFont: UIFont
                 let baseColor: UIColor
                 if showsQuoteValue {
@@ -91,7 +91,7 @@ public enum FiatBalanceViewAsset {
                             font: descriptors.quoteFiatFont,
                             color: descriptors.quoteFiatTextColor,
                             alignment: .right,
-                            accessibility: .id("\(descriptors.quoteFiatAccessibility.id!)\(value.quote.currency.code)")
+                            accessibility: .id("\(descriptors.quoteFiatAccessibility.id!)\(value.quote.code)")
                         )
                     )
                     baseFont = descriptors.baseFiatFont
@@ -107,7 +107,7 @@ public enum FiatBalanceViewAsset {
                     font: baseFont,
                     color: baseColor,
                     alignment: .right,
-                    accessibility: .id("\(descriptors.baseFiatAccessibility.id.printable)\(value.base.currency.code)")
+                    accessibility: .id("\(descriptors.baseFiatAccessibility.id.printable)\(value.base.code)")
                 )
             }
         }

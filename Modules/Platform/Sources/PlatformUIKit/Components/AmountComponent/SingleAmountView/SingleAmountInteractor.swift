@@ -25,6 +25,10 @@ public final class SingleAmountInteractor: AmountViewInteracting {
     public let currencyInteractor: InputAmountLabelInteractor
     public let inputCurrency: Currency
 
+    // This interactor doesn't support min/max
+    public var minAmountSelected: Observable<Void> = .never()
+    public var maxAmountSelected: Observable<Void> = .never()
+
     // MARK: - Private
 
     private let currencyService: CurrencyServiceAPI
@@ -45,10 +49,7 @@ public final class SingleAmountInteractor: AmountViewInteracting {
             .input
             .compactMap { [inputCurrency] input -> MoneyValue? in
                 let amount = input.isEmpty || input.isPlaceholderZero ? "0" : input.amount
-                return MoneyValue.create(
-                    major: amount,
-                    currency: inputCurrency.currency
-                )
+                return MoneyValue.create(major: amount, currency: inputCurrency.currencyType)
             }
             .share(replay: 1, scope: .whileConnected)
     }

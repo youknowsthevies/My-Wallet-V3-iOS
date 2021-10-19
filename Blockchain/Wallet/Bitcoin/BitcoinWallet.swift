@@ -300,28 +300,16 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             }
     }
 
-    func updateMemo(for transactionHash: String, memo: String?) -> Completable {
-        let saveMemo = Completable.create { completable in
-            self.wallet?.saveBitcoinMemo(for: transactionHash, memo: memo)
-            completable(.completed)
-            return Disposables.create()
-        }
-        return reactiveWallet
-            .waitUntilInitialized
-            .flatMap { saveMemo.asObservable() }
-            .asCompletable()
-    }
-
-    func memo(for transactionHash: String) -> Single<String?> {
-        let memo: Single<String?> = Single
+    func note(for transactionHash: String) -> Single<String?> {
+        let note: Single<String?> = Single
             .create(weak: self) { (self, observer) -> Disposable in
                 guard let wallet = self.wallet else {
                     return Disposables.create()
                 }
-                wallet.getBitcoinMemo(
+                wallet.getBitcoinNote(
                     for: transactionHash,
-                    success: { memo in
-                        observer(.success(memo))
+                    success: { note in
+                        observer(.success(note))
                     },
                     error: { _ in
                         observer(.error(WalletError.unknown))
@@ -332,7 +320,19 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
 
         return reactiveWallet
             .waitUntilInitializedSingle
-            .flatMap { memo }
+            .flatMap { note }
+    }
+
+    func updateNote(for transactionHash: String, note: String?) -> Completable {
+        let setNote = Completable.create { completable in
+            self.wallet?.setBitcoinNote(for: transactionHash, note: note)
+            completable(.completed)
+            return Disposables.create()
+        }
+        return reactiveWallet
+            .waitUntilInitialized
+            .flatMap { setNote.asObservable() }
+            .asCompletable()
     }
 
     var defaultWallet: Single<BitcoinWalletAccount> {
@@ -340,6 +340,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) -> Single<String?> in
                 self.secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+                    .asSingle()
             }
             .flatMap(weak: self) { (self, secondPassword) -> Single<BitcoinWalletAccount> in
                 self.defaultWallet(secondPassword: secondPassword)
@@ -361,6 +362,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
 
     var wallets: Single<[BitcoinWalletAccount]> {
         secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+            .asSingle()
             .flatMap(weak: self) { (self, secondPassword) -> Single<[BitcoinWalletAccount]> in
                 self.bitcoinWallets(secondPassword: secondPassword)
             }
@@ -436,15 +438,6 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             )
             return Disposables.create()
         }
-    }
-}
-
-extension BitcoinWallet: PasswordAccessAPI {
-    public var password: Maybe<String> {
-        guard let password = credentialsProvider.legacyPassword else {
-            return Maybe.empty()
-        }
-        return Maybe.just(password)
     }
 }
 

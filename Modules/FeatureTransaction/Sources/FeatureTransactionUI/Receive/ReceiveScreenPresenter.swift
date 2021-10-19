@@ -28,8 +28,16 @@ final class ReceiveScreenPresenter {
     let copyButton: ButtonViewModel
     let shareButton: ButtonViewModel
     private(set) lazy var title = "\(LocalizedString.Text.receive) \(interactor.account.currencyType.code)"
-    var assetImage: Driver<ImageViewContent> {
-        .just(ImageViewContent(imageResource: interactor.account.currencyType.logoResource))
+    var assetImage: Driver<BadgeImageViewModel> {
+        let theme = BadgeImageViewModel.Theme(
+            backgroundColor: .background,
+            cornerRadius: .round,
+            imageViewContent: ImageViewContent(
+                imageResource: interactor.account.currencyType.logoResource
+            ),
+            marginOffset: 0
+        )
+        return .just(BadgeImageViewModel(theme: theme))
     }
 
     var qrCode: Driver<UIImage?> {
@@ -208,7 +216,11 @@ final class ReceiveScreenPresenter {
             .withLatestFrom(qrCodeMetadata)
             .subscribe(onNext: { [weak self] metadata in
                 guard let self = self else { return }
-                self.interactor.receiveRouter.shareDetails(for: metadata)
+                let currencyType = self.interactor.account.currencyType
+                self.interactor.receiveRouter.shareDetails(
+                    for: metadata,
+                    currencyType: currencyType
+                )
             })
             .disposed(by: disposeBag)
     }

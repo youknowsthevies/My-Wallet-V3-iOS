@@ -1,15 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import CombineExt
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import ToolKit
 
-public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionEngine,
-    InterestTransactionEngine
-{
+public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionEngine, InterestTransactionEngine {
 
     // MARK: - InterestTransactionEngine
 
@@ -83,12 +80,15 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
         self.priceService = priceService
         self.accountLimitsRepository = accountLimitsRepository
         self.transferRepository = transferRepository
-        feeCache = CachedValue(configuration: .periodic(20))
+        feeCache = CachedValue(
+            configuration: .periodic(
+                seconds: 20,
+                schedulerIdentifier: "InterestWithdrawOnChainTransactionEngine"
+            )
+        )
         feeCache.setFetch(weak: self) { (self) -> Single<CustodialTransferFee> in
             self.transferRepository
                 .feesAndLimitsForInterest()
-                .asObservable()
-                .take(1)
                 .asSingle()
         }
     }

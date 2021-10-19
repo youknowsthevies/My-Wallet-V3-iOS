@@ -8,4 +8,8 @@ public protocol BitcoinCashWalletBridgeAPI {
 
     func receiveAddress(forXPub xpub: String) -> Single<String>
     func update(accountIndex: Int, label: String) -> Completable
+
+    func note(for transactionHash: String) -> Single<String?>
+
+    func updateNote(for transactionHash: String, note: String?) -> Completable
 }

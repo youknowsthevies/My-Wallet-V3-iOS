@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
+import Combine
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
@@ -29,6 +31,8 @@ final class TransactionInteractor {
     private let swapEligibilityService: EligibilityServiceAPI
     private let paymentMethodsService: PaymentAccountsServiceAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
+    private let userTiersService: KYCTiersServiceAPI
+    private let ordersService: OrdersServiceAPI
     private let errorRecorder: ErrorRecording
     private var transactionProcessor: TransactionProcessor?
 
@@ -41,6 +45,8 @@ final class TransactionInteractor {
         swapEligibilityService: EligibilityServiceAPI = resolve(),
         paymentMethodsService: PaymentAccountsServiceAPI = resolve(),
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
+        userTiersService: KYCTiersServiceAPI = resolve(),
+        ordersService: OrdersServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve()
     ) {
         self.coincore = coincore
@@ -49,6 +55,8 @@ final class TransactionInteractor {
         self.swapEligibilityService = swapEligibilityService
         self.paymentMethodsService = paymentMethodsService
         self.linkedBanksFactory = linkedBanksFactory
+        self.userTiersService = userTiersService
+        self.ordersService = ordersService
     }
 
     func initializeTransaction(
@@ -73,7 +81,7 @@ final class TransactionInteractor {
 
     deinit {
         reset()
-        self.transactionProcessor = nil
+        transactionProcessor = nil
     }
 
     func invalidateTransaction() -> Completable {
@@ -102,13 +110,16 @@ final class TransactionInteractor {
     func fetchPaymentAccounts(for currency: CryptoCurrency, amount: MoneyValue?) -> Single<[SingleAccount]> {
         let amount = amount ?? .zero(currency: currency)
         return paymentMethodsService
-            .fetchPaymentAccounts(for: currency, amount: amount)
+            .fetchPaymentMethodAccounts(for: currency, amount: amount)
             .map { $0 }
             .asSingle()
     }
 
-    func getAvailableSourceAccounts(action: AssetAction) -> Single<[SingleAccount]> {
-        let allEligibleCryptoAccounts = coincore.allAccounts
+    func getAvailableSourceAccounts(
+        action: AssetAction,
+        transactionTarget: TransactionTarget?
+    ) -> Single<[SingleAccount]> {
+        let allEligibleCryptoAccounts: Single<[CryptoAccount]> = coincore.allAccounts
             .eraseError()
             .map(\.accounts)
             .flatMapFilter(
@@ -128,11 +139,19 @@ final class TransactionInteractor {
                     account as? CryptoAccount
                 }
             }
-            .asObservable()
             .asSingle()
         switch action {
+        case .interestTransfer:
+            guard let account = transactionTarget as? BlockchainAccount else {
+                impossible("A target account is required for this.")
+            }
+            return coincore
+                .cryptoAccounts(supporting: .interestTransfer)
+                .asSingle()
+                .map { $0.filter { $0.currencyType == account.currencyType } }
+
         case .buy:
-            // TODO: check the new limits API to understand whether passing asset and amount is really required
+            // TODO: the new limits API will require an amount
             return fetchPaymentAccounts(for: .coin(.bitcoin), amount: nil)
         case .swap:
             let tradingPairs = availablePairsService.availableTradingPairs
@@ -143,7 +162,7 @@ final class TransactionInteractor {
                     }
                 }
         case .sell:
-            return allEligibleCryptoAccounts.map { $0.map { $0 as SingleAccount } }
+            return allEligibleCryptoAccounts.map { $0 as [SingleAccount] }
         case .deposit:
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         default:
@@ -158,6 +177,16 @@ final class TransactionInteractor {
                 fatalError("Expected a CryptoAccount.")
             }
             return swapTargets(sourceAccount: cryptoAccount)
+        case .interestTransfer:
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected a CryptoAccount.")
+            }
+            return interestDepositTargets(sourceAccount: cryptoAccount)
+        case .interestWithdraw:
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected a CryptoAccount.")
+            }
+            return interestWithdrawTargets(sourceAccount: cryptoAccount)
         case .send:
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected a CryptoAccount.")
@@ -169,7 +198,7 @@ final class TransactionInteractor {
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         case .buy:
             return coincore
-                .cryptoAccounts(supporting: .buy)
+                .cryptoAccounts(supporting: .buy, filter: .custodial)
                 .asSingle()
                 .map { $0 }
         case .sell:
@@ -232,7 +261,46 @@ final class TransactionInteractor {
         return transactionProcessor.validateAll()
     }
 
+    func fetchUserKYCStatus() -> AnyPublisher<KYC.UserTiers?, Never> {
+        userTiersService.tiers
+            .map { $0 } // make it optional
+            .replaceError(with: nil)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+
+    func pollOrderStatusUntilDoneOrTimeout(orderId: String) -> AnyPublisher<OrderDetails.State, Never> {
+        ordersService
+            .fetchOrder(with: orderId)
+            .asPublisher()
+            .startPolling(
+                timeoutInterval: .seconds(30),
+                until: { $0.isFinal }
+            )
+            .map(\.state)
+            .replaceError(with: .pendingConfirmation)
+            .eraseToAnyPublisher()
+    }
+
     // MARK: - Private Functions
+
+    private func interestWithdrawTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
+        coincore
+            .getTransactionTargets(
+                sourceAccount: sourceAccount,
+                action: .interestWithdraw
+            )
+            .asSingle()
+    }
+
+    private func interestDepositTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
+        coincore
+            .getTransactionTargets(
+                sourceAccount: sourceAccount,
+                action: .interestTransfer
+            )
+            .asSingle()
+    }
 
     private func sendTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
         coincore

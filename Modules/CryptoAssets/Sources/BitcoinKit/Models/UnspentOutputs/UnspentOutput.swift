@@ -53,14 +53,8 @@ struct UnspentOutput: Equatable {
 }
 
 extension UnspentOutput {
-    init(response: UnspentOutputResponse) throws {
-        let satoshisString = NSDecimalNumber(decimal: response.value).stringValue
-        guard
-            let satoshis = BigInt(satoshisString)
-        else {
-            throw UnspentOutputError.invalidValue
-        }
-        let value = try BitcoinValue(satoshis: satoshis)
+    init(response: UnspentOutputResponse) {
+        let value = BitcoinValue(satoshis: response.value)
         hash = response.tx_hash
         script = response.script
         self.value = value

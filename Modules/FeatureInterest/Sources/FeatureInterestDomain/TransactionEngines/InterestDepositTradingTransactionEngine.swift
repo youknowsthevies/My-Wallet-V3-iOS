@@ -48,7 +48,7 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
                     .price(of: sourceAsset, in: fiatValue.currency)
                     .asSingle()
                     .map(\.moneyValue)
-                    .map { $0.fiatValue ?? .zero(currency: fiatValue.currencyType) }
+                    .map { $0.fiatValue ?? .zero(currency: fiatValue.currency) }
                 return Single.zip(quote, .just(fiatValue))
             }
             .map { [sourceAsset] (quote: FiatValue, deposit: FiatValue) -> CryptoValue in
@@ -80,6 +80,7 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
             }
     }
 
+    private let accountTransferRepository: InterestAccountTransferRepositoryAPI
     private let accountLimitsRepository: InterestAccountLimitsRepositoryAPI
 
     // MARK: - Init
@@ -88,11 +89,13 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
         requireSecondPassword: Bool,
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
-        accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve()
+        accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
+        accountTransferRepository: InterestAccountTransferRepositoryAPI = resolve()
     ) {
         self.fiatCurrencyService = fiatCurrencyService
         self.requireSecondPassword = requireSecondPassword
         self.priceService = priceService
+        self.accountTransferRepository = accountTransferRepository
         self.accountLimitsRepository = accountLimitsRepository
     }
 
@@ -164,8 +167,10 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
     public func doValidateAll(
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        // TODO: Check Terms and Conditions
-        validateAmount(pendingTransaction: pendingTransaction)
+        guard pendingTransaction.agreementOptionValue, pendingTransaction.termsOptionValue else {
+            return .just(pendingTransaction.update(validationState: .optionInvalid))
+        }
+        return validateAmount(pendingTransaction: pendingTransaction)
     }
 
     public func doBuildConfirmations(
@@ -173,6 +178,8 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
     ) -> Single<PendingTransaction> {
         let source = sourceAccount.label
         let destination = transactionTarget.label
+        let termsChecked = getTermsOptionValueFromPendingTransaction(pendingTransaction)
+        let agreementChecked = getTransferAgreementOptionValueFromPendingTransaction(pendingTransaction)
         return fiatAmountAndFees(from: pendingTransaction)
             .map { fiatAmount, fiatFees -> PendingTransaction in
                 pendingTransaction
@@ -192,13 +199,31 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
                         ]
                     )
             }
+            .map { [weak self] pendingTransaction in
+                guard let self = self else {
+                    unexpectedDeallocation()
+                }
+                return self.modifyEngineConfirmations(
+                    pendingTransaction,
+                    termsChecked: termsChecked,
+                    agreementChecked: agreementChecked
+                )
+            }
     }
 
     public func execute(
         pendingTransaction: PendingTransaction,
         secondPassword: String
     ) -> Single<TransactionResult> {
-        unimplemented()
+        accountTransferRepository
+            .createInterestAccountCustodialTransfer(pendingTransaction.amount)
+            .mapError { _ in
+                TransactionValidationFailure(state: .unknownError)
+            }
+            .map { _ in
+                TransactionResult.unHashed(amount: pendingTransaction.amount)
+            }
+            .asSingle()
     }
 
     public func doPostExecute(

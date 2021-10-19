@@ -22,16 +22,14 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
                     imageResource: type.thumbnail,
                     accessibility: .id(type.name)
                 )
-                let viewModel = BadgeImageViewModel(cornerRadius: .roundedLow)
-                viewModel.sizingTypeRelay.accept(.constant(CGSize(width: 32, height: 20)))
-                viewModel.marginOffsetRelay.accept(0)
-                viewModel.set(
-                    theme: .init(
-                        backgroundColor: .background,
-                        imageViewContent: content
-                    )
+                let theme = BadgeImageViewModel.Theme(
+                    backgroundColor: .background,
+                    cornerRadius: .roundedLow,
+                    imageViewContent: content,
+                    marginOffset: 0,
+                    sizingType: .constant(CGSize(width: 32, height: 20))
                 )
-                return viewModel
+                return BadgeImageViewModel(theme: theme)
             }
     }
 

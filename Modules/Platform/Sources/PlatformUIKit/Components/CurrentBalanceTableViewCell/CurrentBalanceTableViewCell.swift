@@ -20,6 +20,8 @@ public final class CurrentBalanceTableViewCell: UITableViewCell {
                 return
             }
 
+            accessibility = .id(presenter.viewAccessibilitySuffix)
+
             assetBalanceView.presenter = presenter.assetBalanceViewPresenter
             multiBadgeView.model = presenter.multiBadgeViewModel
 

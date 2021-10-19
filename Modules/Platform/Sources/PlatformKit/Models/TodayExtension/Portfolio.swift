@@ -8,7 +8,7 @@ public struct Portfolio: Codable {
         let currency: CryptoCurrency
         let balance: String
         var cryptoValue: CryptoValue {
-            CryptoValue.create(minor: balance, currency: currency) ?? CryptoValue.zero(currency: currency)
+            CryptoValue.create(minor: balance, currency: currency) ?? .zero(currency: currency)
         }
     }
 

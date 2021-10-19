@@ -17,16 +17,9 @@ extension Reachability {
     }
 }
 
-protocol InternetReachabilityAPI: AnyObject {
-    var canConnect: Bool { get }
-}
-
 public final class InternetReachability: InternetReachabilityAPI {
-    public enum ErrorType: Error {
-        case internetUnreachable
-    }
 
-    var canConnect: Bool {
+    public var canConnect: Bool {
         Reachability.hasInternetConnection()
     }
 

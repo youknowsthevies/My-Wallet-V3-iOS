@@ -3,58 +3,72 @@
 import FeatureTransactionDomain
 import Localization
 import PlatformKit
+import PlatformUIKit
 import RxSwift
+import ToolKit
 
-// TODO: customize this
 final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding {
 
-    private typealias LocalizationIds = LocalizationConstants.Transaction.Swap.Completion
+    private typealias LocalizationIds = LocalizationConstants.Transaction.Buy.Completion
+
+    private let coreBuyIcon: CompositeStatusViewType.Composite.BaseViewType = .templateImage(
+        name: "plus-icon",
+        bundle: .platformUIKit,
+        templateColor: .white
+    )
 
     // MARK: - PendingTransactionStateProviding
 
     func connect(state: Observable<TransactionState>) -> Observable<PendingTransactionPageState> {
-        state
-            .map(weak: self) { (self, state) in
-                switch state.executionStatus {
-                case .inProgress,
-                     .notStarted:
-                    return self.pending(state: state)
-                case .completed:
-                    return self.success(state: state)
-                case .error:
-                    return self.failed(state: state)
-                }
+        state.map(weak: self) { (self, state) in
+            switch state.executionStatus {
+            case .inProgress,
+                 .notStarted:
+                return self.inProgress(state: state)
+            case .pending:
+                return self.pending(state: state)
+            case .completed:
+                return self.success(state: state)
+            case .error:
+                return self.failed(state: state)
             }
+        }
     }
 
     // MARK: - Private Functions
 
     private func success(state: TransactionState) -> PendingTransactionPageState {
-        .init(
+        guard let destinationCurrency = state.destination?.currencyType else {
+            impossible("Expected a destination to there for a transaction that has succeeded")
+        }
+        let canUpgradeTier = canUpgradeTier(from: state.userKYCTiers)
+        return .init(
             title: String(
                 format: LocalizationIds.Success.title,
                 state.amount.displayString
             ),
             subtitle: String(
                 format: LocalizationIds.Success.description,
-                state.amount.currency.name
+                destinationCurrency.name
             ),
             compositeViewType: .composite(
                 .init(
-                    baseViewType: .templateImage(name: "plus-icon", bundle: .platformUIKit, templateColor: .white),
+                    baseViewType: coreBuyIcon,
                     sideViewAttributes: .init(
                         type: .image(.local(name: "v-success-icon", bundle: .platformUIKit)),
                         position: .radiusDistanceFromCenter
                     ),
+                    backgroundColor: .primaryButton,
                     cornerRadiusRatio: 0.5
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationIds.Success.action)
+            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action),
+            secondaryButtonViewModel: canUpgradeTier ? .secondary(with: LocalizationIds.Success.upgrade) : nil
         )
     }
 
-    private func pending(state: TransactionState) -> PendingTransactionPageState {
+    private func inProgress(state: TransactionState) -> PendingTransactionPageState {
         let sent = state.amount
         let received: MoneyValue
         switch state.moneyValueFromDestination() {
@@ -65,9 +79,9 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
             case nil:
                 fatalError("Expected a Destination: \(state)")
             case let account as SingleAccount:
-                received = MoneyValue.zero(currency: account.currencyType)
+                received = .zero(currency: account.currencyType)
             case let cryptoTarget as CryptoTarget:
-                received = MoneyValue.zero(currency: cryptoTarget.asset)
+                received = .zero(currency: cryptoTarget.asset)
             default:
                 fatalError("Unsupported state.destination: \(String(reflecting: state.destination))")
             }
@@ -76,30 +90,51 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
         if !received.isZero, !sent.isZero {
             // If we have both sent and receive values:
             title = String(
-                format: LocalizationIds.Pending.title,
-                sent.displayString,
-                received.displayString
+                format: LocalizationIds.InProgress.title,
+                received.displayString,
+                sent.displayString
             )
         } else {
             // If we have invalid inputs but we should continue.
             title = String(
-                format: LocalizationIds.Pending.title,
-                sent.displayCode,
-                received.displayCode
+                format: LocalizationIds.InProgress.title,
+                received.displayCode,
+                sent.displayCode
             )
         }
         return .init(
             title: title,
-            subtitle: LocalizationIds.Pending.description,
+            subtitle: LocalizationIds.InProgress.description,
             compositeViewType: .composite(
                 .init(
-                    baseViewType: .templateImage(name: "plus-icon", bundle: .platformUIKit, templateColor: .white),
+                    baseViewType: coreBuyIcon,
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     backgroundColor: .primaryButton,
                     cornerRadiusRatio: 0.5
                 )
+            )
+        )
+    }
+
+    private func pending(state: TransactionState) -> PendingTransactionPageState {
+        let canUpgradeTier = canUpgradeTier(from: state.userKYCTiers)
+        return PendingTransactionPageState(
+            title: LocalizationIds.Pending.title,
+            subtitle: LocalizationIds.Pending.description,
+            compositeViewType: .composite(
+                .init(
+                    baseViewType: coreBuyIcon,
+                    sideViewAttributes: .init(
+                        type: .image(.local(name: "clock-error-icon", bundle: .platformUIKit)),
+                        position: .radiusDistanceFromCenter
+                    ),
+                    backgroundColor: .primaryButton,
+                    cornerRadiusRatio: 0.5
+                )
             ),
-            buttonViewModel: nil
+            effect: .close,
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            secondaryButtonViewModel: canUpgradeTier ? .secondary(with: LocalizationIds.Success.upgrade) : nil
         )
     }
 
@@ -109,7 +144,7 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
             subtitle: LocalizationIds.Failure.description,
             compositeViewType: .composite(
                 .init(
-                    baseViewType: .templateImage(name: "plus-icon", bundle: .platformUIKit, templateColor: .white),
+                    baseViewType: coreBuyIcon,
                     sideViewAttributes: .init(
                         type: .image(.local(name: "circular-error-icon", bundle: .platformUIKit)),
                         position: .radiusDistanceFromCenter
@@ -119,7 +154,12 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
+    }
+
+    private func canUpgradeTier(from kycTiers: KYC.UserTiers?) -> Bool {
+        // Default to Tier 2 if needed so we don't show the upgrade prompt unnecessarily
+        (kycTiers?.latestApprovedTier ?? .tier2) < .tier2
     }
 }

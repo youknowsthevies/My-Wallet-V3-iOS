@@ -121,10 +121,10 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                         let (fiatCurrency, pendingTransaction) = payload
 
                         let fallback = PendingTransaction(
-                            amount: CryptoValue.zero(currency: self.sourceAsset).moneyValue,
-                            available: CryptoValue.zero(currency: self.targetAsset).moneyValue,
-                            feeAmount: CryptoValue.zero(currency: self.targetAsset).moneyValue,
-                            feeForFullAvailable: CryptoValue.zero(currency: self.sourceAsset).moneyValue,
+                            amount: .zero(currency: self.sourceAsset),
+                            available: .zero(currency: self.targetAsset),
+                            feeAmount: .zero(currency: self.targetAsset),
+                            feeForFullAvailable: .zero(currency: self.sourceAsset),
                             feeSelection: .empty(asset: self.sourceAsset),
                             selectedFiatCurrency: fiatCurrency
                         )

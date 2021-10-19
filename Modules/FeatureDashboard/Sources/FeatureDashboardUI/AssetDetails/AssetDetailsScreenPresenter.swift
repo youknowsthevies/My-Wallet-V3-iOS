@@ -116,13 +116,13 @@ final class AssetDetailsScreenPresenter {
         var cellTypes: [CellType] = []
         cellTypes.append(.priceAlert)
         cellTypes.append(.chart)
-        if let walletBalance = self.walletBalance {
+        if let walletBalance = walletBalance {
             cellTypes.append(.balance(walletBalance.account))
         }
-        if let tradingBalance = self.tradingBalance {
+        if let tradingBalance = tradingBalance {
             cellTypes.append(.balance(tradingBalance.account))
         }
-        if let savingsBalance = self.savingsBalance {
+        if let savingsBalance = savingsBalance {
             cellTypes.append(.balance(savingsBalance.account))
         }
         return cellTypes
@@ -167,7 +167,7 @@ final class AssetDetailsScreenPresenter {
         lineChartCellPresenter = AssetLineChartTableViewCellPresenter(
             cryptoCurrency: currency,
             fiatCurrencyService: interactor.fiatCurrencyService,
-            historicalFiatPriceService: interactor.priceServiceAPI
+            historicalFiatPriceService: interactor.historicalFiatPriceService
         )
 
         lineChartCellPresenter.isScrollEnabled
@@ -201,18 +201,9 @@ final class AssetDetailsScreenPresenter {
 
     private func setupWalletBalancePresenter() {
         interactor.nonCustodialAccount
-            .flatMap(weak: self) { (self, account) -> Single<BalancePresentationState> in
-                account
-                    .can(perform: .viewActivity)
-                    .map(weak: self) { (self, supported) in
-                        switch supported {
-                        case false:
-                            return .hidden
-                        case true:
-                            let presenter = self.balanceCellPresenter(account: account)
-                            return .visible(presenter, account)
-                        }
-                    }
+            .map(weak: self) { (self, account) -> BalancePresentationState in
+                let presenter = self.balanceCellPresenter(account: account)
+                return .visible(presenter, account)
             }
             .asObservable()
             .catchErrorJustReturn(.hidden)
@@ -285,6 +276,7 @@ final class AssetDetailsScreenPresenter {
             interactor: CurrentBalanceCellInteractor(account: account),
             descriptionValue: descriptionValue,
             currency: .crypto(currency),
+            viewAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.view)",
             titleAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.titleValue)",
             descriptionAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.descriptionValue)",
             pendingAccessibilitySuffix: "\(AccessibilityId.CurrentBalanceCell.pendingValue)",

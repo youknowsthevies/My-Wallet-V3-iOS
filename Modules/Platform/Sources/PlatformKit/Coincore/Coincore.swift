@@ -1,19 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import DIKit
 import RxSwift
 import ToolKit
 
-public enum CoincoreError: Error {
-    case failedToLoadAccounts(Error)
-    case failedToInitializeAsset(asset: Asset, error: AssetError)
-    case failedToGetTransactionTargets(
-        sourceAccount: BlockchainAccount,
-        action: AssetAction,
-        error: Error
-    )
+public enum CoincoreError: Error, Equatable {
+    case failedToInitializeAsset(error: AssetError)
 }
 
 /// Types adopting the `CoincoreAPI` should provide a way to retrieve fiat and crypto accounts
@@ -27,7 +20,7 @@ public protocol CoincoreAPI {
     var cryptoAssets: [CryptoAsset] { get }
 
     /// Initialize any assets prior being available
-    func initialize() -> AnyPublisher<Never, CoincoreError>
+    func initialize() -> AnyPublisher<Void, CoincoreError>
 
     /// Provides an array of `SingleAccount` instances for the specified source account and the given action.
     /// - Parameters:
@@ -68,57 +61,55 @@ final class Coincore: CoincoreAPI {
             .mapError()
     }
 
-    // MARK: - Private Properties
-
+    let fiatAsset: Asset
     var allAssets: [Asset] {
         [fiatAsset] + cryptoAssets
     }
 
-    let fiatAsset: Asset
-    let cryptoAssets: [CryptoAsset]
+    var cryptoAssets: [CryptoAsset] {
+        assetLoader.loadedAssets
+    }
 
+    // MARK: - Private Properties
+
+    private let assetLoader: AssetLoader
     private let reactiveWallet: ReactiveWalletAPI
 
     // MARK: - Setup
 
     init(
-        cryptoAssets: [CryptoAsset],
+        assetLoader: AssetLoader = AssetLoaderSwitcher(),
         fiatAsset: FiatAsset = FiatAsset(),
         reactiveWallet: ReactiveWalletAPI = resolve()
     ) {
-        self.cryptoAssets = cryptoAssets.sorted(by: { $0.asset < $1.asset })
+        self.assetLoader = assetLoader
         self.fiatAsset = fiatAsset
         self.reactiveWallet = reactiveWallet
     }
 
     /// Gives a chance for all assets to initialize themselves.
-    func initialize() -> AnyPublisher<Never, CoincoreError> {
-        var assetInitializers = cryptoAssets
-            .map { asset -> AnyPublisher<Void, CoincoreError> in
-                asset.initialize()
-                    .catch { assetError -> AnyPublisher<Void, CoincoreError> in
-                        .failure(.failedToInitializeAsset(asset: asset, error: assetError))
+    func initialize() -> AnyPublisher<Void, CoincoreError> {
+        assetLoader
+            .initAndPreload()
+            .mapError(to: CoincoreError.self)
+            .flatMap { [assetLoader] _ -> AnyPublisher<Void, CoincoreError> in
+                assetLoader.loadedAssets
+                    .map { asset -> AnyPublisher<Void, CoincoreError> in
+                        asset.initialize()
+                            .mapError { error in
+                                .failedToInitializeAsset(error: error)
+                            }
+                            .eraseToAnyPublisher()
                     }
+                    .zip()
+                    .mapToVoid()
                     .eraseToAnyPublisher()
             }
-        assetInitializers.append(
-            fiatAsset.initialize()
-                .catch { [fiatAsset] assetError -> AnyPublisher<Void, CoincoreError> in
-                    .failure(.failedToInitializeAsset(asset: fiatAsset, error: assetError))
-                }
-                .eraseToAnyPublisher()
-        )
-        return assetInitializers.zip()
-            .mapToVoid()
-            .ignoreOutput()
             .eraseToAnyPublisher()
     }
 
     subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
-        guard let asset = cryptoAssets.first(where: { $0.asset == cryptoCurrency }) else {
-            fatalError("Unknown crypto currency '\(cryptoCurrency.code)'.")
-        }
-        return asset
+        assetLoader[cryptoCurrency]
     }
 
     /// We are looking for targets of our action.
@@ -128,7 +119,9 @@ final class Coincore: CoincoreAPI {
         action: AssetAction
     ) -> AnyPublisher<[SingleAccount], CoincoreError> {
         switch action {
-        case .swap:
+        case .swap,
+             .interestTransfer,
+             .interestWithdraw:
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
             }
@@ -179,6 +172,13 @@ final class Coincore: CoincoreAPI {
         switch action {
         case .buy:
             unimplemented("WIP")
+        case .interestTransfer:
+            return true
+        case .interestWithdraw:
+            guard let cryptoAccount = destinationAccount as? CryptoAccount else {
+                return false
+            }
+            return sourceAccount.asset == cryptoAccount.asset
         case .sell:
             return destinationAccount is FiatAccount
         case .swap:

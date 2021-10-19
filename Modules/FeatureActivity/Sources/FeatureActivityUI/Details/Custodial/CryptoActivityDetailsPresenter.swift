@@ -6,8 +6,6 @@ import Localization
 import PlatformKit
 import PlatformUIKit
 import RxRelay
-import RxSwift
-import ToolKit
 
 final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
@@ -16,6 +14,7 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
     private typealias BadgeItem = BadgeAsset.Value.Interaction.BadgeItem
     private typealias BadgeType = BadgeItem.BadgeType
     private typealias LocalizedString = LocalizationConstants.Activity.Details
+    private typealias LocalizedLineItem = LocalizationConstants.LineItem.Transactional
     private typealias AccessibilityId = Accessibility.Identifier.Activity.Details
 
     // MARK: - DetailsScreenPresenterAPI
@@ -32,24 +31,23 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     let reloadRelay: PublishRelay<Void> = .init()
 
-    // MARK: - Private Properties
-
-    private let disposeBag: DisposeBag = .init()
-
     // MARK: Private Properties (LabelContentPresenting)
 
-    private let fiatAmountLabelPresenter: LabelContentPresenting
-
-    // MARK: Private Properties (LineItemCellPresenting)
-
-    private let dateCreatedPresenter: LineItemCellPresenting
-    private let orderIDPresenter: LineItemCellPresenting
-    private let toPresenter: LineItemCellPresenting
+    private let cryptoAmountLabelPresenter: LabelContentPresenting
 
     // MARK: Private Properties (Badge Model)
 
     private let badgesModel = MultiBadgeViewModel()
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
+
+    // MARK: Private Properties (LineItemCellPresenting)
+
+    private let orderIDPresenter: LineItemCellPresenting
+    private let dateCreatedPresenter: LineItemCellPresenting
+    private let totalPresenter: LineItemCellPresenting
+    private let networkFeePresenter: LineItemCellPresenting
+    private let toPresenter: LineItemCellPresenting
+    private let fromPresenter: LineItemCellPresenting
 
     // MARK: - Init
 
@@ -57,30 +55,22 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
         event: CustodialActivityEvent.Crypto,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        fiatAmountLabelPresenter = DefaultLabelContentPresenter(
-            knownValue: event.amount.toDisplayString(includeSymbol: true),
-            descriptors: .h1(accessibilityIdPrefix: "")
-        )
-        toPresenter = TransactionalLineItem.to(event.receivingAddress).defaultCopyablePresenter(
-            analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-        dateCreatedPresenter = TransactionalLineItem.date(DateFormatter.elegantDateFormatter.string(from: event.date))
-            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
-            analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-
         let title: String
-        let statusDescription: String
-        let badgeType: BadgeType
         switch event.type {
         case .deposit:
             title = LocalizedString.Title.receive
         case .withdrawal:
             title = LocalizedString.Title.send
         }
+        titleViewRelay.accept(.text(value: title))
+
+        cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
+            knownValue: event.amount.displayString,
+            descriptors: .h1(accessibilityIdPrefix: "")
+        )
+
+        let statusDescription: String
+        let badgeType: BadgeType
         switch event.state {
         case .completed:
             statusDescription = LocalizedString.completed
@@ -92,33 +82,101 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
             statusDescription = LocalizedString.failed
             badgeType = .destructive
         }
-
-        titleViewRelay.accept(.text(value: title))
-        let badgeItem: BadgeItem = .init(
-            type: badgeType,
-            description: statusDescription
-        )
-        statusBadge
-            .interactor
-            .stateRelay
-            .accept(
-                .loaded(
-                    next: badgeItem
+        badgesModel.badgesRelay.accept([statusBadge])
+        statusBadge.interactor.stateRelay.accept(
+            .loaded(
+                next: .init(
+                    type: badgeType,
+                    description: statusDescription
                 )
             )
-        badgesModel
-            .badgesRelay
-            .accept([statusBadge])
+        )
 
-        cells = [
-            .label(fiatAmountLabelPresenter),
-            .badges(badgesModel),
-            .separator,
-            .lineItem(orderIDPresenter),
-            .separator,
-            .lineItem(toPresenter),
-            .separator,
-            .lineItem(dateCreatedPresenter)
-        ]
+        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let date = DateFormatter.elegantDateFormatter.string(from: event.date)
+        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let total = event.amount.convertToFiatValue(exchangeRate: event.price).displayString
+        totalPresenter = TransactionalLineItem.total(total).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let fee = """
+        \(event.fee.displayString) / \(event.fee.convertToFiatValue(exchangeRate: event.price).displayString)
+        """
+        networkFeePresenter = TransactionalLineItem.networkFee(fee).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let destination: String
+        switch event.type {
+        case .deposit:
+            destination = "\(event.amount.code) \(LocalizedLineItem.tradingWallet)"
+        case .withdrawal:
+            destination = event.receivingAddress ?? "\(event.amount.code) \(LocalizedLineItem.wallet)"
+        }
+        switch event.receivingAddress {
+        case .none:
+            toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            )
+        case .some:
+            toPresenter = TransactionalLineItem.to(destination).defaultCopyablePresenter(
+                analyticsRecorder: analyticsRecorder,
+                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            )
+        }
+
+        let source: String
+        switch event.type {
+        case .deposit:
+            source = "\(event.amount.code) \(LocalizedLineItem.wallet)"
+        case .withdrawal:
+            source = "\(event.amount.code) \(LocalizedLineItem.tradingWallet)"
+        }
+        fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        switch event.type {
+        case .deposit:
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(orderIDPresenter),
+                .separator,
+                .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(totalPresenter),
+                .separator,
+                .lineItem(toPresenter),
+                .separator,
+                .lineItem(fromPresenter)
+            ]
+        case .withdrawal:
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(orderIDPresenter),
+                .separator,
+                .lineItem(dateCreatedPresenter),
+                .separator,
+                .lineItem(totalPresenter),
+                .separator,
+                .lineItem(networkFeePresenter),
+                .separator,
+                .lineItem(toPresenter),
+                .separator,
+                .lineItem(fromPresenter)
+            ]
+        }
     }
 }

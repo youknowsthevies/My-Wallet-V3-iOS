@@ -3,6 +3,7 @@
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
+import ToolKit
 
 extension DependencyContainer {
 
@@ -14,19 +15,17 @@ extension DependencyContainer {
         factory { APIClient() as TransactionClientAPI }
         factory { APIClient() as TransactionFeeClientAPI }
         factory { APIClient() as BalanceClientAPI }
+        factory { APIClient() as EthereumAccountClientAPI }
 
-        factory(tag: CoinAssetModel.ethereum.typeTag) { EthereumExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
+        factory(tag: CoinAssetModel.ethereum.typeTag) {
+            EthereumExternalAssetAddressFactory() as CryptoReceiveAddressFactory
+        }
 
         factory(tag: CryptoCurrency.coin(.ethereum)) { EthereumAsset() as CryptoAsset }
 
         single { EthereumAccountDetailsService() as EthereumAccountDetailsServiceAPI }
 
-        factory { EthereumWalletAccountRepository() }
-
-        factory { () -> EthereumWalletAccountRepositoryAPI in
-            let repository: EthereumWalletAccountRepository = DIKit.resolve()
-            return repository as EthereumWalletAccountRepositoryAPI
-        }
+        single { EthereumWalletAccountRepository() as EthereumWalletAccountRepositoryAPI }
 
         single { EthereumHistoricalTransactionService() as EthereumHistoricalTransactionServiceAPI }
 
@@ -40,6 +39,10 @@ extension DependencyContainer {
 
         factory { EthereumFeeService() as EthereumFeeServiceAPI }
 
+        factory { EthereumAccountService() as EthereumAccountServiceAPI }
+
+        factory { EthereumKeyPairProvider() }
+
         factory { AnyKeyPairProvider<EthereumKeyPair>.ethereum() }
 
         factory { EthereumTransactionBuilder() as EthereumTransactionBuilderAPI }
@@ -49,14 +52,26 @@ extension DependencyContainer {
         factory { EthereumTransactionEncoder() as EthereumTransactionEncoderAPI }
 
         factory { EthereumTransactionDispatcher() as EthereumTransactionDispatcherAPI }
+
+        single(tag: Tags.EthereumAccountService.isContractAddressCache) {
+            Atomic<[String: Bool]>([:])
+        }
+    }
+}
+
+extension DependencyContainer {
+    enum Tags {
+        enum EthereumAccountService {
+            static let isContractAddressCache = String(describing: Self.self)
+        }
     }
 }
 
 extension AnyKeyPairProvider where Pair == EthereumKeyPair {
 
     fileprivate static func ethereum(
-        ethereumWalletAccountRepository: EthereumWalletAccountRepository = resolve()
+        ethereumKeyPairProvider: EthereumKeyPairProvider = resolve()
     ) -> AnyKeyPairProvider<Pair> {
-        AnyKeyPairProvider<Pair>(provider: ethereumWalletAccountRepository)
+        AnyKeyPairProvider<Pair>(provider: ethereumKeyPairProvider)
     }
 }

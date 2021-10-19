@@ -8,6 +8,7 @@ import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import ToolKit
 
 final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
 
@@ -85,6 +86,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
             interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
             currency: interactor.currency,
+            viewAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.view)",
             titleAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.title)",
             descriptionAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.description)",
             pendingAccessibilitySuffix: "\(Accessibility.Identifier.CurrentBalanceCell.pending)",
@@ -141,6 +143,9 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
 extension AssetAction {
     fileprivate var walletAction: WalletAction {
         switch self {
+        case .interestTransfer,
+             .interestWithdraw:
+            unimplemented()
         case .viewActivity:
             return .activity
         case .buy:

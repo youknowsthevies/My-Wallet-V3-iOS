@@ -2,6 +2,7 @@
 
 import BitcoinKit
 import DIKit
+import FeatureAuthenticationDomain
 import FeatureSettingsDomain
 import JavaScriptCore
 import PlatformKit
@@ -14,7 +15,7 @@ import WalletPayloadKit
  Manager object for operations to the Blockchain Wallet.
  */
 @objc
-class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
+class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider, WalletManagerAPI {
 
     @Inject static var shared: WalletManager
 
@@ -145,6 +146,52 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
         }
         currencySymbols["code"] = fiatCode
         latestMultiAddressResponse?.symbol_local = CurrencySymbol(dict: currencySymbols)
+    }
+}
+
+extension WalletManager {
+    func loadWalletJS() {
+        wallet.loadJS()
+    }
+
+    func fetch(with password: String) {
+        wallet.fetch(with: password)
+    }
+
+    func walletIsInitialized() -> Bool {
+        wallet.isInitialized()
+    }
+
+    func walletNeedsSecondPassword() -> Bool {
+        wallet.needsSecondPassword()
+    }
+
+    func walletGetHistoryForAllAssets() {
+        wallet.getHistoryForAllAssets()
+    }
+
+    func newWallet(password: String, email: String) {
+        wallet.newAccount(password, email: email)
+    }
+
+    func load(with guid: String, sharedKey: String, password: String) {
+        wallet.load(withGuid: guid, sharedKey: sharedKey, password: password)
+    }
+
+    func markWalletAsNew() {
+        wallet.isNew = true
+    }
+
+    func recoverFromMetadata(seedPhrase: String) {
+        wallet.recoverFromMetadata(withMnemonicPassphrase: seedPhrase)
+    }
+
+    func recover(email: String, password: String, seedPhrase: String) {
+        wallet.recover(
+            withEmail: email,
+            password: password,
+            mnemonicPassphrase: seedPhrase
+        )
     }
 }
 

@@ -14,6 +14,7 @@ public enum TransactionalLineItem: Hashable {
     case value(_ content: String? = nil)
     case fee(_ content: String? = nil)
     case buyingFee(_ content: String? = nil)
+    case networkFee(_ content: String? = nil)
     case date(_ content: String? = nil)
     case estimatedAmount(_ content: String? = nil)
     case exchangeRate(_ content: String? = nil)
@@ -43,6 +44,8 @@ public enum TransactionalLineItem: Hashable {
             return AccessibilityID.fee
         case .buyingFee:
             return AccessibilityID.buyingFee
+        case .networkFee:
+            return AccessibilityID.networkFee
         case .date:
             return AccessibilityID.date
         case .estimatedAmount:
@@ -82,6 +85,7 @@ public enum TransactionalLineItem: Hashable {
         switch self {
         case .amount(let content),
              .buyingFee(let content),
+             .networkFee(let content),
              .date(let content),
              .estimatedAmount(let content),
              .exchangeRate(let content),
@@ -118,6 +122,8 @@ public enum TransactionalLineItem: Hashable {
             return LocalizedString.for
         case .buyingFee:
             return LocalizedString.buyingFee
+        case .networkFee:
+            return LocalizedString.networkFee
         case .date:
             return LocalizedString.date
         case .estimatedAmount:

@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "Tool",
-    platforms: [.iOS(.v14)],
+    platforms: [.iOS(.v14), .macOS(.v11)],
     products: [
         .library(
             name: "ToolKit",
@@ -22,9 +22,9 @@ let package = Package(
             .branch("safe-property-wrappers")
         ),
         .package(
-            name: "CombineExt",
-            url: "https://github.com/CombineCommunity/CombineExt.git",
-            from: "1.3.0"
+            name: "combine-schedulers",
+            url: "https://github.com/pointfreeco/combine-schedulers",
+            from: "0.5.2"
         ),
         .package(
             name: "RxCombine",
@@ -47,7 +47,6 @@ let package = Package(
         .target(
             name: "ToolKit",
             dependencies: [
-                .product(name: "CombineExt", package: "CombineExt"),
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxRelay", package: "RxSwift"),
@@ -67,6 +66,7 @@ let package = Package(
             dependencies: [
                 .target(name: "ToolKit"),
                 .target(name: "ToolKitMock"),
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")
             ]
         )

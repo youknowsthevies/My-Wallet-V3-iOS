@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Wallet Intro announcement is a periodic announcement that can also be entirely removed
-final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncement & ActionableAnnouncement {
+final class WalletIntroAnnouncement: PeriodicAnnouncement, RemovableAnnouncement, ActionableAnnouncement {
 
     // MARK: - Properties
 
@@ -52,7 +52,11 @@ final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncemen
             title: LocalizationConstants.AnnouncementCards.Welcome.title,
             description: LocalizationConstants.AnnouncementCards.Welcome.description,
             buttons: [ctaButton, skipButton],
-            dismissState: .undismissible,
+            dismissState: .dismissible { [weak self] in
+                guard let self = self else { return }
+                self.analyticsRecorder.record(event: self.dismissAnalyticsEvent)
+                self.dismiss()
+            },
             didAppear: { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: AnalyticsEvents.WalletIntro.walletIntroOffered)

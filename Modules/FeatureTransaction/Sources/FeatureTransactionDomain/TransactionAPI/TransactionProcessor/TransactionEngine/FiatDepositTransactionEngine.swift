@@ -66,7 +66,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
                     feeAmount: .zero(currency: self.sourceAsset),
                     feeForFullAvailable: .zero(currency: self.sourceAsset),
                     feeSelection: .init(selectedLevel: .none, availableLevels: []),
-                    selectedFiatCurrency: paymentLimits.min.currencyType,
+                    selectedFiatCurrency: paymentLimits.min.currency,
                     minimumLimit: paymentLimits.min.moneyValue,
                     maximumLimit: paymentLimits.max.transactional.moneyValue,
                     maximumDailyLimit: paymentLimits.max.daily.moneyValue,

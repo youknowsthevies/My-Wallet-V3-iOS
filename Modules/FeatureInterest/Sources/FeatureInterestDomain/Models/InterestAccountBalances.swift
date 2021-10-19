@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-public struct InterestAccountBalances {
+public struct InterestAccountBalances: Equatable {
 
     public static let empty = InterestAccountBalances()
 

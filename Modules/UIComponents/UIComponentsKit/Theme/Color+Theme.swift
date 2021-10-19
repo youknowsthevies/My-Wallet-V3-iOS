@@ -11,7 +11,11 @@ extension Color {
 
     // MARK: Backgrounds
 
+    public static let lightContentBackground = Color(paletteColor: .grey900)
     public static let viewPrimaryBackground = Color(paletteColor: .white)
+
+    public static let shimmeringLight = Color(paletteColor: .grey000)
+    public static let shimmeringDark = Color(paletteColor: .grey200)
 
     // MARK: PrimaryButton
 
@@ -23,6 +27,12 @@ extension Color {
     public static let buttonSecondaryBackground = Color(paletteColor: .white)
     public static let buttonSecondaryText = Color(paletteColor: .blue600)
 
+    // MARK: MinimalDoubleButton
+
+    public static let buttonMinimalDoubleBackground = Color(paletteColor: .white)
+    public static let buttonMinimalDoublePressedBackground = Color(paletteColor: .grey000)
+    public static let buttonMinimalDoubleText = Color(paletteColor: .blue600)
+
     // MARK: Links
 
     public static let buttonLinkText = Color(paletteColor: .blue600)
@@ -30,6 +40,7 @@ extension Color {
     // MARK: Divider
 
     public static let dividerLine = Color(paletteColor: .grey100)
+    public static let dividerLineLight = Color(paletteColor: .grey000)
 
     // MARK: Text
 
@@ -66,6 +77,7 @@ extension Color {
 
     // MARK: Other Elements
 
+    public static let backgroundFiat = Color(paletteColor: .green500)
     public static let positiveTrend = Color(paletteColor: .green600)
     public static let negativeTrend = Color(paletteColor: .red600)
     public static let neutralTrend = Color(paletteColor: .grey600)

@@ -4,6 +4,8 @@ import Foundation
 
 final class AccessibilityIdentifiers: NSObject {
 
+    // MARK: - Email Login
+
     enum WelcomeScreen {
         static let prefix = "WelcomeScreen."
 
@@ -66,6 +68,8 @@ final class AccessibilityIdentifiers: NSObject {
         static let hardwareKeyGroup = "\(prefix)hardwareKeyGroup"
     }
 
+    // MARK: - Account Recovery
+
     enum SeedPhraseScreen {
         static let prefix = "SeedPhraseScreen."
 
@@ -74,6 +78,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let invalidPhraseErrorText = "\(prefix)invalidPhraseErrorText"
         static let resetAccountPromptText = "\(prefix)resetAccountPromptText"
         static let resetAccountButton = "\(prefix)resetAccountButton"
+        static let contactSupportButton = "\(prefix)contactSupportButton"
         static let logInButton = "\(prefix)logInButton"
     }
 
@@ -95,6 +100,16 @@ final class AccessibilityIdentifiers: NSObject {
         static let lostFundsWarningMessageText = "\(prefix)lostFundsWarningMessageText"
         static let resetAccountButton = "\(prefix)resetAccountButton"
         static let goBackButton = "\(prefix)goBackButton"
+    }
+
+    enum ResetAccountFailureScreen {
+        static let prefix = "ResetAccountFailureScreen."
+
+        static let resetAccountFailureImage = "\(prefix)resetAccountFailureImage"
+        static let resetAccountFailureTitleText = "\(prefix)resetAccountFailureTitleText"
+        static let resetAccountFailureMessageText = "\(prefix)resetAccountFailureMessageText"
+        static let resetAccountFailureCallOutGroup = "\(prefix)resetAccountFailureCallOutGroup"
+        static let contactSupportButton = "\(prefix)contactSupportButton"
     }
 
     enum ResetPasswordScreen {
@@ -130,5 +145,38 @@ final class AccessibilityIdentifiers: NSObject {
         static let passwordStrengthIndicatorGroup = "\(prefix)passwordStrengthIndicatorGroup"
         static let confirmPasswordGroup = "\(prefix)confirmPasswordGroup"
         static let createAccountButton = "\(prefix)createAccountButton"
+    }
+
+    enum TradingAccountWarningScreen {
+        static let prefix = "TradingAccountWarningScreen."
+
+        static let image = "\(prefix)image"
+        static let title = "\(prefix)title"
+        static let message = "\(prefix)message"
+        static let walletIdMessagePrefix = "\(prefix)walletIdMessagePrefix"
+        static let logoutButton = "\(prefix)logoutButton"
+        static let cancel = "\(prefix)cancelButton"
+    }
+
+    // MARK: - Upgrade Account (Unified sign in)
+
+    enum SkipUpgradeScreen {
+        static let prefix = "SkipUpgradeScreen."
+
+        static let skipUpgradeImage = "\(prefix)skipUpgradeImage"
+        static let skipUpgradeTitleText = "\(prefix)skipUpgradeTitleText"
+        static let skipUpgradeMessageText = "\(prefix)skipUpgradeMessageText"
+        static let skipUpgradeButton = "\(prefix)skipUpgradeButton"
+        static let upgradeAccountButton = "\(prefix)upgradeAccountButton"
+    }
+
+    enum UpgradeAccountScreen {
+        static let prefix = "UpgradeAccountScreen."
+
+        static let heading = "\(prefix)heading"
+        static let subheading = "\(prefix)subheading"
+        static let messageList = "\(prefix)messageList"
+        static let upgradeButton = "\(prefix)upgradeButton"
+        static let skipButton = "\(prefix)skipButton"
     }
 }

@@ -40,7 +40,7 @@ final class AmountTranslationPriceProvider: AmountTranslationPriceProviding {
             .compactMap { $0 }
             .map { sourceToFiatPair -> MoneyValuePair in
                 let amount = amount.isEmpty ? "0" : amount
-                return try MoneyValuePair(
+                return MoneyValuePair(
                     base: CryptoValue.create(majorDisplay: amount, currency: cryptoCurrency)!.moneyValue,
                     exchangeRate: sourceToFiatPair.quote
                 )

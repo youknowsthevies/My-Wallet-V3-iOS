@@ -15,7 +15,7 @@ public final class CardOrderCheckoutInteractor {
 
         var localizedDescription: String {
             switch self {
-            case .orderStateMismatch(is3DSConfirmedCardOrder: let is3DSConfirmedCardOrder, isPending3DSCardOrder: let isPending3DSCardOrder):
+            case .orderStateMismatch(let is3DSConfirmedCardOrder, let isPending3DSCardOrder):
                 // swiftlint:disable line_length
                 return "Order state mismatch - got is3DSConfirmedCardOrder: \(is3DSConfirmedCardOrder), isPending3DSCardOrder: \(isPending3DSCardOrder)"
             case .missingFee:
@@ -61,7 +61,7 @@ public final class CardOrderCheckoutInteractor {
         return orderQuoteService
             .getQuote(
                 for: .buy,
-                cryptoCurrency: crypto.currencyType,
+                cryptoCurrency: crypto.currency,
                 fiatValue: fiat
             )
             .flatMap(weak: self) { (self, quote) in
@@ -71,7 +71,7 @@ public final class CardOrderCheckoutInteractor {
                         let interactionData = CheckoutInteractionData(
                             time: quote.time,
                             fee: checkoutData.order.fee ?? MoneyValue(fiatValue: quote.fee),
-                            amount: MoneyValue(cryptoValue: quote.estimatedAmount),
+                            amount: MoneyValue(cryptoValue: quote.estimatedCryptoAmount),
                             exchangeRate: MoneyValue(fiatValue: quote.rate),
                             card: card,
                             bankTransferData: nil,

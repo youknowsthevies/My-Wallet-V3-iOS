@@ -62,8 +62,11 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
         self.priceService = priceService
         self.bridge = bridge
         self.feeService = feeService
-        feeCache = CachedValue<BitcoinChainTransactionFee<Token>>(
-            configuration: .periodic(90)
+        feeCache = CachedValue(
+            configuration: .periodic(
+                seconds: 90,
+                schedulerIdentifier: "BitcoinOnChainTransactionEngine"
+            )
         )
         feeCache.setFetch(weak: self) { (self) in
             self.feeService.fees
@@ -97,12 +100,12 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                 .init(
                     amount: .zero(currency: Token.coin.cryptoCurrency),
                     available: .zero(currency: Token.coin.cryptoCurrency),
-                    feeAmount: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
-                    feeForFullAvailable: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
+                    feeAmount: .zero(currency: Token.coin.cryptoCurrency),
+                    feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
                     feeSelection: .init(
                         selectedLevel: .regular,
                         availableLevels: [.regular, .priority],
-                        asset: Token.coin.cryptoCurrency.currency
+                        asset: Token.coin.cryptoCurrency.currencyType
                     ),
                     selectedFiatCurrency: fiatCurrency
                 )
@@ -180,9 +183,9 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                         default:
                             candidate = .init(
                                 proposal: proposal,
-                                fees: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
-                                sweepAmount: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
-                                sweepFee: MoneyValue.zero(currency: Token.coin.cryptoCurrency)
+                                fees: .zero(currency: Token.coin.cryptoCurrency),
+                                sweepAmount: .zero(currency: Token.coin.cryptoCurrency),
+                                sweepFee: .zero(currency: Token.coin.cryptoCurrency)
                             )
                         }
                         return .just(candidate)

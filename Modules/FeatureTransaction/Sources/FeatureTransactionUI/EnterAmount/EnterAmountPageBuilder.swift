@@ -71,13 +71,15 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
-                inputTypeToggleVisiblity: .visible
+                inputTypeToggleVisibility: .visible
             )
 
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
 
         case .deposit,
-             .withdraw:
+             .withdraw,
+             .interestWithdraw,
+             .interestTransfer:
             amountViewInteracting = SingleAmountInteractor(
                 currencyService: fiatCurrencyService,
                 inputCurrency: sourceAccount.currencyType
@@ -95,7 +97,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             }
             amountViewInteracting = AmountTranslationInteractor(
                 fiatCurrencyService: fiatCurrencyService,
-                cryptoCurrencyService: DefaultCryptoCurrencyService(currencyType: cryptoAccount.currencyType),
+                cryptoCurrencyService: EnterAmountCryptoCurrencyProvider(transactionModel: transactionModel),
                 priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),
                 defaultCryptoCurrency: cryptoAccount.asset,
                 initialActiveInput: .fiat
@@ -105,7 +107,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
-                inputTypeToggleVisiblity: .visible
+                inputTypeToggleVisibility: .visible
             )
 
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
@@ -114,7 +116,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         }
 
         let digitPadViewModel = provideDigitPadViewModel()
-        let continueButtonViewModel = ButtonViewModel.primary(with: LocalizationConstants.Transaction.next)
+        let continueButtonTitle = String(format: LocalizationConstants.Transaction.preview, action.name)
+        let continueButtonViewModel = ButtonViewModel.primary(with: continueButtonTitle)
 
         let viewController = EnterAmountViewController(
             displayBundle: displayBundle,

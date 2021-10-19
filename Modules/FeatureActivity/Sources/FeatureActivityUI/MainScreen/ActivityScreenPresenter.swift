@@ -111,9 +111,15 @@ final class ActivityScreenPresenter {
 
         selectionButtonViewModel = SelectionButtonViewModel()
         selectionButtonViewModel.shouldShowSeparatorRelay.accept(true)
-        selectionButtonViewModel.accessibilityContentRelay.accept(.init(id: AccessibilityId.WalletSelectorView.button, label: ""))
-        selectionButtonViewModel.titleAccessibilityRelay.accept(.id(AccessibilityId.WalletSelectorView.titleLabel))
-        selectionButtonViewModel.subtitleAccessibilityRelay.accept(.id(AccessibilityId.WalletSelectorView.subtitleLabel))
+        selectionButtonViewModel.accessibilityContentRelay.accept(
+            .init(id: AccessibilityId.WalletSelectorView.button, label: "")
+        )
+        selectionButtonViewModel.titleAccessibilityRelay.accept(
+            .id(AccessibilityId.WalletSelectorView.titleLabel)
+        )
+        selectionButtonViewModel.subtitleAccessibilityRelay.accept(
+            .id(AccessibilityId.WalletSelectorView.subtitleLabel)
+        )
 
         selectionButtonViewModel.tap
             .emit(onNext: { [unowned router] in
@@ -201,7 +207,7 @@ extension SelectionButtonViewModel.LeadingContent {
         case is AccountGroup:
             return .image(
                 .init(
-                    image: .local(name: "icon-card", bundle: .platformUIKit),
+                    image: .local(name: "icon-wallet", bundle: .platformUIKit),
                     background: .lightBadgeBackground,
                     cornerRadius: .round,
                     size: .edge(32)

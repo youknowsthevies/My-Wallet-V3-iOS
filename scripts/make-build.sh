@@ -102,7 +102,7 @@ git add TodayExtension/Info.plist
 git checkout .
 
 printf "Committing production version bump: ${git_tag_prod}...\n"
-git commit -m "version bump: ${git_tag_prod}" > /dev/null 2>&1
+git commit -S -m "version bump: ${git_tag_prod}" > /dev/null 2>&1
 
 printf "Creating and pushing production tag...\n"
 git tag -s $git_tag_prod -m "Release ${project_version_number}" > /dev/null 2>&1

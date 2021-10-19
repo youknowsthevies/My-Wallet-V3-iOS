@@ -1,62 +1,29 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-import ToolKit
 
-public enum MoneyValueError: Error {
-    case invalidInput
-    case invalidFiatAmount
-    case invalidCryptoAmount
-}
+/// A money value.
+public struct MoneyValue: Money, Hashable {
 
-public struct MoneyValue: Money, Hashable, Equatable {
+    // MARK: - Private Types
 
-    private enum Value: Hashable, Equatable {
+    /// A wrapped money implementing value.
+    private enum Value: Hashable {
+
         case fiat(FiatValue)
+
         case crypto(CryptoValue)
-
-        init(major amount: String, fiat fiatCurrency: FiatCurrency) throws {
-            guard let fiatValue = FiatValue.create(major: amount, currency: fiatCurrency) else {
-                throw MoneyValueError.invalidCryptoAmount
-            }
-            self = .fiat(fiatValue)
-        }
-
-        init(major amount: String, crypto cryptoCurrency: CryptoCurrency) throws {
-            guard let cryptoValue = CryptoValue.create(major: amount, currency: cryptoCurrency) else {
-                throw MoneyValueError.invalidCryptoAmount
-            }
-            self = .crypto(cryptoValue)
-        }
-
-        init(minor amount: String, fiat fiatCurrency: FiatCurrency) throws {
-            guard let fiatValue = FiatValue.create(minor: amount, currency: fiatCurrency) else {
-                throw MoneyValueError.invalidFiatAmount
-            }
-            self = .fiat(fiatValue)
-        }
-
-        init(minor amount: String, crypto cryptoCurrency: CryptoCurrency) throws {
-            guard let cryptoValue = CryptoValue.create(minor: amount, currency: cryptoCurrency) else {
-                throw MoneyValueError.invalidCryptoAmount
-            }
-            self = .crypto(cryptoValue)
-        }
     }
 
     // MARK: - Public properties
 
-    public var isCrypto: Bool {
+    public var currency: CurrencyType {
         switch _value {
-        case .crypto:
-            return true
-        case .fiat:
-            return false
+        case .crypto(let cryptoValue):
+            return cryptoValue.currencyType
+        case .fiat(let fiatValue):
+            return fiatValue.currencyType
         }
-    }
-
-    public var isFiat: Bool {
-        !isCrypto
     }
 
     public var amount: BigInt {
@@ -68,6 +35,27 @@ public struct MoneyValue: Money, Hashable, Equatable {
         }
     }
 
+    /// Whether the money value is a crypto value.
+    public var isCrypto: Bool {
+        switch _value {
+        case .crypto:
+            return true
+        case .fiat:
+            return false
+        }
+    }
+
+    /// Whether the money value is a fiat value.
+    public var isFiat: Bool {
+        switch _value {
+        case .crypto:
+            return false
+        case .fiat:
+            return true
+        }
+    }
+
+    /// The fiat value, or `nil` if not a fiat value.
     public var fiatValue: FiatValue? {
         switch _value {
         case .crypto:
@@ -77,6 +65,7 @@ public struct MoneyValue: Money, Hashable, Equatable {
         }
     }
 
+    /// The crypto value, or `nil` if not a crypto value.
     public var cryptoValue: CryptoValue? {
         switch _value {
         case .crypto(let cryptoValue):
@@ -86,51 +75,31 @@ public struct MoneyValue: Money, Hashable, Equatable {
         }
     }
 
-    public var currencyType: CurrencyType {
-        switch _value {
-        case .crypto(let cryptoValue):
-            return cryptoValue.currency
-        case .fiat(let fiatValue):
-            return fiatValue.currency
-        }
-    }
-
-    public var value: MoneyValue {
-        self
-    }
-
     // MARK: - Private properties
 
     private let _value: Value
 
     // MARK: - Setup
 
+    /// Creates a money value.
+    ///
+    /// - Parameter cryptoValue: A crypto value.
     public init(cryptoValue: CryptoValue) {
         _value = .crypto(cryptoValue)
     }
 
+    /// Creates a money value.
+    ///
+    /// - Parameter fiatValue: A fiat value.
     public init(fiatValue: FiatValue) {
         _value = .fiat(fiatValue)
     }
 
-    fileprivate init(major amount: String, currency: CurrencyType) throws {
-        switch currency {
-        case .crypto(let cryptoCurrency):
-            _value = try Value(major: amount, crypto: cryptoCurrency)
-        case .fiat(let fiatCurrency):
-            _value = try Value(major: amount, fiat: fiatCurrency)
-        }
-    }
-
-    fileprivate init(minor amount: String, currency: CurrencyType) throws {
-        switch currency {
-        case .crypto(let cryptoCurrency):
-            _value = try Value(minor: amount, crypto: cryptoCurrency)
-        case .fiat(let fiatCurrency):
-            _value = try Value(minor: amount, fiat: fiatCurrency)
-        }
-    }
-
+    /// Creates a money value.
+    ///
+    /// - Parameters:
+    ///   - amount:   An amount in minor units.
+    ///   - currency: A currency.
     public init(amount: BigInt, currency: CurrencyType) {
         switch currency {
         case .crypto(let cryptoCurrency):
@@ -140,8 +109,27 @@ public struct MoneyValue: Money, Hashable, Equatable {
         }
     }
 
+    /// Creates a money value.
+    ///
+    /// - Parameters:
+    ///   - amount:   An amount in major units.
+    ///   - currency: A currency.
+    private init(major amount: Decimal, currency: CurrencyType) {
+        switch currency {
+        case .crypto(let cryptoCurrency):
+            _value = .crypto(CryptoValue.create(major: amount, currency: cryptoCurrency))
+        case .fiat(let fiatCurrency):
+            _value = .fiat(FiatValue.create(major: amount, currency: fiatCurrency))
+        }
+    }
+
     // MARK: - Public methods
 
+    /// Creates a displayable string, representing the currency amount in major units, in the given locale, optionally including the currency symbol.
+    ///
+    /// - Parameters:
+    ///   - includeSymbol: Whether the symbol should be included.
+    ///   - locale:        A locale.
     public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
         switch _value {
         case .crypto(let cryptoValue):
@@ -151,89 +139,108 @@ public struct MoneyValue: Money, Hashable, Equatable {
         }
     }
 
+    /// Returns the value before a percentage increase/decrease (e.g. for a value of 15, and a `percentChange` of 0.5 i.e. 50%, this returns 10).
+    ///
+    /// - Parameter percentageChange: A percentage of change.
     public func value(before percentageChange: Double) -> MoneyValue {
         switch _value {
-        case .fiat(let value):
-            return MoneyValue(fiatValue: value.value(before: percentageChange))
-        case .crypto(let value):
-            return MoneyValue(cryptoValue: value.value(before: percentageChange))
+        case .crypto(let cryptoValue):
+            return MoneyValue(cryptoValue: cryptoValue.value(before: percentageChange))
+        case .fiat(let fiatValue):
+            return MoneyValue(fiatValue: fiatValue.value(before: percentageChange))
         }
     }
 
     // MARK: - Public factory methods
 
+    /// Creates a zero valued money value (e.g. `0 USD`, `0 BTC`, etc.).
+    ///
+    /// - Parameter currency: A crypto currency.
     public static func zero(currency: CryptoCurrency) -> MoneyValue {
-        MoneyValue(cryptoValue: CryptoValue.zero(currency: currency))
+        MoneyValue(cryptoValue: .zero(currency: currency))
     }
 
+    /// Creates a zero valued money value (e.g. `0 USD`, `0 BTC`, etc.).
+    ///
+    /// - Parameter currency: A fiat currency.
     public static func zero(currency: FiatCurrency) -> MoneyValue {
-        MoneyValue(fiatValue: FiatValue.zero(currency: currency))
+        MoneyValue(fiatValue: .zero(currency: currency))
     }
 
+    /// Creates a one (major unit) valued money value (e.g. `1 USD`, `1 BTC`, etc.).
+    ///
+    /// - Parameter currency: A crypto currency.
     public static func one(currency: CryptoCurrency) -> MoneyValue {
-        let one = BigInt.one.toMinor(maxDecimalPlaces: currency.maxDecimalPlaces)
-        return MoneyValue(cryptoValue: CryptoValue.create(minor: one, currency: currency))
+        MoneyValue(cryptoValue: .one(currency: currency))
     }
 
+    /// Creates a one (major unit) valued money value (e.g. `1 USD`, `1 BTC`, etc.).
+    ///
+    /// - Parameter currency: A fiat currency.
     public static func one(currency: FiatCurrency) -> MoneyValue {
-        let one = BigInt.one.toMinor(maxDecimalPlaces: currency.maxDecimalPlaces)
-        return MoneyValue(fiatValue: FiatValue.create(minor: one, currency: currency))
+        MoneyValue(fiatValue: .one(currency: currency))
     }
 
-    /// Use this method when you want to convert a `MoneyValue` in `A` currency into `B` currency and your exchange rate is in `B` currency.
-    /// - Parameter exchangeRate:The `MoneyValue` representing one major unit of `Self.CurrencyType` in destination's `CurrencyType`.
-    /// - Returns: `MoneyValue` of this instance value converted into the given `exchangeRate.currencyType`.
-    public func convert(using exchangeRate: MoneyValue) throws -> MoneyValue {
-        let exchangeRateAmount = exchangeRate.displayMajorValue
-        let majorDecimal = displayMajorValue * exchangeRateAmount
-        let major = "\(majorDecimal)"
-        return try MoneyValue(major: major, currency: exchangeRate.currencyType)
-    }
+    // MARK: - Public Methods
 
-    /// Use this method when you want to convert a `MoneyValue` in `A` currency into `B` currency and your exchange rate is in `A` currency.
-    /// - Parameter exchangeRate: The `MoneyValue` representing one major unit of the destination `CurrencyType` in `Self.CurrencyType`.
-    /// - Parameter currencyType: The destination `CurrencyType`.
-    /// - Returns: `MoneyValue` of this instance value converted into the given `CurrencyType`, using the inverse of the given exchange rate.
-    public func convert(usingInverse exchangeRate: MoneyValue, currencyType: CurrencyType) throws -> MoneyValue {
-        guard !isZero else {
-            return MoneyValue.zero(currency: currencyType)
+    /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate from `A` to `B`.
+    ///
+    /// - Parameter exchangeRate: An exchange rate, representing one major unit of currency `A` in currency `B`.
+    public func convert(using exchangeRate: MoneyValue) -> MoneyValue {
+        guard currency != exchangeRate.currency else {
+            // Converting to the same currency.
+            return self
         }
-        guard !exchangeRate.isZero else {
-            return MoneyValue.zero(currency: currencyType)
+        guard !isZero, !exchangeRate.isZero else {
+            return .zero(currency: exchangeRate.currency)
         }
-        let exchangeRateAmount = exchangeRate.displayMajorValue
-        let majorDecimal = displayMajorValue / exchangeRateAmount
-        let major = "\(majorDecimal)"
-        return try MoneyValue(major: major, currency: currencyType)
-    }
-}
-
-extension MoneyValue {
-
-    public enum MoneyValueConversionError: Error {
-        case mismatchingCurrencies(MoneyValue, MoneyValue)
+        let conversionAmount = displayMajorValue * exchangeRate.displayMajorValue
+        return MoneyValue(major: conversionAmount, currency: exchangeRate.currency)
     }
 
+    /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate from `B` to `A`.
+    ///
+    /// - Parameters:
+    ///   - exchangeRate: An exchange rate, representing one major unit of currency `B` in currency `A`.
+    ///   - currencyType: The destination currency `B`.
+    public func convert(usingInverse exchangeRate: MoneyValue, currencyType: CurrencyType) -> MoneyValue {
+        guard !isZero, !exchangeRate.isZero else {
+            return .zero(currency: currencyType)
+        }
+        let conversionAmount = displayMajorValue / exchangeRate.displayMajorValue
+        return MoneyValue(major: conversionAmount, currency: currencyType)
+    }
+
+    /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate pair from `A` to `B`.
+    ///
+    /// - Parameter exchangeRate: An exchange rate, representing a money value pair with the base in currency `A`, and the quote in currency `B`.
+    ///
+    /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the current currency and the `exchangeRate`'s base currency do not match.
     public func convert(using exchangeRate: MoneyValuePair) throws -> MoneyValue {
         guard currency != exchangeRate.quote.currency else {
+            // Converting to the same currency.
             return self
         }
         guard currency == exchangeRate.base.currency else {
-            throw MoneyValueConversionError.mismatchingCurrencies(self, exchangeRate.base)
+            throw MoneyOperatingError.mismatchingCurrencies(currency, exchangeRate.base.currency)
         }
-        return try convert(using: exchangeRate.quote)
+        return convert(using: exchangeRate.quote)
     }
 }
 
 extension MoneyValue: MoneyOperating {}
 
 extension CryptoValue {
+
+    /// Creates a money value from the current `CryptoValue`.
     public var moneyValue: MoneyValue {
         MoneyValue(cryptoValue: self)
     }
 }
 
 extension FiatValue {
+
+    /// Creates a money value from the current `FiatValue`.
     public var moneyValue: MoneyValue {
         MoneyValue(fiatValue: self)
     }

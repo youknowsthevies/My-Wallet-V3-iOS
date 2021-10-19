@@ -18,9 +18,9 @@ class MockWallet: Wallet {
         mockNeedsSecondPassword
     }
 
-    var guid: String = ""
-    var sharedKey: String?
-    private var password: String?
+    let guid = String(repeating: "a", count: 36)
+    let sharedKey = String(repeating: "b", count: 36)
+    private var password: String = "a-password"
 
     /// When called, invokes the delegate's walletDidDecrypt and walletDidFinishLoad methods
     override func load(withGuid guid: String, sharedKey: String?, password: String?) {
@@ -39,5 +39,17 @@ class MockWallet: Wallet {
 
     override func getHistoryForAllAssets() {
         getHistoryForAllAssetsCalled = true
+    }
+
+    override func newAccount(_ password: String!, email: String!) {
+        delegate?.didCreateNewAccount?(guid, sharedKey: sharedKey, password: password)
+    }
+
+    override func recoverFromMetadata(withMnemonicPassphrase mnemonicPassphrase: String) {
+        delegate?.didRecoverWallet?()
+    }
+
+    override func recover(withEmail email: String, password recoveryPassword: String, mnemonicPassphrase: String) {
+        delegate?.didRecoverWallet?()
     }
 }

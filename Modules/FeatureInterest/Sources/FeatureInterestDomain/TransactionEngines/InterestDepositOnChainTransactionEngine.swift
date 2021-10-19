@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import CombineExt
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
@@ -71,11 +70,16 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
         self.sourceAccount = sourceAccount
         self.transactionTarget = transactionTarget
         self.askForRefreshConfirmation = askForRefreshConfirmation
+        onChainEngine.start(
+            sourceAccount: sourceAccount,
+            transactionTarget: transactionTarget,
+            askForRefreshConfirmation: askForRefreshConfirmation
+        )
     }
 
     public func assertInputsValid() {
-        precondition(transactionTarget is NonCustodialAccount)
-        precondition(sourceAccount is InterestAccount)
+        precondition(transactionTarget is CryptoReceiveAddress)
+        precondition(sourceAccount is CryptoNonCustodialAccount)
     }
 
     public func initializeTransaction()
@@ -104,9 +108,20 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
     public func doBuildConfirmations(
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        // TODO: Handle Terms and Conditions Confirmation
-        onChainEngine
+        let termsChecked = getTermsOptionValueFromPendingTransaction(pendingTransaction)
+        let agreementChecked = getTransferAgreementOptionValueFromPendingTransaction(pendingTransaction)
+        return onChainEngine
             .doBuildConfirmations(pendingTransaction: pendingTransaction)
+            .map { [weak self] pendingTransaction in
+                guard let self = self else {
+                    unexpectedDeallocation()
+                }
+                return self.modifyEngineConfirmations(
+                    pendingTransaction,
+                    termsChecked: termsChecked,
+                    agreementChecked: agreementChecked
+                )
+            }
     }
 
     public func update(
@@ -175,8 +190,9 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
         _ pendingTransaction: PendingTransaction
     ) -> Completable {
         Completable.fromCallable {
-            // TODO: Check that the user has opted into the options
-            // (e.g. privacy policy and terms)
+            guard pendingTransaction.agreementOptionValue, pendingTransaction.termsOptionValue else {
+                throw TransactionValidationFailure(state: .optionInvalid)
+            }
             guard pendingTransaction.validationState == .canExecute else {
                 throw TransactionValidationFailure(state: .unknownError)
             }

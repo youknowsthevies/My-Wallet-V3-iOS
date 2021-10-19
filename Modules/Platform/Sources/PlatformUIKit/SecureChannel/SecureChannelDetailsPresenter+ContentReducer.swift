@@ -43,15 +43,16 @@ extension SecureChannelDetailsPresenter {
                 title = LocalizedString.New.title
                 subtitle = LocalizedString.New.subtitle
             }
+            let image = ImageViewContent(
+                imageResource: .local(name: "icon-laptop", bundle: .platformUIKit),
+                accessibility: .none,
+                renderingMode: .normal
+            )
             let model = AccountPickerHeaderModel(
-                title: title,
+                imageContent: image,
                 subtitle: subtitle,
-                imageContent: .init(
-                    imageResource: .local(name: "icon-laptop", bundle: .platformUIKit),
-                    accessibility: .none,
-                    renderingMode: .normal
-                ),
-                tableTitle: nil
+                tableTitle: nil,
+                title: title
             )
             headers = [
                 0: AccountPickerHeaderBuilder(headerType: .default(model))

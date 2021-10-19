@@ -9,6 +9,10 @@ import Foundation
 extension LocalizationConstants {
     public enum Interest {
         public enum Screen {
+            public enum Overview {
+                public enum Action {}
+            }
+
             public enum IdentityVerification {}
             public enum Announcement {}
             public enum AccountDetails {}
@@ -19,8 +23,8 @@ extension LocalizationConstants {
 // MARK: - Screen.Announcement
 
 extension LocalizationConstants.Interest.Screen.Announcement {
-    public static let title = NSLocalizedString("Earn Interest on Your Crypto", comment: "Earn Interest on Your Crypto")
-    public static let description = NSLocalizedString("Start earning. Add BTC to your Interest Account.", comment: "Start earning. Add BTC to your Interest Account.")
+    public static let title = NSLocalizedString("Earn Rewards on Your Crypto", comment: "Earn Rewards on Your Crypto")
+    public static let description = NSLocalizedString("Start earning. Add BTC to your Rewards Account.", comment: "Start earning. Add BTC to your Rewards Account.")
     public enum Cells {
         public enum LineItem {
             public enum Rate {
@@ -28,7 +32,7 @@ extension LocalizationConstants.Interest.Screen.Announcement {
             }
 
             public enum Interest {
-                public static let title = NSLocalizedString("Interest Paid", comment: "Interest Paid")
+                public static let title = NSLocalizedString("Rewards Paid", comment: "Rewards Paid")
                 public static let description = NSLocalizedString("1st of Every Month", comment: "1st of Every Month")
             }
 
@@ -38,7 +42,7 @@ extension LocalizationConstants.Interest.Screen.Announcement {
         }
 
         public enum Footer {
-            public static let title = NSLocalizedString("Please manage your BTC Interest Account on the web at blockchain.com", comment: "Please manage your BTC Interest Account on the web at blockchain.com")
+            public static let title = NSLocalizedString("Please manage your BTC Rewards Account on the web at blockchain.com", comment: "Please manage your BTC Rewards Account on the web at blockchain.com")
         }
 
         public enum Button {
@@ -50,7 +54,7 @@ extension LocalizationConstants.Interest.Screen.Announcement {
 // MARK: - Screen.IdentityVerification
 
 extension LocalizationConstants.Interest.Screen.IdentityVerification {
-    public static let title = NSLocalizedString("Earn Interest on Your Crypto", comment: "Earn Interest on Your Crypto")
+    public static let title = NSLocalizedString("Earn Rewards on Your Crypto", comment: "Earn Rewards on Your Crypto")
     public static let description = NSLocalizedString("Verify your identity and earn up to 9.0% annually.", comment: "Verify your identity and earn up to 9.0% annually.")
     public static let action = NSLocalizedString("Verify My Identity", comment: "Verify My Identity")
     public static let notNow = NSLocalizedString("Not Now", comment: "Not Now")
@@ -64,10 +68,10 @@ extension LocalizationConstants.Interest.Screen.IdentityVerification {
         }
 
         public enum Second {
-            public static let title = NSLocalizedString("Add BTC to Your Interest Account", comment: "Add BTC to Your Interest Account")
+            public static let title = NSLocalizedString("Add BTC to Your Rewards Account", comment: "Add BTC to Your Rewards Account")
             public static let description = NSLocalizedString(
-                "Send Bitcoin to your new Interest Account. Deposit and withdraw at any time.",
-                comment: "Send Bitcoin to your new Interest Account. Deposit and withdraw at any time."
+                "Send Bitcoin to your new Rewards Account. Deposit and withdraw at any time.",
+                comment: "Send Bitcoin to your new Rewards Account. Deposit and withdraw at any time."
             )
         }
 
@@ -81,28 +85,73 @@ extension LocalizationConstants.Interest.Screen.IdentityVerification {
     }
 }
 
+// MARK: - Screen.Overview
+
+extension LocalizationConstants.Interest.Screen.Overview {
+    public static let title = NSLocalizedString(
+        "Interest Accounts",
+        comment: "Interest Accounts"
+    )
+    public static let earnUpTo = NSLocalizedString(
+        "Earn up to %@ annually on your %@",
+        comment: "Earn up to %@ annually on your %@"
+    )
+    public static let totalEarned = NSLocalizedString(
+        "Total Interest Earned",
+        comment: "Total Interest Earned"
+    )
+    public static let balance = NSLocalizedString("Balance", comment: "Balance")
+    public static let annually = NSLocalizedString("annually", comment: "annually")
+}
+
+// MARK: - Screen.Overview.Actions
+
+extension LocalizationConstants.Interest.Screen.Overview.Action {
+    public static let view = NSLocalizedString("View", comment: "View")
+    public static let earnInterest = NSLocalizedString(
+        "Earn Interest",
+        comment: "Earn Interest"
+    )
+    public static let notAvailable = NSLocalizedString(
+        "Not available in your region",
+        comment: "Not available in your region"
+    )
+    public static let tierTooLow = NSLocalizedString(
+        "You need to be Gold verified to start Earning Interest",
+        comment: "You need to be Gold verified to start Earning Interest"
+    )
+    public static let unavailable = NSLocalizedString(
+        "Currently unavailable, please check again later",
+        comment: "Currently unavailable, please check again later"
+    )
+}
+
 // MARK: - Screen.AccountDetails
 
 extension LocalizationConstants.Interest.Screen.AccountDetails {
     public static let annually = NSLocalizedString("Annually", comment: "Annually")
+    public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
+    public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+    public static let rewardsSummary = NSLocalizedString("Rewards Summary", comment: "Rewards Summary")
+    public static let rewardsAccount = NSLocalizedString("Rewards Account", comment: "Rewards Account")
     public enum Cell {
         public enum Balance {
-            public static let title = NSLocalizedString("Interest Account", comment: "Interest Account")
+            public static let title = NSLocalizedString("Rewards Account", comment: "Rewards Account")
         }
 
         public enum Default {
             public enum Total {
-                public static let title = NSLocalizedString("Total Interest Earned", comment: "Total Interest Earned")
+                public static let title = NSLocalizedString("Total Rewards Earned", comment: "Total Rewards Earned")
             }
 
             public enum Next {
-                public static let title = NSLocalizedString("Next Interest Payment", comment: "Next Interest Payment")
+                public static let title = NSLocalizedString("Next Rewards Payment", comment: "Next Rewards Payment")
             }
 
             public enum Accrued {
                 public static let title = NSLocalizedString(
-                    "Accrued Interest This Month",
-                    comment: "Accrued Interest This Month"
+                    "Accrued Rewards This Month",
+                    comment: "Accrued Rewards This Month"
                 )
             }
 
@@ -115,16 +164,16 @@ extension LocalizationConstants.Interest.Screen.AccountDetails {
 
             public enum Rate {
                 public static let title = NSLocalizedString(
-                    "Interest Rate",
-                    comment: "Interest Rate"
+                    "Rewards Rate",
+                    comment: "Rewards Rate"
                 )
             }
         }
 
         public enum Footer {
             public static let title = NSLocalizedString(
-                "Manage your %@ Interest Account on the web at blockchain.com",
-                comment: "Manage your %@ Interest Account on the web at blockchain.com"
+                "Manage your %@ Rewards Account on the web at blockchain.com",
+                comment: "Manage your %@ Rewards Account on the web at blockchain.com"
             )
         }
     }

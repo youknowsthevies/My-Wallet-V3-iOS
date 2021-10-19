@@ -2,7 +2,6 @@
 
 import Combine
 import DIKit
-import RxSwift
 import ToolKit
 
 public protocol ExchangeAccountsProviderAPI {
@@ -18,8 +17,11 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
 
     private let statusService: ExchangeAccountStatusServiceAPI
     private let client: ExchangeAccountsProviderClientAPI
-    private let disposeBag = DisposeBag()
-    private let storage: Atomic<[CryptoCurrency: CryptoExchangeAccount]> = .init([:])
+    private let cachedValue: CachedValueNew<
+        CryptoCurrency,
+        CryptoExchangeAddressResponse,
+        ExchangeAccountsNetworkError
+    >
 
     // MARK: - Init
 
@@ -29,19 +31,28 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
     ) {
         self.statusService = statusService
         self.client = client
-
-        NotificationCenter.when(.login) { [weak self] _ in
-            guard let self = self else { return }
-            self.storage.mutate { cache in
-                cache.removeAll()
+        let cache: AnyCache<CryptoCurrency, CryptoExchangeAddressResponse> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PerpetualCacheRefreshControl()
+        ).eraseToAnyCache()
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { [statusService, client] key in
+                statusService
+                    .hasLinkedExchangeAccount
+                    .replaceError(with: ExchangeAccountsNetworkError.unavailable)
+                    .flatMap { hasLinkedExchangeAccount
+                        -> AnyPublisher<CryptoExchangeAddressResponse, ExchangeAccountsNetworkError> in
+                        guard hasLinkedExchangeAccount else {
+                            return .failure(ExchangeAccountsNetworkError.missingAccount)
+                        }
+                        return client.exchangeAddress(with: key)
+                            .replaceError(with: ExchangeAccountsNetworkError.missingAccount)
+                            .eraseToAnyPublisher()
+                    }
+                    .eraseToAnyPublisher()
             }
-        }
-        NotificationCenter.when(.logout) { [weak self] _ in
-            guard let self = self else { return }
-            self.storage.mutate { cache in
-                cache.removeAll()
-            }
-        }
+        )
     }
 
     // MARK: - ExchangeAccountsProviderAPI
@@ -49,35 +60,11 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
     func account(
         for currency: CryptoCurrency
     ) -> AnyPublisher<CryptoExchangeAccount, ExchangeAccountsNetworkError> {
-        guard let account = storage.value[currency] else {
-            Logger.shared.debug("Cache Miss: \(currency.code)")
-            return fetchAccount(for: currency)
+        guard currency.supports(product: .mercuryDeposits) else {
+            return .failure(ExchangeAccountsNetworkError.unavailable)
         }
-        Logger.shared.debug("Cache Hit: \(currency.code)")
-        return .just(account)
-    }
-
-    // MARK: - Private methods
-
-    private func fetchAccount(
-        for currency: CryptoCurrency
-    ) -> AnyPublisher<CryptoExchangeAccount, ExchangeAccountsNetworkError> {
-        statusService.hasLinkedExchangeAccount
-            .replaceError(with: ExchangeAccountsNetworkError.missingAccount)
-            .flatMap { [client, storage] hasLinkedExchangeAccount
-                -> AnyPublisher<CryptoExchangeAccount, ExchangeAccountsNetworkError> in
-                guard hasLinkedExchangeAccount else {
-                    return .failure(.missingAccount)
-                }
-                return client.exchangeAddress(with: currency)
-                    .map(CryptoExchangeAccount.from)
-                    .handleEvents(receiveOutput: { account in
-                        storage.mutate { cache in
-                            cache[currency] = account
-                        }
-                    })
-                    .replaceError(with: ExchangeAccountsNetworkError.missingAccount)
-            }
+        return cachedValue.get(key: currency)
+            .map(CryptoExchangeAccount.from)
             .eraseToAnyPublisher()
     }
 }

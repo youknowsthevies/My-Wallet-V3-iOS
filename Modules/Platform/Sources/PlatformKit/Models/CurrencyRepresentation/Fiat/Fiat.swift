@@ -1,53 +1,38 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BigInt
-import ToolKit
-
+/// A fiat money.
 public protocol Fiat: Money {
 
-    /// The `FiatCurrency` (e.g. `USD`, `GBP`)
-    var currencyType: FiatCurrency { get }
-
-    /// The current fiat currency value represented as a `FiatValue`
-    var value: FiatValue { get }
+    /// The fiat currency.
+    var currency: FiatCurrency { get }
 }
 
 extension Fiat {
-
-    public static func zero(currencyCode: String) -> FiatValue? {
-        guard let currency = FiatCurrency(code: currencyCode) else {
-            return nil
-        }
-        return FiatValue.zero(currency: currency)
-    }
 
     public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
         toDisplayString(includeSymbol: includeSymbol, format: .fullLength, locale: locale)
     }
 
-    public func toDisplayString(
-        includeSymbol: Bool,
-        format: NumberFormatter.CurrencyFormat,
-        locale: Locale
-    ) -> String {
-        /// Determine how many fraction digits should be formatted from a `FiatValue`.
-        /// If the rhs of the decimal point is different than zero -> display two digits,
-        /// otherwise, display without the fractional part
+    /// Creates a displayable string, representing the currency amount in major units, in the given locale, using the given format, optionally including the currency symbol.
+    ///
+    /// - Parameters:
+    ///   - includeSymbol: Whether the symbol should be included.
+    ///   - format                    A format.
+    ///   - locale:        A locale.
+    public func toDisplayString(includeSymbol: Bool, format: NumberFormatter.CurrencyFormat, locale: Locale) -> String {
         let maxFractionDigits: Int
         switch format {
         case .fullLength:
-            maxFractionDigits = currency.maxDecimalPlaces
-        case .shortened where abs(displayMajorValue - displayMajorValue.roundTo(places: 0)) > 0:
-            maxFractionDigits = currency.maxDecimalPlaces
+            maxFractionDigits = currency.precision
+        case .shortened where displayMajorValue.exponent < 0:
+            // Has a fractional part only when the exponent is negative.
+            maxFractionDigits = currency.precision
         case .shortened:
             maxFractionDigits = 0
         }
 
-        let formatter = FiatFormatterProvider.shared.formatter(
-            locale: locale,
-            fiatValue: value,
-            maxFractionDigits: maxFractionDigits
-        )
-        return formatter.format(amount: displayMajorValue, includeSymbol: includeSymbol)
+        return FiatFormatterProvider.shared
+            .formatter(locale: locale, fiatCurrency: currency, maxFractionDigits: maxFractionDigits)
+            .format(major: displayMajorValue, includeSymbol: includeSymbol)
     }
 }

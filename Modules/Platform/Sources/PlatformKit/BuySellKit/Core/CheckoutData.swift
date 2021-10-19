@@ -51,9 +51,9 @@ public struct CandidateOrderDetails {
             paymentMethod: paymentMethod,
             action: .buy,
             fiatValue: fiatValue,
-            fiatCurrency: fiatValue.currencyType,
+            fiatCurrency: fiatValue.currency,
             cryptoValue: cryptoValue,
-            cryptoCurrency: cryptoValue.currencyType,
+            cryptoCurrency: cryptoValue.currency,
             paymentMethodId: paymentMethodId
         )
     }
@@ -71,7 +71,7 @@ public struct CandidateOrderDetails {
             fiatValue: fiatValue,
             fiatCurrency: destinationFiatCurrency,
             cryptoValue: cryptoValue,
-            cryptoCurrency: cryptoValue.currencyType,
+            cryptoCurrency: cryptoValue.currency,
             paymentMethodId: paymentMethodId
         )
     }
@@ -103,11 +103,11 @@ public struct CheckoutData {
     }
 
     public var outputCurrency: CurrencyType {
-        order.outputValue.currencyType
+        order.outputValue.currency
     }
 
     public var inputCurrency: CurrencyType {
-        order.inputValue.currencyType
+        order.inputValue.currency
     }
 
     public var fiatValue: FiatValue? {
@@ -152,13 +152,13 @@ public struct CheckoutData {
     }
 
     public func checkoutData(byAppending cardData: CardData) -> CheckoutData {
-        var order = self.order
+        var order = order
         order.paymentMethodId = cardData.identifier
         return CheckoutData(order: order)
     }
 
     public func checkoutData(byAppending bankAccount: LinkedBankData) -> CheckoutData {
-        var order = self.order
+        var order = order
         order.paymentMethodId = bankAccount.identifier
         return CheckoutData(order: order, linkedBankData: bankAccount)
     }

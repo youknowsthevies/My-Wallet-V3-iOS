@@ -24,14 +24,14 @@ public enum AssetBalanceViewModel {
             /// The wallet's balance in fiat
             let fiatValue: MoneyValue
             /// The wallet's balance in crypto
-            let cryptoValue: MoneyValue
+            let cryptoValue: MoneyValue?
             /// The wallet's pending balance in crypto
-            let pendingValue: MoneyValue
+            let pendingValue: MoneyValue?
 
             init(
                 fiatValue: MoneyValue,
-                cryptoValue: MoneyValue,
-                pendingValue: MoneyValue
+                cryptoValue: MoneyValue?,
+                pendingValue: MoneyValue?
             ) {
                 self.fiatValue = fiatValue
                 self.cryptoValue = cryptoValue
@@ -48,17 +48,17 @@ public enum AssetBalanceViewModel {
             // MARK: - Properties
 
             /// The balance in fiat
-            let fiatBalance: LabelContent
+            public let fiatBalance: LabelContent
 
             /// The balance in crypto
-            let cryptoBalance: LabelContent
+            public let cryptoBalance: LabelContent
 
             /// The visibility state of the `Pending` balance
             let pendingBalanceVisibility: Visibility
 
             /// The pending balance in crypto. This value is `.none`
             /// should the user's pending balance be `.zero`
-            let pendingBalance: LabelContent
+            public let pendingBalance: LabelContent
 
             /// Descriptors that allows customized content and style
             public struct Descriptors {
@@ -106,28 +106,34 @@ public enum AssetBalanceViewModel {
                     font: descriptors.fiatFont,
                     color: descriptors.fiatTextColor,
                     alignment: textAlignment,
-                    accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
+                    accessibility: descriptors.fiatAccessibility.with(idSuffix: value.fiatValue.code)
                 )
 
-                if value.cryptoValue == value.fiatValue {
-                    cryptoBalance = .empty
-                } else {
+                if let cryptoValue = value.cryptoValue {
                     cryptoBalance = LabelContent(
-                        text: value.cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
+                        text: cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
                         font: descriptors.cryptoFont,
                         color: descriptors.cryptoTextColor,
                         alignment: textAlignment,
-                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
+                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: cryptoValue.code)
                     )
+                } else {
+                    cryptoBalance = .empty
                 }
-                pendingBalanceVisibility = value.pendingValue.isZero ? .hidden : .visible
-                pendingBalance = LabelContent(
-                    text: value.pendingValue.toDisplayString(includeSymbol: true, locale: .current),
-                    font: descriptors.cryptoFont,
-                    color: descriptors.pendingTextColor,
-                    alignment: textAlignment,
-                    accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
-                )
+
+                if let pendingValue = value.pendingValue {
+                    pendingBalanceVisibility = .visible
+                    pendingBalance = LabelContent(
+                        text: pendingValue.toDisplayString(includeSymbol: true, locale: .current),
+                        font: descriptors.cryptoFont,
+                        color: descriptors.pendingTextColor,
+                        alignment: textAlignment,
+                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: pendingValue.code)
+                    )
+                } else {
+                    pendingBalanceVisibility = .hidden
+                    pendingBalance = .empty
+                }
             }
         }
     }

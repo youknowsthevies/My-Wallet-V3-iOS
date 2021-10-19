@@ -103,7 +103,7 @@ struct OrderQuoteResponse: Decodable {
         sampleDepositAddress = try values.decode(String.self, forKey: .sampleDepositAddress)
         let networkFeeValue = try values.decode(String.self, forKey: .networkFee)
         let staticFeeValue = try values.decode(String.self, forKey: .staticFee)
-        let zeroDestination = MoneyValue.zero(currency: pair.destinationCurrencyType)
+        let zeroDestination: MoneyValue = .zero(currency: pair.destinationCurrencyType)
         networkFee = MoneyValue.create(minor: networkFeeValue, currency: pair.destinationCurrencyType) ?? zeroDestination
         staticFee = MoneyValue.create(minor: staticFeeValue, currency: pair.destinationCurrencyType) ?? zeroDestination
         quote = try values.decode(OrderQuoteResponse.OrderQuote.self, forKey: .quote)

@@ -48,7 +48,7 @@ public struct TransactionalActivityItemEvent {
     public let transactionHash: String
 
     public var currency: CryptoCurrency {
-        amount.currencyType
+        amount.currency
     }
 
     public init(

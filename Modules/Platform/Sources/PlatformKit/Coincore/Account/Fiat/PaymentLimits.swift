@@ -3,7 +3,7 @@
 public struct PaymentLimits {
 
     public var fiatCurrency: FiatCurrency {
-        min.currency.fiatCurrency!
+        min.currency
     }
 
     public struct Max {

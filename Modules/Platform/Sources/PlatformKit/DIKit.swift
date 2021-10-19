@@ -27,23 +27,15 @@ extension DependencyContainer {
 
         factory { GeneralInformationClient() as GeneralInformationClientAPI }
 
-        factory { PriceClient() as PriceClientAPI }
-
         factory { UpdateWalletInformationClient() as UpdateWalletInformationClientAPI }
 
-        factory { JWTClient() as JWTClientAPI }
-
         factory { KYCClient() as KYCClientAPI }
-
-        factory { NabuUserCreationClient() as NabuUserCreationClientAPI }
-
-        factory { NabuSessionTokenClient() as NabuSessionTokenClientAPI }
-
-        factory { NabuResetUserClient() as NabuResetUserClientAPI }
 
         factory { SupportedAssetsRemoteService() as SupportedAssetsRemoteServiceAPI }
 
         factory { SupportedAssetsClient() as SupportedAssetsClientAPI }
+
+        factory { SendEmailNotificationClient() as SendEmailNotificationClientAPI }
 
         // MARK: Exchange
 
@@ -63,6 +55,18 @@ extension DependencyContainer {
 
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
 
+        single { NabuAuthenticationErrorBroadcaster() }
+
+        factory { () -> NabuAuthenticationErrorReceiverAPI in
+            let broadcaster: NabuAuthenticationErrorBroadcaster = DIKit.resolve()
+            return broadcaster as NabuAuthenticationErrorReceiverAPI
+        }
+
+        factory { () -> UserAlreadyRestoredHandlerAPI in
+            let broadcaster: NabuAuthenticationErrorBroadcaster = DIKit.resolve()
+            return broadcaster as UserAlreadyRestoredHandlerAPI
+        }
+
         // swiftlint:disable opening_brace
         factory { () -> NabuAuthenticationExecutorProvider in
             { () -> NabuAuthenticationExecutorAPI in
@@ -72,8 +76,6 @@ extension DependencyContainer {
         // swiftlint:enable opening_brace
 
         factory { NabuAuthenticator() as AuthenticatorAPI }
-
-        factory { JWTService() as JWTServiceAPI }
 
         // MARK: - Wallet
 
@@ -123,7 +125,7 @@ extension DependencyContainer {
 
         single { EmailVerificationService() as EmailVerificationServiceAPI }
 
-        factory { SwapActivityService() as SwapActivityServiceAPI }
+        single { SwapActivityService() as SwapActivityServiceAPI }
 
         single { ExchangeAccountsProvider() as ExchangeAccountsProviderAPI }
 
@@ -131,39 +133,7 @@ extension DependencyContainer {
 
         factory { LinkedBanksFactory() as LinkedBanksFactoryAPI }
 
-        single { () -> CoincoreAPI in
-            let provider: EnabledCurrenciesServiceAPI = DIKit.resolve()
-            let allEnabledCryptoCurrencies = provider.allEnabledCryptoCurrencies
-            let nonCustodialCoinCodes = NonCustodialCoinCode.allCases.map(\.rawValue)
-
-            let nonCustodialAssets = allEnabledCryptoCurrencies
-                .filter(\.isCoin)
-                .filter { nonCustodialCoinCodes.contains($0.code) }
-                .map { cryptoCurrency -> CryptoAsset in
-                    let asset: CryptoAsset = DIKit.resolve(tag: cryptoCurrency)
-                    return asset
-                }
-            let custodialAssets = allEnabledCryptoCurrencies
-                .filter(\.isCoin)
-                .filter { !nonCustodialCoinCodes.contains($0.code) }
-                .map { cryptoCurrency -> CryptoAsset in
-                    CustodialCryptoAsset(asset: cryptoCurrency)
-                }
-            let erc20Factory: ERC20AssetFactoryAPI = DIKit.resolve()
-            let erc20Assets = allEnabledCryptoCurrencies
-                .filter(\.isERC20)
-                .compactMap { cryptoCurrency -> ERC20AssetModel? in
-                    guard case .erc20(let model) = cryptoCurrency else {
-                        return nil
-                    }
-                    return model
-                }
-                .compactMap { erc20Factory.erc20Asset(erc20AssetModel: $0) }
-
-            return Coincore(
-                cryptoAssets: nonCustodialAssets + custodialAssets + erc20Assets
-            )
-        }
+        single { Coincore() as CoincoreAPI }
 
         factory { SupportedAssetsFilePathProvider() as SupportedAssetsFilePathProviderAPI }
 
@@ -171,9 +141,9 @@ extension DependencyContainer {
 
         single { SupportedAssetsRepository() as SupportedAssetsRepositoryAPI }
 
-        single { FiatPriceService() as FiatPriceServiceAPI }
-
         single { ReactiveWallet() as ReactiveWalletAPI }
+
+        factory { BlockchainAccountProvider() as BlockchainAccountRepositoryAPI }
 
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }
 
@@ -196,9 +166,15 @@ extension DependencyContainer {
 
         factory { PriceService() as PriceServiceAPI }
 
+        factory { () -> CurrencyConversionServiceAPI in
+            CurrencyConversionService(priceService: DIKit.resolve())
+        }
+
         factory { CryptoReceiveAddressFactoryService() }
 
         factory { BlockchainAccountFetcher() as BlockchainAccountFetching }
+
+        factory { SendEmailNotificationService() as SendEmailNotificationServiceAPI }
 
         // MARK: - Settings
 

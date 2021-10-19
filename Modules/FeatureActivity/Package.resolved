@@ -1,0 +1,241 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "BigInt",
+        "repositoryURL": "https://github.com/attaswift/BigInt.git",
+        "state": {
+          "branch": null,
+          "revision": "0ed110f7555c34ff468e72e1686e59721f2b0da6",
+          "version": "5.3.0"
+        }
+      },
+      {
+        "package": "Charts",
+        "repositoryURL": "https://github.com/danielgindi/Charts.git",
+        "state": {
+          "branch": null,
+          "revision": "66546404a6739173b8e436ab6bc1f2897cd08594",
+          "version": "3.6.0"
+        }
+      },
+      {
+        "package": "combine-schedulers",
+        "repositoryURL": "https://github.com/pointfreeco/combine-schedulers",
+        "state": {
+          "branch": null,
+          "revision": "4cf088c29a20f52be0f2ca54992b492c54e0076b",
+          "version": "0.5.3"
+        }
+      },
+      {
+        "package": "CryptoSwift",
+        "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
+        "state": {
+          "branch": null,
+          "revision": "8d4f6384e0a8cc41f2005247241dd553963a492a",
+          "version": "1.4.1"
+        }
+      },
+      {
+        "package": "DIKit",
+        "repositoryURL": "https://github.com/jackpooleybc/DIKit.git",
+        "state": {
+          "branch": "safe-property-wrappers",
+          "revision": "1d20369ab59d123b4d0bf85dffbe045f4f405ec1",
+          "version": null
+        }
+      },
+      {
+        "package": "Gifu",
+        "repositoryURL": "https://github.com/kaishin/Gifu",
+        "state": {
+          "branch": null,
+          "revision": "51f2eab32903e336f590c013267cfa4d7f8b06c4",
+          "version": "3.3.1"
+        }
+      },
+      {
+        "package": "Nuke",
+        "repositoryURL": "https://github.com/kean/Nuke.git",
+        "state": {
+          "branch": null,
+          "revision": "0db18dd34998cca18e9a28bcee136f84518007a0",
+          "version": "10.4.1"
+        }
+      },
+      {
+        "package": "NukeUI",
+        "repositoryURL": "https://github.com/kean/NukeUI.git",
+        "state": {
+          "branch": null,
+          "revision": "0130ce2c1d140a426ced903a9abd68b4b8bf9790",
+          "version": "0.6.8"
+        }
+      },
+      {
+        "package": "PhoneNumberKit",
+        "repositoryURL": "https://github.com/marmelroy/PhoneNumberKit.git",
+        "state": {
+          "branch": null,
+          "revision": "1ef0431b971f69c48ca5eb4cdba07f2c5da54c35",
+          "version": "3.3.3"
+        }
+      },
+      {
+        "package": "RIBs",
+        "repositoryURL": "https://github.com/paulo-bc/RIBs.git",
+        "state": {
+          "branch": null,
+          "revision": "6cad1e953d9b60ab177a963dd63715806ed0d192",
+          "version": "0.10.2"
+        }
+      },
+      {
+        "package": "RxCombine",
+        "repositoryURL": "https://github.com/paulo-bc/RxCombine.git",
+        "state": {
+          "branch": null,
+          "revision": "0762454fba26dcf315aaa7ac5ed5fbdecd50fef2",
+          "version": "1.6.2"
+        }
+      },
+      {
+        "package": "RxDataSources",
+        "repositoryURL": "https://github.com/RxSwiftCommunity/RxDataSources.git",
+        "state": {
+          "branch": null,
+          "revision": "a18cee01c9ee55f04d0c7eb15c77a96c3648c88e",
+          "version": "4.0.1"
+        }
+      },
+      {
+        "package": "RxSwift",
+        "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
+        "state": {
+          "branch": null,
+          "revision": "cec68169a048a079f461ba203fe85636548d7a89",
+          "version": "5.1.3"
+        }
+      },
+      {
+        "package": "stellarsdk",
+        "repositoryURL": "https://github.com/Soneso/stellar-ios-mac-sdk.git",
+        "state": {
+          "branch": null,
+          "revision": "c2f7a48391555fcac70b55dd728051ba50b059dd",
+          "version": "2.0.2"
+        }
+      },
+      {
+        "package": "swift-algorithms",
+        "repositoryURL": "https://github.com/apple/swift-algorithms.git",
+        "state": {
+          "branch": null,
+          "revision": "2327673b0e9c7e90e6b1826376526ec3627210e4",
+          "version": "0.2.1"
+        }
+      },
+      {
+        "package": "swift-case-paths",
+        "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
+        "state": {
+          "branch": null,
+          "revision": "d226d167bd4a68b51e352af5655c92bce8ee0463",
+          "version": "0.7.0"
+        }
+      },
+      {
+        "package": "swift-collections",
+        "repositoryURL": "https://github.com/apple/swift-collections",
+        "state": {
+          "branch": null,
+          "revision": "2d33a0ea89c961dcb2b3da2157963d9c0370347e",
+          "version": "1.0.1"
+        }
+      },
+      {
+        "package": "swift-composable-architecture",
+        "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
+        "state": {
+          "branch": null,
+          "revision": "599a2398adaaa7a4e3f5420cde7728c39e33677e",
+          "version": "0.28.1"
+        }
+      },
+      {
+        "package": "swift-custom-dump",
+        "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
+        "state": {
+          "branch": null,
+          "revision": "c2dd2c64b753dda592f5619303e02f741cd3e862",
+          "version": "0.2.0"
+        }
+      },
+      {
+        "package": "swift-identified-collections",
+        "repositoryURL": "https://github.com/pointfreeco/swift-identified-collections",
+        "state": {
+          "branch": null,
+          "revision": "c8e6a40209650ab619853cd4ce89a0aa51792754",
+          "version": "0.3.0"
+        }
+      },
+      {
+        "package": "swift-numerics",
+        "repositoryURL": "https://github.com/apple/swift-numerics",
+        "state": {
+          "branch": null,
+          "revision": "6583ac70c326c3ee080c1d42d9ca3361dca816cd",
+          "version": "0.1.0"
+        }
+      },
+      {
+        "package": "SnapshotTesting",
+        "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing",
+        "state": {
+          "branch": null,
+          "revision": "f8a9c997c3c1dab4e216a8ec9014e23144cbab37",
+          "version": "1.9.0"
+        }
+      },
+      {
+        "package": "Veriff",
+        "repositoryURL": "https://github.com/Veriff/veriff-ios-spm.git",
+        "state": {
+          "branch": null,
+          "revision": "c5b656b1d1fbc25ff448162539db20a824c9e42f",
+          "version": "4.3.1"
+        }
+      },
+      {
+        "package": "WalletCore",
+        "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
+        "state": {
+          "branch": null,
+          "revision": "3d42f6995032828a3e1a0a372fb9873cdd357f03",
+          "version": null
+        }
+      },
+      {
+        "package": "xctest-dynamic-overlay",
+        "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
+        "state": {
+          "branch": null,
+          "revision": "50a70a9d3583fe228ce672e8923010c8df2deddd",
+          "version": "0.2.1"
+        }
+      },
+      {
+        "package": "Zxcvbn",
+        "repositoryURL": "https://github.com/oliveratkinson-bc/zxcvbn-ios.git",
+        "state": {
+          "branch": "swift-package-manager",
+          "revision": "c0db9d5278bbc07b28937278406cc042e4bebf68",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

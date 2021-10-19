@@ -34,21 +34,22 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Private Properties
 
-    private let disposeBag: DisposeBag = .init()
+    private let disposeBag = DisposeBag()
 
     // MARK: Private Properties (LabelContentPresenting)
 
     private let fiatAmountLabelPresenter: LabelContentPresenting
 
-    // MARK: Private Properties (LineItemCellPresenting)
-
-    private let dateCreatedPresenter: LineItemCellPresenting
-    private let orderIDPresenter: LineItemCellPresenting
-
     // MARK: Private Properties (Badge Model)
 
     private let badgesModel = MultiBadgeViewModel()
     private let statusBadge: DefaultBadgeAssetPresenter = .init()
+
+    // MARK: Private Properties (LineItemCellPresenting)
+
+    private let orderIDPresenter: LineItemCellPresenting
+    private let dateCreatedPresenter: LineItemCellPresenting
+    private let toPresenter: LineItemCellPresenting
 
     // MARK: - Init
 
@@ -56,26 +57,22 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
         event: CustodialActivityEvent.Fiat,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        fiatAmountLabelPresenter = DefaultLabelContentPresenter(
-            knownValue: event.amount.toDisplayString(includeSymbol: true),
-            descriptors: .h1(accessibilityIdPrefix: "")
-        )
-        dateCreatedPresenter = TransactionalLineItem.date(DateFormatter.elegantDateFormatter.string(from: event.date))
-            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
-        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
-            analyticsRecorder: analyticsRecorder,
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
-
         let title: String
-        let statusDescription: String
-        let badgeType: BadgeType
         switch event.type {
         case .deposit:
             title = LocalizedString.Title.deposit
         case .withdrawal:
             title = LocalizedString.Title.withdraw
         }
+        titleViewRelay.accept(.text(value: title))
+
+        fiatAmountLabelPresenter = DefaultLabelContentPresenter(
+            knownValue: event.amount.displayString,
+            descriptors: .h1(accessibilityIdPrefix: "")
+        )
+
+        let statusDescription: String
+        let badgeType: BadgeType
         switch event.state {
         case .completed:
             statusDescription = LocalizedString.completed
@@ -87,23 +84,36 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
             statusDescription = LocalizedString.failed
             badgeType = .destructive
         }
-
-        titleViewRelay.accept(.text(value: title))
-        let badgeItem: BadgeItem = .init(
-            type: badgeType,
-            description: statusDescription
-        )
-        statusBadge
-            .interactor
-            .stateRelay
-            .accept(
-                .loaded(
-                    next: badgeItem
+        badgesModel.badgesRelay.accept([statusBadge])
+        statusBadge.interactor.stateRelay.accept(
+            .loaded(
+                next: .init(
+                    type: badgeType,
+                    description: statusDescription
                 )
             )
-        badgesModel
-            .badgesRelay
-            .accept([statusBadge])
+        )
+
+        orderIDPresenter = TransactionalLineItem.orderId(event.identifier).defaultCopyablePresenter(
+            analyticsRecorder: analyticsRecorder,
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let date = DateFormatter.elegantDateFormatter.string(from: event.date)
+        dateCreatedPresenter = TransactionalLineItem.date(date).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+
+        let destination: String
+        switch event.type {
+        case .deposit:
+            destination = event.amount.currency.defaultWalletName
+        case .withdrawal:
+            destination = ""
+        }
+        toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
 
         cells = [
             .label(fiatAmountLabelPresenter),
@@ -111,7 +121,9 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .separator,
             .lineItem(orderIDPresenter),
             .separator,
-            .lineItem(dateCreatedPresenter)
+            .lineItem(dateCreatedPresenter),
+            .separator,
+            .lineItem(toPresenter)
         ]
     }
 }

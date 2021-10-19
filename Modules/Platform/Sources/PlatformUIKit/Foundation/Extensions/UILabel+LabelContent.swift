@@ -24,6 +24,7 @@ extension UILabel {
             attributedText = attrString
             textAlignment = newValue.alignment
             accessibility = newValue.accessibility.copy(label: newValue.text)
+            sizeToFit()
         }
     }
 }

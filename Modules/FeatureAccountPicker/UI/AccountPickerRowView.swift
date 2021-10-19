@@ -2,12 +2,37 @@
 
 import ComposableArchitecture
 import FeatureAccountPickerDomain
+import Localization
 import SwiftUI
 import UIComponentsKit
 
 struct AccountPickerRowView: View {
 
+    // MARK: - Internal properties
+
     let store: Store<AccountPickerRow, AccountPickerRowAction>
+    let badgeView: (AnyHashable) -> AnyView
+    let iconView: (AnyHashable) -> AnyView
+    let multiBadgeView: (AnyHashable) -> (AnyView)
+
+    // MARK: - Init
+
+    static func with(
+        badgeView: @escaping (AnyHashable) -> AnyView,
+        iconView: @escaping (AnyHashable) -> AnyView,
+        multiBadgeView: @escaping (AnyHashable) -> (AnyView)
+    ) -> (Store<AccountPickerRow, AccountPickerRowAction>) -> Self {
+        { store in
+            Self(
+                store: store,
+                badgeView: badgeView,
+                iconView: iconView,
+                multiBadgeView: multiBadgeView
+            )
+        }
+    }
+
+    // MARK: - Body
 
     var body: some View {
         WithViewStore(store) { viewStore in
@@ -15,171 +40,302 @@ struct AccountPickerRowView: View {
                 Rectangle()
                     .foregroundColor(.viewPrimaryBackground)
                     .contentShape(Rectangle())
-                switch viewStore.kind {
+                switch viewStore.state {
+                case .label(let model):
+                    Text(model.text)
                 case .accountGroup(let model):
-                    AccountGroupRow(model: model)
+                    AccountGroupRow(
+                        model: model,
+                        badgeView: badgeView(model.id)
+                    )
+                    .onAppear {
+                        viewStore.send(.accountGroup(action: .subscribeToUpdates))
+                    }
                 case .button(let model):
-                    ButtonRow(model: model)
+                    ButtonRow(model: model) {
+                        viewStore.send(.accountPickerRowDidTap)
+                    }
                 case .linkedBankAccount(let model):
-                    LinkedBankAccountRow(model: model)
+                    LinkedBankAccountRow(
+                        model: model,
+                        badgeView: badgeView(model.id),
+                        multiBadgeView: multiBadgeView(model.id)
+                    )
+                case .paymentMethodAccount(let model):
+                    PaymentMethodRow(
+                        model: model
+                    )
                 case .singleAccount(let model):
-                    SingleAccountRow(model: model)
+                    SingleAccountRow(
+                        model: model,
+                        badgeView: badgeView(model.id),
+                        iconView: iconView(model.id),
+                        multiBadgeView: multiBadgeView(model.id)
+                    )
+                    .onAppear {
+                        viewStore.send(.singleAccount(action: .subscribeToUpdates))
+                    }
                 }
-            }.onTapGesture {
-                viewStore.send(.accountPickerRowDidTap(title: viewStore.id.description))
+            }
+            .onTapGesture {
+                viewStore.send(.accountPickerRowDidTap)
             }
         }
     }
 }
 
+// MARK: - Specific Rows
+
 private struct AccountGroupRow: View {
 
-    let model: AccountPickerRow.AccountGroupModel
+    let model: AccountPickerRow.AccountGroup
+
+    let badgeView: AnyView
 
     var body: some View {
-        HStack(spacing: 16) {
-            if let image = model.badgeImage {
-                image
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32.0, height: 32.0)
-            }
-            VStack {
-                HStack {
-                    Text(model.title)
-                        .textStyle(.heading)
-                    Spacer()
-                    Text(model.fiatBalance)
-                        .textStyle(.heading)
+        ZStack(alignment: .bottom) {
+            HStack(spacing: 16) {
+                badgeView
+                    .frame(width: 32, height: 32)
+                    .padding(6)
+                VStack {
+                    HStack {
+                        Text(model.title)
+                            .textStyle(.heading)
+                        Spacer()
+                        Text(model.fiatBalance.value ?? " ")
+                            .textStyle(.heading)
+                            .shimmer(
+                                enabled: model.fiatBalance.isLoading,
+                                width: 90
+                            )
+                    }
+                    HStack {
+                        Text(model.description)
+                            .textStyle(.subheading)
+                        Spacer()
+                        Text(model.currencyCode.value ?? " ")
+                            .textStyle(.subheading)
+                            .shimmer(
+                                enabled: model.currencyCode.isLoading,
+                                width: 100
+                            )
+                    }
                 }
-                HStack {
-                    Text(model.description)
-                        .textStyle(.subheading)
-                    Spacer()
-                    Text(model.currencyCode)
-                        .textStyle(.subheading)
-                }
             }
+            .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
+
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(Color(UIColor.lightBorder))
         }
-        .padding([.top, .bottom], 10)
     }
 }
 
 private struct ButtonRow: View {
 
-    let model: AccountPickerRow.ButtonModel
+    let model: AccountPickerRow.Button
+    let action: () -> Void
 
     var body: some View {
         VStack {
-            Button(model.text) {
-                print("Button tapped!")
+            SecondaryButton(title: model.text) {
+                action()
             }
-            .padding()
             .frame(height: 48)
-            .clipShape(Capsule())
         }
-        .padding([.top, .bottom], 10)
+        .padding(EdgeInsets(top: 16, leading: 24, bottom: 16, trailing: 24))
     }
 }
 
 private struct LinkedBankAccountRow: View {
 
-    let model: AccountPickerRow.LinkedBankAccountModel
+    let model: AccountPickerRow.LinkedBankAccount
+    let badgeView: AnyView
+    let multiBadgeView: AnyView
 
     var body: some View {
-        HStack(spacing: 16) {
-            if let badgeImage = model.badgeImage {
-                badgeImage
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32.0, height: 32.0)
+        ZStack(alignment: .bottom) {
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    badgeView
+                        .frame(width: 32, height: 32)
+                        .padding(6)
+                    Spacer()
+                        .frame(width: 16)
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(model.title)
+                                .textStyle(.heading)
+                            Text(model.description)
+                                .textStyle(.subheading)
+                        }
+                    }
+                }
+
+                multiBadgeView
+                    .padding(.top, 8)
             }
-            VStack(spacing: 4) {
-                Text(model.title)
-                    .textStyle(.heading)
-                Text(model.description)
-                    .textStyle(.subheading)
-                if let multiBadgeView = model.multiBadgeView {
-                    multiBadgeView
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 32.0, height: 32.0)
+            .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
+
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(Color(UIColor.lightBorder))
+        }
+    }
+}
+
+private struct PaymentMethodRow: View {
+
+    let model: AccountPickerRow.PaymentMethod
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(spacing: 0) {
+                HStack(alignment: .center, spacing: 0) {
+                    ZStack {
+                        model.badgeView
+                            .frame(width: 32, height: 32)
+                            .scaledToFit()
+                    }
+                    .frame(width: 32, height: 32)
+                    .padding(6)
+                    .background(model.badgeBackground)
+                    .clipShape(Circle())
+
+                    Spacer()
+                        .frame(width: 16)
+
+                    VStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(model.title)
+                                .textStyle(.heading)
+                            Text(model.description)
+                                .textStyle(.subheading)
+                        }
+                    }
+                    .offset(x: 0, y: -2) // visually align due to font padding
                 }
             }
+            .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
+
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(Color(UIColor.lightBorder))
         }
-        .padding([.top, .bottom], 10)
     }
 }
 
 private struct SingleAccountRow: View {
 
-    let model: AccountPickerRow.SingleAccountModel
+    let model: AccountPickerRow.SingleAccount
+    let badgeView: AnyView
+    let iconView: AnyView
+    let multiBadgeView: AnyView
 
     var body: some View {
-        HStack(spacing: 16) {
-            if let image = model.thumbSideImage {
-                image
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 32.0, height: 32.0)
-            }
-            VStack {
-                HStack {
-                    Text(model.title)
-                        .textStyle(.heading)
+        ZStack(alignment: .bottom) {
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    ZStack(alignment: .bottomTrailing) {
+                        Group {
+                            badgeView
+                                .frame(width: 32, height: 32)
+                        }
+                        .padding(6)
+
+                        iconView
+                            .frame(width: 16, height: 16)
+                    }
                     Spacer()
-                    Text(model.fiatBalance)
-                        .textStyle(.heading)
+                        .frame(width: 16)
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(model.title)
+                                .textStyle(.heading)
+                            Text(model.description)
+                                .textStyle(.subheading)
+                        }
+                        Spacer()
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Text(model.fiatBalance.value ?? " ")
+                                .textStyle(.heading)
+                                .shimmer(
+                                    enabled: model.fiatBalance.isLoading,
+                                    width: 90
+                                )
+                            Text(model.cryptoBalance.value ?? "")
+                                .textStyle(.subheading)
+                                .shimmer(
+                                    enabled: model.cryptoBalance.isLoading,
+                                    width: 100
+                                )
+                        }
+                    }
                 }
-                HStack {
-                    Text(model.description)
-                        .textStyle(.subheading)
-                    Spacer()
-                    Text(model.cryptoBalance)
-                        .textStyle(.subheading)
-                }
+
+                multiBadgeView
             }
+            .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
+
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(Color(UIColor.lightBorder))
         }
-        .padding([.top, .bottom], 10)
     }
 }
 
 struct AccountPickerRowView_Previews: PreviewProvider {
 
-    static let accountGroupRow = AccountPickerRow(
-        kind: .accountGroup(
-            AccountPickerRow.AccountGroupModel(
-                title: "All Wallets",
-                description: "Total Balance",
-                fiatBalance: "$2,302.39",
-                currencyCode: "USD"
-            )
+    static let accountGroupRow = AccountPickerRow.accountGroup(
+        AccountPickerRow.AccountGroup(
+            id: UUID(),
+            title: "All Wallets",
+            description: "Total Balance",
+            fiatBalance: .loaded(next: "$2,302.39"),
+            currencyCode: .loaded(next: "USD")
         )
     )
 
-    static let buttonRow = AccountPickerRow(
-        kind: .button(AccountPickerRow.ButtonModel(text: "See Balance"))
-    )
-
-    static let linkedBankAccountRow = AccountPickerRow(
-        kind: .linkedBankAccount(
-            AccountPickerRow.LinkedBankAccountModel(
-                title: "BTC",
-                description: "5243424"
-            )
+    static let buttonRow = AccountPickerRow.button(
+        AccountPickerRow.Button(
+            id: UUID(),
+            text: "See Balance"
         )
     )
 
-    static let singleAccountRow = AccountPickerRow(
-        kind: .singleAccount(
-            AccountPickerRow.SingleAccountModel(
-                title: "BTC Trading Wallet",
-                description: "Bitcoin",
-                pending: "0.0",
-                fiatBalance: "$2,302.39",
-                cryptoBalance: "0.21204887 BTC"
-            )
+    static let linkedBankAccountRow = AccountPickerRow.linkedBankAccount(
+        AccountPickerRow.LinkedBankAccount(
+            id: UUID(),
+            title: "BTC",
+            description: "5243424"
         )
+    )
+
+    static let paymentMethodAccountRow = AccountPickerRow.paymentMethodAccount(
+        AccountPickerRow.PaymentMethod(
+            id: UUID(),
+            title: "Visa •••• 0000",
+            description: "$1,200",
+            badgeView: Image(systemName: "creditcard"),
+            badgeBackground: .badgeBackgroundInfo
+        )
+    )
+
+    static let singleAccountRow = AccountPickerRow.singleAccount(
+        AccountPickerRow.SingleAccount(
+            id: UUID(),
+            title: "BTC Trading Wallet",
+            description: "Bitcoin",
+            fiatBalance: .loaded(next: "$2,302.39"),
+            cryptoBalance: .loaded(next: "0.21204887 BTC")
+        )
+    )
+
+    static let environment = AccountPickerRowEnvironment(
+        mainQueue: .main,
+        updateSingleAccount: { _ in nil },
+        updateAccountGroup: { _ in nil }
     )
 
     static var previews: some View {
@@ -188,8 +344,11 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 store: Store(
                     initialState: accountGroupRow,
                     reducer: accountPickerRowReducer,
-                    environment: AccountPickerRowEnvironment()
-                )
+                    environment: environment
+                ),
+                badgeView: { _ in AnyView(EmptyView()) },
+                iconView: { _ in AnyView(EmptyView()) },
+                multiBadgeView: { _ in AnyView(EmptyView()) }
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
@@ -199,8 +358,11 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 store: Store(
                     initialState: buttonRow,
                     reducer: accountPickerRowReducer,
-                    environment: AccountPickerRowEnvironment()
-                )
+                    environment: environment
+                ),
+                badgeView: { _ in AnyView(EmptyView()) },
+                iconView: { _ in AnyView(EmptyView()) },
+                multiBadgeView: { _ in AnyView(EmptyView()) }
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
@@ -210,8 +372,11 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 store: Store(
                     initialState: linkedBankAccountRow,
                     reducer: accountPickerRowReducer,
-                    environment: AccountPickerRowEnvironment()
-                )
+                    environment: environment
+                ),
+                badgeView: { _ in AnyView(EmptyView()) },
+                iconView: { _ in AnyView(EmptyView()) },
+                multiBadgeView: { _ in AnyView(EmptyView()) }
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
@@ -219,10 +384,27 @@ struct AccountPickerRowView_Previews: PreviewProvider {
 
             AccountPickerRowView(
                 store: Store(
+                    initialState: paymentMethodAccountRow,
+                    reducer: accountPickerRowReducer,
+                    environment: environment
+                ),
+                badgeView: { _ in AnyView(EmptyView()) },
+                iconView: { _ in AnyView(EmptyView()) },
+                multiBadgeView: { _ in AnyView(EmptyView()) }
+            )
+            .previewLayout(PreviewLayout.sizeThatFits)
+            .padding()
+            .previewDisplayName("PaymentMethodAccountRow")
+
+            AccountPickerRowView(
+                store: Store(
                     initialState: singleAccountRow,
                     reducer: accountPickerRowReducer,
-                    environment: AccountPickerRowEnvironment()
-                )
+                    environment: environment
+                ),
+                badgeView: { _ in AnyView(EmptyView()) },
+                iconView: { _ in AnyView(EmptyView()) },
+                multiBadgeView: { _ in AnyView(EmptyView()) }
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()

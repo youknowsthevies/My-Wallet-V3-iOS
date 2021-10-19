@@ -11,33 +11,39 @@ final class PricesScreenInteractor {
 
     // MARK: - Properties
 
-    let enabledCurrenciesService: EnabledCurrenciesServiceAPI
-    let priceInteractors: [CryptoCurrency: AssetPriceViewInteractor]
-
     var enabledCryptoCurrencies: [CryptoCurrency] {
         enabledCurrenciesService.allEnabledCryptoCurrencies
     }
 
     // MARK: - Private Properties
 
-    private let disposeBag = DisposeBag()
-    private let historicalProvider: HistoricalFiatPriceProviding
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let priceService: PriceServiceAPI
+
+    // MARK: - Init
 
     init(
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-        historicalProvider: HistoricalFiatPriceProviding = resolve()
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve()
     ) {
         self.enabledCurrenciesService = enabledCurrenciesService
-        self.historicalProvider = historicalProvider
-        priceInteractors = enabledCurrenciesService.allEnabledCryptoCurrencies
-            .reduce(into: [CryptoCurrency: AssetPriceViewInteractor]()) { result, cryptoCurrency in
-                result[cryptoCurrency] = AssetPriceViewInteractor(
-                    historicalPriceProvider: historicalProvider[cryptoCurrency]
-                )
-            }
+        self.fiatCurrencyService = fiatCurrencyService
+        self.priceService = priceService
     }
 
-    func refresh() {
-        historicalProvider.refresh(window: .day(.oneHour))
+    // MARK: - Methods
+
+    func assetPriceViewInteractor(
+        for currency: CryptoCurrency
+    ) -> AssetPriceViewInteracting {
+        AssetPriceViewDailyInteractor(
+            cryptoCurrency: currency,
+            priceService: priceService,
+            fiatCurrencyService: fiatCurrencyService
+        )
     }
+
+    func refresh() {}
 }

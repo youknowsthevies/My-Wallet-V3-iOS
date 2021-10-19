@@ -28,8 +28,11 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
+        .package(url: "https://github.com/pointfreeco/combine-schedulers", from: "0.1.2"),
         .package(path: "../UIComponents"),
-        .package(path: "../Test")
+        .package(path: "../Test"),
+        .package(path: "../Platform"),
+        .package(path: "../Localization")
     ],
     targets: [
         .target(
@@ -50,8 +53,11 @@ let package = Package(
             name: "FeatureAccountPickerUI",
             dependencies: [
                 .target(name: "FeatureAccountPickerDomain"),
+                .product(name: "Localization", package: "Localization"),
                 .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "PlatformKit", package: "Platform")
             ],
             path: "UI"
         ),
@@ -63,9 +69,14 @@ let package = Package(
                 .target(name: "FeatureAccountPickerUI"),
                 .product(name: "SnapshotTesting", package: "SnapshotTesting"),
                 .product(name: "TestKit", package: "Test"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "PlatformKitMock", package: "Platform"),
+                .product(name: "PlatformUIKit", package: "Platform"),
+                .product(name: "UIComponents", package: "UIComponents")
             ],
-            path: "Tests"
+            path: "Tests",
+            exclude: ["__Snapshots__"]
         )
     ]
 )

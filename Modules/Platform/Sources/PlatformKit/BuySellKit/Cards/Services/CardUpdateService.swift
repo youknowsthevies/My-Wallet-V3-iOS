@@ -70,7 +70,9 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     public func add(card: CardData) -> Single<PartnerAuthorizationData> {
 
         // Get the user email
-        let email = dataRepository.userSingle
+        let email = dataRepository
+            .user
+            .asSingle()
             .map(\.email.address)
 
         return Single.zip(

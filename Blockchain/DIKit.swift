@@ -7,6 +7,7 @@ import BitcoinKit
 import DIKit
 import ERC20Kit
 import EthereumKit
+import FeatureAppUI
 import FeatureAuthenticationData
 import FeatureAuthenticationDomain
 import FeatureDashboardUI
@@ -30,7 +31,7 @@ import WalletPayloadKit
 
 extension ExchangeCoordinator: FeatureSettingsUI.ExchangeCoordinating {}
 
-extension UIApplication: FeatureSettingsUI.AppStoreOpening {}
+extension UIApplication: PlatformKit.AppStoreOpening {}
 
 extension Wallet: WalletRecoveryVerifing {}
 
@@ -59,18 +60,11 @@ extension DependencyContainer {
 
         single { OnboardingSettings() }
 
+        single { InternetReachability() as InternetReachabilityAPI }
+
         factory { () -> OnboardingSettingsAPI in
             let settings: OnboardingSettings = DIKit.resolve()
             return settings as OnboardingSettingsAPI
-        }
-
-        single { () -> BackgroundAppHandlerAPI in
-            let timer = BackgroundTaskTimer(
-                invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(
-                    identifier: UIBackgroundTaskIdentifier.invalid
-                )
-            )
-            return BackgroundAppHandler(backgroundTaskTimer: timer)
         }
 
         factory { AirdropRouter() as AirdropRouterAPI }
@@ -92,8 +86,6 @@ extension DependencyContainer {
         factory(tag: "CrashlyticsRecorder") { CrashlyticsRecorder() as Recording }
 
         factory { ExchangeClient() as ExchangeClientAPI }
-
-        factory { LockboxRepository() as LockboxRepositoryAPI }
 
         factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
 
@@ -126,7 +118,11 @@ extension DependencyContainer {
         single { () -> AppDeeplinkHandlerAPI in
             let appSettings: BlockchainSettings.App = DIKit.resolve()
             let isPinSet: () -> Bool = { appSettings.isPinSet }
-            let deeplinkHandler = CoreDeeplinkHandler(isPinSet: isPinSet)
+            let deeplinkHandler = CoreDeeplinkHandler(
+                markBitpayUrl: { BitpayService.shared.contentRelay.accept($0) },
+                isBitPayURL: BitPayLinkRouter.isBitPayURL,
+                isPinSet: isPinSet
+            )
             let blockchainHandler = BlockchainLinksHandler(
                 validHosts: BlockchainLinks.validLinks,
                 validRoutes: BlockchainLinks.validRoutes
@@ -259,9 +255,9 @@ extension DependencyContainer {
 
         single { WalletManager() }
 
-        factory { () -> WalletManagerReactiveAPI in
+        factory { () -> WalletManagerAPI in
             let manager: WalletManager = DIKit.resolve()
-            return manager
+            return manager as WalletManagerAPI
         }
 
         factory { () -> MnemonicAccessAPI in
@@ -370,6 +366,11 @@ extension DependencyContainer {
             return completeSettingsService
         }
 
+        factory { () -> FiatCurrencyPublisherAPI in
+            let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettingsService
+        }
+
         factory { () -> MobileSettingsServiceAPI in
             let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettingsService
@@ -377,38 +378,18 @@ extension DependencyContainer {
 
         // MARK: - BlockchainDataRepository
 
-        factory { BlockchainDataRepository.shared as DataRepositoryAPI }
+        factory { BlockchainDataRepository() as DataRepositoryAPI }
 
         // MARK: - Ethereum Wallet
 
-        factory { () -> EthereumWallet in
+        factory { () -> EthereumWalletBridgeAPI in
             let manager: WalletManager = DIKit.resolve()
             return manager.wallet.ethereum
         }
 
-        factory { () -> EthereumWalletBridgeAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
-
         factory { () -> EthereumWalletAccountBridgeAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
-
-        factory(tag: CryptoCurrency.coin(.ethereum)) { () -> MnemonicAccessAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
-
-        factory(tag: CryptoCurrency.coin(.ethereum)) { () -> PasswordAccessAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
-
-        factory { () -> CompleteEthereumWalletBridgeAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum as CompleteEthereumWalletBridgeAPI
+            let manager: WalletManager = DIKit.resolve()
+            return manager.wallet.ethereum
         }
 
         // MARK: - Stellar Wallet
@@ -584,6 +565,17 @@ extension DependencyContainer {
                 firebaseAnalyticsServiceProvider,
                 nabuAnalyticsServiceProvider
             ])
+        }
+
+        // MARK: Account Picker
+
+        factory { () -> AccountPickerViewControllable in
+            let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
+
+            if internalFeatureFlagService.isEnabled(.newAccountPicker) {
+                return FeatureAccountPickerControllableAdapter() as AccountPickerViewControllable
+            }
+            return AccountPickerViewController() as AccountPickerViewControllable
         }
     }
 }

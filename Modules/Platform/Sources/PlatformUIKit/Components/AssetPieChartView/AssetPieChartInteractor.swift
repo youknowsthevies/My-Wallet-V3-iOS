@@ -25,17 +25,14 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
             .flatMapLatest { [coincore] fiatCurrency -> Observable<AssetPieChart.State.Interaction> in
                 let cryptoStreams: [Observable<MoneyValuePair>] = coincore.cryptoAssets.map { asset in
                     asset.accountGroup(filter: .all)
-                        .asObservable()
-                        .asSingle()
-                        .flatMap { accountGroup -> Single<MoneyValuePair> in
+                        .flatMap { accountGroup in
                             accountGroup.balancePair(fiatCurrency: fiatCurrency)
                         }
                         .asObservable()
                 }
                 let fiatStream: Observable<MoneyValuePair> = coincore.fiatAsset
                     .accountGroup(filter: .all)
-                    .asObservable()
-                    .flatMap { accountGroup -> Single<MoneyValuePair> in
+                    .flatMap { accountGroup in
                         accountGroup.fiatBalance(fiatCurrency: fiatCurrency)
                             .map { MoneyValuePair(base: $0, quote: $0) }
                     }
@@ -44,7 +41,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                 return Observable.combineLatest(cryptoStreams + [fiatStream])
                     .map { pairs -> AssetPieChart.State.Interaction in
                         let total = try pairs.map(\.quote)
-                            .reduce(MoneyValue.zero(currency: fiatCurrency), +)
+                            .reduce(.zero(currency: fiatCurrency), +)
                         guard total.isPositive else {
                             return .loaded(next: [])
                         }

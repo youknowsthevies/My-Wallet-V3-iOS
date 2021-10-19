@@ -100,7 +100,7 @@ extension TransactionEngine {
 
     public var sourceCryptoCurrency: CryptoCurrency {
         guard let crypto = sourceAsset.cryptoCurrency else {
-            fatalError("Expected a CryptoCurrency type: \(sourceAsset.currency)")
+            fatalError("Expected a CryptoCurrency type: \(sourceAsset)")
         }
         return crypto
     }

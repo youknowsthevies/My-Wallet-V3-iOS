@@ -58,10 +58,14 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         self.priceService = priceService
         self.isNoteSupported = isNoteSupported
         self.transferRepository = transferRepository
-        feeCache = CachedValue(configuration: .periodic(20))
+        feeCache = CachedValue(
+            configuration: .periodic(
+                seconds: 20,
+                schedulerIdentifier: "TradingToOnChainTransactionEngine"
+            )
+        )
         feeCache.setFetch(weak: self) { (self) -> Single<CustodialTransferFee> in
             self.transferRepository.fees()
-                .asObservable()
                 .asSingle()
         }
     }
@@ -97,7 +101,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             Single
                 .zip(feeCache.valueSingle, sourceTradingAccount.withdrawableBalance)
                 .map { fees, withdrawableBalance -> PendingTransaction in
-                    let fee = fees[fee: amount.currencyType]
+                    let fee = fees[fee: amount.currency]
                     let available = try withdrawableBalance - fee
                     var pendingTransaction = pendingTransaction.update(
                         amount: amount,
@@ -105,7 +109,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                         fee: fee,
                         feeForFullAvailable: fee
                     )
-                    pendingTransaction.minimumLimit = fees[minimumAmount: amount.currencyType]
+                    pendingTransaction.minimumLimit = fees[minimumAmount: amount.currency]
                     return pendingTransaction
                 }
     }
@@ -117,9 +121,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
                     .networkFee(.init(
-                        fee: fiatAmountAndFees.fees.moneyValue,
-                        feeType: .withdrawalFee,
-                        asset: self.sourceAsset
+                        primaryCurrencyFee: fiatAmountAndFees.fees.moneyValue,
+                        feeType: .withdrawalFee
                     )),
                     .total(.init(total: fiatAmountAndFees.amount.moneyValue))
                 ]

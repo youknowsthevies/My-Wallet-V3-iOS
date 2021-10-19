@@ -153,7 +153,7 @@ public final class MoneyValueInputScanner {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.decimalSeparator = Constant.decimalSeparator
-        formatter.maximumFractionDigits = CurrencyType.maxDisplayableDecimalPlaces
+        formatter.maximumFractionDigits = CurrencyType.maxDisplayPrecision
         return formatter
     }()
 

@@ -85,13 +85,13 @@ final class ACHFlowRootInteractor: Interactor,
         case .bankTransfer:
             stateService.previousRelay.accept(())
             router?.closeFlow()
+            stateService.nextFromBankLinkSelection()
         case .funds(.fiat(let currency)):
             showFundsTransferDetailsIfNeeded(for: currency)
         case .funds(.crypto):
             fatalError("Funds with crypto currency is not a possible state")
         case .card:
-            stateService.previousRelay.accept(())
-            router?.closeFlow()
+            stateService.nextFromCardLinkSelection()
         }
     }
 
@@ -99,11 +99,11 @@ final class ACHFlowRootInteractor: Interactor,
         paymentMethodService.isUserEligibleForFunds
             .handleLoaderForLifecycle(loader: loadingViewPresenter)
             .observeOn(MainScheduler.instance)
-            .subscribe(onSuccess: { [weak self] isEligibile in
+            .subscribe(onSuccess: { [stateService] isEligibile in
                 if isEligibile {
-                    self?.stateService.showFundsTransferDetails(for: currency, isOriginDeposit: false)
+                    stateService.showFundsTransferDetails(for: currency, isOriginDeposit: false)
                 } else {
-                    self?.stateService.kyc()
+                    stateService.kyc()
                 }
             }, onError: { error in
                 Logger.shared.error(error)

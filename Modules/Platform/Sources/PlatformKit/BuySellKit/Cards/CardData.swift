@@ -62,6 +62,10 @@ public struct CardData {
     public var displaySuffix: String {
         "•••• \(suffix)"
     }
+
+    public var displayLabel: String {
+        "\(type.name) \(displaySuffix)"
+    }
 }
 
 // MARK: - Response Setup
