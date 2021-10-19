@@ -8,7 +8,6 @@ import OpenBanking
 import SwiftUI
 import ToolKit
 
-// swiftlint:disable line_length
 public struct OpenBankingEnvironment {
 
     public var environment: Self { self }
@@ -56,7 +55,3 @@ extension OpenBankingEnvironment {
         }
     }
 }
-
-#if DEBUG
-
-#endif

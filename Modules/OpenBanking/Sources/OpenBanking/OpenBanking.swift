@@ -372,7 +372,7 @@ extension OpenBanking {
 
     public struct Media: Codable, Hashable {
         public var source: URL
-        public var type: String
+        public var type: MediaType
     }
 
     public struct Institution: Codable, Hashable {
@@ -391,6 +391,19 @@ extension OpenBanking {
         public var environmentType: String
         public var features: [String]
     }
+}
+
+extension OpenBanking.Media {
+
+    public struct MediaType: NewTypeString {
+
+        public private(set) var value: String
+        public init(_ value: String) { self.value = value }
+
+        public static let icon: Self = "icon"
+        public static let logo: Self = "logo"
+    }
+
 }
 
 extension OpenBanking.Payment {

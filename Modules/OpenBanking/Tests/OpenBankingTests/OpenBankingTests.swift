@@ -454,6 +454,8 @@ final class OpenBankingPaymentTests: XCTestCase {
     }
 }
 
+import Combine
+
 /// Used for testing without any UI
 final class OpenBankingFlowTests: XCTestCase {
 
@@ -469,7 +471,7 @@ final class OpenBankingFlowTests: XCTestCase {
                     components: ["nabu-gateway"]
                 ),
                 headers: [
-                    "Authorization": "Bearer ..."
+                    "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJyZXRhaWwtY29yZSIsImV4cCI6MTYzNDY2MzAzMCwiaWF0IjoxNjM0NjYxODMwLCJ1c2VySUQiOiIwMGQxMDczNC1mMWZlLTRiMDgtYmQyNC1jZWZiZjBjOTkzMzQiLCJqdGkiOiI2MDFkYmJiMy0zODdlLTQwYjEtYTA0OC0xNjViYjY0ZTZhNjUifQ.Rw8UvZtCKzkDbpNyIsISgIkapp-Zeqo_3cfHvjnRUzM"
                 ]
             ),
             network: NetworkAdapter(
@@ -478,6 +480,22 @@ final class OpenBankingFlowTests: XCTestCase {
             scheduler: DispatchQueue.main.eraseToAnyScheduler(),
             state: .init([.currency: "GBP"])
         )
+    }
+
+    func x_test_delete_all() throws {
+
+        let bankAccounts = try banking.allBankAccounts()
+            .wait(timeout: 5)
+            .get()
+
+        for account in bankAccounts {
+            print("Deleting \(account.id)...", terminator: " ")
+            let deleted = try account.delete(in: banking).wait(timeout: 1)
+            switch deleted {
+            case .success: print("✅")
+            case .failure: print("❌")
+            }
+        }
     }
 
     func x_test_link() throws {

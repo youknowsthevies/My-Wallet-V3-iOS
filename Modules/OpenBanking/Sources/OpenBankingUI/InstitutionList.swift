@@ -182,7 +182,7 @@ extension InstitutionList {
         }
 
         private var image: URL? {
-            institution.media.first(where: { $0.type == "icon" })?.source
+            institution.media.first(where: { $0.type == .icon })?.source
                 ?? institution.media.first?.source
         }
 
