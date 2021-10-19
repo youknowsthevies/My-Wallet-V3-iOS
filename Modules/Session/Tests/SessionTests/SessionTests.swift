@@ -1,6 +1,8 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 import Combine
-import XCTest
 import Session
+import XCTest
 
 final class SessionTests: XCTestCase {
 
@@ -31,9 +33,12 @@ final class SessionTests: XCTestCase {
         let it = state.publisher(for: "published")
             .sink { result in
                 switch result {
-                case .success: value.fulfill()
-                case .failure(.keyDoesNotExist): error.fulfill()
-                case let .failure(error): XCTFail("Unexpected failure case \(error)")
+                case .success:
+                    value.fulfill()
+                case .failure(.keyDoesNotExist):
+                    error.fulfill()
+                case .failure(let error):
+                    XCTFail("Unexpected failure case \(error)")
                 }
             }
 
@@ -53,9 +58,12 @@ final class SessionTests: XCTestCase {
         let it = state.publisher(for: "published", as: Bool.self)
             .sink { result in
                 switch result {
-                case .success: value.fulfill()
-                case .failure(.keyDoesNotExist): error.fulfill()
-                case let .failure(error): XCTFail("Unexpected failure case \(error)")
+                case .success:
+                    value.fulfill()
+                case .failure(.keyDoesNotExist):
+                    error.fulfill()
+                case .failure(let error):
+                    XCTFail("Unexpected failure case \(error)")
                 }
             }
 
@@ -84,7 +92,7 @@ final class SessionTests: XCTestCase {
 
     func test_concurrency() throws {
 
-        let iterations = 5_000
+        let iterations = 5000
 
         DispatchQueue.concurrentPerform(iterations: iterations) { i in
             state.set("\(i % 10)", to: i % 10)
@@ -95,7 +103,7 @@ final class SessionTests: XCTestCase {
                 let value: Int = try state.get("\(i % 10)")
                 XCTAssertEqual(value, i % 10)
             } catch {
-                XCTFail()
+                XCTFail("\(i) @ \(i % 10) has a missing value")
             }
         }
 
@@ -109,7 +117,7 @@ final class SessionTests: XCTestCase {
     }
 
     func test_stress() {
-        DispatchQueue.concurrentPerform(iterations: 10_000) { i in
+        DispatchQueue.concurrentPerform(iterations: 10_000) { _ in
             var rng: Int { Int.random(in: 0...100) }
             state.set("\(rng)", to: rng)
             _ = state.contains("\(rng)")
