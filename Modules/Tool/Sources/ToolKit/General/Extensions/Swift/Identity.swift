@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-// swiftlint:disable type_name
 public struct Identity<T>: Codable, Hashable {
 
     public let value: String
