@@ -240,3 +240,153 @@ extension Length: Codable {
         }
     }
 }
+
+public protocol ComputedLength {
+    associatedtype ComputedValue
+    func `in`(parent: CGRect, screen: CGRect) -> ComputedValue
+}
+
+extension ComputedLength {
+
+    @inlinable public func `in`(_ geometry: GeometryProxy, coordinateSpace: CoordinateSpace = .local) -> ComputedValue {
+        `in`(parent: geometry.frame(in: coordinateSpace), screen: .mainScreenBounds)
+    }
+
+    @inlinable public func `in`(_ frame: CGRect) -> ComputedValue {
+        `in`(parent: frame, screen: frame)
+    }
+}
+
+extension Length: ComputedLength {}
+extension Size: ComputedLength {}
+
+// Generate the below with [gyb](https://nshipster.com/swift-gyb/) until we have variadic generics
+extension View {
+
+    public func compute<A: ComputedLength>(
+        _ a: A,
+        to binding: Binding<A.ComputedValue>
+    ) -> some View {
+        modifier(
+            LengthViewModifier(a: a) { a in
+                binding.wrappedValue = a
+            }
+        )
+    }
+
+    public func compute<A: ComputedLength>(
+        _ a: A,
+        _ yield: @escaping (A.ComputedValue) -> Void
+    ) -> some View {
+        modifier(
+            LengthViewModifier(a: a, yield: yield)
+        )
+    }
+
+    public func compute<A: ComputedLength, B: ComputedLength>(
+        _ a: A,
+        _ b: B,
+        _ yield: @escaping (A.ComputedValue, B.ComputedValue) -> Void
+    ) -> some View {
+        modifier(
+            LengthViewModifier2(a: a, b: b, yield: yield)
+        )
+    }
+
+    public func compute<A: ComputedLength, B: ComputedLength, C: ComputedLength>(
+        _ a: A,
+        _ b: B,
+        _ c: C,
+        _ yield: @escaping (A.ComputedValue, B.ComputedValue, C.ComputedValue) -> Void
+    ) -> some View {
+        modifier(
+            LengthViewModifier3(a: a, b: b, c: c, yield: yield)
+        )
+    }
+
+    public func compute<A: ComputedLength, B: ComputedLength, C: ComputedLength, D: ComputedLength>(
+        _ a: A,
+        _ b: B,
+        _ c: C,
+        _ d: D,
+        _ yield: @escaping (A.ComputedValue, B.ComputedValue, C.ComputedValue, D.ComputedValue) -> Void
+    ) -> some View {
+        modifier(
+            LengthViewModifier4(a: a, b: b, c: c, d: d, yield: yield)
+        )
+    }
+}
+
+struct LengthViewModifier<A: ComputedLength>: ViewModifier {
+
+    var a: A
+
+    var yield: (A.ComputedValue) -> Void
+
+    func body(content: Content) -> some View {
+        content.background(
+            GeometryReader { geometry in
+                Color.clear.onAppear {
+                    yield(a.in(geometry))
+                }
+            }
+        )
+    }
+}
+
+struct LengthViewModifier2<A: ComputedLength, B: ComputedLength>: ViewModifier {
+
+    var a: A
+    var b: B
+
+    var yield: (A.ComputedValue, B.ComputedValue) -> Void
+
+    func body(content: Content) -> some View {
+        content.background(
+            GeometryReader { geometry in
+                Color.clear.onAppear {
+                    yield(a.in(geometry), b.in(geometry))
+                }
+            }
+        )
+    }
+}
+
+struct LengthViewModifier3<A: ComputedLength, B: ComputedLength, C: ComputedLength>: ViewModifier {
+
+    var a: A
+    var b: B
+    var c: C
+
+    var yield: (A.ComputedValue, B.ComputedValue, C.ComputedValue) -> Void
+
+    func body(content: Content) -> some View {
+        content.background(
+            GeometryReader { geometry in
+                Color.clear.onAppear {
+                    yield(a.in(geometry), b.in(geometry), c.in(geometry))
+                }
+            }
+        )
+    }
+}
+
+struct LengthViewModifier4<A: ComputedLength, B: ComputedLength, C: ComputedLength, D: ComputedLength>: ViewModifier {
+
+    var a: A
+    var b: B
+    var c: C
+    var d: D
+
+    var yield: (A.ComputedValue, B.ComputedValue, C.ComputedValue, D.ComputedValue) -> Void
+
+    func body(content: Content) -> some View {
+        content.background(
+            GeometryReader { geometry in
+                Color.clear.onAppear {
+                    yield(a.in(geometry), b.in(geometry), c.in(geometry), d.in(geometry))
+                }
+            }
+        )
+    }
+}

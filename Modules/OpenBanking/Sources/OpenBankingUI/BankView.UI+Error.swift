@@ -8,18 +8,15 @@ extension BankState.UI {
 
     static func error(_ error: OpenBanking.Error) -> Self {
         switch error {
-        case .code(let code):
-            return errors[code, default: defaultError]
         case .message(let message):
             return .errorMessage(message)
         default:
-            return defaultError
+            return errors[error, default: defaultError]
         }
     }
 
-    static var errors: [String: Self] = [
-        "NULL": defaultError,
-        "BANK_TRANSFER_ACCOUNT_NAME_MISMATCH": .init(
+    static var errors: [OpenBanking.Error: Self] = [
+        .BANK_TRANSFER_ACCOUNT_NAME_MISMATCH: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
@@ -31,7 +28,7 @@ extension BankState.UI {
                 .cancel
             ]
         ),
-        "BANK_TRANSFER_ACCOUNT_EXPIRED": .init(
+        .BANK_TRANSFER_ACCOUNT_EXPIRED: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
@@ -43,7 +40,7 @@ extension BankState.UI {
                 .cancel
             ]
         ),
-        "BANK_TRANSFER_ACCOUNT_FAILED": .init(
+    .BANK_TRANSFER_ACCOUNT_FAILED: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
@@ -55,7 +52,7 @@ extension BankState.UI {
                 .cancel
             ]
         ),
-        "BANK_TRANSFER_ACCOUNT_REJECTED": .init(
+        .BANK_TRANSFER_ACCOUNT_REJECTED: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
@@ -67,7 +64,7 @@ extension BankState.UI {
                 .cancel
             ]
         ),
-        "BANK_TRANSFER_ACCOUNT_INVALID": .init(
+        .BANK_TRANSFER_ACCOUNT_INVALID: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
@@ -79,7 +76,7 @@ extension BankState.UI {
                 .cancel
             ]
         ),
-        "BANK_TRANSFER_ACCOUNT_ALREADY_LINKED": .init(
+        .BANK_TRANSFER_ACCOUNT_ALREADY_LINKED: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),

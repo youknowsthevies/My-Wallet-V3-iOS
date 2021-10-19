@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import CasePaths
 import Combine
 import Foundation
 
@@ -158,5 +159,72 @@ extension Publisher where Failure == Never {
 
     public func assign(to published: inout Published<Output?>.Publisher) {
         map(Output?.init).assign(to: &published)
+    }
+}
+
+extension Publisher where Output: ResultProtocol {
+
+    public func ignoreResultFailure() -> Publishers.CompactMap<Self, Output.Success> {
+        compactMap { output in
+            switch output.result {
+            case .success(let o):
+                return o
+            case .failure:
+                return nil
+            }
+        }
+    }
+
+    public func ignore<T>(output casePath: CasePath<Output.Success, T>) -> AnyPublisher<Output, Failure> {
+        filter { output in
+            switch output.result {
+            case .failure:
+                return true
+            case .success(let success):
+                return casePath.extract(from: success) != nil
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
+    public func ignore<T>(failure casePath: CasePath<Output.Failure, T>) -> AnyPublisher<Output, Failure> {
+        filter { output in
+            switch output.result {
+            case .failure(let error):
+                return casePath.extract(from: error) != nil
+            case .success:
+                return true
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+extension Publisher where Output: ResultProtocol, Failure == Never {
+
+    public func get() -> AnyPublisher<Output.Success, Output.Failure> {
+        flatMap { output -> AnyPublisher<Output.Success, Output.Failure> in
+            switch output.result {
+            case .failure(let error):
+                return Fail(error: error).eraseToAnyPublisher()
+            case .success(let success):
+                return Just(success).setFailureType(to: Output.Failure.self).eraseToAnyPublisher()
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+extension Publisher {
+
+    public func filter<T>(_ casePath: CasePath<Output, T>) -> Publishers.CompactMap<Self, T> {
+        compactMap(casePath.extract(from:))
+    }
+
+    public func ignore<T>(output casePath: CasePath<Output, T>) -> AnyPublisher<Output, Failure> {
+        filter { output in
+            casePath.extract(from: output) != nil
+        }
+        .eraseToAnyPublisher()
     }
 }

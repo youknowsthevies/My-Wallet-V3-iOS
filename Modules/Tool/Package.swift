@@ -27,6 +27,11 @@ let package = Package(
             from: "0.5.2"
         ),
         .package(
+            name: "swift-case-paths",
+            url: "https://github.com/pointfreeco/swift-case-paths",
+            from: "0.7.0"
+        ),
+        .package(
             name: "RxCombine",
             url: "https://github.com/paulo-bc/RxCombine.git",
             from: "1.6.2"
@@ -47,6 +52,7 @@ let package = Package(
         .target(
             name: "ToolKit",
             dependencies: [
+                .product(name: "CasePaths", package: "swift-case-paths"),
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxRelay", package: "RxSwift"),

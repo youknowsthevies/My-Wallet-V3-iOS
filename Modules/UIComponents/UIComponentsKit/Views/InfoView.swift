@@ -10,12 +10,24 @@ public struct InfoView: View {
         public struct Overlay: Equatable, Codable {
             public var media: Media?
             public var progress: Bool?
+
+            public init(media: Media? = nil, progress: Bool? = nil) {
+                self.media = media
+                self.progress = progress
+            }
         }
 
         public var media: Media
         public var overlay: Overlay?
         public var title: String
         public var subtitle: String
+
+        public init(media: Media, overlay: InfoView.Model.Overlay? = nil, title: String, subtitle: String) {
+            self.media = media
+            self.overlay = overlay
+            self.title = title
+            self.subtitle = subtitle
+        }
     }
 
     public struct Layout: Equatable, Codable {

@@ -28,6 +28,7 @@ let package = Package(
             from: "0.28.1"
         ),
         .package(path: "../ComposableNavigation"),
+        .package(path: "../ComponentLibrary"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../Platform"),
@@ -52,6 +53,7 @@ let package = Package(
                 .target(name: "OpenBanking"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableNavigation"),
+                .product(name: "ComponentLibrary", package: "ComponentLibrary"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "UIComponents", package: "UIComponents")
