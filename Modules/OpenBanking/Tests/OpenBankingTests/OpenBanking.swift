@@ -41,7 +41,7 @@ extension OpenBanking {
                 network: NetworkAdapter(
                     communicator: communicator
                 ),
-                scheduler: scheduler,
+                scheduler: scheduler.eraseToAnyScheduler(),
                 state: .init([.currency: "GBP"])
             ),
             communicator

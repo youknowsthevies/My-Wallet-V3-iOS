@@ -20,6 +20,7 @@ import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import NetworkKit
+import OpenBanking
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -576,6 +577,15 @@ extension DependencyContainer {
                 return FeatureAccountPickerControllableAdapter() as AccountPickerViewControllable
             }
             return AccountPickerViewController() as AccountPickerViewControllable
+        }
+
+        single { () -> OpenBanking in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            return OpenBanking(
+                requestBuilder: builder,
+                network: adapter
+            )
         }
     }
 }

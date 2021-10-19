@@ -6,6 +6,7 @@ import CombineSchedulers
 import TestKit
 
 // swiftlint:disable line_length
+// swiftlint:disable single_test_class
 
 final class OpenBankingTests: XCTestCase {
 
@@ -13,7 +14,7 @@ final class OpenBankingTests: XCTestCase {
     var network: ReplayNetworkCommunicator!
 
     override func setUpWithError() throws {
-        super.setUp()
+        try super.setUpWithError()
         (banking, network) = OpenBanking.test()
     }
 
@@ -474,7 +475,7 @@ final class OpenBankingFlowTests: XCTestCase {
             network: NetworkAdapter(
                 communicator: EphemeralNetworkCommunicator(isRecording: true, directory: "/tmp/OpenBanking")
             ),
-            scheduler: DispatchQueue.main,
+            scheduler: DispatchQueue.main.eraseToAnyScheduler(),
             state: .init([.currency: "GBP"])
         )
     }

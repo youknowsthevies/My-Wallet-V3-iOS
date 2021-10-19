@@ -7,7 +7,9 @@ import NetworkKit
 import Session
 import ToolKit
 
+// swiftlint:disable:next duplicate_imports
 @_exported import struct ToolKit.Identity
+// swiftlint:disable:next duplicate_imports
 @_exported import protocol ToolKit.NewTypeString
 
 public class OpenBanking {
@@ -29,17 +31,17 @@ public class OpenBanking {
         self.init(
             requestBuilder: requestBuilder,
             network: network,
-            scheduler: scheduler,
+            scheduler: scheduler.eraseToAnyScheduler(),
             state: .init()
         )
     }
 
-    init<S: Scheduler>(
+    init(
         requestBuilder: RequestBuilder,
         network: NetworkAdapterAPI,
-        scheduler: S,
+        scheduler: AnySchedulerOf<DispatchQueue>,
         state: State
-    ) where S.SchedulerTimeType == DispatchQueue.SchedulerTimeType, S.SchedulerOptions == DispatchQueue.SchedulerOptions {
+    ) {
         self.requestBuilder = requestBuilder
         self.network = network
         self.scheduler = scheduler.eraseToAnyScheduler()
@@ -50,7 +52,7 @@ public class OpenBanking {
             .store(in: &bag)
     }
 
-    public func handle(consent: Result<String, State.Error>) {
+    func handle(consent: Result<String, State.Error>) {
         do {
 
             if case .failure(.keyDoesNotExist) = consent {
@@ -75,7 +77,7 @@ public class OpenBanking {
         }
     }
 
-    public func handle(updateConsent result: Result<Void, Error>) {
+    func handle(updateConsent result: Result<Void, Error>) {
 
         state.transaction { state in
             switch result {
@@ -87,8 +89,6 @@ public class OpenBanking {
                 state.set(.is.authorised, to: false)
             }
         }
-
-        print(try! state.get(.is.authorised))
     }
 
     public func createBankAccount() throws -> AnyPublisher<Result<BankAccount, Error>, Never> {
