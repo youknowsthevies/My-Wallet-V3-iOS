@@ -20,7 +20,7 @@ extension State {
         internal var subjects: [Key: Subject] = [:]
         private var dirty: (data: [Key: Any], level: UInt) = ([:], 0)
 
-        private var q: DispatchQueue = DispatchQueue(label: "com.blockchain.session.state.q")
+        private var q = DispatchQueue(label: "com.blockchain.session.state.q")
         private var k: DispatchSpecificKey<Data.Type>
 
         init() { k = .init(on: q) }

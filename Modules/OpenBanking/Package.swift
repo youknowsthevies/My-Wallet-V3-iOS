@@ -21,7 +21,7 @@ let package = Package(
         .package(path: "../Network"),
         .package(path: "../Session"),
         .package(path: "../Test"),
-        .package(path: "../Tool"),
+        .package(path: "../Tool")
     ],
     targets: [
         .target(

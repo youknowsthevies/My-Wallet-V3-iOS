@@ -426,6 +426,7 @@ extension OpenBanking.BankAccount {
     public struct State: NewTypeString {
 
         public private(set) var value: String
+
         public init(_ value: String) { self.value = value }
 
         public static let CREATED: Self = "CREATED"
@@ -442,6 +443,7 @@ extension OpenBanking.Payment.Details {
     public struct State: NewTypeString {
 
         public private(set) var value: String
+
         public init(_ value: String) { self.value = value }
 
         public static let CREATED: Self = "CREATED"

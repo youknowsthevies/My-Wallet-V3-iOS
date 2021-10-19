@@ -77,7 +77,7 @@ final class OpenBankingBankAccountTests: XCTestCase {
     var institution: OpenBanking.Institution!
 
     override func setUpWithError() throws {
-        super.setUp()
+        try super.setUpWithError()
         (banking, network) = OpenBanking.test()
         bankAccount = try banking.createBankAccount().wait().get()
         institution = bankAccount.attributes.institutions?[1]
@@ -189,7 +189,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
     var scheduler: TestSchedulerOf<DispatchQueue>!
 
     override func setUpWithError() throws {
-        super.setUp()
+        try super.setUpWithError()
         scheduler = DispatchQueue.test
         (banking, network) = OpenBanking.test(using: scheduler)
         bankAccount = try banking.createBankAccount().wait().get()
@@ -342,7 +342,7 @@ final class OpenBankingPaymentTests: XCTestCase {
     var scheduler: TestSchedulerOf<DispatchQueue>!
 
     override func setUpWithError() throws {
-        super.setUp()
+        try super.setUpWithError()
         scheduler = DispatchQueue.test
         (banking, network) = OpenBanking.test(using: scheduler)
         bankAccount = try banking.allBankAccounts().wait().get().first.unwrap()
@@ -451,101 +451,6 @@ final class OpenBankingPaymentTests: XCTestCase {
         XCTAssertEqual(account.state, .COMPLETE)
 
         subscription.cancel()
-    }
-}
-
-/// Used for testing without any UI
-final class OpenBankingFlowTests: XCTestCase {
-
-    var banking: OpenBanking!
-
-    override func setUpWithError() throws {
-        super.setUp()
-        banking = OpenBanking(
-            requestBuilder: RequestBuilder(
-                config: Network.Config(
-                    scheme: "https",
-                    host: "api.blockchain.info",
-                    components: ["nabu-gateway"]
-                ),
-                headers: [
-                    "Authorization": "Bearer ..."
-                ]
-            ),
-            network: NetworkAdapter(
-                communicator: EphemeralNetworkCommunicator(isRecording: true, directory: "/tmp/OpenBanking")
-            ),
-            scheduler: DispatchQueue.main.eraseToAnyScheduler(),
-            state: .init([.currency: "GBP"])
-        )
-    }
-
-    func x_test_link() throws {
-
-        let bankAccount = try banking.createBankAccount()
-            .wait(timeout: 5)
-            .get()
-
-        let activation = try bankAccount.activateBankAccount(with: bankAccount.attributes.institutions![1].id, in: banking)
-            .wait(timeout: 5)
-            .get()
-
-        let subscription = banking.state.publisher(for: .authorisation.url, as: URL.self).sink { result in
-            switch result {
-            case .success(let url):
-                var consentToken = ""
-                // Stop debugger on `print` and set `consentToken` to mutate the open banking state to finalise the transaction
-                consentToken = ""
-                print(url) // e consentToken = "..."
-                self.banking.state.set(.consent.token, to: consentToken)
-            case .failure(.keyDoesNotExist):
-                break
-            case .failure(let error):
-                XCTFail("\(error)")
-            }
-        }
-
-        let account = try activation.poll(in: banking)
-            .wait(timeout: 120000)
-            .get()
-
-        subscription.cancel()
-        _ = account
-    }
-
-    func x_test_payment() throws {
-
-        let bankAccount = try banking.allBankAccounts()
-            .wait(timeout: 5)
-            .get()
-            .first(where: { $0.state == "ACTIVE" })
-            .unwrap()
-
-        let payment = try bankAccount.pay(amountMinor: "1000", product: "SIMPLEBUY", in: banking)
-            .wait(timeout: 5)
-            .get()
-
-        let subscription = banking.state.publisher(for: .authorisation.url, as: URL.self).sink { result in
-            switch result {
-            case .success(let url):
-                var consentToken = ""
-                // Stop debugger on `print` and set `consentToken` to mutate the open banking state to finalise the transaction
-                consentToken = ""
-                print(url) // e consentToken = "..."
-                self.banking.state.set(.consent.token, to: consentToken)
-            case .failure(.keyDoesNotExist):
-                break
-            case .failure(let error):
-                XCTFail("\(error)")
-            }
-        }
-
-        let details = try payment.poll(in: banking)
-            .wait(timeout: 120000)
-            .get()
-
-        subscription.cancel()
-        _ = details
     }
 }
 

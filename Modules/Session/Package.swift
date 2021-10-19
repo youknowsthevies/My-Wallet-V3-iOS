@@ -11,9 +11,6 @@ let package = Package(
             targets: ["Session"]
         )
     ],
-    dependencies: [
-
-    ],
     targets: [
         .target(
             name: "Session"
