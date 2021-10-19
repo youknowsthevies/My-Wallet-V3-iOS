@@ -1,0 +1,6 @@
+{
+  "paymentId": "b039317d-df85-413f-932d-2719346a839a",
+  "attributes": {
+    "callbackPath": "nabu-gateway/payments/banktransfer/one-time-token"
+  }
+}
