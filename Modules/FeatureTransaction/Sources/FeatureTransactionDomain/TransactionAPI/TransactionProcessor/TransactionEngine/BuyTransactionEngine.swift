@@ -6,6 +6,8 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
+extension OrderDetails: TransactionOrder {}
+
 final class BuyTransactionEngine: TransactionEngine {
 
     private struct Limits {
@@ -30,19 +32,27 @@ final class BuyTransactionEngine: TransactionEngine {
     private let orderCreationService: OrderCreationServiceAPI
     // Used to execute the order once created
     private let orderConfirmationService: OrderConfirmationServiceAPI
+    // Used to cancel orders
+    private let orderCancellationService: OrderCancellationServiceAPI
+
+    // Used as a workaround to show the correct total fee to the user during checkout.
+    // This won't be needed anymore once we migrate the quotes API to v2
+    private var pendingCheckoutData: CheckoutData?
 
     init(
         conversionService: CurrencyConversionServiceAPI = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         orderQuoteService: OrderQuoteServiceAPI = resolve(),
         orderCreationService: OrderCreationServiceAPI = resolve(),
-        orderConfirmationService: OrderConfirmationServiceAPI = resolve()
+        orderConfirmationService: OrderConfirmationServiceAPI = resolve(),
+        orderCancellationService: OrderCancellationServiceAPI = resolve()
     ) {
         self.conversionService = conversionService
         self.walletCurrencyService = walletCurrencyService
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
         self.orderConfirmationService = orderConfirmationService
+        self.orderCancellationService = orderCancellationService
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -119,14 +129,19 @@ final class BuyTransactionEngine: TransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         let sourceAccountLabel = sourceAccount.label
-        return fiatExchangeRatePairsSingle
-            .map { moneyPair in
+        let orderFuture = createOrder(pendingTransaction: pendingTransaction)
+            .map { order -> OrderDetails in
+                guard let order = order as? OrderDetails else {
+                    impossible("Buy transactions should only create \(OrderDetails.self) orders")
+                }
+                return order
+            }
+        return Single.zip(orderFuture, fiatExchangeRatePairsSingle)
+            .map { order, moneyPair in
                 let fiatAmount: FiatValue
                 let cryptoAmount: CryptoValue
-                let fiatFeeAmount: FiatValue
                 if pendingTransaction.amount.isFiat {
                     fiatAmount = pendingTransaction.amount.fiatValue!
-                    fiatFeeAmount = pendingTransaction.feeAmount.fiatValue!
                     cryptoAmount = try pendingTransaction.amount
                         .convert(using: moneyPair.destination)
                         .cryptoValue!
@@ -134,27 +149,38 @@ final class BuyTransactionEngine: TransactionEngine {
                     fiatAmount = try pendingTransaction.amount
                         .convert(using: moneyPair.source)
                         .fiatValue!
-                    fiatFeeAmount = try pendingTransaction.feeAmount
-                        .convert(using: moneyPair.source)
-                        .fiatValue!
                     cryptoAmount = pendingTransaction.amount.cryptoValue!
                 }
 
+                var fee = order.fee ?? .zero(currency: fiatAmount.currency)
+                if fee.isCrypto {
+                    fee = try fee.convert(using: moneyPair.source)
+                }
+
+                var totalCost = try fiatAmount.moneyValue + fee
                 var confirmations: [TransactionConfirmation] = [
                     .buyCryptoValue(.init(baseValue: cryptoAmount)),
                     .buyExchangeRateValue(.init(baseValue: moneyPair.source.quote, code: moneyPair.source.base.code)),
                     .buyPaymentMethod(.init(name: sourceAccountLabel)),
-                    .transactionFee(.init(fee: fiatFeeAmount.moneyValue)),
-                    .total(.init(total: (try fiatAmount + fiatFeeAmount).moneyValue))
+                    .transactionFee(.init(fee: fee))
                 ]
                 if let customFeeAmount = pendingTransaction.customFeeAmount {
                     confirmations.append(.transactionFee(.init(fee: customFeeAmount)))
+                    if customFeeAmount.isFiat {
+                        try totalCost += customFeeAmount
+                    } else {
+                        try totalCost += customFeeAmount.convert(using: moneyPair.source)
+                    }
                 }
+                confirmations.append(.total(.init(total: totalCost)))
                 return pendingTransaction.update(confirmations: confirmations)
             }
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func createOrder(pendingTransaction: PendingTransaction) -> Single<TransactionOrder?> {
+        guard pendingCheckoutData == nil else {
+            return .just(pendingCheckoutData?.order)
+        }
         guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
             return .error(TransactionValidationFailure(state: .optionInvalid))
         }
@@ -177,24 +203,51 @@ final class BuyTransactionEngine: TransactionEngine {
                 )
                 return orderCreationService.create(using: orderDetails)
             }
-            .do(onError: { error in
+            .do(onSuccess: { [weak self] checkoutData in
+                Logger.shared.info("[BUY] Order creation successful \(String(describing: checkoutData))")
+                self?.pendingCheckoutData = checkoutData
+            }, onError: { error in
                 Logger.shared.error("[BUY] Order creation failed \(String(describing: error))")
             })
-            // STEP 3: Execute the order
-            .flatMap { [orderConfirmationService] checkoutData -> Single<CheckoutData> in
-                Logger.shared.info("[BUY] Order creation successful \(String(describing: checkoutData))")
-                return orderConfirmationService.confirm(checkoutData: checkoutData)
-            }
-            // STEP 4: Map order to Transaction Result
+            .map(\.order)
+            .map(Optional.some)
+    }
+
+    func cancelOrder(with identifier: String) -> Single<Void> {
+        orderCancellationService.cancelOrder(with: identifier)
+            .handleEvents(receiveOutput: { [weak self] _ in
+                self?.pendingCheckoutData = nil
+            }, receiveCompletion: { [weak self] completion in
+                guard case .finished = completion else {
+                    return
+                }
+                self?.pendingCheckoutData = nil
+            })
+            .asSingle()
+    }
+
+    func execute(
+        pendingTransaction: PendingTransaction,
+        pendingOrder: TransactionOrder?,
+        secondPassword: String
+    ) -> Single<TransactionResult> {
+        guard let order = pendingOrder as? OrderDetails else {
+            return .error(TransactionValidationFailure(state: .optionInvalid))
+        }
+        // Execute the order
+        return orderConfirmationService.confirm(checkoutData: CheckoutData(order: order))
+            // Map order to Transaction Result
             .map { checkoutData -> TransactionResult in
-                Logger.shared.info("[BUY] Order confirmation successful \(String(describing: checkoutData))")
-                return TransactionResult.hashed(
+                TransactionResult.hashed(
                     txHash: checkoutData.order.identifier,
                     amount: pendingTransaction.amount,
                     order: checkoutData.order
                 )
             }
-            .do(onError: { error in
+            .do(onSuccess: { [weak self] checkoutData in
+                Logger.shared.info("[BUY] Order confirmation successful \(String(describing: checkoutData))")
+                self?.pendingCheckoutData = nil
+            }, onError: { error in
                 Logger.shared.error("[BUY] Order confirmation failed \(String(describing: error))")
             })
     }
@@ -210,8 +263,11 @@ final class BuyTransactionEngine: TransactionEngine {
     ) -> Single<PendingTransaction> {
         impossible("Fees are fixed for buying crypto")
     }
+}
 
-    // MARK: - Helpers
+// MARK: - Helpers
+
+extension BuyTransactionEngine {
 
     private func makeTransaction(amount: MoneyValue? = nil) -> Single<PendingTransaction> {
         guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
@@ -219,17 +275,21 @@ final class BuyTransactionEngine: TransactionEngine {
         }
         let paymentMethod = sourceAccount.paymentMethod
         let amount = amount ?? .zero(currency: paymentMethod.fiatCurrency.currencyType)
-        return Publishers.Zip3(
+        return Publishers.Zip(
             convertSourceBalance(to: amount.currencyType),
-            fetchFeeForPurchasing(amount),
             convertTransactionLimits(for: paymentMethod, to: amount.currencyType)
         )
-        .tryMap { sourceBalance, quoteFee, limits in
-            PendingTransaction(
+        .tryMap { sourceBalance, limits in
+            // NOTE: the fee coming from the API is always 0 at the moment.
+            // The correct fee will be fetched when the order is created.
+            // This misleading behavior doesn't affect the purchase.
+            // That said, this is going to be fixed once we migrate to v2 of the quotes API.
+            let zeroFee: MoneyValue = .zero(currency: amount.currency)
+            return PendingTransaction(
                 amount: amount,
                 available: sourceBalance,
-                feeAmount: quoteFee,
-                feeForFullAvailable: quoteFee,
+                feeAmount: zeroFee,
+                feeForFullAvailable: zeroFee,
                 feeSelection: .empty(asset: amount.currencyType),
                 selectedFiatCurrency: sourceAccount.fiatCurrency,
                 minimumLimit: limits.minimum,
@@ -278,17 +338,6 @@ final class BuyTransactionEngine: TransactionEngine {
             .replaceError(with: PriceServiceError.missingPrice)
             .flatMap { [conversionService] balance in
                 conversionService.convert(balance, to: currency)
-            }
-            .eraseToAnyPublisher()
-    }
-
-    private func fetchFeeForPurchasing(_ amount: MoneyValue) -> AnyPublisher<MoneyValue, PriceServiceError> {
-        fetchQuote(for: amount)
-            .map(\.fee.moneyValue)
-            .asPublisher()
-            .replaceError(with: PriceServiceError.missingPrice)
-            .flatMap { [conversionService] quoteFee in
-                conversionService.convert(quoteFee, to: amount.currencyType)
             }
             .eraseToAnyPublisher()
     }

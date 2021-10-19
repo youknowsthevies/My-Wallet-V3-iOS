@@ -140,7 +140,10 @@ final class TransactionModel {
         case .showCheckout:
             return nil
         case .executeTransaction:
-            return processExecuteTransaction(secondPassword: previousState.secondPassword)
+            return processExecuteTransaction(
+                order: previousState.order,
+                secondPassword: previousState.secondPassword
+            )
         case .updateTransactionPending:
             return nil
         case .updateTransactionComplete:
@@ -161,16 +164,28 @@ final class TransactionModel {
             return nil
         case .validateTransaction:
             return processValidateTransaction()
+        case .createOrder:
+            return processCreateOrder()
+        case .orderCreated:
+            process(action: .showCheckout)
+            return nil
+        case .orderCancelled:
+            return nil
         case .resetFlow:
             interactor.reset()
             return nil
         case .returnToPreviousStep:
-            let isBitPay = previousState.step == .confirmDetail && previousState.destination is BitPayInvoiceTarget
             let isAmountScreen = previousState.step == .enterAmount
-            guard isAmountScreen || isBitPay else {
-                return nil
+            let isBitPay = previousState.step == .confirmDetail && previousState.destination is BitPayInvoiceTarget
+            let shouldInvalidateTransaction = isAmountScreen || isBitPay
+            guard !shouldInvalidateTransaction else {
+                return processTransactionInvalidation(state: previousState)
             }
-            return processTransactionInvalidation(action: previousState.action)
+            let shouldCancelOrder = previousState.step == .confirmDetail
+            guard !shouldCancelOrder else {
+                return processCancelOrder(state: previousState)
+            }
+            return nil
         case .sourceAccountSelected(let sourceAccount):
             if let target = previousState.destination, !previousState.availableTargets.isEmpty {
                 // This is going to initialize a new PendingTransaction with a 0 amount.
@@ -285,16 +300,24 @@ final class TransactionModel {
     private func processValidateTransactionForCheckout(oldState: TransactionState) -> Disposable {
         interactor.validateTransaction
             .subscribe { [weak self] in
-                self?.process(action: .showCheckout)
+                self?.process(action: .createOrder)
             } onError: { [weak self] error in
                 Logger.shared.debug("!TRANSACTION!> Invalid transaction: \(String(describing: error))")
-                // HACK: update the transaction to show errors.
-                self?.process(action: .updateAmount(oldState.amount))
+                self?.process(action: .fatalTransactionError(error))
             }
     }
 
-    private func processExecuteTransaction(secondPassword: String) -> Disposable {
-        interactor.verifyAndExecute(secondPassword: secondPassword)
+    private func processCreateOrder() -> Disposable {
+        interactor.createOrder()
+            .subscribe { [weak self] order in
+                self?.process(action: .orderCreated(order))
+            } onError: { [weak self] error in
+                self?.process(action: .fatalTransactionError(error))
+            }
+    }
+
+    private func processExecuteTransaction(order: TransactionOrder?, secondPassword: String) -> Disposable {
+        interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
             .subscribe(onSuccess: { [weak self] result in
                 switch result {
                 case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
@@ -308,7 +331,7 @@ final class TransactionModel {
             })
     }
 
-    private func processPollOrderStatus(order: OrderDetails) -> Disposable? {
+    private func processPollOrderStatus(order: TransactionOrder) -> Disposable? {
         interactor
             .pollOrderStatusUntilDoneOrTimeout(orderId: order.identifier)
             .asSingle()
@@ -435,11 +458,28 @@ final class TransactionModel {
             }
     }
 
-    private func processTransactionInvalidation(action: AssetAction) -> Disposable {
-        Observable.just(())
-            .subscribe(onNext: { [weak self] _ in
-                self?.process(action: .invalidateTransaction)
-            })
+    private func processTransactionInvalidation(state: TransactionState) -> Disposable {
+        let cancelOrder: Single<Void>
+        if let order = state.order {
+            cancelOrder = interactor.cancelOrder(with: order.identifier)
+        } else {
+            cancelOrder = .just(())
+        }
+        return cancelOrder.subscribe(onSuccess: { [weak self] _ in
+            self?.process(action: .invalidateTransaction)
+        })
+    }
+
+    private func processCancelOrder(state: TransactionState) -> Disposable {
+        let cancelOrder: Single<Void>
+        if let order = state.order {
+            cancelOrder = interactor.cancelOrder(with: order.identifier)
+        } else {
+            cancelOrder = .just(())
+        }
+        return cancelOrder.subscribe(onSuccess: { [weak self] _ in
+            self?.process(action: .orderCancelled)
+        })
     }
 
     private func processInvalidateTransaction() -> Disposable {

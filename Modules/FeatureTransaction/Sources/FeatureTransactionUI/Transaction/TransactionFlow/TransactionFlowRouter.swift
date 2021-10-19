@@ -309,7 +309,10 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             .asSingle()
             .observeOn(MainScheduler.instance)
             .subscribe { [securityRouter, showFailure] transactionState in
-                guard let authorizationData = transactionState.order?.authorizationData else {
+                guard
+                    let order = transactionState.order as? OrderDetails,
+                    let authorizationData = order.authorizationData
+                else {
                     let error = FatalTransactionError.message("Order should contain authorization data.")
                     showFailure(error)
                     return

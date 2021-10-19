@@ -28,7 +28,7 @@ struct TransactionState: StateType {
     var pendingTransaction: PendingTransaction?
     var executionStatus: TransactionExecutionStatus = .notStarted
     var errorState: TransactionErrorState = .none // TODO: make it associated data of execution status, if related?
-    var order: OrderDetails?
+    var order: TransactionOrder?
     var userKYCTiers: KYC.UserTiers?
 
     // MARK: UI Supporting Data
