@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import DIKit
 import PlatformKit
 import RIBs
 import UIKit
@@ -17,7 +16,7 @@ final class BuyFlowRouter: RIBs.Router<BuyFlowInteractor>, BuyFlowRouting {
 
     init(
         interactor: BuyFlowInteractor,
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI
     ) {
         self.analyticsRecorder = analyticsRecorder
         super.init(interactor: interactor)

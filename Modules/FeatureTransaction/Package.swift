@@ -83,6 +83,7 @@ let package = Package(
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
         .package(path: "../Platform"),
+        .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../UIComponents")
     ],
@@ -152,16 +153,18 @@ let package = Package(
             name: "FeatureTransactionDomainTests",
             dependencies: [
                 .target(name: "FeatureTransactionDomain"),
+                .product(name: "BigInt", package: "BigInt"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift"),
-                .product(name: "BigInt", package: "BigInt"),
+                .product(name: "TestKit", package: "Test"),
                 .product(name: "PlatformKit", package: "Platform")
             ]
         ),
         .testTarget(
             name: "FeatureTransactionDataTests",
             dependencies: [
-                .target(name: "FeatureTransactionData")
+                .target(name: "FeatureTransactionData"),
+                .product(name: "TestKit", package: "Test")
             ]
         ),
         .testTarget(
@@ -170,9 +173,11 @@ let package = Package(
                 .target(name: "FeatureTransactionDomainMock"),
                 .target(name: "FeatureTransactionUI"),
                 .target(name: "FeatureTransactionUIMock"),
+                .product(name: "AnalyticsKitMock", package: "Analytics"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "PlatformKitMock", package: "Platform"),
                 .product(name: "PlatformUIKitMock", package: "Platform"),
+                .product(name: "TestKit", package: "Test"),
                 .product(name: "ToolKitMock", package: "Tool")
             ]
         )
