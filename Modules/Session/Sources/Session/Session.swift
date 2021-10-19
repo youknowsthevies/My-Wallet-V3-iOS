@@ -116,7 +116,7 @@ extension State {
     }
 
     public func publisher(for key: Key) -> AnyPublisher<Result<Any, Error>, Never> {
-        return Just(result(for: key))
+        Just(result(for: key))
             .merge(with: data.subject(for: key))
             .eraseToAnyPublisher()
     }
@@ -151,8 +151,7 @@ extension State.Data {
         sync {
             dirty.data[key] = value
             if isNotInTransaction {
-                store[key] = value
-                updateSubjects()
+                update([key: value])
             }
         }
     }
@@ -162,21 +161,25 @@ extension State.Data {
             if isInTransaction {
                 dirty.data[key] = Tombstone.self
             } else {
-                store[key] = nil
-                updateSubjects()
+                update([key: Tombstone.self])
             }
         }
     }
 
     func beginTransaction() {
-        sync { dirty.level += 1 }
+        sync {
+            dirty.level += 1
+        }
     }
 
     func endTransaction() {
         sync {
+            let data = dirty.data
             switch dirty.level {
             case 1:
-                updateSubjects()
+                dirty.data.removeAll(keepingCapacity: true)
+                dirty.level = 0
+                update(data)
             case 1...UInt.max:
                 dirty.level -= 1
             default:
@@ -184,7 +187,6 @@ extension State.Data {
                     "Misaligned begin -> end transaction calls. You must be in a transaction to end a transaction."
                 )
             }
-            dirty.data = [:]
         }
     }
 
@@ -192,7 +194,7 @@ extension State.Data {
         sync {
             precondition(isInTransaction)
             dirty.level = 0
-            dirty.data = [:]
+            dirty.data.removeAll(keepingCapacity: true)
         }
     }
 
@@ -204,20 +206,24 @@ extension State.Data {
         }
     }
 
-    private func updateSubjects() {
+    private func update(_ data: [Key: Any]) {
         sync {
-            for (key, value) in dirty.data {
+            for (key, value) in data {
                 switch value {
                 case is Tombstone.Type:
                     store.removeValue(forKey: key)
-                    notify(key, with: Any?.none as Any)
                 default:
                     store[key] = value
+                }
+            }
+            for (key, value) in data {
+                switch value {
+                case is Tombstone.Type:
+                    notify(key, with: Any?.none as Any)
+                default:
                     notify(key, with: value)
                 }
             }
-            dirty.level = 0
-            dirty.data.removeAll(keepingCapacity: true)
         }
     }
 
@@ -242,4 +248,23 @@ extension DispatchSpecificKey {
         self.init()
         queue.setSpecific(key: self, value: K.self)
     }
+}
+
+extension State.Error: Equatable {
+
+    public static func == (lhs: State.Error, rhs: State.Error) -> Bool {
+        switch (lhs, rhs) {
+        case (.keyDoesNotExist(let l), .keyDoesNotExist(let r)):
+            return l == r
+        case (.typeMismatch(let k1, let e1, let a1), .typeMismatch(let k2, let e2, let a2)):
+            return k1 == k2
+                && String(reflecting: e1) == String(reflecting: e2)
+                && String(reflecting: a1) == String(reflecting: a2)
+        case (.other(let e1), .other(let e2)):
+            return String(describing: e1) == String(describing: e2)
+        default:
+            return false
+        }
+    }
+
 }
