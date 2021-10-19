@@ -20,7 +20,7 @@ extension State {
         internal var subjects: [Key: Subject] = [:]
         private var dirty: (data: [Key: Any], level: UInt) = ([:], 0)
 
-        private var q: DispatchQueue = DispatchQueue(label: "com.blockchain.session.state.q")
+        private var q = DispatchQueue(label: "com.blockchain.session.state.q")
         private var k: DispatchSpecificKey<Data.Type>
 
         init() { k = .init(on: q) }
@@ -67,7 +67,7 @@ extension State {
         data.set(key, to: value)
     }
 
-    public func set(_ key: Key, to value:  @escaping () throws -> Any) {
+    public func set(_ key: Key, to value: @escaping () throws -> Any) {
         data.set(key, to: Data.Computed(key: key, yield: value))
     }
 
@@ -104,9 +104,9 @@ extension State {
             }
             .removeDuplicates(by: { a, b in
                 switch (a, b) {
-                case let (.success(a), .success(b)):
+                case (.success(let a), .success(let b)):
                     return a == b
-                case let (.failure(.keyDoesNotExist(a)), .failure(.keyDoesNotExist(b))):
+                case (.failure(.keyDoesNotExist(let a)), .failure(.keyDoesNotExist(let b))):
                     return a == b
                 default:
                     return false
