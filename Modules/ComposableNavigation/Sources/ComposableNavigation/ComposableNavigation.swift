@@ -24,6 +24,11 @@ public struct RouteIntent<R: NavigationRoute>: Hashable {
 
     public var route: R
     public var action: Action
+
+    public init(route: R, action: RouteIntent<R>.Action) {
+        self.route = route
+        self.action = action
+    }
 }
 
 /// A specfication of a route and how it maps to the destination screen

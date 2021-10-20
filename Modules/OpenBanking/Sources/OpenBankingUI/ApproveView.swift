@@ -23,7 +23,7 @@ public struct ApproveState: Equatable, NavigationState {
     }
 }
 
-public enum ApproveAction: NavigationAction {
+public enum ApproveAction: Hashable, NavigationAction {
 
     case route(RouteIntent<ApproveRoute>?)
 

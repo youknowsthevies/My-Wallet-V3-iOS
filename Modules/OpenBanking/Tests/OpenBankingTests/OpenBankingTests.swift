@@ -4,6 +4,7 @@ import CombineSchedulers
 @testable import NetworkKit
 @testable import OpenBanking
 import TestKit
+import OpenBankingTestFixture
 
 // swiftlint:disable line_length
 // swiftlint:disable single_test_class
@@ -32,10 +33,7 @@ final class OpenBankingTests: XCTestCase {
     func test_handle_consent_token_error() throws {
 
         network.error(
-            URLRequest(
-                url: "https://api.blockchain.info/nabu-gateway/payments/banktransfer/one-time-token",
-                method: .post
-            ).json()
+            URLRequest(.post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/one-time-token",)
         )
 
         banking.state.transaction { state in
@@ -197,10 +195,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
     }
 
     func get() -> URLRequest {
-        URLRequest(
-            url: "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c",
-            method: .get
-        ).json()
+        URLRequest(.get, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c")
     }
 
     func test_poll_with_error() throws {
@@ -355,11 +350,7 @@ final class OpenBankingPaymentTests: XCTestCase {
     }
 
     func get() -> URLRequest {
-        URLRequest(
-            url: "https://api.blockchain.info/nabu-gateway/payments/payment/b039317d-df85-413f-932d-2719346a839a",
-            method: .get
-        )
-        .json()
+        URLRequest(.get, "https://api.blockchain.info/nabu-gateway/payments/payment/b039317d-df85-413f-932d-2719346a839a")
     }
 
     func test_poll_error() throws {
@@ -564,20 +555,5 @@ final class OpenBankingFlowTests: XCTestCase {
 
         subscription.cancel()
         _ = details
-    }
-}
-
-extension Array where Element == NetworkRequest {
-
-    subscript(method: NetworkRequest.NetworkMethod, url: URL) -> NetworkRequest? {
-        first(where: { $0.method == method && $0.urlRequest.url == url })
-    }
-}
-
-extension URLRequest {
-    func json() -> Self {
-        var request = self
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        return request
     }
 }

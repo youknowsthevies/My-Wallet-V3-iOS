@@ -2,6 +2,8 @@
 
 #if DEBUG
 
+import Foundation
+import CombineSchedulers
 import NetworkKit
 import ToolKit
 

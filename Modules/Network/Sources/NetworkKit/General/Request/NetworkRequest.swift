@@ -56,10 +56,10 @@ public struct NetworkRequest {
         return request.copy() as! URLRequest
     }
 
-    let method: NetworkMethod
-    let endpoint: URL
-    private(set) var headers: HTTPHeaders
-    let contentType: ContentType
+    public let method: NetworkMethod
+    public let endpoint: URL
+    public private(set) var headers: HTTPHeaders
+    public let contentType: ContentType
     let decoder: NetworkResponseDecoderAPI
     let responseHandler: NetworkResponseHandlerAPI
 

@@ -1,4 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+// swiftlint:disable all
 
 import CasePaths
 import SwiftUI
@@ -131,7 +132,7 @@ extension Length {
         `in`(parent: frame, screen: frame)
     }
 
-    @inlinable public func `in`(parent: CGRect, screen: CGRect) -> CGFloat {
+    @inlinable public func `in`(parent: CGRect, screen: CGRect = .screen) -> CGFloat {
         switch self {
         case .pt(let o):
             return o
@@ -161,20 +162,6 @@ extension Size {
 
     public static var zero: Size = .init(length: 0.pt)
     public static var unit: Size = .init(length: 1.pt)
-
-    @inlinable public func `in`(_ proxy: GeometryProxy, coordinateSpace: CoordinateSpace = .local) -> CGSize {
-        CGSize(
-            width: width.in(proxy, coordinateSpace: coordinateSpace),
-            height: height.in(proxy, coordinateSpace: coordinateSpace)
-        )
-    }
-
-    @inlinable public func `in`(_ frame: CGRect) -> CGSize {
-        CGSize(
-            width: width.in(frame),
-            height: height.in(frame)
-        )
-    }
 
     @inlinable public func `in`(parent: CGRect, screen: CGRect) -> CGSize {
         CGSize(
@@ -256,6 +243,10 @@ extension ComputeLength {
         `in`(geometry, coordinateSpace: .local)
     }
 
+    @inlinable public func `in`(_ coordinateSpace: CoordinateSpace) -> (_ geometry: GeometryProxy) -> ComputedValue {
+        { `in`($0, coordinateSpace: coordinateSpace) }
+    }
+
     @inlinable public func `in`(_ frame: CGRect) -> ComputedValue {
         `in`(parent: frame, screen: frame)
     }
@@ -264,63 +255,57 @@ extension ComputeLength {
 extension Length: ComputeLength {}
 extension Size: ComputeLength {}
 
+extension View {
 
-struct LengthViewModifier<A: ComputeLength>: ViewModifier {
+    public func padding(
+        _ length: Length,
+        in frame: CGRect? = nil
+    ) -> some View {
+        padding(length.in(parent: frame ?? .screen))
+    }
 
-    var length: A
-    var yield: (A.ComputedValue) -> Void
+    public func padding(
+        _ edges: Edge.Set = .all,
+        _ length: Length,
+        in frame: CGRect? = nil
+    ) -> some View {
+        padding(edges, length.in(parent: frame ?? .screen))
+    }
 
-    func body(content: Content) -> some View {
-        content.background(
-            GeometryReader { geometry in
-                Color.clear.onAppear {
-                    yield(length.in(geometry))
-                }
-            }
+    public func frame(
+        width: Length,
+        alignment: Alignment = .center,
+        in frame: CGRect? = nil
+    ) -> some View {
+        self.frame(
+            width: width.in(parent: frame ?? .screen),
+            alignment: alignment
         )
     }
-}
 
-extension View {
-
-    public func bind<A: ComputeLength>(
-        _ a: A,
-        to binding: Binding<A.ComputedValue>
+    public func frame(
+        height: Length,
+        alignment: Alignment = .center,
+        in frame: CGRect? = nil
     ) -> some View {
-        return modifier(LengthViewModifier(a: a) { binding.wrappedValue = $0 })
+        self.frame(
+            height: height.in(parent: frame ?? .screen),
+            alignment: alignment
+        )
     }
 
-    public func length<A: ComputeLength>(
-        _ a: A,
-        _ yield: @escaping (A.ComputedValue) -> Void
+    public func frame(
+        width: Length,
+        height: Length,
+        alignment: Alignment = .center,
+        in frame: CGRect? = nil
     ) -> some View {
-        modifier(LengthViewModifier(a: a, yield: yield))
-    }
-}
-
-extension View {
-
-    public func padding(_ length: Length) -> some View {
-        withGeometry(length.in(_:)) { $0.padding($1) }
-    }
-
-    public func padding(_ edges: Edge.Set = .all, _ length: Length) -> some View {
-        withGeometry(length.in(_:)) { $0.padding(edges, $1) }
-    }
-
-    public func frame(width: Length, alignment: Alignment = .center) -> some View {
-        withGeometry(width.in(_:)) { $0.frame(width: $1, alignment: alignment) }
-    }
-
-    public func frame(height: Length, alignment: Alignment = .center) -> some View {
-        withGeometry(height.in(_:)) { $0.frame(height: $1, alignment: alignment) }
-
-    }
-
-    public func frame(width: Length, height: Length, alignment: Alignment = .center) -> some View {
-        withGeometry({ (width: width.in($0), height: height.in($0)) }) {
-            $0.frame(width: $1.width, height: $1.height, alignment: alignment)
-        }
+        let frame = frame ?? .screen
+        return self.frame(
+            width: width.in(parent: frame),
+            height: height.in(parent: frame),
+            alignment: alignment
+        )
     }
 
     public func frame(
@@ -330,45 +315,51 @@ extension View {
         minHeight: Length? = nil,
         idealHeight: Length? = nil,
         maxHeight: Length? = nil,
-        alignment: Alignment = .center
+        alignment: Alignment = .center,
+        in frame: CGRect? = nil
     ) -> some View {
-        withGeometry(
-            {
-                (
-                    minWidth: minWidth?.in($0),
-                    idealWidth: idealWidth?.in($0),
-                    maxWidth: maxWidth?.in($0),
-                    minHeight: minHeight?.in($0),
-                    idealHeight: idealHeight?.in($0),
-                    maxHeight: maxHeight?.in($0)
-                )
-            }
-        ) {
-            $0.frame(
-                minWidth: $1.minWidth,
-                idealWidth: $1.idealWidth,
-                maxWidth: $1.maxWidth,
-                minHeight: $1.minHeight,
-                idealHeight: $1.idealHeight,
-                maxHeight: $1.maxHeight,
-                alignment: alignment
-            )
-        }
+        let frame = frame ?? .screen
+        return self.frame(
+            minWidth: minWidth?.in(parent: frame),
+            idealWidth: idealWidth?.in(parent: frame),
+            maxWidth: maxWidth?.in(parent: frame),
+            minHeight: minHeight?.in(parent: frame),
+            idealHeight: idealHeight?.in(parent: frame),
+            maxHeight: maxHeight?.in(parent: frame),
+            alignment: alignment
+        )
     }
 
-    public func offset(_ size: Size) -> some View {
-        offset(x: size.width, y: size.height)
+    public func offset(
+        _ size: Size,
+        in frame: CGRect? = nil
+    ) -> some View {
+        offset(x: size.width, y: size.height, in: frame)
     }
 
-    public func offset(x: Length) -> some View {
-        withGeometry(x.in(_:)) { $0.offset(x: $1) }
+    public func offset(
+        x: Length,
+        in frame: CGRect? = nil
+    ) -> some View {
+        offset(x: x.in(parent: frame ?? .screen))
     }
 
-    public func offset(y: Length) -> some View {
-        withGeometry(y.in(_:)) { $0.offset(y: $1) }
+    public func offset(
+        y: Length,
+        in frame: CGRect? = nil
+    ) -> some View {
+        offset(y: y.in(parent: frame ?? .screen))
     }
 
-    public func offset(x: Length, y: Length) -> some View {
-        withGeometry({ (x: x.in($0), y: y.in($0) }) { $0.offset(x: $1.x, y: $1.y) }
+    public func offset(
+        x: Length,
+        y: Length,
+        in frame: CGRect? = nil
+    ) -> some View {
+        let parent = frame ?? .screen
+        return offset(
+            x: x.in(parent: parent),
+            y: y.in(parent: parent)
+        )
     }
 }

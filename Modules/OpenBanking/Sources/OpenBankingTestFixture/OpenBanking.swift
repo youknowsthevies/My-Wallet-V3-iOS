@@ -8,14 +8,14 @@ import NetworkKit
 
 extension OpenBanking {
 
-    static func test(_ requests: [URLRequest: Data] = [:]) -> (
+    public static func test(_ requests: [URLRequest: Data] = [:]) -> (
         banking: OpenBanking,
         communicator: ReplayNetworkCommunicator
     ) {
         test(requests, using: DispatchQueue.immediate)
     }
 
-    static func test<S: Scheduler>(
+    public static func test<S: Scheduler>(
         _ requests: [URLRequest: Data] = [:],
         using scheduler: S
     ) -> (
@@ -46,5 +46,21 @@ extension OpenBanking {
             ),
             communicator
         )
+    }
+}
+
+extension Array where Element == NetworkRequest {
+
+    public subscript(method: NetworkRequest.NetworkMethod, url: URL) -> NetworkRequest? {
+        first(where: { $0.method == method && $0.urlRequest.url == url })
+    }
+}
+
+extension URLRequest {
+    
+    public init(_ method: NetworkRequest.NetworkMethod, _ url: URL, _ contentType: NetworkRequest.ContentType = .json) {
+        self.init(url: url)
+        httpMethod = method.rawValue
+        addValue(contentType.rawValue, forHTTPHeaderField: "Accept")
     }
 }

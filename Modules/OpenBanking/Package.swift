@@ -59,8 +59,8 @@ let package = Package(
                 .product(name: "UIComponents", package: "UIComponents")
             ]
         ),
-        .testTarget(
-            name: "OpenBankingTests",
+        .target(
+            name: "OpenBankingTestFixture",
             dependencies: [
                 .target(name: "OpenBanking"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
@@ -68,7 +68,7 @@ let package = Package(
             ],
             resources: [
                 // swiftlint:disable line_length
-                // $ cd Tests/OpenBankingTests
+                // $ cd Sources/OpenBankingTestFixture
                 // $ fd --glob *.json | xargs -L 1 bash -c 'printf ".copy(\"%s\"),\n" "$*" ' bash
                 .copy("fixture/DELETE/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c/DELETE_nabu-gateway_payments_banktransfer_a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c.json"),
                 .copy("fixture/GET/nabu-gateway/payments/banktransfer/5adf0e04-ffc5-42ce-bc5b-3ce465016292/GET_nabu-gateway_payments_banktransfer_5adf0e04-ffc5-42ce-bc5b-3ce465016292.json"),
@@ -80,6 +80,24 @@ let package = Package(
                 .copy("fixture/POST/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c/payment/POST_nabu-gateway_payments_banktransfer_a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c_payment.json"),
                 .copy("fixture/POST/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c/update/POST_nabu-gateway_payments_banktransfer_a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c_update.json"),
                 .copy("fixture/POST/nabu-gateway/payments/banktransfer/one-time-token/POST_nabu-gateway_payments_banktransfer_one-time-token.json")
+            ]
+        ),
+        .testTarget(
+            name: "OpenBankingTests",
+            dependencies: [
+                .target(name: "OpenBanking"),
+                .target(name: "OpenBankingTestFixture"),
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "TestKit", package: "Test")
+            ]
+        ),
+        .testTarget(
+            name: "OpenBankingUITests",
+            dependencies: [
+                .target(name: "OpenBankingUI"),
+                .target(name: "OpenBankingTestFixture"),
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "TestKit", package: "Test")
             ]
         )
     ]

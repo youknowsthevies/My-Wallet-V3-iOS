@@ -16,7 +16,7 @@ public struct InstitutionListState: Equatable, NavigationState {
     var selection: ApproveState?
 }
 
-public enum InstitutionListAction: NavigationAction, FailAction {
+public enum InstitutionListAction: Hashable, NavigationAction, FailAction {
 
     case route(RouteIntent<InstitutionListRoute>?)
     case fail(OpenBanking.Error)
@@ -176,22 +176,13 @@ extension InstitutionList {
 
         let institution: OpenBanking.Institution
 
-        public var id: Identity<OpenBanking.Institution> {
-            institution.id
-        }
+        public var id: Identity<OpenBanking.Institution> { institution.id }
 
+        private var title: String { institution.fullName }
         private var image: URL? {
             institution.media.first(where: { $0.type == .icon })?.source
                 ?? institution.media.first?.source
         }
-
-        private var title: String {
-            institution.fullName
-        }
-
-        @State private var icon: CGFloat = 44
-        @State private var row: CGFloat = 75
-        @State private var chevron: CGFloat = 8
 
         init(_ institution: OpenBanking.Institution) {
             self.institution = institution
