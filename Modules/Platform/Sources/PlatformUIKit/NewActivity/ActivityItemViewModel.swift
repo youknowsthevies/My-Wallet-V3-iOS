@@ -82,8 +82,8 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
         }
         return .init(
             text: text,
-            font: descriptors.fiatFont,
-            color: descriptors.fiatTextColor,
+            font: descriptors.primaryFont,
+            color: descriptors.primaryTextColor,
             alignment: .left,
             accessibility: .id(AccessibilityId.ActivityCell.titleLabel)
         )
@@ -94,23 +94,23 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
         case .pending(confirmations: let confirmations):
             return .init(
                 text: "\(confirmations.current) \(LocalizationStrings.of) \(confirmations.total)",
-                font: descriptors.cryptoFont,
-                color: descriptors.cryptoTextColor,
+                font: descriptors.secondaryFont,
+                color: descriptors.secondaryTextColor,
                 alignment: .left,
                 accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
             )
         case .complete:
             return .init(
                 text: DateFormatter.medium.string(from: event.creationDate),
-                font: descriptors.cryptoFont,
-                color: descriptors.cryptoTextColor,
+                font: descriptors.secondaryFont,
+                color: descriptors.secondaryTextColor,
                 alignment: .left,
                 accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
             )
         case .product(let status):
             let failedLabelContent: LabelContent = .init(
                 text: LocalizationStrings.failed,
-                font: descriptors.cryptoFont,
+                font: descriptors.secondaryFont,
                 color: .destructive,
                 alignment: .left,
                 accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
@@ -136,8 +136,8 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
 
             return .init(
                 text: DateFormatter.medium.string(from: event.creationDate),
-                font: descriptors.cryptoFont,
-                color: descriptors.cryptoTextColor,
+                font: descriptors.secondaryFont,
+                color: descriptors.secondaryTextColor,
                 alignment: .left,
                 accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
             )

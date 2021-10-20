@@ -322,11 +322,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         transactionState
-            .compactMap { state -> (
-                action: AssetAction,
-                amountIsZero: Bool,
-                networkFeeAdjustmentSupported: Bool
-            )? in
+            .compactMap { state -> (action: AssetAction, amountIsZero: Bool, networkFeeAdjustmentSupported: Bool)? in
                 guard let pendingTransaction = state.pendingTransaction else {
                     return nil
                 }

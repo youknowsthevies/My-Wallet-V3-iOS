@@ -133,8 +133,8 @@ public final class AssetBalanceView: ThreeLabelStackView {
 extension Reactive where Base: AssetBalanceView {
     var values: Binder<AssetBalanceViewModel.Value.Presentation> {
         Binder(base) { view, values in
-            view.fiatBalanceLabel.content = values.fiatBalance
-            view.cryptoBalanceLabel.content = values.cryptoBalance
+            view.fiatBalanceLabel.content = values.primaryBalance
+            view.cryptoBalanceLabel.content = values.secondaryBalance
             view.pendingCryptoBalanceLabel.content = values.pendingBalance
             view.pendingCryptoBalanceLabel.isHidden = values.pendingBalanceVisibility.isHidden
         }

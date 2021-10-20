@@ -31,8 +31,8 @@ public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteractin
                 case .value(let result):
                     return .loaded(
                         next: .init(
-                            fiatValue: result.quote,
-                            cryptoValue: result.base,
+                            primaryValue: result.base,
+                            secondaryValue: result.quote,
                             pendingValue: nil
                         )
                     )

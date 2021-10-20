@@ -43,6 +43,7 @@ public struct TransactionalActivityItemEvent {
     public let status: EventStatus
     public let type: EventType
     public let amount: CryptoValue
+    public let fee: CryptoValue
 
     /// The transaction hash, used in Explorer URLs.
     public let transactionHash: String
@@ -57,7 +58,8 @@ public struct TransactionalActivityItemEvent {
         creationDate: Date,
         status: EventStatus,
         type: EventType,
-        amount: CryptoValue
+        amount: CryptoValue,
+        fee: CryptoValue?
     ) {
         self.identifier = identifier
         self.transactionHash = transactionHash
@@ -65,6 +67,7 @@ public struct TransactionalActivityItemEvent {
         self.status = status
         self.type = type
         self.amount = amount
+        self.fee = fee ?? .zero(currency: amount.currency)
     }
 }
 

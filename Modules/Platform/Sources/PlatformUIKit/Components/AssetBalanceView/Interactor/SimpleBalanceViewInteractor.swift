@@ -11,8 +11,8 @@ public final class SimpleBalanceViewInteractor: AssetBalanceViewInteracting {
     public var state: Observable<InteractionState> {
         .just(
             .loaded(next: .init(
-                fiatValue: fiatValue,
-                cryptoValue: cryptoValue,
+                primaryValue: cryptoValue ?? fiatValue,
+                secondaryValue: fiatValue,
                 pendingValue: nil
             ))
         )
