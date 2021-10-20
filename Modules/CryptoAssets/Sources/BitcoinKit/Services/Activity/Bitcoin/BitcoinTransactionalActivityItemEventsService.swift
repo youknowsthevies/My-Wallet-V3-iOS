@@ -24,7 +24,8 @@ extension BitcoinHistoricalTransaction {
             creationDate: createdAt,
             status: status,
             type: direction == .debit ? .receive : .send,
-            amount: amount
+            amount: amount,
+            fee: fee
         )
     }
 }

@@ -54,19 +54,19 @@ extension DependencyContainer {
 
         // MARK: - Explorer
 
-        single(tag: DIKitContext.explorer) { RequestBuilder(networkConfig: Network.Config.explorerConfig) }
+        single(tag: DIKitContext.explorer) { RequestBuilder(config: Network.Config.explorerConfig) }
 
         single(tag: DIKitContext.explorer) { NetworkAdapter() as NetworkAdapterAPI }
 
         // MARK: - Wallet
 
-        single(tag: DIKitContext.wallet) { RequestBuilder(networkConfig: Network.Config.walletConfig) }
+        single(tag: DIKitContext.wallet) { RequestBuilder(config: Network.Config.walletConfig) }
 
         single(tag: DIKitContext.wallet) { NetworkAdapter() as NetworkAdapterAPI }
 
         // MARK: - Retail
 
-        single(tag: DIKitContext.retail) { RequestBuilder(networkConfig: Network.Config.retailConfig) }
+        single(tag: DIKitContext.retail) { RequestBuilder(config: Network.Config.retailConfig) }
 
         single(tag: DIKitContext.retail) { NetworkAdapter.retailAdapter() as NetworkAdapterAPI }
 
@@ -76,7 +76,7 @@ extension DependencyContainer {
 
         single(tag: DIKitContext.everypay) { DefaultSessionHandler() as NetworkSessionDelegateAPI }
 
-        single(tag: DIKitContext.everypay) { RequestBuilder(networkConfig: Network.Config.everypayConfig) }
+        single(tag: DIKitContext.everypay) { RequestBuilder(config: Network.Config.everypayConfig) }
 
         single(tag: DIKitContext.everypay) { NetworkAdapter.everypayAdapter() as NetworkAdapterAPI }
 

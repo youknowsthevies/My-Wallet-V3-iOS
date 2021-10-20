@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import FeatureTransactionDomain
+import Localization
 import PlatformKit
 import RxCocoa
 import RxRelay
@@ -59,10 +60,16 @@ final class TransactionModel {
                 amount: .zero(currency: sourceAccount.currencyType),
                 action: action
             )
-        case .initialiseWithTargetAndNoSource(let action, _, _),
-             .initialiseWithNoSourceOrTargetAccount(let action, _):
-            return processSourceAccountsListUpdate(action: action)
-
+        case .initialiseWithNoSourceOrTargetAccount(let action, _):
+            return processSourceAccountsListUpdate(
+                action: action,
+                targetAccount: nil
+            )
+        case .initialiseWithTargetAndNoSource(let action, let target, _):
+            return processSourceAccountsListUpdate(
+                action: action,
+                targetAccount: target
+            )
         case .availableSourceAccountsListUpdated:
             return nil
 
@@ -76,10 +83,13 @@ final class TransactionModel {
             return nil
 
         case .cardLinkingFlowCompleted:
-            return processCardLinkingCompletion(state: previousState)
+            return processSourceAccountsListUpdate(
+                action: previousState.action,
+                targetAccount: nil
+            )
 
         case .bankAccountLinked(let action):
-            return processSourceAccountsListUpdate(action: action)
+            return processSourceAccountsListUpdate(action: action, targetAccount: nil)
 
         case .bankAccountLinkedFromSource(let source, let action):
             switch action {
@@ -91,6 +101,9 @@ final class TransactionModel {
 
         case .showBankLinkingFlow,
              .bankLinkingFlowDismissed:
+            return nil
+
+        case .showBankWiringInstructions:
             return nil
 
         case .initialiseWithSourceAccount(let action, let sourceAccount, _):
@@ -123,15 +136,26 @@ final class TransactionModel {
         case .validateSourceAccount:
             return nil
         case .prepareTransaction:
+            return processValidateTransactionForCheckout(oldState: previousState)
+        case .showCheckout:
             return nil
         case .executeTransaction:
-            return processExecuteTransaction(secondPassword: previousState.secondPassword)
+            return processExecuteTransaction(
+                order: previousState.order,
+                secondPassword: previousState.secondPassword
+            )
+        case .updateTransactionPending:
+            return nil
         case .updateTransactionComplete:
             return nil
         case .fetchFiatRates:
             return processFiatRatePairs()
         case .fetchTargetRates:
             return processTransactionRatePair()
+        case .fetchUserKYCInfo:
+            return processFetchKYCStatus()
+        case .userKYCInfoFetched:
+            return nil
         case .transactionFiatRatePairs:
             return nil
         case .sourceDestinationPair:
@@ -140,16 +164,28 @@ final class TransactionModel {
             return nil
         case .validateTransaction:
             return processValidateTransaction()
+        case .createOrder:
+            return processCreateOrder()
+        case .orderCreated:
+            process(action: .showCheckout)
+            return nil
+        case .orderCancelled:
+            return nil
         case .resetFlow:
             interactor.reset()
             return nil
         case .returnToPreviousStep:
-            let isBitPay = previousState.step == .confirmDetail && previousState.destination is BitPayInvoiceTarget
             let isAmountScreen = previousState.step == .enterAmount
-            guard isAmountScreen || isBitPay else {
-                return nil
+            let isBitPay = previousState.step == .confirmDetail && previousState.destination is BitPayInvoiceTarget
+            let shouldInvalidateTransaction = isAmountScreen || isBitPay
+            guard !shouldInvalidateTransaction else {
+                return processTransactionInvalidation(state: previousState)
             }
-            return processTransactionInvalidation(action: previousState.action)
+            let shouldCancelOrder = previousState.step == .confirmDetail
+            guard !shouldCancelOrder else {
+                return processCancelOrder(state: previousState)
+            }
+            return nil
         case .sourceAccountSelected(let sourceAccount):
             if let target = previousState.destination, !previousState.availableTargets.isEmpty {
                 // This is going to initialize a new PendingTransaction with a 0 amount.
@@ -181,12 +217,13 @@ final class TransactionModel {
         case .performSecurityChecksForTransaction:
             return nil
         case .securityChecksCompleted:
-            process(
-                action: .updateTransactionComplete(
-                    .unHashed(amount: previousState.amount)
+            guard let order = previousState.order else {
+                return perform(
+                    previousState: previousState,
+                    action: .updateTransactionComplete
                 )
-            )
-            return nil
+            }
+            return processPollOrderStatus(order: order)
         case .invalidateTransaction:
             return processInvalidateTransaction()
         case .showSourceSelection:
@@ -223,8 +260,15 @@ final class TransactionModel {
             })
     }
 
-    private func processSourceAccountsListUpdate(action: AssetAction) -> Disposable {
-        interactor.getAvailableSourceAccounts(action: action)
+    private func processSourceAccountsListUpdate(
+        action: AssetAction,
+        targetAccount: TransactionTarget?
+    ) -> Disposable {
+        interactor
+            .getAvailableSourceAccounts(
+                action: action,
+                transactionTarget: targetAccount
+            )
             .subscribe(
                 onSuccess: { [weak self] sourceAccounts in
                     self?.process(action: .availableSourceAccountsListUpdated(sourceAccounts))
@@ -253,19 +297,67 @@ final class TransactionModel {
             })
     }
 
-    private func processExecuteTransaction(secondPassword: String) -> Disposable {
-        interactor.verifyAndExecute(secondPassword: secondPassword)
+    private func processValidateTransactionForCheckout(oldState: TransactionState) -> Disposable {
+        interactor.validateTransaction
+            .subscribe { [weak self] in
+                self?.process(action: .createOrder)
+            } onError: { [weak self] error in
+                Logger.shared.debug("!TRANSACTION!> Invalid transaction: \(String(describing: error))")
+                self?.process(action: .fatalTransactionError(error))
+            }
+    }
+
+    private func processCreateOrder() -> Disposable {
+        interactor.createOrder()
+            .subscribe { [weak self] order in
+                self?.process(action: .orderCreated(order))
+            } onError: { [weak self] error in
+                self?.process(action: .fatalTransactionError(error))
+            }
+    }
+
+    private func processExecuteTransaction(order: TransactionOrder?, secondPassword: String) -> Disposable {
+        interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
             .subscribe(onSuccess: { [weak self] result in
                 switch result {
                 case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
                     self?.process(action: .performSecurityChecksForTransaction(result))
                 default:
-                    self?.process(action: .updateTransactionComplete(result))
+                    self?.process(action: .updateTransactionComplete)
                 }
             }, onError: { [weak self] error in
                 Logger.shared.error("!TRANSACTION!> Unable to processExecuteTransaction: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))
             })
+    }
+
+    private func processPollOrderStatus(order: TransactionOrder) -> Disposable? {
+        interactor
+            .pollOrderStatusUntilDoneOrTimeout(orderId: order.identifier)
+            .asSingle()
+            .subscribeOn(MainScheduler.instance)
+            .subscribe { [weak self] finalOrderStatus in
+                switch finalOrderStatus {
+                case .cancelled, .expired:
+                    self?.process(
+                        action: .fatalTransactionError(
+                            FatalTransactionError.message(LocalizationConstants.Transaction.Error.unknownError)
+                        )
+                    )
+                case .failed:
+                    self?.process(
+                        action: .fatalTransactionError(
+                            FatalTransactionError.message(LocalizationConstants.Transaction.Error.generic)
+                        )
+                    )
+                case .depositMatched, .pendingConfirmation, .pendingDeposit:
+                    self?.process(action: .updateTransactionPending)
+                case .finished:
+                    self?.process(action: .updateTransactionComplete)
+                }
+            } onError: { [weak self] error in
+                self?.process(action: .fatalTransactionError(error))
+            }
     }
 
     private func processAmountChanged(amount: MoneyValue) -> Disposable? {
@@ -328,6 +420,7 @@ final class TransactionModel {
         process(action: .pendingTransactionStarted(allowFiatInput: interactor.canTransactFiat))
         process(action: .fetchFiatRates)
         process(action: .fetchTargetRates)
+        process(action: .fetchUserKYCInfo)
         process(action: .updateAmount(amount))
     }
 
@@ -355,11 +448,38 @@ final class TransactionModel {
             }
     }
 
-    private func processTransactionInvalidation(action: AssetAction) -> Disposable {
-        Observable.just(())
-            .subscribe(onNext: { [weak self] _ in
-                self?.process(action: .invalidateTransaction)
-            })
+    private func processFetchKYCStatus() -> Disposable {
+        interactor
+            .fetchUserKYCStatus()
+            .asSingle()
+            .compactMap { $0 }
+            .subscribe { [weak self] userKYCTier in
+                self?.process(action: .userKYCInfoFetched(userKYCTier))
+            }
+    }
+
+    private func processTransactionInvalidation(state: TransactionState) -> Disposable {
+        let cancelOrder: Single<Void>
+        if let order = state.order {
+            cancelOrder = interactor.cancelOrder(with: order.identifier)
+        } else {
+            cancelOrder = .just(())
+        }
+        return cancelOrder.subscribe(onSuccess: { [weak self] _ in
+            self?.process(action: .invalidateTransaction)
+        })
+    }
+
+    private func processCancelOrder(state: TransactionState) -> Disposable {
+        let cancelOrder: Single<Void>
+        if let order = state.order {
+            cancelOrder = interactor.cancelOrder(with: order.identifier)
+        } else {
+            cancelOrder = .just(())
+        }
+        return cancelOrder.subscribe(onSuccess: { [weak self] _ in
+            self?.process(action: .orderCancelled)
+        })
     }
 
     private func processInvalidateTransaction() -> Disposable {
@@ -368,7 +488,7 @@ final class TransactionModel {
     }
 
     private func processAvailableDestinationAccountsListUpdated(state: TransactionState) -> Disposable? {
-        if let destination = state.destination {
+        if let destination = state.destination, state.action == .buy {
             // If we refreshed the list of possible accounts we need to proceed to enter amount
             // That said, the current implementation doesn't initialize a `PendingTransaction` until
             // a target is selected. A target was already selected in this case, but the exchange rate data
@@ -381,14 +501,5 @@ final class TransactionModel {
                 })
         }
         return nil
-    }
-
-    private func processCardLinkingCompletion(state: TransactionState) -> Disposable? {
-        switch state.action {
-        case .buy:
-            return processSourceAccountsListUpdate(action: state.action)
-        default:
-            return nil
-        }
     }
 }

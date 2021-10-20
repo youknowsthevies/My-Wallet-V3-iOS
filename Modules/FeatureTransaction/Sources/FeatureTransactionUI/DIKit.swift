@@ -26,6 +26,7 @@ extension DependencyContainer {
         // MARK: Internal
 
         factory { PaymentMethodLinker() as PaymentMethodLinkerAPI }
+        factory { BankWireLinker() as BankWireLinkerAPI }
         factory { CardLinker() as CardLinkerAPI }
     }
 }

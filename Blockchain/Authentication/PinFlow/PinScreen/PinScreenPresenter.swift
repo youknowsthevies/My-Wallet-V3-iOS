@@ -518,7 +518,7 @@ extension PinScreenPresenter {
     func verifyPinBeforeChanging() -> Completable {
 
         // Pin MUST NOT be nil at that point as it accompanies the use-case.
-        let pin = self.pin.value!
+        let pin = pin.value!
 
         return Completable.create { [weak self] completable in
             guard let self = self else { return Disposables.create() }
@@ -643,7 +643,7 @@ extension PinScreenPresenter {
         }
 
         // Pin MUST NOT be nil at that point
-        let pin = self.pin.value!
+        let pin = pin.value!
 
         // Create a pin payload to be validated by the interactor
         let payload = PinPayload(

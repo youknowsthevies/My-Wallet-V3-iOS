@@ -143,6 +143,8 @@ extension DependencyContainer {
 
         single { ReactiveWallet() as ReactiveWalletAPI }
 
+        factory { BlockchainAccountProvider() as BlockchainAccountRepositoryAPI }
+
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }
 
         single { WalletService() as WalletOptionsAPI }
@@ -163,6 +165,10 @@ extension DependencyContainer {
         single { TradingBalanceService() as TradingBalanceServiceAPI }
 
         factory { PriceService() as PriceServiceAPI }
+
+        factory { () -> CurrencyConversionServiceAPI in
+            CurrencyConversionService(priceService: DIKit.resolve())
+        }
 
         factory { CryptoReceiveAddressFactoryService() }
 

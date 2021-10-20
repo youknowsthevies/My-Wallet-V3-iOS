@@ -121,7 +121,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         case is BankAccount:
             model = .template(
                 image: .local(name: "ic-trading-account", bundle: .platformUIKit),
-                templateColor: account.currencyType.brandColor,
+                templateColor: account.currencyType.brandUIColor,
                 backgroundColor: .red,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
@@ -129,7 +129,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         case is TradingAccount:
             model = .template(
                 image: .local(name: "ic-trading-account", bundle: .platformUIKit),
-                templateColor: account.currencyType.brandColor,
+                templateColor: account.currencyType.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
@@ -137,7 +137,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         case is CryptoInterestAccount:
             model = .template(
                 image: .local(name: "ic-interest-account", bundle: .platformUIKit),
-                templateColor: account.currencyType.brandColor,
+                templateColor: account.currencyType.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
@@ -145,7 +145,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         case is ExchangeAccount:
             model = .template(
                 image: .local(name: "ic-exchange-account", bundle: .platformUIKit),
-                templateColor: account.currencyType.brandColor,
+                templateColor: account.currencyType.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
@@ -153,7 +153,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         case is NonCustodialAccount:
             model = .template(
                 image: .local(name: "ic-private-account", bundle: .platformUIKit),
-                templateColor: account.currencyType.brandColor,
+                templateColor: account.currencyType.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
@@ -161,7 +161,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         case is FiatAccount:
             model = .template(
                 image: .local(name: "ic-trading-account", bundle: .platformUIKit),
-                templateColor: account.currencyType.brandColor,
+                templateColor: account.currencyType.brandUIColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""

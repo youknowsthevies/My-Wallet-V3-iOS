@@ -8,6 +8,16 @@ struct PriceListView: View {
 
     let store: Store<PriceListState, PriceListAction>
 
+    init(
+        store: Store<PriceListState, PriceListAction> = Store(
+            initialState: PriceListState(),
+            reducer: priceListReducer,
+            environment: PriceListEnvironment()
+        )
+    ) {
+        self.store = store
+    }
+
     var body: some View {
         WithViewStore(self.store) { viewStore in
             VStack {
@@ -38,7 +48,11 @@ struct PriceListView: View {
                         viewStore.send(.listDidScroll(offset: $0))
                     }
                 }
-            }.padding(.top)
+            }
+            .padding(.top)
+            .onAppear {
+                viewStore.send(.loadPrices)
+            }
         }
     }
 
@@ -74,7 +88,31 @@ private struct OffsetKey: PreferenceKey {
 }
 
 struct PriceListView_Previews: PreviewProvider {
+
+    static let items = [
+        Price(currency: .coin(.bitcoin), value: .loaded(next: "$55,343.76"), deltaPercentage: .loaded(next: 7.88)),
+        Price(currency: .coin(.ethereum), value: .loaded(next: "$3,585.69"), deltaPercentage: .loaded(next: 1.82)),
+        Price(currency: .coin(.bitcoinCash), value: .loaded(next: "$618.05"), deltaPercentage: .loaded(next: -3.46)),
+        Price(currency: .coin(.stellar), value: .loaded(next: "$0.36"), deltaPercentage: .loaded(next: 12.50))
+    ]
+
+    static var priceListState: PriceListState {
+        var priceListState = PriceListState()
+        priceListState.items = IdentifiedArray(uniqueElements: items)
+        return priceListState
+    }
+
+    static var reducer: Reducer<PriceListState, PriceListAction, PriceListEnvironment> = Reducer { _, _, _ in
+        .none
+    }
+
     static var previews: some View {
-        PriceListFactory.makePriceList()
+        PriceListView(
+            store: Store(
+                initialState: priceListState,
+                reducer: reducer,
+                environment: PriceListEnvironment()
+            )
+        )
     }
 }

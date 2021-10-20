@@ -12,6 +12,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case feedTotal(TransactionConfirmation.Model.FeedTotal)
     case feeSelection(TransactionConfirmation.Model.FeeSelection)
     case largeTransactionWarning(TransactionConfirmation.Model.AnyBoolOption<MoneyValue>)
+    case termsOfService(TransactionConfirmation.Model.AnyBoolOption<Bool>)
+    case transferAgreement(TransactionConfirmation.Model.AnyBoolOption<Bool>)
     case memo(TransactionConfirmation.Model.Memo)
     case transactionFee(TransactionConfirmation.Model.FiatTransactionFee)
     case arrivalDate(TransactionConfirmation.Model.FundsArrivalDate)
@@ -32,9 +34,14 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case buyPaymentMethod(TransactionConfirmation.Model.BuyPaymentMethodValue)
 
     case total(TransactionConfirmation.Model.Total)
+    case totalCost(TransactionConfirmation.Model.TotalCost)
 
     public var type: TransactionConfirmation.Kind {
         switch self {
+        case .transferAgreement(let value):
+            return value.type
+        case .termsOfService(let value):
+            return value.type
         case .arrivalDate(let value):
             return value.type
         case .transactionFee(let value):
@@ -82,12 +89,18 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .buyCryptoValue(let value):
             return value.type
         case .buyPaymentMethod(let value):
+            return value.type
+        case .totalCost(let value):
             return value.type
         }
     }
 
     public var formatted: (title: String, subtitle: String)? {
         switch self {
+        case .transferAgreement(let value):
+            return value.formatted
+        case .termsOfService(let value):
+            return value.formatted
         case .arrivalDate(let value):
             return value.formatted
         case .transactionFee(let value):
@@ -135,6 +148,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .buyCryptoValue(let value):
             return value.formatted
         case .buyPaymentMethod(let value):
+            return value.formatted
+        case .totalCost(let value):
             return value.formatted
         }
     }
@@ -158,8 +173,11 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
              (.swapExchangeRate, .swapExchangeRate),
              (.swapSourceValue, .swapSourceValue),
              (.total, .total),
+             (.totalCost, .totalCost),
              (.transactionFee, .transactionFee),
-             (.arrivalDate, .arrivalDate):
+             (.arrivalDate, .arrivalDate),
+             (.termsOfService, .termsOfService),
+             (.transferAgreement, .transferAgreement):
             return true
         default:
             return false

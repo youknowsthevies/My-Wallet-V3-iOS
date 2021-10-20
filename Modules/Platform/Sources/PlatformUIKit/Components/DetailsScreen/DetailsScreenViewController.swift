@@ -93,6 +93,7 @@ public final class DetailsScreenViewController: BaseTableViewController {
         tableView.register(BadgeNumberedTableViewCell.self)
         tableView.registerNibCell(LineItemTableViewCell.self, in: .module)
         tableView.register(SeparatorTableViewCell.self)
+        tableView.register(CheckboxTableViewCell.self)
         tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
     }
 
@@ -169,6 +170,7 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
              .interactableTextCell,
              .notice,
              .separator,
+             .checkbox,
              .textField:
             break
         case .lineItem(let presenter):
@@ -210,6 +212,8 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
             return separatorCell(for: indexPath)
         case .textField(let viewModel):
             return textFieldCell(for: indexPath, viewModel: viewModel)
+        case .checkbox(let viewModel):
+            return checkBox(for: indexPath, model: viewModel)
         }
     }
 
@@ -234,6 +238,12 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
 
     private func numberedCell(for indexPath: IndexPath, model: BadgeNumberedItemViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(BadgeNumberedTableViewCell.self, for: indexPath)
+        cell.viewModel = model
+        return cell
+    }
+
+    private func checkBox(for indexPath: IndexPath, model: CheckboxViewModel) -> UITableViewCell {
+        let cell = tableView.dequeue(CheckboxTableViewCell.self, for: indexPath)
         cell.viewModel = model
         return cell
     }

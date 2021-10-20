@@ -48,8 +48,8 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                         account.fiatBalance = .loading
                         account.cryptoBalance = .loading
                     case .loaded(let balance):
-                        account.fiatBalance = .loaded(next: balance.fiatBalance.text)
-                        account.cryptoBalance = .loaded(next: balance.cryptoBalance.text)
+                        account.fiatBalance = .loaded(next: balance.primaryBalance.text)
+                        account.cryptoBalance = .loaded(next: balance.secondaryBalance.text)
                     }
                     return account
                 }
@@ -267,6 +267,7 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                     text: viewModel.textRelay.value
                                 )
                             )
+
                         case .linkedBankAccount(let presenter):
                             return .linkedBankAccount(
                                 .init(
@@ -276,6 +277,22 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                         + " \(presenter.account.accountNumber)"
                                 )
                             )
+
+                        case .paymentMethodAccount(let presenter):
+                            return .paymentMethodAccount(
+                                .init(
+                                    id: item.identity,
+                                    title: presenter.account.label,
+                                    description: presenter
+                                        .account
+                                        .paymentMethodType
+                                        .balance
+                                        .displayString,
+                                    badgeView: presenter.account.logoResource.image,
+                                    badgeBackground: Color(presenter.account.logoBackgroundColor)
+                                )
+                            )
+
                         case .accountGroup(let presenter):
                             return .accountGroup(
                                 .init(
@@ -286,6 +303,7 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                     currencyCode: .loading
                                 )
                             )
+
                         case .singleAccount(let presenter):
                             return .singleAccount(
                                 .init(

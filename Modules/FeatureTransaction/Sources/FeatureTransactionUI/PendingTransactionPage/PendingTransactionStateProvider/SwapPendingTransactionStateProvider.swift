@@ -18,6 +18,7 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
             .map(weak: self) { (self, state) in
                 switch state.executionStatus {
                 case .inProgress,
+                     .pending,
                      .notStarted:
                     return self.pending(state: state)
                 case .completed:
@@ -52,7 +53,7 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationIds.Success.action)
+            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action)
         )
     }
 
@@ -100,8 +101,7 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
                     backgroundColor: .primaryButton,
                     cornerRadiusRatio: 0.5
                 )
-            ),
-            buttonViewModel: nil
+            )
         )
     }
 
@@ -121,7 +121,7 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 }

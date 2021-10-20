@@ -21,6 +21,7 @@ public enum DetailsScreen {
         case notice(NoticeViewModel)
         case lineItem(LineItemCellPresenting)
         case textField(TextFieldViewModel)
+        case checkbox(CheckboxViewModel)
         case separator
         case interactableTextCell(InteractableTextViewModel)
     }

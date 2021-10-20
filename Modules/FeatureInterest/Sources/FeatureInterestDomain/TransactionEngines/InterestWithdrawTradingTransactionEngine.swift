@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import CombineExt
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit

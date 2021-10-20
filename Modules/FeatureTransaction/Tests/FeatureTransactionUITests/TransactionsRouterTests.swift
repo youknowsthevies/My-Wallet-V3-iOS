@@ -4,113 +4,80 @@ import Combine
 @testable import FeatureTransactionDomainMock
 @testable import FeatureTransactionUI
 @testable import FeatureTransactionUIMock
-import PlatformKit
-@testable import PlatformKitMock
 @testable import PlatformUIKitMock
-import SwiftUI
+import TestKit
 @testable import ToolKitMock
 import XCTest
 
 final class TransactionsRouterTests: XCTestCase {
 
     private var router: TransactionsRouter!
-    private var mockLegacyBuyFlowPresenter: MockLegacyBuyFlowPresenter!
-    private var mockCryptoCurrencyService: MockCryptoCurrenciesService!
+    private var mockBuyFlowBuilder: MockBuyFlowBuilder!
+    private var mockLegacyBuyFlowRouter: MockLegacyBuyFlowRouter!
     private var mockFeatureFlagsService: MockFeatureFlagsService!
-    private var mockKYCService: MockKYCSDDService!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        mockCryptoCurrencyService = MockCryptoCurrenciesService()
         mockFeatureFlagsService = MockFeatureFlagsService()
-        mockKYCService = MockKYCSDDService()
-        mockLegacyBuyFlowPresenter = MockLegacyBuyFlowPresenter(
-            cryptoCurrenciesService: mockCryptoCurrencyService,
-            kycService: mockKYCService
-        )
+        mockLegacyBuyFlowRouter = MockLegacyBuyFlowRouter()
+        mockBuyFlowBuilder = MockBuyFlowBuilder()
         router = TransactionsRouter(
             featureFlagsService: mockFeatureFlagsService,
-            legacyBuyPresenter: mockLegacyBuyFlowPresenter
+            pendingOrdersService: MockPendingOrderDetailsService(),
+            kycRouter: MockTransactionsKYCRouter(),
+            alertViewPresenter: MockAlertViewPresenter(),
+            loadingViewPresenter: MockLoadingViewPresenter(),
+            legacyBuyRouter: mockLegacyBuyFlowRouter,
+            buyFlowBuilder: mockBuyFlowBuilder
         )
     }
 
     override func tearDownWithError() throws {
         try super.tearDownWithError()
         router = nil
-        mockKYCService = nil
         mockFeatureFlagsService = nil
-        mockCryptoCurrencyService = nil
-        mockLegacyBuyFlowPresenter = nil
+        mockLegacyBuyFlowRouter = nil
     }
 
     func test_routesTo_legacyBuyFlow_forCryptoAccount_featueFlagOff() throws {
-        throw XCTSkip("This test crashes due to DIKit. It will require more mocks. Will do later.")
-        mockFeatureFlagsService.disable(.local(.useTransactionsFlowToBuyCrypto))
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.local(.useTransactionsFlowToBuyCrypto)))
         let mockViewController = MockViewController()
-        let cryptoAccount = CryptoInterestAccount(asset: .coin(.bitcoin))
-        let cancellable = router.presentTransactionFlow(to: .buy(cryptoAccount), from: mockViewController)
-            .sink { _ in
-                // no-op
-            }
-
-        let recordedInvocations = mockLegacyBuyFlowPresenter.recordedInvocations
+        let cryptoAccount = ReceivePlaceholderCryptoAccount(asset: .coin(.bitcoin))
+        let publisher = router.presentTransactionFlow(to: .buy(cryptoAccount), from: mockViewController)
+        XCTAssertPublisherCompletion(publisher)
+        let recordedInvocations = mockLegacyBuyFlowRouter.recordedInvocations
         XCTAssertEqual(recordedInvocations.presentBuyScreen, 1)
-        cancellable.cancel()
     }
 
     func test_routesTo_legacyBuyFlow_nilAccount_featueFlagOff() throws {
-        mockFeatureFlagsService.disable(.local(.useTransactionsFlowToBuyCrypto))
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.local(.useTransactionsFlowToBuyCrypto)))
         let mockViewController = MockViewController()
-        let cancellable = router.presentTransactionFlow(to: .buy(nil), from: mockViewController)
-            .sink { _ in
-                // no-op
-            }
-
-        let recordedInvocations = mockLegacyBuyFlowPresenter.recordedInvocations
+        let publisher = router.presentTransactionFlow(to: .buy(nil), from: mockViewController)
+        XCTAssertPublisherCompletion(publisher)
+        let recordedInvocations = mockLegacyBuyFlowRouter.recordedInvocations
         XCTAssertEqual(recordedInvocations.presentBuyFlowWithTargetCurrencySelectionIfNecessary, 1)
-        cancellable.cancel()
     }
 
-    func test_routesTo_legacyBuyFlow_featueFlagOn() throws {
-        throw XCTSkip("This test crashes due to DIKit. It will require more mocks and refactoring. Will do later.")
-        mockFeatureFlagsService.enable(.local(.useTransactionsFlowToBuyCrypto))
+    func test_routesTo_legacyBuyFlow_featueFlagOn_nilAccount() throws {
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.local(.useTransactionsFlowToBuyCrypto)))
         let mockViewController = MockViewController()
-        let cancellable = router.presentTransactionFlow(to: .buy(nil), from: mockViewController)
-            .sink { _ in
-                // no-op
-            }
-
-        // TODO: IOS-4879 update this as concrete implementation gets built...
-        let presentedViewController = mockViewController.recordedInvocations.presentViewController.first
-        XCTAssertEqual(presentedViewController?.view.backgroundColor, .red)
-        cancellable.cancel()
-    }
-}
-
-final class MockLegacyBuyFlowPresenter: LegacyBuyFlowPresenter {
-
-    struct RecordedInvocations {
-        var presentBuyScreen: Int = 0
-        var presentBuyFlowWithTargetCurrencySelectionIfNecessary: Int = 0
+        let publisher = router.presentTransactionFlow(to: .buy(nil), from: mockViewController)
+        XCTAssertPublisherCompletion(publisher)
+        let mockRouter = mockBuyFlowBuilder.builtRouters.first
+        let buyStartRequests = mockRouter?.recordedInvocations.start
+        XCTAssertEqual(buyStartRequests?.count, 1)
+        XCTAssertNil(buyStartRequests?.first?.cryptoAccount)
     }
 
-    private(set) var recordedInvocations = RecordedInvocations()
-
-    override func presentBuyScreen(
-        from presenter: UIViewController,
-        targetCurrency: CryptoCurrency,
-        sourceCurrency: FiatCurrency,
-        isSDDEligible: Bool = true
-    ) -> AnyPublisher<TransactionFlowResult, Never> {
-        recordedInvocations.presentBuyScreen += 1
-        return .empty()
-    }
-
-    override func presentBuyFlowWithTargetCurrencySelectionIfNecessary(
-        from presenter: UIViewController,
-        using fiatCurrency: FiatCurrency
-    ) -> AnyPublisher<TransactionFlowResult, Never> {
-        recordedInvocations.presentBuyFlowWithTargetCurrencySelectionIfNecessary += 1
-        return .empty()
+    func test_routesTo_legacyBuyFlow_featueFlagOn_nonNilAccount() throws {
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.local(.useTransactionsFlowToBuyCrypto)))
+        let mockViewController = MockViewController()
+        let cryptoAccount = ReceivePlaceholderCryptoAccount(asset: .coin(.bitcoin))
+        let publisher = router.presentTransactionFlow(to: .buy(cryptoAccount), from: mockViewController)
+        XCTAssertPublisherCompletion(publisher)
+        let mockRouter = mockBuyFlowBuilder.builtRouters.first
+        let buyStartRequests = mockRouter?.recordedInvocations.start
+        XCTAssertEqual(buyStartRequests?.count, 1)
+        XCTAssertEqual(buyStartRequests?.first?.cryptoAccount?.asset, .coin(.bitcoin))
     }
 }

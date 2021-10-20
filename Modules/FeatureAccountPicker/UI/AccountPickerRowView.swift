@@ -61,6 +61,10 @@ struct AccountPickerRowView: View {
                         badgeView: badgeView(model.id),
                         multiBadgeView: multiBadgeView(model.id)
                     )
+                case .paymentMethodAccount(let model):
+                    PaymentMethodRow(
+                        model: model
+                    )
                 case .singleAccount(let model):
                     SingleAccountRow(
                         model: model,
@@ -181,6 +185,47 @@ private struct LinkedBankAccountRow: View {
     }
 }
 
+private struct PaymentMethodRow: View {
+
+    let model: AccountPickerRow.PaymentMethod
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(spacing: 0) {
+                HStack(alignment: .center, spacing: 0) {
+                    ZStack {
+                        model.badgeView
+                            .frame(width: 32, height: 32)
+                            .scaledToFit()
+                    }
+                    .frame(width: 32, height: 32)
+                    .padding(6)
+                    .background(model.badgeBackground)
+                    .clipShape(Circle())
+
+                    Spacer()
+                        .frame(width: 16)
+
+                    VStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(model.title)
+                                .textStyle(.heading)
+                            Text(model.description)
+                                .textStyle(.subheading)
+                        }
+                    }
+                    .offset(x: 0, y: -2) // visually align due to font padding
+                }
+            }
+            .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
+
+            Rectangle()
+                .frame(height: 1)
+                .foregroundColor(Color(UIColor.lightBorder))
+        }
+    }
+}
+
 private struct SingleAccountRow: View {
 
     let model: AccountPickerRow.SingleAccount
@@ -267,6 +312,16 @@ struct AccountPickerRowView_Previews: PreviewProvider {
         )
     )
 
+    static let paymentMethodAccountRow = AccountPickerRow.paymentMethodAccount(
+        AccountPickerRow.PaymentMethod(
+            id: UUID(),
+            title: "Visa •••• 0000",
+            description: "$1,200",
+            badgeView: Image(systemName: "creditcard"),
+            badgeBackground: .badgeBackgroundInfo
+        )
+    )
+
     static let singleAccountRow = AccountPickerRow.singleAccount(
         AccountPickerRow.SingleAccount(
             id: UUID(),
@@ -326,6 +381,20 @@ struct AccountPickerRowView_Previews: PreviewProvider {
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
             .previewDisplayName("LinkedBankAccountRow")
+
+            AccountPickerRowView(
+                store: Store(
+                    initialState: paymentMethodAccountRow,
+                    reducer: accountPickerRowReducer,
+                    environment: environment
+                ),
+                badgeView: { _ in AnyView(EmptyView()) },
+                iconView: { _ in AnyView(EmptyView()) },
+                multiBadgeView: { _ in AnyView(EmptyView()) }
+            )
+            .previewLayout(PreviewLayout.sizeThatFits)
+            .padding()
+            .previewDisplayName("PaymentMethodAccountRow")
 
             AccountPickerRowView(
                 store: Store(

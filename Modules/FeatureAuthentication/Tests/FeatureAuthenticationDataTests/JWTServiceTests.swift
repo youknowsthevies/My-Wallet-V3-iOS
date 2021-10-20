@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 @testable import FeatureAuthenticationData
 @testable import FeatureAuthenticationDomain
 import RxBlocking

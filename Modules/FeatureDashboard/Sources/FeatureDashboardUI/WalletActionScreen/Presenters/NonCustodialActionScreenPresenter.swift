@@ -36,7 +36,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         interactor
             .availableActions
             .map { actions in
-                actions.map(\.walletAction)
+                actions.compactMap(\.walletAction)
             }
             .map { $0.sorted() }
             .map { [currency] actions in
@@ -120,8 +120,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
                     // Not possible for a Non Custodial wallet to 'interest'.
                     break
                 case .sell:
-                    // Not possible for a Non Custodial wallet to 'sell'.
-                    break
+                    stateService.selectionRelay.accept(.next(.sell))
                 case .withdraw:
                     // Not possible for a Non Custodial wallet to 'withdraw'.
                     break
@@ -132,8 +131,11 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
 }
 
 extension AssetAction {
-    fileprivate var walletAction: WalletAction {
+    fileprivate var walletAction: WalletAction? {
         switch self {
+        case .interestWithdraw,
+             .interestTransfer:
+            return nil
         case .viewActivity:
             return .activity
         case .buy:

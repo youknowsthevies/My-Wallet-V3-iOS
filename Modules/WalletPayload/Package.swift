@@ -54,7 +54,16 @@ let package = Package(
                 .product(name: "ToolKitMock", package: "Tool")
             ],
             resources: [
-                .copy("Fixtures/wallet-data.json")
+                .copy("Fixtures/wallet-data.json"),
+                .copy("Fixtures/address-label.json"),
+                .copy("Fixtures/hdaccount.v3.json"),
+                .copy("Fixtures/hdaccount.v4.json"),
+                .copy("Fixtures/hdaccount.v4.unknown.json"),
+                .copy("Fixtures/wallet.v3.json"),
+                .copy("Fixtures/wallet.v4.json"),
+                .copy("Fixtures/hdwallet.v3.json"),
+                .copy("Fixtures/hdwallet.v4.json"),
+                .copy("Fixtures/hdwallet.unknown.json")
             ]
         )
     ]

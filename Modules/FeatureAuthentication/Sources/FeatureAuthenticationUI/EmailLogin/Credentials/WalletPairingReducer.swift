@@ -288,4 +288,6 @@ private func startPolling(
         .map { _ in
             .pollWalletIdentifier
         }
+        .receive(on: environment.mainQueue)
+        .eraseToEffect()
 }

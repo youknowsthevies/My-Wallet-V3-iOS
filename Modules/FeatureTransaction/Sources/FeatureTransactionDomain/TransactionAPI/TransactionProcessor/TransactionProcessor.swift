@@ -139,13 +139,25 @@ public final class TransactionProcessor {
         }
     }
 
-    public func execute(secondPassword: String) -> Single<TransactionResult> {
+    public func createOrder() -> Single<TransactionOrder?> {
+        do {
+            return engine.createOrder(pendingTransaction: try pendingTransaction())
+        } catch {
+            return .error(error)
+        }
+    }
+
+    public func cancelOrder(with identifier: String) -> Single<Void> {
+        engine.cancelOrder(with: identifier)
+    }
+
+    public func execute(order: TransactionOrder?, secondPassword: String) -> Single<TransactionResult> {
         Logger.shared.debug("!TRANSACTION!> in `execute`")
         do {
             if engine.requireSecondPassword, secondPassword.isEmpty {
                 throw PlatformKitError.illegalStateException(message: "Second password not supplied")
             }
-            let pendingTransaction = try self.pendingTransaction()
+            let pendingTransaction = try pendingTransaction()
             return engine
                 .doValidateAll(pendingTransaction: pendingTransaction)
                 .do(onSuccess: { transaction in
@@ -153,8 +165,12 @@ public final class TransactionProcessor {
                         throw PlatformKitError.illegalStateException(message: "PendingTx is not executable")
                     }
                 })
-                .flatMap { [engine] transaction -> Single<TransactionResult> in
-                    engine.execute(pendingTransaction: transaction, secondPassword: secondPassword)
+                .flatMap { [engine] transaction in
+                    engine.execute(
+                        pendingTransaction: transaction,
+                        pendingOrder: order,
+                        secondPassword: secondPassword
+                    )
                 }
         } catch {
             return .error(error)
@@ -163,7 +179,7 @@ public final class TransactionProcessor {
 
     public func validateAll() -> Completable {
         Logger.shared.debug("!TRANSACTION!> in `validateAll`")
-        guard let pendingTransaction = try? self.pendingTransaction() else {
+        guard let pendingTransaction = try? pendingTransaction() else {
             preconditionFailure("We should always have a pending transaction when validating")
         }
         return engine.doBuildConfirmations(pendingTransaction: pendingTransaction)
@@ -186,7 +202,7 @@ public final class TransactionProcessor {
     /// then call into the engine to set the fee and validate ballances etc
     public func updateFeeLevel(_ feeLevel: FeeLevel, customFeeAmount: MoneyValue?) -> Completable {
         Logger.shared.debug("!TRANSACTION!> in `UpdateFeeLevel`")
-        guard let pendingTransaction = try? self.pendingTransaction() else {
+        guard let pendingTransaction = try? pendingTransaction() else {
             preconditionFailure("We should always have a pending transaction when validating")
         }
         precondition(pendingTransaction.feeSelection.availableLevels.contains(feeLevel))
@@ -208,7 +224,7 @@ public final class TransactionProcessor {
     // requires a refresh
     private func refreshConfirmations(revalidate: Bool) -> Completable {
         Logger.shared.debug("!TRANSACTION!> in `refreshConfirmations`")
-        guard let pendingTransaction = try? self.pendingTransaction() else {
+        guard let pendingTransaction = try? pendingTransaction() else {
             return .empty() // TODO: or error?
         }
         guard !pendingTransaction.confirmations.isEmpty else {

@@ -48,7 +48,7 @@ public final class AccountPickerPresenter: Presenter<AccountPickerViewControllab
     // MARK: - Methods
 
     public func connect(state: Driver<AccountPickerInteractor.State>) -> Driver<AccountPickerInteractor.Effects> {
-        let action = self.action
+        let action = action
         let sections = state.map(\.interactors)
             .map { items -> [AccountPickerCellItem] in
                 items.map { interactor in
@@ -59,8 +59,8 @@ public final class AccountPickerPresenter: Presenter<AccountPickerViewControllab
             .map { [$0] }
             .startWith([])
 
-        let headerModel = self.headerModel
-        let navigationModel = self.navigationModel
+        let headerModel = headerModel
+        let navigationModel = navigationModel
         let presentableState = sections
             .map { sections -> AccountPickerPresenter.State in
                 AccountPickerPresenter.State(

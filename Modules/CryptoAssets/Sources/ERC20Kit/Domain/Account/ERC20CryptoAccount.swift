@@ -33,21 +33,33 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     var actions: Single<AvailableActions> {
-        Single
-            .zip(isFunded, isPairToFiatAvailable, hasHistory.asSingle())
-            .map { isFunded, isPairToFiatAvailable, hasHistory -> AvailableActions in
-                var base: AvailableActions = [.receive]
-                if hasHistory || isFunded {
-                    base.insert(.viewActivity)
-                }
-                if isPairToFiatAvailable {
-                    base.insert(.buy)
-                }
-                if isFunded {
-                    base.formUnion([.send, .swap])
-                }
-                return base
+        Single.zip(
+            isFunded,
+            isPairToFiatAvailable,
+            hasHistory.asSingle(),
+            canPerformInterestTransfer(),
+            featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
+        )
+        .map { isFunded, isPairToFiatAvailable, hasHistory, isInterestEnabled, isSellEnabled -> AvailableActions in
+            var base: AvailableActions = [.receive]
+            if hasHistory || isFunded {
+                base.insert(.viewActivity)
             }
+            if isPairToFiatAvailable {
+                base.insert(.buy)
+            }
+            if isFunded {
+                base.formUnion([.send, .swap])
+            }
+            if isFunded, isSellEnabled {
+                base.insert(.sell)
+            }
+            if isFunded, isInterestEnabled {
+                base.insert(.interestTransfer)
+            }
+            return base
+        }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
@@ -97,6 +109,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     private let transactionsService: ERC20HistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         publicKey: String,
@@ -107,7 +120,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         transactionsService: ERC20HistoricalTransactionServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
-        supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve()
+        supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.publicKey = publicKey
         self.erc20Token = erc20Token
@@ -119,6 +133,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         self.swapTransactionsService = swapTransactionsService
         self.priceService = priceService
         self.supportedPairsInteractorService = supportedPairsInteractorService
+        self.featureFlagsService = featureFlagsService
         self.erc20TokenAccountsRepository = erc20TokenAccountsRepository
     }
 
@@ -137,9 +152,14 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         switch action {
         case .receive:
             return .just(true)
+        case .interestTransfer:
+            return canPerformInterestTransfer()
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
+                }
         case .deposit,
              .withdraw,
-             .sell:
+             .interestWithdraw:
             return .just(false)
         case .viewActivity:
             return hasHistory.asSingle()
@@ -148,6 +168,15 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             return isFunded
         case .buy:
             return isPairToFiatAvailable
+        case .sell:
+            return featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled))
+                .asSingle()
+                .flatMap(weak: self) { (self, _) in
+                    Single.zip(self.isPairToFiatAvailable, self.isFunded).map {
+                        $0.0 && $0.1
+                    }
+                }
         }
     }
 

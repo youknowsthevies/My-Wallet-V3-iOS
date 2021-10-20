@@ -30,13 +30,14 @@ public struct InterestAccountBalanceDetailsResponse: Decodable {
 }
 
 extension InterestAccountBalanceDetails {
-    init(_ response: InterestAccountBalanceDetailsResponse) {
+    init(_ response: InterestAccountBalanceDetailsResponse, code: String) {
         self.init(
             balance: response.balance,
             pendingInterest: response.pendingInterest,
             totalInterest: response.totalInterest,
             pendingWithdrawal: response.pendingWithdrawal,
-            pendingDeposit: response.pendingDeposit
+            pendingDeposit: response.pendingDeposit,
+            code: code
         )
     }
 }

@@ -14,6 +14,7 @@ public final class MockKYCRouter: FeatureKYCUI.Routing {
         public var presentEmailVerificationIfNeeded: [UIViewController] = []
         public var presentKYCIfNeeded: [UIViewController] = []
         public var presentPromptToUnlockMoreTrading: [UIViewController] = []
+        public var presentPromptToUnlockMoreTradingIfNeeded: [UIViewController] = []
     }
 
     public struct StubbedResults {
@@ -23,6 +24,7 @@ public final class MockKYCRouter: FeatureKYCUI.Routing {
         public var presentEmailVerificationIfNeeded: FlowResultPublisher = .failure(.emailVerificationFailed)
         public var presentKYCIfNeeded: FlowResultPublisher = .failure(.kycVerificationFailed)
         public var presentPromptToUnlockMoreTrading: AnyPublisher<FlowResult, Never> = .empty()
+        public var presentPromptToUnlockMoreTradingIfNeeded: AnyPublisher<FlowResult, RouterError> = .empty()
     }
 
     public private(set) var recordedInvocations = RecordedInvocations()
@@ -72,5 +74,13 @@ public final class MockKYCRouter: FeatureKYCUI.Routing {
     ) -> AnyPublisher<FlowResult, Never> {
         recordedInvocations.presentPromptToUnlockMoreTrading.append(presenter)
         return stubbedResults.presentPromptToUnlockMoreTrading
+    }
+
+    public func presentPromptToUnlockMoreTradingIfNeeded(
+        from presenter: UIViewController,
+        requiredTier: KYC.Tier
+    ) -> AnyPublisher<FlowResult, RouterError> {
+        recordedInvocations.presentPromptToUnlockMoreTradingIfNeeded.append(presenter)
+        return stubbedResults.presentPromptToUnlockMoreTradingIfNeeded
     }
 }

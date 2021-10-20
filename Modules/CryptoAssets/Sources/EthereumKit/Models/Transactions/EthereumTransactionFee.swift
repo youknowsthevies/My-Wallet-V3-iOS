@@ -44,7 +44,7 @@ public struct EthereumTransactionFee {
 
     public func absoluteFee(with feeLevel: FeeLevel, isContract: Bool) -> CryptoValue {
         let price = fee(feeLevel: feeLevel).amount
-        let gasLimit = BigInt(isContract ? gasLimitContract : self.gasLimit)
+        let gasLimit = BigInt(isContract ? gasLimitContract : gasLimit)
         let amount = price * gasLimit
         return CryptoValue.create(minor: amount, currency: .coin(.ethereum))
     }

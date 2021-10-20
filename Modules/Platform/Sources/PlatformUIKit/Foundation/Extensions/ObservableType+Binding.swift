@@ -51,6 +51,6 @@ extension ObservableType {
         self.do(onError: { error in
             fatalError("Binding error. file: \(file), line: \(line), function: \(function), error: \(error).")
         })
-            .bind(onNext: onNext)
+        .bind(onNext: onNext)
     }
 }

@@ -1,13 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
+import SwiftUI
 import ToolKit
 
 extension CryptoCurrency {
 
     // MARK: - UIColor
 
-    public var brandColor: UIColor {
+    public var brandColor: SwiftUI.Color {
+        SwiftUI.Color(brandUIColor)
+    }
+
+    public var brandUIColor: UIColor {
         switch self {
         case .coin(let model):
             if let match = CustodialCoinCode.allCases.first(where: { $0.rawValue == model.code }) {
@@ -22,10 +27,14 @@ extension CryptoCurrency {
 
     /// Defaults to brand color with 15% opacity.
     public var accentColor: UIColor {
-        brandColor.withAlphaComponent(0.15)
+        brandUIColor.withAlphaComponent(0.15)
     }
 
     // MARK: Logo Image `ImageResource`
+
+    public var image: Image {
+        logoResource.image ?? Image("crypto-btc", bundle: .platformUIKit)
+    }
 
     public var logoResource: ImageResource {
         switch self {

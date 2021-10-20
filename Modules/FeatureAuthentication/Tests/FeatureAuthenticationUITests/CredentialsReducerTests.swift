@@ -183,8 +183,8 @@ final class CredentialsReducerTests: XCTestCase {
                 // polling should happen after 1 more second (2 seconds in total)
                 self.mockPollingQueue.advance(by: 1)
             },
-            .receive(.walletPairing(.pollWalletIdentifier)),
             .do { self.mockMainQueue.advance() },
+            .receive(.walletPairing(.pollWalletIdentifier)),
             .receive(.walletPairing(.authenticate(""))) { state in
                 state.isLoading = true
             },
@@ -245,14 +245,14 @@ final class CredentialsReducerTests: XCTestCase {
             .receive(
                 .alert(
                     .show(
-                        title: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.title,
-                        message: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.message
+                        title: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.title,
+                        message: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.message
                     )
                 )
             ) { state in
                 state.credentialsFailureAlert = AlertState(
-                    title: TextState(verbatim: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.title),
-                    message: TextState(verbatim: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.message),
+                    title: TextState(verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.title),
+                    message: TextState(verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SMSCode.Success.message),
                     dismissButton: .default(
                         TextState(LocalizationConstants.okString),
                         action: .send(.alert(.dismiss))

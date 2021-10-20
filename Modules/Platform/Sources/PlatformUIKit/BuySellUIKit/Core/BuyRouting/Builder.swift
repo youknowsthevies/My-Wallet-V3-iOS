@@ -18,6 +18,7 @@ public protocol Buildable: AnyObject {
 public final class Builder: Buildable {
 
     public let stateService: StateServiceAPI
+    private let disposeBag = DisposeBag()
 
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let analytics: AnalyticsEventRecorderAPI
@@ -63,9 +64,12 @@ public final class Builder: Buildable {
             webViewRouter: webViewRouter,
             analyticsRecorder: analytics,
             interactor: interactor,
-            stateService: stateService,
             isOriginDeposit: isOriginDeposit
         )
+        presenter.backRelay
+            .bind(to: stateService.previousRelay)
+            .disposed(by: disposeBag)
+
         let viewController = DetailsScreenViewController(presenter: presenter)
         navigationController.viewControllers = [viewController]
         return navigationController

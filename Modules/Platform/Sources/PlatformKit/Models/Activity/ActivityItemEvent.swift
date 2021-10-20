@@ -83,18 +83,29 @@ extension ActivityItemEvent: Hashable {
 
 extension ActivityItemEvent {
 
-    public var amount: MoneyValue {
+    public var inputAmount: MoneyValue {
+        switch self {
+        case .buySell(let event):
+            return event.inputValue
+        case .swap(let event):
+            return event.amounts.deposit
+        case .transactional(let event):
+            return (try? event.amount + event.fee)?.moneyValue ?? event.amount.moneyValue
+        case .fiat(let event):
+            return event.amount.moneyValue
+        case .crypto(let event):
+            return (try? event.amount + event.fee)?.moneyValue ?? event.amount.moneyValue
+        }
+    }
+
+    public var outputAmount: MoneyValue? {
         switch self {
         case .buySell(let event):
             return event.outputValue
         case .swap(let event):
-            return event.amounts.deposit
-        case .transactional(let event):
-            return event.amount.moneyValue
-        case .fiat(let event):
-            return event.amount.moneyValue
-        case .crypto(let event):
-            return event.amount.moneyValue
+            return event.amounts.withdrawal
+        default:
+            return nil
         }
     }
 

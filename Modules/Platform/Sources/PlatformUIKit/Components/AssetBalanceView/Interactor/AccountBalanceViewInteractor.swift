@@ -32,8 +32,8 @@ public final class AccountBalanceViewInteractor: AssetBalanceViewInteracting {
         )
         .map { balancePair, pendingBalance in
             AssetBalanceViewModel.Value.Interaction(
-                fiatValue: balancePair.quote,
-                cryptoValue: balancePair.base,
+                primaryValue: balancePair.quote,
+                secondaryValue: balancePair.base,
                 pendingValue: pendingBalance
             )
         }

@@ -22,7 +22,7 @@ public final class PasswordValidator: PasswordValidatorAPI {
     // MARK: - API
 
     public func validate(password: String) -> AnyPublisher<PasswordValidationScore, Never> {
-        let validationProvider = self.validationProvider
+        let validationProvider = validationProvider
         return Deferred {
             Future { [validationProvider] promise in
                 validationProvider.passwordStrength(password)

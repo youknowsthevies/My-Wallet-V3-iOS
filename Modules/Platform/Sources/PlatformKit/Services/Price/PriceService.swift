@@ -98,8 +98,6 @@ final class PriceService: PriceServiceAPI {
         self.enabledCurrenciesService = enabledCurrenciesService
     }
 
-    // MARK: - Internal Methods
-
     func moneyValuePair(
         fiatValue: FiatValue,
         cryptoCurrency: CryptoCurrency,

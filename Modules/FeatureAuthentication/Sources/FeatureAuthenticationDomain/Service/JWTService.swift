@@ -30,7 +30,7 @@ final class JWTService: JWTServiceAPI {
     // MARK: - Properties
 
     var token: AnyPublisher<String, JWTServiceError> {
-        let jwtRepository = self.jwtRepository
+        let jwtRepository = jwtRepository
         return credentialsRepository
             .credentialsPublisher
             .mapError(JWTServiceError.failedToRetrieveCredentials)

@@ -75,6 +75,16 @@ public protocol Routing {
     func presentPromptToUnlockMoreTrading(
         from presenter: UIViewController
     ) -> AnyPublisher<FlowResult, Never>
+
+    /// Checks the KYC status of the user against the required tier. If the user is on a lower tier, presents a screen prompting the user to upgrade to Gold Tier.
+    /// If the user tries to upgrade, the KYC Flow will be presented on top of the prompt.
+    /// - Parameters:
+    ///   - from: the `ViewController` presenting the KYC Flow
+    ///   - requiredTier: the minimum KYC tier the user needs to be on to avoid presenting the KYC Flow
+    func presentPromptToUnlockMoreTradingIfNeeded(
+        from presenter: UIViewController,
+        requiredTier: KYC.Tier
+    ) -> AnyPublisher<FlowResult, RouterError>
 }
 
 /// A class that encapsulates routing logic for the KYC flow. Use this to present the app user with any part of the KYC flow.
@@ -244,6 +254,27 @@ public class Router: Routing {
                     }
                 }
                 .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public func presentPromptToUnlockMoreTradingIfNeeded(
+        from presenter: UIViewController,
+        requiredTier: KYC.Tier
+    ) -> AnyPublisher<FlowResult, RouterError> {
+        guard requiredTier > .tier0 else {
+            return .just(.completed)
+        }
+        return kycService
+            .fetchTiers()
+            .receive(on: DispatchQueue.main)
+            .mapError { _ in RouterError.kycStepFailed }
+            .flatMap { [presentPromptToUnlockMoreTrading] userTiers -> AnyPublisher<FlowResult, RouterError> in
+                guard userTiers.latestApprovedTier < requiredTier else {
+                    return .just(.completed)
+                }
+                return presentPromptToUnlockMoreTrading(presenter)
+                    .mapError()
             }
             .eraseToAnyPublisher()
     }

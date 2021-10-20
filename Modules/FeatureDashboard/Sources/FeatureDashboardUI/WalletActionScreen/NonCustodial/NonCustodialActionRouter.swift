@@ -67,6 +67,8 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
             showReceiveScreen()
         case .buy:
             showBuyScreen()
+        case .sell:
+            showSellScreen()
         }
     }
 
@@ -100,6 +102,12 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     private func showBuyScreen() {
         dismiss { [walletOperationsRouter, account] _ in
             walletOperationsRouter.handleBuyCrypto(account: account as? CryptoAccount)
+        }
+    }
+
+    private func showSellScreen() {
+        dismiss { [walletOperationsRouter, account] _ in
+            walletOperationsRouter.handleSellCrypto(account: account as? CryptoAccount)
         }
     }
 

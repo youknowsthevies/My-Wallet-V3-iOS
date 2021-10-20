@@ -32,8 +32,11 @@ public struct InterestAccountBalanceResponse: Decodable {
 extension InterestAccountBalances {
     init(_ response: InterestAccountBalanceResponse) {
         var balances: [String: InterestAccountBalanceDetails] = [:]
-        response.balances.keys.forEach {
-            balances[$0] = InterestAccountBalanceDetails(response.balances[$0]!)
+        response.balances.keys.forEach { key in
+            balances[key] = InterestAccountBalanceDetails(
+                response.balances[key]!,
+                code: key
+            )
         }
         self.init(balances: balances)
     }

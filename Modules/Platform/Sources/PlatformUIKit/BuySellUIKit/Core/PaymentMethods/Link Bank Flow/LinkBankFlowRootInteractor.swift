@@ -69,7 +69,7 @@ final class LinkBankFlowRootInteractor: Interactor,
         super.didBecomeActive()
 
         let loadAction = Observable<LinkBankFlow.Action>.just(.load)
-        let retryAction = self.retryAction
+        let retryAction = retryAction
             .asObservable()
             .share(replay: 1, scope: .whileConnected)
 

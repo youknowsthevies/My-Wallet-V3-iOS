@@ -116,7 +116,8 @@ let emailVerificationReducer = Reducer.combine(
             )
         }
     ),
-    Reducer<EmailVerificationState, EmailVerificationAction, EmailVerificationEnvironment> { state, action, environment in
+    Reducer<EmailVerificationState, EmailVerificationAction, EmailVerificationEnvironment> {
+        state, action, environment in
         struct TimerIdentifier: Hashable {}
         switch action {
         case .closeButtonTapped:
@@ -131,6 +132,8 @@ let emailVerificationReducer = Reducer.combine(
                 on: environment.pollingQueue
             )
             .map { _ in .loadVerificationState }
+            .receive(on: environment.mainQueue)
+            .eraseToEffect()
 
         case .didDisappear:
             return .cancel(id: TimerIdentifier())

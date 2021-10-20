@@ -102,7 +102,7 @@ extension ActivityScreenInteractor.State {
             .map { item in
                 ActivityItemInteractor(
                     activityItemEvent: item,
-                    pairExchangeService: exchangeProviding[item.amount.currencyType]
+                    pairExchangeService: exchangeProviding[item.inputAmount.currencyType]
                 )
             }
         self = interactors.isEmpty ? .invalid(.empty) : .value(interactors)

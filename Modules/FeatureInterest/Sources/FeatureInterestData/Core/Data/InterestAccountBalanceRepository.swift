@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import DIKit
 import FeatureInterestDomain
 import PlatformKit
@@ -36,7 +35,7 @@ final class InterestAccountBalanceRepository: InterestAccountBalanceRepositoryAP
         )
     }
 
-    func interestAccountsBalance(
+    func fetchInterestAccountsBalance(
         fiatCurrency: FiatCurrency
     ) -> AnyPublisher<InterestAccountBalances, InterestAccountBalanceRepositoryError> {
         cachedValue.get(key: fiatCurrency)

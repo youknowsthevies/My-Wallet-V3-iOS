@@ -21,7 +21,7 @@ final class WalletActionCellPresenter {
         var accentColor: UIColor = .clear
         switch currencyType {
         case .crypto(let crypto):
-            templateColor = crypto.brandColor
+            templateColor = crypto.brandUIColor
             accentColor = crypto.accentColor
         case .fiat:
             templateColor = .fiat
