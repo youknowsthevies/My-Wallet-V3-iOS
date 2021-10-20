@@ -297,6 +297,8 @@ packages:
     path: Modules/FeatureTransaction
   HDWallet:
     path: Modules/HDWallet
+  Keychain:
+    path: Modules/Keychain
   Localization:
     path: Modules/Localization
   Network:
@@ -425,6 +427,8 @@ targets:
         product: StellarKit
       - package: HDWallet
         product: HDWalletKit
+      - package: Keychain
+        product: KeychainKit
       - package: Localization
         product: Localization
       - package: Network
