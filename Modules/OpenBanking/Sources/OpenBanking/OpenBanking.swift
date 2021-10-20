@@ -23,6 +23,8 @@ public class OpenBanking {
     let requestBuilder: RequestBuilder
     let network: NetworkAdapterAPI
 
+    let formatMoney: (_ amountMinor: String, _ symbol: String) -> String = { amountMinor, _ in amountMinor }
+
     public convenience init(
         requestBuilder: RequestBuilder,
         network: NetworkAdapterAPI,

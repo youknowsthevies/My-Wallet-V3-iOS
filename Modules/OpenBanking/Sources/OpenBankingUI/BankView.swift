@@ -214,46 +214,7 @@ public struct BankView: View {
                         )
                         Spacer()
                     },
-                    buttons: ui.action
-                        .or(default: [])
-                        .enumerated()
-                        .map { i, action in
-                            let style: ActionableView<
-                                TupleView<(Spacer, InfoView, Spacer)>
-                            >.ButtonState.Style = i == 0 ? .primary : .secondary
-                            switch action {
-                            case .ok:
-                                return .init(
-                                    title: R.Bank.Action.ok,
-                                    action: {
-                                        if let payment = viewStore.payment {
-                                            viewStore.send(.authorised(viewStore.account, payment))
-                                        } else {
-                                            viewStore.send(.fail(.message(R.Bank.Error.failedToGetPaymentDetails)))
-                                        }
-                                    },
-                                    style: style
-                                )
-                            case .next:
-                                return .init(
-                                    title: R.Bank.Action.next,
-                                    action: { viewStore.send(.linked(viewStore.account)) },
-                                    style: style
-                                )
-                            case .retry(let label, let action):
-                                return .init(
-                                    title: label,
-                                    action: { viewStore.send(action) },
-                                    style: style
-                                )
-                            case .cancel:
-                                return .init(
-                                    title: R.Bank.Action.cancel,
-                                    action: { viewStore.send(.cancel) },
-                                    style: style
-                                )
-                            }
-                        }
+                    buttons: buttons(from: ui.action, in: viewStore)
                 )
                 .trailingNavigationButton(.close) {
                     viewStore.send(.dismiss)
@@ -270,9 +231,11 @@ public struct BankView: View {
         .whiteNavigationBarStyle()
     }
 
-    private typealias ButtonAction = ActionableView<TupleView<(Spacer, InfoView, Spacer)>>.ButtonState
+    private typealias ButtonAction = ActionableView<
+        TupleView<(Spacer, InfoView, Spacer)>
+    >.ButtonState
 
-    private func actions(
+    private func buttons(
         from actions: [BankState.UI.Action]?,
         in viewStore: ViewStore<BankState, BankAction>
     ) -> [ButtonAction] {

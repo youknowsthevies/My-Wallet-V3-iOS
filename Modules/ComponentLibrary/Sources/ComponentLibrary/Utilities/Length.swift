@@ -107,7 +107,7 @@ extension BinaryFloatingPoint {
 
 extension CGRect {
 
-    @usableFromInline internal static var mainScreenBounds: CGRect {
+    @inlinable public static var screen: CGRect {
         #if canImport(UIKit)
         UIScreen.main.bounds
         #elseif canImport(AppKit)
@@ -117,14 +117,14 @@ extension CGRect {
 }
 
 extension CGSize {
-    @usableFromInline var min: CGFloat { Swift.min(width, height) }
-    @usableFromInline var max: CGFloat { Swift.max(width, height) }
+    @inlinable public var min: CGFloat { Swift.min(width, height) }
+    @inlinable public var max: CGFloat { Swift.max(width, height) }
 }
 
 extension Length {
 
     @inlinable public func `in`(_ proxy: GeometryProxy, coordinateSpace: CoordinateSpace = .local) -> CGFloat {
-        `in`(parent: proxy.frame(in: coordinateSpace), screen: .mainScreenBounds)
+        `in`(parent: proxy.frame(in: coordinateSpace), screen: .screen)
     }
 
     @inlinable public func `in`(_ frame: CGRect) -> CGFloat {
@@ -241,15 +241,19 @@ extension Length: Codable {
     }
 }
 
-public protocol ComputedLength {
+public protocol ComputeLength {
     associatedtype ComputedValue
     func `in`(parent: CGRect, screen: CGRect) -> ComputedValue
 }
 
-extension ComputedLength {
+extension ComputeLength {
 
-    @inlinable public func `in`(_ geometry: GeometryProxy, coordinateSpace: CoordinateSpace = .local) -> ComputedValue {
-        `in`(parent: geometry.frame(in: coordinateSpace), screen: .mainScreenBounds)
+    @inlinable public func `in`(_ geometry: GeometryProxy, coordinateSpace: CoordinateSpace) -> ComputedValue {
+        `in`(parent: geometry.frame(in: coordinateSpace), screen: .screen)
+    }
+
+    @inlinable public func `in`(_ geometry: GeometryProxy) -> ComputedValue {
+        `in`(geometry, coordinateSpace: .local)
     }
 
     @inlinable public func `in`(_ frame: CGRect) -> ComputedValue {
@@ -257,136 +261,114 @@ extension ComputedLength {
     }
 }
 
-extension Length: ComputedLength {}
-extension Size: ComputedLength {}
+extension Length: ComputeLength {}
+extension Size: ComputeLength {}
 
-// Generate the below with [gyb](https://nshipster.com/swift-gyb/) until we have variadic generics
-extension View {
 
-    public func compute<A: ComputedLength>(
-        _ a: A,
-        to binding: Binding<A.ComputedValue>
-    ) -> some View {
-        modifier(
-            LengthViewModifier(a: a) { a in
-                binding.wrappedValue = a
-            }
-        )
-    }
+struct LengthViewModifier<A: ComputeLength>: ViewModifier {
 
-    public func compute<A: ComputedLength>(
-        _ a: A,
-        _ yield: @escaping (A.ComputedValue) -> Void
-    ) -> some View {
-        modifier(
-            LengthViewModifier(a: a, yield: yield)
-        )
-    }
-
-    public func compute<A: ComputedLength, B: ComputedLength>(
-        _ a: A,
-        _ b: B,
-        _ yield: @escaping (A.ComputedValue, B.ComputedValue) -> Void
-    ) -> some View {
-        modifier(
-            LengthViewModifier2(a: a, b: b, yield: yield)
-        )
-    }
-
-    public func compute<A: ComputedLength, B: ComputedLength, C: ComputedLength>(
-        _ a: A,
-        _ b: B,
-        _ c: C,
-        _ yield: @escaping (A.ComputedValue, B.ComputedValue, C.ComputedValue) -> Void
-    ) -> some View {
-        modifier(
-            LengthViewModifier3(a: a, b: b, c: c, yield: yield)
-        )
-    }
-
-    public func compute<A: ComputedLength, B: ComputedLength, C: ComputedLength, D: ComputedLength>(
-        _ a: A,
-        _ b: B,
-        _ c: C,
-        _ d: D,
-        _ yield: @escaping (A.ComputedValue, B.ComputedValue, C.ComputedValue, D.ComputedValue) -> Void
-    ) -> some View {
-        modifier(
-            LengthViewModifier4(a: a, b: b, c: c, d: d, yield: yield)
-        )
-    }
-}
-
-struct LengthViewModifier<A: ComputedLength>: ViewModifier {
-
-    var a: A
-
+    var length: A
     var yield: (A.ComputedValue) -> Void
 
     func body(content: Content) -> some View {
         content.background(
             GeometryReader { geometry in
                 Color.clear.onAppear {
-                    yield(a.in(geometry))
+                    yield(length.in(geometry))
                 }
             }
         )
     }
 }
 
-struct LengthViewModifier2<A: ComputedLength, B: ComputedLength>: ViewModifier {
+extension View {
 
-    var a: A
-    var b: B
+    public func bind<A: ComputeLength>(
+        _ a: A,
+        to binding: Binding<A.ComputedValue>
+    ) -> some View {
+        return modifier(LengthViewModifier(a: a) { binding.wrappedValue = $0 })
+    }
 
-    var yield: (A.ComputedValue, B.ComputedValue) -> Void
-
-    func body(content: Content) -> some View {
-        content.background(
-            GeometryReader { geometry in
-                Color.clear.onAppear {
-                    yield(a.in(geometry), b.in(geometry))
-                }
-            }
-        )
+    public func length<A: ComputeLength>(
+        _ a: A,
+        _ yield: @escaping (A.ComputedValue) -> Void
+    ) -> some View {
+        modifier(LengthViewModifier(a: a, yield: yield))
     }
 }
 
-struct LengthViewModifier3<A: ComputedLength, B: ComputedLength, C: ComputedLength>: ViewModifier {
+extension View {
 
-    var a: A
-    var b: B
-    var c: C
-
-    var yield: (A.ComputedValue, B.ComputedValue, C.ComputedValue) -> Void
-
-    func body(content: Content) -> some View {
-        content.background(
-            GeometryReader { geometry in
-                Color.clear.onAppear {
-                    yield(a.in(geometry), b.in(geometry), c.in(geometry))
-                }
-            }
-        )
+    public func padding(_ length: Length) -> some View {
+        withGeometry(length.in(_:)) { $0.padding($1) }
     }
-}
 
-struct LengthViewModifier4<A: ComputedLength, B: ComputedLength, C: ComputedLength, D: ComputedLength>: ViewModifier {
+    public func padding(_ edges: Edge.Set = .all, _ length: Length) -> some View {
+        withGeometry(length.in(_:)) { $0.padding(edges, $1) }
+    }
 
-    var a: A
-    var b: B
-    var c: C
-    var d: D
+    public func frame(width: Length, alignment: Alignment = .center) -> some View {
+        withGeometry(width.in(_:)) { $0.frame(width: $1, alignment: alignment) }
+    }
 
-    var yield: (A.ComputedValue, B.ComputedValue, C.ComputedValue, D.ComputedValue) -> Void
+    public func frame(height: Length, alignment: Alignment = .center) -> some View {
+        withGeometry(height.in(_:)) { $0.frame(height: $1, alignment: alignment) }
 
-    func body(content: Content) -> some View {
-        content.background(
-            GeometryReader { geometry in
-                Color.clear.onAppear {
-                    yield(a.in(geometry), b.in(geometry), c.in(geometry), d.in(geometry))
-                }
+    }
+
+    public func frame(width: Length, height: Length, alignment: Alignment = .center) -> some View {
+        withGeometry({ (width: width.in($0), height: height.in($0)) }) {
+            $0.frame(width: $1.width, height: $1.height, alignment: alignment)
+        }
+    }
+
+    public func frame(
+        minWidth: Length? = nil,
+        idealWidth: Length? = nil,
+        maxWidth: Length? = nil,
+        minHeight: Length? = nil,
+        idealHeight: Length? = nil,
+        maxHeight: Length? = nil,
+        alignment: Alignment = .center
+    ) -> some View {
+        withGeometry(
+            {
+                (
+                    minWidth: minWidth?.in($0),
+                    idealWidth: idealWidth?.in($0),
+                    maxWidth: maxWidth?.in($0),
+                    minHeight: minHeight?.in($0),
+                    idealHeight: idealHeight?.in($0),
+                    maxHeight: maxHeight?.in($0)
+                )
             }
-        )
+        ) {
+            $0.frame(
+                minWidth: $1.minWidth,
+                idealWidth: $1.idealWidth,
+                maxWidth: $1.maxWidth,
+                minHeight: $1.minHeight,
+                idealHeight: $1.idealHeight,
+                maxHeight: $1.maxHeight,
+                alignment: alignment
+            )
+        }
+    }
+
+    public func offset(_ size: Size) -> some View {
+        offset(x: size.width, y: size.height)
+    }
+
+    public func offset(x: Length) -> some View {
+        withGeometry(x.in(_:)) { $0.offset(x: $1) }
+    }
+
+    public func offset(y: Length) -> some View {
+        withGeometry(y.in(_:)) { $0.offset(y: $1) }
+    }
+
+    public func offset(x: Length, y: Length) -> some View {
+        withGeometry({ (x: x.in($0), y: y.in($0) }) { $0.offset(x: $1.x, y: $1.y) }
     }
 }

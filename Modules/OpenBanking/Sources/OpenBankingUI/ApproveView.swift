@@ -112,7 +112,7 @@ public struct ApproveView: View {
 
     @ViewBuilder var actionArea: some View {
         WithViewStore(store) { viewStore in
-            VStack(spacing: 12) {
+            VStack(spacing: 12.pt.in(.screen)) {
                 Button(R.Approve.Action.approve) {
                     viewStore.send(.approve)
                 }

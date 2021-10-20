@@ -6,6 +6,7 @@ import OpenBanking
 import SwiftUI
 import ToolKit
 import UIComponentsKit
+import ComponentLibrary
 
 public struct InstitutionListState: Equatable, NavigationState {
 
@@ -113,8 +114,7 @@ public struct InstitutionList: View {
                 switch viewStore.account {
                 case .none:
                     ProgressView(value: 0.25)
-                        .compute(12.vmin, to: $loading)
-                        .frame(width: loading, alignment: .center)
+                        .frame(width: 12.vmin, alignment: .center)
                         .aspectRatio(1, contentMode: .fit)
                         .progressViewStyle(IndeterminateProgressStyle())
                         .onAppear { viewStore.send(.fetch) }
@@ -160,14 +160,13 @@ public struct InstitutionList: View {
                 .typography(.body2)
                 .foregroundColor(.textTitle)
                 .frame(alignment: .center)
-                .padding(padding)
+                .padding(10.5.vmin)
                 .multilineTextAlignment(.center)
             Spacer()
             PrimaryButton(title: R.InstitutionList.Error.showTransferDetails) {
                 view.send(.showTransferDetails)
             }
         }
-        .compute(10.5.vmin, to: $padding)
     }
 }
 
@@ -212,19 +211,16 @@ extension InstitutionList {
                         Color.viewPrimaryBackground
                     }
                 }
-                .compute(12.vw, to: $icon)
-                .frame(width: icon, height: icon, alignment: .center)
+                .frame(width: 12.vw, height: 12.vw, alignment: .center)
                 Text(title)
                     .typography(.title3)
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .compute(8.pt, to: $chevron)
-                    .frame(width: chevron)
+                    .frame(width: 8.pt)
                     .padding()
                     .foregroundColor(.disclosureIndicator)
             }
-            .compute(9.5.vh, to: $row)
-            .frame(height: row, alignment: .center)
+            .frame(height: 9.5.vh, alignment: .center)
         }
     }
 }
