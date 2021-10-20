@@ -36,13 +36,14 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
+        case .useTransactionsFlowToBuyCrypto:
+            return true
         case .disableGUIDLogin,
              .interestWithdrawAndDeposit,
              .newAccountPicker,
              .newOnboardingTour,
              .requestConsoleLogging,
              .secureChannel,
-             .useTransactionsFlowToBuyCrypto,
              .unifiedSignIn,
              .nativeWalletPayload:
             return false
