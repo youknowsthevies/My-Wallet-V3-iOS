@@ -63,7 +63,7 @@ final class DynamicAssetLoader: AssetLoader {
                 let custodialAssets: [CryptoAsset] = custodialCryptoCurrencies
                     .map { [erc20AssetFactory] cryptoCurrency -> CryptoAsset in
                         switch cryptoCurrency {
-                        case .coin:
+                        case .coin, .celoToken:
                             return CustodialCryptoAsset(asset: cryptoCurrency)
                         case .erc20(let erc20AssetModel):
                             return erc20AssetFactory.erc20Asset(erc20AssetModel: erc20AssetModel)
@@ -92,7 +92,7 @@ final class DynamicAssetLoader: AssetLoader {
             guard let cryptoAsset = storage[cryptoCurrency] else {
                 let cryptoAsset: CryptoAsset
                 switch cryptoCurrency {
-                case .coin:
+                case .coin, .celoToken:
                     cryptoAsset = CustodialCryptoAsset(asset: cryptoCurrency)
                 case .erc20(let erc20AssetModel):
                     cryptoAsset = erc20AssetFactory.erc20Asset(erc20AssetModel: erc20AssetModel)

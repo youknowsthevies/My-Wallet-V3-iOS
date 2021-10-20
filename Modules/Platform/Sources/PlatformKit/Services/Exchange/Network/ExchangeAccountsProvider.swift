@@ -7,7 +7,8 @@ import ToolKit
 public protocol ExchangeAccountsProviderAPI {
 
     func account(
-        for currency: CryptoCurrency
+        for currency: CryptoCurrency,
+        externalAssetAddressFactory: ExternalAssetAddressFactory
     ) -> AnyPublisher<CryptoExchangeAccount, ExchangeAccountsNetworkError>
 }
 
@@ -58,13 +59,19 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
     // MARK: - ExchangeAccountsProviderAPI
 
     func account(
-        for currency: CryptoCurrency
+        for currency: CryptoCurrency,
+        externalAssetAddressFactory: ExternalAssetAddressFactory
     ) -> AnyPublisher<CryptoExchangeAccount, ExchangeAccountsNetworkError> {
         guard currency.supports(product: .mercuryDeposits) else {
             return .failure(ExchangeAccountsNetworkError.unavailable)
         }
         return cachedValue.get(key: currency)
-            .map(CryptoExchangeAccount.from)
+            .map { response in
+                CryptoExchangeAccount(
+                    response: response,
+                    cryptoReceiveAddressFactory: externalAssetAddressFactory
+                )
+            }
             .eraseToAnyPublisher()
     }
 }

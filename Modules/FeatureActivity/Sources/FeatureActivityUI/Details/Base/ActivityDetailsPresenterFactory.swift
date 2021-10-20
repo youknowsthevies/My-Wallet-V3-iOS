@@ -29,12 +29,14 @@ enum ActivityDetailsPresenterFactory {
             case .erc20:
                 let interactor = ERC20ActivityDetailsInteractor(cryptoCurrency: transactional.currency)
                 return ERC20ActivityDetailsPresenter(event: transactional, router: router, interactor: interactor)
+            case .celoToken:
+                fatalError("Transactional Activity Details not implemented for \(transactional.currency.code).")
             }
         }
     }
 
     private static func presenter(
-        model: CoinAssetModel,
+        model: AssetModel,
         transactional: TransactionalActivityItemEvent,
         router: ActivityRouterAPI
     ) -> DetailsScreenPresenterAPI {

@@ -48,14 +48,16 @@ final class BitcoinAsset: CryptoAsset {
         )
     }()
 
-    private let addressFactory: CryptoReceiveAddressFactory
+    private let addressFactory: ExternalAssetAddressFactory
     private let errorRecorder: ErrorRecording
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: BitcoinWalletAccountRepository
     private let kycTiersService: KYCTiersServiceAPI
 
     init(
-        addressFactory: CryptoReceiveAddressFactory = resolve(tag: CoinAssetModel.bitcoin.typeTag),
+        addressFactory: ExternalAssetAddressFactory = resolve(
+            tag: BitcoinChainCoin.bitcoin
+        ),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
@@ -98,6 +100,14 @@ final class BitcoinAsset: CryptoAsset {
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
         cryptoAssetRepository.parse(address: address)
+    }
+
+    func parse(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping (TransactionResult) -> Completable
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        cryptoAssetRepository.parse(address: address, label: label, onTxCompleted: onTxCompleted)
     }
 
     // MARK: - Private methods

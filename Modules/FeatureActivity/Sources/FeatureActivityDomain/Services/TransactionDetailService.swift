@@ -39,6 +39,8 @@ final class TransactionDetailService: TransactionDetailServiceAPI {
             }
         case .erc20:
             return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
+        case .celoToken:
+            return nil
         }
     }
 }

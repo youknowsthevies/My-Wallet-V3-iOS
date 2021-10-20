@@ -6,59 +6,28 @@ import ToolKit
 
 extension CryptoCurrency {
 
-    // MARK: - UIColor
+    // MARK: UIColor
 
     public var brandColor: SwiftUI.Color {
-        SwiftUI.Color(brandUIColor)
+        assetModel.brandColor
     }
 
     public var brandUIColor: UIColor {
-        switch self {
-        case .coin(let model):
-            if let match = CustodialCoinCode.allCases.first(where: { $0.rawValue == model.code }) {
-                return UIColor(hex: match.spotColor) ?? .black
-            }
-            return model.spotColor.flatMap(UIColor.init(hex:)) ?? .black
-        case .erc20(let model):
-            return model.spotColor.flatMap(UIColor.init(hex:))
-                ?? UIColor(hex: ERC20Code.spotColor(code: model.code))!
-        }
+        assetModel.brandUIColor
     }
 
     /// Defaults to brand color with 15% opacity.
     public var accentColor: UIColor {
-        brandUIColor.withAlphaComponent(0.15)
+        assetModel.accentColor
     }
 
     // MARK: Logo Image `ImageResource`
 
     public var image: Image {
-        logoResource.image ?? Image("crypto-btc", bundle: .platformUIKit)
+        logoResource.image ?? Image("crypto-placeholder", bundle: .platformUIKit)
     }
 
     public var logoResource: ImageResource {
-        switch self {
-        case .coin(let model):
-            switch model.code {
-            case NonCustodialCoinCode.bitcoin.rawValue:
-                return .local(name: "crypto-btc", bundle: .platformUIKit)
-            case NonCustodialCoinCode.bitcoinCash.rawValue:
-                return .local(name: "crypto-bch", bundle: .platformUIKit)
-            case NonCustodialCoinCode.ethereum.rawValue:
-                return .local(name: "crypto-eth", bundle: .platformUIKit)
-            case NonCustodialCoinCode.stellar.rawValue:
-                return .local(name: "crypto-xlm", bundle: .platformUIKit)
-            default:
-                guard let logoPngUrl = model.logoPngUrl.flatMap(URL.init) else {
-                    return .local(name: "crypto-placeholder", bundle: .platformUIKit)
-                }
-                return .remote(url: logoPngUrl)
-            }
-        case .erc20(let model):
-            guard let logoPngUrl = model.logoPngUrl.flatMap(URL.init) else {
-                return .local(name: "crypto-placeholder", bundle: .platformUIKit)
-            }
-            return .remote(url: logoPngUrl)
-        }
+        assetModel.logoResource
     }
 }
