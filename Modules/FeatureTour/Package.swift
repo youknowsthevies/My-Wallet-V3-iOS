@@ -24,7 +24,8 @@ let package = Package(
         .package(name: "DIKit", url: "https://github.com/jackpooleybc/DIKit.git", .branch("safe-property-wrappers")),
         .package(path: "../Localization"),
         .package(path: "../Platform"),
-        .package(path: "../UIComponents")
+        .package(path: "../UIComponents"),
+        .package(path: "../ComposableNavigation")
     ],
     targets: [
         .target(
@@ -50,7 +51,8 @@ let package = Package(
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "NukeUI", package: "NukeUI")
+                .product(name: "NukeUI", package: "NukeUI"),
+                .product(name: "ComposableNavigation", package: "ComposableNavigation")
             ],
             path: "UI"
         ),

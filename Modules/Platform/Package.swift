@@ -72,7 +72,8 @@ let package = Package(
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../WalletPayload"),
-        .package(path: "../UIComponents")
+        .package(path: "../UIComponents"),
+        .package(path: "../ComposableNavigation")
     ],
     targets: [
         .target(
@@ -92,7 +93,8 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload")
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "ComposableNavigation", package: "ComposableNavigation")
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json"),

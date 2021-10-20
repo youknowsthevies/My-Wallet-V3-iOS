@@ -1,27 +1,49 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import ComposableNavigation
 
 private struct UpdateSubscriptionId: Hashable {}
 private struct UpdateHeaderId: Hashable {}
 
 let accountPickerReducer = Reducer<AccountPickerState, AccountPickerAction, AccountPickerEnvironment>.combine(
+    accountPickerRowReducer.forEach(
+        state: \.self,
+        action: /SuccessRowsAction.accountPickerRow(id:action:),
+        environment: { environment in
+            AccountPickerRowEnvironment(
+                mainQueue: environment.mainQueue,
+                updateSingleAccount: environment.updateSingleAccount,
+                updateAccountGroup: environment.updateAccountGroup
+            )
+        }
+    )
+    .pullback(state: /Result.success, action: /LoadedRowsAction.success, environment: { $0 })
+    .pullback(state: /LoadingState.loaded, action: /AccountPickerAction.rowsLoaded, environment: { $0 })
+    .pullback(state: \.rows, action: /AccountPickerAction.self, environment: { $0 }),
     Reducer { state, action, environment in
         switch action {
 
-        case .accountPickerRow(id: let id, action: .accountPickerRowDidTap):
+        case .rowsLoaded(.success(.accountPickerRow(id: let id, action: .accountPickerRowDidTap))):
             environment.rowSelected(id)
             return .none
 
+        case .rowsLoading:
+            return .none
+
         case .updateRows(rows: let rows):
-            state.rows = IdentifiedArrayOf(uniqueElements: rows)
+            state.rows = .loaded(next: .success(IdentifiedArrayOf(uniqueElements: rows)))
+            return .none
+
+        case .failedToUpdateRows:
+            state.rows = .loaded(next: .failure(.testError))
             return .none
 
         case .updateHeader(header: let header):
             state.header = header
             return .none
 
-        case .failedToUpdate:
+        case .failedToUpdateHeader:
             return .none
 
         case .subscribeToUpdates:
@@ -35,7 +57,7 @@ let accountPickerReducer = Reducer<AccountPickerState, AccountPickerAction, Acco
                         case .success(let rows):
                             return .updateRows(rows)
                         case .failure(let error):
-                            return .failedToUpdate(error)
+                            return .failedToUpdateRows(error)
                         }
                     },
                 environment.header()
@@ -47,7 +69,7 @@ let accountPickerReducer = Reducer<AccountPickerState, AccountPickerAction, Acco
                         case .success(let header):
                             return .updateHeader(header)
                         case .failure(let error):
-                            return .failedToUpdate(error)
+                            return .failedToUpdateHeader(error)
                         }
                     }
             )
@@ -55,16 +77,5 @@ let accountPickerReducer = Reducer<AccountPickerState, AccountPickerAction, Acco
         default:
             return .none
         }
-    },
-    accountPickerRowReducer.forEach(
-        state: \.rows,
-        action: /AccountPickerAction.accountPickerRow(id:action:),
-        environment: { environment in
-            AccountPickerRowEnvironment(
-                mainQueue: environment.mainQueue,
-                updateSingleAccount: environment.updateSingleAccount,
-                updateAccountGroup: environment.updateAccountGroup
-            )
-        }
-    )
+    }
 )
