@@ -13,7 +13,8 @@ public struct RootView: View {
 
     private let data: NavigationLinkProviderList = [
         "1 - Base": [
-            NavigationLinkProvider(view: TypographyExamplesView(), title: "🔠 Typography")
+            NavigationLinkProvider(view: TypographyExamplesView(), title: "🔠 Typography"),
+            NavigationLinkProvider(view: IconsExamplesView(), title: "🖼 Icons")
         ],
         "2 - Primitives": [
             NavigationLinkProvider(view: SampleView())
