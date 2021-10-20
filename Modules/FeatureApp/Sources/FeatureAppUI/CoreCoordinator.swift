@@ -25,6 +25,7 @@ private enum WalletCancelations {
     struct UpgradeId: Hashable {}
     struct CreateId: Hashable {}
     struct RestoreId: Hashable {}
+    struct RestoreFailedId: Hashable {}
     struct AssetInitializationId: Hashable {}
 }
 
@@ -397,6 +398,29 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 )
             )
         }
+        // decide if we need to reset password or not (we need to reset password after metadata recovery)
+        // if needed, go to reset password screen, if not, go to PIN screen
+        if let context = state.onboarding?.walletRecoveryContext,
+           context == .metadataRecovery {
+            environment.loadingViewPresenter.hide()
+            // if it is from the restore wallet screen
+            if state.onboarding?.welcomeState?.restoreWalletState != nil {
+                return .merge(
+                    .cancel(id: WalletCancelations.AuthenticationId()),
+                    Effect(value: .onboarding(.welcomeScreen(.restoreWallet(.setResetPasswordScreenVisible(true)))))
+                )
+            // if it is from the trouble logging in screen
+            } else if state.onboarding?.welcomeState?.emailLoginState != nil {
+                return .merge(
+                    .cancel(id: WalletCancelations.AuthenticationId()),
+                    Effect(value:
+                        .onboarding(
+                            .welcomeScreen(.emailLogin(.verifyDevice(.credentials(.seedPhrase(.setResetPasswordScreenVisible(true))))))
+                        )
+                    )
+                )
+            }
+        }
         // decide if we need to set a pin or not
         guard environment.blockchainSettings.isPinSet else {
             state.onboarding?.hideLegacyScreenIfNeeded()
@@ -546,43 +570,70 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
 
     case .restore:
-        return environment
-            .walletManager
-            .walletRecovered
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .cancellable(id: WalletCancelations.RestoreId(), cancelInFlight: false)
-            .map { result -> CoreAppAction in
-                guard case .success = result else {
+        return .merge(
+            environment
+                .walletManager
+                .walletRecovered
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .cancellable(id: WalletCancelations.RestoreId(), cancelInFlight: false)
+                .map { result -> CoreAppAction in
+                    guard case .success = result else {
+                        return .restored(.failure(.failedToRestoreWallet))
+                    }
+                    return .restored(.success(.noValue))
+                },
+            environment
+                .walletManager
+                .walletRecoveryFailed
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .cancellable(id: WalletCancelations.RestoreFailedId(), cancelInFlight: false)
+                .map { result -> CoreAppAction in
+                    guard case .success = result else {
+                        return .none
+                    }
                     return .restored(.failure(.failedToRestoreWallet))
                 }
-                return .restored(.success(.noValue))
-            }
-
-    // TODO: refactor this to not rely on the lower lever reducers
-    case .onboarding(.welcomeScreen(.emailLogin(.verifyDevice(.credentials(.seedPhrase(.resetPassword(.didChangeNewPassword(let newPassword)))))))):
-        state.onboarding?.newPasswordForWalletRecovery = newPassword
-        return .none
+        )
 
     case .restored(.success):
-        guard let context = state.onboarding?.walletRecoveryContext,
-              let newPassword = state.onboarding?.newPasswordForWalletRecovery
-        else {
-            return .cancel(id: WalletCancelations.RestoreId())
-        }
-        switch context {
-        case .metadataRecovery:
-            return .merge(
-                .cancel(id: WalletCancelations.RestoreId()),
-                Effect(value: .resetPassword(newPassword: newPassword))
-            )
-        case .importRecovery:
-            return .cancel(id: WalletCancelations.RestoreId())
-        }
+        return .merge(
+            .cancel(id: WalletCancelations.RestoreId()),
+            .cancel(id: WalletCancelations.RestoreFailedId())
+        )
 
     case .restored(.failure):
-        state.onboarding?.displayAlert = .walletRecovery(.failedToRestoreWallet)
-        return .cancel(id: WalletCancelations.RestoreId())
+        guard let recoveryContext = state.onboarding?.walletRecoveryContext,
+              recoveryContext == .metadataRecovery
+        else {
+            state.onboarding?.displayAlert = .walletRecovery(.failedToRestoreWallet)
+            return .merge(
+                .cancel(id: WalletCancelations.RestoreId()),
+                .cancel(id: WalletCancelations.RestoreFailedId())
+            )
+        }
+        if state.onboarding?.welcomeState?.restoreWalletState != nil {
+            return .merge(
+                Effect(value: .onboarding(.welcomeScreen(.restoreWallet(.setImportWalletScreenVisible(true))))),
+                .cancel(id: WalletCancelations.RestoreId()),
+                .cancel(id: WalletCancelations.RestoreFailedId())
+            )
+        } else if state.onboarding?.welcomeState?.emailLoginState != nil {
+            return .merge(
+                Effect(value: .onboarding(.welcomeScreen(.emailLogin(
+                    .verifyDevice(.credentials(.seedPhrase(
+                        .setImportWalletScreenVisible(true)
+                    )))
+                )))),
+                .cancel(id: WalletCancelations.RestoreId()),
+                .cancel(id: WalletCancelations.RestoreFailedId())
+            )
+        }
+        return .merge(
+            .cancel(id: WalletCancelations.RestoreId()),
+            .cancel(id: WalletCancelations.RestoreFailedId())
+        )
 
     case .prepareForLoggedIn:
         let coincoreInit = environment.coincore
@@ -636,6 +687,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             Effect(value: CoreAppAction.loggedIn(.start(context))),
             Effect(value: CoreAppAction.mobileAuthSync(isLogin: true))
         )
+
+    case .onboarding(.welcomeScreen(.emailLogin(.verifyDevice(.credentials(.seedPhrase(.resetPassword(.reset(let password)))))))),
+         .onboarding(.welcomeScreen(.restoreWallet(.resetPassword(.reset(let password))))):
+        return Effect(value: .resetPassword(newPassword: password))
 
     case .onboarding(.welcomeScreen(.presentScreenFlow(.createWalletScreen))):
         // send `authenticate` action so that we can listen for wallet creation
@@ -744,6 +799,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                     event: AnalyticsEvents.New.AccountRecoveryCoreFlow
                         .accountPasswordReset(hasRecoveryPhrase: true)
                 )
+                // proceed to setup PIN after reset password if needed
+                guard environment.blockchainSettings.isPinSet else {
+                    return .setupPin
+                }
                 return .none
             }
 

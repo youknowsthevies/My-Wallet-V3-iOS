@@ -486,126 +486,18 @@ final class MainAppReducerTests: XCTestCase {
         }
         testStore.receive(.onboarding(.welcomeScreen(.start)))
 
-        testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.emailLoginScreen)))) { state in
-            state.onboarding?.welcomeState?.screenFlow = .emailLoginScreen
-            state.onboarding?.welcomeState?.emailLoginState = .init()
-            state.onboarding?.walletCreationContext = .existing
-        }
-
-        testStore.send(.onboarding(.welcomeScreen(.emailLogin(.setVerifyDeviceScreenVisible(true))))) { state in
-            state.onboarding?.welcomeState?.emailLoginState?.isVerifyDeviceScreenVisible = true
-            state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState = .init(emailAddress: "")
+        testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.restoreWalletScreen)))) { state in
+            state.onboarding?.welcomeState?.screenFlow = .restoreWalletScreen
+            state.onboarding?.welcomeState?.restoreWalletState = .init()
+            state.onboarding?.walletCreationContext = .recovery
         }
 
         testStore.send(
             .onboarding(
-                .welcomeScreen(.emailLogin(.verifyDevice(.setCredentialsScreenVisible(true))))
-            )
-        ) { state in
-            state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?.isCredentialsScreenVisible = true
-            state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?
-                .credentialsState = .init(accountRecoveryEnabled: false)
-        }
-
-        testStore.send(
-            .onboarding(
-                .welcomeScreen(.emailLogin(.verifyDevice(.credentials(.setTroubleLoggingInScreenVisible(true)))))
-            )
-        ) { state in
-            state
-                .onboarding?
-                .welcomeState?
-                .emailLoginState?
-                .verifyDeviceState?
-                .credentialsState?
-                .isTroubleLoggingInScreenVisible = true
-            state
-                .onboarding?
-                .welcomeState?
-                .emailLoginState?
-                .verifyDeviceState?
-                .credentialsState?
-                .seedPhraseState = .init()
-        }
-
-        testStore.send(
-            .onboarding(
-                .welcomeScreen(
-                    .emailLogin(.verifyDevice(.credentials(.seedPhrase(.setResetPasswordScreenVisible(true)))))
-                )
-            )
-        ) { state in
-            state
-                .onboarding?
-                .welcomeState?
-                .emailLoginState?
-                .verifyDeviceState?
-                .credentialsState?
-                .seedPhraseState?
-                .isResetPasswordScreenVisible = true
-            state
-                .onboarding?
-                .welcomeState?
-                .emailLoginState?
-                .verifyDeviceState?
-                .credentialsState?
-                .seedPhraseState?
-                .resetPasswordState = .init()
-        }
-
-        testStore.send(
-            .onboarding(
-                .welcomeScreen(
-                    .emailLogin(
-                        .verifyDevice(
-                            .credentials(
-                                .seedPhrase(
-                                    .resetPassword(
-                                        .didChangeNewPassword("new password")
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        ) { state in
-            state
-                .onboarding?
-                .welcomeState?
-                .emailLoginState?
-                .verifyDeviceState?
-                .credentialsState?
-                .seedPhraseState?
-                .resetPasswordState?
-                .newPassword = "new password"
-            state.onboarding?.newPasswordForWalletRecovery = "new password"
-        }
-
-        testStore.receive(
-            .onboarding(
-                .welcomeScreen(
-                    .emailLogin(.verifyDevice(.credentials(.seedPhrase(.resetPassword(.validatePasswordStrength))))
-                    )
-                )
+                .welcomeScreen(.restoreWallet(.restoreWallet(.metadataRecovery(seedPhrase: ""))))
             )
         )
 
-        testStore.send(
-            .onboarding(
-                .welcomeScreen(
-                    .emailLogin(
-                        .verifyDevice(
-                            .credentials(
-                                .seedPhrase(
-                                    .restoreWallet(.metadataRecovery(seedPhrase: ""))
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
         testStore.receive(.onboarding(.welcomeScreen(.requestedToRestoreWallet(.metadataRecovery(seedPhrase: "")))))
         testStore.receive(.metadataRestoreWallet(seedPhrase: "")) { state in
             state.onboarding?.walletRecoveryContext = .metadataRecovery
@@ -614,60 +506,42 @@ final class MainAppReducerTests: XCTestCase {
         mockWallet.recoverFromMetadata(withMnemonicPassphrase: "")
         mockMainQueue.advance()
 
+        mockSettingsApp.guid = String(repeating: "a", count: 36)
+        mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
+        mockWallet.load(
+            withGuid: mockSettingsApp.guid!,
+            sharedKey: mockSettingsApp.sharedKey!,
+            password: "password".passwordPartHash
+        )
         testStore.receive(.authenticate)
-        let guid = String(repeating: "a", count: 36)
-        let sharedKey = String(repeating: "b", count: 36)
-        // we need to assign this here as the WalletManager+Rx gets the password hash the legacy password
-        mockWalletManager.legacyRepository.legacyPassword = "a-password"
-        mockWallet.load(withGuid: guid, sharedKey: sharedKey, password: "a-password")
         mockMainQueue.advance()
 
-        testStore.receive(
-            .onboarding(
-                .welcomeScreen(
-                    .emailLogin(
-                        .verifyDevice(
-                            .credentials(
-                                .seedPhrase(
-                                    .resetPassword(.didChangePasswordStrength(.weak)
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        ) { state in
-            state
-                .onboarding?
-                .welcomeState?
-                .emailLoginState?
-                .verifyDeviceState?
-                .credentialsState?
-                .seedPhraseState?
-                .resetPasswordState?
-                .passwordStrength = .weak
-        }
-
         testStore.receive(.restored(.success(.noValue)))
-        testStore.receive(.resetPassword(newPassword: "new password"))
+
+        let decryption = WalletDecryption(
+            guid: mockSettingsApp.guid,
+            sharedKey: mockSettingsApp.sharedKey,
+            passwordPartHash: nil
+        )
+        testStore.receive(.didDecryptWallet(decryption))
+        testStore.receive(.resetVerificationStatusIfNeeded(guid: decryption.guid, sharedKey: decryption.sharedKey))
+        testStore.receive(.authenticated(.success(true)))
+
+        testStore.receive(
+            .onboarding(.welcomeScreen(.restoreWallet(.setResetPasswordScreenVisible(true))))
+        ) { state in
+            state.onboarding?.welcomeState?.restoreWalletState?.resetPasswordState = .init()
+            state.onboarding?.welcomeState?.restoreWalletState?.isResetPasswordScreenVisible = true
+        }
         testStore.receive(.none)
 
-        let walletDecryption = WalletDecryption(
-            guid: guid,
-            sharedKey: sharedKey,
-            passwordPartHash: "a-password".passwordPartHash
-        )
-        testStore.receive(.didDecryptWallet(walletDecryption))
-        testStore.receive(.resetVerificationStatusIfNeeded(guid: guid, sharedKey: sharedKey))
-        testStore.receive(.authenticated(.success(true))) { state in
-            state.onboarding?.welcomeState?.screenFlow = .emailLoginScreen
+        testStore.send(
+            .onboarding(.welcomeScreen(.restoreWallet(.resetPassword(.reset(password: "password")))))
+        ) { state in
+            state.onboarding?.welcomeState?.restoreWalletState?.resetPasswordState?.isLoading = true
         }
-        testStore.receive(.onboarding(.welcomeScreen(.presentScreenFlow(.welcomeScreen)))) { state in
-            state.onboarding?.welcomeState?.emailLoginState = nil
-            state.onboarding?.walletCreationContext = nil
-            state.onboarding?.welcomeState?.screenFlow = .welcomeScreen
-        }
+        testStore.receive(.resetPassword(newPassword: "password"))
+        mockMainQueue.advance()
         testStore.receive(.setupPin) { state in
             state.onboarding?.pinState = .init()
             state.onboarding?.passwordScreen = nil
@@ -675,7 +549,6 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.onboarding(.pin(.create))) { state in
             state.onboarding?.pinState?.creating = true
         }
-        testStore.receive(.none)
     }
 
     // swiftlint:disable function_body_length

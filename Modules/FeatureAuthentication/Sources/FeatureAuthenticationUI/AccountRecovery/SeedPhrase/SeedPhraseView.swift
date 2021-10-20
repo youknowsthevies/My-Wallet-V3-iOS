@@ -83,19 +83,14 @@ public struct SeedPhraseView: View {
             PrimaryButton(
                 title: context == .troubleLoggingIn ?
                     LocalizedString.loginInButton :
-                    LocalizedString.NavigationTitle.importWallet
+                    LocalizedString.NavigationTitle.restoreWallet
             ) {
-                switch context {
-                case .troubleLoggingIn:
-                    viewStore.send(.setResetPasswordScreenVisible(true))
-                case .importWallet:
-                    viewStore.send(.setImportWalletScreenVisible(true))
-                case .none:
-                    break
-                }
+                viewStore.send(
+                    .restoreWallet(.metadataRecovery(seedPhrase: viewStore.seedPhrase))
+                )
             }
             .disabled(!viewStore.seedPhraseScore.isValid)
-            .accessibility(identifier: AccessibilityIdentifiers.SeedPhraseScreen.logInButton)
+            .accessibility(identifier: AccessibilityIdentifiers.SeedPhraseScreen.continueButton)
 
             NavigationLink(
                 destination: IfLetStore(
@@ -165,7 +160,7 @@ public struct SeedPhraseView: View {
         .navigationBarTitle(
             context == .troubleLoggingIn ?
                 LocalizedString.NavigationTitle.troubleLoggingIn :
-                LocalizedString.NavigationTitle.importWallet,
+                LocalizedString.NavigationTitle.restoreWallet,
             displayMode: .inline
         )
         .hideBackButtonTitle()
@@ -182,7 +177,7 @@ public struct SeedPhraseView: View {
     private var instructionText: some View {
         Text(context == .troubleLoggingIn ?
             LocalizedString.instruction :
-            LocalizedString.importWalletInstruction
+            LocalizedString.restoreWalletInstruction
         )
         .textStyle(.body)
         .multilineTextAlignment(.leading)
