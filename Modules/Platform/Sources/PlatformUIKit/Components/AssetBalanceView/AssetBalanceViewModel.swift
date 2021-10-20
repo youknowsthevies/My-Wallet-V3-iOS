@@ -121,7 +121,7 @@ public enum AssetBalanceViewModel {
                     secondaryBalance = .empty
                 }
 
-                if let pendingValue = value.pendingValue {
+                if let pendingValue = value.pendingValue, !pendingValue.isZero {
                     pendingBalanceVisibility = .visible
                     pendingBalance = LabelContent(
                         text: pendingValue.toDisplayString(includeSymbol: true, locale: .current),
