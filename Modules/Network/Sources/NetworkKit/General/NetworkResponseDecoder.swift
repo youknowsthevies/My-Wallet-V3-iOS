@@ -140,9 +140,9 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             )
             Logger.shared.error(errorMessage)
             // TODO: Fix decoding errors then uncomment this: IOS-4501
-            // #if INTERNAL_BUILD
-            // fatalError(errorMessage)
-            // #endif
+            // if BuildFlag.isInternal {
+            //     fatalError(errorMessage)
+            // }
             return ErrorResponseType.from(.payloadError(.badData(rawPayload: rawPayload)))
         }
         return decodedErrorResponse
@@ -162,19 +162,21 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         for request: NetworkRequest,
         emptyPayloadHandler: (ServerResponse) -> Result<ResponseType, NetworkError>
     ) -> Result<ResponseType, NetworkError> {
-        #if INTERNAL_BUILD
-        let consoleLoggingEnabled = interalFeatureFlagService.isEnabled(.requestConsoleLogging)
-        if let data = response.payload, consoleLoggingEnabled {
-            if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
-                Logger.shared.debug("""
-                \n----------------------
-                🌎 ENDPOINT: \n\(response.response.url?.absoluteString ?? "Unknown")
-                📦 PAYLOAD: \n\(json)
-                ======================\n
-                """)
+
+        if BuildFlag.isInternal {
+            let consoleLoggingEnabled = request.isDebugging.response
+                || interalFeatureFlagService.isEnabled(.requestConsoleLogging)
+            if let data = response.payload, consoleLoggingEnabled {
+                if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
+                    Logger.shared.debug("""
+                    \n----------------------
+                    🌎 ENDPOINT: \n\(response.response.url?.absoluteString ?? "Unknown")
+                    📦 PAYLOAD: \n\(json)
+                    ======================\n
+                    """)
+                }
             }
         }
-        #endif
         guard ResponseType.self != EmptyNetworkResponse.self else {
             let emptyResponse: ResponseType = EmptyNetworkResponse() as! ResponseType
             return .success(emptyResponse)
@@ -203,9 +205,9 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                 )
                 Logger.shared.error(errorMessage)
                 // TODO: Fix decoding errors then uncomment this: IOS-4501
-                // #if INTERNAL_BUILD
-                // fatalError(errorMessage)
-                // #endif
+                // if BuildFlag.isInternal {
+                //     fatalError(errorMessage)
+                // }
                 return .failure(.payloadError(.badData(rawPayload: rawPayload)))
             }
     }

@@ -10,12 +10,16 @@ extension DependencyContainer {
 
         // MARK: - Services
 
-        single {
-            PasswordValidator() as PasswordValidatorAPI
-        }
+        factory { JWTService() as JWTServiceAPI }
 
-        single {
-            SeedPhraseValidator() as SeedPhraseValidatorAPI
-        }
+        factory { AccountRecoveryService() as AccountRecoveryServiceAPI }
+
+        factory { MobileAuthSyncService() as MobileAuthSyncServiceAPI }
+
+        factory { ResetPasswordService() as ResetPasswordServiceAPI }
+
+        single { PasswordValidator() as PasswordValidatorAPI }
+
+        single { SeedPhraseValidator() as SeedPhraseValidatorAPI }
     }
 }

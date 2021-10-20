@@ -1,16 +1,27 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
+import UIKit
 
-final class AccountPickerSimpleHeaderView: UIView {
-    private let subtitleLabel = UILabel()
-    private let separator = UIView()
+final class AccountPickerSimpleHeaderView: UIView, AccountPickerHeaderViewAPI {
+
+    // MARK: Properties
 
     var model: AccountPickerSimpleHeaderModel! {
         didSet {
             subtitleLabel.content = model?.subtitleLabel ?? .empty
         }
     }
+
+    // MARK: Properties - AccountPickerHeaderViewAPI
+
+    var searchBar: UISearchBar? { nil }
+
+    // MARK: Private Properties
+
+    private let subtitleLabel = UILabel()
+    private let separator = UIView()
+
+    // MARK: Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -21,6 +32,8 @@ final class AccountPickerSimpleHeaderView: UIView {
         super.init(coder: coder)
         setup()
     }
+
+    // MARK: Private Methods
 
     private func setup() {
         addSubview(subtitleLabel)

@@ -44,11 +44,14 @@ private typealias CredentialsLocalization = LocalizationConstants.CredentialsFor
 // MARK: - Properties
 
 struct CredentialsState: Equatable {
+    // TODO: this is a temporary solution for inserting a feature flag, remove this later
+    var accountRecoveryEnabled: Bool
     var walletPairingState: WalletPairingState
     var passwordState: PasswordState
     var twoFAState: TwoFAState?
     var hardwareKeyState: HardwareKeyState?
     var seedPhraseState: SeedPhraseState?
+    var nabuInfo: WalletInfo.NabuInfo?
     var isManualPairing: Bool
     var isTroubleLoggingInScreenVisible: Bool
     var isTwoFactorOTPVerified: Bool
@@ -58,11 +61,13 @@ struct CredentialsState: Equatable {
     var isLoading: Bool
 
     init(
+        accountRecoveryEnabled: Bool,
         walletPairingState: WalletPairingState = .init(),
         passwordState: PasswordState = .init(),
         twoFAState: TwoFAState? = nil,
         hardwareKeyState: HardwareKeyState? = nil,
         seedPhraseState: SeedPhraseState? = nil,
+        nabuInfo: WalletInfo.NabuInfo? = nil,
         isManualPairing: Bool = false,
         isTroubleLoggingInScreenVisible: Bool = false,
         isTwoFactorOTPVerified: Bool = false,
@@ -71,11 +76,13 @@ struct CredentialsState: Equatable {
         credentialsFailureAlert: AlertState<CredentialsAction>? = nil,
         isLoading: Bool = false
     ) {
+        self.accountRecoveryEnabled = accountRecoveryEnabled
         self.walletPairingState = walletPairingState
         self.passwordState = passwordState
         self.twoFAState = twoFAState
         self.hardwareKeyState = hardwareKeyState
         self.seedPhraseState = seedPhraseState
+        self.nabuInfo = nabuInfo
         self.isManualPairing = isManualPairing
         self.isTroubleLoggingInScreenVisible = isTroubleLoggingInScreenVisible
         self.isTwoFactorOTPVerified = isTwoFactorOTPVerified
@@ -96,6 +103,7 @@ struct CredentialsEnvironment {
     let loginService: LoginServiceAPI
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let externalAppOpener: ExternalAppOpener
+    let appFeatureConfigurator: FeatureConfiguratorAPI
     let errorRecorder: ErrorRecording
     let walletIdentifierValidator: (String) -> Bool
 
@@ -112,6 +120,7 @@ struct CredentialsEnvironment {
         loginService: LoginServiceAPI = resolve(),
         errorRecorder: ErrorRecording,
         externalAppOpener: ExternalAppOpener = resolve(),
+        appFeatureConfigurator: FeatureConfiguratorAPI,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         walletIdentifierValidator: @escaping (String) -> Bool = TextValidation.walletIdentifierValidator
     ) {
@@ -124,6 +133,7 @@ struct CredentialsEnvironment {
         self.loginService = loginService
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
+        self.appFeatureConfigurator = appFeatureConfigurator
         self.analyticsRecorder = analyticsRecorder
         self.walletIdentifierValidator = walletIdentifierValidator
     }
@@ -174,7 +184,9 @@ let credentialsReducer = Reducer.combine(
             action: /CredentialsAction.seedPhrase,
             environment: {
                 SeedPhraseEnvironment(
-                    mainQueue: $0.mainQueue
+                    mainQueue: $0.mainQueue,
+                    externalAppOpener: $0.externalAppOpener,
+                    analyticsRecorder: $0.analyticsRecorder
                 )
             }
         ),
@@ -204,19 +216,19 @@ let credentialsReducer = Reducer.combine(
             return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
 
         case .didAppear(.walletInfo(let info)):
-            state.isTroubleLoggingInScreenVisible = false
             state.walletPairingState.emailAddress = info.email ?? ""
             state.walletPairingState.walletGuid = info.guid
             state.walletPairingState.emailCode = info.emailCode
+            if let nabuInfo = info.nabuInfo {
+                state.nabuInfo = nabuInfo
+            }
             return .none
 
         case .didAppear(.walletIdentifier(let guid)):
-            state.isTroubleLoggingInScreenVisible = false
             state.walletPairingState.walletGuid = guid ?? ""
             return .none
 
         case .didAppear(.manualPairing):
-            state.isTroubleLoggingInScreenVisible = false
             state.walletPairingState.emailAddress = "not available on manual pairing"
             state.isManualPairing = true
             return Effect(value: .walletPairing(.setupSessionToken))
@@ -331,8 +343,14 @@ let credentialsReducer = Reducer.combine(
             state.isLoading = true
             return .none
 
-        case .setTroubleLoggingInScreenVisible(let visible):
-            state.isTroubleLoggingInScreenVisible = visible
+        case .setTroubleLoggingInScreenVisible(let isVisible):
+            state.isTroubleLoggingInScreenVisible = isVisible
+            if isVisible {
+                state.seedPhraseState = .init(
+                    emailAddress: state.walletPairingState.emailAddress,
+                    nabuInfo: state.nabuInfo
+                )
+            }
             return .none
 
         case .twoFA,
@@ -542,6 +560,11 @@ extension Reducer where
                 case .twoFA(.didChangeTwoFACodeAttemptsLeft):
                     environment.analyticsRecorder.record(
                         event: .loginTwoStepVerificationDenied
+                    )
+                    return .none
+                case .setTroubleLoggingInScreenVisible(true):
+                    environment.analyticsRecorder.record(
+                        event: .recoveryOptionSelected
                     )
                     return .none
                 default:

@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Foundation
+
 /// An asset (crypto or fiat).
 public protocol AssetModel {
 
@@ -26,4 +28,11 @@ public protocol AssetModel {
 
     /// The asset spot color.
     var spotColor: String? { get }
+}
+
+extension AssetModel {
+
+    public func supports(product: AssetModelProduct) -> Bool {
+        products.contains(product)
+    }
 }

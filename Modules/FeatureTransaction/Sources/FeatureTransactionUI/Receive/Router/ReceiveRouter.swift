@@ -52,8 +52,8 @@ final class ReceiveRouter: ReceiveRouterAPI {
         navigationRouter.present(viewController: viewController)
     }
 
-    func shareDetails(for metadata: CryptoAssetQRMetadata) {
-        let displayCode = metadata.cryptoCurrency.displayCode
+    func shareDetails(for metadata: CryptoAssetQRMetadata, currencyType: CurrencyType) {
+        let displayCode = currencyType.displayCode
         let prefix = String(format: LocalizedString.Text.pleaseSendXTo, displayCode)
         let message = "\(prefix) \(metadata.absoluteString)"
         let subject = String(format: LocalizedString.Text.xPaymentRequest, displayCode)

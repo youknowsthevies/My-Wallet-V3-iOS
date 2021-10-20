@@ -39,7 +39,10 @@ final class EligibilityService: EligibilityServiceAPI {
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencyService = fiatCurrencyService
         isEligibileValue = CachedValue(
-            configuration: .periodic(30)
+            configuration: .periodic(
+                seconds: 30,
+                schedulerIdentifier: "EligibilityService"
+            )
         )
 
         isEligibileValue.setFetch(weak: self) { (self) in

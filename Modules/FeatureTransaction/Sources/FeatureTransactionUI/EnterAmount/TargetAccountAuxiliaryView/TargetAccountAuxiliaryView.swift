@@ -54,6 +54,7 @@ struct TargetAccountAuxiliaryView: View {
                         spacing: LayoutConstants.VerticalSpacing.betweenContentGroups
                     ) {
                         ImageResourceView(viewStore.image)
+                            .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: Constants.accountImageSize)
                         VStack(alignment: .leading, spacing: 0) {

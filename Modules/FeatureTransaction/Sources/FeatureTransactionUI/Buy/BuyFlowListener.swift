@@ -46,7 +46,9 @@ final class BuyFlowListener: BuyFlowListening {
         kycRouter.presentEmailVerificationAndKYCIfNeeded(from: viewController, requiredTier: .tier1)
             .receive(on: DispatchQueue.main)
             .sink { [alertViewPresenter, loadingViewPresenter] completionResult in
-                loadingViewPresenter.hide()
+                if loadingViewPresenter.isVisible {
+                    loadingViewPresenter.hide()
+                }
                 guard case .failure(let error) = completionResult else {
                     return
                 }
@@ -55,7 +57,8 @@ final class BuyFlowListener: BuyFlowListening {
                     message: String(describing: error),
                     action: nil
                 )
-            } receiveValue: { result in
+            } receiveValue: { [loadingViewPresenter] result in
+                loadingViewPresenter.hide()
                 completion(result == .completed)
             }
             .store(in: &cancellables)

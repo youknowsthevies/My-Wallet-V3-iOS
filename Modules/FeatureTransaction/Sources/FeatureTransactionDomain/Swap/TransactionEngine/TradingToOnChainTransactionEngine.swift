@@ -58,10 +58,14 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         self.priceService = priceService
         self.isNoteSupported = isNoteSupported
         self.transferRepository = transferRepository
-        feeCache = CachedValue(configuration: .periodic(20))
+        feeCache = CachedValue(
+            configuration: .periodic(
+                seconds: 20,
+                schedulerIdentifier: "TradingToOnChainTransactionEngine"
+            )
+        )
         feeCache.setFetch(weak: self) { (self) -> Single<CustodialTransferFee> in
             self.transferRepository.fees()
-                .asObservable()
                 .asSingle()
         }
     }

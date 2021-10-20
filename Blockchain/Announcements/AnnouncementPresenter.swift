@@ -34,6 +34,9 @@ final class AnnouncementPresenter {
     private let interactor: AnnouncementInteracting
     private let webViewServiceAPI: WebViewServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let navigationRouter: NavigationRouterAPI
+    private let exchangeProviding: ExchangeProviding
+    private let accountsRouter: AccountsRouting
 
     // MARK: - Rx
 
@@ -53,6 +56,9 @@ final class AnnouncementPresenter {
     // MARK: - Setup
 
     init(
+        navigationRouter: NavigationRouterAPI = NavigationRouter(),
+        exchangeProviding: ExchangeProviding = DIKit.resolve(),
+        accountsRouter: AccountsRouting = DIKit.resolve(),
         interactor: AnnouncementInteracting = AnnouncementInteractor(),
         topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
         featureFetcher: FeatureFetching = DIKit.resolve(),
@@ -88,6 +94,9 @@ final class AnnouncementPresenter {
         self.backupFlowStarter = backupFlowStarter
         self.settingsStarter = settingsStarter
         self.tapControllerManagerProvider = tapControllerManagerProvider
+        self.navigationRouter = navigationRouter
+        self.exchangeProviding = exchangeProviding
+        self.accountsRouter = accountsRouter
 
         announcement
             .asObservable()
@@ -134,6 +143,8 @@ final class AnnouncementPresenter {
         for type in metadata.order {
             let announcement: Announcement
             switch type {
+            case .resubmitDocumentsAfterRecovery:
+                announcement = resubmitDocumentsAfterRecovery(user: preliminaryData.user)
             case .sddUsersFirstBuy:
                 announcement = sddUsersFirstBuy(
                     tiers: preliminaryData.tiers,
@@ -150,10 +161,13 @@ final class AnnouncementPresenter {
             case .fiatFundsKYC:
                 announcement = fiatFundsLinkBank(
                     isKYCVerified: preliminaryData.tiers.isTier2Approved,
-                    hasLinkedBanks: preliminaryData.hasLinkedBanks
+                    hasLinkedBanks: preliminaryData.simpleBuy.hasLinkedBanks
                 )
             case .verifyEmail:
-                announcement = verifyEmail(user: preliminaryData.user)
+                announcement = verifyEmail(
+                    user: preliminaryData.user,
+                    reappearanceTimeInterval: metadata.interval
+                )
             case .walletIntro:
                 announcement = walletIntro(reappearanceTimeInterval: metadata.interval)
             case .twoFA:
@@ -184,17 +198,27 @@ final class AnnouncementPresenter {
                 announcement = resubmitDocuments(user: preliminaryData.user)
             case .simpleBuyPendingTransaction:
                 announcement = simpleBuyPendingTransaction(
-                    for: preliminaryData.pendingOrderDetails
+                    for: preliminaryData.simpleBuy.pendingOrderDetails,
+                    reappearanceTimeInterval: metadata.interval
                 )
             case .simpleBuyKYCIncomplete:
                 announcement = simpleBuyFinishSignup(
                     tiers: preliminaryData.tiers,
-                    hasIncompleteBuyFlow: preliminaryData.hasIncompleteBuyFlow
+                    hasIncompleteBuyFlow: preliminaryData.hasIncompleteBuyFlow,
+                    reappearanceTimeInterval: metadata.interval
                 )
             case .newSwap:
                 announcement = newSwap(using: preliminaryData, reappearanceTimeInterval: metadata.interval)
             case .newAsset:
-                announcement = newAsset(cryptoCurrency: preliminaryData.announcementAsset)
+                announcement = newAsset(cryptoCurrency: preliminaryData.newAsset)
+            case .assetRename:
+                announcement = assetRename(
+                    data: preliminaryData.assetRename
+                )
+            case .celoEUR:
+                announcement = assetRename(
+                    data: preliminaryData.assetRename
+                )
             }
             // Return the first different announcement that should show
             if announcement.shouldShow {
@@ -223,20 +247,34 @@ final class AnnouncementPresenter {
 extension AnnouncementPresenter {
 
     /// Computes email verification announcement
-    private func verifyEmail(user: NabuUser) -> Announcement {
+    private func verifyEmail(
+        user: NabuUser,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
         VerifyEmailAnnouncement(
             isEmailVerified: user.email.verified,
-            action: UIApplication.shared.openMailApplication
+            reappearanceTimeInterval: reappearanceTimeInterval,
+            action: UIApplication.shared.openMailApplication,
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            }
         )
     }
 
     /// Computes Simple Buy Pending Transaction Announcement
-    private func simpleBuyPendingTransaction(for order: OrderDetails?) -> Announcement {
+    private func simpleBuyPendingTransaction(
+        for order: OrderDetails?,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
         SimpleBuyPendingTransactionAnnouncement(
             orderDetails: order,
+            reappearanceTimeInterval: reappearanceTimeInterval,
             action: { [weak self] in
                 self?.hideAnnouncement()
                 self?.handleBuyCrypto()
+            },
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
             }
         )
     }
@@ -244,15 +282,20 @@ extension AnnouncementPresenter {
     /// Computes Simple Buy Finish Signup Announcement
     private func simpleBuyFinishSignup(
         tiers: KYC.UserTiers,
-        hasIncompleteBuyFlow: Bool
+        hasIncompleteBuyFlow: Bool,
+        reappearanceTimeInterval: TimeInterval
     ) -> Announcement {
         SimpleBuyFinishSignupAnnouncement(
             canCompleteTier2: tiers.canCompleteTier2,
             hasIncompleteBuyFlow: hasIncompleteBuyFlow,
+            reappearanceTimeInterval: reappearanceTimeInterval,
             action: { [weak self] in
                 guard let self = self else { return }
                 self.hideAnnouncement()
                 self.handleBuyCrypto()
+            },
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
             }
         )
     }
@@ -358,7 +401,63 @@ extension AnnouncementPresenter {
         )
     }
 
-    /// Computes PAX Renaming card announcement
+    private func showAssetDetailsScreen(for currency: CryptoCurrency) {
+        let builder = AssetDetailsBuilder(
+            accountsRouter: accountsRouter,
+            currency: currency,
+            exchangeProviding: exchangeProviding
+        )
+        let controller = builder.build()
+        navigationRouter.present(
+            viewController: controller,
+            using: .modalOverTopMost
+        )
+    }
+
+    /// Computes asset rename card announcement.
+    private func assetRename(
+        data: AnnouncementPreliminaryData.AssetRename?
+    ) -> Announcement {
+        AssetRenameAnnouncement(
+            data: data,
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [weak self] in
+                guard let asset = data?.asset else {
+                    return
+                }
+                self?.showAssetDetailsScreen(for: asset)
+            }
+        )
+    }
+
+    /// Computes CeloEUR card announcement.
+    private func celoEUR(
+        celoEUR: CryptoCurrency?,
+        user: NabuUser,
+        tiers: KYC.UserTiers
+    ) -> Announcement {
+        CeloEURAnnouncement(
+            celoEUR: celoEUR,
+            tiers: tiers,
+            userCountry: user.address?.country,
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [topMostViewControllerProvider, webViewServiceAPI] in
+                guard let topMostViewController = topMostViewControllerProvider.topMostViewController else {
+                    return
+                }
+                webViewServiceAPI.openSafari(
+                    url: "https://why.blockchain.com/celo",
+                    from: topMostViewController
+                )
+            }
+        )
+    }
+
+    /// Computes new asset card announcement.
     private func newAsset(cryptoCurrency: CryptoCurrency?) -> Announcement {
         NewAssetAnnouncement(
             cryptoCurrency: cryptoCurrency,
@@ -475,7 +574,7 @@ extension AnnouncementPresenter {
         reappearanceTimeInterval: TimeInterval
     ) -> Announcement {
         NewSwapAnnouncement(
-            isEligibleForSimpleBuy: data.isSimpleBuyEligible,
+            isEligibleForSimpleBuy: data.simpleBuy.isEligible,
             isTier1Or2Verified: data.tiers.isTier1Approved || data.tiers.isTier2Approved,
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
@@ -520,10 +619,28 @@ extension AnnouncementPresenter {
     /// Computes Upload Documents card announcement
     private func resubmitDocuments(user: NabuUser) -> Announcement {
         ResubmitDocumentsAnnouncement(
-            needsDocumentResubmission: user.needsDocumentResubmission != nil,
+            needsDocumentResubmission: user.needsDocumentResubmission != nil
+                && user.needsDocumentResubmission?.reason != 1,
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             },
+            action: { [weak self] in
+                guard let self = self else { return }
+                guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
+                let tier = user.tiers?.selected ?? .tier1
+                self.kycRouter.start(
+                    tier: tier,
+                    parentFlow: .announcement,
+                    from: tabControllerManager.tabViewController
+                )
+            }
+        )
+    }
+
+    private func resubmitDocumentsAfterRecovery(user: NabuUser) -> Announcement {
+        ResubmitDocumentsAfterRecoveryAnnouncement(
+            // reason 1: resubmission needed due to account recovery
+            needsDocumentResubmission: user.needsDocumentResubmission?.reason == 1,
             action: { [weak self] in
                 guard let self = self else { return }
                 guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }

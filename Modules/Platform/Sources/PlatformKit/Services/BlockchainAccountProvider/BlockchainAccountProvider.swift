@@ -24,7 +24,6 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
     func accounts(for currency: CurrencyType) -> Single<[BlockchainAccount]> {
         coincore
             .allAccounts
-            .asObservable()
             .asSingle()
             .map { $0.accounts.filter { $0.currencyType == currency } }
             .catchErrorJustReturn([])
@@ -33,7 +32,6 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
     func accounts(accountType: SingleAccountType) -> Single<[BlockchainAccount]> {
         coincore
             .allAccounts
-            .asObservable()
             .asSingle()
             .map(\.accounts)
             .map { accounts in
@@ -59,8 +57,6 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
         case .fiat:
             return coincore.fiatAsset
                 .accountGroup(filter: .all)
-                .asObservable()
-                .asSingle()
                 .map(\.accounts)
                 .map { accounts in
                     accounts.filter { $0.currencyType == currency }
@@ -68,11 +64,10 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
                 .map { accounts in
                     accounts as [BlockchainAccount]
                 }
-                .catchErrorJustReturn([])
+                .replaceError(with: [])
+                .asSingle()
         case .crypto(let cryptoCurrency):
-            guard let cryptoAsset = coincore.cryptoAssets.first(where: { $0.asset == cryptoCurrency }) else {
-                return .just([])
-            }
+            let cryptoAsset = coincore[cryptoCurrency]
             let filter: AssetFilter
 
             switch accountType {
@@ -88,8 +83,6 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
             }
             return cryptoAsset
                 .accountGroup(filter: filter)
-                .asObservable()
-                .asSingle()
                 .map(\.accounts)
                 .map { accounts in
                     accounts.filter { $0.currencyType == currency }
@@ -97,7 +90,8 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
                 .map { accounts in
                     accounts as [BlockchainAccount]
                 }
-                .catchErrorJustReturn([])
+                .replaceError(with: [])
+                .asSingle()
         }
     }
 

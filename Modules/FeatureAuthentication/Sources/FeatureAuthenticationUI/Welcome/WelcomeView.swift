@@ -62,7 +62,8 @@ public struct WelcomeView: View {
                     || viewStore.modals == .secondPasswordNoticeScreen
             ),
             onDismiss: {
-                if viewStore.screenFlow == .emailLoginScreen {
+                // TODO: This is ugly, refactor by navigation routes extension by Oliver (PR #2791)
+                if viewStore.screenFlow == .emailLoginScreen || viewStore.screenFlow == .restoreWalletScreen {
                     viewStore.send(.presentScreenFlow(.welcomeScreen))
                 } else if viewStore.modals == .secondPasswordNoticeScreen {
                     viewStore.send(.modalDismissed(.secondPasswordNoticeScreen))
@@ -199,7 +200,7 @@ public struct WelcomeView: View {
     private var supplementarySection: some View {
         HStack {
             Button(LocalizedString.Button.restoreWallet) {
-                viewStore.send(.presentScreenFlow(.legacyRestoreWalletScreen))
+                viewStore.send(.presentScreenFlow(.restoreScreen))
             }
             .font(Font(weight: .semibold, size: Layout.supplmentaryTextFontSize))
             .foregroundColor(.buttonLinkText)
@@ -243,6 +244,7 @@ struct WelcomeView_Previews: PreviewProvider {
                     sessionTokenService: NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     featureFlags: NoOpInternalFeatureFlagService(),
+                    appFeatureConfigurator: NoOpFeatureConfigurator(),
                     buildVersionProvider: { "Test version" }
                 )
             )

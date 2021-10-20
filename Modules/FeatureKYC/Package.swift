@@ -44,6 +44,7 @@ let package = Package(
             from: "1.6.2"
         ),
         .package(path: "../Analytics"),
+        .package(path: "../FeatureAuthentication"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../Platform"),
@@ -70,6 +71,7 @@ let package = Package(
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "DIKit", package: "DIKit"),
+                .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "PlatformKit", package: "Platform"),
@@ -116,6 +118,7 @@ let package = Package(
                 .target(name: "FeatureKYCUI"),
                 .target(name: "FeatureKYCUIMock"),
                 .product(name: "AnalyticsKitMock", package: "Analytics"),
+                .product(name: "FeatureAuthenticationMock", package: "FeatureAuthentication"),
                 .product(name: "PlatformKitMock", package: "Platform"),
                 .product(name: "PlatformUIKitMock", package: "Platform"),
                 .product(name: "ToolKitMock", package: "Tool"),

@@ -41,6 +41,8 @@ struct AccountPickerRowView: View {
                     .foregroundColor(.viewPrimaryBackground)
                     .contentShape(Rectangle())
                 switch viewStore.state {
+                case .label(let model):
+                    Text(model.text)
                 case .accountGroup(let model):
                     AccountGroupRow(
                         model: model,
@@ -97,15 +99,23 @@ private struct AccountGroupRow: View {
                         Text(model.title)
                             .textStyle(.heading)
                         Spacer()
-                        Text(model.fiatBalance)
+                        Text(model.fiatBalance.value ?? " ")
                             .textStyle(.heading)
+                            .shimmer(
+                                enabled: model.fiatBalance.isLoading,
+                                width: 90
+                            )
                     }
                     HStack {
                         Text(model.description)
                             .textStyle(.subheading)
                         Spacer()
-                        Text(model.currencyCode)
+                        Text(model.currencyCode.value ?? " ")
                             .textStyle(.subheading)
+                            .shimmer(
+                                enabled: model.currencyCode.isLoading,
+                                width: 100
+                            )
                     }
                 }
             }
@@ -203,10 +213,18 @@ private struct SingleAccountRow: View {
                         }
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
-                            Text(model.fiatBalance)
+                            Text(model.fiatBalance.value ?? " ")
                                 .textStyle(.heading)
-                            Text(model.cryptoBalance)
+                                .shimmer(
+                                    enabled: model.fiatBalance.isLoading,
+                                    width: 90
+                                )
+                            Text(model.cryptoBalance.value ?? "")
                                 .textStyle(.subheading)
+                                .shimmer(
+                                    enabled: model.cryptoBalance.isLoading,
+                                    width: 100
+                                )
                         }
                     }
                 }
@@ -229,8 +247,8 @@ struct AccountPickerRowView_Previews: PreviewProvider {
             id: UUID(),
             title: "All Wallets",
             description: "Total Balance",
-            fiatBalance: "$2,302.39",
-            currencyCode: "USD"
+            fiatBalance: .loaded(next: "$2,302.39"),
+            currencyCode: .loaded(next: "USD")
         )
     )
 
@@ -254,8 +272,8 @@ struct AccountPickerRowView_Previews: PreviewProvider {
             id: UUID(),
             title: "BTC Trading Wallet",
             description: "Bitcoin",
-            fiatBalance: "$2,302.39",
-            cryptoBalance: "0.21204887 BTC"
+            fiatBalance: .loaded(next: "$2,302.39"),
+            cryptoBalance: .loaded(next: "0.21204887 BTC")
         )
     )
 

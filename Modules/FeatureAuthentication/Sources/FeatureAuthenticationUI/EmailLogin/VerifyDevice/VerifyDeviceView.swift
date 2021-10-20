@@ -127,6 +127,7 @@ struct VerifyDeviceView_Previews: PreviewProvider {
                 environment: .init(
                     mainQueue: .main,
                     deviceVerificationService: NoOpDeviceVerificationService(),
+                    appFeatureConfigurator: NoOpFeatureConfigurator(),
                     errorRecorder: NoOpErrorRecorder(),
                     analyticsRecorder: NoOpAnalyticsRecorder()
                 )

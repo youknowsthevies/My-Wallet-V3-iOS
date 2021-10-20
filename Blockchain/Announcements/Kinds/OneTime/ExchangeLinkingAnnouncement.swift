@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Card announcement for Wallet-Exchange linking
-final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+final class ExchangeLinkingAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
 
     // MARK: - Properties
 

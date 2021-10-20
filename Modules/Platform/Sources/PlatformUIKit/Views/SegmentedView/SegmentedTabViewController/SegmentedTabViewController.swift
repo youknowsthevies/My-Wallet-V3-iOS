@@ -57,7 +57,7 @@ public final class SegmentedTabViewController: UITabBarController {
         guard let fromView = selectedViewController?.view,
               let toView = viewController.view,
               fromView != toView,
-              let controllerIndex = viewControllers?.index(of: viewController)
+              let controllerIndex = viewControllers?.firstIndex(of: viewController)
         else {
             return
         }

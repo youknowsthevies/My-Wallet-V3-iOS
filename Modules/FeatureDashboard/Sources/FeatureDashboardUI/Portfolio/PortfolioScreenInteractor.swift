@@ -14,7 +14,7 @@ final class PortfolioScreenInteractor {
     let fiatBalancesInteractor: DashboardFiatBalancesInteractor
 
     var enabledCryptoCurrencies: [CryptoCurrency] {
-        enabledCurrenciesService.allEnabledCryptoCurrencies
+        coincore.cryptoAssets.map(\.asset)
     }
 
     // MARK: - Private Properties

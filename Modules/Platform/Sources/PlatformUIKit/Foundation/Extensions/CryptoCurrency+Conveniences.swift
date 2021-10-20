@@ -15,10 +15,8 @@ extension CryptoCurrency {
             }
             return model.spotColor.flatMap(UIColor.init(hex:)) ?? .black
         case .erc20(let model):
-            if let match = ERC20Code.allCases.first(where: { $0.rawValue == model.code }) {
-                return UIColor(hex: match.spotColor) ?? .black
-            }
-            return model.spotColor.flatMap(UIColor.init(hex:)) ?? UIColor(hex: "473BCB")!
+            return model.spotColor.flatMap(UIColor.init(hex:))
+                ?? UIColor(hex: ERC20Code.spotColor(code: model.code))!
         }
     }
 
@@ -42,13 +40,13 @@ extension CryptoCurrency {
             case NonCustodialCoinCode.stellar.rawValue:
                 return .local(name: "crypto-xlm", bundle: .platformUIKit)
             default:
-                guard let logoPngUrl = model.logoPngUrl else {
+                guard let logoPngUrl = model.logoPngUrl.flatMap(URL.init) else {
                     return .local(name: "crypto-placeholder", bundle: .platformUIKit)
                 }
                 return .remote(url: logoPngUrl)
             }
         case .erc20(let model):
-            guard let logoPngUrl = model.logoPngUrl else {
+            guard let logoPngUrl = model.logoPngUrl.flatMap(URL.init) else {
                 return .local(name: "crypto-placeholder", bundle: .platformUIKit)
             }
             return .remote(url: logoPngUrl)

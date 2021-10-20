@@ -14,11 +14,11 @@ extension Bundle {
             hash = (info["COMMIT_HASH"] as? String ?? "")
         }
         var title = "v\(Bundle.applicationVersion ?? "")"
-        #if INTERNAL_BUILD
-        title = "\(title) (\(hash))"
-        #else
-        title = "\(title) (\(applicationBuildVersion ?? ""))"
-        #endif
+        if BuildFlag.isInternal {
+            title = "\(title) (\(hash))"
+        } else {
+            title = "\(title) (\(applicationBuildVersion ?? ""))"
+        }
         return title
     }
 

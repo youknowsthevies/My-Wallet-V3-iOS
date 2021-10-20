@@ -48,8 +48,18 @@ final class EthereumHistoricalTransactionService: EthereumHistoricalTransactionS
     init(accountRepository: EthereumWalletAccountRepositoryAPI = resolve(), client: TransactionClientAPI = resolve()) {
         self.accountRepository = accountRepository
         self.client = client
-        cachedTransactions = CachedValue<[EthereumHistoricalTransaction]>(configuration: .periodic(60))
-        cachedLatestBlock = CachedValue<Int>(configuration: .periodic(5))
+        cachedTransactions = CachedValue(
+            configuration: .periodic(
+                seconds: 60,
+                schedulerIdentifier: "EthereumHistoricalTransactionService.Transactions"
+            )
+        )
+        cachedLatestBlock = CachedValue(
+            configuration: .periodic(
+                seconds: 5,
+                schedulerIdentifier: "EthereumHistoricalTransactionService.LatestBlock"
+            )
+        )
 
         cachedTransactions.setFetch { [weak self] () -> Single<[EthereumHistoricalTransaction]> in
             guard let self = self else {

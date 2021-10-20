@@ -40,6 +40,8 @@ enum TransactionAction: MviAction {
     case validateSourceAccount // e.g. Give an opportunity to link a payment method
     case prepareTransaction // When continue button is tapped on enter amount screen
     case executeTransaction
+    case performSecurityChecksForTransaction(TransactionResult)
+    case securityChecksCompleted
     case updateTransactionComplete(TransactionResult)
     case fetchFiatRates
     case fetchTargetRates
@@ -280,12 +282,25 @@ extension TransactionAction {
             newState.nextEnabled = false // Don't enable until we get a validated pendingTx from the interactor
             newState.step = .confirmDetail
             return newState.withUpdatedBackstack(oldState: oldState)
+
         case .executeTransaction:
             var newState = oldState
             newState.nextEnabled = false
             newState.step = .inProgress
             newState.executionStatus = .inProgress
             return newState.withUpdatedBackstack(oldState: oldState)
+
+        case .performSecurityChecksForTransaction(let transactionResult):
+            guard case .hashed(_, _, let order) = transactionResult else {
+                impossible("This should only ever happen for transactions requiring 3D Secure or similar checks")
+            }
+            return oldState
+                .update(keyPath: \.order, value: order)
+                .stateForMovingForward(to: .securityConfirmation)
+
+        case .securityChecksCompleted:
+            return oldState.stateForMovingOneStepBack()
+
         case .updateTransactionComplete:
             var newState = oldState
             newState.nextEnabled = true
@@ -333,6 +348,7 @@ extension TransactionAction {
 enum FatalTransactionError: Error, Equatable {
     case rxError(RxError)
     case generic(Error)
+    case message(String)
 
     /// Initializes the enum with the given error, this check if it's an RxError and assigns correctly
     /// - Parameter error: An `Error` to be assigned
@@ -348,7 +364,7 @@ enum FatalTransactionError: Error, Equatable {
         switch self {
         case .rxError(let error):
             return error
-        case .generic:
+        default:
             return nil
         }
     }
@@ -359,6 +375,8 @@ enum FatalTransactionError: Error, Equatable {
             return "\(LocalizationConstants.Errors.genericError) \n\(error.debugDescription)"
         case .generic(let error):
             return String(describing: error)
+        case .message(let message):
+            return message
         }
     }
 
@@ -368,6 +386,8 @@ enum FatalTransactionError: Error, Equatable {
             return left.debugDescription == right.localizedDescription
         case (.generic(let left), .generic(let right)):
             return left.localizedDescription == right.localizedDescription
+        case (.message(let lhs), .message(let rhs)):
+            return lhs == rhs
         default:
             return false
         }

@@ -768,8 +768,8 @@ extension LocalizationConstants.SimpleBuy {
     public enum CashIntroductionScreen {
         public static let title = NSLocalizedString("Keep Cash in Your Wallet", comment: "Keep Cash in Your Wallet")
         public static let description = NSLocalizedString(
-            "Verify your identity to deposit cash into your Wallet. Buy & Sell scrupto. Withdraw at anytime.",
-            comment: "Verify your identity to deposit cash into your Wallet. Buy & Sell scrupto. Withdraw at anytime."
+            "Verify your identity to deposit cash into your Wallet. Buy & Sell crypto. Withdraw at anytime.",
+            comment: "Verify your identity to deposit cash into your Wallet. Buy & Sell crypto. Withdraw at anytime."
         )
         public static let notNow = NSLocalizedString("Not Now", comment: "Not Now")
         public static let verifyIdentity = NSLocalizedString("Verify Identity", comment: "Verify Identity")

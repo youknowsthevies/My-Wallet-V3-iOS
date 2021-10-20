@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import FeatureSettingsDomain
+import Foundation
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -21,6 +22,7 @@ final class PasswordRequiredScreenInteractor {
     let passwordRelay = BehaviorRelay<String>(value: "")
 
     private let walletPayloadService: WalletPayloadServiceAPI
+    private let mobileAuthSyncService: MobileAuthSyncServiceAPI
     private let pushNotificationsRepository: PushNotificationsRepositoryAPI
     private let walletFetcher: (_ password: String) -> Void
     private let appSettings: BlockchainSettings.App
@@ -38,6 +40,7 @@ final class PasswordRequiredScreenInteractor {
 
     init(
         walletPayloadService: WalletPayloadServiceAPI = resolve(),
+        mobileAuthSyncService: MobileAuthSyncServiceAPI = resolve(),
         pushNotificationsRepository: PushNotificationsRepositoryAPI = resolve(),
         walletManager: WalletManager = resolve(),
         appSettings: BlockchainSettings.App = resolve(),
@@ -45,6 +48,7 @@ final class PasswordRequiredScreenInteractor {
         walletFetcher: @escaping ((_ password: String) -> Void)
     ) {
         self.walletPayloadService = walletPayloadService
+        self.mobileAuthSyncService = mobileAuthSyncService
         self.pushNotificationsRepository = pushNotificationsRepository
         self.walletManager = walletManager
         self.walletFetcher = walletFetcher
@@ -75,9 +79,13 @@ final class PasswordRequiredScreenInteractor {
         credentialsStore.erase()
 
         // TODO: [10/15/2021] Move this to CoreCoordinator with the forget wallet logic in the future
-        pushNotificationsRepository
-            .revokeToken()
-            .subscribe()
-            .store(in: &cancellables)
+        Publishers.Zip3(
+            // ignore failure
+            pushNotificationsRepository.revokeToken().ignoreFailure(),
+            mobileAuthSyncService.updateMobileSetup(isMobileSetup: false).ignoreFailure(),
+            mobileAuthSyncService.verifyCloudBackup(hasCloudBackup: false).ignoreFailure()
+        )
+        .subscribe()
+        .store(in: &cancellables)
     }
 }

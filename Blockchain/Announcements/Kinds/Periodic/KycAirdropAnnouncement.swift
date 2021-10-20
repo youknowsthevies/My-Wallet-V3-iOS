@@ -10,7 +10,7 @@ import SwiftUI
 import ToolKit
 
 /// Kyc airdrop announcement is a periodic announcement that introduces the user to airdrop verification
-final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
+final class KycAirdropAnnouncement: PeriodicAnnouncement, ActionableAnnouncement {
 
     // MARK: - Properties
 

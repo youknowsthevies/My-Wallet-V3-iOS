@@ -21,7 +21,11 @@ final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
 
     // MARK: - Private Properties
 
-    private let cachedValue: CachedValueNew<ERC20TokenAccountsKey, ERC20TokenAccounts, ERC20TokenAccountsError>
+    private let cachedValue: CachedValueNew<
+        ERC20TokenAccountsKey,
+        ERC20TokenAccounts,
+        ERC20TokenAccountsError
+    >
 
     // MARK: - Setup
 
@@ -31,7 +35,7 @@ final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
     ///   - client:                   An ERC-20 account client.
     ///   - enabledCurrenciesService: An enabled currencies service.
     convenience init(
-        client: ERC20AccountClientAPINew = resolve(),
+        client: ERC20AccountClientAPI = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
     ) {
         let configuration: CacheConfiguration = .onLoginLogout()
@@ -52,7 +56,7 @@ final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
     ///   - cache:                    A cache.
     ///   - enabledCurrenciesService: An enabled currencies service.
     init(
-        client: ERC20AccountClientAPINew = resolve(),
+        client: ERC20AccountClientAPI = resolve(),
         cache: AnyCache<ERC20TokenAccountsKey, ERC20TokenAccounts>,
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
     ) {

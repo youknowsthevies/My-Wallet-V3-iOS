@@ -56,7 +56,7 @@ public protocol KYCSDDServiceAPI {
 
 internal final class TransactionsRouter: TransactionsRouterAPI {
 
-    private let featureFlagsService: InternalFeatureFlagServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let legacyBuyPresenter: LegacyBuyFlowPresenter
     private var sellRouter: LegacySellRouter?
     private let buyFlowBuilder: BuyFlowBuildable
@@ -66,7 +66,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private var currentRIBRouter: RIBs.Routing?
 
     init(
-        featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         legacyBuyPresenter: LegacyBuyFlowPresenter = .init(),
         buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(),
         sellFlowBuilder: SellFlowBuilder = SellFlowBuilder()
@@ -83,17 +83,25 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         switch action {
         case .buy:
-            if featureFlagsService.isEnabled(.useTransactionsFlowToBuyCrypto) {
-                return presentNewTransactionFlow(action, from: presenter)
-            } else {
-                return presentLegacyTransactionFlow(action, from: presenter)
-            }
+            return featureFlagsService.isEnabled(.local(.useTransactionsFlowToBuyCrypto))
+                .flatMap { [weak self] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in
+                    if isEnabled {
+                        return self?.presentNewTransactionFlow(action, from: presenter) ?? .empty()
+                    } else {
+                        return self?.presentLegacyTransactionFlow(action, from: presenter) ?? .empty()
+                    }
+                }
+                .eraseToAnyPublisher()
         case .sell:
-            if featureFlagsService.isEnabled(.useTransactionsFlowToSellCrypto) {
-                return presentNewTransactionFlow(action, from: presenter)
-            } else {
-                return presentLegacyTransactionFlow(action, from: presenter)
-            }
+            return featureFlagsService.isEnabled(.remote(.sellUsingTransactionFlowEnabled))
+                .flatMap { [weak self] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in
+                    if isEnabled {
+                        return self?.presentNewTransactionFlow(action, from: presenter) ?? .empty()
+                    } else {
+                        return self?.presentLegacyTransactionFlow(action, from: presenter) ?? .empty()
+                    }
+                }
+                .eraseToAnyPublisher()
         case .swap:
             return presentNewTransactionFlow(action, from: presenter)
         }

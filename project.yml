@@ -221,7 +221,7 @@ packages:
     version: 1.9.0
   ComposableArchitecture:
     url: https://github.com/pointfreeco/swift-composable-architecture
-    version: 0.24.0
+    version: 0.28.1
   ZendeskChatSDK:
     url: https://github.com/zendesk/chat_sdk_ios.git
     version: 2.11.1
@@ -572,6 +572,8 @@ targets:
       path: Modules/Platform/Sources/PlatformUIKitMock
     - createIntermediateGroups: true
       path: Modules/RemoteNotifications/Sources/RemoteNotificationsKitMock
+    - createIntermediateGroups: true
+      path: Modules/FeatureAuthentication/Sources/FeatureAuthenticationMock
     - createIntermediateGroups: true
       path: Modules/FeatureKYC/Sources/FeatureKYCDomainMock
     - createIntermediateGroups: true

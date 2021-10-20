@@ -15,11 +15,11 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
     fileprivate var disposeBag = DisposeBag()
     var shouldOverrideNavigationEffects: Bool = false
 
-    fileprivate let headerRelay = BehaviorRelay<HeaderBuilder?>(value: nil)
     fileprivate let modelSelectedRelay = PublishRelay<AccountPickerCellItem>()
     fileprivate let backButtonRelay = PublishRelay<Void>()
     fileprivate let closeButtonRelay = PublishRelay<Void>()
     fileprivate let sections = PassthroughSubject<[AccountPickerRow], Never>()
+    fileprivate let header = PassthroughSubject<Header, Error>()
 
     fileprivate lazy var environment = AccountPickerEnvironment(
         rowSelected: { [unowned self] identifier in
@@ -45,11 +45,11 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                     var account = account
                     switch value {
                     case .loading:
-                        account.fiatBalance = "Loading"
-                        account.cryptoBalance = "Loading"
+                        account.fiatBalance = .loading
+                        account.cryptoBalance = .loading
                     case .loaded(let balance):
-                        account.fiatBalance = balance.fiatBalance.text
-                        account.cryptoBalance = balance.cryptoBalance.text
+                        account.fiatBalance = .loaded(next: balance.fiatBalance.text)
+                        account.cryptoBalance = .loaded(next: balance.cryptoBalance.text)
                     }
                     return account
                 }
@@ -66,16 +66,17 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                     var group = group
                     switch value {
                     case .loading:
-                        group.fiatBalance = "Loading"
-                        group.currencyCode = "Loading"
+                        group.fiatBalance = .loading
+                        group.currencyCode = .loading
                     case .loaded(let balance):
-                        group.fiatBalance = balance.fiatBalance.text
-                        group.currencyCode = balance.currencyCode.text
+                        group.fiatBalance = .loaded(next: balance.fiatBalance.text)
+                        group.currencyCode = .loaded(next: balance.currencyCode.text)
                     }
                     return group
                 }
                 .eraseToAnyPublisher()
-        }
+        },
+        header: { [header] in header.eraseToAnyPublisher() }
     )
 
     fileprivate var models: [AccountPickerSectionViewModel] = []
@@ -226,8 +227,23 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
             .disposed(by: disposeBag)
 
         stateWait.map(\.headerModel)
-            .map { AccountPickerHeaderBuilder(headerType: $0) }
-            .drive(headerRelay)
+            .drive(weak: self) { (self, headerType) in
+                let header: Header
+                switch headerType {
+                case .default(let model):
+                    header = .normal(
+                        title: model.title,
+                        subtitle: model.subtitle,
+                        image: model.imageContent.imageResource?.image,
+                        tableTitle: model.tableTitle
+                    )
+                case .simple(let model):
+                    header = .simple(subtitle: model.subtitle)
+                case .none:
+                    header = .none
+                }
+                self.header.send(header)
+            }
             .disposed(by: disposeBag)
 
         stateWait.map(\.sections)
@@ -237,6 +253,13 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                     .flatMap(\.items)
                     .map { (item: AccountPickerCellItem) -> AccountPickerRow in
                         switch item.presenter {
+                        case .emptyState(let labelContent):
+                            return .label(
+                                .init(
+                                    id: item.identity,
+                                    text: labelContent.text
+                                )
+                            )
                         case .button(let viewModel):
                             return .button(
                                 .init(
@@ -259,8 +282,8 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                     id: item.identity,
                                     title: presenter.account.label,
                                     description: LocalizationConstants.Dashboard.Portfolio.totalBalance,
-                                    fiatBalance: "",
-                                    currencyCode: ""
+                                    fiatBalance: .loading,
+                                    currencyCode: .loading
                                 )
                             )
                         case .singleAccount(let presenter):
@@ -269,8 +292,8 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                     id: item.identity,
                                     title: presenter.account.label,
                                     description: presenter.account.currencyType.name,
-                                    fiatBalance: "",
-                                    cryptoBalance: ""
+                                    fiatBalance: .loading,
+                                    cryptoBalance: .loading
                                 )
                             )
                         }

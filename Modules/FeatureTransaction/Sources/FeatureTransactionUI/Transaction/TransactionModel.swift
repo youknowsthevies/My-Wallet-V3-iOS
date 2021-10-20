@@ -39,6 +39,7 @@ final class TransactionModel {
         mviModel.process(action: action)
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func perform(previousState: TransactionState, action: TransactionAction) -> Disposable? {
         Logger.shared.debug("[Transaction Flow] Perform action: \(action) on state:")
         switch action {
@@ -151,12 +152,22 @@ final class TransactionModel {
             return processTransactionInvalidation(action: previousState.action)
         case .sourceAccountSelected(let sourceAccount):
             if let target = previousState.destination, !previousState.availableTargets.isEmpty {
+                // This is going to initialize a new PendingTransaction with a 0 amount.
+                // This makes sense for transaction types like Swap where changing the source would invalidate the amount entirely.
+                // For Buy, though we can simply use the amount we have in `previousState`, so the transaction ca be re-validated.
+                // This also fixes an issue where the enter amount screen has the "next" button disabled after user switches source account in Buy.
+                let newAmount: MoneyValue
+                if sourceAccount.currencyType == previousState.amount.currency {
+                    newAmount = previousState.amount
+                } else {
+                    newAmount = .zero(currency: sourceAccount.currencyType)
+                }
                 // The user has already selected a destination such as through `Deposit`. In this case we want to
                 // go straight to the Enter Amount screen, since we have both target and source.
                 return processTargetSelectionConfirmed(
                     sourceAccount: sourceAccount,
                     transactionTarget: target,
-                    amount: .zero(currency: sourceAccount.currencyType),
+                    amount: newAmount,
                     action: previousState.action
                 )
             }
@@ -167,6 +178,15 @@ final class TransactionModel {
             )
         case .modifyTransactionConfirmation(let confirmation):
             return processModifyTransactionConfirmation(confirmation: confirmation)
+        case .performSecurityChecksForTransaction:
+            return nil
+        case .securityChecksCompleted:
+            process(
+                action: .updateTransactionComplete(
+                    .unHashed(amount: previousState.amount)
+                )
+            )
+            return nil
         case .invalidateTransaction:
             return processInvalidateTransaction()
         case .showSourceSelection:
@@ -236,7 +256,12 @@ final class TransactionModel {
     private func processExecuteTransaction(secondPassword: String) -> Disposable {
         interactor.verifyAndExecute(secondPassword: secondPassword)
             .subscribe(onSuccess: { [weak self] result in
-                self?.process(action: .updateTransactionComplete(result))
+                switch result {
+                case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
+                    self?.process(action: .performSecurityChecksForTransaction(result))
+                default:
+                    self?.process(action: .updateTransactionComplete(result))
+                }
             }, onError: { [weak self] error in
                 Logger.shared.error("!TRANSACTION!> Unable to processExecuteTransaction: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))

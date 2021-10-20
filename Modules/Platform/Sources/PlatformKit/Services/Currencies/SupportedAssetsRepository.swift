@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import ToolKit
 
 protocol SupportedAssetsRepositoryAPI {
     var erc20Assets: SupportedAssets { get }
@@ -16,11 +17,10 @@ final class SupportedAssetsRepository: SupportedAssetsRepositoryAPI {
         case .success(let response):
             return SupportedAssets(response: response)
         case .failure(let error):
-            #if INTERNAL_BUILD
-            fatalError("Can' load local ERC20 assets. \(error.localizedDescription)")
-            #else
+            if BuildFlag.isInternal {
+                fatalError("Can' load local ERC20 assets. \(error.localizedDescription)")
+            }
             return SupportedAssets.empty
-            #endif
         }
     }()
 
@@ -29,11 +29,10 @@ final class SupportedAssetsRepository: SupportedAssetsRepositoryAPI {
         case .success(let response):
             return SupportedAssets(response: response)
         case .failure(let error):
-            #if INTERNAL_BUILD
-            fatalError("Can' load local ERC20 assets. \(error.localizedDescription)")
-            #else
+            if BuildFlag.isInternal {
+                fatalError("Can' load local custodial assets. \(error.localizedDescription)")
+            }
             return SupportedAssets.empty
-            #endif
         }
     }()
 

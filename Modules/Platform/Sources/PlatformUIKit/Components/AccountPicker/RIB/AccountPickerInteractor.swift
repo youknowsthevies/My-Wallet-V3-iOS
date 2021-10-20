@@ -20,6 +20,7 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
 
     // MARK: - Private Properties
 
+    private let searchRelay: PublishRelay<String?> = .init()
     private let accountProvider: AccountPickerAccountProviding
     private let didSelect: AccountPickerDidSelect?
     private let disposeBag = DisposeBag()
@@ -59,19 +60,37 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
                 .disposeOnDeactivate(interactor: self)
         }
 
-        let interactorState: Driver<State> = accountProvider.accounts
-            .map { accounts -> [AccountPickerCellItem.Interactor] in
-                accounts.map(\.accountPickerCellItemInteractor)
-            }
-            .map { accounts in
-                if let button = button {
-                    return accounts + [.button(button)]
-                } else {
-                    return accounts
+        let searchObservable = searchRelay.asObservable()
+            .startWith(nil)
+            .distinctUntilChanged()
+            .debounce(.milliseconds(350), scheduler: MainScheduler.asyncInstance)
+
+        let interactorState: Driver<State> = Observable
+            .combineLatest(
+                accountProvider.accounts,
+                searchObservable
+            )
+            .map { [button] accounts, searchString -> State in
+                let isFiltering = searchString
+                    .flatMap { !$0.isEmpty } ?? false
+
+                var interactors = accounts
+                    .filter { account in
+                        account.currencyType.matchSearch(searchString)
+                    }
+                    .map(\.accountPickerCellItemInteractor)
+
+                if interactors.isEmpty {
+                    interactors.append(.emptyState)
                 }
-            }
-            .map { interactors -> State in
-                State(interactors: interactors)
+                if let button = button {
+                    interactors.append(.button(button))
+                }
+
+                return State(
+                    isFiltering: isFiltering,
+                    interactors: interactors
+                )
             }
             .asDriver(onErrorJustReturn: .empty)
 
@@ -92,6 +111,8 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
             listener?.didTapBack()
         case .closed:
             listener?.didTapClose()
+        case .filter(let string):
+            searchRelay.accept(string)
         case .none:
             break
         }
@@ -100,7 +121,8 @@ public final class AccountPickerInteractor: PresentableInteractor<AccountPickerP
 
 extension AccountPickerInteractor {
     public struct State {
-        static let empty = State(interactors: [])
+        static let empty = State(isFiltering: false, interactors: [])
+        let isFiltering: Bool
         let interactors: [AccountPickerCellItem.Interactor]
     }
 
@@ -108,6 +130,7 @@ extension AccountPickerInteractor {
         case select(BlockchainAccount)
         case back
         case closed
+        case filter(String?)
         case none
     }
 }

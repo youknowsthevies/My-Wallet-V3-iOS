@@ -287,6 +287,8 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                 let minFiatValue = pair.minFiatValue
                 let maxFiatValue: FiatValue
                 let paymentMethodId: String?
+                let hardCodedMinimum = (FiatValue.create(major: "10.00", currency: currency) ?? minFiatValue)
+                let maxMinFiatValue: FiatValue = try .max(hardCodedMinimum, minFiatValue)
 
                 switch preferredPaymentMethod {
                 case .card(let cardData):
@@ -306,7 +308,8 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     paymentMethodId = data.identifier
                 }
 
-                guard fiat.currencyType == minFiatValue.currencyType, fiat.currencyType == maxFiatValue.currencyType else {
+                guard fiat.currencyType == maxMinFiatValue.currencyType,
+                      fiat.currencyType == maxFiatValue.currencyType else {
                     return .empty(currency: currency)
                 }
 
@@ -314,8 +317,8 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     return .empty(currency: currency)
                 } else if try fiat > maxFiatValue {
                     return .tooHigh(max: maxFiatValue)
-                } else if try fiat < minFiatValue {
-                    return .tooLow(min: minFiatValue)
+                } else if try fiat < maxMinFiatValue {
+                    return .tooLow(min: maxMinFiatValue)
                 }
                 let data: CandidateOrderDetails = .buy(
                     paymentMethod: preferredPaymentMethod,

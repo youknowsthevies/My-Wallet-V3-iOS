@@ -47,6 +47,7 @@ let package = Package(
             dependencies: [
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "BitcoinChainKit", package: "CryptoAssets"),
+                .product(name: "ERC20Kit", package: "CryptoAssets"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "FeatureDebugUI", package: "FeatureDebug"),
                 .product(name: "FeatureDashboardUI", package: "FeatureDashboard"),

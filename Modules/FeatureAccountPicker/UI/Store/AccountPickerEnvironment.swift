@@ -18,6 +18,7 @@ public class AccountPickerEnvironment {
     let sections: () -> AnyPublisher<[AccountPickerRow], Never>
     let updateSingleAccount: (AccountPickerRow.SingleAccount) -> AnyPublisher<AccountPickerRow.SingleAccount, Error>?
     let updateAccountGroup: (AccountPickerRow.AccountGroup) -> AnyPublisher<AccountPickerRow.AccountGroup, Error>?
+    let header: () -> AnyPublisher<Header, Error>
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
@@ -27,8 +28,9 @@ public class AccountPickerEnvironment {
         sections: @escaping () -> AnyPublisher<[AccountPickerRow], Never>,
         // swiftlint:disable line_length
         updateSingleAccount: @escaping (AccountPickerRow.SingleAccount) -> AnyPublisher<AccountPickerRow.SingleAccount, Error>?,
-        updateAccountGroup: @escaping (AccountPickerRow.AccountGroup) -> AnyPublisher<AccountPickerRow.AccountGroup, Error>?
+        updateAccountGroup: @escaping (AccountPickerRow.AccountGroup) -> AnyPublisher<AccountPickerRow.AccountGroup, Error>?,
         // swiftlint:enable line_length
+        header: @escaping () -> AnyPublisher<Header, Error>
     ) {
         self.mainQueue = mainQueue
         self.rowSelected = rowSelected
@@ -37,5 +39,6 @@ public class AccountPickerEnvironment {
         self.sections = sections
         self.updateSingleAccount = updateSingleAccount
         self.updateAccountGroup = updateAccountGroup
+        self.header = header
     }
 }

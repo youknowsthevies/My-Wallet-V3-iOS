@@ -98,6 +98,10 @@ final class OnboardingHostingController: UIViewController {
             .ifLet(then: { [weak self] pinStore in
                 guard let self = self else { return }
                 let pinHostingController = PinHostingController(store: pinStore)
+                // TODO: Dismiss the alert in the respective presenting view (credentials view). This is a temporary solution until the alert state issue is resolved
+                if self.topMostViewController != self.currentController {
+                    self.topMostViewController?.dismiss(animated: true, completion: nil)
+                }
                 self.transitionFromCurrentController(to: pinHostingController)
                 self.currentController = pinHostingController
             })
@@ -260,6 +264,18 @@ final class OnboardingHostingController: UIViewController {
 
     private func showAlert(type: Onboarding.Alert) {
         switch type {
+        case .proceedToLoggedIn(.coincore(let error)):
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.genericError + " " + error.localizedDescription
+            )
+            alertViewPresenter.notify(content: content, in: self)
+        case .proceedToLoggedIn(.erc20Service(let error)):
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.genericError + " " + error.localizedDescription
+            )
+            alertViewPresenter.notify(content: content, in: self)
         case .walletAuthentication(let error) where error.code == .failedToLoadWallet:
             handleFailedToLoadWalletAlert()
         case .walletAuthentication(let error) where error.code == .noInternet:
@@ -276,6 +292,18 @@ final class OnboardingHostingController: UIViewController {
                 )
                 alertViewPresenter.notify(content: content, in: self)
             }
+        case .walletCreation(let error):
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: error.localizedDescription
+            )
+            alertViewPresenter.notify(content: content, in: self)
+        case .walletRecovery(let error):
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: error.localizedDescription
+            )
+            alertViewPresenter.notify(content: content, in: self)
         }
     }
 }

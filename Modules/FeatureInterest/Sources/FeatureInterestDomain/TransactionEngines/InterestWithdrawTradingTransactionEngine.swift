@@ -56,8 +56,6 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
                         sourceAsset.cryptoCurrency!,
                         fiatCurrency: fiatCurrency
                     )
-                    .asObservable()
-                    .take(1)
                     .asSingle()
             }
     }
@@ -80,12 +78,15 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
         self.priceService = priceService
         self.accountLimitsRepository = accountLimitsRepository
         self.transferRepository = transferRepository
-        feeCache = CachedValue(configuration: .periodic(20))
+        feeCache = CachedValue(
+            configuration: .periodic(
+                seconds: 20,
+                schedulerIdentifier: "InterestWithdrawTradingTransationEngine"
+            )
+        )
         feeCache.setFetch(weak: self) { (self) -> Single<CustodialTransferFee> in
             self.transferRepository
                 .feesAndLimitsForInterest()
-                .asObservable()
-                .take(1)
                 .asSingle()
         }
     }

@@ -74,6 +74,9 @@ protocol TransactionFlowRouting: Routing {
     /// Route to the in progress screen. This pushes onto the navigation stack.
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
 
+    /// Route to the transaction security checks screen (e.g. 3DS checks for card payments)
+    func routeToSecurityChecks(transactionModel: TransactionModel)
+
     /// Show the `EnterAmount` screen. This pushes onto the prior screen.
     /// For `Buy` we should set this as the root.
     func routeToPriceInput(
@@ -137,12 +140,6 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         super.didBecomeActive()
         transactionModel
             .state
-            .do(onNext: { state in
-                #if DEBUG
-                print("[\(TransactionFlowInteractor.self)] State changed:")
-                dump(state, maxDepth: 1)
-                #endif
-            })
             .distinctUntilChanged(\.step)
             .withPrevious()
             .observeOn(MainScheduler.asyncInstance)
@@ -473,6 +470,11 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 action: action
             )
 
+        case .securityConfirmation:
+            router?.routeToSecurityChecks(
+                transactionModel: transactionModel
+            )
+
         case .closed:
             transactionModel.destroy()
         }
@@ -512,12 +514,12 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     private func linkPaymentMethodOrMoveToNextStep(for transactionState: TransactionState) {
-        guard let paymentAccount = transactionState.source as? FeatureTransactionDomain.PaymentMethodAccount else {
+        guard let paymentAccount = transactionState.source as? PaymentMethodAccount else {
             impossible("The source account for Buy should be a valid payment method")
         }
-        // If there's a linked payment account - e.g. a Credit Card or Bank Acccount - the source account is valid.
-        // If so, simply move on to the next step.
-        guard paymentAccount.linkedAccount == nil else {
+        // If the select payment account's method is a suggested payment method, it means we need to link a bank or card to the user's account.
+        // Otherwise, we can move on to the order details confirmation screen as we're able to process the transaction.
+        guard case .suggested = paymentAccount.paymentMethodType else {
             transactionModel.process(action: .prepareTransaction)
             return
         }
@@ -526,8 +528,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .bankAccount:
             transactionModel.process(action: .showBankLinkingFlow)
         case .bankTransfer:
-            // Nothing to link, move on to the next step
-            // TODO: Is this right? Check with Alex
+            // TODO: present bank wiring instructions
             transactionModel.process(action: .prepareTransaction)
         case .card:
             transactionModel.process(action: .showCardLinkingFlow)

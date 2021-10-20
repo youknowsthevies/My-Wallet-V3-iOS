@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import DIKit
 import FeatureAuthenticationDomain
@@ -8,14 +9,15 @@ import ToolKit
 // MARK: - Type
 
 public enum CreateAccountAction: Equatable {
-    case didDisappear
+    case onDisappear
     case didChangeEmailAddress(String)
     case didChangePassword(String)
     case didChangeConfirmPassword(String)
     case didChangePasswordStrength(PasswordValidationScore)
     case validatePasswordStrength
     case openExternalLink(URL)
-    case none
+    case createButtonTapped
+    case noop
 }
 
 // MARK: - Properties
@@ -38,15 +40,18 @@ struct CreateAccountEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let passwordValidator: PasswordValidatorAPI
     let externalAppOpener: ExternalAppOpener
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
         passwordValidator: PasswordValidatorAPI = resolve(),
-        externalAppOpener: ExternalAppOpener = resolve()
+        externalAppOpener: ExternalAppOpener = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI
     ) {
         self.mainQueue = mainQueue
         self.passwordValidator = passwordValidator
         self.externalAppOpener = externalAppOpener
+        self.analyticsRecorder = analyticsRecorder
     }
 }
 
@@ -56,10 +61,10 @@ let createAccountReducer = Reducer<
     CreateAccountEnvironment
 > { state, action, environment in
     switch action {
-    case .didDisappear:
-        state.emailAddress = ""
-        state.password = ""
-        state.confirmPassword = ""
+    case .onDisappear:
+        environment.analyticsRecorder.record(
+            event: .importWalletCancelled
+        )
         return .none
     case .didChangeEmailAddress(let emailAddress):
         state.emailAddress = emailAddress
@@ -81,14 +86,19 @@ let createAccountReducer = Reducer<
             .catchToEffect()
             .map { result -> CreateAccountAction in
                 guard case .success(let score) = result else {
-                    return .none
+                    return .didChangePasswordStrength(.none)
                 }
                 return .didChangePasswordStrength(score)
             }
     case .openExternalLink(let url):
         environment.externalAppOpener.open(url)
         return .none
-    case .none:
+    case .createButtonTapped:
+        environment.analyticsRecorder.record(
+            event: .importWalletConfirmed
+        )
+        return .none
+    case .noop:
         return .none
     }
 }

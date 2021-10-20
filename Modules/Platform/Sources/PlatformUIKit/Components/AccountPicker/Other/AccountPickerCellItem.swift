@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import PlatformKit
 import RxDataSources
 import ToolKit
@@ -9,6 +10,7 @@ public struct AccountPickerCellItem: IdentifiableType {
     // MARK: - Properties
 
     public enum Presenter {
+        case emptyState(LabelContent)
         case button(ButtonViewModel)
         case linkedBankAccount(LinkedBankAccountCellPresenter)
         case accountGroup(AccountGroupBalanceCellPresenter)
@@ -16,6 +18,7 @@ public struct AccountPickerCellItem: IdentifiableType {
     }
 
     enum Interactor {
+        case emptyState
         case button(ButtonViewModel)
         case linkedBankAccount(LinkedBankAccount)
         case accountGroup(AccountGroup, AccountGroupBalanceCellInteractor)
@@ -23,13 +26,17 @@ public struct AccountPickerCellItem: IdentifiableType {
     }
 
     public var identity: AnyHashable {
-        if let identifier = account?.identifier {
-            return identifier
-        }
-        if case .button = presenter {
+        switch presenter {
+        case .emptyState:
+            return "emptyState"
+        case .button:
             return "button"
+        case .accountGroup, .linkedBankAccount, .singleAccount:
+            if let identifier = account?.identifier {
+                return identifier
+            }
+            unimplemented()
         }
-        unimplemented()
     }
 
     public let account: BlockchainAccount?
@@ -37,6 +44,15 @@ public struct AccountPickerCellItem: IdentifiableType {
 
     init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {
+        case .emptyState:
+            account = nil
+            let labelContent = LabelContent(
+                text: LocalizationConstants.Dashboard.Prices.noResults,
+                font: .main(.medium, 16),
+                color: .darkTitleText,
+                alignment: .center
+            )
+            presenter = .emptyState(labelContent)
         case .button(let viewModel):
             account = nil
             presenter = .button(viewModel)

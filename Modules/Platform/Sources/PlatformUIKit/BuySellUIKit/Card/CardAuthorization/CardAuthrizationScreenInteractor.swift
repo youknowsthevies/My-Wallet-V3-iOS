@@ -2,15 +2,15 @@
 
 import RIBs
 
-final class CardAuthorizationScreenInteractor: Interactor {
+public final class CardAuthorizationScreenInteractor: Interactor {
 
     private let routingInteractor: CardAuthorizationRoutingInteractorAPI
 
-    init(routingInteractor: CardAuthorizationRoutingInteractorAPI) {
+    public init(routingInteractor: CardAuthorizationRoutingInteractorAPI) {
         self.routingInteractor = routingInteractor
     }
 
-    func cardAuthorized(with identifier: String) {
+    public func cardAuthorized(with identifier: String) {
         routingInteractor.cardAuthorized(with: identifier)
     }
 }

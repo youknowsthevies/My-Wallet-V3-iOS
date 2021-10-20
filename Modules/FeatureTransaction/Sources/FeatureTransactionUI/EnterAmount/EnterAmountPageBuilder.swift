@@ -95,7 +95,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             }
             amountViewInteracting = AmountTranslationInteractor(
                 fiatCurrencyService: fiatCurrencyService,
-                cryptoCurrencyService: DefaultCryptoCurrencyService(currencyType: cryptoAccount.currencyType),
+                cryptoCurrencyService: EnterAmountCryptoCurrencyProvider(transactionModel: transactionModel),
                 priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),
                 defaultCryptoCurrency: cryptoAccount.asset,
                 initialActiveInput: .fiat

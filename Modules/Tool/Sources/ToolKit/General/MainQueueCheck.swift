@@ -3,11 +3,11 @@
 import Foundation
 
 public func ensureIsOnMainQueue() {
-    #if INTERNAL_BUILD
-    dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-    #else
-    ProbabilisticRunner.run(for: .pointZeroOnePercent) {
+    if BuildFlag.isInternal {
         dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+    } else {
+        ProbabilisticRunner.run(for: .pointZeroOnePercent) {
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+        }
     }
-    #endif
 }

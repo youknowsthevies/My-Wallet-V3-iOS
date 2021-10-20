@@ -47,25 +47,12 @@ extension CryptoNonCustodialAccount {
         swapEvents: [SwapActivityItemEvent],
         noncustodial: [TransactionalActivityItemEvent]
     ) -> [ActivityItemEvent] {
-        noncustodial.map { event -> ActivityItemEvent in
-            guard event.type == .send else {
-                return .transactional(event)
-            }
-            guard let swap = swapEvents.first(where: { swapEvent in
-                guard let transactionID = swapEvent.kind.depositTxHash else {
-                    return false
+        (noncustodial.map(ActivityItemEvent.transactional) + swapEvents.map(ActivityItemEvent.swap))
+            .map { event in
+                if case .swap(let swapEvent) = event, swapEvent.pair.outputCurrencyType.isFiatCurrency {
+                    return .buySell(.init(swapActivityItemEvent: swapEvent))
                 }
-                return transactionID.caseInsensitiveCompare(event.identifier) == .orderedSame
-            }) else {
-                return .transactional(event)
+                return event
             }
-            return .swap(swap)
-        }
-        .map { event in
-            if case .swap(let swapEvent) = event, swapEvent.pair.outputCurrencyType.isFiatCurrency {
-                return .buySell(.init(swapActivityItemEvent: swapEvent))
-            }
-            return event
-        }
     }
 }

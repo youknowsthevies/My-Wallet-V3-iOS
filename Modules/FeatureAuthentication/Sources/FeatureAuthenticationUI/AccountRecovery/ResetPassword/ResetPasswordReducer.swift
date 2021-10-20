@@ -19,12 +19,14 @@ public enum ResetPasswordAction: Equatable {
         }
     }
 
-    case didDisappear
     case didChangeNewPassword(String)
     case didChangeConfirmNewPassword(String)
     case didChangePasswordStrength(PasswordValidationScore)
+    case resetButtonTapped
     case validatePasswordStrength
     case open(urlContent: URLContent)
+    case resetAccountFailure(ResetAccountFailureAction)
+    case setResetAccountFailureVisible(Bool)
     case none
 }
 
@@ -34,11 +36,14 @@ struct ResetPasswordState: Equatable {
     var newPassword: String
     var confirmNewPassword: String
     var passwordStrength: PasswordValidationScore
+    var isResetAccountFailureVisible: Bool
+    var resetAccountFailureState: ResetAccountFailureState?
 
     init() {
         newPassword = ""
         confirmNewPassword = ""
         passwordStrength = .none
+        isResetAccountFailureVisible = false
     }
 }
 
@@ -46,58 +51,84 @@ struct ResetPasswordEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let passwordValidator: PasswordValidatorAPI
     let externalAppOpener: ExternalAppOpener
+    let errorRecorder: ErrorRecording
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         passwordValidator: PasswordValidatorAPI = resolve(),
-        externalAppOpener: ExternalAppOpener = resolve()
+        externalAppOpener: ExternalAppOpener = resolve(),
+        errorRecorder: ErrorRecording = resolve()
     ) {
         self.mainQueue = mainQueue
         self.passwordValidator = passwordValidator
         self.externalAppOpener = externalAppOpener
+        self.errorRecorder = errorRecorder
     }
 }
 
-let resetPasswordReducer = Reducer<
-    ResetPasswordState,
-    ResetPasswordAction,
-    ResetPasswordEnvironment
-> { state, action, environment in
-    switch action {
-    case .didDisappear:
-        // clear states after disappear
-        state.newPassword = ""
-        state.confirmNewPassword = ""
-        state.passwordStrength = .none
-        return .none
-    case .didChangeNewPassword(let password):
-        state.newPassword = password
-        return Effect(value: .validatePasswordStrength)
-    case .didChangeConfirmNewPassword(let password):
-        state.confirmNewPassword = password
-        return .none
-    case .didChangePasswordStrength(let score):
-        state.passwordStrength = score
-        return .none
-    case .validatePasswordStrength:
-        return environment
-            .passwordValidator
-            .validate(password: state.newPassword)
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .map { result -> ResetPasswordAction in
-                guard case .success(let score) = result else {
-                    return .none
+let resetPasswordReducer = Reducer.combine(
+    resetAccountFailureReducer
+        .optional()
+        .pullback(
+            state: \.resetAccountFailureState,
+            action: /ResetPasswordAction.resetAccountFailure,
+            environment: { _ in ResetAccountFailureEnvironment() }
+        ),
+    Reducer<
+        ResetPasswordState,
+        ResetPasswordAction,
+        ResetPasswordEnvironment
+    > { state, action, environment in
+        switch action {
+
+        case .didChangeNewPassword(let password):
+            state.newPassword = password
+            return Effect(value: .validatePasswordStrength)
+
+        case .didChangeConfirmNewPassword(let password):
+            state.confirmNewPassword = password
+            return .none
+
+        case .didChangePasswordStrength(let score):
+            state.passwordStrength = score
+            return .none
+
+        case .validatePasswordStrength:
+            return environment
+                .passwordValidator
+                .validate(password: state.newPassword)
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map { result -> ResetPasswordAction in
+                    guard case .success(let score) = result else {
+                        return .none
+                    }
+                    return .didChangePasswordStrength(score)
                 }
-                return .didChangePasswordStrength(score)
+
+        case .open(let urlContent):
+            guard let url = urlContent.url else {
+                return .none
             }
-    case .open(let urlContent):
-        guard let url = urlContent.url else {
+            environment.externalAppOpener.open(url)
+            return .none
+
+        case .resetButtonTapped:
+            // handled in seedPhraseReducer
+            return .none
+
+        case .setResetAccountFailureVisible(let isVisible):
+            state.isResetAccountFailureVisible = isVisible
+            if isVisible {
+                state.resetAccountFailureState = .init()
+            }
+            return .none
+
+        case .resetAccountFailure:
+            return .none
+
+        case .none:
             return .none
         }
-        environment.externalAppOpener.open(url)
-        return .none
-    case .none:
-        return .none
     }
-}
+)

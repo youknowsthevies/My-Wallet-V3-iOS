@@ -11,16 +11,17 @@ import XCTest
 final class CachedValueTests: XCTestCase {
 
     private var disposeBag = DisposeBag()
-    private var testScheduler: TestScheduler!
+    private var testScheduler: SchedulerType!
 
     override func setUp() {
-        testScheduler = TestScheduler(initialClock: 0)
+        super.setUp()
+        testScheduler = CachedValueConfiguration.generateScheduler(identifier: "CachedValueTests")
         disposeBag = DisposeBag()
     }
 
     func testInitialSubscriptionToValue() {
         let expectedValue = "expected_value"
-        let configuration = CachedValueConfiguration(refreshType: .onSubscription)
+        let configuration = CachedValueConfiguration(refreshType: .onSubscription, scheduler: testScheduler)
         let cachedValue = CachedValue<String>(configuration: configuration)
         cachedValue.setFetch { Single.just(expectedValue) }
         do {
@@ -36,7 +37,8 @@ final class CachedValueTests: XCTestCase {
         var index = 0
 
         let configuration = CachedValueConfiguration(
-            refreshType: .onSubscription
+            refreshType: .onSubscription,
+            scheduler: testScheduler
         )
         let cachedValue = CachedValue<String>(configuration: configuration)
         cachedValue.setFetch { () -> Single<String> in
@@ -57,7 +59,8 @@ final class CachedValueTests: XCTestCase {
         let expectedResult = "expected_result1"
 
         let configuration = CachedValueConfiguration(
-            refreshType: .onSubscription
+            refreshType: .onSubscription,
+            scheduler: testScheduler
         )
         let cachedValue = CachedValue<String>(configuration: configuration)
 

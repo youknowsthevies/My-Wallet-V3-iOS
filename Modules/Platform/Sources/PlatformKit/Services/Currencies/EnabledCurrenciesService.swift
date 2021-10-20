@@ -40,7 +40,7 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     }
 
     private var erc20Currencies: [CryptoCurrency] {
-        guard internalFeatureFlagService.isEnabled(.loadAllERC20Tokens) else {
+        guard StaticFeatureFlags.isDynamicAssetsEnabled else {
             return []
         }
         return repository.erc20Assets

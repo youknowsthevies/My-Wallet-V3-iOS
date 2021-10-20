@@ -125,8 +125,12 @@ let emailVerificationReducer = Reducer.combine(
             return .none
 
         case .didAppear:
-            return Effect.timer(id: TimerIdentifier(), every: 5, on: environment.pollingQueue)
-                .map { _ in .loadVerificationState }
+            return Effect.timer(
+                id: TimerIdentifier(),
+                every: 5,
+                on: environment.pollingQueue
+            )
+            .map { _ in .loadVerificationState }
 
         case .didDisappear:
             return .cancel(id: TimerIdentifier())

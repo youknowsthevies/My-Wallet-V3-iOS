@@ -6,8 +6,8 @@ import Foundation
 public enum NonCustodialCoinCode: String, CaseIterable {
     case bitcoin = "BTC"
     case bitcoinCash = "BCH"
-    case stellar = "XLM"
     case ethereum = "ETH"
+    case stellar = "XLM"
 }
 
 /// An enumeration of the hardcoded ERC20 assets.
@@ -31,6 +31,13 @@ public enum ERC20Code: String, CaseIterable {
     case wdgld = "WDGLD"
     case yearnFinance = "YFI"
     case zrx = "ZRX"
+
+    public static func spotColor(code: String) -> String {
+        ERC20Code.allCases
+            .first(where: { $0.rawValue == code })?
+            .spotColor
+            ?? "0C6CF2"
+    }
 
     public var spotColor: String {
         switch self {

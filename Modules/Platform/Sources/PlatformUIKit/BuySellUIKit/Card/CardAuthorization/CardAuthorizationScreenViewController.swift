@@ -2,7 +2,7 @@
 
 import WebKit
 
-final class CardAuthorizationScreenViewController: BaseScreenViewController {
+public final class CardAuthorizationScreenViewController: BaseScreenViewController {
 
     // MARK: - UI Properties
 
@@ -24,30 +24,30 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
 
     // MARK: - Setup
 
-    init(presenter: CardAuthorizationScreenPresenter) {
+    public init(presenter: CardAuthorizationScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
 
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Lifecycle
 
-    override func loadView() {
+    override public func loadView() {
         view = UIView()
         view.backgroundColor = .white
     }
 
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         presenter.viewDidLoad()
         setupNavigationBar()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
         switch presenter.authorizationState {
@@ -62,7 +62,7 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
         }
     }
 
-    override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         switch presenter.authorizationState {
         case .none, .confirmed:
@@ -72,7 +72,7 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
         }
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
+    override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         presenter.viewDidDisappear()
     }
@@ -86,7 +86,8 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
 // MARK: WKNavigationDelegate
 
 extension CardAuthorizationScreenViewController: WKNavigationDelegate {
-    func webView(
+
+    public func webView(
         _ webView: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void
@@ -94,7 +95,6 @@ extension CardAuthorizationScreenViewController: WKNavigationDelegate {
         if navigationAction.request.url?.host == exitUrl.host {
             presenter.redirect()
         }
-
         decisionHandler(.allow)
     }
 }

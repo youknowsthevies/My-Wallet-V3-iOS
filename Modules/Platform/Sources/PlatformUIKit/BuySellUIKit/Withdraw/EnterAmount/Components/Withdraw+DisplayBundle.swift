@@ -104,7 +104,7 @@ extension DisplayBundle {
         typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.SellScreen
 
         let strings = Strings(
-            title: String(format: LocalizedString.title, currency.code),
+            title: String(format: LocalizedString.title, currency.displayCode),
             ctaButton: LocalizedString.ctaButton,
             bottomAuxiliaryItemSeparatorTitle: "",
             useMin: "",

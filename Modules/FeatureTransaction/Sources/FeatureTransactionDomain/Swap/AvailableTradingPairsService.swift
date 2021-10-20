@@ -37,7 +37,7 @@ final class AvailableTradingPairsService: AvailableTradingPairsServiceAPI {
     // MARK: - Properties
 
     private let pairsCachedValue = CachedValue<[OrderPair]>(
-        configuration: .onSubscription()
+        configuration: .onSubscription(schedulerIdentifier: "AvailableTradingPairsService")
     )
 
     private let repository: AvailablePairsRepositoryAPI

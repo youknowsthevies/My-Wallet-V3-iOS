@@ -7,6 +7,7 @@ import RxDataSources
 import RxRelay
 import RxSwift
 import ToolKit
+import UIKit
 
 public protocol AccountPickerViewControllable: ViewControllable {
     var shouldOverrideNavigationEffects: Bool { get set }
@@ -20,28 +21,59 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
 
     private typealias RxDataSource = RxTableViewSectionedReloadDataSource<AccountPickerSectionViewModel>
 
+    // MARK: - Public Properties
+
+    public var shouldOverrideNavigationEffects: Bool = false
+
     // MARK: - Private Properties
 
+    /// Store current header view so we can remove it when a new one is going to be displayed.
+    private weak var headerView: UIView?
+    private let headerLayoutGuide = UILayoutGuide()
     private var disposeBag = DisposeBag()
-    public var shouldOverrideNavigationEffects: Bool = false
     private let tableView = UITableView(frame: .zero, style: .grouped)
-    private let headerRelay = BehaviorRelay<HeaderBuilder?>(value: nil)
+    private let headerRelay = BehaviorRelay<AccountPickerHeaderBuilder?>(value: nil)
     private let backButtonRelay = PublishRelay<Void>()
     private let closeButtonRelay = PublishRelay<Void>()
+    private let searchRelay = PublishRelay<String?>()
 
     private lazy var dataSource: RxDataSource = {
-        RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
-            guard let self = self else { return UITableViewCell() }
+        RxDataSource(configureCell: { [weak self] _, tableView, indexPath, item in
+            guard let self = self else {
+                return UITableViewCell()
+            }
             let cell: UITableViewCell
             switch item.presenter {
+            case .emptyState(let content):
+                cell = self.labelContentCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    content: content
+                )
             case .button(let viewModel):
-                cell = self.buttonTableViewCell(for: indexPath, viewModel: viewModel)
+                cell = self.buttonTableViewCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    viewModel: viewModel
+                )
             case .linkedBankAccount(let presenter):
-                cell = self.linkedBankCell(for: indexPath, presenter: presenter)
+                cell = self.linkedBankCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    presenter: presenter
+                )
             case .accountGroup(let presenter):
-                cell = self.totalBalanceCell(for: indexPath, presenter: presenter)
+                cell = self.totalBalanceCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    presenter: presenter
+                )
             case .singleAccount(let presenter):
-                cell = self.balanceCell(for: indexPath, presenter: presenter)
+                cell = self.balanceCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    presenter: presenter
+                )
             }
             cell.selectionStyle = .none
             return cell
@@ -54,6 +86,8 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.separatorColor = .clear
         tableView.alwaysBounceVertical = true
+        tableView.keyboardDismissMode = .onDrag
+        tableView.register(LabelTableViewCell.self)
         tableView.register(LinkedBankAccountTableViewCell.self)
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self, in: .module)
@@ -72,8 +106,21 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     override public func viewDidLoad() {
         super.viewDidLoad()
         _ = setupTableView
+
+        view.addLayoutGuide(headerLayoutGuide)
         view.addSubview(tableView)
-        tableView.layoutToSuperview(.top, .bottom, .leading, .trailing)
+
+        let headerLayoutGuideHeight = headerLayoutGuide.heightAnchor.constraint(equalToConstant: 0)
+        headerLayoutGuideHeight.priority = .defaultHigh
+
+        NSLayoutConstraint.activate([
+            headerLayoutGuideHeight,
+            headerLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
+            headerLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerLayoutGuide.bottomAnchor.constraint(equalTo: tableView.topAnchor)
+        ])
+        tableView.layoutToSuperview(.bottom, .leading, .trailing)
     }
 
     // MARK: - Methods
@@ -102,8 +149,18 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
             .disposed(by: disposeBag)
 
         stateWait.map(\.headerModel)
-            .map { AccountPickerHeaderBuilder(headerType: $0) }
+            .distinctUntilChanged()
+            .map(AccountPickerHeaderBuilder.init)
             .drive(headerRelay)
+            .disposed(by: disposeBag)
+
+        headerRelay.asDriver()
+            .compactMap { $0 }
+            .drive(
+                onNext: { [weak self] headerBuilder in
+                    self?.prepare(headerBuilder: headerBuilder)
+                }
+            )
             .disposed(by: disposeBag)
 
         stateWait.map(\.sections)
@@ -123,7 +180,42 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
             .map { AccountPickerInteractor.Effects.closed }
             .asDriverCatchError()
 
-        return .merge(modelSelected, backButtonEffect, closeButtonEffect)
+        let searchEffect = searchRelay
+            .distinctUntilChanged()
+            .map { AccountPickerInteractor.Effects.filter($0) }
+            .asDriverCatchError()
+
+        return .merge(modelSelected, backButtonEffect, closeButtonEffect, searchEffect)
+    }
+
+    private func prepare(headerBuilder: AccountPickerHeaderBuilder) {
+        guard headerBuilder.isAlwaysVisible else {
+            headerView?.removeFromSuperview()
+            tableView.contentInset = .zero
+            return
+        }
+        guard let headerBuilder = headerRelay.value else {
+            return
+        }
+        guard let headerView = headerBuilder.headerView(
+            fittingWidth: view.bounds.width,
+            customHeight: nil
+        ) else {
+            return
+        }
+        self.headerView = headerView
+        headerView.searchBar?.rx
+            .text
+            .bind(to: searchRelay)
+            .disposed(by: disposeBag)
+        view.addSubview(headerView)
+
+        NSLayoutConstraint.activate([
+            headerView.topAnchor.constraint(equalTo: headerLayoutGuide.topAnchor),
+            headerView.leadingAnchor.constraint(equalTo: headerLayoutGuide.leadingAnchor),
+            headerView.trailingAnchor.constraint(equalTo: headerLayoutGuide.trailingAnchor),
+            headerView.bottomAnchor.constraint(equalTo: headerLayoutGuide.bottomAnchor)
+        ])
     }
 
     override public func navigationBarLeadingButtonPressed() {
@@ -156,7 +248,18 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
 
     // MARK: - Private Methods
 
+    private func labelContentCell(
+        tableView: UITableView,
+        for indexPath: IndexPath,
+        content: LabelContent
+    ) -> UITableViewCell {
+        let cell = tableView.dequeue(LabelTableViewCell.self, for: indexPath)
+        cell.content = content
+        return cell
+    }
+
     private func linkedBankCell(
+        tableView: UITableView,
         for indexPath: IndexPath,
         presenter: LinkedBankAccountCellPresenter
     ) -> UITableViewCell {
@@ -166,6 +269,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     }
 
     private func balanceCell(
+        tableView: UITableView,
         for indexPath: IndexPath,
         presenter: CurrentBalanceCellPresenting
     ) -> UITableViewCell {
@@ -175,6 +279,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     }
 
     private func totalBalanceCell(
+        tableView: UITableView,
         for indexPath: IndexPath,
         presenter: AccountGroupBalanceCellPresenter
     ) -> AccountGroupBalanceTableViewCell {
@@ -184,6 +289,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     }
 
     private func buttonTableViewCell(
+        tableView: UITableView,
         for indexPath: IndexPath,
         viewModel: ButtonViewModel
     ) -> UITableViewCell {
@@ -198,12 +304,31 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
 
 extension AccountPickerViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard section == 0 else { return nil }
-        return headerRelay.value?.view(fittingWidth: view.bounds.width, customHeight: nil)
+        headerBuilderForTableView(section: section)?
+            .view(
+                fittingWidth: view.bounds.width,
+                customHeight: nil
+            )
     }
 
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard section == 0 else { return 0 }
-        return headerRelay.value?.defaultHeight ?? 0
+        headerBuilderForTableView(section: section)?.defaultHeight ?? 0
+    }
+
+    /// - returns: A `AccountPickerHeaderBuilder` for the given UITableView section, or nil it it should be displayed or doesn't exist.
+    private func headerBuilderForTableView(section: Int) -> AccountPickerHeaderBuilder? {
+        guard let headerBuilder = headerRelay.value else {
+            return nil
+        }
+        return shouldDisplayHeaderOnTableView(
+            section: section,
+            headerBuilder: headerBuilder
+        ) ? headerBuilder : nil
+    }
+
+    /// - returns: `true` if header should be displayed as part of the UITableView, false if not.
+    private func shouldDisplayHeaderOnTableView(section: Int, headerBuilder: AccountPickerHeaderBuilder) -> Bool {
+        section == 0
+            && !headerBuilder.isAlwaysVisible
     }
 }

@@ -24,9 +24,10 @@ final class GeneralInformationService: GeneralInformationServiceAPI {
     init(client: GeneralInformationClientAPI = resolve()) {
         self.client = client
 
-        countriesCachedValue = .init(
-            configuration: .init(
-                refreshType: .periodic(seconds: 60 * 60)
+        countriesCachedValue = CachedValue(
+            configuration: .periodic(
+                seconds: 60 * 60,
+                schedulerIdentifier: "GeneralInformationService"
             )
         )
 

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import ComposableArchitecture
 import FeatureAuthenticationDomain
 import Localization
@@ -50,7 +51,7 @@ struct CreateAccountView: View {
             PasswordStrengthIndicatorView(
                 passwordStrength: viewStore.binding(
                     get: \.passwordStrength,
-                    send: .none
+                    send: { .didChangePasswordStrength($0) }
                 )
             )
             .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.passwordStrengthIndicatorGroup)
@@ -68,10 +69,13 @@ struct CreateAccountView: View {
             Spacer()
 
             PrimaryButton(title: LocalizedString.createAccountButton) {
-                // TODO: create account
+                viewStore.send(.createButtonTapped)
             }
             .disabled(viewStore.password.isEmpty || viewStore.password != viewStore.confirmPassword)
             .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.createAccountButton)
+        }
+        .onDisappear {
+            viewStore.send(.onDisappear)
         }
         .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
         .padding(
@@ -119,7 +123,7 @@ struct CreateAccountView: View {
             isFirstResponder: $isEmailFieldFirstResponder,
             isError: viewStore.binding(
                 get: { !$0.emailAddress.isEmail && !$0.emailAddress.isEmpty },
-                send: .none
+                send: .noop
             ),
             title: LocalizedString.TextFieldTitle.email,
             configuration: {
@@ -192,7 +196,7 @@ struct CreateAccountView: View {
             isFirstResponder: $isConfirmPasswordFieldFirstResponder,
             isError: viewStore.binding(
                 get: { $0.password != $0.confirmPassword },
-                send: .none
+                send: .noop
             ),
             title: LocalizedString.TextFieldTitle.confirmPassword,
             configuration: {
@@ -227,7 +231,9 @@ struct CreateAccountView_Previews: PreviewProvider {
             store: .init(
                 initialState: .init(),
                 reducer: createAccountReducer,
-                environment: .init()
+                environment: .init(
+                    analyticsRecorder: NoOpAnalyticsRecorder()
+                )
             )
         )
     }

@@ -5,11 +5,11 @@ import SwiftUI
 
 final class TargetAuxiliaryViewPresenter: AuxiliaryViewPresenting {
 
-    private let interactor: TargetAuxiliaryViewInteractor
+    private weak var delegate: AuxiliaryViewPresentingDelegate?
     private let transactionState: TransactionState
 
-    init(interactor: TargetAuxiliaryViewInteractor, transactionState: TransactionState) {
-        self.interactor = interactor
+    init(delegate: AuxiliaryViewPresentingDelegate?, transactionState: TransactionState) {
+        self.delegate = delegate
         self.transactionState = transactionState
     }
 
@@ -23,8 +23,8 @@ final class TargetAuxiliaryViewPresenter: AuxiliaryViewPresenting {
                 rootView: TargetAccountAuxiliaryView(
                     asset: account.asset,
                     price: .zero(currency: account.asset.currencyType),
-                    action: { [interactor, transactionState] in
-                        interactor.handleTopAuxiliaryViewTapped(state: transactionState)
+                    action: { [weak self] in
+                        self?.handleTap()
                     }
                 )
                 .redacted(reason: .placeholder)
@@ -35,10 +35,14 @@ final class TargetAuxiliaryViewPresenter: AuxiliaryViewPresenting {
             rootView: TargetAccountAuxiliaryView(
                 asset: account.asset,
                 price: conversionRate.quote,
-                action: { [interactor, transactionState] in
-                    interactor.handleTopAuxiliaryViewTapped(state: transactionState)
+                action: { [weak self] in
+                    self?.handleTap()
                 }
             )
         )
+    }
+
+    private func handleTap() {
+        delegate?.auxiliaryViewTapped(self, state: transactionState)
     }
 }
