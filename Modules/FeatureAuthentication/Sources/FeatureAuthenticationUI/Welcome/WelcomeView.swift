@@ -86,7 +86,7 @@ public struct WelcomeView: View {
                         ),
                         then: { store in
                             NavigationView {
-                                SeedPhraseView(context: .importWallet, store: store)
+                                SeedPhraseView(context: .restoreWallet, store: store)
                                     .trailingNavigationButton(.close) {
                                         viewStore.send(.restoreWallet(.closeButtonTapped))
                                     }
