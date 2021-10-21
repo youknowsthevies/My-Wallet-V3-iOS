@@ -108,6 +108,7 @@ extension BinaryFloatingPoint {
 
 extension CGRect {
 
+    /// The current screens bounds. From UIScreen on iOS, NSScreen on macOS.
     @inlinable public static var screen: CGRect {
         #if canImport(UIKit)
         UIScreen.main.bounds
