@@ -38,7 +38,7 @@ public enum SeedPhraseAction: Equatable {
 
 public enum AccountRecoveryContext: Equatable {
     case troubleLoggingIn
-    case importWallet
+    case restoreWallet
     case none
 }
 
@@ -198,12 +198,6 @@ let seedPhraseReducer = Reducer.combine(
             }
             return .none
 
-        case .resetPassword(.resetButtonTapped):
-            // password reset will be triggered after the recovery by core coordinator
-            return Effect(
-                value: .restoreWallet(.metadataRecovery(seedPhrase: state.seedPhrase))
-            )
-
         case .resetPassword:
             // handled in reset password reducer
             return .none
@@ -221,17 +215,15 @@ let seedPhraseReducer = Reducer.combine(
         case .lostFundsWarning(.goBackButtonTapped):
             return Effect(value: .setLostFundsWarningScreenVisible(false))
 
-        case .lostFundsWarning(.resetPassword(.resetButtonTapped)):
-            guard let resetPasswordState = state.lostFundsWarningState?.resetPasswordState,
-                  let nabuInfo = state.nabuInfo
-            else {
+        case .lostFundsWarning(.resetPassword(.reset(let password))):
+            guard let nabuInfo = state.nabuInfo else {
                 return .none
             }
             return Effect(
                 value: .restoreWallet(
                     .resetAccountRecovery(
                         email: state.emailAddress,
-                        newPassword: resetPasswordState.newPassword,
+                        newPassword: password,
                         nabuInfo: nabuInfo
                     )
                 )

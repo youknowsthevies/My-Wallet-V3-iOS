@@ -22,7 +22,7 @@ public enum ResetPasswordAction: Equatable {
     case didChangeNewPassword(String)
     case didChangeConfirmNewPassword(String)
     case didChangePasswordStrength(PasswordValidationScore)
-    case resetButtonTapped
+    case reset(password: String)
     case validatePasswordStrength
     case open(urlContent: URLContent)
     case resetAccountFailure(ResetAccountFailureAction)
@@ -38,12 +38,14 @@ struct ResetPasswordState: Equatable {
     var passwordStrength: PasswordValidationScore
     var isResetAccountFailureVisible: Bool
     var resetAccountFailureState: ResetAccountFailureState?
+    var isLoading: Bool
 
     init() {
         newPassword = ""
         confirmNewPassword = ""
         passwordStrength = .none
         isResetAccountFailureVisible = false
+        isLoading = false
     }
 }
 
@@ -113,8 +115,8 @@ let resetPasswordReducer = Reducer.combine(
             environment.externalAppOpener.open(url)
             return .none
 
-        case .resetButtonTapped:
-            // handled in seedPhraseReducer
+        case .reset:
+            state.isLoading = true
             return .none
 
         case .setResetAccountFailureVisible(let isVisible):

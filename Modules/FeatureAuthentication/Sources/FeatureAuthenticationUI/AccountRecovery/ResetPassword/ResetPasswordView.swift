@@ -61,9 +61,13 @@ struct ResetPasswordView: View {
 
             Spacer()
 
-            PrimaryButton(title: LocalizedString.Button.resetPassword) {
-                viewStore.send(.resetButtonTapped)
-            }
+            PrimaryButton(
+                title: LocalizedString.Button.resetPassword,
+                action: {
+                    viewStore.send(.reset(password: viewStore.newPassword))
+                },
+                loading: viewStore.binding(get: \.isLoading, send: .none)
+            )
             .disabled(viewStore.newPassword.isEmpty || viewStore.newPassword != viewStore.confirmNewPassword ||
                 viewStore.passwordStrength != .strong)
             .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.resetPasswordButton)
