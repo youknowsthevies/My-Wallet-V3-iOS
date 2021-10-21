@@ -42,10 +42,10 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
         switch event {
         case .buySell(let orderDetails):
             if orderDetails.isBuy {
-                text = "\(LocalizationStrings.buy) \(orderDetails.outputValue.currency.code)"
+                text = "\(LocalizationStrings.buy) \(orderDetails.outputValue.currency.displayCode)"
             } else {
                 text = "\(LocalizationStrings.sell) "
-                    + "\(orderDetails.inputValue.currency.code) -> \(orderDetails.outputValue.currency.code)"
+                    + "\(orderDetails.inputValue.currency.displayCode) -> \(orderDetails.outputValue.currency.displayCode)"
             }
         case .swap(let event):
             let pair = event.pair

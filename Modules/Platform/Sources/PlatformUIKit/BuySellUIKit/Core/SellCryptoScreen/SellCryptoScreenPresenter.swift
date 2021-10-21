@@ -76,10 +76,10 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
         topSelectionButtonViewModel.trailingContentRelay.accept(.empty)
         bottomAuxiliaryViewModelStateRelay.accept(.maxAvailable(auxiliaryViewPresenter))
         topSelectionButtonViewModel.titleRelay.accept(
-            String(format: LocalizedString.from, interactor.data.source.currencyType.code)
+            String(format: LocalizedString.from, interactor.data.source.currencyType.displayCode)
         )
         topSelectionButtonViewModel.subtitleRelay.accept(
-            String(format: LocalizedString.to, interactor.data.destination.currencyType.code)
+            String(format: LocalizedString.to, interactor.data.destination.currencyType.displayCode)
         )
 
         struct CTAData {

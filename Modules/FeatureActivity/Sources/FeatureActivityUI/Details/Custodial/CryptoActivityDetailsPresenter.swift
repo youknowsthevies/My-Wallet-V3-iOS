@@ -117,9 +117,9 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
         let destination: String
         switch event.type {
         case .deposit:
-            destination = "\(event.amount.code) \(LocalizedLineItem.tradingWallet)"
+            destination = "\(event.amount.displayCode) \(LocalizedLineItem.tradingWallet)"
         case .withdrawal:
-            destination = event.receivingAddress ?? "\(event.amount.code) \(LocalizedLineItem.wallet)"
+            destination = event.receivingAddress ?? "\(event.amount.displayCode) \(LocalizedLineItem.wallet)"
         }
         switch event.receivingAddress {
         case .none:
@@ -136,9 +136,9 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
         let source: String
         switch event.type {
         case .deposit:
-            source = "\(event.amount.code) \(LocalizedLineItem.wallet)"
+            source = "\(event.amount.displayCode) \(LocalizedLineItem.wallet)"
         case .withdrawal:
-            source = "\(event.amount.code) \(LocalizedLineItem.tradingWallet)"
+            source = "\(event.amount.displayCode) \(LocalizedLineItem.tradingWallet)"
         }
         fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix

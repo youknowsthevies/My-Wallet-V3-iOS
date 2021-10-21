@@ -169,7 +169,7 @@ final class ActivityScreenPresenter {
                 interactor.fiatCurrency
             )
             .map { balance, fiatCurrency in
-                balance.toDisplayString(includeSymbol: true) + " \(fiatCurrency.code)"
+                balance.toDisplayString(includeSymbol: true) + " \(fiatCurrency.displayCode)"
             }
             .catchErrorJustReturn("")
             .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)

@@ -27,7 +27,7 @@ final class ReceiveScreenPresenter {
     let memoNoteViewModel: InteractableTextViewModel
     let copyButton: ButtonViewModel
     let shareButton: ButtonViewModel
-    private(set) lazy var title = "\(LocalizedString.Text.receive) \(interactor.account.currencyType.code)"
+    private(set) lazy var title = "\(LocalizedString.Text.receive) \(interactor.account.currencyType.displayCode)"
     var assetImage: Driver<BadgeImageViewModel> {
         let theme = BadgeImageViewModel.Theme(
             backgroundColor: .background,

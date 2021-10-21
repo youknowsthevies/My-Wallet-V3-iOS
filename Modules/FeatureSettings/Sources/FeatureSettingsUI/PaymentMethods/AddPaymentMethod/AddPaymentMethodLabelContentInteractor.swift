@@ -25,8 +25,8 @@ struct AddPaymentMethodLocalizedStrings {
         return AddPaymentMethodLocalizedStrings(
             kycDisabled: LocalizedString.unverified,
             notAbleToAddNew: LocalizedString.maximum,
-            cta: "\(LocalizedString.addPrefix) \(fiatCurrency.code) \(LocalizedString.addSuffix)",
-            accessibilityId: "\(AccessibilityID.AddPaymentMethodCell.disclaimer).bank.\(fiatCurrency.code)"
+            cta: "\(LocalizedString.addPrefix) \(fiatCurrency.displayCode) \(LocalizedString.addSuffix)",
+            accessibilityId: "\(AccessibilityID.AddPaymentMethodCell.disclaimer).bank.\(fiatCurrency.displayCode)"
         )
     }
 
