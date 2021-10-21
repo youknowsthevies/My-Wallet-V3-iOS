@@ -13,7 +13,9 @@ public struct RootView: View {
 
     private let data: NavigationLinkProviderList = [
         "1 - Base": [
-            NavigationLinkProvider(view: TypographyExamplesView(), title: "🔠 Typography")
+            NavigationLinkProvider(view: ColorsExamplesView(), title: "🌈 Colors"),
+            NavigationLinkProvider(view: TypographyExamplesView(), title: "🔠 Typography"),
+            NavigationLinkProvider(view: IconsExamplesView(), title: "🖼 Icons")
         ],
         "2 - Primitives": [
             NavigationLinkProvider(view: SampleView())
@@ -22,6 +24,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: Text("Composition Example"))
         ]
     ]
+
+    public init() {}
 
     public var body: some View {
         NavigationView {

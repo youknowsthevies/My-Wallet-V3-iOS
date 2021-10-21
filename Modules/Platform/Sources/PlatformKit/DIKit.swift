@@ -6,7 +6,7 @@ import NetworkKit
 import ToolKit
 
 public protocol ERC20AssetFactoryAPI {
-    func erc20Asset(erc20AssetModel: ERC20AssetModel) -> CryptoAsset
+    func erc20Asset(erc20AssetModel: AssetModel) -> CryptoAsset
 }
 
 extension DependencyContainer {
@@ -170,7 +170,7 @@ extension DependencyContainer {
             CurrencyConversionService(priceService: DIKit.resolve())
         }
 
-        factory { CryptoReceiveAddressFactoryService() }
+        factory { ExternalAssetAddressService() as ExternalAssetAddressServiceAPI }
 
         factory { BlockchainAccountFetcher() as BlockchainAccountFetching }
 

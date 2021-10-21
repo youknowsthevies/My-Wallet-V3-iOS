@@ -139,7 +139,19 @@ public final class TransactionProcessor {
         }
     }
 
-    public func execute(secondPassword: String) -> Single<TransactionResult> {
+    public func createOrder() -> Single<TransactionOrder?> {
+        do {
+            return engine.createOrder(pendingTransaction: try pendingTransaction())
+        } catch {
+            return .error(error)
+        }
+    }
+
+    public func cancelOrder(with identifier: String) -> Single<Void> {
+        engine.cancelOrder(with: identifier)
+    }
+
+    public func execute(order: TransactionOrder?, secondPassword: String) -> Single<TransactionResult> {
         Logger.shared.debug("!TRANSACTION!> in `execute`")
         do {
             if engine.requireSecondPassword, secondPassword.isEmpty {
@@ -153,8 +165,12 @@ public final class TransactionProcessor {
                         throw PlatformKitError.illegalStateException(message: "PendingTx is not executable")
                     }
                 })
-                .flatMap { [engine] transaction -> Single<TransactionResult> in
-                    engine.execute(pendingTransaction: transaction, secondPassword: secondPassword)
+                .flatMap { [engine] transaction in
+                    engine.execute(
+                        pendingTransaction: transaction,
+                        pendingOrder: order,
+                        secondPassword: secondPassword
+                    )
                 }
         } catch {
             return .error(error)

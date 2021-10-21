@@ -1,7 +1,6 @@
 import Foundation
 
 @_spi(OpenBankingSetup) public var resources: Bundle = .main
-@_spi(OpenBankingSetup) public var formatMoney: (_ amountMinor: String, _ currency: String) -> String? = { "\($1) \($0)" }
 
 /*
  guard let currency = FiatCurrency(rawValue: payment.amount.symbol),
@@ -10,3 +9,8 @@ import Foundation
      return .errorMessage(R.Bank.Payment.error.interpolating(payment.amount.symbol))
  }
  */
+
+
+public protocol FiatCurrencyFormatter {
+    func displayString(amountMinor: String, currency: String) -> String?
+}

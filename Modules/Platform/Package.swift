@@ -74,7 +74,8 @@ let package = Package(
         .package(path: "../Tool"),
         .package(path: "../RxTool"),
         .package(path: "../WalletPayload"),
-        .package(path: "../UIComponents")
+        .package(path: "../UIComponents"),
+        .package(path: "../ComposableNavigation")
     ],
     targets: [
         .target(
@@ -95,7 +96,8 @@ let package = Package(
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "RxToolKit", package: "RxTool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload")
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "ComposableNavigation", package: "ComposableNavigation")
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json"),

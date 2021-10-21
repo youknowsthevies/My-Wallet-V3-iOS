@@ -16,7 +16,7 @@ extension DisplayBundle {
         typealias LocalizedString = LocalizationConstants.Transaction
 
         return DisplayBundle(
-            title: LocalizedString.Deposit.add + " \(sourceAccount.currencyType.code)",
+            title: LocalizedString.Deposit.add + " \(sourceAccount.currencyType.displayCode)",
             amountDisplayBundle: .init(
                 events: .init(
                     min: DepositAnalyticsEvent(),

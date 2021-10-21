@@ -25,6 +25,7 @@ public struct OpenBankingEnvironment {
         showTransferDetails: @escaping () -> Void = {},
         dismiss: @escaping () -> Void = {},
         openURL: ExternalAppOpener = resolve(),
+        formatter: FiatCurrencyFormatter = resolve(),
         currency: String
     ) {
         self.scheduler = scheduler

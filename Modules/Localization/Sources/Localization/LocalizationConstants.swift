@@ -1168,6 +1168,13 @@ public enum LocalizationConstants {
             comment: "2FA alert: sms type"
         )
     }
+
+    public enum AccountPicker {
+        public static let noWallets = NSLocalizedString(
+            "No Wallets",
+            comment: "Title text for account picker when no wallets are available"
+        )
+    }
 }
 
 extension LocalizationConstants {

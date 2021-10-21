@@ -132,7 +132,7 @@ extension Length {
         `in`(parent: frame, screen: frame)
     }
 
-    @inlinable public func `in`(parent: CGRect, screen: CGRect = .screen) -> CGFloat {
+    @inlinable public func `in`(parent: CGRect, screen: CGRect) -> CGFloat {
         switch self {
         case .pt(let o):
             return o
@@ -259,26 +259,26 @@ extension View {
 
     public func padding(
         _ length: Length,
-        in frame: CGRect? = nil
+        in parent: CGRect? = nil
     ) -> some View {
-        padding(length.in(parent: frame ?? .screen))
+        padding(length.in(parent: parent ?? .screen, screen: .screen))
     }
 
     public func padding(
         _ edges: Edge.Set = .all,
         _ length: Length,
-        in frame: CGRect? = nil
+        in parent: CGRect? = nil
     ) -> some View {
-        padding(edges, length.in(parent: frame ?? .screen))
+        padding(edges, length.in(parent: parent ?? .screen, screen: .screen))
     }
 
     public func frame(
         width: Length,
         alignment: Alignment = .center,
-        in frame: CGRect? = nil
+        in parent: CGRect? = nil
     ) -> some View {
-        self.frame(
-            width: width.in(parent: frame ?? .screen),
+        frame(
+            width: width.in(parent: parent ?? .screen, screen: .screen),
             alignment: alignment
         )
     }
@@ -286,10 +286,10 @@ extension View {
     public func frame(
         height: Length,
         alignment: Alignment = .center,
-        in frame: CGRect? = nil
+        in parent: CGRect? = nil
     ) -> some View {
-        self.frame(
-            height: height.in(parent: frame ?? .screen),
+        frame(
+            height: height.in(parent: parent ?? .screen, screen: .screen),
             alignment: alignment
         )
     }
@@ -298,12 +298,12 @@ extension View {
         width: Length,
         height: Length,
         alignment: Alignment = .center,
-        in frame: CGRect? = nil
+        in parent: CGRect? = nil
     ) -> some View {
-        let frame = frame ?? .screen
-        return self.frame(
-            width: width.in(parent: frame),
-            height: height.in(parent: frame),
+        let parent = parent ?? .screen
+        return frame(
+            width: width.in(parent: parent, screen: .screen),
+            height: height.in(parent: parent, screen: .screen),
             alignment: alignment
         )
     }
@@ -316,50 +316,50 @@ extension View {
         idealHeight: Length? = nil,
         maxHeight: Length? = nil,
         alignment: Alignment = .center,
-        in frame: CGRect? = nil
+        in parent: CGRect? = nil
     ) -> some View {
-        let frame = frame ?? .screen
-        return self.frame(
-            minWidth: minWidth?.in(parent: frame),
-            idealWidth: idealWidth?.in(parent: frame),
-            maxWidth: maxWidth?.in(parent: frame),
-            minHeight: minHeight?.in(parent: frame),
-            idealHeight: idealHeight?.in(parent: frame),
-            maxHeight: maxHeight?.in(parent: frame),
+        let parent = parent ?? .screen
+        return frame(
+            minWidth: minWidth?.in(parent: parent, screen: .screen),
+            idealWidth: idealWidth?.in(parent: parent, screen: .screen),
+            maxWidth: maxWidth?.in(parent: parent, screen: .screen),
+            minHeight: minHeight?.in(parent: parent, screen: .screen),
+            idealHeight: idealHeight?.in(parent: parent, screen: .screen),
+            maxHeight: maxHeight?.in(parent: parent, screen: .screen),
             alignment: alignment
         )
     }
 
     public func offset(
         _ size: Size,
-        in frame: CGRect? = nil
+        in parent: CGRect? = nil
     ) -> some View {
-        offset(x: size.width, y: size.height, in: frame)
+        offset(x: size.width, y: size.height)
     }
 
     public func offset(
         x: Length,
-        in frame: CGRect? = nil
+        in parent: CGRect? = nil
     ) -> some View {
-        offset(x: x.in(parent: frame ?? .screen))
+        offset(x: x.in(parent: parent ?? .screen, screen: .screen))
     }
 
     public func offset(
         y: Length,
-        in frame: CGRect? = nil
+        in parent: CGRect? = nil
     ) -> some View {
-        offset(y: y.in(parent: frame ?? .screen))
+        offset(y: y.in(parent: parent ?? .screen, screen: .screen))
     }
 
     public func offset(
         x: Length,
         y: Length,
-        in frame: CGRect? = nil
+        in parent: CGRect? = nil
     ) -> some View {
-        let parent = frame ?? .screen
+        let parent = parent ?? .screen
         return offset(
-            x: x.in(parent: parent),
-            y: y.in(parent: parent)
+            x: x.in(parent: parent, screen: .screen),
+            y: y.in(parent: parent, screen: .screen)
         )
     }
 }

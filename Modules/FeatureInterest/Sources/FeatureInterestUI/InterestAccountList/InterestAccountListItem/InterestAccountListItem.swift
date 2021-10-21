@@ -35,7 +35,7 @@ struct InterestAccountListItem: View {
                                 String(
                                     format: LocalizationId.earnUpTo,
                                     "\(viewStore.rate.string(with: 1))%",
-                                    viewStore.currency.code
+                                    viewStore.currency.displayCode
                                 )
                             )
                             .textStyle(.body)
@@ -48,7 +48,7 @@ struct InterestAccountListItem: View {
                     Spacer(minLength: 12.0)
                     HStack {
                         VStack(alignment: .leading, spacing: 4.0) {
-                            Text("\(viewStore.currency.code) \(LocalizationId.balance)")
+                            Text("\(viewStore.currency.displayCode) \(LocalizationId.balance)")
                                 .textStyle(.body)
                                 .foregroundColor(.textSubheading)
                             Text(viewStore.balance.displayString)

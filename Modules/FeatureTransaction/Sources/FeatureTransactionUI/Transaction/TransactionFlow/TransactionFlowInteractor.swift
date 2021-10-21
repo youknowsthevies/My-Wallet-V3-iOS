@@ -347,6 +347,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     private func showFlowStep(previousState: TransactionState?, newState: TransactionState) {
+        guard previousState?.step != newState.step else {
+            // if the step hasn't changed we have nothing to do
+            return
+        }
         guard !newState.isGoingBack else {
             guard previousState?.step.goingBackSkipsNavigation == false else {
                 return

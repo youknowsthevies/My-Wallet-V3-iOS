@@ -104,7 +104,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         let celoEUR: CryptoCurrency? = enabledCurrenciesService
             .allEnabledCryptoCurrencies
             .first { cryptoCurrency in
-                cryptoCurrency.isCoin
+                cryptoCurrency.isCeloToken
                     && cryptoCurrency.code.uppercased() == "CEUR"
             }
 

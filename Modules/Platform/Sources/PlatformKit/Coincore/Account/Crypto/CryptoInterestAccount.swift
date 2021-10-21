@@ -29,10 +29,9 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .fetchInterestAccountReceiveAddressForCurrencyCode(asset.code)
             .eraseToAnyPublisher()
             .asSingle()
-            .flatMap { [cryptoReceiveAddressFactory, onTxCompleted, asset] addressString in
+            .flatMap { [cryptoReceiveAddressFactory, onTxCompleted] addressString in
                 cryptoReceiveAddressFactory
                     .makeExternalAssetAddress(
-                        asset: asset,
                         address: addressString,
                         label: "",
                         onTxCompleted: onTxCompleted
@@ -84,7 +83,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         .just([])
     }
 
-    let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
+    let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
     private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
@@ -102,7 +101,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         balanceService: InterestAccountOverviewAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve(),
         interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve(),
-        cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()
+        cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     ) {
         label = asset.defaultInterestWalletName
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory

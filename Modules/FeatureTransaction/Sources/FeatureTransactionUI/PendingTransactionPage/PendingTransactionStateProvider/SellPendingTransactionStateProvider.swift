@@ -38,7 +38,7 @@ final class SellPendingTransactionStateProvider: PendingTransactionStateProvidin
             ),
             subtitle: String(
                 format: LocalizationIds.Success.description,
-                state.destination?.currencyType.code ?? ""
+                state.destination?.currencyType.displayCode ?? ""
             ),
             compositeViewType: .composite(
                 .init(

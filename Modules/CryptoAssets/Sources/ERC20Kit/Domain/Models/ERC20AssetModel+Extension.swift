@@ -3,8 +3,13 @@
 import EthereumKit
 import PlatformKit
 
-extension ERC20AssetModel {
-    var contractAddress: EthereumAddress {
-        EthereumAddress(address: erc20Address)!
+extension AssetModel {
+    var contractAddress: EthereumAddress? {
+        switch kind {
+        case .erc20(let contractAddress):
+            return EthereumAddress(address: contractAddress)
+        default:
+            return nil
+        }
     }
 }

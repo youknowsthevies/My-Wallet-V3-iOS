@@ -1,5 +1,7 @@
 attributes:
   ORGANIZATIONNAME: Blockchain Luxembourg S.A
+include:
+  Modules/ComponentLibrary/project.yml
 configs:
   Debug Dev: debug
   Debug Production: debug
@@ -294,6 +296,8 @@ packages:
     path: Modules/FeatureTransaction
   HDWallet:
     path: Modules/HDWallet
+  Keychain:
+    path: Modules/Keychain
   Localization:
     path: Modules/Localization
   Network:
@@ -427,6 +431,8 @@ targets:
         product: StellarKit
       - package: HDWallet
         product: HDWalletKit
+      - package: Keychain
+        product: KeychainKit
       - package: Localization
         product: Localization
       - package: Network

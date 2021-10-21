@@ -18,7 +18,10 @@ public struct ERC20ContractGasActivityModel {
         self.cryptoCurrency = cryptoCurrency
         switch ERC20Function(data: details.data) {
         case .transfer(to: let address, amount: let hexAmount):
-            cryptoValue = ERC20ContractGasActivityModel.gasCryptoValue(hexAmount: hexAmount, cryptoCurrency: cryptoCurrency)
+            cryptoValue = ERC20ContractGasActivityModel.gasCryptoValue(
+                hexAmount: hexAmount,
+                cryptoCurrency: cryptoCurrency
+            )
             to = EthereumAddress(address: address)!
         case nil:
             cryptoValue = nil
@@ -35,22 +38,8 @@ public struct ERC20ContractGasActivityModel {
     }
 
     private static func token(address: EthereumAddress) -> CryptoCurrency? {
-        let service: EnabledCurrenciesServiceAPI = resolve()
-        let knownERC20: [ERC20AssetModel] = service.allEnabledCryptoCurrencies
-            .compactMap { currency in
-                switch currency {
-                case .erc20(let model):
-                    return model
-                default:
-                    return nil
-                }
-            }
-        let publicKey = address.publicKey.lowercased()
-        for token in knownERC20 {
-            if publicKey.compare(token.contractAddress.publicKey, options: .caseInsensitive) == .orderedSame {
-                return token.cryptoCurrency
-            }
-        }
-        return nil
+        CryptoCurrency(
+            erc20Address: address.publicKey.lowercased()
+        )
     }
 }

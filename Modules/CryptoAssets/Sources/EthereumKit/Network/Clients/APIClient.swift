@@ -220,7 +220,12 @@ extension CryptoCurrency {
     fileprivate var erc20ContractAddress: String? {
         switch self {
         case .erc20(let model):
-            return model.erc20Address
+            switch model.kind {
+            case .erc20(let contractAddress):
+                return contractAddress
+            default:
+                return nil
+            }
         default:
             return nil
         }

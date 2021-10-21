@@ -13,7 +13,7 @@ extension DisplayBundle {
         typealias LocalizedString = LocalizationConstants.Transaction
 
         return DisplayBundle(
-            title: LocalizedString.Sell.title + " \(sourceAccount.currencyType.code)",
+            title: LocalizedString.Sell.title + " \(sourceAccount.currencyType.displayCode)",
             amountDisplayBundle: .init(
                 events: nil,
                 strings: .init(

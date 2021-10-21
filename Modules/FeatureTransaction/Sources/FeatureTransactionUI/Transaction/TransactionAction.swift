@@ -54,6 +54,9 @@ enum TransactionAction: MviAction {
     case transactionFiatRatePairs(TransactionMoneyValuePairs)
     case fatalTransactionError(Error)
     case validateTransaction
+    case createOrder
+    case orderCreated(TransactionOrder?)
+    case orderCancelled
     case resetFlow
     case showSourceSelection
     case showTargetSelection
@@ -201,6 +204,7 @@ extension TransactionAction {
             var newState = oldState
             newState.sourceDestinationPair = pair
             return newState
+
         case .transactionFiatRatePairs(let pair):
             var newState = oldState
             newState.destinationToFiatPair = pair.destination
@@ -298,6 +302,17 @@ extension TransactionAction {
             var newState = oldState
             newState.nextEnabled = false // Don't enable until we get a validated pendingTx from the interactor
             return newState
+
+        case .createOrder:
+            return oldState
+
+        case .orderCreated(let order):
+            return oldState
+                .update(keyPath: \.order, value: order)
+
+        case .orderCancelled:
+            return oldState
+                .update(keyPath: \.order, value: nil)
 
         case .showCheckout:
             return oldState.stateForMovingForward(to: .confirmDetail)

@@ -206,11 +206,10 @@ extension AddNewBankAccountPagePresenter {
             }
 
             let amount = MoneyValue.one(currency: account.currency)
-            let code = account.currency.code
             let instructions = String(
                 format: FundsString.Notice.Instructions.description,
                 amount.displayString,
-                code
+                account.currency.displayCode
             )
 
             noticeViewModels = [

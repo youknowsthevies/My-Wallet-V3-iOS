@@ -48,8 +48,8 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                         account.fiatBalance = .loading
                         account.cryptoBalance = .loading
                     case .loaded(let balance):
-                        account.fiatBalance = .loaded(next: balance.fiatBalance.text)
-                        account.cryptoBalance = .loaded(next: balance.cryptoBalance.text)
+                        account.fiatBalance = .loaded(next: balance.primaryBalance.text)
+                        account.cryptoBalance = .loaded(next: balance.secondaryBalance.text)
                     }
                     return account
                 }
