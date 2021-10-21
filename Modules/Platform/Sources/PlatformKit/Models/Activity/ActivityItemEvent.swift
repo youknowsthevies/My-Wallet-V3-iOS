@@ -90,7 +90,11 @@ extension ActivityItemEvent {
         case .swap(let event):
             return event.amounts.deposit
         case .transactional(let event):
-            return (try? event.amount + event.fee)?.moneyValue ?? event.amount.moneyValue
+            if event.type == .send {
+                return (try? event.amount + event.fee)?.moneyValue ?? event.amount.moneyValue
+            } else {
+                return event.amount.moneyValue
+            }
         case .fiat(let event):
             return event.amount.moneyValue
         case .crypto(let event):
