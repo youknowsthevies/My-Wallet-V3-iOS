@@ -3,6 +3,7 @@
 import DIKit
 import RxSwift
 import ToolKit
+import RxToolKit
 
 public typealias PolledOrder = PollResult<OrderDetails>
 

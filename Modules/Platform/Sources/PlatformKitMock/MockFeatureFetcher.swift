@@ -3,8 +3,9 @@
 import PlatformKit
 import RxSwift
 import ToolKit
+import RxToolKit
 
-final class MockFeatureFetcher: FeatureFetching {
+final class MockFeatureFetcher: RxFeatureFetching {
 
     var expectedVariant = FeatureTestingVariant.variantA
 

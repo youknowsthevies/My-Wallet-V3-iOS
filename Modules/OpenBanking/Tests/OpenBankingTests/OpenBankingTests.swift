@@ -33,7 +33,7 @@ final class OpenBankingTests: XCTestCase {
     func test_handle_consent_token_error() throws {
 
         network.error(
-            URLRequest(.post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/one-time-token",)
+            URLRequest(.post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/one-time-token")
         )
 
         banking.state.transaction { state in

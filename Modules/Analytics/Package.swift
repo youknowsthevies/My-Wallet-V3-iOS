@@ -11,20 +11,11 @@ let package = Package(
             targets: ["AnalyticsKit"]
         ),
         .library(
-            name: "RxAnalyticsKit",
-            targets: ["RxAnalyticsKit"]
-        ),
-        .library(
             name: "AnalyticsKitMock",
             targets: ["AnalyticsKitMock"]
         )
     ],
     dependencies: [
-        .package(
-            name: "RxSwift",
-            url: "https://github.com/ReactiveX/RxSwift.git",
-            from: "5.1.3"
-        ),
         .package(
             name: "Mockingbird",
             url: "https://github.com/birdrides/mockingbird.git",
@@ -36,13 +27,6 @@ let package = Package(
             name: "AnalyticsKit"
         ),
         .target(
-            name: "RxAnalyticsKit",
-            dependencies: [
-                .target(name: "AnalyticsKit"),
-                .product(name: "RxSwift", package: "RxSwift")
-            ]
-        ),
-        .target(
             name: "AnalyticsKitMock",
             dependencies: [
                 .target(name: "AnalyticsKit")
@@ -52,7 +36,6 @@ let package = Package(
             name: "AnalyticsKitTests",
             dependencies: [
                 .target(name: "AnalyticsKit"),
-                .target(name: "RxAnalyticsKit"),
                 .product(name: "Mockingbird", package: "Mockingbird")
             ]
         )

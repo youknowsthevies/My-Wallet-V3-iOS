@@ -3,6 +3,7 @@
 import DIKit
 import RxSwift
 import ToolKit
+import RxToolKit
 
 public enum WalletCryptoPBKDF2Iterations {
     /// Used for Auto Pair QR code decryption/encryption

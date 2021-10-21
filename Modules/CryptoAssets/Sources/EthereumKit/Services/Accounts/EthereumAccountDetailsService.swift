@@ -5,6 +5,8 @@ import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import RxToolKit
+import RxToolKit
 
 public protocol EthereumAccountDetailsServiceAPI {
 

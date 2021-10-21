@@ -27,7 +27,7 @@ final class KYCClientMock: KYCClientAPI {
     var expectedTiers: Result<KYC.UserTiers, NabuNetworkError>!
 
     func tiers() -> AnyPublisher<KYC.UserTiers, NabuNetworkError> {
-        expectedTiers.publisher
+        expectedTiers.publisher.eraseToAnyPublisher()
     }
 
     var expectedSupportedDocuments: Result<KYCSupportedDocumentsResponse, NabuNetworkError>!
@@ -35,13 +35,13 @@ final class KYCClientMock: KYCClientAPI {
     func supportedDocuments(
         for country: String
     ) -> AnyPublisher<KYCSupportedDocumentsResponse, NabuNetworkError> {
-        expectedSupportedDocuments.publisher
+        expectedSupportedDocuments.publisher.eraseToAnyPublisher()
     }
 
     var expectedUser: Result<NabuUser, NabuNetworkError>!
 
     func user() -> AnyPublisher<NabuUser, NabuNetworkError> {
-        expectedUser.publisher
+        expectedUser.publisher.eraseToAnyPublisher()
     }
 
     var expectedListOfStates: Result<[KYCState], NabuNetworkError>!
@@ -49,7 +49,7 @@ final class KYCClientMock: KYCClientAPI {
     func listOfStates(
         in country: String
     ) -> AnyPublisher<[KYCState], NabuNetworkError> {
-        expectedListOfStates.publisher
+        expectedListOfStates.publisher.eraseToAnyPublisher()
     }
 
     var expectedSelectCountry: AnyPublisher<Void, NabuNetworkError>!
@@ -84,7 +84,7 @@ final class KYCClientMock: KYCClientAPI {
     var expectedCredentials: Result<VeriffCredentials, NabuNetworkError>!
 
     func credentialsForVeriff() -> AnyPublisher<VeriffCredentials, NabuNetworkError> {
-        expectedCredentials.publisher
+        expectedCredentials.publisher.eraseToAnyPublisher()
     }
 
     var expectedSubmitToVeriffForVerification: AnyPublisher<Void, NabuNetworkError>!
@@ -101,7 +101,7 @@ final class KYCClientMock: KYCClientAPI {
         guid: String,
         sharedKey: String
     ) -> AnyPublisher<String, NabuNetworkError> {
-        jwtToken.publisher
+        jwtToken.publisher.eraseToAnyPublisher()
     }
 
     func fetchUser() -> AnyPublisher<NabuUser, NabuNetworkError> {

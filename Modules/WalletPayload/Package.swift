@@ -23,7 +23,8 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../CommonCrypto"),
         .package(path: "../Test"),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../RxTool"),
     ],
     targets: [
         .target(
@@ -32,6 +33,7 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "ToolKit", package: "Tool"),
+                .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "DIKit", package: "DIKit")
             ]
         ),

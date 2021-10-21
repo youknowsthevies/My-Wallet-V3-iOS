@@ -225,9 +225,6 @@ packages:
   ZendeskChatSDK:
     url: https://github.com/zendesk/chat_sdk_ios.git
     version: 2.11.1
-  Lottie:
-    url: https://github.com/airbnb/lottie-ios.git
-    version: 3.2.1
   Nuke:
     url: https://github.com/kean/Nuke.git
     from: 10.3.1
@@ -263,6 +260,8 @@ packages:
     revision: 3d42f6995032828a3e1a0a372fb9873cdd357f03
   Analytics:
     path: Modules/Analytics
+  RxAnalytics:
+    path: Modules/RxAnalytics
   CommonCrypto:
     path: Modules/CommonCrypto
   ComposableNavigation:
@@ -311,6 +310,8 @@ packages:
     path: Modules/Test
   Tool:
     path: Modules/Tool
+  RxTool:
+    path: Modules/RxTool
   UIComponents:
     path: Modules/UIComponents
   WalletPayload:
@@ -390,7 +391,6 @@ targets:
       - package: DIKit
       - package: Nuke
       - package: NukeUI
-      - package: Lottie
       - package: RIBs
       - package: RxCombine
       - package: RxDataSources
@@ -407,6 +407,8 @@ targets:
 
       - package: Analytics
         product: AnalyticsKit
+      - package: RxAnalytics
+        product: RxAnalyticsKit
       - package: CommonCrypto
         product: CommonCryptoKit
       - package: CryptoAssets
@@ -443,6 +445,8 @@ targets:
         product: RemoteNotificationsKit
       - package: Tool
         product: ToolKit
+      - package: RxTool
+        product: RxToolKit
       - package: UIComponents
         product: UIComponents
       - package: WalletPayload

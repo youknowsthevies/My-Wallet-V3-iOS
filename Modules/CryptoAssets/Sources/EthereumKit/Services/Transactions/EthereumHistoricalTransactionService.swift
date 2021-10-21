@@ -6,6 +6,7 @@ import PlatformKit
 import RxRelay
 import RxSwift
 import ToolKit
+import RxToolKit
 
 public protocol EthereumHistoricalTransactionServiceAPI: AnyObject {
     var isWaitingOnTransaction: Single<Bool> { get }

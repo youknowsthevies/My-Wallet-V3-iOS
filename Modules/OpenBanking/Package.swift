@@ -31,7 +31,6 @@ let package = Package(
         .package(path: "../ComponentLibrary"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
-        .package(path: "../Platform"),
         .package(path: "../Session"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
@@ -55,7 +54,6 @@ let package = Package(
                 .product(name: "ComposableNavigation", package: "ComposableNavigation"),
                 .product(name: "ComponentLibrary", package: "ComponentLibrary"),
                 .product(name: "Localization", package: "Localization"),
-                .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "UIComponents", package: "UIComponents")
             ]
         ),

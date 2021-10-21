@@ -5,6 +5,7 @@ import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import ToolKit
+import RxToolKit
 
 final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTransactionEngine, BitPayClientEngine {
 

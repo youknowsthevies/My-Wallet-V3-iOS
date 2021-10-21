@@ -140,7 +140,7 @@ public struct InstitutionList: View {
                             title: R.Error.title,
                             subtitle: "\(error.description)"
                         ),
-                        in: .platformUIKit
+                        in: resources
                     )
                 }
             }

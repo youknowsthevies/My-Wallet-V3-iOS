@@ -2,7 +2,7 @@
 
 import Foundation
 import OpenBanking
-import PlatformKit
+//import PlatformKit
 import ToolKit
 import UIComponentsKit
 
@@ -64,14 +64,12 @@ extension BankState.UI {
 
     static func payment(success payment: OpenBanking.Payment.Details) -> Self {
 
-        guard let currency = FiatCurrency(rawValue: payment.amount.symbol),
-              let fiat = FiatValue.create(minor: payment.amount.value, currency: currency)
-        else {
+        guard let fiat = formatMoney(payment.amount.value, payment.amount.symbol) else {
             return .errorMessage(R.Bank.Payment.error.interpolating(payment.amount.symbol))
         }
 
         var formatted = (
-            amount: fiat.displayString,
+            amount: fiat,
             currency: payment.amount.symbol,
             date: ""
         )

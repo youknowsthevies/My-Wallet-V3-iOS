@@ -2,7 +2,8 @@
 // swiftlint:disable line_length
 
 import OpenBanking
-import PlatformKit
+//import PlatformKit
+import Foundation
 import UIComponentsKit
 
 extension ApproveState.UI {
@@ -38,8 +39,8 @@ extension ApproveState.UI {
             guard let bankName = details?.bankName,
                   let sortCode = details?.sortCode,
                   let accountNumber = details?.accountNumber,
-                  let currency = bankAccount.currency.flatMap(FiatCurrency.init(code:)),
-                  let amount = FiatValue.create(minor: amountMinor, currency: currency)
+                  let currency =  bankAccount.currency,
+                  let amount = formatMoney(amountMinor, currency)
             else {
                 return .init(title: R.Error.title, tasks: [])
             }
@@ -50,7 +51,7 @@ extension ApproveState.UI {
                 Task.spacer(4.vmin),
                 Task.group(
                     Task.divider(),
-                    Task.row(R.Approve.Payment.paymentTotal, value: amount.displayString)
+                    Task.row(R.Approve.Payment.paymentTotal, value: amount)
                         .padding([.top, .bottom], 8.pt),
                     Task.divider()
                 ),

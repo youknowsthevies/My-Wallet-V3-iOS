@@ -32,16 +32,6 @@ let package = Package(
             from: "0.7.0"
         ),
         .package(
-            name: "RxCombine",
-            url: "https://github.com/paulo-bc/RxCombine.git",
-            from: "1.6.2"
-        ),
-        .package(
-            name: "RxSwift",
-            url: "https://github.com/ReactiveX/RxSwift.git",
-            from: "5.1.3"
-        ),
-        .package(
             name: "BigInt",
             url: "https://github.com/attaswift/BigInt.git",
             from: "5.2.1"
@@ -53,10 +43,6 @@ let package = Package(
             name: "ToolKit",
             dependencies: [
                 .product(name: "CasePaths", package: "swift-case-paths"),
-                .product(name: "RxCocoa", package: "RxSwift"),
-                .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "RxRelay", package: "RxSwift"),
-                .product(name: "RxCombine", package: "RxCombine"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "BigInt", package: "BigInt")
             ]

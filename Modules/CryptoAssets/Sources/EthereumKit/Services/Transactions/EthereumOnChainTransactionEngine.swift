@@ -6,6 +6,7 @@ import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import ToolKit
+import RxToolKit
 
 final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 

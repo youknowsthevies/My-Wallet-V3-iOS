@@ -5,6 +5,7 @@ import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 import ToolKit
+import RxToolKit
 
 public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionEngine, InterestTransactionEngine {
 

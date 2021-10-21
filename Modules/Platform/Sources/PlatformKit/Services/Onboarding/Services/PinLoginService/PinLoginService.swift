@@ -5,12 +5,13 @@ import FeatureAuthenticationDomain
 import RxSwift
 import ToolKit
 import WalletPayloadKit
+import RxToolKit
 
 public final class PinLoginService: PinLoginServiceAPI {
 
     // MARK: - Types
 
-    public typealias PasscodeRepositoryAPI = SharedKeyRepositoryAPI & GuidRepositoryAPI & PasswordRepositoryAPI
+    public typealias PasscodeRepositoryAPI = SharedKeyRepositoryAPI & FeatureAuthenticationDomain.GuidRepositoryAPI & PasswordRepositoryAPI
 
     /// Potential errors
     public enum ServiceError: Error {

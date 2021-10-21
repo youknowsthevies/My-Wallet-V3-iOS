@@ -2,7 +2,6 @@
 
 import Combine
 import DIKit
-import RxCombine
 
 public enum FeatureFlag: Hashable {
     case local(InternalFeature)
@@ -28,6 +27,26 @@ public enum FeatureFlagError: Error {
     case decodingError(Error)
 }
 
+/// Types adopting the `FeatureConfiguratorAPI` should provide a way to initialize and configure a
+/// remote based feature flag system
+public protocol FeatureConfiguratorAPI: FeatureInitializer, FeatureConfiguring {}
+
+public enum FeatureConfigurationError: Error {
+    case missingKeyRawValue
+    case missingValue
+    case decodingError
+}
+
+public protocol FeatureInitializer: AnyObject {
+    func initialize()
+}
+
+/// Any feature remote configuration protocol
+public protocol FeatureConfiguring: AnyObject {
+    func configuration(for feature: AppFeature) -> AppFeatureConfiguration
+    func configuration<Feature: Decodable>(for feature: AppFeature) -> Result<Feature, FeatureConfigurationError>
+}
+
 /// This is the interface all modules should use for feature flags.
 /// It replaces `InternalFeatureFlagServiceAPI` and `FeatureFetching` by wrapping them under a unified set of APIs.
 /// This is to avoid having to change business logic when moving from internally-driven to externally-driven feature flags and may be extended to allow the use of either at the same time.
@@ -37,6 +56,10 @@ public protocol FeatureFlagsServiceAPI {
     func disable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never>
     func isEnabled(_ feature: FeatureFlag) -> AnyPublisher<Bool, Never>
     func object<Feature: Codable>(for feature: FeatureFlag) -> AnyPublisher<Feature?, FeatureFlagError>
+}
+
+public protocol FeatureFetching: AnyObject {
+    func fetch<Feature: Decodable>(for key: AppFeature) -> AnyPublisher<Feature, FeatureFlagError>
 }
 
 class FeatureFlagsService: FeatureFlagsServiceAPI {
@@ -83,8 +106,7 @@ class FeatureFlagsService: FeatureFlagsServiceAPI {
             return .just(localFeatureFlagsService.isEnabled(featureFlag))
 
         case .remote(let featureFlag):
-            return remoteFeatureFlagsService.fetchBool(for: featureFlag)
-                .asPublisher()
+            return remoteFeatureFlagsService.fetch(for: featureFlag)
                 .replaceError(with: false)
                 .eraseToAnyPublisher()
         }
@@ -97,7 +119,6 @@ class FeatureFlagsService: FeatureFlagsServiceAPI {
 
         case .remote(let featureFlag):
             return remoteFeatureFlagsService.fetch(for: featureFlag)
-                .asPublisher()
                 .mapError { error in
                     FeatureFlagError.decodingError(error)
                 }

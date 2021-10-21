@@ -27,6 +27,7 @@ import RemoteNotificationsKit
 import StellarKit
 import ToolKit
 import WalletPayloadKit
+import RxToolKit
 
 // MARK: - Settings Dependencies
 
@@ -350,7 +351,13 @@ extension DependencyContainer {
             return featureFetching
         }
 
-        factory { () -> FeatureVariantFetching in
+
+        factory { () -> RxFeatureFetching in
+            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
+            return featureFetching
+        }
+
+        factory { () -> RxFeatureVariantFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
         }

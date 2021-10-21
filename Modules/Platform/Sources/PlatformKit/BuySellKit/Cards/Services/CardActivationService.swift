@@ -5,6 +5,7 @@ import RxCombine
 import RxRelay
 import RxSwift
 import ToolKit
+import RxToolKit
 
 public enum CardActivationState {
     case active(CardData)

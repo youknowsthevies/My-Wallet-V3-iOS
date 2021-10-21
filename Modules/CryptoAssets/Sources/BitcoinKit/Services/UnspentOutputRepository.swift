@@ -5,6 +5,7 @@ import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import RxToolKit
 
 protocol UnspentOutputRepositoryAPI {
     var unspentOutputs: Single<UnspentOutputs> { get }

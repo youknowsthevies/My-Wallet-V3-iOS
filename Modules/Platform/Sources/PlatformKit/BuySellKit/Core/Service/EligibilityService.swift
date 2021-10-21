@@ -5,6 +5,7 @@ import DIKit
 import RxRelay
 import RxSwift
 import ToolKit
+import RxToolKit
 
 final class EligibilityService: EligibilityServiceAPI {
 

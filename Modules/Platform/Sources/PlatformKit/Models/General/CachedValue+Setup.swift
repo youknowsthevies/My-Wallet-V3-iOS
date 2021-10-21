@@ -2,6 +2,7 @@
 
 import RxSwift
 import ToolKit
+import RxToolKit
 
 extension CachedValueConfiguration {
 

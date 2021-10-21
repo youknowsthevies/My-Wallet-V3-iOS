@@ -3,7 +3,7 @@
 import Combine
 import ComposableArchitecture
 import OpenBanking
-import PlatformUIKit
+//import PlatformUIKit
 import Session
 import SwiftUI
 import ToolKit
@@ -210,7 +210,7 @@ public struct BankView: View {
                         Spacer()
                         InfoView(
                             ui.info,
-                            in: .platformUIKit
+                            in: resources
                         )
                         Spacer()
                     },

@@ -24,6 +24,7 @@ final class ApproveTests: XCTestCase {
 
     private var network: ReplayNetworkCommunicator!
 
+    // swiftlint:disable:next force_try
     lazy var account = try! network[URLRequest(.post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer")]
         .unwrap()
         .decode(to: OpenBanking.BankAccount.self)

@@ -130,8 +130,10 @@ extension OpenBanking.BankAccount {
         in banking: OpenBanking
     ) throws -> AnyPublisher<Result<OpenBanking.BankAccount, OpenBanking.Error>, Never> {
 
-        banking.state.clear(.authorisation.url)
-        banking.state.clear(.callback.path)
+        banking.state.transaction { state in
+            state.clear(.authorisation.url)
+            state.clear(.callback.path)
+        }
 
         let request = try banking.requestBuilder.post(
             path: ["payments", "banktransfer", id.value, "update"],

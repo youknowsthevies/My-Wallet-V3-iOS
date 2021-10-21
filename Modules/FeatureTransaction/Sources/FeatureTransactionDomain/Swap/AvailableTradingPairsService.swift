@@ -4,6 +4,7 @@ import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import RxToolKit
 
 public protocol AvailableTradingPairsServiceAPI {
 
