@@ -100,7 +100,7 @@ public struct ApproveView: View {
                             title: R.Error.title,
                             subtitle: R.Error.subtitle
                         ),
-                        in: .componentLibrary
+                        in: .openBanking
                     )
                 }
             }

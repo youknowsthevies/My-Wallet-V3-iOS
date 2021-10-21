@@ -214,7 +214,7 @@ public struct BankView: View {
                         Spacer()
                         InfoView(
                             ui.info,
-                            in: .componentLibrary
+                            in: .openBanking
                         )
                         Spacer()
                     },

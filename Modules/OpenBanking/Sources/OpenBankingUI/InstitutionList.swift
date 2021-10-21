@@ -143,7 +143,7 @@ public struct InstitutionList: View {
                             title: R.Error.title,
                             subtitle: "\(error.description)"
                         ),
-                        in: .componentLibrary
+                        in: .openBanking
                     )
                 }
             }

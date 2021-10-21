@@ -361,17 +361,23 @@ extension Style.Padding {
 struct TaskView_Previews: PreviewProvider {
 
     static var previews: some View {
-        NavigationView {
-            ScrollView {
-                TaskView(
-                    Task.group(
-                        payment(),
-                        Task.spacer(4.vmin),
-                        safeconnect()
-                    )
-                    .padding()
-                )
-            }
+        VStack {
+            TaskView(
+                .media(.image(named: Icon.blockchainCircle.name)),
+                in: .componentLibrary
+            ).background(Color.red)
+//            NavigationView {
+//                ScrollView {
+//                    TaskView(
+//                        Task.group(
+//                            payment(),
+//                            Task.spacer(4.vmin),
+//                            safeconnect()
+//                        )
+//                        .padding()
+//                    )
+//                }
+//            }
         }
     }
 }
