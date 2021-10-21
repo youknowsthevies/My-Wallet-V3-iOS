@@ -17,10 +17,6 @@ extension DependencyContainer {
         factory { APIClient() as BalanceClientAPI }
         factory { APIClient() as EthereumAccountClientAPI }
 
-        factory(tag: CoinAssetModel.ethereum.typeTag) {
-            EthereumExternalAssetAddressFactory() as CryptoReceiveAddressFactory
-        }
-
         factory(tag: CryptoCurrency.coin(.ethereum)) { EthereumAsset() as CryptoAsset }
 
         single { EthereumAccountDetailsService() as EthereumAccountDetailsServiceAPI }

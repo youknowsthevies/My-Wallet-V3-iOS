@@ -113,7 +113,7 @@ import ToolKit
                 // We should hide the pulse when the user taps it.
                 self.hide()
             })
-                .disposed(by: self.bag)
+            .disposed(by: self.bag)
             self.state = .animating
         }
     }

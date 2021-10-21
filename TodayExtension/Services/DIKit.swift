@@ -19,6 +19,8 @@ extension DependencyContainer {
 
         factory { UIDevice.current as DeviceInfo }
 
+        factory { FiatCurrencyService() as FiatCurrencyPublisherAPI }
+
         factory { FiatCurrencyService() as FiatCurrencyServiceAPI }
 
         factory { ErrorRecorderMock() as ErrorRecording }

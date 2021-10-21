@@ -9,6 +9,10 @@ import Foundation
 extension LocalizationConstants {
     public enum Interest {
         public enum Screen {
+            public enum Overview {
+                public enum Action {}
+            }
+
             public enum IdentityVerification {}
             public enum Announcement {}
             public enum AccountDetails {}
@@ -81,10 +85,55 @@ extension LocalizationConstants.Interest.Screen.IdentityVerification {
     }
 }
 
+// MARK: - Screen.Overview
+
+extension LocalizationConstants.Interest.Screen.Overview {
+    public static let title = NSLocalizedString(
+        "Interest Accounts",
+        comment: "Interest Accounts"
+    )
+    public static let earnUpTo = NSLocalizedString(
+        "Earn up to %@ annually on your %@",
+        comment: "Earn up to %@ annually on your %@"
+    )
+    public static let totalEarned = NSLocalizedString(
+        "Total Interest Earned",
+        comment: "Total Interest Earned"
+    )
+    public static let balance = NSLocalizedString("Balance", comment: "Balance")
+    public static let annually = NSLocalizedString("annually", comment: "annually")
+}
+
+// MARK: - Screen.Overview.Actions
+
+extension LocalizationConstants.Interest.Screen.Overview.Action {
+    public static let view = NSLocalizedString("View", comment: "View")
+    public static let earnInterest = NSLocalizedString(
+        "Earn Interest",
+        comment: "Earn Interest"
+    )
+    public static let notAvailable = NSLocalizedString(
+        "Not available in your region",
+        comment: "Not available in your region"
+    )
+    public static let tierTooLow = NSLocalizedString(
+        "You need to be Gold verified to start Earning Interest",
+        comment: "You need to be Gold verified to start Earning Interest"
+    )
+    public static let unavailable = NSLocalizedString(
+        "Currently unavailable, please check again later",
+        comment: "Currently unavailable, please check again later"
+    )
+}
+
 // MARK: - Screen.AccountDetails
 
 extension LocalizationConstants.Interest.Screen.AccountDetails {
     public static let annually = NSLocalizedString("Annually", comment: "Annually")
+    public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
+    public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+    public static let rewardsSummary = NSLocalizedString("Rewards Summary", comment: "Rewards Summary")
+    public static let rewardsAccount = NSLocalizedString("Rewards Account", comment: "Rewards Account")
     public enum Cell {
         public enum Balance {
             public static let title = NSLocalizedString("Rewards Account", comment: "Rewards Account")

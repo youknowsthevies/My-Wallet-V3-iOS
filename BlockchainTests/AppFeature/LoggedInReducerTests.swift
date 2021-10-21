@@ -113,7 +113,7 @@ final class LoggedInReducerTests: XCTestCase {
     }
 
     func test_calling_start_on_reducer_should_post_login_notification() {
-        let expectation = self.expectation(forNotification: .login, object: nil)
+        let expectation = expectation(forNotification: .login, object: nil)
 
         testStore.send(.start(.none))
         mockMainQueue.advance()

@@ -3,3 +3,9 @@
 Modules/TransactionFeature/ @paulo-bc @thisisalexmcgregor
 
 Modules/Network/ @jackpooleybc
+
+Modules/ComponentLibrary/ @mjarvis-bc
+
+Modules/ComposableNavigation/ @oliveratkinson-bc
+Modules/Session/ @oliveratkinson-bc
+Modules/OpenBanking/ @oliveratkinson-bc

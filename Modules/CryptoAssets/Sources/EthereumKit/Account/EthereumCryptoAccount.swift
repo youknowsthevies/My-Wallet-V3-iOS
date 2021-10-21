@@ -32,14 +32,25 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var actions: Single<AvailableActions> {
-        isFunded
-            .map { isFunded -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
-                if isFunded {
-                    base.insert(.swap)
+        Single.zip(
+            isFunded,
+            canPerformInterestTransfer(),
+            featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
+        )
+        .map { isFunded, isInterestEnabled, isSellEnabled -> AvailableActions in
+            var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
+            if isFunded {
+                base.insert(.swap)
+                if isSellEnabled {
+                    base.insert(.sell)
                 }
-                return base
+                if isInterestEnabled {
+                    base.insert(.interestTransfer)
+                }
             }
+            return base
+        }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
@@ -76,6 +87,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     private let bridge: EthereumWalletBridgeAPI
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         publicKey: String,
@@ -86,7 +98,8 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         bridge: EthereumWalletBridgeAPI = resolve(),
         accountDetailsService: EthereumAccountDetailsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
-        exchangeProviding: ExchangeProviding = resolve()
+        exchangeProviding: ExchangeProviding = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         let asset = CryptoCurrency.coin(.ethereum)
         self.asset = asset
@@ -98,6 +111,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         self.accountDetailsService = accountDetailsService
         self.bridge = bridge
         self.label = label ?? asset.defaultWalletName
+        self.featureFlagsService = featureFlagsService
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -107,10 +121,24 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
              .viewActivity,
              .buy:
             return .just(true)
+        case .interestTransfer:
+            return canPerformInterestTransfer()
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
+                }
         case .deposit,
              .withdraw,
-             .sell:
+             .interestWithdraw:
             return .just(false)
+        case .sell:
+            return featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled))
+                .asSingle()
+                .flatMap(weak: self) { _, isEnabled in
+                    isEnabled
+                        ? self.isFunded
+                        : .just(false)
+                }
         case .swap:
             return isFunded
         }

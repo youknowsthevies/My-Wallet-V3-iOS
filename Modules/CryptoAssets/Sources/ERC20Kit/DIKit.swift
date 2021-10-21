@@ -12,8 +12,6 @@ extension DependencyContainer {
 
         // MARK: Asset Agnostic
 
-        factory(tag: AssetModelType.erc20) { ERC20ExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
-
         factory { ERC20AssetFactory() as ERC20AssetFactoryAPI }
 
         single { ERC20HistoricalTransactionService() as ERC20HistoricalTransactionServiceAPI }

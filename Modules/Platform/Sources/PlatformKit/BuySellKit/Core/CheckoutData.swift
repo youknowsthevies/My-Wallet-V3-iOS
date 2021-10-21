@@ -152,13 +152,13 @@ public struct CheckoutData {
     }
 
     public func checkoutData(byAppending cardData: CardData) -> CheckoutData {
-        var order = self.order
+        var order = order
         order.paymentMethodId = cardData.identifier
         return CheckoutData(order: order)
     }
 
     public func checkoutData(byAppending bankAccount: LinkedBankData) -> CheckoutData {
-        var order = self.order
+        var order = order
         order.paymentMethodId = bankAccount.identifier
         return CheckoutData(order: order, linkedBankData: bankAccount)
     }

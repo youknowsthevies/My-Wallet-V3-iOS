@@ -64,7 +64,8 @@ let package = Package(
             name: "NetworkKitTests",
             dependencies: [
                 .target(name: "NetworkKit"),
-                .product(name: "RxSwift", package: "RxSwift")
+                .product(name: "RxSwift", package: "RxSwift"),
+                .product(name: "TestKit", package: "Test")
             ]
         )
     ]

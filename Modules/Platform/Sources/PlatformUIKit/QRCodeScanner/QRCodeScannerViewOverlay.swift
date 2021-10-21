@@ -124,7 +124,7 @@ final class QRCodeScannerViewOverlay: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        let scannableFrame = self.scannableFrame
+        let scannableFrame = scannableFrame
         setupLayerMask(frame: scannableFrame)
         updateScanningBorder(frame: scannableFrame)
     }

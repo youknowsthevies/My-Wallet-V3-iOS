@@ -81,7 +81,7 @@ final class AddPaymentMethodLabelContentInteractor: LabelContentInteracting {
     }
 
     private func setup() {
-        let localizedStrings = self.localizedStrings
+        let localizedStrings = localizedStrings
         interactor.isEnabledForUser
             .map { isEnabledForUser in
                 if isEnabledForUser {

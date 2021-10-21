@@ -121,9 +121,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
                     .networkFee(.init(
-                        fee: fiatAmountAndFees.fees.moneyValue,
-                        feeType: .withdrawalFee,
-                        asset: self.sourceAsset
+                        primaryCurrencyFee: fiatAmountAndFees.fees.moneyValue,
+                        feeType: .withdrawalFee
                     )),
                     .total(.init(total: fiatAmountAndFees.amount.moneyValue))
                 ]

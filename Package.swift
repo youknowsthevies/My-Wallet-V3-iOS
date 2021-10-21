@@ -5,27 +5,34 @@ import PackageDescription
 let package = Package(
     name: "Blockchain",
     platforms: [
-        .iOS(.v13)
+        .iOS(.v14)
     ],
     products: [
         .library(
             name: "AnalyticsKit",
             targets: ["AnalyticsKit"]
+        ),
+        .library(
+            name: "SharedComponentLibrary",
+            targets: ["SharedComponentLibrary"]
         )
-    ],
-    dependencies: [
-        .package(url: "git@github.com:CombineCommunity/CombineExt.git", from: "1.2.0")
     ],
     targets: [
         .target(
             name: "AnalyticsKit",
-            dependencies: ["CombineExt"],
             path: "Modules/Analytics/Sources/AnalyticsKit"
         ),
         .testTarget(
             name: "AnalyticsKitTests",
-            dependencies: ["CombineExt"],
             path: "Modules/Analytics/Tests/AnalyticsKitTests"
+        ),
+        .target(
+            name: "SharedComponentLibrary",
+            path: "Modules/ComponentLibrary/Sources/ComponentLibrary"
+        ),
+        .testTarget(
+            name: "SharedComponentLibraryTests",
+            path: "Modules/ComponentLibrary/Tests/ComponentLibraryTests"
         )
     ],
     swiftLanguageVersions: [.v5]

@@ -17,9 +17,11 @@ public protocol NetworkResponseHandlerAPI {
     ) -> AnyPublisher<ServerResponse, NetworkError>
 }
 
-final class NetworkResponseHandler: NetworkResponseHandlerAPI {
+public final class NetworkResponseHandler: NetworkResponseHandlerAPI {
 
-    func handle(
+    public init() {}
+
+    public func handle(
         elements: (data: Data, response: URLResponse),
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {

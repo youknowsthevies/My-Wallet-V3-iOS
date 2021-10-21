@@ -19,7 +19,7 @@ final class CashIdentityVerificationRouter {
     }
 
     func dismiss(startKYC: Bool = false) {
-        let kycRouter = self.kycRouter
+        let kycRouter = kycRouter
         topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
             guard startKYC else { return }
             kycRouter.start(parentFlow: .cash)

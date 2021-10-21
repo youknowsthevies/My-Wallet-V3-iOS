@@ -56,7 +56,7 @@ extension String {
     /// Returns query arguments from a string in URL format
     public var queryArgs: [String: String] {
         var queryArgs = [String: String]()
-        let components = self.components(separatedBy: "&")
+        let components = components(separatedBy: "&")
         components.forEach {
             let paramValueArray = $0.components(separatedBy: "=")
 
@@ -74,7 +74,7 @@ extension String {
     // MARK: - Other
 
     public func count(of substring: String) -> Int {
-        let components = self.components(separatedBy: substring)
+        let components = components(separatedBy: substring)
         return components.count - 1
     }
 

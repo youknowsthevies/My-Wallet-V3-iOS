@@ -236,5 +236,6 @@ extension Currency {
         }
         return name.localizedCaseInsensitiveContains(searchString)
             || code.localizedCaseInsensitiveContains(searchString)
+            || displayCode.localizedCaseInsensitiveContains(searchString)
     }
 }

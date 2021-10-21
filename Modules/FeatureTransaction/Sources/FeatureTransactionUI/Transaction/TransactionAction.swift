@@ -30,6 +30,7 @@ enum TransactionAction: MviAction {
     case showBankLinkingFlow
     case bankAccountLinkedFromSource(BlockchainAccount, AssetAction)
     case bankAccountLinked(AssetAction)
+    case showBankWiringInstructions
     case sourceAccountSelected(BlockchainAccount)
     case targetAccountSelected(TransactionTarget)
     case availableSourceAccountsListUpdated([BlockchainAccount])
@@ -42,17 +43,24 @@ enum TransactionAction: MviAction {
     case executeTransaction
     case performSecurityChecksForTransaction(TransactionResult)
     case securityChecksCompleted
-    case updateTransactionComplete(TransactionResult)
+    case updateTransactionPending
+    case updateTransactionComplete
     case fetchFiatRates
     case fetchTargetRates
+    case fetchUserKYCInfo
+    case userKYCInfoFetched(KYC.UserTiers)
     case updateFeeLevelAndAmount(FeeLevel, MoneyValue?)
     case sourceDestinationPair(MoneyValuePair)
     case transactionFiatRatePairs(TransactionMoneyValuePairs)
     case fatalTransactionError(Error)
     case validateTransaction
+    case createOrder
+    case orderCreated(TransactionOrder?)
+    case orderCancelled
     case resetFlow
     case showSourceSelection
     case showTargetSelection
+    case showCheckout
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
     case modifyTransactionConfirmation(TransactionConfirmation)
@@ -65,7 +73,7 @@ extension TransactionAction {
     // swiftlint:disable function_body_length
     // swiftlint:disable cyclomatic_complexity
     func reduce(oldState: TransactionState) -> TransactionState {
-        Logger.shared.debug("[Transaction Flow] Readucing Action: \(self)")
+        Logger.shared.debug("[Transaction Flow] Reducing Action: \(self)")
         switch self {
         case .pendingTransactionStarted(let allowFiatInput):
             var newState = oldState
@@ -124,6 +132,9 @@ extension TransactionAction {
             }
             return newState
 
+        case .showBankWiringInstructions:
+            return oldState.stateForMovingForward(to: .linkBankViaWire)
+
         case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, let passwordRequired):
             // If the user scans a BitPay QR code, the account will be a BitPayInvoiceTarget.
             // This means we do not proceed to the enter amount screen but rather the confirmation detail screen.
@@ -176,14 +187,24 @@ extension TransactionAction {
                 source: sourceAccount,
                 passwordRequired: passwordRequired
             )
+
         case .fetchFiatRates:
             return oldState
+
         case .fetchTargetRates:
             return oldState
+
+        case .fetchUserKYCInfo:
+            return oldState
+
+        case .userKYCInfoFetched(let tiers):
+            return oldState.update(keyPath: \.userKYCTiers, value: tiers)
+
         case .sourceDestinationPair(let pair):
             var newState = oldState
             newState.sourceDestinationPair = pair
             return newState
+
         case .transactionFiatRatePairs(let pair):
             var newState = oldState
             newState.destinationToFiatPair = pair.destination
@@ -280,8 +301,21 @@ extension TransactionAction {
         case .prepareTransaction:
             var newState = oldState
             newState.nextEnabled = false // Don't enable until we get a validated pendingTx from the interactor
-            newState.step = .confirmDetail
-            return newState.withUpdatedBackstack(oldState: oldState)
+            return newState
+
+        case .createOrder:
+            return oldState
+
+        case .orderCreated(let order):
+            return oldState
+                .update(keyPath: \.order, value: order)
+
+        case .orderCancelled:
+            return oldState
+                .update(keyPath: \.order, value: nil)
+
+        case .showCheckout:
+            return oldState.stateForMovingForward(to: .confirmDetail)
 
         case .executeTransaction:
             var newState = oldState
@@ -301,11 +335,18 @@ extension TransactionAction {
         case .securityChecksCompleted:
             return oldState.stateForMovingOneStepBack()
 
+        case .updateTransactionPending:
+            return oldState
+                .update(keyPath: \.nextEnabled, value: true)
+                .update(keyPath: \.executionStatus, value: .pending)
+                .withUpdatedBackstack(oldState: oldState)
+
         case .updateTransactionComplete:
             var newState = oldState
             newState.nextEnabled = true
             newState.executionStatus = .completed
             return newState.withUpdatedBackstack(oldState: oldState)
+
         case .fatalTransactionError(let error):
             Logger.shared.error(String(describing: error))
             var newState = oldState
@@ -314,8 +355,10 @@ extension TransactionAction {
             newState.errorState = .fatalError(FatalTransactionError(error: error))
             newState.executionStatus = .error
             return newState.withUpdatedBackstack(oldState: oldState)
+
         case .validateTransaction:
             return oldState
+
         case .resetFlow:
             var newState = oldState
             newState.step = .closed
@@ -326,6 +369,7 @@ extension TransactionAction {
 
         case .modifyTransactionConfirmation:
             return oldState
+
         case .invalidateTransaction:
             return oldState
                 .update(keyPath: \.pendingTransaction, value: nil)

@@ -36,11 +36,18 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
     private let backButtonRelay = PublishRelay<Void>()
     private let closeButtonRelay = PublishRelay<Void>()
     private let searchRelay = PublishRelay<String?>()
+    private var activityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView()
+        activityIndicatorView.startAnimating()
+        return activityIndicatorView
+    }()
 
     private lazy var dataSource: RxDataSource = {
         RxDataSource(configureCell: { [weak self] _, tableView, indexPath, item in
-            guard let self = self else {
-                return UITableViewCell()
+            guard let self = self else { return UITableViewCell() }
+            if !self.activityIndicatorView.isHidden {
+                self.activityIndicatorView.isHidden = true
+                self.activityIndicatorView.stopAnimating()
             }
             let cell: UITableViewCell
             switch item.presenter {
@@ -58,6 +65,12 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
                 )
             case .linkedBankAccount(let presenter):
                 cell = self.linkedBankCell(
+                    tableView: tableView,
+                    for: indexPath,
+                    presenter: presenter
+                )
+            case .paymentMethodAccount(let presenter):
+                cell = self.paymentMethodCell(
                     tableView: tableView,
                     for: indexPath,
                     presenter: presenter
@@ -80,7 +93,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         })
     }()
 
-    private lazy var setupTableView: Void = {
+    private func setupTableView() {
         tableView.backgroundColor = .white
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
@@ -89,10 +102,11 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         tableView.keyboardDismissMode = .onDrag
         tableView.register(LabelTableViewCell.self)
         tableView.register(LinkedBankAccountTableViewCell.self)
+        tableView.register(PaymentMethodCell.self)
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
-    }()
+    }
 
     public init() {
         super.init(nibName: nil, bundle: nil)
@@ -105,10 +119,11 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        _ = setupTableView
+        setupTableView()
 
         view.addLayoutGuide(headerLayoutGuide)
         view.addSubview(tableView)
+        view.addSubview(activityIndicatorView)
 
         let headerLayoutGuideHeight = headerLayoutGuide.heightAnchor.constraint(equalToConstant: 0)
         headerLayoutGuideHeight.priority = .defaultHigh
@@ -121,6 +136,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
             headerLayoutGuide.bottomAnchor.constraint(equalTo: tableView.topAnchor)
         ])
         tableView.layoutToSuperview(.bottom, .leading, .trailing)
+        activityIndicatorView.layoutToSuperviewCenter()
     }
 
     // MARK: - Methods
@@ -264,6 +280,16 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         presenter: LinkedBankAccountCellPresenter
     ) -> UITableViewCell {
         let cell = tableView.dequeue(LinkedBankAccountTableViewCell.self, for: indexPath)
+        cell.presenter = presenter
+        return cell
+    }
+
+    private func paymentMethodCell(
+        tableView: UITableView,
+        for indexPath: IndexPath,
+        presenter: PaymentMethodCellPresenter
+    ) -> UITableViewCell {
+        let cell = tableView.dequeue(PaymentMethodCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }

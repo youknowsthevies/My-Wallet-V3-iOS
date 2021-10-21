@@ -58,12 +58,13 @@ public final class ActivityScreenViewController: BaseScreenViewController {
         longPress
             .rx
             .event
-            .compactMap { [weak self] gesture -> ActivityItemViewModel? in
-                guard let self = self else { return nil }
+            .compactMap { [tableView] gesture -> ActivityItemViewModel? in
                 guard gesture.state == .began else { return nil }
                 let location = gesture.location(in: self.tableView)
-                guard let indexPath = self.tableView.indexPathForRow(at: location) else { return nil }
-                guard let cell = self.tableView.cellForRow(at: indexPath) as? ActivityItemTableViewCell else { return nil }
+                guard let indexPath = tableView?.indexPathForRow(at: location) else { return nil }
+                guard let cell = tableView?.cellForRow(at: indexPath) as? ActivityItemTableViewCell else {
+                    return nil
+                }
                 return cell.presenter.viewModel
             }
             .bindAndCatch(to: presenter.longPressRelay)
@@ -120,8 +121,6 @@ public final class ActivityScreenViewController: BaseScreenViewController {
         tableView.backgroundColor = .clear
         tableView.separatorColor = .clear
         tableView.tableFooterView = UIView()
-        tableView.estimatedRowHeight = 80
-        tableView.rowHeight = UITableView.automaticDimension
         tableView.register(SelectionButtonTableViewCell.self)
         tableView.registerNibCell(ActivityItemTableViewCell.self, in: .module)
         tableView.registerNibCell(ActivitySkeletonTableViewCell.self, in: .module)
@@ -187,13 +186,18 @@ public final class ActivityScreenViewController: BaseScreenViewController {
         return cell
     }
 
-    private func activityItemTableViewCell(for indexPath: IndexPath, presenter: ActivityItemPresenter) -> ActivityItemTableViewCell {
+    private func activityItemTableViewCell(
+        for indexPath: IndexPath,
+        presenter: ActivityItemPresenter
+    ) -> ActivityItemTableViewCell {
         let cell = tableView.dequeue(ActivityItemTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func selectionButtonTableViewCell(for indexPath: IndexPath, viewModel: SelectionButtonViewModel) -> SelectionButtonTableViewCell {
+    private func selectionButtonTableViewCell(
+        for indexPath: IndexPath, viewModel: SelectionButtonViewModel
+    ) -> SelectionButtonTableViewCell {
         let cell = tableView.dequeue(
             SelectionButtonTableViewCell.self,
             for: indexPath

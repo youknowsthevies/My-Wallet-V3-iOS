@@ -2,11 +2,48 @@
 
 import AnalyticsKit
 import ComposableArchitecture
+import ComposableNavigation
 import FeatureAuthenticationDomain
 import Localization
 import SwiftUI
 import ToolKit
 import UIComponentsKit
+
+public enum VerifyDeviceRoute: NavigationRoute {
+    case credentials
+    case upgradeAccount
+
+    @ViewBuilder
+    public func destination(
+        in store: Store<VerifyDeviceState, VerifyDeviceAction>
+    ) -> some View {
+        WithViewStore(store) { viewStore in
+            switch self {
+            case .credentials:
+                IfLetStore(
+                    store.scope(
+                        state: \.credentialsState,
+                        action: VerifyDeviceAction.credentials
+                    ),
+                    then: { store in
+                        CredentialsView(
+                            context: viewStore.credentialsContext,
+                            store: store
+                        )
+                    }
+                )
+            case .upgradeAccount:
+                IfLetStore(
+                    store.scope(
+                        state: \.upgradeAccountState,
+                        action: VerifyDeviceAction.upgradeAccount
+                    ),
+                    then: UpgradeAccountView.init(store:)
+                )
+            }
+        }
+    }
+}
 
 struct VerifyDeviceView: View {
 
@@ -26,11 +63,9 @@ struct VerifyDeviceView: View {
 
     private let store: Store<VerifyDeviceState, VerifyDeviceAction>
     private var showOpenMailAppButton: Bool
-    @ObservedObject private var viewStore: ViewStore<VerifyDeviceState, VerifyDeviceAction>
 
     init(store: Store<VerifyDeviceState, VerifyDeviceAction>) {
         self.store = store
-        viewStore = ViewStore(store)
 
         if let mailAppURL = URL(string: "message://"),
            UIApplication.shared.canOpenURL(mailAppURL)
@@ -58,29 +93,14 @@ struct VerifyDeviceView: View {
                     .font(Font(weight: .medium, size: Layout.descriptionFontSize))
                     .foregroundColor(.textSubheading)
                     .lineSpacing(Layout.descriptionLineSpacing)
-                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceDescriptionText)
+                    .accessibility(
+                        identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceDescriptionText
+                    )
                 Spacer()
             }
             .multilineTextAlignment(.center)
 
             buttonSection
-
-            NavigationLink(
-                destination: IfLetStore(
-                    store.scope(
-                        state: \.credentialsState,
-                        action: VerifyDeviceAction.credentials
-                    ),
-                    then: { store in
-                        CredentialsView(context: viewStore.credentialsContext, store: store)
-                    }
-                ),
-                isActive: viewStore.binding(
-                    get: \.isCredentialsScreenVisible,
-                    send: VerifyDeviceAction.setCredentialsScreenVisible(_:)
-                ),
-                label: EmptyView.init
-            )
         }
         .padding(
             EdgeInsets(
@@ -91,26 +111,29 @@ struct VerifyDeviceView: View {
             )
         )
         .navigationBarTitleDisplayMode(.inline)
+        .navigationRoute(in: store)
         .hideBackButtonTitle()
-        .alert(self.store.scope(state: \.verifyDeviceFailureAlert), dismiss: .verifyDeviceFailureAlert(.dismiss))
+        .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
     }
 
     private var buttonSection: some View {
-        VStack(spacing: Layout.buttonSpacing) {
-            SecondaryButton(
-                title: LocalizedString.Button.sendAgain,
-                action: {
-                    viewStore.send(.sendDeviceVerificationEmail)
-                },
-                loading: viewStore.binding(get: \.sendEmailButtonIsLoading, send: .none)
-            )
-            .disabled(viewStore.sendEmailButtonIsLoading)
-            .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.sendAgainButton)
-            if showOpenMailAppButton {
-                PrimaryButton(title: LocalizedString.Button.openEmail) {
-                    viewStore.send(.openMailApp)
+        WithViewStore(store) { viewStore in
+            VStack(spacing: Layout.buttonSpacing) {
+                SecondaryButton(
+                    title: LocalizedString.Button.sendAgain,
+                    action: {
+                        viewStore.send(.sendDeviceVerificationEmail)
+                    },
+                    loading: viewStore.binding(get: \.sendEmailButtonIsLoading, send: .none)
+                )
+                .disabled(viewStore.sendEmailButtonIsLoading)
+                .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.sendAgainButton)
+                if showOpenMailAppButton {
+                    PrimaryButton(title: LocalizedString.Button.openEmail) {
+                        viewStore.send(.openMailApp)
+                    }
+                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.openMailAppButton)
                 }
-                .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.openMailAppButton)
             }
         }
     }

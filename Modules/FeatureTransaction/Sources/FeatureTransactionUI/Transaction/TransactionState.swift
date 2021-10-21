@@ -28,7 +28,8 @@ struct TransactionState: StateType {
     var pendingTransaction: PendingTransaction?
     var executionStatus: TransactionExecutionStatus = .notStarted
     var errorState: TransactionErrorState = .none // TODO: make it associated data of execution status, if related?
-    var order: OrderDetails?
+    var order: TransactionOrder?
+    var userKYCTiers: KYC.UserTiers?
 
     // MARK: UI Supporting Data
 
@@ -48,6 +49,12 @@ struct TransactionState: StateType {
         didSet {
             isGoingBack = false
         }
+    }
+
+    var termsAndAgreementsAreValid: Bool {
+        guard action == .interestTransfer else { return true }
+        guard let pendingTx = pendingTransaction else { return false }
+        return pendingTx.agreementOptionValue && pendingTx.termsOptionValue
     }
 
     var stepsBackStack: [TransactionFlowStep] = []
@@ -191,7 +198,7 @@ extension TransactionState {
             exchange.quote.cryptoValue
         ) {
         case (.none, .some(let fiat), .some(let cryptoPrice)):
-            /// Conver the `fiatValue` amount entered into
+            /// Convert the `fiatValue` amount entered into
             /// a `CryptoValue`
             return .success(
                 fiat.convertToCryptoValue(
@@ -346,6 +353,7 @@ enum TransactionFlowStep: Equatable {
     case linkPaymentMethod
     case linkACard
     case linkABank
+    case linkBankViaWire
     case enterAddress
     case selectTarget
     case enterAmount
@@ -366,6 +374,7 @@ extension TransactionFlowStep {
              .enterAddress,
              .enterAmount,
              .inProgress,
+             .linkBankViaWire,
              .confirmDetail:
             return true
         case .closed,
@@ -388,6 +397,7 @@ extension TransactionFlowStep {
              .linkPaymentMethod,
              .linkACard,
              .linkABank,
+             .linkBankViaWire,
              .securityConfirmation:
             return true
         case .closed,
@@ -410,6 +420,7 @@ enum TransactionExecutionStatus {
     case inProgress
     case error
     case completed
+    case pending
 
     var isComplete: Bool {
         self == .completed

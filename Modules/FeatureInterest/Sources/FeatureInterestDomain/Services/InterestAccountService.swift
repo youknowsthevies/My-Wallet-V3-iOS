@@ -83,7 +83,7 @@ final class InterestAccountService: InterestAccountServiceAPI {
 
     func rate(for currency: CryptoCurrency) -> Single<Double> {
         interestAccountRateRepository
-            .fetchInteretAccountRateForCryptoCurrency(currency)
+            .fetchInterestAccountRateForCryptoCurrency(currency)
             .map(\.rate)
             .asSingle()
     }
@@ -100,7 +100,7 @@ final class InterestAccountService: InterestAccountServiceAPI {
                     return .just(.empty)
                 }
                 return interestAccountBalanceRepository
-                    .interestAccountsBalance(fiatCurrency: fiatCurrency)
+                    .fetchInterestAccountsBalance(fiatCurrency: fiatCurrency)
                     .asSingle()
             }
             .catchErrorJustReturn(InterestAccountBalances.empty)

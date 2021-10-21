@@ -1,0 +1,35 @@
+name: Example
+
+options:
+
+  bundleIDPrefix: com.rainydayapps
+  deploymentTarget:
+    iOS: 14.0
+
+packages: 
+  ComponentLibrary:
+    path: ../ComponentLibrary
+
+targets:
+
+  ComponentLibraryExample:
+  
+    platform: iOS
+    type: application
+    sources:
+      - path: Example/
+    dependencies: 
+      - package: ComponentLibrary
+        product: Examples
+
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: 1
+        PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.componentLibrary
+
+schemes:
+        
+  ComponentLibraryExample:
+    build:
+      targets:
+        ComponentLibraryExample: all

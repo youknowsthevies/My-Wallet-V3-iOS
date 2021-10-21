@@ -70,7 +70,7 @@ extension CryptoCurrency {
     }
 
     fileprivate var whiteImageSmall: UIImage? {
-        guard let whiteImageName = self.whiteImageName else {
+        guard let whiteImageName = whiteImageName else {
             return nil
         }
         return UIImage(named: whiteImageName)

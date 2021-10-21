@@ -9,7 +9,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
+public final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Types
 
@@ -19,18 +19,19 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Screen Properties
 
-    let reloadRelay: PublishRelay<Void> = .init()
+    public let reloadRelay: PublishRelay<Void> = .init()
+    public let backRelay: PublishRelay<Void> = .init()
 
-    private(set) var buttons: [ButtonViewModel] = []
+    public private(set) var buttons: [ButtonViewModel] = []
 
-    private(set) var cells: [DetailsScreen.CellType] = []
+    public private(set) var cells: [DetailsScreen.CellType] = []
 
     // MARK: - Navigation Properties
 
-    let navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction
-    let navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction = .default
+    public let navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction
+    public let navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction = .default
 
-    var navigationBarAppearance: DetailsScreen.NavigationBarAppearance {
+    public var navigationBarAppearance: DetailsScreen.NavigationBarAppearance {
         .custom(
             leading: .none,
             trailing: .close,
@@ -38,7 +39,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         )
     }
 
-    let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)
+    public let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)
 
     // MARK: - Private Properties
 
@@ -49,30 +50,27 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     private let isOriginDeposit: Bool
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let webViewRouter: WebViewRouterAPI
-    private let stateService: StateServiceAPI
     private let interactor: FundsTransferDetailsInteractorAPI
 
     // MARK: - Setup
 
-    init(
+    public init(
         webViewRouter: WebViewRouterAPI,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         interactor: FundsTransferDetailsInteractorAPI,
-        stateService: StateServiceAPI,
         isOriginDeposit: Bool
     ) {
         self.analyticsRecorder = analyticsRecorder
         self.webViewRouter = webViewRouter
         self.interactor = interactor
-        self.stateService = stateService
         self.isOriginDeposit = isOriginDeposit
 
-        navigationBarTrailingButtonAction = .custom {
-            stateService.previousRelay.accept(())
+        navigationBarTrailingButtonAction = .custom { [backRelay] in
+            backRelay.accept(())
         }
     }
 
-    func viewDidLoad() {
+    public func viewDidLoad() {
         analyticsRecorder.record(
             event: AnalyticsEvents.SimpleBuy.sbLinkBankScreenShown(currencyCode: interactor.fiatCurrency.code)
         )
@@ -110,9 +108,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
         let continueButtonViewModel = ButtonViewModel.primary(with: LocalizedString.Button.ok)
         continueButtonViewModel.tapRelay
-            .bindAndCatch(weak: self) { (self) in
-                self.stateService.previousRelay.accept(())
-            }
+            .bindAndCatch(to: backRelay)
             .disposed(by: disposeBag)
         buttons.append(continueButtonViewModel)
 

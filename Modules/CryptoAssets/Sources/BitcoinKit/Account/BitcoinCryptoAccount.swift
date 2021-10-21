@@ -35,14 +35,25 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var actions: Single<AvailableActions> {
-        isFunded
-            .map { isFunded -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
-                if isFunded {
-                    base.insert(.swap)
+        Single.zip(
+            isFunded,
+            canPerformInterestTransfer(),
+            featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
+        )
+        .map { isFunded, isInterestTransferEnabled, isSellEnabled -> AvailableActions in
+            var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
+            if isFunded {
+                base.insert(.swap)
+                if isSellEnabled {
+                    base.insert(.sell)
                 }
-                return base
+                if isInterestTransferEnabled {
+                    base.insert(.interestTransfer)
+                }
             }
+            return base
+        }
     }
 
     var receiveAddress: Single<ReceiveAddress> {
@@ -91,6 +102,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     private let walletAccount: BitcoinWalletAccount
     private let transactionsService: BitcoinHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         walletAccount: BitcoinWalletAccount,
@@ -99,7 +111,8 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
         transactionsService: BitcoinHistoricalTransactionServiceAPI = resolve(),
         swapTransactionsService: SwapActivityServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
-        bridge: BitcoinWalletBridgeAPI = resolve()
+        bridge: BitcoinWalletBridgeAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         xPub = walletAccount.publicKeys.default
         hdAccountIndex = walletAccount.index
@@ -111,6 +124,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
         self.swapTransactionsService = swapTransactionsService
         self.bridge = bridge
         self.walletAccount = walletAccount
+        self.featureFlagsService = featureFlagsService
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -120,10 +134,24 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
              .buy,
              .viewActivity:
             return .just(true)
+        case .interestTransfer:
+            return canPerformInterestTransfer()
+                .flatMap { [isFunded] isEnabled in
+                    isEnabled ? isFunded : .just(false)
+                }
         case .deposit,
              .withdraw,
-             .sell:
+             .interestWithdraw:
             return .just(false)
+        case .sell:
+            return featureFlagsService
+                .isEnabled(.remote(.sellUsingTransactionFlowEnabled))
+                .asSingle()
+                .flatMap(weak: self) { _, isEnabled in
+                    isEnabled
+                        ? self.isFunded
+                        : .just(false)
+                }
         case .swap:
             return isFunded
         }

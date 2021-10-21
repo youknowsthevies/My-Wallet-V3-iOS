@@ -136,14 +136,20 @@ extension AccountPickerInteractor {
 }
 
 extension BlockchainAccount {
+
     fileprivate var accountPickerCellItemInteractor: AccountPickerCellItem.Interactor {
         switch self {
+        case is PaymentMethodAccount:
+            return .paymentMethodAccount(self as! PaymentMethodAccount)
+
         case is LinkedBankAccount:
             let account = self as! LinkedBankAccount
             return .linkedBankAccount(account)
+
         case is SingleAccount:
             let singleAccount = self as! SingleAccount
             return .singleAccount(singleAccount, AccountAssetBalanceViewInteractor(account: singleAccount))
+
         case is AccountGroup:
             let accountGroup = self as! AccountGroup
             return .accountGroup(
@@ -152,6 +158,7 @@ extension BlockchainAccount {
                     balanceViewInteractor: WalletBalanceViewInteractor(account: accountGroup)
                 )
             )
+
         default:
             impossible()
         }

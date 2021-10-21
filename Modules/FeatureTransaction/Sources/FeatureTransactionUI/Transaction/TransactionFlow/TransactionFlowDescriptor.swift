@@ -28,12 +28,18 @@ enum TransactionFlowDescriptor {
                     return prefix
                 }
                 return prefix + source.label
+            case .interestWithdraw:
+                guard let source = state.source as? CryptoAccount else {
+                    fatalError("Expected a FiatAccount")
+                }
+                return "\(source.currencyType.code) " + LocalizedString.Withdraw.account
             case .withdraw:
                 guard let source = state.source as? FiatAccount else {
                     fatalError("Expected a FiatAccount")
                 }
                 return "\(source.fiatCurrency.code) " + LocalizedString.Withdraw.account
-            case .deposit:
+            case .deposit,
+                 .interestTransfer:
                 return LocalizedString.Deposit.dailyLimit
             case .buy:
                 guard let source = state.source, let destination = state.destination else {
@@ -71,9 +77,11 @@ enum TransactionFlowDescriptor {
                     return prefix
                 }
                 return prefix + account.label
-            case .withdraw:
+            case .withdraw,
+                 .interestWithdraw:
                 return formatForHeader(moneyValue: state.availableBalance)
-            case .deposit:
+            case .deposit,
+                 .interestTransfer:
                 return "\(state.maxDaily.displayString)"
             case .buy:
                 let prefix = "\(LocalizedString.Buy.title):"
@@ -107,7 +115,9 @@ enum TransactionFlowDescriptor {
             case .receive,
                  .send,
                  .viewActivity,
-                 .withdraw:
+                 .withdraw,
+                 .interestWithdraw,
+                 .interestTransfer:
                 return ""
             }
         }
@@ -123,7 +133,9 @@ enum TransactionFlowDescriptor {
                  .receive,
                  .buy,
                  .send,
-                 .viewActivity:
+                 .viewActivity,
+                 .interestWithdraw,
+                 .interestTransfer:
                 return ""
             }
         }
@@ -132,12 +144,15 @@ enum TransactionFlowDescriptor {
             switch action {
             case .swap:
                 return LocalizedString.receive
-            case .withdraw:
+            case .withdraw,
+                 .interestWithdraw:
                 return LocalizedString.Withdraw.withdrawTo
             case .buy:
                 return LocalizedString.Buy.selectDestinationTitle
             case .sell:
                 return LocalizedString.Sell.title
+            case .interestTransfer:
+                return LocalizedString.Transfer.transferTo
             case .deposit,
                  .receive,
                  .send,
@@ -157,7 +172,9 @@ enum TransactionFlowDescriptor {
                  .buy,
                  .send,
                  .viewActivity,
-                 .withdraw:
+                 .withdraw,
+                 .interestWithdraw,
+                 .interestTransfer:
                 return ""
             }
         }
@@ -170,8 +187,11 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.newSwap
             case .send:
                 return LocalizedString.Send.send
-            case .withdraw:
+            case .withdraw,
+                 .interestWithdraw:
                 return LocalizedString.Withdraw.withdraw
+            case .interestTransfer:
+                return LocalizedString.transfer
             case .deposit,
                  .receive,
                  .buy,
@@ -200,7 +220,9 @@ enum TransactionFlowDescriptor {
              .receive,
              .sell,
              .send,
-             .viewActivity:
+             .viewActivity,
+             .interestWithdraw,
+             .interestTransfer:
             return false
         }
     }
@@ -217,7 +239,9 @@ enum TransactionFlowDescriptor {
              .receive,
              .sell,
              .send,
-             .viewActivity:
+             .viewActivity,
+             .interestWithdraw,
+             .interestTransfer:
             return ""
         }
     }

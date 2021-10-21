@@ -61,9 +61,7 @@ final class StaticAssetLoader: AssetLoader {
                 // Crypto Assets for ERC20 tokens.
                 let erc20Assets = allEnabledCryptoCurrencies
                     .filter(\.isERC20)
-                    .compactMap { cryptoCurrency in
-                        cryptoCurrency.assetModel as? ERC20AssetModel
-                    }
+                    .map(\.assetModel)
                     .map { erc20AssetModel in
                         erc20AssetFactory.erc20Asset(erc20AssetModel: erc20AssetModel)
                     }

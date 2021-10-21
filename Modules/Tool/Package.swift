@@ -27,11 +27,6 @@ let package = Package(
             from: "0.5.2"
         ),
         .package(
-            name: "CombineExt",
-            url: "https://github.com/CombineCommunity/CombineExt.git",
-            from: "1.5.0"
-        ),
-        .package(
             name: "RxCombine",
             url: "https://github.com/paulo-bc/RxCombine.git",
             from: "1.6.2"
@@ -52,7 +47,6 @@ let package = Package(
         .target(
             name: "ToolKit",
             dependencies: [
-                .product(name: "CombineExt", package: "CombineExt"),
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxRelay", package: "RxSwift"),

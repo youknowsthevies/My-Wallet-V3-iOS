@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NabuNetworkError
 import PlatformKit
 public enum InterestAccountRateError: Error {
     case networkError(Error)
@@ -9,9 +8,13 @@ public enum InterestAccountRateError: Error {
 
 public protocol InterestAccountRateRepositoryAPI: AnyObject {
 
+    /// Fetches `[InterestAccountRate]` for all currencies
+    func fetchAllInterestAccountRates()
+        -> AnyPublisher<[InterestAccountRate], InterestAccountRateError>
+
     /// Fetches the current `InterestAccountRate` for a given CryptoCurrency.
     /// - Parameter currency: CryptoCurrency
-    func fetchInteretAccountRateForCryptoCurrency(
+    func fetchInterestAccountRateForCryptoCurrency(
         _ currency: CryptoCurrency
     ) -> AnyPublisher<InterestAccountRate, InterestAccountRateError>
 }

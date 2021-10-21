@@ -37,6 +37,13 @@ extension CryptoNonCustodialAccount {
         .just(())
     }
 
+    public func canPerformInterestTransfer() -> Single<Bool> {
+        disabledReason
+            .map(\.isEligible)
+            .asSingle()
+            .catchErrorJustReturn(false)
+    }
+
     /// The `OrderDirection` for which an `CryptoNonCustodialAccount` could have custodial events.
     public var custodialDirections: Set<OrderDirection> {
         [.fromUserKey, .onChain]

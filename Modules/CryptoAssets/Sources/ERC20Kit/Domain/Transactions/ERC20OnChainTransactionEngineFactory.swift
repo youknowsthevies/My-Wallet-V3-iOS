@@ -5,9 +5,9 @@ import PlatformKit
 
 final class ERC20OnChainTransactionEngineFactory: OnChainTransactionEngineFactory {
 
-    private let erc20Token: ERC20AssetModel
+    private let erc20Token: AssetModel
 
-    init(erc20Token: ERC20AssetModel) {
+    init(erc20Token: AssetModel) {
         self.erc20Token = erc20Token
     }
 

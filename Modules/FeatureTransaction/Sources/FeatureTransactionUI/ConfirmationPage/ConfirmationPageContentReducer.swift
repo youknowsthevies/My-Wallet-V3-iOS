@@ -23,6 +23,10 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
     // MARK: - Types
 
+    typealias ConfirmationModel = TransactionConfirmation.Model
+
+    // MARK: - Private Types
+
     private typealias LocalizedString = LocalizationConstants.Transaction
 
     // MARK: - CheckoutScreenContentReducing
@@ -31,8 +35,16 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     var cells: [DetailsScreen.CellType]
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
+    let termsCheckboxViewModel: CheckboxViewModel = .init(
+        text: LocalizedString.Transfer.termsOfServiceDisclaimer
+    )
+    let transferCheckboxViewModel: CheckboxViewModel = .init(
+        text: LocalizedString.Transfer.transferAgreement
+    )
     let messageRecorder: MessageRecording
-    let memoUpdated: PublishRelay<(String, TransactionConfirmation.Model.Memo)> = .init()
+    let transferAgreementUpdated = PublishRelay<Bool>()
+    let termsUpdated = PublishRelay<Bool>()
+    let memoUpdated = PublishRelay<(String, TransactionConfirmation.Model.Memo)>()
     private let memoModel: TextFieldViewModel
     private var disposeBag = DisposeBag()
 
@@ -60,7 +72,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             return
         }
 
-        let interactors: [DefaultLineItemCellPresenter] = pendingTransaction.confirmations
+        let interactors: [DefaultLineItemCellPresenter] = pendingTransaction
+            .confirmations
             .filter { confirmation -> Bool in
                 !confirmation.isCustom
             }
@@ -78,7 +91,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 )
             }
 
-        var bitpayItemIfNeeded: [DetailsScreen.CellType] = pendingTransaction.confirmations
+        var bitpayItemIfNeeded: [DetailsScreen.CellType] = pendingTransaction
+            .confirmations
             .filter(\.isBitPay)
             .compactMap(\.formatted)
             .map { data -> (title: LabelContentInteracting, subtitle: LabelContentInteracting) in
@@ -95,7 +109,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 setupBitPay(on: presenter)
                 return .lineItem(presenter)
             }
-        if bitpayItemIfNeeded.count > 0 {
+        if !bitpayItemIfNeeded.isEmpty {
             bitpayItemIfNeeded.append(.separator)
         }
 
@@ -123,13 +137,36 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 .label(presenter)
             }
 
-        let memo: TransactionConfirmation.Model.Memo? = pendingTransaction.confirmations
+        let memo: TransactionConfirmation.Model.Memo? = pendingTransaction
+            .confirmations
             .filter(\.isMemo)
             .compactMap { confirmation -> TransactionConfirmation.Model.Memo? in
                 guard case .memo(let memo) = confirmation else {
                     return nil
                 }
                 return memo
+            }
+            .first
+
+        let terms: ConfirmationModel.AnyBoolOption<Bool>? = pendingTransaction
+            .confirmations
+            .filter(\.isTermsOfService)
+            .compactMap { confirmation -> ConfirmationModel.AnyBoolOption<Bool>? in
+                guard case .termsOfService(let value) = confirmation else {
+                    return nil
+                }
+                return value
+            }
+            .first
+
+        let transferAgreement: ConfirmationModel.AnyBoolOption<Bool>? = pendingTransaction
+            .confirmations
+            .filter(\.isTransferAgreement)
+            .compactMap { confirmation -> ConfirmationModel.AnyBoolOption<Bool>? in
+                guard case .transferAgreement(let value) = confirmation else {
+                    return nil
+                }
+                return value
             }
             .first
 
@@ -151,6 +188,30 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             memoModels.append(.textField(memoModel))
         }
 
+        var checkboxModels: [DetailsScreen.CellType] = []
+        if let terms = terms,
+           let transferAgreement = transferAgreement
+        {
+            termsCheckboxViewModel
+                .selectedRelay
+                .distinctUntilChanged()
+                .bind(to: termsUpdated)
+                .disposed(by: disposeBag)
+
+            transferCheckboxViewModel
+                .selectedRelay
+                .distinctUntilChanged()
+                .bind(to: transferAgreementUpdated)
+                .disposed(by: disposeBag)
+
+            checkboxModels.append(
+                contentsOf: [
+                    .checkbox(termsCheckboxViewModel),
+                    .checkbox(transferCheckboxViewModel)
+                ]
+            )
+        }
+
         var disclaimer: [DetailsScreen.CellType] = []
         if TransactionFlowDescriptor.confirmDisclaimerVisibility(action: state.action) {
             let content = LabelContent(
@@ -162,8 +223,13 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             )
             disclaimer.append(.staticLabel(content))
         }
-        let restItems: [DetailsScreen.CellType] = memoModels + errorModels + disclaimer
-        cells = [.separator] + bitpayItemIfNeeded + confirmationLineItems + restItems
+
+        let restItems: [DetailsScreen.CellType] = memoModels +
+            errorModels + disclaimer + checkboxModels
+        cells = [.separator] +
+            bitpayItemIfNeeded +
+            confirmationLineItems +
+            restItems
     }
 
     static func confirmCtaText(state: TransactionState) -> String {
@@ -178,7 +244,10 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             return LocalizedString.Swap.sellNow
         case .deposit:
             return LocalizedString.Deposit.depositNow
-        case .withdraw:
+        case .interestTransfer:
+            return LocalizedString.Transfer.transferNow
+        case .withdraw,
+             .interestWithdraw:
             return LocalizedString.Withdraw.withdrawNow
         case .receive,
              .viewActivity:
@@ -198,7 +267,17 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
 extension TransactionConfirmation {
     var isCustom: Bool {
-        isErrorNotice || isMemo || isBitPay
+        isErrorNotice || isMemo || isBitPay || isCheckbox
+    }
+
+    var isCheckbox: Bool {
+        switch self {
+        case .termsOfService,
+             .transferAgreement:
+            return true
+        default:
+            return false
+        }
     }
 
     var isBitPay: Bool {
@@ -213,6 +292,28 @@ extension TransactionConfirmation {
     var isErrorNotice: Bool {
         switch self {
         case .errorNotice:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isRequiredAgreement: Bool {
+        isTermsOfService && isTransferAgreement
+    }
+
+    var isTermsOfService: Bool {
+        switch self {
+        case .termsOfService:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isTransferAgreement: Bool {
+        switch self {
+        case .transferAgreement:
             return true
         default:
             return false

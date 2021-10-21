@@ -216,7 +216,7 @@ extension WalletPayloadClient {
         // MARK: - API
 
         func build(identifier: Identifier, guid: String) -> NetworkRequest {
-            let pathComponents = self.pathComponents + [guid]
+            let pathComponents = pathComponents + [guid]
             var headers: HTTPHeaders = [:]
             var parameters: [URLQueryItem] = []
 

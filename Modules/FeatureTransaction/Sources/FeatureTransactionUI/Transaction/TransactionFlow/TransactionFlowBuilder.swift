@@ -6,7 +6,7 @@ import RIBs
 
 // MARK: - Builder
 
-protocol TransactionFlowBuildable: RIBs.Buildable {
+public protocol TransactionFlowBuildable: RIBs.Buildable {
     func build(
         withListener listener: TransactionFlowListener,
         action: AssetAction,
@@ -15,9 +15,11 @@ protocol TransactionFlowBuildable: RIBs.Buildable {
     ) -> ViewableRouting
 }
 
-final class TransactionFlowBuilder: TransactionFlowBuildable {
+public final class TransactionFlowBuilder: TransactionFlowBuildable {
 
-    func build(
+    public init() {}
+
+    public func build(
         withListener listener: TransactionFlowListener,
         action: AssetAction,
         sourceAccount: BlockchainAccount?,

@@ -401,7 +401,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // decide if we need to reset password or not (we need to reset password after metadata recovery)
         // if needed, go to reset password screen, if not, go to PIN screen
         if let context = state.onboarding?.walletRecoveryContext,
-           context == .metadataRecovery {
+           context == .metadataRecovery
+        {
             environment.loadingViewPresenter.hide()
             // if it is from the restore wallet screen
             if state.onboarding?.welcomeState?.restoreWalletState != nil {
@@ -409,7 +410,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                     .cancel(id: WalletCancelations.AuthenticationId()),
                     Effect(value: .onboarding(.welcomeScreen(.restoreWallet(.setResetPasswordScreenVisible(true)))))
                 )
-            // if it is from the trouble logging in screen
+                // if it is from the trouble logging in screen
             } else if state.onboarding?.welcomeState?.emailLoginState != nil {
                 return .merge(
                     .cancel(id: WalletCancelations.AuthenticationId()),

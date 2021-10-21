@@ -84,7 +84,7 @@ class AccountPickerViewTests: XCTestCase {
         let view = AccountPickerView(
             store: Store(
                 initialState: AccountPickerState(
-                    rows: accountPickerRowList,
+                    rows: .loaded(next: .success(accountPickerRowList)),
                     header: header
                 ),
                 reducer: accountPickerReducer,

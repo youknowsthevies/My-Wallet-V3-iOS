@@ -75,7 +75,7 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
     }
 
     public func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError> {
-        let walletIdentifierValidator = self.walletIdentifierValidator
+        let walletIdentifierValidator = walletIdentifierValidator
         return Deferred {
             Future { promise in
                 let lastPathOrNil = deeplink.absoluteString.components(separatedBy: "/").last

@@ -15,7 +15,6 @@ public struct ImageResourceView<Loading: View, Placeholder: View>: View {
     @StateObject private var loader: ImageLoader
     private let placeholder: () -> Placeholder
     private let loading: () -> Loading
-    private var image: (UniversalImage) -> Image = makeImage
     fileprivate var configurations: [(Image) -> Image] = []
 
     public init(
@@ -35,8 +34,8 @@ public struct ImageResourceView<Loading: View, Placeholder: View>: View {
     @ViewBuilder private var content: some View {
         if loader.isLoading {
             loading()
-        } else if let o = loader.image {
-            configurations.reduce(image(o)) { previous, configuration in
+        } else if let image = loader.image {
+            configurations.reduce(image) { previous, configuration in
                 configuration(previous)
             }
         } else {
@@ -191,7 +190,7 @@ extension ImageResourceView where Loading == ProgressView<EmptyView, EmptyView>,
 
 private class ImageLoader: ObservableObject {
 
-    @Published var image: UniversalImage?
+    @Published var image: Image?
 
     private(set) var isLoading = false
 
@@ -213,10 +212,10 @@ private class ImageLoader: ObservableObject {
 
         switch resource {
         case .local(name: let name, bundle: let bundle):
-            image = UniversalImage(named: name, in: bundle, compatibleWith: nil)
+            image = Image(name, bundle: bundle)
             onFinish()
         case .systemName(let name):
-            image = UniversalImage(systemName: name)
+            image = Image(systemName: name)
             onFinish()
         case .remote(url: let url):
             cancellable = URLSession.shared.dataTaskPublisher(for: url)
@@ -229,7 +228,7 @@ private class ImageLoader: ObservableObject {
                 )
                 .subscribe(on: Self.imageProcessingQueue)
                 .receive(on: DispatchQueue.main)
-                .sink { [weak self] in self?.image = $0 }
+                .sink { [weak self] in self?.image = $0.map(makeImage) }
         }
     }
 
@@ -249,7 +248,11 @@ private class ImageLoader: ObservableObject {
 struct ImageResourceView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
-            ImageResourceView(named: "cancel_icon", in: .UIComponents)
+            ImageResourceView(systemName: "building.columns.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 20)
+            ImageResourceView(named: "cancel_icon", in: .module)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 20)

@@ -1,5 +1,7 @@
 attributes:
   ORGANIZATIONNAME: Blockchain Luxembourg S.A
+include:
+  Modules/ComponentLibrary/project.yml
 configs:
   Debug Dev: debug
   Debug Production: debug
@@ -225,9 +227,6 @@ packages:
   ZendeskChatSDK:
     url: https://github.com/zendesk/chat_sdk_ios.git
     version: 2.11.1
-  CombineExt:
-    url: https://github.com/CombineCommunity/CombineExt.git
-    version: 1.5.0
   Lottie:
     url: https://github.com/airbnb/lottie-ios.git
     version: 3.2.1
@@ -268,6 +267,8 @@ packages:
     path: Modules/Analytics
   CommonCrypto:
     path: Modules/CommonCrypto
+  ComposableNavigation:
+    path: Modules/ComposableNavigation
   CryptoAssets:
     path: Modules/CryptoAssets
   FeatureApp:
@@ -296,6 +297,8 @@ packages:
     path: Modules/FeatureTransaction
   HDWallet:
     path: Modules/HDWallet
+  Keychain:
+    path: Modules/Keychain
   Localization:
     path: Modules/Localization
   Network:
@@ -314,6 +317,8 @@ packages:
     path: Modules/UIComponents
   WalletPayload:
     path: Modules/WalletPayload
+  ComponentLibrary:
+    path: Modules/ComponentLibrary
 targets:
   Blockchain:
     configFiles:
@@ -383,11 +388,11 @@ targets:
       - package: FeatureTransaction
 
       - package: BigInt
-      - package: CombineExt
       - package: ComposableArchitecture
       - package: DIKit
       - package: Nuke
       - package: NukeUI
+      - package: Lottie
       - package: RIBs
       - package: RxCombine
       - package: RxDataSources
@@ -422,6 +427,8 @@ targets:
         product: StellarKit
       - package: HDWallet
         product: HDWalletKit
+      - package: Keychain
+        product: KeychainKit
       - package: Localization
         product: Localization
       - package: Network

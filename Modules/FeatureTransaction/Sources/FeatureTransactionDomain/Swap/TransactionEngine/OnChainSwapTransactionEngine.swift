@@ -7,7 +7,7 @@ import ToolKit
 
 final class OnChainSwapTransactionEngine: SwapTransactionEngine {
 
-    let receiveAddressFactory: CryptoReceiveAddressFactoryService
+    let receiveAddressFactory: ExternalAssetAddressServiceAPI
     let fiatCurrencyService: FiatCurrencyServiceAPI
     let kycTiersService: KYCTiersServiceAPI
     let onChainEngine: OnChainTransactionEngine
@@ -37,7 +37,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
-        receiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()
+        receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
         self.requireSecondPassword = requireSecondPassword

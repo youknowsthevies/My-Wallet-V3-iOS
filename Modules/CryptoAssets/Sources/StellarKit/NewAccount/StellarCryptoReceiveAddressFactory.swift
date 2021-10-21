@@ -5,10 +5,9 @@ import PlatformKit
 import RxSwift
 import stellarsdk
 
-final class StellarCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
+final class StellarCryptoReceiveAddressFactory: ExternalAssetAddressFactory {
 
     func makeExternalAssetAddress(
-        asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted

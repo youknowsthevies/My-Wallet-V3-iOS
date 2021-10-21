@@ -10,11 +10,6 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "CombineExt",
-            url: "https://github.com/CombineCommunity/CombineExt.git",
-            from: "1.5.0"
-        ),
-        .package(
             name: "RxSwift",
             url: "https://github.com/ReactiveX/RxSwift.git",
             from: "5.1.3"

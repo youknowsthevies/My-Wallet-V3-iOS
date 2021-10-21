@@ -13,7 +13,8 @@ extension ERC20HistoricalTransaction {
             creationDate: createdAt,
             status: .complete,
             type: direction == .debit ? .receive : .send,
-            amount: amount
+            amount: amount,
+            fee: fee
         )
     }
 }

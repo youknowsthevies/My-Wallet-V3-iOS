@@ -1,9 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import RxSwift
 
+public protocol FiatCurrencyPublisherAPI {
+    var fiatCurrencyPublisher: AnyPublisher<FiatCurrency, Never> { get }
+}
+
 /// An API of a generic service which provides fiat currency - to be inherited by any other service.
-public protocol FiatCurrencyServiceAPI: CurrencyServiceAPI {
+public protocol FiatCurrencyServiceAPI: FiatCurrencyPublisherAPI, CurrencyServiceAPI {
 
     /// An `Observable` that streams `FiatCurrency` values
     var fiatCurrencyObservable: Observable<FiatCurrency> { get }

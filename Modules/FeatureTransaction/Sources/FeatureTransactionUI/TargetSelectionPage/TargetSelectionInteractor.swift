@@ -35,10 +35,16 @@ final class TargetSelectionInteractor {
     ) -> Single<[SingleAccount]> {
         switch action {
         case .swap,
-             .send:
+             .send,
+             .interestWithdraw,
+             .interestTransfer:
             return Single.just(sourceAccount)
                 .flatMap(weak: self) { (self, account) -> Single<[SingleAccount]> in
-                    self.coincore.getTransactionTargets(sourceAccount: account, action: action)
+                    self.coincore
+                        .getTransactionTargets(
+                            sourceAccount: account,
+                            action: action
+                        )
                         .asObservable()
                         .asSingle()
                 }

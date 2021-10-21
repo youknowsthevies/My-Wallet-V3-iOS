@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
+import Foundation
 
 /// A generic value fetcher, interacting with local and remote data sources.
 ///
@@ -129,7 +129,7 @@ public final class CachedValueNew<Key: Hashable, Value: Equatable, CacheError: E
                     self?.inFlightRequests.mutate { $0[key] = nil }
                 })
                 .subscribe(on: queue)
-                .share(replay: 1)
+                .shareReplay()
                 .eraseToAnyPublisher()
 
             // Add to in-flight requests.

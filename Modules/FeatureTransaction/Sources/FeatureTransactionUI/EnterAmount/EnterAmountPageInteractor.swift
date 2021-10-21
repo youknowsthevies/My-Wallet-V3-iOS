@@ -63,7 +63,6 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
 
-    private let tiersService: KYCTiersServiceAPI
     private let analyticsHook: TransactionAnalyticsHook
 
     init(
@@ -72,14 +71,12 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         amountInteractor: AmountViewInteracting,
         action: AssetAction,
         navigationModel: ScreenNavigationModel,
-        tiersService: KYCTiersServiceAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve()
     ) {
         self.action = action
         self.transactionModel = transactionModel
         amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
-        self.tiersService = tiersService
         self.analyticsHook = analyticsHook
         sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
         sendAuxiliaryViewPresenter = SendAuxiliaryViewPresenter(
@@ -164,6 +161,16 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             })
             .disposeOnDeactivate(interactor: self)
 
+        amountViewInteractor.maxAmountSelected
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: analyticsHook.onMinSelected(state:))
+            .disposeOnDeactivate(interactor: self)
+
+        amountViewInteractor.minAmountSelected
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: analyticsHook.onMinSelected(state:))
+            .disposeOnDeactivate(interactor: self)
+
         let fee = transactionState
             .takeWhile { $0.action == .send }
             .compactMap(\.pendingTransaction)
@@ -175,10 +182,12 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .map { state -> BlockchainAccount? in
                 switch state.action {
                 case .buy,
-                     .deposit:
+                     .deposit,
+                     .interestTransfer:
                     return state.source
                 case .sell,
-                     .withdraw:
+                     .withdraw,
+                     .interestWithdraw:
                     return state.destination as? BlockchainAccount
                 case .viewActivity,
                      .send,
@@ -210,17 +219,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 return availableSources
             }
             .map(\.count)
-            .flatMap { [action, tiersService] accountsCount -> Observable<Bool> in
-                tiersService
-                    .fetchTiers()
-                    .asObservable()
-                    .map { userTiers -> Bool in
-                        if action == .buy {
-                            return userTiers.latestApprovedTier == .tier2
-                        }
-                        return accountsCount > 0
-                    }
-            }
+            .map { $0 > 1 }
 
         accountAuxiliaryViewInteractor
             .connect(
@@ -323,19 +322,15 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         transactionState
-            .compactMap { state -> (
-                action: AssetAction,
-                amountIsZero: Bool,
-                networkFeeAdjustmentSupported: Bool
-            )? in
-            guard let pendingTransaction = state.pendingTransaction else {
-                return nil
-            }
-            return (
-                state.action,
-                state.amount.isZero,
-                pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported
-            )
+            .compactMap { state -> (action: AssetAction, amountIsZero: Bool, networkFeeAdjustmentSupported: Bool)? in
+                guard let pendingTransaction = state.pendingTransaction else {
+                    return nil
+                }
+                return (
+                    state.action,
+                    state.amount.isZero,
+                    pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported
+                )
             }
             .map { action, amountIsZero, networkFeeAdjustmentSupported in
                 (action, (networkFeeAdjustmentSupported && action == .send && !amountIsZero) ? .visible : .hidden)

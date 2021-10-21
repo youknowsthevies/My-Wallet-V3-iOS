@@ -1,5 +1,6 @@
 import Combine
 import ComposableArchitecture
+import ComposableNavigation
 import FeatureAccountPickerDomain
 import Localization
 import SwiftUI
@@ -37,7 +38,7 @@ public struct AccountPickerView: View {
         self.init(
             store: Store(
                 initialState: AccountPickerState(
-                    rows: [],
+                    rows: .loading,
                     header: .none
                 ),
                 reducer: accountPickerReducer,
@@ -52,26 +53,60 @@ public struct AccountPickerView: View {
     // MARK: - Body
 
     public var body: some View {
-        WithViewStore(self.store) { viewStore in
-            VStack(spacing: .zero) {
-                HeaderView(viewModel: viewStore.header)
-                List {
-                    ForEachStore(
-                        self.store.scope(
-                            state: \.rows,
-                            action: AccountPickerAction.accountPickerRow(id:action:)
-                        ),
-                        content: AccountPickerRowView.with(
-                            badgeView: badgeView,
-                            iconView: iconView,
-                            multiBadgeView: multiBadgeView
-                        )
-                    )
-                    .listRowInsets(EdgeInsets())
+
+        WithViewStore(store) { viewStore in
+
+            StatefulView(
+                store: store.scope(state: \.rows),
+                loadedAction: AccountPickerAction.rowsLoaded,
+                loadingAction: AccountPickerAction.rowsLoading,
+                successAction: LoadedRowsAction.success,
+                failureAction: LoadedRowsAction.failure,
+                loading: { _ in
+                    LoadingStateView(title: LocalizationConstants.loading)
+                },
+                success: { store in
+                    WithViewStore(store) { [header = viewStore.header] viewStore in
+                        if viewStore.state.isEmpty {
+                            EmptyStateView(
+                                title: LocalizationConstants.AccountPicker.noWallets,
+                                subHeading: "",
+                                image: ImageAsset.emptyActivity.image
+                            )
+                        } else {
+                            contentView(store: store, header: header)
+                        }
+                    }
+                },
+                failure: { _ in
+                    ErrorStateView(title: LocalizationConstants.Errors.genericError)
                 }
-            }
+            )
             .onAppear {
                 viewStore.send(.subscribeToUpdates)
+            }
+        }
+    }
+
+    @ViewBuilder func contentView(
+        store: Store<IdentifiedArrayOf<AccountPickerRow>, SuccessRowsAction>,
+        header: Header
+    ) -> some View {
+        VStack(spacing: .zero) {
+            HeaderView(viewModel: header)
+            List {
+                ForEachStore(
+                    store.scope(
+                        state: { $0 },
+                        action: SuccessRowsAction.accountPickerRow(id:action:)
+                    ),
+                    content: AccountPickerRowView.with(
+                        badgeView: badgeView,
+                        iconView: iconView,
+                        multiBadgeView: multiBadgeView
+                    )
+                )
+                .listRowInsets(EdgeInsets())
             }
         }
     }
@@ -149,11 +184,13 @@ struct AccountPickerView_Previews: PreviewProvider {
         tableTitle: "Select a Wallet"
     )
 
-    static var previews: some View {
+    @ViewBuilder static func view(
+        rows: LoadingState<Result<IdentifiedArrayOf<AccountPickerRow>, AccountPickerError>>
+    ) -> AccountPickerView {
         AccountPickerView(
             store: Store(
                 initialState: AccountPickerState(
-                    rows: [],
+                    rows: rows,
                     header: header
                 ),
                 reducer: accountPickerReducer,
@@ -171,5 +208,19 @@ struct AccountPickerView_Previews: PreviewProvider {
             iconView: { _ in AnyView(EmptyView()) },
             multiBadgeView: { _ in AnyView(EmptyView()) }
         )
+    }
+
+    static var previews: some View {
+        view(rows: .loaded(next: .success(accountPickerRowList)))
+            .previewDisplayName("Success")
+
+        view(rows: .loaded(next: .success([])))
+            .previewDisplayName("Empty")
+
+        view(rows: .loaded(next: .failure(.testError)))
+            .previewDisplayName("Error")
+
+        view(rows: .loading)
+            .previewDisplayName("Loading")
     }
 }

@@ -119,12 +119,9 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         quotesEngine.getRate(direction: orderDirection, pair: pair)
-            .first()
+            .take(1)
+            .asSingle()
             .map { [sourceAsset, targetAsset] pricedQuote -> PendingTransaction in
-                guard let pricedQuote = pricedQuote else {
-                    return pendingTransaction
-                }
-
                 let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let baseValue = MoneyValue.one(currency: pendingTransaction.amount.currency)
                 let sellDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
@@ -134,12 +131,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
                     .sellDestinationValue(.init(fiatValue: sellDestinationValue.fiatValue!)),
                     .sellExchangeRateValue(.init(baseValue: baseValue, resultValue: resultValue)),
                     .source(.init(value: self.sourceAccount.label)),
-                    .destination(.init(value: self.target.label)),
-                    .networkFee(.init(
-                        fee: pendingTransaction.feeAmount,
-                        feeType: .depositFee,
-                        asset: sourceAsset.currencyType
-                    ))
+                    .destination(.init(value: self.target.label))
                 ]
 
                 var pendingTransaction = pendingTransaction.update(confirmations: confirmations)

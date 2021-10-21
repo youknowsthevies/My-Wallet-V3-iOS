@@ -33,7 +33,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
     }
 
     func presentableState(for interactorState: Driver<TargetSelectionPageInteractor.State>) -> Driver<TargetSelectionPagePresenter.State> {
-        let action = self.action
+        let action = action
         let sourceSection = interactorState
             .compactMap(\.sourceInteractor)
             .map { [$0] }
@@ -92,7 +92,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
             .combineLatest(sourceSection, inputFieldSection, destinationSections)
             .map { [$0] + $1 + $2 }
 
-        let navigationModel = self.navigationModel
+        let navigationModel = navigationModel
         return Driver.combineLatest(sections, button)
             .map { values -> TargetSelectionPagePresenter.State in
                 let (sections, button) = values
@@ -118,7 +118,8 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 )
             )
         case .send,
-             .withdraw:
+             .withdraw,
+             .interestWithdraw:
             return TargetSelectionHeaderBuilder(
                 headerType: .section(
                     .init(
@@ -127,6 +128,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 )
             )
         case .deposit,
+             .interestTransfer,
              .receive,
              .buy,
              .sell,

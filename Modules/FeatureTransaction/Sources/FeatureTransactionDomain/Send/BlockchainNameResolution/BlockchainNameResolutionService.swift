@@ -21,11 +21,11 @@ public protocol BlockchainNameResolutionServiceAPI {
 final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI {
 
     private let repository: BlockchainNameResolutionRepositoryAPI
-    private let factory: CryptoReceiveAddressFactoryService
+    private let factory: ExternalAssetAddressServiceAPI
 
     init(
         repository: BlockchainNameResolutionRepositoryAPI = resolve(),
-        factory: CryptoReceiveAddressFactoryService = resolve()
+        factory: ExternalAssetAddressServiceAPI = resolve()
     ) {
         self.repository = repository
         self.factory = factory

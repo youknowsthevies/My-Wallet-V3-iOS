@@ -34,7 +34,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
 
     // MARK: - Private Properties
 
-    private let erc20Token: ERC20AssetModel
+    private let erc20Token: AssetModel
     private let feeCache: CachedValue<EthereumTransactionFee>
     private let feeService: EthereumKit.EthereumFeeServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
@@ -50,7 +50,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     // MARK: - Init
 
     init(
-        erc20Token: ERC20AssetModel,
+        erc20Token: AssetModel,
         requireSecondPassword: Bool,
         ethereumAccountDetails: EthereumAccountDetailsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
@@ -92,8 +92,8 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .fiatCurrency
             .map { [erc20Token] fiatCurrency -> PendingTransaction in
                 .init(
-                    amount: .zero(currency: erc20Token.cryptoCurrency),
-                    available: .zero(currency: erc20Token.cryptoCurrency),
+                    amount: .zero(currency: .erc20(erc20Token)),
+                    available: .zero(currency: .erc20(erc20Token)),
                     feeAmount: .zero(currency: .coin(.ethereum)),
                     feeForFullAvailable: .zero(currency: .coin(.ethereum)),
                     feeSelection: .init(
@@ -160,7 +160,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         guard let crypto = amount.cryptoValue else {
             return .error(TransactionValidationFailure(state: .unknownError))
         }
-        guard crypto.currencyType == erc20Token.cryptoCurrency else {
+        guard crypto.currencyType == .erc20(erc20Token) else {
             return .error(TransactionValidationFailure(state: .unknownError))
         }
         return Single.zip(
@@ -252,7 +252,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable { [erc20Token] in
-            if try pendingTransaction.amount <= .zero(currency: erc20Token.cryptoCurrency) {
+            if try pendingTransaction.amount <= .zero(currency: .erc20(erc20Token)) {
                 throw TransactionValidationFailure(state: .invalidAmount)
             }
         }
@@ -305,8 +305,8 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         Single.zip(
             sourceExchangeRatePair,
             ethereumExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: erc20Token.cryptoCurrency)),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: erc20Token.cryptoCurrency))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .erc20(erc20Token))),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: .erc20(erc20Token)))
         )
         .map { sourceExchange, ethereumExchange, amount, feeAmount -> (FiatValue, FiatValue) in
             let erc20Quote = sourceExchange.quote.fiatValue!

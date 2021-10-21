@@ -8,12 +8,12 @@ import RxCombine
 import RxSwift
 import ToolKit
 
-final class NetworkAdapter: NetworkAdapterAPI {
+public final class NetworkAdapter: NetworkAdapterAPI {
 
     private let communicator: NetworkCommunicatorAPI
     private let queue: DispatchQueue
 
-    init(
+    public init(
         communicator: NetworkCommunicatorAPI = resolve(),
         queue: DispatchQueue = DispatchQueue.global(qos: .default)
     ) {
@@ -21,7 +21,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
         self.queue = queue
     }
 
-    func performOptional<ResponseType: Decodable>(
+    public func performOptional<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
     ) -> AnyPublisher<ResponseType?, NetworkError> {
@@ -31,7 +31,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
             .eraseToAnyPublisher()
     }
 
-    func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
+    public func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type
     ) -> AnyPublisher<ResponseType?, ErrorResponseType> {
@@ -41,7 +41,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
             .eraseToAnyPublisher()
     }
 
-    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
+    public func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest
     ) -> AnyPublisher<ResponseType, ErrorResponseType> {
         communicator.dataTaskPublisher(for: request)
@@ -50,7 +50,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
             .eraseToAnyPublisher()
     }
 
-    func perform<ResponseType: Decodable>(
+    public func perform<ResponseType: Decodable>(
         request: NetworkRequest
     ) -> AnyPublisher<ResponseType, NetworkError> {
         communicator.dataTaskPublisher(for: request)

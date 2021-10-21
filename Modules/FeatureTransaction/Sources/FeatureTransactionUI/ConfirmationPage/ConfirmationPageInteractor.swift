@@ -58,13 +58,25 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
 
     func handle(effect: Effects) {
         switch effect {
-        case .close:
-            listener?.closeFlow()
-        case .back:
+        case .close, .back:
+            // in both close and back, we need to clean up any prepared state (e.g. cancel created order)
+            // Going back does that. Alternatively, we could delegate to `transactionModel` by creating a new action.
             listener?.checkoutDidTapBack()
         case .updateMemo(let memo, let oldModel):
             let model = TransactionConfirmation.Model.Memo(textMemo: memo, required: oldModel.required)
             transactionModel.process(action: .modifyTransactionConfirmation(.memo(model)))
+        case .toggleToSAgreement(let value):
+            let model = TransactionConfirmation.Model.AnyBoolOption<Bool>(
+                value: value,
+                type: .agreementInterestTandC
+            )
+            transactionModel.process(action: .modifyTransactionConfirmation(.termsOfService(model)))
+        case .toggleHoldPeriodAgreement(let value):
+            let model = TransactionConfirmation.Model.AnyBoolOption<Bool>(
+                value: value,
+                type: .agreementInterestTransfer
+            )
+            transactionModel.process(action: .modifyTransactionConfirmation(.transferAgreement(model)))
         }
     }
 }
@@ -79,5 +91,7 @@ extension ConfirmationPageInteractor {
         case close
         case back
         case updateMemo(String?, oldModel: TransactionConfirmation.Model.Memo)
+        case toggleToSAgreement(Bool)
+        case toggleHoldPeriodAgreement(Bool)
     }
 }

@@ -146,18 +146,18 @@ extension ObservableType {
         self.do(onError: { error in
             fatalError("Binding error to publish relay. file: \(file), line: \(line), function: \(function), error: \(error).")
         })
-            .subscribe { event in
-                switch event {
-                case .next(let element):
-                    relays.forEach {
-                        $0.accept(element)
-                    }
-                case .error:
-                    break
-                case .completed:
-                    break
+        .subscribe { event in
+            switch event {
+            case .next(let element):
+                relays.forEach {
+                    $0.accept(element)
                 }
+            case .error:
+                break
+            case .completed:
+                break
             }
+        }
     }
 
     public func bindAndCatch(
@@ -178,18 +178,18 @@ extension ObservableType {
         self.do(onError: { error in
             fatalError("Binding error to behavior relay. file: \(file), line: \(line), function: \(function), error: \(error).")
         })
-            .subscribe { event in
-                switch event {
-                case .next(let element):
-                    relays.forEach {
-                        $0.accept(element)
-                    }
-                case .error:
-                    break
-                case .completed:
-                    break
+        .subscribe { event in
+            switch event {
+            case .next(let element):
+                relays.forEach {
+                    $0.accept(element)
                 }
+            case .error:
+                break
+            case .completed:
+                break
             }
+        }
     }
 
     public func bindAndCatch(
@@ -228,9 +228,9 @@ extension ObservableType {
         self.do(onError: { error in
             fatalError("Binding error to observers. file: \(file), line: \(line), function: \(function), error: \(error).")
         })
-            .subscribe { event in
-                observers.forEach { $0.on(event) }
-            }
+        .subscribe { event in
+            observers.forEach { $0.on(event) }
+        }
     }
 
     public func bindAndCatch<Result>(to binder: (Self) -> Result) -> Result {

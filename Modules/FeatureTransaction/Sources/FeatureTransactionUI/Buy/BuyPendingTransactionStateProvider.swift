@@ -24,6 +24,8 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
             switch state.executionStatus {
             case .inProgress,
                  .notStarted:
+                return self.inProgress(state: state)
+            case .pending:
                 return self.pending(state: state)
             case .completed:
                 return self.success(state: state)
@@ -39,6 +41,7 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
         guard let destinationCurrency = state.destination?.currencyType else {
             impossible("Expected a destination to there for a transaction that has succeeded")
         }
+        let canUpgradeTier = canUpgradeTier(from: state.userKYCTiers)
         return .init(
             title: String(
                 format: LocalizationIds.Success.title,
@@ -60,11 +63,12 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationIds.Success.action)
+            primaryButtonViewModel: .primary(with: LocalizationIds.Success.action),
+            secondaryButtonViewModel: canUpgradeTier ? .secondary(with: LocalizationIds.Success.upgrade) : nil
         )
     }
 
-    private func pending(state: TransactionState) -> PendingTransactionPageState {
+    private func inProgress(state: TransactionState) -> PendingTransactionPageState {
         let sent = state.amount
         let received: MoneyValue
         switch state.moneyValueFromDestination() {
@@ -86,21 +90,21 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
         if !received.isZero, !sent.isZero {
             // If we have both sent and receive values:
             title = String(
-                format: LocalizationIds.Pending.title,
+                format: LocalizationIds.InProgress.title,
                 received.displayString,
                 sent.displayString
             )
         } else {
             // If we have invalid inputs but we should continue.
             title = String(
-                format: LocalizationIds.Pending.title,
+                format: LocalizationIds.InProgress.title,
                 received.displayCode,
                 sent.displayCode
             )
         }
         return .init(
             title: title,
-            subtitle: LocalizationIds.Pending.description,
+            subtitle: LocalizationIds.InProgress.description,
             compositeViewType: .composite(
                 .init(
                     baseViewType: coreBuyIcon,
@@ -108,8 +112,29 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                     backgroundColor: .primaryButton,
                     cornerRadiusRatio: 0.5
                 )
+            )
+        )
+    }
+
+    private func pending(state: TransactionState) -> PendingTransactionPageState {
+        let canUpgradeTier = canUpgradeTier(from: state.userKYCTiers)
+        return PendingTransactionPageState(
+            title: LocalizationIds.Pending.title,
+            subtitle: LocalizationIds.Pending.description,
+            compositeViewType: .composite(
+                .init(
+                    baseViewType: coreBuyIcon,
+                    sideViewAttributes: .init(
+                        type: .image(.local(name: "clock-error-icon", bundle: .platformUIKit)),
+                        position: .radiusDistanceFromCenter
+                    ),
+                    backgroundColor: .primaryButton,
+                    cornerRadiusRatio: 0.5
+                )
             ),
-            buttonViewModel: nil
+            effect: .close,
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString),
+            secondaryButtonViewModel: canUpgradeTier ? .secondary(with: LocalizationIds.Success.upgrade) : nil
         )
     }
 
@@ -129,7 +154,12 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
+    }
+
+    private func canUpgradeTier(from kycTiers: KYC.UserTiers?) -> Bool {
+        // Default to Tier 2 if needed so we don't show the upgrade prompt unnecessarily
+        (kycTiers?.latestApprovedTier ?? .tier2) < .tier2
     }
 }

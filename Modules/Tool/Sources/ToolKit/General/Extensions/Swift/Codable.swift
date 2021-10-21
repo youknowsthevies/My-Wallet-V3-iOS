@@ -12,8 +12,12 @@ extension Decodable {
 
 extension Encodable {
 
+    public func data(using encoder: JSONEncoder = .init()) throws -> Data {
+        try encoder.encode(self)
+    }
+
     public func json(using encoder: JSONEncoder = .init()) throws -> Any {
-        try encoder.encode(self).json()
+        try data(using: encoder).json()
     }
 }
 
