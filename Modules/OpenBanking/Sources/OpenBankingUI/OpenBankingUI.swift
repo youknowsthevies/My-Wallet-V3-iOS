@@ -16,7 +16,11 @@ extension OpenBankingState {
         .institutionList(.init())
     }
 
-    public static func pay(amountMinor: String, product: String, from bankAccount: OpenBanking.BankAccount) -> Self {
+    public static func pay(
+        amountMinor: String,
+        product: String,
+        from bankAccount: OpenBanking.BankAccount
+    ) -> Self {
         .approve(
             .init(
                 bank: .init(

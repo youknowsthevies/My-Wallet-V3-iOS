@@ -150,6 +150,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         }
         state.ui = .updatingWallet
         return .merge(
+            .cancel(id: ID.Poll()),
             environment.openBanking.state.publisher(for: .is.authorised, as: Bool.self)
                 .ignoreResultFailure()
                 .receive(on: environment.scheduler.main)
@@ -170,12 +171,15 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         if let error = payment.extraAttributes?.error {
             return Effect(value: .fail(.code(error)))
         }
-        state.ui = .payment(success: payment)
-        return .none
+        state.ui = .payment(success: payment, in: environment)
+        return .cancel(id: ID.Poll())
 
     case .success:
         state.ui = .linked(institution: state.bankName)
-        return .none
+        return .merge(
+            .cancel(id: ID.Linked()),
+            .cancel(id: ID.ConsentError())
+        )
 
     case .dismiss:
         return .fireAndForget(environment.dismiss)
@@ -210,7 +214,7 @@ public struct BankView: View {
                         Spacer()
                         InfoView(
                             ui.info,
-                            in: resources
+                            in: .componentLibrary
                         )
                         Spacer()
                     },

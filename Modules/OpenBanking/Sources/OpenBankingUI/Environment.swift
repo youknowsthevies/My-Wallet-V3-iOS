@@ -17,15 +17,16 @@ public struct OpenBankingEnvironment {
     public var openBanking: OpenBanking
     public var showTransferDetails: () -> Void
     public var dismiss: () -> Void
-    public var openURL: ExternalAppOpener
+    public var openURL: URLOpener
+    public var fiatCurrencyFormatter: FiatCurrencyFormatter
 
     public init(
         scheduler: Scheduler = .init(),
         openBanking: OpenBanking = resolve(),
         showTransferDetails: @escaping () -> Void = {},
         dismiss: @escaping () -> Void = {},
-        openURL: ExternalAppOpener = resolve(),
-        formatter: FiatCurrencyFormatter = resolve(),
+        openURL: URLOpener = resolve(),
+        fiatCurrencyFormatter: FiatCurrencyFormatter = resolve(),
         currency: String
     ) {
         self.scheduler = scheduler
@@ -33,6 +34,7 @@ public struct OpenBankingEnvironment {
         self.showTransferDetails = showTransferDetails
         self.dismiss = dismiss
         self.openURL = openURL
+        self.fiatCurrencyFormatter = fiatCurrencyFormatter
 
         openBanking.state.set(.currency, to: currency)
     }

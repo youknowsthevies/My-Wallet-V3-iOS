@@ -5,7 +5,7 @@ import ComposableArchitecture
 import NetworkKit
 import TestKit
 
-final class InstitutionListTests: XCTestCase {
+final class InstitutionListTests: OpenBankingTestCase {
 
     typealias Store = TestStore<
         InstitutionListState,
@@ -17,35 +17,13 @@ final class InstitutionListTests: XCTestCase {
 
     private var store: Store!
 
-    private var scheduler = (
-        main: DispatchQueue.test,
-        background: DispatchQueue.test
-    )
-
-    private var network: ReplayNetworkCommunicator!
-
-    // swiftlint:disable:next force_try
-    lazy var account = try! network[URLRequest(.post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer")]
-        .unwrap()
-        .decode(to: OpenBanking.BankAccount.self)
-
-    lazy var institution = account.attributes.institutions![1]
-
     override func setUpWithError() throws {
         try super.setUpWithError()
-        scheduler = (main: DispatchQueue.test, background: DispatchQueue.test)
-        let (environment, network) = OpenBankingEnvironment.test(
-            scheduler: .init(
-                main: scheduler.main.eraseToAnyScheduler(),
-                background: scheduler.background.eraseToAnyScheduler()
-            )
-        )
         store = .init(
             initialState: .init(),
             reducer: institutionListReducer,
             environment: environment
         )
-        self.network = network
     }
 
     func test_initial_state() throws {
@@ -75,52 +53,30 @@ final class InstitutionListTests: XCTestCase {
         store.assert(
             .send(.fetch),
             .do { [self] in scheduler.main.run() },
-            .receive(.fetched(account)) { state in
-                state.account = .success(self.account)
+            .receive(.fetched(createAccount)) { [self] state in
+                state.account = .success(createAccount)
             }
         )
     }
 
     func test_show_transfer_details() throws {
-
-        let (environment, _) = OpenBankingEnvironment.test(
-            showTransferDetails: expectation(description: "showTransferDetails").fulfill
-        )
-
-        store = .init(
-            initialState: .init(),
-            reducer: institutionListReducer,
-            environment: environment
-        )
-
         store.assert(.send(.showTransferDetails))
-        waitForExpectations(timeout: 0)
+        XCTAssertTrue(showTransferDetails)
     }
 
     func test_dismiss() throws {
-
-        let (environment, _) = OpenBankingEnvironment.test(
-            dismiss: expectation(description: "dismiss").fulfill
-        )
-
-        store = .init(
-            initialState: .init(),
-            reducer: institutionListReducer,
-            environment: environment
-        )
-
         store.assert(.send(.dismiss))
-        waitForExpectations(timeout: 0)
+        XCTAssertTrue(dismiss)
     }
 
     var approve: [Store.Step] {
         [
-            .send(.fetched(account)) { [self] state in
-                state.account = .success(account)
+            .send(.fetched(createAccount)) { [self] state in
+                state.account = .success(createAccount)
             },
             .send(.select(institution)) { [self] state in
                 state.selection = .init(
-                    bank: .init(account: account, action: .link(institution: institution))
+                    bank: .init(account: createAccount, action: .link(institution: institution))
                 )
             },
             .receive(.navigate(to: .approve)) { state in
@@ -161,22 +117,9 @@ final class InstitutionListTests: XCTestCase {
             },
             .receive(.fetch),
             .do { [self] in scheduler.main.advance() },
-            .receive(.fetched(account)) { [self] state in
-                state.account = .success(account)
+            .receive(.fetched(createAccount)) { [self] state in
+                state.account = .success(createAccount)
             }
         )
-    }
-}
-
-extension TestStore where LocalState: Equatable, Action: Equatable {
-
-    /// Asserts against a script of actions.
-    public func assert(
-        _ first: [Step],
-        _ rest: Step...,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) {
-        assert(first + rest, file: file, line: line)
     }
 }

@@ -5,7 +5,7 @@ import ComposableArchitecture
 import NetworkKit
 import TestKit
 
-final class ApproveTests: XCTestCase {
+final class ApproveTests: OpenBankingTestCase {
 
     typealias Store = TestStore<
         ApproveState,
@@ -17,39 +17,67 @@ final class ApproveTests: XCTestCase {
 
     private var store: Store!
 
-    private var scheduler = (
-        main: DispatchQueue.test,
-        background: DispatchQueue.test
-    )
-
-    private var network: ReplayNetworkCommunicator!
-
-    // swiftlint:disable:next force_try
-    lazy var account = try! network[URLRequest(.post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer")]
-        .unwrap()
-        .decode(to: OpenBanking.BankAccount.self)
-
-    lazy var institution = account.attributes.institutions![1]
-
     override func setUpWithError() throws {
         try super.setUpWithError()
-        scheduler = (main: DispatchQueue.test, background: DispatchQueue.test)
-        let (environment, network) = OpenBankingEnvironment.test(
-            scheduler: .init(
-                main: scheduler.main.eraseToAnyScheduler(),
-                background: scheduler.background.eraseToAnyScheduler()
-            )
-        )
-        self.network = network
         store = .init(
-            initialState: .init(bank: .init(account: account, action: .link(institution: institution))),
+            initialState: initialState,
             reducer: approveReducer,
             environment: environment
         )
     }
 
-    func test_initial_state() throws {
-
+    var initialState: ApproveState {
+        ApproveState(
+            bank: .init(account: createAccount, action: .link(institution: institution))
+        )
     }
 
+    func test_initial_state() throws {
+        let state = initialState
+        XCTAssertNil(state.route)
+        XCTAssertNil(state.ui)
+    }
+
+    func test_onAppear() throws {
+        store.assert(
+            .send(.onAppear) { [self] state in
+                state.ui = .model(createAccount, for: .link(institution: institution), in: environment)
+            }
+        )
+    }
+
+    func test_onAppear_pay() throws {
+
+        store = .init(
+            initialState: ApproveState(
+                bank: .init(account: createAccount, action: .pay(amountMinor: "1000", product: "SIMPLEBUY"))
+            ),
+            reducer: approveReducer,
+            environment: environment
+        )
+
+        store.assert(
+            .send(.onAppear) { [self] state in
+                state.ui = .model(createAccount, for: .pay(amountMinor: "1000", product: "SIMPLEBUY"), in: environment)
+            }
+        )
+    }
+
+    func test_approve() throws {
+        store.assert(
+            .send(.approve),
+            .receive(.navigate(to: .bank)) { state in
+                state.route = .init(route: .bank, action: .navigateTo)
+            }
+        )
+    }
+
+    func test_dismiss() throws {
+        store.assert(.send(.dismiss))
+        XCTAssertTrue(dismiss)
+    }
+
+    func test_deny() throws {
+        store.assert(.send(.deny))
+    }
 }

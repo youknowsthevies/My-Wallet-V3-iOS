@@ -62,9 +62,12 @@ extension BankState.UI {
         }
     )
 
-    static func payment(success payment: OpenBanking.Payment.Details) -> Self {
+    static func payment(success payment: OpenBanking.Payment.Details, in environment: OpenBankingEnvironment) -> Self {
 
-        guard let fiat = formatMoney(payment.amount.value, payment.amount.symbol) else {
+        guard let fiat = environment.fiatCurrencyFormatter.displayString(
+            amountMinor: payment.amount.value,
+            currency: payment.amount.symbol
+        ) else {
             return .errorMessage(R.Bank.Payment.error.interpolating(payment.amount.symbol))
         }
 

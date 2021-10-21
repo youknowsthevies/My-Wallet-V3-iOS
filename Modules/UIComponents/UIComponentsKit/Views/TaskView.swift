@@ -6,25 +6,6 @@ import ComponentLibrary
 
 public struct Task: Codable, Hashable {
 
-    public struct Style: Codable, Hashable {
-
-        public struct Text: Codable, Hashable {
-            var typography: Typography?
-        }
-
-        public struct Padding: Codable, Hashable {
-            var top: Length?
-            var leading: Length?
-            var bottom: Length?
-            var trailing: Length?
-        }
-
-        var text: Text?
-        var padding: Padding?
-        var foreground: Texture?
-        var background: Texture?
-    }
-
     public struct Row: Codable, Hashable {
         var title: String
         var value: String
@@ -61,6 +42,25 @@ public struct Task: Codable, Hashable {
     var divider: Bool?
     var group: Group?
     var style: Style?
+}
+
+public struct Style: Codable, Hashable {
+
+    public struct Text: Codable, Hashable {
+        var typography: Typography?
+    }
+
+    public struct Padding: Codable, Hashable {
+        var top: Length?
+        var leading: Length?
+        var bottom: Length?
+        var trailing: Length?
+    }
+
+    var text: Text?
+    var padding: Padding?
+    var foreground: Texture?
+    var background: Texture?
 }
 
 public struct TaskView: View {
@@ -329,7 +329,7 @@ extension Collection where Element == Task {
     }
 }
 
-extension Task.Style.Padding {
+extension Style.Padding {
 
     fileprivate init(_ length: Length?, edges: Edge.Set) {
         guard let length = length else { return }

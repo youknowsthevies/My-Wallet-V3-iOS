@@ -15,7 +15,11 @@ extension ApproveState.UI {
         return formatter
     }()
 
-    static func model(_ bankAccount: OpenBanking.BankAccount, for action: BankState.Action) -> ApproveState.UI {
+    static func model(
+        _ bankAccount: OpenBanking.BankAccount,
+        for action: BankState.Action,
+        in environment: OpenBankingEnvironment
+    ) -> ApproveState.UI {
 
         let _90days = DateComponents(day: 90)
         let expiry = Calendar.current.date(byAdding: _90days, to: Date())
@@ -34,13 +38,17 @@ extension ApproveState.UI {
                     .padding()
                 ]
             )
+
         case .pay(let amountMinor, _):
             let details = bankAccount.details
             guard let bankName = details?.bankName,
                   let sortCode = details?.sortCode,
                   let accountNumber = details?.accountNumber,
                   let currency =  bankAccount.currency,
-                  let amount = formatMoney(amountMinor, currency)
+                  let amount = environment.fiatCurrencyFormatter.displayString(
+                    amountMinor: amountMinor,
+                    currency: currency
+                  )
             else {
                 return .init(title: R.Error.title, tasks: [])
             }

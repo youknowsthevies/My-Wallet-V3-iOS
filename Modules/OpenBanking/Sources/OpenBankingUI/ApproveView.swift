@@ -15,11 +15,10 @@ public struct ApproveState: Equatable, NavigationState {
 
     public var route: RouteIntent<ApproveRoute>?
     public var bank: BankState
-    public var ui: UI
+    public var ui: UI?
 
     init(bank: BankState) {
         self.bank = bank
-        ui = .model(bank.account, for: bank.action)
     }
 }
 
@@ -27,6 +26,7 @@ public enum ApproveAction: Hashable, NavigationAction {
 
     case route(RouteIntent<ApproveRoute>?)
 
+    case onAppear
     case approve
     case deny
     case dismiss
@@ -59,6 +59,9 @@ public let approveReducer = Reducer<ApproveState, ApproveAction, OpenBankingEnvi
         case .route(let route):
             state.route = route
             return .none
+        case .onAppear:
+            state.ui = .model(state.bank.account, for: state.bank.action, in: environment)
+            return .none
         case .approve:
             return .navigate(to: .bank)
         case .dismiss:
@@ -80,7 +83,16 @@ public struct ApproveView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             Group {
-                if viewStore.ui.tasks.isEmpty {
+                if let ui = viewStore.ui, !ui.tasks.isEmpty {
+                    VStack {
+                        ScrollView(showsIndicators: false) {
+                            ForEach(ui.tasks, id: \.self, content: TaskView.init)
+                            actionArea
+                                .hidden()
+                        }
+                        .overlay(actionArea, alignment: .bottom)
+                    }
+                } else {
                     InfoView(
                         .init(
                             media: .bankIcon,
@@ -88,17 +100,8 @@ public struct ApproveView: View {
                             title: R.Error.title,
                             subtitle: R.Error.subtitle
                         ),
-                        in: resources
+                        in: .componentLibrary
                     )
-                } else {
-                    VStack {
-                        ScrollView(showsIndicators: false) {
-                            ForEach(viewStore.ui.tasks, id: \.self, content: TaskView.init)
-                            actionArea
-                                .hidden()
-                        }
-                        .overlay(actionArea, alignment: .bottom)
-                    }
                 }
             }
             .navigationTitle(viewStore.bank.account.attributes.entity)
@@ -106,6 +109,9 @@ public struct ApproveView: View {
             .whiteNavigationBarStyle()
             .trailingNavigationButton(.close) {
                 viewStore.send(.dismiss)
+            }
+            .onAppear {
+                viewStore.send(.onAppear)
             }
         }
     }

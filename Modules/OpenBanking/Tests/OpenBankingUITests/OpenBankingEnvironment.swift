@@ -13,7 +13,8 @@ extension OpenBankingEnvironment {
             background: DispatchQueue.test.eraseToAnyScheduler()
         ),
         showTransferDetails: @escaping () -> Void = {},
-        dismiss: @escaping () -> Void = {}
+        dismiss: @escaping () -> Void = {},
+        openURL: @escaping (URL) -> Void = { _ in }
     ) -> (environment: OpenBankingEnvironment, network: ReplayNetworkCommunicator) {
         let (banking, network) = OpenBanking.test(using: scheduler.main)
         return (
@@ -22,7 +23,8 @@ extension OpenBankingEnvironment {
                 openBanking: banking,
                 showTransferDetails: showTransferDetails,
                 dismiss: dismiss,
-                openURL: PrintAppOpen(),
+                openURL: OpenURL(yield: openURL),
+                fiatCurrencyFormatter: NoFormatFiatCurrencyFormatter(),
                 currency: "GBP"
             ),
             network

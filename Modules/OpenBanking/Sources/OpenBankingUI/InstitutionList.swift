@@ -76,7 +76,10 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                     .or(throw: OpenBanking.Error.message(R.InstitutionList.Error.invalidAccount))
                     .get()
                 state.selection = .init(
-                    bank: .init(account: account, action: .link(institution: institution))
+                    bank: .init(
+                        account: account,
+                        action: .link(institution: institution)
+                    )
                 )
                 return .navigate(to: .approve)
             case .approve(.deny):
@@ -140,7 +143,7 @@ public struct InstitutionList: View {
                             title: R.Error.title,
                             subtitle: "\(error.description)"
                         ),
-                        in: resources
+                        in: .componentLibrary
                     )
                 }
             }

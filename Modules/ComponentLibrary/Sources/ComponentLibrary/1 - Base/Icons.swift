@@ -15,7 +15,7 @@ import SwiftUI
 ///
 ///  [Assets - Icons](https://www.figma.com/file/3jESURhHQ4VBTQcu0aZkoX/01---Assets-%7C-Icons)
 public struct Icon {
-    let name: String
+    public let name: String
 
     /// A SwiftUI Image View representing the given icon
     public var image: Image {
@@ -36,6 +36,7 @@ extension Icon {
     public static let backup = Icon(name: "Backup")
     public static let bank = Icon(name: "Bank")
     public static let blockchain = Icon(name: "Blockchain")
+    public static let blockchainCircle = Icon(name: "Blockchain Circle")
     public static let calendar = Icon(name: "Calendar")
     public static let call = Icon(name: "Call")
     public static let camera = Icon(name: "Camera")
