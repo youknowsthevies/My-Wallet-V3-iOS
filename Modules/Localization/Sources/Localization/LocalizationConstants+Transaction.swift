@@ -522,6 +522,7 @@ extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Success 
         "Your %@ has been withdrawn successfully.",
         comment: "Your %@ has been withdrawn successfully."
     )
+    public static let action = NSLocalizedString("OK", comment: "OK")
 }
 
 extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Failure {
@@ -565,6 +566,7 @@ extension LocalizationConstants.Transaction.Transfer.Completion.Success {
         "Your %@ has been transferred successfully.",
         comment: "Your %@ has been transferred successfully."
     )
+    public static let action = NSLocalizedString("OK", comment: "OK")
 }
 
 extension LocalizationConstants.Transaction.Transfer.Completion.Failure {
