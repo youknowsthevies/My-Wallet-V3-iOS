@@ -301,10 +301,6 @@ extension BuyTransactionEngine {
                 maximumAnnualLimit: limits.maximumAnnual
             )
         }
-        .flatMap { [validateAmount] transaction in
-            validateAmount(transaction)
-                .asPublisher()
-        }
         .asSingle()
     }
 
@@ -338,7 +334,7 @@ extension BuyTransactionEngine {
         sourceAccount
             .balance
             .asPublisher()
-            .replaceError(with: PriceServiceError.missingPrice)
+            .replaceError(with: .zero(currency: currency))
             .flatMap { [conversionService] balance in
                 conversionService.convert(balance, to: currency)
             }
