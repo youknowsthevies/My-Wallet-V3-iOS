@@ -40,7 +40,6 @@ public enum Onboarding {
         public var deeplinkContent: URIContent?
         public var walletCreationContext: WalletCreationContext?
         public var walletRecoveryContext: WalletRecoveryContext?
-        public var newPasswordForWalletRecovery: String?
         public var nabuInfoForResetAccount: WalletInfo.NabuInfo?
 
         /// Helper method to toggle any visible legacy screen if needed

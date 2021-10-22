@@ -5,10 +5,15 @@ import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 
-final class ERC20ExternalAssetAddressFactory: CryptoReceiveAddressFactory {
+final class ERC20ExternalAssetAddressFactory: ExternalAssetAddressFactory {
+
+    private let asset: CryptoCurrency
+
+    init(asset: CryptoCurrency) {
+        self.asset = asset
+    }
 
     func makeExternalAssetAddress(
-        asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted

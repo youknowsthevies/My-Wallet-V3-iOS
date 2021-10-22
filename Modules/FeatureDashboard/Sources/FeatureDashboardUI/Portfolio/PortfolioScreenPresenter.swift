@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import ComposableNavigation
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -213,12 +214,12 @@ final class PortfolioScreenPresenter {
 
         // Bind fiat balances.
         fiatBalancePresenter.action
-            .do(onNext: { action in
+            .do(onNext: { [weak self] action in
                 switch action {
                 case .hide:
-                    self.model.fiatBalanceCollectionViewPresenter = nil
+                    self?.model.fiatBalanceCollectionViewPresenter = nil
                 case .show(let presenter):
-                    self.model.fiatBalanceCollectionViewPresenter = presenter
+                    self?.model.fiatBalanceCollectionViewPresenter = presenter
                 }
             })
             .asObservable()

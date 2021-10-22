@@ -7,7 +7,6 @@ import PlatformUIKit
 
 struct KYCTierCellModel {
 
-    // TODO: Likely to be replaced
     // Only using this to test cells
     enum ApprovalStatus {
         case none
@@ -26,7 +25,7 @@ struct KYCTierCellModel {
 extension KYCTierCellModel {
 
     var limitDescription: String {
-        fiatValue.toDisplayString(includeSymbol: true)
+        fiatValue.toDisplayString(includeSymbol: true, format: .shortened, locale: .current)
     }
 
     var requirementsVisibility: Visibility {
@@ -116,10 +115,15 @@ extension KYCTierCellModel {
         from userTier: KYC.UserTier
     ) -> KYCTierCellModel? {
         let value = approvalStatusFromTierState(userTier.state)
-        guard let limits = userTier.limits else { return nil }
-        let currency = FiatCurrency(code: limits.currency) ?? .USD
-        let limit: Decimal = (limits.annual ?? limits.daily) ?? 0
-        let fiatValue = FiatValue.create(major: limit, currency: currency)
+        // NOTE: hardcoded for now (IOS-5581), but it will be fixed in upcoming limits revamp work.
+        let fiatValue: FiatValue
+        if userTier.tier == .tier1 {
+            fiatValue = FiatValue(amount: 200000, currency: .USD)
+        } else if userTier.tier == .tier2 {
+            fiatValue = FiatValue(amount: 50000000, currency: .USD)
+        } else {
+            fiatValue = .zero(currency: .USD)
+        }
         return KYCTierCellModel(tier: userTier.tier, status: value, fiatValue: fiatValue)
     }
 

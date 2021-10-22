@@ -12,7 +12,8 @@ extension StellarHistoricalTransaction {
             creationDate: createdAt,
             status: .complete,
             type: direction == .debit ? .receive : .send,
-            amount: amount
+            amount: amount,
+            fee: fee
         )
     }
 }

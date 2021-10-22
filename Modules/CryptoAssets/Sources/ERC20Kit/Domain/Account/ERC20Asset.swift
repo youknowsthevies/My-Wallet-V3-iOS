@@ -38,8 +38,8 @@ final class ERC20Asset: CryptoAsset {
         )
     }()
 
-    private let addressFactory: ERC20ExternalAssetAddressFactory
-    private let erc20Token: ERC20AssetModel
+    private let addressFactory: ExternalAssetAddressFactory
+    private let erc20Token: AssetModel
     private let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let walletAccountBridge: EthereumWalletAccountRepositoryAPI
@@ -48,15 +48,14 @@ final class ERC20Asset: CryptoAsset {
     // MARK: - Setup
 
     init(
-        erc20Token: ERC20AssetModel,
+        erc20Token: AssetModel,
         walletAccountBridge: EthereumWalletAccountRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve(),
-        addressFactory: ERC20ExternalAssetAddressFactory = .init()
+        kycTiersService: KYCTiersServiceAPI = resolve()
     ) {
-        asset = erc20Token.cryptoCurrency
-        self.addressFactory = addressFactory
+        asset = .erc20(erc20Token)
+        addressFactory = ERC20ExternalAssetAddressFactory(asset: asset)
         self.erc20Token = erc20Token
         self.walletAccountBridge = walletAccountBridge
         self.errorRecorder = errorRecorder
@@ -79,11 +78,19 @@ final class ERC20Asset: CryptoAsset {
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
         cryptoAssetRepository.parse(address: address)
     }
+
+    func parse(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping (TransactionResult) -> Completable
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        cryptoAssetRepository.parse(address: address, label: label, onTxCompleted: onTxCompleted)
+    }
 }
 
 extension EthereumWalletAccountRepositoryAPI {
 
-    fileprivate func defaultAccount(erc20Token: ERC20AssetModel) -> AnyPublisher<SingleAccount, CryptoAssetError> {
+    fileprivate func defaultAccount(erc20Token: AssetModel) -> AnyPublisher<SingleAccount, CryptoAssetError> {
         defaultAccount
             .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .map { account in

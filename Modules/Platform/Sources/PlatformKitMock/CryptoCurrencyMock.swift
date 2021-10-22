@@ -2,9 +2,9 @@
 
 @testable import PlatformKit
 
-extension ERC20AssetModel {
-    static func mock(name: String, precision: Int = 18, sortIndex: Int = 0) -> ERC20AssetModel {
-        ERC20AssetModel(
+extension AssetModel {
+    static func mockERC20(name: String, precision: Int = 18, sortIndex: Int = 0) -> AssetModel {
+        AssetModel(
             assetResponse: .init(
                 symbol: name,
                 displaySymbol: name,
@@ -24,11 +24,9 @@ extension ERC20AssetModel {
             sortIndex: sortIndex
         )!
     }
-}
 
-extension CoinAssetModel {
-    static func mock(name: String, precision: Int = 18, sortIndex: Int = 0) -> CoinAssetModel {
-        CoinAssetModel(
+    static func mockCoin(name: String, precision: Int = 18, sortIndex: Int = 0) -> AssetModel {
+        AssetModel(
             assetResponse: .init(
                 symbol: name,
                 displaySymbol: name,
@@ -46,6 +44,6 @@ extension CoinAssetModel {
                 )
             ),
             sortIndex: sortIndex
-        )
+        )!
     }
 }

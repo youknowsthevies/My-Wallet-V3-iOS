@@ -40,7 +40,11 @@ public final class KYCTiersViewController: UIViewController {
     public var selectedTier: ((KYC.Tier) -> Void)?
     public let parentFlow: KYCParentFlow
 
-    public init(pageModel: KYCTiersPageModel, parentFlow: KYCParentFlow, title: String = LocalizationConstants.KYC.accountLimits) {
+    public init(
+        pageModel: KYCTiersPageModel,
+        parentFlow: KYCParentFlow,
+        title: String = LocalizationConstants.KYC.accountLimits
+    ) {
         self.pageModel = pageModel
         self.parentFlow = parentFlow
         super.init(nibName: nil, bundle: nil)
@@ -154,7 +158,10 @@ extension KYCTiersViewController: UICollectionViewDataSource {
         pageModel.cells.count
     }
 
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
         let item = pageModel.cells[indexPath.row]
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: KYCTierCell.identifier,
@@ -169,13 +176,15 @@ extension KYCTiersViewController: UICollectionViewDataSource {
 }
 
 extension KYCTiersViewController: UICollectionViewDelegate {
+
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = pageModel.cells[indexPath.row]
         guard let cell = collectionView.cellForItem(at: indexPath) as? KYCTierCell else { return }
         guard item.status == .none else {
             Logger.shared.debug(
                 """
-                Not presenting KYC. KYC should only be presented if the status is `.none` for \(item.tier.tierDescription).
+                Not presenting KYC.
+                KYC should only be presented if the status is `.none` for \(item.tier.tierDescription).
                 The status is: \(item.status)
                 """
             )
@@ -216,7 +225,8 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
                 withReuseIdentifier: KYCTiersFooterView.identifier,
                 for: indexPath
             ) as? KYCTiersFooterView else { return UICollectionReusableView() }
-            let trigger = ActionableTrigger(text: disclaimer, CTA: LocalizationConstants.ObjCStrings.BC_STRING_LEARN_MORE) { [weak self] in
+            let ctaTitle = LocalizationConstants.ObjCStrings.BC_STRING_LEARN_MORE
+            let trigger = ActionableTrigger(text: disclaimer, CTA: ctaTitle) { [weak self] in
                 guard let strongSelf = self else { return }
                 guard let supportURL = URL(string: Constants.Url.airdropProgram) else { return }
                 let controller = SFSafariViewController(url: supportURL)
@@ -283,7 +293,7 @@ extension KYCTiersViewController: KYCTierCellDelegate {
             block(selectedTier)
         } else {
             let kycRouter: KYCRouterAPI = resolve()
-            guard let viewController = UIApplication.shared.keyWindow?.rootViewController?.topMostViewController else { return }
+            guard let viewController = UIApplication.shared.topMostViewController else { return }
             kycRouter.start(tier: selectedTier, parentFlow: parentFlow, from: viewController)
         }
     }
@@ -313,37 +323,26 @@ extension KYCTiersViewController: KYCTiersInterface {
 
 extension KYCTiersViewController {
 
-    private static func tiersPageModel() -> Single<KYCTiersPageModel> {
-        let currencyService: FiatCurrencyServiceAPI = resolve()
-        let tiersService: KYCTiersServiceAPI = resolve()
-        let limitsAPI: TradeLimitsAPI = resolve()
-        return currencyService.fiatCurrency
-            .flatMap { [limitsAPI, tiersService] fiatCurrency -> Single<(TradeLimits?, KYC.UserTiers, FiatCurrency)> in
-                let tradeLimits = limitsAPI
-                    .getTradeLimits(withFiatCurrency: fiatCurrency.code, ignoringCache: true)
-                    .optional()
-                    .catchErrorJustReturn(nil)
-
-                return Single
-                    .zip(
-                        tradeLimits,
-                        tiersService.tiers.asSingle(),
-                        .just(fiatCurrency)
-                    )
-            }
-            .map { tradeLimits, tiers, fiatCurrency -> (FiatValue, KYC.UserTiers) in
+    private static func tiersPageModel(
+        tiersService: KYCTiersServiceAPI = resolve()
+    ) -> Single<KYCTiersPageModel> {
+        // NOTE: currency hardcoded for now (IOS-5581), but it will be fixed in upcoming limits revamp work.
+        tiersService.tiers
+            .map { tiers -> (FiatValue, KYC.UserTiers) in
                 guard tiers.tierAccountStatus(for: .tier1).isApproved else {
-                    return (.zero(currency: fiatCurrency), tiers)
+                    return (.zero(currency: .USD), tiers)
                 }
+                let latestApprovedTier = tiers.tiers.first(where: { $0.tier == tiers.latestApprovedTier })
                 let maxTradableToday = FiatValue.create(
-                    major: tradeLimits?.maxTradableToday ?? 0,
-                    currency: fiatCurrency
+                    major: latestApprovedTier?.limits?.daily ?? 0,
+                    currency: .USD
                 )
                 return (maxTradableToday, tiers)
             }
             .map { maxTradableToday, tiers -> KYCTiersPageModel in
                 KYCTiersPageModel.make(tiers: tiers, maxTradableToday: maxTradableToday, suppressCTA: true)
             }
+            .asSingle()
     }
 
     public static func routeToTiers(

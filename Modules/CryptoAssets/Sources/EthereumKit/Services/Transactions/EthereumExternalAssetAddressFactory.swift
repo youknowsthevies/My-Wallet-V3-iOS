@@ -4,10 +4,9 @@ import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
 
-final class EthereumExternalAssetAddressFactory: CryptoReceiveAddressFactory {
+final class EthereumExternalAssetAddressFactory: ExternalAssetAddressFactory {
 
     func makeExternalAssetAddress(
-        asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted

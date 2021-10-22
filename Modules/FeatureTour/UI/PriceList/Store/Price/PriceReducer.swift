@@ -2,6 +2,7 @@
 
 import Combine
 import ComposableArchitecture
+import ComposableNavigation
 import PlatformKit
 
 let priceReducer = Reducer<Price, PriceAction, PriceEnvironment> { state, action, environment in

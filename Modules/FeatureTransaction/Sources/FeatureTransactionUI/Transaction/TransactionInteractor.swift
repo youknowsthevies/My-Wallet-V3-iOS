@@ -217,11 +217,28 @@ final class TransactionInteractor {
         }
     }
 
-    func verifyAndExecute(secondPassword: String) -> Single<TransactionResult> {
+    func verifyAndExecute(order: TransactionOrder?, secondPassword: String) -> Single<TransactionResult> {
         guard let transactionProcessor = transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
-        return transactionProcessor.execute(secondPassword: secondPassword)
+        return transactionProcessor.execute(
+            order: order,
+            secondPassword: secondPassword
+        )
+    }
+
+    func createOrder() -> Single<TransactionOrder?> {
+        guard let transactionProcessor = transactionProcessor else {
+            fatalError("Tx Processor is nil")
+        }
+        return transactionProcessor.createOrder()
+    }
+
+    func cancelOrder(with identifier: String) -> Single<Void> {
+        guard let transactionProcessor = transactionProcessor else {
+            fatalError("Tx Processor is nil")
+        }
+        return transactionProcessor.cancelOrder(with: identifier)
     }
 
     func modifyTransactionConfirmation(_ newConfirmation: TransactionConfirmation) -> Completable {

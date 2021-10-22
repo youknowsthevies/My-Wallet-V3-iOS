@@ -207,7 +207,7 @@ extension Typography: ViewModifier {
 
     var font: Font {
         loadCustomFonts()
-        let size = size.in(CGRect.mainScreenBounds)
+        let size = size.in(CGRect.screen)
 
         #if canImport(UIKit)
         switch design {

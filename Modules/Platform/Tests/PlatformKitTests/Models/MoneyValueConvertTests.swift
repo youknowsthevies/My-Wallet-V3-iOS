@@ -5,16 +5,16 @@ import XCTest
 
 final class MoneyValueConvertTests: XCTestCase {
 
-    var mockCoin6Precision: CoinAssetModel {
-        CoinAssetModel(
+    var mockCoin6Precision: AssetModel {
+        AssetModel(
             code: "MOCK",
             displayCode: "MOCK",
+            kind: .coin(minimumOnChainConfirmations: 0),
             name: "Mock Coin",
             precision: 6,
             products: [],
             logoPngUrl: nil,
             spotColor: nil,
-            minimumOnChainConfirmations: 0,
             sortIndex: 0
         )
     }

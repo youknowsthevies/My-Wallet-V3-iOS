@@ -27,7 +27,7 @@
 *.tgz
 *.tsbuildinfo
 *.xccheckout
-*.xcodeproj/*
+**/*.xcodeproj/*
 *.xcscmblueprint
 ._*
 .accio/

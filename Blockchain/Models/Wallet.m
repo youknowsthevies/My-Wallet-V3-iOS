@@ -1306,6 +1306,8 @@ NSString * const kAccountInvitations = @"invited";
     DLog(@"on_get_history_success");
 }
 
+// TODO: Separate the metadata recovery and loading wallet in the future
+// This will gives greater flexibility of when to load the wallet after recovery
 - (void)on_success_recover_with_passphrase:(NSDictionary *)recoveredWalletDictionary
 {
     DLog(@"on_recover_with_passphrase_success_guid:sharedKey:password:");

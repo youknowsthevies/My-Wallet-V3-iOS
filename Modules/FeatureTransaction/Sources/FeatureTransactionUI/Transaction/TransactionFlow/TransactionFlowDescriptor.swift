@@ -32,12 +32,12 @@ enum TransactionFlowDescriptor {
                 guard let source = state.source as? CryptoAccount else {
                     fatalError("Expected a FiatAccount")
                 }
-                return "\(source.currencyType.code) " + LocalizedString.Withdraw.account
+                return "\(source.currencyType.displayCode) " + LocalizedString.Withdraw.account
             case .withdraw:
                 guard let source = state.source as? FiatAccount else {
                     fatalError("Expected a FiatAccount")
                 }
-                return "\(source.fiatCurrency.code) " + LocalizedString.Withdraw.account
+                return "\(source.fiatCurrency.displayCode) " + LocalizedString.Withdraw.account
             case .deposit,
                  .interestTransfer:
                 return LocalizedString.Deposit.dailyLimit
@@ -45,7 +45,7 @@ enum TransactionFlowDescriptor {
                 guard let source = state.source, let destination = state.destination else {
                     return LocalizedString.Buy.title
                 }
-                return "\(LocalizedString.Buy.title) \(destination.currencyType.code) using \(source.label)"
+                return "\(LocalizedString.Buy.title) \(destination.currencyType.displayCode) using \(source.label)"
             case .sell:
                 return [
                     LocalizedString.Sell.headerTitlePrefix,
@@ -88,7 +88,7 @@ enum TransactionFlowDescriptor {
                 guard let destination = state.destination else {
                     return prefix
                 }
-                return "\(prefix) \(destination.currencyType.code) \(destination.label)"
+                return "\(prefix) \(destination.currencyType.displayCode) \(destination.label)"
             case .sell:
                 return [
                     LocalizedString.Sell.headerSubtitlePrefix,

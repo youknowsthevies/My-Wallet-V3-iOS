@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableNavigation
 import PlatformKit
 import RxCocoa
 import RxRelay
@@ -51,7 +52,7 @@ public final class WalletBalanceViewPresenter {
             )
 
             currencyCode = LabelContent(
-                text: value.fiatCurrency.code,
+                text: value.fiatCurrency.displayCode,
                 font: descriptors.descriptionFont,
                 color: descriptors.descriptionTextColor,
                 accessibility: .id(AccessibilityId.currencyCode)

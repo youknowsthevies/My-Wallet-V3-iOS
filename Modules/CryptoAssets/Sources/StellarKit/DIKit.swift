@@ -36,8 +36,6 @@ extension DependencyContainer {
 
         factory { LedgersServiceProvider() as LedgersServiceProviderAPI }
 
-        factory(tag: CoinAssetModel.stellar.typeTag) { StellarCryptoReceiveAddressFactory() as CryptoReceiveAddressFactory }
-
         factory { StellarHistoricalTransactionService() as StellarHistoricalTransactionServiceAPI }
     }
 }

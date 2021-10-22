@@ -38,6 +38,9 @@ struct SupportedAssetsResponse: Codable {
 
                 /// A fiat asset.
                 case fiat = "FIAT"
+
+                /// An Celo asset.
+                case celoToken = "CELO_TOKEN"
             }
 
             /// The asset type name.

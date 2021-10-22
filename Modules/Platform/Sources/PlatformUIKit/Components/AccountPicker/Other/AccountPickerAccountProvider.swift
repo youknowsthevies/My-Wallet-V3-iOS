@@ -20,7 +20,7 @@ public final class AccountPickerAccountProvider: AccountPickerAccountProviding {
             switch self {
             case .loadingFailed(let account, let action, let error):
                 let type = String(reflecting: account)
-                let asset = account.currencyType.code
+                let asset = account.currencyType.displayCode
                 let label = account.label
                 return "Failed to load: '\(type)' asset '\(asset)' label '\(label)' action '\(action)'  error '\(error)'."
             }

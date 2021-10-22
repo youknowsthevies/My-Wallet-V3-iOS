@@ -91,3 +91,8 @@ let exampleReducer = Reducer<ExampleState, ExampleAction, Void> { state, action,
 ```swift
 viewStore.send(.enter(into: .a(context: "Hello World!")))
 ```
+
+## StatefulView
+
+A few variants of `StatefulView(...)` are provided to assist in wrapping composable state which can be a combination of `LoadingState<T>` and `Result<Success, Failure>`.
+See `StatefulView.swift` for inline documentation, and `AccountPickerView.swift` for a sample usage.

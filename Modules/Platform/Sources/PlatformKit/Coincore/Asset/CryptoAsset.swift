@@ -15,13 +15,19 @@ public protocol CryptoAsset: Asset {
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> { get }
 
     var canTransactToCustodial: AnyPublisher<Bool, Never> { get }
+
+    func parse(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping (TransactionResult) -> Completable
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError>
 }
 
 extension CryptoAsset {
 
     /// Forces wallets with the previous legacy label to the new default label.
     public func upgradeLegacyLabels(accounts: [BlockchainAccount]) -> AnyPublisher<Void, Never> {
-        let publishers = accounts
+        let publishers: [AnyPublisher<Void, Never>] = accounts
             // Optional cast each element in the array to `CryptoNonCustodialAccount`.
             .compactMap { $0 as? CryptoNonCustodialAccount }
             // Filter in elements that need `labelNeedsForcedUpdate`.

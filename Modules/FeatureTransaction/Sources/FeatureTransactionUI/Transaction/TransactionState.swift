@@ -28,7 +28,7 @@ struct TransactionState: StateType {
     var pendingTransaction: PendingTransaction?
     var executionStatus: TransactionExecutionStatus = .notStarted
     var errorState: TransactionErrorState = .none // TODO: make it associated data of execution status, if related?
-    var order: OrderDetails?
+    var order: TransactionOrder?
     var userKYCTiers: KYC.UserTiers?
 
     // MARK: UI Supporting Data
@@ -89,12 +89,9 @@ extension TransactionState {
     /// The source account `CryptoCurrency`.
     var asset: CurrencyType {
         guard let sourceAccount = source else {
-            preconditionFailure("Source should have been set at this point.")
+            fatalError("Source should have been set at this point. Asset Action: \(action), Step: \(step)")
         }
-        guard let account = sourceAccount as? SingleAccount else {
-            preconditionFailure("Expected a `SingleAccount`: \(String(describing: source))")
-        }
-        return account.currencyType
+        return sourceAccount.currencyType
     }
 
     /// The fees associated with the transaction

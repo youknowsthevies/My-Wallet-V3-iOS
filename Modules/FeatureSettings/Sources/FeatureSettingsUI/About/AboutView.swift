@@ -43,9 +43,12 @@ final class AboutView: UIView {
         if let info = MainBundleProvider.mainBundle.infoDictionary {
             hash = (info[Constants.commitHash] as? String ?? "")
         }
-        var version = LocalizationIDs.version + " " + "\(Bundle.applicationVersion ?? "")"
+
+        let appVersion = Bundle.applicationVersion ?? ""
+        let buildNumber = Bundle.applicationBuildVersion ?? ""
+        var version = "\(LocalizationIDs.version) \(appVersion) (\(buildNumber))"
         if BuildFlag.isInternal {
-            version = "\(version) (\(hash))"
+            version = "\(version) - \(hash)"
         }
 
         versionLabel.content = .init(

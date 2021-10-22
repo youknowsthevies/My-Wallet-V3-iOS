@@ -77,6 +77,14 @@ final class EthereumAsset: CryptoAsset {
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
         cryptoAssetRepository.parse(address: address)
     }
+
+    func parse(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping (TransactionResult) -> Completable
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        cryptoAssetRepository.parse(address: address, label: label, onTxCompleted: onTxCompleted)
+    }
 }
 
 extension EthereumWalletAccountRepositoryAPI {

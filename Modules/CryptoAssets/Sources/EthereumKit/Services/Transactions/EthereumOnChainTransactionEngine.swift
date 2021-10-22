@@ -246,10 +246,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         unimplemented()
     }
 
-    func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        .never()
-    }
-
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         unimplemented()
     }

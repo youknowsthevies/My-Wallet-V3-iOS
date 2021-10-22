@@ -33,7 +33,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .receiveAddress(for: asset)
             .flatMap(weak: self) { (self, address) in
                 self.cryptoReceiveAddressFactory.makeExternalAssetAddress(
-                    asset: self.asset,
                     address: address,
                     label: self.label,
                     onTxCompleted: self.onTxCompleted
@@ -162,7 +161,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     private let balanceService: TradingBalanceServiceAPI
-    private let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
+    private let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     private let custodialAddressService: CustodialAddressServiceAPI
     private let custodialPendingDepositService: CustodialPendingDepositServiceAPI
     private let eligibilityService: EligibilityServiceAPI
@@ -189,7 +188,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         featureFetcher: FeatureFetching = resolve(),
         priceService: PriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
-        cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve(),
+        cryptoReceiveAddressFactory: ExternalAssetAddressFactory,
         custodialAddressService: CustodialAddressServiceAPI = resolve(),
         custodialPendingDepositService: CustodialPendingDepositServiceAPI = resolve(),
         eligibilityService: EligibilityServiceAPI = resolve(),
