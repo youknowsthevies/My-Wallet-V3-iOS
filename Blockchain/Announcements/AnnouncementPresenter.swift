@@ -216,8 +216,10 @@ final class AnnouncementPresenter {
                     data: preliminaryData.assetRename
                 )
             case .celoEUR:
-                announcement = assetRename(
-                    data: preliminaryData.assetRename
+                announcement = celoEUR(
+                    celoEUR: preliminaryData.celoEUR,
+                    user: preliminaryData.user,
+                    tiers: preliminaryData.tiers
                 )
             }
             // Return the first different announcement that should show
