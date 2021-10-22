@@ -102,16 +102,7 @@ extension State {
             .map { result in
                 Self.map(result, to: T.self, for: key)
             }
-            .removeDuplicates(by: { a, b in
-                switch (a, b) {
-                case (.success(let a), .success(let b)):
-                    return a == b
-                case (.failure(.keyDoesNotExist(let a)), .failure(.keyDoesNotExist(let b))):
-                    return a == b
-                default:
-                    return false
-                }
-            })
+            .removeDuplicates()
             .eraseToAnyPublisher()
     }
 
