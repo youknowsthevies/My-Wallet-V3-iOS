@@ -46,6 +46,7 @@ final class TransactionModel {
         switch action {
         case .pendingTransactionStarted:
             return nil
+
         case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, _):
             return processTargetSelectionConfirmed(
                 sourceAccount: sourceAccount,
@@ -53,6 +54,7 @@ final class TransactionModel {
                 amount: .zero(currency: sourceAccount.currencyType),
                 action: action
             )
+
         case .initialiseWithSourceAndPreferredTarget(let action, let sourceAccount, let target, _):
             return processTargetSelectionConfirmed(
                 sourceAccount: sourceAccount,
@@ -60,16 +62,19 @@ final class TransactionModel {
                 amount: .zero(currency: sourceAccount.currencyType),
                 action: action
             )
+
         case .initialiseWithNoSourceOrTargetAccount(let action, _):
             return processSourceAccountsListUpdate(
                 action: action,
                 targetAccount: nil
             )
+
         case .initialiseWithTargetAndNoSource(let action, let target, _):
             return processSourceAccountsListUpdate(
                 action: action,
                 targetAccount: target
             )
+
         case .availableSourceAccountsListUpdated:
             return nil
 
@@ -271,6 +276,14 @@ final class TransactionModel {
             )
             .subscribe(
                 onSuccess: { [weak self] sourceAccounts in
+                    guard action != .buy || !sourceAccounts.isEmpty else {
+                        self?.process(
+                            action: .fatalTransactionError(
+                                TransactionValidationFailure(state: .noSourcesAvailable)
+                            )
+                        )
+                        return
+                    }
                     self?.process(action: .availableSourceAccountsListUpdated(sourceAccounts))
                     if action == .buy, let first = sourceAccounts.first {
                         // For buy, we don't want to display the list of possible sources straight away.
