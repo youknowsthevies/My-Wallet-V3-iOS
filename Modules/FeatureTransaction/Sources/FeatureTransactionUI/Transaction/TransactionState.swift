@@ -82,12 +82,9 @@ extension TransactionState {
     /// The source account `CryptoCurrency`.
     var asset: CurrencyType {
         guard let sourceAccount = source else {
-            preconditionFailure("Source should have been set at this point.")
+            fatalError("Source should have been set at this point. Asset Action: \(action), Step: \(step)")
         }
-        guard let account = sourceAccount as? SingleAccount else {
-            preconditionFailure("Expected a `SingleAccount`: \(String(describing: source))")
-        }
-        return account.currencyType
+        return sourceAccount.currencyType
     }
 
     /// The fees associated with the transaction
