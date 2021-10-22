@@ -483,6 +483,10 @@ extension DependencyContainer {
             TransactionsKYCAdapter()
         }
 
+        factory { () -> FeatureSettingsUI.PaymentMethodsLinkerAPI in
+            PaymentMethodsLinkingAdapter()
+        }
+
         // MARK: FeatureAuthentication Module
 
         factory { () -> AutoWalletPairingServiceAPI in

@@ -29,6 +29,10 @@ public protocol ExchangeCoordinating: AnyObject {
     func start(from viewController: UIViewController)
 }
 
+public protocol PaymentMethodsLinkerAPI {
+    func routeToCardLinkingFlow(from viewController: UIViewController, completion: @escaping () -> Void)
+}
+
 final class SettingsRouter: SettingsRouterAPI {
 
     typealias AnalyticsEvent = AnalyticsEvents.Settings
@@ -71,6 +75,8 @@ final class SettingsRouter: SettingsRouterAPI {
     /// The router for linking a new bank
     private var linkBankFlowRouter: LinkBankFlowStarter?
 
+    private let paymentMethodLinker: PaymentMethodsLinkerAPI
+
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
 
@@ -92,6 +98,7 @@ final class SettingsRouter: SettingsRouterAPI {
         tabSwapping: TabSwapping = resolve(),
         passwordRepository: PasswordRepositoryAPI = resolve(),
         repository: DataRepositoryAPI = resolve(),
+        paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.wallet = wallet
@@ -110,6 +117,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.pitConnectionAPI = pitConnectionAPI
         self.passwordRepository = passwordRepository
         self.repository = repository
+        self.paymentMethodLinker = paymentMethodLinker
         self.analyticsRecorder = analyticsRecorder
 
         previousRelay
@@ -177,22 +185,14 @@ final class SettingsRouter: SettingsRouterAPI {
             viewController.modalPresentationStyle = .custom
             navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
         case .showAddCardScreen:
-            let interactor = CardRouterInteractor()
-            interactor
-                .completionCardData
-                .mapToVoid()
-                .bindAndCatch(to: addCardCompletionRelay)
-                .disposed(by: disposeBag)
-            let builder = CardComponentBuilder(
-                routingInteractor: interactor,
-                paymentMethodTypesService: paymentMethodTypesService
-            )
-            cardRouter = CardRouter(
-                interactor: interactor,
-                builder: builder,
-                routingType: .modal
-            )
-            cardRouter.load()
+            guard let presenter = navigationRouter.topMostViewControllerProvider.topMostViewController else {
+                impossible("The top view controller cannot be nil")
+            }
+            paymentMethodLinker.routeToCardLinkingFlow(from: presenter) { [addCardCompletionRelay] in
+                presenter.dismiss(animated: true) {
+                    addCardCompletionRelay.accept(())
+                }
+            }
         case .showAddBankScreen(let fiatCurrency):
             if fiatCurrency == .USD {
                 showLinkBankFlow()
