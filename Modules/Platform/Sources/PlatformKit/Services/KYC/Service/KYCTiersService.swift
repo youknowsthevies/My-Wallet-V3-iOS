@@ -13,7 +13,13 @@ public enum KYCTierServiceError: Error {
     case other(Error)
 }
 
-public protocol KYCTiersServiceAPI: AnyObject {
+public protocol KYCVerificationServiceAPI: AnyObject {
+
+    /// Returnes whether or not the user is Tier 2 approved.
+    var isKYCVerified: AnyPublisher<Bool, Never> { get }
+}
+
+public protocol KYCTiersServiceAPI: AnyObject, KYCVerificationServiceAPI {
 
     /// Returns the cached tiers. Fetches them if they are not already cached
     var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> { get }
@@ -91,6 +97,13 @@ final class KYCTiersService: KYCTiersServiceAPI {
                     .eraseToAnyPublisher()
             }
         )
+    }
+
+    var isKYCVerified: AnyPublisher<Bool, Never> {
+        fetchTiers()
+            .map(\.isTier2Approved)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError> {

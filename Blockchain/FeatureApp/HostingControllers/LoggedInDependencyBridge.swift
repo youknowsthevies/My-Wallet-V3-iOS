@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import FeatureDashboardUI
+import FeatureInterestUI
 import FeatureSettingsUI
 import PlatformUIKit
 
@@ -43,6 +44,7 @@ protocol LoggedInBridge: DrawerRouting,
     BackupFlowStarterAPI,
     SettingsStarterAPI,
     LoggedInReloadAPI,
+    InterestAccountListHostingControllerDelegate,
     AuthenticationCoordinating {}
 
 protocol LoggedInDependencyBridgeAPI: AnyObject {

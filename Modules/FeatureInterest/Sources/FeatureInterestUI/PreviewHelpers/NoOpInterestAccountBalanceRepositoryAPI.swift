@@ -8,10 +8,6 @@ final class NoOpInterestAccountBalanceRepository: InterestAccountBalanceReposito
     func fetchInterestAccountsBalance(
         fiatCurrency: FiatCurrency
     ) -> AnyPublisher<InterestAccountBalances, InterestAccountBalanceRepositoryError> {
-        Deferred {
-            Future { _ in
-            }
-        }
-        .eraseToAnyPublisher()
+        Empty().eraseToAnyPublisher()
     }
 }
