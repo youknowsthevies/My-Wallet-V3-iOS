@@ -25,6 +25,8 @@ extension Color {
         )
     }
 
+    public static let semantic: Semantic.Type = Semantic.self
+
     public enum Semantic {
 
         public static let white: Color = Palette.white.color()
