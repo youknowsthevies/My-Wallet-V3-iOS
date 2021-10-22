@@ -163,7 +163,10 @@ extension DependencyContainer {
         factory { UIApplication.shared as AppStoreOpening }
 
         factory {
-            BackupFundsRouter(entry: .custody, navigationRouter: NavigationRouter()) as FeatureDashboardUI.BackupRouterAPI
+            BackupFundsRouter(
+                entry: .custody,
+                navigationRouter: NavigationRouter()
+            ) as FeatureDashboardUI.BackupRouterAPI
         }
 
         factory { AnalyticsUserPropertyInteractor() as FeatureDashboardUI.AnalyticsUserPropertyInteracting }
