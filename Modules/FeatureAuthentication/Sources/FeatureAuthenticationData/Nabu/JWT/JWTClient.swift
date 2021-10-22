@@ -27,7 +27,7 @@ final class JWTClient: JWTClientAPI {
     }
 
     private enum Path {
-        static let token = ["wallet", "signed-retail-token"]
+        static let wallet = ["wallet"]
     }
 
     private enum Parameter {
@@ -71,6 +71,7 @@ final class JWTClient: JWTClientAPI {
         ]
         let data = RequestBuilder.body(from: parameters)
         let request = requestBuilder.post(
+            path: Path.wallet,
             body: data,
             contentType: .formUrlEncoded
         )!

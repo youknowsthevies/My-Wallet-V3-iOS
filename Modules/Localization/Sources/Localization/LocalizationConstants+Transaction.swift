@@ -522,6 +522,7 @@ extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Success 
         "Your %@ has been withdrawn successfully.",
         comment: "Your %@ has been withdrawn successfully."
     )
+    public static let action = NSLocalizedString("OK", comment: "OK")
 }
 
 extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Failure {
@@ -565,6 +566,7 @@ extension LocalizationConstants.Transaction.Transfer.Completion.Success {
         "Your %@ has been transferred successfully.",
         comment: "Your %@ has been transferred successfully."
     )
+    public static let action = NSLocalizedString("OK", comment: "OK")
 }
 
 extension LocalizationConstants.Transaction.Transfer.Completion.Failure {
@@ -952,8 +954,8 @@ extension LocalizationConstants.Transaction.Confirmation.Error {
         comment: ""
     )
     public static let pendingOrderLimitReached = NSLocalizedString(
-        "You have 1 Swap in-progress. Once that completes, create a New Swap.",
-        comment: ""
+        "You have too many pending orders in-progress. Once those complete, try again. You can check your order status in 'Activity'.",
+        comment: "User has reached the maximum limit of unfullfilled pending orders and cannot create new orders at this time."
     )
     public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",

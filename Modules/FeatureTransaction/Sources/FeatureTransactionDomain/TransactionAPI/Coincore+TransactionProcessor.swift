@@ -282,24 +282,31 @@ extension CoincoreAPI {
                         )
                 )
             )
-        case let account as CryptoNonCustodialAccount:
-            let factory = account.createTransactionEngine() as! OnChainTransactionEngineFactory
-            return account
-                .requireSecondPassword
-                .map { requiresSecondPassword in
-                    TransactionProcessor(
-                        sourceAccount: account,
-                        transactionTarget: target,
-                        engine: onChainFactory
-                            .build(
-                                requiresSecondPassword: requiresSecondPassword,
-                                action: action,
-                                onChainEngine: factory
+        case let nonCustodialAccount as CryptoNonCustodialAccount:
+            let factory = nonCustodialAccount.createTransactionEngine() as! OnChainTransactionEngineFactory
+            guard let target = target as? CryptoNonCustodialAccount else {
+                impossible()
+            }
+            return target
+                .receiveAddress
+                .flatMap { receiveAddress in
+                    account
+                        .requireSecondPassword
+                        .map { requiresSecondPassword in
+                            TransactionProcessor(
+                                sourceAccount: account,
+                                transactionTarget: receiveAddress,
+                                engine: onChainFactory
                                     .build(
-                                        requiresSecondPassword: requiresSecondPassword
+                                        requiresSecondPassword: requiresSecondPassword,
+                                        action: action,
+                                        onChainEngine: factory
+                                            .build(
+                                                requiresSecondPassword: requiresSecondPassword
+                                            )
                                     )
                             )
-                    )
+                        }
                 }
         default:
             unimplemented()

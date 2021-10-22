@@ -145,6 +145,7 @@ final class APIClient: FeatureInterestDataAPIClient {
         let request = requestBuilder
             .post(
                 path: Path.transfer,
+                body: try? body.encode(),
                 authenticated: true
             )!
 
@@ -155,6 +156,20 @@ final class APIClient: FeatureInterestDataAPIClient {
     func createInterestAccountCustodialWithdraw(
         _ amount: MoneyValue
     ) -> AnyPublisher<Void, NabuNetworkError> {
-        unimplemented()
+        let body = InterestAccountTransferRequest
+            .createWithdrawRequestWithAmount(
+                amount.minorString,
+                currencyCode: amount.code
+            )
+
+        let request = requestBuilder
+            .post(
+                path: Path.transfer,
+                body: try? body.encode(),
+                authenticated: true
+            )!
+
+        return networkAdapter
+            .perform(request: request)
     }
 }

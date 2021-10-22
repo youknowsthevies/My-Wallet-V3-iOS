@@ -33,7 +33,11 @@ public struct TourView: View {
                     makeTabView()
                     makeButtonsView(viewStore)
                 }
-                .background(AnimatedGradient().ignoresSafeArea(.all))
+                .background(
+                    Image("gradient", bundle: Bundle.featureTour)
+                        .resizable()
+                        .ignoresSafeArea(.all)
+                )
             }
         }
     }

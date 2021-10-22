@@ -55,7 +55,9 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         switch action {
         case .swap,
              .sell,
-             .send:
+             .send,
+             .interestWithdraw,
+             .interestTransfer:
             guard let crypto = sourceAccount.currencyType.cryptoCurrency else {
                 fatalError("Expected a crypto as a source account.")
             }
@@ -77,9 +79,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
 
         case .deposit,
-             .withdraw,
-             .interestWithdraw,
-             .interestTransfer:
+             .withdraw:
             amountViewInteracting = SingleAmountInteractor(
                 currencyService: fiatCurrencyService,
                 inputCurrency: sourceAccount.currencyType

@@ -65,6 +65,7 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
 
     private let feeCache: CachedValue<CustodialTransferFee>
     private let transferRepository: CustodialTransferRepositoryAPI
+    private let interestAccountWithdrawRepository: InterestAccountWithdrawRepositoryAPI
     private let accountLimitsRepository: InterestAccountLimitsRepositoryAPI
 
     // MARK: - Init
@@ -74,13 +75,15 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
-        transferRepository: CustodialTransferRepositoryAPI = resolve()
+        transferRepository: CustodialTransferRepositoryAPI = resolve(),
+        interestAccountWithdrawRepository: InterestAccountWithdrawRepositoryAPI = resolve()
     ) {
         self.fiatCurrencyService = fiatCurrencyService
         self.requireSecondPassword = requireSecondPassword
         self.priceService = priceService
         self.accountLimitsRepository = accountLimitsRepository
         self.transferRepository = transferRepository
+        self.interestAccountWithdrawRepository = interestAccountWithdrawRepository
         feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 20,
@@ -95,9 +98,9 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
     }
 
     public func assertInputsValid() {
-        defaultAssertInputsValid()
-        precondition(transactionTarget is NonCustodialAccount)
+        precondition(transactionTarget is CryptoReceiveAddress)
         precondition(sourceAccount is InterestAccount)
+        precondition(sourceAsset == transactionTarget.currencyType)
     }
 
     public func initializeTransaction()
@@ -197,6 +200,31 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
         pendingTransaction: PendingTransaction,
         secondPassword: String
     ) -> Single<TransactionResult> {
-        unimplemented()
+        guard let receiveAddress = transactionTarget as? CryptoReceiveAddress else {
+            return .error(TransactionValidationFailure(state: .unknownError))
+        }
+        let address = addMemoIfNeeded(
+            receiveAddress: receiveAddress.address,
+            memo: receiveAddress.memo
+        )
+        return interestAccountWithdrawRepository
+            .createInterestAccountWithdrawal(
+                pendingTransaction.amount,
+                address: address,
+                currencyCode: sourceAsset.code
+            )
+            .map { _ in
+                TransactionResult.unHashed(amount: pendingTransaction.amount)
+            }
+            .asSingle()
+    }
+
+    // MARK: - Private Functions
+
+    private func addMemoIfNeeded(receiveAddress: String, memo: String?) -> String {
+        if let memo = memo {
+            return receiveAddress + ":\(memo)"
+        }
+        return receiveAddress
     }
 }

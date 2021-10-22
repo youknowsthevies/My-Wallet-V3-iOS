@@ -191,8 +191,15 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                     transactionModel.process(action: .returnToPreviousStep)
                 case .completed(let paymentMethod):
                     switch paymentMethod.type {
-                    case .bankAccount, .bankTransfer:
-                        transactionModel.process(action: .showBankLinkingFlow)
+                    case .bankAccount:
+                        transactionModel.process(action: .showBankWiringInstructions)
+                    case .bankTransfer:
+                        // Check the currency to ensure the user can link a bank via ACH until Open Banking is complete.
+                        if paymentMethod.fiatCurrency == .USD {
+                            transactionModel.process(action: .showBankLinkingFlow)
+                        } else {
+                            transactionModel.process(action: .showBankWiringInstructions)
+                        }
                     case .card:
                         transactionModel.process(action: .showCardLinkingFlow)
                     case .funds:

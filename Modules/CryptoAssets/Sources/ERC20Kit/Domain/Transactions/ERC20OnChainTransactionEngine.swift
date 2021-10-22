@@ -234,10 +234,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        .just(pendingTransaction)
-    }
-
     // MARK: - Private Functions
 
     private func validateNoPendingTransaction() -> Completable {

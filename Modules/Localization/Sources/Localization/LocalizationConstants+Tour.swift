@@ -8,12 +8,12 @@ extension LocalizationConstants {
 
     public enum Tour {
         public static let carouselBrokerageScreenMessage = NSLocalizedString(
-            "Buy, Sell and Swap Crypto in Seconds.",
+            "Instantly Buy, Sell and Swap Crypto.",
             comment: "Main text that appears in the Brokerage view inside the onboarding tour"
         )
 
         public static let carouselEarnScreenMessage = NSLocalizedString(
-            "Earn Interest on Your Crypto.",
+            "Earn Rewards on Your Crypto.",
             comment: "Main text that appears in the Earn view inside the onboarding tour"
         )
 
