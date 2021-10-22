@@ -49,7 +49,6 @@ extension NetworkError: CustomStringConvertible {
                     HTTP \(error.response.statusCode)
                     """
             }
-
         }
     }
 }
