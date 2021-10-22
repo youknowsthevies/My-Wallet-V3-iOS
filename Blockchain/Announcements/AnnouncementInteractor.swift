@@ -8,8 +8,8 @@ import PlatformKit
 import PlatformUIKit
 import RxCombine
 import RxSwift
-import ToolKit
 import RxToolKit
+import ToolKit
 
 /// The announcement interactor cross all the preliminary data
 /// that is required to display announcements to the user

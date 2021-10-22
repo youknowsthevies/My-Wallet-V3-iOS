@@ -150,7 +150,7 @@ public struct InfoView: View {
             MediaView(icon, in: bundle, failure: Color.clear)
         } else if model.overlay?.progress == true {
             ProgressView(value: 0.25)
-                .progressViewStyle( IndeterminateProgressStyle())
+                .progressViewStyle(IndeterminateProgressStyle())
         } else {
             EmptyView()
         }

@@ -407,7 +407,6 @@ extension OpenBanking.Media {
         public static let icon: Self = "icon"
         public static let logo: Self = "logo"
     }
-
 }
 
 extension OpenBanking.Payment {

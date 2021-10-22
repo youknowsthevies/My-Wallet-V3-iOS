@@ -4,9 +4,8 @@ import BigInt
 import DIKit
 import PlatformKit
 import RxSwift
+import RxToolKit
 import ToolKit
-import RxToolKit
-import RxToolKit
 
 public protocol EthereumAccountDetailsServiceAPI {
 

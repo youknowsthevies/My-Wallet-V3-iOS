@@ -31,7 +31,7 @@ public protocol AddNewPaymentMethodListener: AnyObject {
 }
 
 final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMethodPresentable>,
-                                           AddNewPaymentMethodInteractable
+    AddNewPaymentMethodInteractable
 {
 
     // MARK: - Types

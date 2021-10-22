@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RxSwift
-import ToolKit
 import RxToolKit
+import ToolKit
 
 extension CachedValueConfiguration {
 

@@ -3,8 +3,8 @@
 import DIKit
 import Localization
 import RxSwift
-import ToolKit
 import RxToolKit
+import ToolKit
 
 protocol WalletUpgradeJSServicing: AnyObject {
     /// Upgrades the wallet to V3 and emits "V3"

@@ -24,7 +24,7 @@ let package = Package(
         .package(path: "../CommonCrypto"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
-        .package(path: "../RxTool"),
+        .package(path: "../RxTool")
     ],
     targets: [
         .target(

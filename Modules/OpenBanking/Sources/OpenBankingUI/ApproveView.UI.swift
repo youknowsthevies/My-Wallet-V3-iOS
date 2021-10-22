@@ -44,8 +44,8 @@ extension ApproveState.UI {
                   let accountNumber = details?.accountNumber,
                   let currency = bankAccount.currency,
                   let amount = environment.fiatCurrencyFormatter.displayString(
-                    amountMinor: amountMinor,
-                    currency: currency
+                      amountMinor: amountMinor,
+                      currency: currency
                   )
             else {
                 return .init(title: R.Error.title, tasks: [])

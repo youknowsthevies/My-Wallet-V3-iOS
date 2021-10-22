@@ -2,8 +2,8 @@
 
 import DIKit
 import RxSwift
-import ToolKit
 import RxToolKit
+import ToolKit
 
 public enum BankActivationState {
     case active(LinkedBankData)

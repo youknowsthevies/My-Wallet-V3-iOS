@@ -3,8 +3,8 @@
 import DIKit
 import RxRelay
 import RxSwift
-import ToolKit
 import RxToolKit
+import ToolKit
 
 /// The type of payment method
 public enum PaymentMethodType: Equatable, Identifiable {

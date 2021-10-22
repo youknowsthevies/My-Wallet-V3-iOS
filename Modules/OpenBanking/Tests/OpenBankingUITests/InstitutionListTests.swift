@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
-@testable import OpenBankingUI
 import NetworkKit
+@testable import OpenBankingUI
 import TestKit
 
 final class InstitutionListTests: OpenBankingTestCase {

@@ -67,7 +67,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     )
 
                     // swiftlint:disable force_try
-                    // TODO Remove once finished debugging
+                    // TODO: Remove once finished debugging
 //                    paymentMethods.append(
 //                        try! PaymentMethod(
 //                            currency: "GBP",

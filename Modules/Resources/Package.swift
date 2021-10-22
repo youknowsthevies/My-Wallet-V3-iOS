@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
     name: "Resources",
     products: [
-        .library(name: "Resources", targets: ["Resources"]),
+        .library(name: "Resources", targets: ["Resources"])
     ],
     targets: [
         .target(name: "Resources")

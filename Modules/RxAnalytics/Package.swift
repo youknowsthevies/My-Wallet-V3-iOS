@@ -9,7 +9,7 @@ let package = Package(
         .library(
             name: "RxAnalyticsKit",
             targets: ["RxAnalyticsKit"]
-        ),
+        )
     ],
     dependencies: [
         .package(

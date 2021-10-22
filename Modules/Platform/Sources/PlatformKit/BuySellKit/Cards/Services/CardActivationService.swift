@@ -4,8 +4,8 @@ import DIKit
 import RxCombine
 import RxRelay
 import RxSwift
-import ToolKit
 import RxToolKit
+import ToolKit
 
 public enum CardActivationState {
     case active(CardData)

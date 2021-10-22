@@ -4,8 +4,8 @@ import AnalyticsKit
 import DIKit
 import RxRelay
 import RxSwift
-import ToolKit
 import RxToolKit
+import ToolKit
 
 public protocol OrdersServiceAPI: AnyObject {
 

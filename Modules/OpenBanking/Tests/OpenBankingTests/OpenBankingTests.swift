@@ -3,8 +3,8 @@
 import CombineSchedulers
 @testable import NetworkKit
 @testable import OpenBanking
-import TestKit
 import OpenBankingTestFixture
+import TestKit
 
 // swiftlint:disable line_length
 // swiftlint:disable single_test_class

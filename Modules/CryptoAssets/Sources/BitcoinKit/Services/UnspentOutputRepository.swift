@@ -4,8 +4,8 @@ import BitcoinChainKit
 import DIKit
 import PlatformKit
 import RxSwift
-import ToolKit
 import RxToolKit
+import ToolKit
 
 protocol UnspentOutputRepositoryAPI {
     var unspentOutputs: Single<UnspentOutputs> { get }

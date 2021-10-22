@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import SwiftUI
 import ToolKit
-import ComponentLibrary
 
 public struct Task: Codable, Hashable {
 

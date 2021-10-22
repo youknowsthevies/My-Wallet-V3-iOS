@@ -5,8 +5,8 @@ import DIKit
 import FirebaseRemoteConfig
 import PlatformKit
 import RxSwift
-import ToolKit
 import RxToolKit
+import ToolKit
 
 final class AppFeatureConfigurator {
 
@@ -69,7 +69,7 @@ extension AppFeatureConfigurator: FeatureConfiguratorAPI {
 
 extension AppFeatureConfigurator: FeatureFetching {
 
-    func fetch<Feature>(for key: AppFeature) -> AnyPublisher<Feature, FeatureFlagError> where Feature : Decodable {
+    func fetch<Feature>(for key: AppFeature) -> AnyPublisher<Feature, FeatureFlagError> where Feature: Decodable {
         fetch(for: key).publisher.mapError(FeatureFlagError.decodingError).eraseToAnyPublisher()
     }
 }

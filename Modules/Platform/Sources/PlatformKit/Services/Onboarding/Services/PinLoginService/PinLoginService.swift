@@ -3,9 +3,9 @@
 import DIKit
 import FeatureAuthenticationDomain
 import RxSwift
+import RxToolKit
 import ToolKit
 import WalletPayloadKit
-import RxToolKit
 
 public final class PinLoginService: PinLoginServiceAPI {
 

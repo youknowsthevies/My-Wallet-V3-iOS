@@ -263,7 +263,7 @@ extension Publisher where Output == Bool, Failure == Never {
     }
 
     public func `if`<Root>(
-        then yes:@escaping  (Root) -> () -> Void,
+        then yes: @escaping (Root) -> () -> Void,
         else no: @escaping (Root) -> () -> Void,
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {

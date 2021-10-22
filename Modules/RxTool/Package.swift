@@ -8,7 +8,8 @@ let package = Package(
     products: [
         .library(
             name: "RxToolKit",
-            targets: ["RxToolKit"]),
+            targets: ["RxToolKit"]
+        )
     ],
     dependencies: [
         .package(

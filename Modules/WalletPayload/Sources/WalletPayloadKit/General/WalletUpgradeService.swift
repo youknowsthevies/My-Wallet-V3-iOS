@@ -4,8 +4,8 @@ import Combine
 import DIKit
 import RxCombine
 import RxSwift
-import ToolKit
 import RxToolKit
+import ToolKit
 
 public protocol WalletUpgradeServicing {
     /// Indicates if the wallet needs any payload upgrade.
