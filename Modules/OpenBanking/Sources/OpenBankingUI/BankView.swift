@@ -209,15 +209,9 @@ public struct BankView: View {
         WithViewStore(store) { viewStore in
             if let ui = viewStore.ui {
                 ActionableView(
-                    content: {
-                        Spacer()
-                        InfoView(
-                            ui.info,
-                            in: .openBanking
-                        )
-                        Spacer()
-                    },
-                    buttons: buttons(from: ui.action, in: viewStore)
+                    ui.info,
+                    buttons: buttons(from: ui.action, in: viewStore),
+                    in: .openBanking
                 )
                 .trailingNavigationButton(.close) {
                     viewStore.send(.dismiss)
@@ -234,19 +228,19 @@ public struct BankView: View {
         .whiteNavigationBarStyle()
     }
 
-    private typealias ButtonAction = ActionableView<
+    private typealias ButtonState = ActionableView<
         TupleView<(Spacer, InfoView, Spacer)>
     >.ButtonState
 
     private func buttons(
         from actions: [BankState.UI.Action]?,
         in viewStore: ViewStore<BankState, BankAction>
-    ) -> [ButtonAction] {
+    ) -> [ButtonState] {
         guard let actions = actions else { return [] }
         return actions
             .enumerated()
             .map { i, action in
-                let style: ButtonAction.Style = i == 0 ? .primary : .secondary
+                let style: ButtonState.Style = i == 0 ? .primary : .secondary
                 switch action {
                 case .ok:
                     return .init(
@@ -291,7 +285,7 @@ struct BankView_Previews: PreviewProvider {
             store: .init(
                 initialState: BankState(
                     account: .mock,
-                    ui: .waiting(for: "Monzo"),
+                    ui: .linked(institution: "Monzo"),
                     action: .link(institution: .mock)
                 ),
                 reducer: bankReducer,

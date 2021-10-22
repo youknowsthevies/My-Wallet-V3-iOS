@@ -52,7 +52,7 @@ public struct ActionableView<Content: View>: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .center) {
             content
             VStack(spacing: LayoutConstants.VerticalSpacing.withinButtonsGroup) {
                 ForEach(buttons, id: \.title) { button in
@@ -114,16 +114,17 @@ extension ActionableView where Content == AnyView {
     }
 }
 
-extension ActionableView where Content == VStack<TupleView<(Spacer, InfoView, Spacer)>> {
+extension ActionableView where Content == TupleView<(Spacer, InfoView, Spacer)> {
 
-    public init(_ model: InfoView.Model, buttons: [ButtonState], in bundle: Bundle = .main) {
-        self.init {
-            VStack(alignment: .center) {
+    public init(_ model: InfoView.Model, buttons: [ButtonState] = [], in bundle: Bundle = .main) {
+        self.init(
+            content: {
                 Spacer()
                 InfoView(model, in: bundle)
                 Spacer()
-            }
-        }
+            },
+            buttons: buttons
+        )
     }
 }
 
@@ -205,6 +206,22 @@ struct ActionableView_Previews: PreviewProvider {
             },
             title: "Lorem Ipsum",
             message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit amet mi sodales, egestas nulla eu, tincidunt est."
+        )
+
+        ActionableView(
+            .init(
+                media: .image(systemName: "applelogo"),
+                title: "Lorem Ipsum",
+                subtitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit amet mi sodales, egestas nulla eu, tincidunt est."
+            ),
+            buttons: [
+                .init(
+                    title: "Primary",
+                    action: {},
+                    style: .primary,
+                    enabled: false
+                )
+            ]
         )
     }
 }
