@@ -35,7 +35,21 @@ extension NetworkError: CustomStringConvertible {
         case .payloadError(let error as Error), .serverError(let error as Error):
             return String(describing: error)
         case .rawServerError(let error):
-            return "HTTP \(error.response.statusCode)"
+            do {
+                guard let payload = error.payload else { throw error }
+                guard let string = String(data: payload, encoding: .utf8) else { throw error }
+                return
+                    """
+                    HTTP \(error.response.statusCode)
+                    \(string)
+                    """
+            } catch {
+                return
+                    """
+                    HTTP \(error.response.statusCode)
+                    """
+            }
+
         }
     }
 }

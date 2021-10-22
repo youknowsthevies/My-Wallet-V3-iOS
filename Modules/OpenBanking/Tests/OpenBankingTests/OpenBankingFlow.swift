@@ -40,9 +40,12 @@ final class OpenBankingFlow: XCTestCase {
             .wait(timeout: 5)
             .get()
 
-        let activation = try bankAccount.activateBankAccount(with: bankAccount.attributes.institutions![1].id, in: banking)
-            .wait(timeout: 5)
-            .get()
+        let activation = try bankAccount.activateBankAccount(
+            with: bankAccount.attributes.institutions![1].id,
+            in: banking
+        )
+        .wait(timeout: 5)
+        .get()
 
         let subscription = banking.state.publisher(for: .authorisation.url, as: URL.self).sink { result in
             switch result {
