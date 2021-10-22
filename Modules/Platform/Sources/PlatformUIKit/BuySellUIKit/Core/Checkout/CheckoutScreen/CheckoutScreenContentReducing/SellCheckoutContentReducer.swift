@@ -49,7 +49,7 @@ final class SellCheckoutContentReducer: CheckoutScreenContentReducing {
         )
 
         let priceLineItemCellInteractor: CellInteractor = .init(
-            title: TitleLabelInteractor(knownValue: "\(data.inputCurrency.code) \(LocalizedLineItem.price)"),
+            title: TitleLabelInteractor(knownValue: "\(data.inputCurrency.displayCode) \(LocalizedLineItem.price)"),
             description: CheckoutContentDescriptionLabelInteractor.AssetPrice(
                 service: priceService,
                 baseCurrency: data.outputCurrency,
@@ -60,14 +60,14 @@ final class SellCheckoutContentReducer: CheckoutScreenContentReducing {
         let fromLineItemCellInteractor: CellInteractor = .init(
             title: TitleLabelInteractor(knownValue: LocalizedLineItem.from),
             description: DescriptionLabelInteractor(
-                knownValue: "\(data.inputCurrency.code) \(LocalizedLineItem.tradingWallet)"
+                knownValue: "\(data.inputCurrency.displayCode) \(LocalizedLineItem.tradingWallet)"
             )
         )
 
         let toLineItemCellInteractor: CellInteractor = .init(
             title: TitleLabelInteractor(knownValue: LocalizedLineItem.to),
             description: DescriptionLabelInteractor(
-                knownValue: "\(data.outputCurrency.code) \(LocalizedLineItem.wallet)"
+                knownValue: "\(data.outputCurrency.displayCode) \(LocalizedLineItem.wallet)"
             )
         )
 

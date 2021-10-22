@@ -266,5 +266,4 @@ extension State.Error: Equatable {
             return false
         }
     }
-
 }

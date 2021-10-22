@@ -79,7 +79,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let resetAccountPromptText = "\(prefix)resetAccountPromptText"
         static let resetAccountButton = "\(prefix)resetAccountButton"
         static let contactSupportButton = "\(prefix)contactSupportButton"
-        static let logInButton = "\(prefix)logInButton"
+        static let continueButton = "\(prefix)continueButton"
     }
 
     enum ResetAccountWarningScreen {

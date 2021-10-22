@@ -107,7 +107,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
         let pair = MoneyValuePair(base: event.inputValue, quote: event.outputValue)
         let exchangeRate = event.isBuy ? pair.inverseExchangeRate : pair.exchangeRate
-        let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.code)"
+        let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.displayCode)"
         exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
@@ -130,7 +130,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .card:
             paymentMethod = LocalizedLineItem.creditOrDebitCard
         case .funds:
-            paymentMethod = "\(event.inputValue.code) \(LocalizedLineItem.Funds.suffix)"
+            paymentMethod = "\(event.inputValue.displayCode) \(LocalizedLineItem.Funds.suffix)"
         }
         paymentMethodPresenter = TransactionalLineItem.paymentMethod(paymentMethod).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
@@ -143,7 +143,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .bindAndCatch(to: paymentMethodPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
-        let source = "\(event.inputValue.code) \(LocalizedLineItem.Funds.suffix)"
+        let source = "\(event.inputValue.displayCode) \(LocalizedLineItem.Funds.suffix)"
         fromPresenter = TransactionalLineItem.from(source).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )

@@ -1,4 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+// swiftlint:disable all
 
 import CasePaths
 import SwiftUI
@@ -107,7 +108,8 @@ extension BinaryFloatingPoint {
 
 extension CGRect {
 
-    @usableFromInline internal static var mainScreenBounds: CGRect {
+    /// The current screens bounds. From UIScreen on iOS, NSScreen on macOS.
+    @inlinable public static var screen: CGRect {
         #if canImport(UIKit)
         UIScreen.main.bounds
         #elseif canImport(AppKit)
@@ -117,14 +119,14 @@ extension CGRect {
 }
 
 extension CGSize {
-    @usableFromInline var min: CGFloat { Swift.min(width, height) }
-    @usableFromInline var max: CGFloat { Swift.max(width, height) }
+    @inlinable public var min: CGFloat { Swift.min(width, height) }
+    @inlinable public var max: CGFloat { Swift.max(width, height) }
 }
 
 extension Length {
 
     @inlinable public func `in`(_ proxy: GeometryProxy, coordinateSpace: CoordinateSpace = .local) -> CGFloat {
-        `in`(parent: proxy.frame(in: coordinateSpace), screen: .mainScreenBounds)
+        `in`(parent: proxy.frame(in: coordinateSpace), screen: .screen)
     }
 
     @inlinable public func `in`(_ frame: CGRect) -> CGFloat {
@@ -161,20 +163,6 @@ extension Size {
 
     public static var zero: Size = .init(length: 0.pt)
     public static var unit: Size = .init(length: 1.pt)
-
-    @inlinable public func `in`(_ proxy: GeometryProxy, coordinateSpace: CoordinateSpace = .local) -> CGSize {
-        CGSize(
-            width: width.in(proxy, coordinateSpace: coordinateSpace),
-            height: height.in(proxy, coordinateSpace: coordinateSpace)
-        )
-    }
-
-    @inlinable public func `in`(_ frame: CGRect) -> CGSize {
-        CGSize(
-            width: width.in(frame),
-            height: height.in(frame)
-        )
-    }
 
     @inlinable public func `in`(parent: CGRect, screen: CGRect) -> CGSize {
         CGSize(
@@ -238,5 +226,141 @@ extension Length: Codable {
                 return
             }
         }
+    }
+}
+
+public protocol ComputeLength {
+    associatedtype ComputedValue
+    func `in`(parent: CGRect, screen: CGRect) -> ComputedValue
+}
+
+extension ComputeLength {
+
+    @inlinable public func `in`(_ geometry: GeometryProxy, coordinateSpace: CoordinateSpace) -> ComputedValue {
+        `in`(parent: geometry.frame(in: coordinateSpace), screen: .screen)
+    }
+
+    @inlinable public func `in`(_ geometry: GeometryProxy) -> ComputedValue {
+        `in`(geometry, coordinateSpace: .local)
+    }
+
+    @inlinable public func `in`(_ coordinateSpace: CoordinateSpace) -> (_ geometry: GeometryProxy) -> ComputedValue {
+        { `in`($0, coordinateSpace: coordinateSpace) }
+    }
+
+    @inlinable public func `in`(_ frame: CGRect) -> ComputedValue {
+        `in`(parent: frame, screen: frame)
+    }
+}
+
+extension Length: ComputeLength {}
+extension Size: ComputeLength {}
+
+extension View {
+
+    public func padding(
+        _ length: Length,
+        in parent: CGRect? = nil
+    ) -> some View {
+        padding(length.in(parent: parent ?? .screen, screen: .screen))
+    }
+
+    public func padding(
+        _ edges: Edge.Set = .all,
+        _ length: Length,
+        in parent: CGRect? = nil
+    ) -> some View {
+        padding(edges, length.in(parent: parent ?? .screen, screen: .screen))
+    }
+
+    public func frame(
+        width: Length,
+        alignment: Alignment = .center,
+        in parent: CGRect? = nil
+    ) -> some View {
+        frame(
+            width: width.in(parent: parent ?? .screen, screen: .screen),
+            alignment: alignment
+        )
+    }
+
+    public func frame(
+        height: Length,
+        alignment: Alignment = .center,
+        in parent: CGRect? = nil
+    ) -> some View {
+        frame(
+            height: height.in(parent: parent ?? .screen, screen: .screen),
+            alignment: alignment
+        )
+    }
+
+    public func frame(
+        width: Length,
+        height: Length,
+        alignment: Alignment = .center,
+        in parent: CGRect? = nil
+    ) -> some View {
+        let parent = parent ?? .screen
+        return frame(
+            width: width.in(parent: parent, screen: .screen),
+            height: height.in(parent: parent, screen: .screen),
+            alignment: alignment
+        )
+    }
+
+    public func frame(
+        minWidth: Length? = nil,
+        idealWidth: Length? = nil,
+        maxWidth: Length? = nil,
+        minHeight: Length? = nil,
+        idealHeight: Length? = nil,
+        maxHeight: Length? = nil,
+        alignment: Alignment = .center,
+        in parent: CGRect? = nil
+    ) -> some View {
+        let parent = parent ?? .screen
+        return frame(
+            minWidth: minWidth?.in(parent: parent, screen: .screen),
+            idealWidth: idealWidth?.in(parent: parent, screen: .screen),
+            maxWidth: maxWidth?.in(parent: parent, screen: .screen),
+            minHeight: minHeight?.in(parent: parent, screen: .screen),
+            idealHeight: idealHeight?.in(parent: parent, screen: .screen),
+            maxHeight: maxHeight?.in(parent: parent, screen: .screen),
+            alignment: alignment
+        )
+    }
+
+    public func offset(
+        _ size: Size,
+        in parent: CGRect? = nil
+    ) -> some View {
+        offset(x: size.width, y: size.height)
+    }
+
+    public func offset(
+        x: Length,
+        in parent: CGRect? = nil
+    ) -> some View {
+        offset(x: x.in(parent: parent ?? .screen, screen: .screen))
+    }
+
+    public func offset(
+        y: Length,
+        in parent: CGRect? = nil
+    ) -> some View {
+        offset(y: y.in(parent: parent ?? .screen, screen: .screen))
+    }
+
+    public func offset(
+        x: Length,
+        y: Length,
+        in parent: CGRect? = nil
+    ) -> some View {
+        let parent = parent ?? .screen
+        return offset(
+            x: x.in(parent: parent, screen: .screen),
+            y: y.in(parent: parent, screen: .screen)
+        )
     }
 }

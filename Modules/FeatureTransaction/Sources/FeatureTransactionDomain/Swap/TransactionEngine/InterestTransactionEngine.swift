@@ -51,7 +51,7 @@ extension InterestTransactionEngine {
             guard let minimum = pendingTransaction.minimumLimit else {
                 throw TransactionValidationFailure(state: .uninitialized)
             }
-            guard try pendingTransaction.amount > minimum else {
+            guard try pendingTransaction.amount >= minimum else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit)
             }
         }

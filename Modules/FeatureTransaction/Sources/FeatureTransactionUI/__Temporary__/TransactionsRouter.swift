@@ -1,15 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import ComposableArchitecture
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
 import PlatformUIKit
 import RIBs
-import SwiftUI
 import ToolKit
-import UIComponentsKit
 
 /// Represents all types of transactions the user can perform
 public enum TransactionFlowAction: Equatable {
@@ -49,16 +46,15 @@ public protocol TransactionsRouterAPI {
     ) -> AnyPublisher<TransactionFlowResult, Never>
 }
 
-public protocol KYCSDDServiceAPI {
-    func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never>
-    func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<Bool, Never>
-}
-
 internal final class TransactionsRouter: TransactionsRouterAPI {
 
     private let featureFlagsService: FeatureFlagsServiceAPI
-    private let legacyBuyPresenter: LegacyBuyFlowPresenter
-    private var sellRouter: LegacySellRouter?
+    private let pendingOrdersService: PendingOrderDetailsServiceAPI
+    private let kycRouter: PlatformUIKit.KYCRouting
+    private let alertViewPresenter: AlertViewPresenterAPI
+    private let loadingViewPresenter: LoadingViewPresenting
+    private let legacyBuyRouter: LegacyBuyFlowRouting
+    private var legacySellRouter: LegacySellRouter?
     private let buyFlowBuilder: BuyFlowBuildable
     private let sellFlowBuilder: SellFlowBuilder
 
@@ -67,12 +63,20 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
 
     init(
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-        legacyBuyPresenter: LegacyBuyFlowPresenter = .init(),
-        buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(),
+        pendingOrdersService: PendingOrderDetailsServiceAPI = resolve(),
+        kycRouter: PlatformUIKit.KYCRouting = resolve(),
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter(),
+        legacyBuyRouter: LegacyBuyFlowRouting = LegacyBuyFlowRouter(),
+        buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(analyticsRecorder: resolve()),
         sellFlowBuilder: SellFlowBuilder = SellFlowBuilder()
     ) {
         self.featureFlagsService = featureFlagsService
-        self.legacyBuyPresenter = legacyBuyPresenter
+        self.kycRouter = kycRouter
+        self.alertViewPresenter = alertViewPresenter
+        self.loadingViewPresenter = loadingViewPresenter
+        self.pendingOrdersService = pendingOrdersService
+        self.legacyBuyRouter = legacyBuyRouter
         self.buyFlowBuilder = buyFlowBuilder
         self.sellFlowBuilder = sellFlowBuilder
     }
@@ -81,20 +85,34 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         to action: TransactionFlowAction,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
+        loadingViewPresenter.showCircular()
         switch action {
         case .buy:
+            // NOTE: This check for pending orders is a hack. Handling pending orders in Transaction Flow requires more planning.
+            // The work required will be scoped in IOS-5575. In the meantime pending orders can be handled by the legacy flow.
+            // Handling orders in the legacy flow unblocks IOS-5368 and the release of this feature.
+            let checkPendingOrders = pendingOrdersService.pendingOrderDetails
+                .asPublisher()
+                .replaceError(with: nil)
             return featureFlagsService.isEnabled(.local(.useTransactionsFlowToBuyCrypto))
-                .flatMap { [weak self] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in
-                    if isEnabled {
+                .zip(checkPendingOrders)
+                .receive(on: DispatchQueue.main)
+                .flatMap { [weak self, loadingViewPresenter] tuple -> AnyPublisher<TransactionFlowResult, Never> in
+                    loadingViewPresenter.hide()
+                    let (isEnabled, pendingOrder) = tuple
+                    if isEnabled, pendingOrder == nil {
                         return self?.presentNewTransactionFlow(action, from: presenter) ?? .empty()
                     } else {
                         return self?.presentLegacyTransactionFlow(action, from: presenter) ?? .empty()
                     }
                 }
                 .eraseToAnyPublisher()
+
         case .sell:
             return featureFlagsService.isEnabled(.remote(.sellUsingTransactionFlowEnabled))
-                .flatMap { [weak self] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in
+                .receive(on: DispatchQueue.main)
+                .flatMap { [weak self, loadingViewPresenter] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in
+                    loadingViewPresenter.hide()
                     if isEnabled {
                         return self?.presentNewTransactionFlow(action, from: presenter) ?? .empty()
                     } else {
@@ -102,6 +120,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                     }
                 }
                 .eraseToAnyPublisher()
+
         case .swap:
             return presentNewTransactionFlow(action, from: presenter)
         }
@@ -119,23 +138,25 @@ extension TransactionsRouter {
     }
 }
 
-// MARK: - Buy
-
 extension TransactionsRouter {
 
     private func presentNewTransactionFlow(
         _ action: TransactionFlowAction,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
-
         switch action {
         case .buy(let cryptoAccount):
-            let listener = BuyFlowListener()
+            let listener = BuyFlowListener(
+                kycRouter: kycRouter,
+                alertViewPresenter: alertViewPresenter,
+                loadingViewPresenter: loadingViewPresenter
+            )
             let interactor = BuyFlowInteractor()
             let router = buyFlowBuilder.build(with: listener, interactor: interactor)
             router.start(with: cryptoAccount, from: presenter)
             mimicRIBAttachment(router: router)
             return listener.publisher
+
         case .sell(let cryptoAccount):
             let listener = SellFlowListener()
             let interactor = SellFlowInteractor()
@@ -143,6 +164,7 @@ extension TransactionsRouter {
             router.start(with: cryptoAccount, from: presenter)
             mimicRIBAttachment(router: router)
             return listener.publisher
+
         case .swap(let cryptoAccount):
             let listener = SwapRootInteractor()
             let builder = TransactionFlowBuilder()
@@ -164,20 +186,17 @@ extension TransactionsRouter {
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         switch action {
         case .buy(let cryptoAccount):
-            // NOTE: right now the user locale is used to determine the fiat currency to use here but eventually we'll ask the user to provide that like we do for simple buy (IOS-4819)
-            let fiatCurrency: FiatCurrency = .locale
-
             guard let cryptoAccount = cryptoAccount else {
-                return legacyBuyPresenter.presentBuyFlowWithTargetCurrencySelectionIfNecessary(
-                    from: presenter,
-                    using: fiatCurrency
+                return legacyBuyRouter.presentBuyFlowWithTargetCurrencySelectionIfNecessary(
+                    from: presenter
                 )
             }
-            return legacyBuyPresenter.presentBuyScreen(
+            return legacyBuyRouter.presentBuyScreen(
                 from: presenter,
                 targetCurrency: cryptoAccount.asset,
-                sourceCurrency: fiatCurrency
+                isSDDEligible: true
             )
+
         case .sell:
             let accountSelectionService = AccountSelectionService()
             let interactor = SellRouterInteractor(
@@ -187,141 +206,12 @@ extension TransactionsRouter {
                 accountSelectionService: accountSelectionService,
                 routerInteractor: interactor
             )
-            sellRouter = PlatformUIKit.LegacySellRouter(builder: builder)
-            sellRouter?.load()
+            legacySellRouter = PlatformUIKit.LegacySellRouter(builder: builder)
+            legacySellRouter?.load()
             return .just(.abandoned)
+
         case .swap:
             unimplemented("There is no legacy swap flow.")
         }
-    }
-}
-
-// MARK: - Legacy Buy Implementation
-
-class LegacyBuyFlowPresenter {
-
-    private enum CrytoSelectionResult {
-        case abandoned
-        case select(CryptoCurrency)
-    }
-
-    private let cryptoCurrenciesService: CryptoCurrenciesServiceAPI
-    private let kycService: KYCSDDServiceAPI
-
-    private var buyRouter: PlatformUIKit.Router! // reference stored otherwise the app crashes for some reason 😕
-
-    init(
-        cryptoCurrenciesService: CryptoCurrenciesServiceAPI = resolve(),
-        kycService: KYCSDDServiceAPI = resolve()
-    ) {
-        self.cryptoCurrenciesService = cryptoCurrenciesService
-        self.kycService = kycService
-    }
-
-    func presentBuyFlowWithTargetCurrencySelectionIfNecessary(
-        from presenter: UIViewController,
-        using fiatCurrency: FiatCurrency
-    ) -> AnyPublisher<TransactionFlowResult, Never> {
-        // Step 1. check SDD eligibility to understand which flow to show next
-        kycService.checkSimplifiedDueDiligenceEligibility()
-            .receive(on: DispatchQueue.main)
-            .flatMap { [weak self] userIsSDDEligible -> AnyPublisher<TransactionFlowResult, Never> in
-                guard let self = self else {
-                    unexpectedDeallocation()
-                }
-                guard userIsSDDEligible else {
-                    // Step 2 (non-SDD eligible). Step Present present simple buy flow
-                    return self.presentSimpleBuyScreen(from: presenter)
-                }
-                // Step 2a. present currency selection screen
-                return self.presentCryptoCurrencySelectionScreen(from: presenter, fiatCurrency: fiatCurrency)
-                    .flatMap { [weak self] result -> AnyPublisher<TransactionFlowResult, Never> in
-                        guard let self = self else {
-                            unexpectedDeallocation()
-                        }
-                        // Step 2b. present buy flow screen for selected crypto and locale's fiat currency
-                        guard case .select(let cryptoCurrency) = result else {
-                            return .just(.abandoned)
-                        }
-                        return self.presentBuyScreen(
-                            from: presenter,
-                            targetCurrency: cryptoCurrency,
-                            sourceCurrency: fiatCurrency
-                        )
-                    }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
-    }
-
-    private func presentCryptoCurrencySelectionScreen(
-        from presenter: UIViewController,
-        fiatCurrency: FiatCurrency
-    ) -> AnyPublisher<CrytoSelectionResult, Never> {
-        let publisher = PassthroughSubject<CrytoSelectionResult, Never>()
-        presenter.present(
-            NavigationView {
-                CryptoCurrencySelectionView(
-                    store: Store(
-                        initialState: CryptoCurrencySelectionState(),
-                        reducer: cryptoCurrencySelectionReducer,
-                        environment: CryptoCurrencySelectionEnvironment(
-                            mainQueue: .main,
-                            close: {
-                                publisher.send(.abandoned)
-                                publisher.send(completion: .finished)
-                            },
-                            select: { selectedCryptoCurrency in
-                                publisher.send(.select(selectedCryptoCurrency))
-                            },
-                            loadCryptoCurrencies: { [cryptoCurrenciesService] in
-                                cryptoCurrenciesService.fetchPurchasableCryptoCurrencies(using: fiatCurrency)
-                            }
-                        )
-                    )
-                )
-                .whiteNavigationBarStyle()
-            }
-            .navigationViewStyle(StackNavigationViewStyle())
-        )
-        return publisher.eraseToAnyPublisher()
-    }
-
-    private func presentSimpleBuyScreen(
-        from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never>
-    {
-        // This is just levereging the existing buy flow, which isn't great but is getting replaced buy the new `Transactions` implementation
-        presentBuyScreen(
-            from: presenter,
-            targetCurrency: .coin(.bitcoin), // not important for simple buy
-            sourceCurrency: .locale, // not imporant for simple buy
-            isSDDEligible: false
-        )
-    }
-
-    func presentBuyScreen(
-        from presenter: UIViewController,
-        targetCurrency: CryptoCurrency,
-        sourceCurrency: FiatCurrency,
-        isSDDEligible: Bool = true
-    ) -> AnyPublisher<TransactionFlowResult, Never> {
-        // This is just levereging the existing buy flow, which isn't great but is getting replaced buy the new `Transactions` implementation
-        let presentBuy = {
-            let builder = PlatformUIKit.Builder(
-                stateService: PlatformUIKit.StateService()
-            )
-            self.buyRouter = PlatformUIKit.Router(builder: builder, currency: targetCurrency)
-            self.buyRouter.start(skipIntro: isSDDEligible)
-        }
-
-        // The current buy flow implementation is too complex to modify to get a callback
-        // so, for now, dimiss any previously presented and present the buy flow. Then return an empty publisher.
-        if presenter.presentedViewController != nil {
-            presenter.dismiss(animated: true, completion: presentBuy)
-        } else {
-            presentBuy()
-        }
-        return Empty(completeImmediately: true)
-            .eraseToAnyPublisher()
     }
 }

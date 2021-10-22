@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableNavigation
 import PlatformKit
 
 extension LoadingState where Content == DashboardAsset.Value.Presentation.AssetPrice {

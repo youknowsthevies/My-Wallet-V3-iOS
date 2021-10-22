@@ -2,25 +2,29 @@
 
 import AnalyticsKit
 
-class MockAnalyticsService: AnalyticsServiceProviderAPI {
-    var supportedEventTypes = [AnalyticsEventType.firebase]
+public class MockAnalyticsService: AnalyticsServiceProviderAPI {
 
-    func trackEvent(title: String, parameters: [String: Any]?) {}
+    public var supportedEventTypes = [AnalyticsEventType.firebase]
+
+    public init() {}
+
+    public func trackEvent(title: String, parameters: [String: Any]?) {}
 }
 
-class MockAnalyticsRecorder: AnalyticsEventRecorderAPI {
+public class MockAnalyticsRecorder: AnalyticsEventRecorderAPI {
 
-    func trackEvent(title: String, parameters: [String: Any]?) {}
+    public private(set) var recordEventCalled: (called: Bool, event: AnalyticsEvent?) = (false, nil)
+    public private(set) var recordEventsCalled: (called: Bool, events: [AnalyticsEvent]?) = (false, nil)
 
-    var recordEventCalled: (called: Bool, event: AnalyticsEvent?) = (false, nil)
+    public init() {}
 
-    func record(event: AnalyticsEvent) {
+    public func trackEvent(title: String, parameters: [String: Any]?) {}
+
+    public func record(event: AnalyticsEvent) {
         recordEventCalled = (true, event)
     }
 
-    var recordEventsCalled: (called: Bool, events: [AnalyticsEvent]?) = (false, nil)
-
-    func record(events: [AnalyticsEvent]) {
+    public func record(events: [AnalyticsEvent]) {
         recordEventsCalled = (true, events)
     }
 }

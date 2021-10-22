@@ -27,7 +27,7 @@ final class AddBankCellModel {
         badgeImageViewModel.marginOffsetRelay.accept(0)
 
         titleLabelContent = LabelContent(
-            text: "\(LocalizedString.addPrefix) \(fiatCurrency.code) \(LocalizedString.addSuffix)",
+            text: "\(LocalizedString.addPrefix) \(fiatCurrency.displayCode) \(LocalizedString.addSuffix)",
             font: .main(.semibold, 16),
             color: .titleText,
             accessibility: .id("\(AccessibilityId.name)\(fiatCurrency.name)")

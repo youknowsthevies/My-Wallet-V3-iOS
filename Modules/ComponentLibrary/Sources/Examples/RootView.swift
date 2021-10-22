@@ -5,15 +5,12 @@ import SwiftUI
 
 public struct RootView: View {
 
-    #if os(iOS)
-    let listStyle = InsetGroupedListStyle()
-    #else
-    let listStyle = InsetListStyle()
-    #endif
-
     private let data: NavigationLinkProviderList = [
         "1 - Base": [
-            NavigationLinkProvider(view: TypographyExamplesView(), title: "🔠 Typography")
+            NavigationLinkProvider(view: ColorsExamplesView(), title: "🌈 Colors"),
+            NavigationLinkProvider(view: TypographyExamplesView(), title: "🔠 Typography"),
+            NavigationLinkProvider(view: SpacingExamplesView(), title: "🔳 Spacing Rules"),
+            NavigationLinkProvider(view: IconsExamplesView(), title: "🖼 Icons")
         ],
         "2 - Primitives": [
             NavigationLinkProvider(view: SampleView())
@@ -23,13 +20,12 @@ public struct RootView: View {
         ]
     ]
 
+    public init() {}
+
     public var body: some View {
         NavigationView {
-            List {
-                NavigationLinkProvider.sections(for: data)
-            }
-            .listStyle(listStyle)
-            .navigationTitle("Component Library")
+            NavigationLinkProviderView(data: data)
+                .navigationTitle("Component Library")
         }
     }
 }

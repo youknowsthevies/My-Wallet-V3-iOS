@@ -160,7 +160,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
     private func initialState(descriptorViewModel: TransactionDescriptorViewModel) -> State {
         let topSelectionTitle = String(
             format: LocalizatedStrings.from,
-            fiatCurrency.code
+            fiatCurrency.displayCode
         )
         let bottomSelectionTitle = String(
             format: LocalizatedStrings.to,

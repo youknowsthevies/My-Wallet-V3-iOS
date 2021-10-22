@@ -27,13 +27,15 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
             .currencies
             .filter { !NonCustodialCoinCode.allCases.map(\.rawValue).contains($0.code) }
             .filter(\.products.enablesCurrency)
-            .compactMap {
-                switch $0 {
-                case let model as CoinAssetModel:
-                    return .coin(model)
-                case let model as ERC20AssetModel:
+            .compactMap { model in
+                switch model.kind {
+                case .erc20:
                     return .erc20(model)
-                default:
+                case .coin:
+                    return .coin(model)
+                case .celoToken:
+                    return .celoToken(model)
+                case .fiat:
                     return nil
                 }
             }
@@ -46,13 +48,9 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
         return repository.erc20Assets
             .currencies
             .filter { !NonCustodialCoinCode.allCases.map(\.rawValue).contains($0.code) }
-            .compactMap {
-                switch $0 {
-                case let model as ERC20AssetModel:
-                    return .erc20(model)
-                default:
-                    return nil
-                }
+            .filter(\.kind.isERC20)
+            .compactMap { model in
+                .erc20(model)
             }
     }
 

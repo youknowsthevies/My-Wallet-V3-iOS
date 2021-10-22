@@ -60,6 +60,8 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
     }
 
     private let feeCache: CachedValue<CustodialTransferFee>
+    private let accountTransferRepository: InterestAccountTransferRepositoryAPI
+    /// Used for fetching fees and limits for interest.
     private let transferRepository: CustodialTransferRepositoryAPI
     private let accountLimitsRepository: InterestAccountLimitsRepositoryAPI
 
@@ -70,8 +72,10 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
-        transferRepository: CustodialTransferRepositoryAPI = resolve()
+        transferRepository: CustodialTransferRepositoryAPI = resolve(),
+        accountTransferRepository: InterestAccountTransferRepositoryAPI = resolve()
     ) {
+        self.accountTransferRepository = accountTransferRepository
         self.fiatCurrencyService = fiatCurrencyService
         self.requireSecondPassword = requireSecondPassword
         self.priceService = priceService
@@ -194,7 +198,15 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
         pendingTransaction: PendingTransaction,
         secondPassword: String
     ) -> Single<TransactionResult> {
-        unimplemented()
+        accountTransferRepository
+            .createInterestAccountCustodialWithdraw(pendingTransaction.amount)
+            .mapError { _ in
+                TransactionValidationFailure(state: .unknownError)
+            }
+            .map { _ in
+                TransactionResult.unHashed(amount: pendingTransaction.amount)
+            }
+            .asSingle()
     }
 
     public func doPostExecute(

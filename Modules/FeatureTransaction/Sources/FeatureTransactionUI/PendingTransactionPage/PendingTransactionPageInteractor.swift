@@ -41,7 +41,9 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
         analyticsHook: TransactionAnalyticsHook = resolve(),
         sendEmailNotificationService: SendEmailNotificationServiceAPI = resolve()
     ) {
-        pendingTransationStateProvider = PendingTransctionStateProviderFactory.pendingTransactionStateProvider(action: action)
+        pendingTransationStateProvider = PendingTransctionStateProviderFactory.pendingTransactionStateProvider(
+            action: action
+        )
         self.transactionModel = transactionModel
         self.analyticsHook = analyticsHook
         self.sendEmailNotificationService = sendEmailNotificationService
@@ -51,12 +53,8 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     override func didBecomeActive() {
         super.didBecomeActive()
 
-        let transactionState = transactionModel
-            .state
-            .share(replay: 1)
-
         let state: Driver<PendingTransactionPageState> = pendingTransationStateProvider
-            .connect(state: transactionState)
+            .connect(state: transactionModel.state)
             .asDriver(onErrorJustReturn: .empty)
 
         presenter
@@ -64,11 +62,11 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
             .drive(onNext: handle(effect:))
             .disposeOnDeactivate(interactor: self)
 
-        let executionStatus = transactionState.map(\.executionStatus)
+        let executionStatus = transactionModel.state.map(\.executionStatus)
 
         executionStatus
             .asObservable()
-            .withLatestFrom(transactionState) { ($0, $1) }
+            .withLatestFrom(transactionModel.state) { ($0, $1) }
             .subscribe(onNext: { [weak self] executionStatus, transactionState in
                 guard let self = self else { return }
                 switch executionStatus {

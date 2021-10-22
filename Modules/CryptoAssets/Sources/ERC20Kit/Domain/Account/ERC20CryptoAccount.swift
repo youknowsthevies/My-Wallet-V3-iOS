@@ -94,14 +94,14 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         erc20TokenAccountsRepository
             .tokens(for: EthereumAddress(address: publicKey)!)
             .map { [erc20Token] tokens in
-                tokens[erc20Token.cryptoCurrency] != nil
+                tokens[.erc20(erc20Token)] != nil
             }
             .replaceError(with: false)
             .ignoreFailure()
     }
 
     private let publicKey: String
-    private let erc20Token: ERC20AssetModel
+    private let erc20Token: AssetModel
     private let erc20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI
     private let balanceService: ERC20BalanceServiceAPI
     private let featureFetcher: FeatureFetching
@@ -113,7 +113,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     init(
         publicKey: String,
-        erc20Token: ERC20AssetModel,
+        erc20Token: AssetModel,
         erc20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI = resolve(),
         featureFetcher: FeatureFetching = resolve(),
         balanceService: ERC20BalanceServiceAPI = resolve(),
@@ -125,8 +125,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     ) {
         self.publicKey = publicKey
         self.erc20Token = erc20Token
-        asset = erc20Token.cryptoCurrency
-        label = erc20Token.cryptoCurrency.defaultWalletName
+        asset = .erc20(erc20Token)
+        label = asset.defaultWalletName
         self.balanceService = balanceService
         self.featureFetcher = featureFetcher
         self.transactionsService = transactionsService

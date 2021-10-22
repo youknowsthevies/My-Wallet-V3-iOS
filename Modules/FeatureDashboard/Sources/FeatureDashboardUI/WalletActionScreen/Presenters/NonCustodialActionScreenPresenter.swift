@@ -36,7 +36,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         interactor
             .availableActions
             .map { actions in
-                actions.map(\.walletAction)
+                actions.compactMap(\.walletAction)
             }
             .map { $0.sorted() }
             .map { [currency] actions in
@@ -131,11 +131,11 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
 }
 
 extension AssetAction {
-    fileprivate var walletAction: WalletAction {
+    fileprivate var walletAction: WalletAction? {
         switch self {
         case .interestWithdraw,
              .interestTransfer:
-            unimplemented()
+            return nil
         case .viewActivity:
             return .activity
         case .buy:

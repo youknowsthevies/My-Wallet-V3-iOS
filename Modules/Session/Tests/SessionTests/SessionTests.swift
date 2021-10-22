@@ -87,7 +87,7 @@ final class SessionTests: XCTestCase {
             throw Explicit.error
         }
 
-        try XCTAssertEqual(state.get("value"), true)
+        try XCTAssertTrue(state.get("value"))
     }
 
     func test_concurrency() throws {
@@ -117,7 +117,7 @@ final class SessionTests: XCTestCase {
     }
 
     func test_stress() {
-        DispatchQueue.concurrentPerform(iterations: 10_000) { _ in
+        DispatchQueue.concurrentPerform(iterations: 10000) { _ in
             var rng: Int { Int.random(in: 0...100) }
             state.set("\(rng)", to: rng)
             _ = state.contains("\(rng)")

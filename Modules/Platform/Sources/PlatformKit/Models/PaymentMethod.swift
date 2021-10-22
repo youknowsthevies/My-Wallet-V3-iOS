@@ -17,10 +17,10 @@ public struct PaymentMethod: Equatable, Comparable {
         /// Card payment method
         case card(Set<CardType>)
 
-        /// Bank account payment method
+        /// Bank account payment method (linking via wire transfer)
         case bankAccount(CurrencyType)
 
-        /// Bank transfer payment method
+        /// Bank transfer payment method (linking via ACH or Open Banking)
         case bankTransfer(CurrencyType)
 
         /// Funds payment method

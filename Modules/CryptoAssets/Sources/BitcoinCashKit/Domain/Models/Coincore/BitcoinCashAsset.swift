@@ -52,7 +52,7 @@ final class BitcoinCashAsset: CryptoAsset {
         )
     }()
 
-    private let addressFactory: CryptoReceiveAddressFactory
+    private let addressFactory: ExternalAssetAddressFactory
     private let errorRecorder: ErrorRecording
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: BitcoinCashWalletAccountRepository
@@ -61,8 +61,8 @@ final class BitcoinCashAsset: CryptoAsset {
     // MARK: - Setup
 
     init(
-        addressFactory: CryptoReceiveAddressFactory = resolve(
-            tag: CoinAssetModel.bitcoinCash.typeTag
+        addressFactory: ExternalAssetAddressFactory = resolve(
+            tag: BitcoinChainCoin.bitcoinCash
         ),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
@@ -106,6 +106,14 @@ final class BitcoinCashAsset: CryptoAsset {
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
         cryptoAssetRepository.parse(address: address)
+    }
+
+    func parse(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping (TransactionResult) -> Completable
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        cryptoAssetRepository.parse(address: address, label: label, onTxCompleted: onTxCompleted)
     }
 
     // MARK: - Private methods

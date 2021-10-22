@@ -39,6 +39,25 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
 
     // MARK: - Private Properties
 
+    private var minimumDepositCryptoLimits: Single<CryptoValue> {
+        minimumDepositLimits
+            .flatMap { [priceService, sourceAsset] fiatValue -> Single<(FiatValue, FiatValue)> in
+                let quote = priceService
+                    .price(of: sourceAsset, in: fiatValue.currency)
+                    .asSingle()
+                    .map(\.moneyValue)
+                    .map { $0.fiatValue ?? .zero(currency: fiatValue.currency) }
+                return Single.zip(quote, .just(fiatValue))
+            }
+            .map { [sourceAsset] (quote: FiatValue, deposit: FiatValue) -> CryptoValue in
+                deposit
+                    .convertToCryptoValue(
+                        exchangeRate: quote,
+                        cryptoCurrency: sourceAsset.cryptoCurrency!
+                    )
+            }
+    }
+
     private var sourceCryptoAccount: CryptoAccount {
         sourceAccount as! CryptoAccount
     }
@@ -87,16 +106,17 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
     {
         onChainEngine
             .initializeTransaction()
-            .flatMap { [minimumDepositLimits] pendingTransaction in
+            .flatMap { [minimumDepositCryptoLimits] pendingTransaction in
                 Single
                     .zip(
-                        minimumDepositLimits,
+                        minimumDepositCryptoLimits
+                            .map(\.moneyValue),
                         .just(pendingTransaction)
                     )
             }
             .map { minimum, pendingTransaction in
                 var tx = pendingTransaction
-                tx.minimumLimit = minimum.moneyValue
+                tx.minimumLimit = minimum
                 tx.feeSelection = pendingTransaction
                     .feeSelection
                     .update(availableFeeLevels: [.regular])
@@ -143,7 +163,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
             .flatMapCompletable(weak: self) { (self, pendingTransaction) in
                 self.checkIfAmountIsBelowMinimumLimit(pendingTransaction)
             }
-            .andThen(.just(pendingTransaction))
+            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
     public func doValidateAll(
@@ -151,10 +171,16 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
     ) -> Single<PendingTransaction> {
         onChainEngine
             .doValidateAll(pendingTransaction: pendingTransaction)
-            .flatMapCompletable(weak: self) { (self, pendingTransaction) in
-                self.checkIfCanExecute(pendingTransaction)
+            .flatMap(weak: self) { (self, pendingTransaction) in
+                guard pendingTransaction.agreementOptionValue, pendingTransaction.termsOptionValue else {
+                    return .just(
+                        pendingTransaction.update(validationState: .optionInvalid)
+                    )
+                }
+                return self.validateAmount(
+                    pendingTransaction: pendingTransaction
+                )
             }
-            .andThen(.just(pendingTransaction))
     }
 
     public func execute(
@@ -182,33 +208,5 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
     ) -> Single<PendingTransaction> {
         precondition(pendingTransaction.availableFeeLevels.contains(level))
         return .just(pendingTransaction)
-    }
-
-    // MARK: - Private Functions
-
-    private func checkIfCanExecute(
-        _ pendingTransaction: PendingTransaction
-    ) -> Completable {
-        Completable.fromCallable {
-            guard pendingTransaction.agreementOptionValue, pendingTransaction.termsOptionValue else {
-                throw TransactionValidationFailure(state: .optionInvalid)
-            }
-            guard pendingTransaction.validationState == .canExecute else {
-                throw TransactionValidationFailure(state: .unknownError)
-            }
-        }
-    }
-
-    private func checkIfAmountIsBelowMinimumLimit(
-        _ pendingTransaction: PendingTransaction
-    ) -> Completable {
-        Completable.fromCallable {
-            guard let minimum = pendingTransaction.minimumLimit else {
-                throw TransactionValidationFailure(state: .uninitialized)
-            }
-            guard try pendingTransaction.amount > minimum else {
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
-            }
-        }
     }
 }

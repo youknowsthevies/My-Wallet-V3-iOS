@@ -123,8 +123,19 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
 
         view.addLayoutGuide(headerLayoutGuide)
         view.addSubview(tableView)
-        tableView.layoutToSuperview(.top, .bottom, .leading, .trailing)
-        tableView.addSubview(activityIndicatorView)
+        view.addSubview(activityIndicatorView)
+
+        let headerLayoutGuideHeight = headerLayoutGuide.heightAnchor.constraint(equalToConstant: 0)
+        headerLayoutGuideHeight.priority = .defaultHigh
+
+        NSLayoutConstraint.activate([
+            headerLayoutGuideHeight,
+            headerLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
+            headerLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            headerLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            headerLayoutGuide.bottomAnchor.constraint(equalTo: tableView.topAnchor)
+        ])
+        tableView.layoutToSuperview(.bottom, .leading, .trailing)
         activityIndicatorView.layoutToSuperviewCenter()
     }
 

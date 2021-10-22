@@ -347,6 +347,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     private func showFlowStep(previousState: TransactionState?, newState: TransactionState) {
+        guard previousState?.step != newState.step else {
+            // if the step hasn't changed we have nothing to do
+            return
+        }
         guard !newState.isGoingBack else {
             guard previousState?.step.goingBackSkipsNavigation == false else {
                 return
@@ -546,9 +550,14 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         // Otherwise, make the user link a relevant payment account.
         switch paymentAccount.paymentMethod.type {
         case .bankAccount:
-            transactionModel.process(action: .showBankLinkingFlow)
-        case .bankTransfer:
             transactionModel.process(action: .showBankWiringInstructions)
+        case .bankTransfer:
+            // Check the currency to ensure the user can link a bank via ACH until Open Banking is complete.
+            if paymentAccount.paymentMethod.fiatCurrency == .USD {
+                transactionModel.process(action: .showBankLinkingFlow)
+            } else {
+                transactionModel.process(action: .showBankWiringInstructions)
+            }
         case .card:
             transactionModel.process(action: .showCardLinkingFlow)
         case .funds:

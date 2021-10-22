@@ -4,6 +4,10 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
+public protocol TransactionOrder {
+    var identifier: String { get }
+}
+
 public protocol TransactionEngine: AnyObject {
 
     typealias AskForRefreshConfirmation = (_ revalidate: Bool) -> Completable
@@ -61,10 +65,32 @@ public protocol TransactionEngine: AnyObject {
     /// Else set it to the appropriate error, and then return the updated PendingTx
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction>
 
-    /// Execute the transaction, it will have been validated before this is called, so the expectation
-    /// is that it will succeed.
-    /// - Parameter secondPassword: The second password or a empty string if not needed.
+    /// Create a `TransactionOrder` for the pending transaction. Not all transaction types require an order. Return a `nil` order if that's the case.
+    /// - Parameter pendingTransaction: The pending transaction so far.
+    func createOrder(pendingTransaction: PendingTransaction) -> Single<TransactionOrder?>
+
+    /// If a `TransactionOrder` was created, the user can cancel it. When an order needs to be cancelled, this method gets called.
+    /// - Parameter identifier: The identifier of the order to be cancelled.
+    func cancelOrder(with identifier: String) -> Single<Void>
+
+    /// Execute the transaction, it will have been validated before this is called, so the expectation is that it will succeed.
+    /// - Note:This method should be implemented by `TransactionEngine`s that don't require the creation of an order.
+    /// - Parameters:
+    ///   - pendingTransaction: The pending transaction so far.
+    ///   - secondPassword: The second password or a empty string if not needed.
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult>
+
+    /// Execute the transaction, it will have been validated before this is called, so the expectation is that it will succeed.
+    /// - Note: This method is defaulted to call `execute(pendingTransaction:secondPassword:)`.
+    /// - Parameters:
+    ///   - pendingTransaction: The pending transaction so far
+    ///   - pendingOrder: The pending order if one was created by `createOrder`.
+    ///   - secondPassword: The second password or an empty string if not needed.
+    func execute(
+        pendingTransaction: PendingTransaction,
+        pendingOrder: TransactionOrder?,
+        secondPassword: String
+    ) -> Single<TransactionResult>
 
     /// Action to be executed once the transaction has been executed, it will have been validated before this is called, so the expectation
     /// is that it will succeed.
@@ -154,5 +180,26 @@ extension TransactionEngine {
 
     public func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .just(pendingTransaction)
+    }
+
+    public func createOrder(pendingTransaction: PendingTransaction) -> Single<TransactionOrder?> {
+        .just(nil)
+    }
+
+    public func cancelOrder(with identifier: String) -> Single<Void> {
+        .just(())
+    }
+
+    public func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+        // swiftlint:disable:next line_length
+        unimplemented("Override this method in your Engine implementation. If you need to execute an order, override \(String(describing: execute(pendingTransaction:pendingOrder:secondPassword:))) instead")
+    }
+
+    public func execute(
+        pendingTransaction: PendingTransaction,
+        pendingOrder: TransactionOrder?,
+        secondPassword: String
+    ) -> Single<TransactionResult> {
+        execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
     }
 }

@@ -13,8 +13,6 @@ final class MockFeatureFlagsService: FeatureFlagsServiceAPI {
     }
 
     struct StubbedResults {
-        var enable: AnyPublisher<Void, Never> = .empty()
-        var disable: AnyPublisher<Void, Never> = .empty()
         var object: AnyPublisher<Codable?, FeatureFlagError> = .empty()
     }
 
@@ -26,13 +24,13 @@ final class MockFeatureFlagsService: FeatureFlagsServiceAPI {
     func enable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
         features[feature] = true
         recordedInvocations.enable.append(feature)
-        return stubbedResults.enable
+        return .just(())
     }
 
     func disable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
         features[feature] = false
         recordedInvocations.disable.append(feature)
-        return stubbedResults.disable
+        return .just(())
     }
 
     func isEnabled(_ feature: FeatureFlag) -> AnyPublisher<Bool, Never> {

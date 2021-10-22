@@ -400,9 +400,9 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Trouble Logging In",
                 comment: "Seed phrase screen: trouble logging in navigation title"
             )
-            public static let importWallet = NSLocalizedString(
-                "Import Wallet",
-                comment: "Seed phrase screen: import wallet navigation title"
+            public static let restoreWallet = NSLocalizedString(
+                "Restore Wallet",
+                comment: "Seed phrase screen: restore wallet navigation title"
             )
         }
 
@@ -410,9 +410,9 @@ extension LocalizationConstants.FeatureAuthentication {
             "Enter your twelve word Secret Private Key Recovery Phrase to log in. Separate each word with a space.",
             comment: "Seed phrase screen: main instruction"
         )
-        public static let importWalletInstruction = NSLocalizedString(
-            "Enter your twelve word Secret Private Key Recovery Phrase (Seed Phrase) to import wallet. Separate each word with a space.",
-            comment: "Seed phrase screen: import wallet main instruction"
+        public static let restoreWalletInstruction = NSLocalizedString(
+            "Enter your twelve word Secret Private Key Recovery Phrase (Seed Phrase) to restore wallet. Separate each word with a space.",
+            comment: "Seed phrase screen: restore wallet main instruction"
         )
         public static let placeholder = NSLocalizedString(
             "Enter recovery phrase",

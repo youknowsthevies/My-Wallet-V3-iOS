@@ -27,7 +27,7 @@ let package = Package(
     dependencies: [
         .package(
             name: "SnapshotTesting",
-            url: "https://github.com/pointfreeco/swift-snapshot-testing.git",
+            url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
         .package(
