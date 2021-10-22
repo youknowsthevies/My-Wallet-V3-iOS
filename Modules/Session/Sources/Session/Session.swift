@@ -20,10 +20,10 @@ extension State {
         internal var subjects: [Key: Subject] = [:]
         private var dirty: (data: [Key: Any], level: UInt) = ([:], 0)
 
-        private var q = DispatchQueue(label: "com.blockchain.session.state.q")
-        private var k: DispatchSpecificKey<Data.Type>
+        private var queue = DispatchQueue(label: "com.blockchain.session.state.queue")
+        private var key: DispatchSpecificKey<Data.Type>
 
-        init() { k = .init(on: q) }
+        init() { key = .init(on: queue) }
     }
 
     public enum Error: Swift.Error {
@@ -123,10 +123,10 @@ extension State {
 
     private static func map<T>(_ result: Result<Any, Error>, to _: T.Type, for key: Key) -> Result<T, Error> {
         result.flatMap { value in
-            guard let __ = value as? T else {
+            guard let value = value as? T else {
                 return .failure(.typeMismatch(key, expected: T.self, actual: type(of: value)))
             }
-            return .success(__)
+            return .success(value)
         }
     }
 }
@@ -233,8 +233,8 @@ extension State.Data {
 
     @discardableResult
     public func sync<T>(execute work: () throws -> T) rethrows -> T {
-        DispatchQueue.getSpecific(key: k) == nil
-            ? try q.sync(execute: work)
+        DispatchQueue.getSpecific(key: key) == nil
+            ? try queue.sync(execute: work)
             : try work()
     }
 }
