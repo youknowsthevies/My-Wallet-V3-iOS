@@ -53,6 +53,9 @@ public struct AssetModel: Hashable {
             self.sortIndex = 1000 + sortIndex
             kind = .celoToken
         case SupportedAssetsResponse.Asset.AssetType.Name.erc20.rawValue:
+            guard assetResponse.type.parentChain == NonCustodialCoinCode.ethereum.rawValue else {
+                return nil
+            }
             guard let erc20Address = assetResponse.type.erc20Address else {
                 return nil
             }
