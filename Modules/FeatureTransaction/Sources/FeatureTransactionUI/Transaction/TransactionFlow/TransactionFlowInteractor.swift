@@ -550,9 +550,14 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         // Otherwise, make the user link a relevant payment account.
         switch paymentAccount.paymentMethod.type {
         case .bankAccount:
-            transactionModel.process(action: .showBankLinkingFlow)
-        case .bankTransfer:
             transactionModel.process(action: .showBankWiringInstructions)
+        case .bankTransfer:
+            // Check the currency to ensure the user can link a bank via ACH until Open Banking is complete.
+            if paymentAccount.paymentMethod.fiatCurrency == .USD {
+                transactionModel.process(action: .showBankLinkingFlow)
+            } else {
+                transactionModel.process(action: .showBankWiringInstructions)
+            }
         case .card:
             transactionModel.process(action: .showCardLinkingFlow)
         case .funds:
