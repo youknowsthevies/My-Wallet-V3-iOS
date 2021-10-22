@@ -1,10 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RIBs
 import RxCocoa
 import RxSwift
+import ToolKit
 
 enum LinkBankFlow {
     enum FailureReason: Error {
@@ -14,6 +16,7 @@ enum LinkBankFlow {
     enum Screen {
         case splash(data: BankLinkageData)
         case yodlee(data: BankLinkageData)
+        case yapily(data: BankLinkageData)
         case failure(FailureReason)
     }
 
@@ -43,13 +46,14 @@ final class LinkBankFlowRootInteractor: Interactor,
 
     private let bankFlowEffectRelay = PublishRelay<LinkBankFlowEffect>()
     internal let retryAction = PublishRelay<LinkBankFlow.Action>()
-    private let supportedParters: Set<BankLinkageData.Partner> = [.yodlee]
 
     // MARK: - Injected
 
     private let linkedBankService: LinkedBanksServiceAPI
     private let loadingViewPresenter: LoadingViewPresenting
     private let beneficiariesService: BeneficiariesServiceAPI
+
+    private var bag: Set<AnyCancellable> = []
 
     init(
         linkedBankService: LinkedBanksServiceAPI = resolve(),
@@ -127,13 +131,20 @@ final class LinkBankFlowRootInteractor: Interactor,
                 router?.route(to: .failure(.generic))
                 return
             }
-            guard supportedParters.contains(data.partner) else {
-                router?.route(to: .failure(.generic))
-                return
+            switch data.partner {
+            case .yapily:
+                (resolve() as FeatureFlagsServiceAPI)
+                    .isEnabled(.local(.openBanking))
+                    .if(
+                        then: { [weak self] in self?.route(to: .yapily(data: data)) },
+                        else: { [weak self] in self?.route(to: .failure(.generic)) }
+                    )
+                    .store(in: &bag)
+            case .yodlee:
+                route(to: .splash(data: data))
             }
-            router?.route(to: .splash(data: data))
         case .failure:
-            router?.route(to: .failure(.generic))
+            route(to: .failure(.generic))
         }
     }
 }

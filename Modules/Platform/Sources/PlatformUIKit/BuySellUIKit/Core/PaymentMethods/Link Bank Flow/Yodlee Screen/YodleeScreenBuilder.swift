@@ -7,12 +7,12 @@ import WebKit
 // MARK: - Builder
 
 protocol YodleeScreenBuildable {
-    func build(withListener listener: YodleeScreenListener, data: BankLinkageData) -> YodleeScreenRouting
+    func build(withListener listener: LinkBankListener, data: BankLinkageData) -> YodleeScreenRouting
 }
 
 final class YodleeScreenBuilder: YodleeScreenBuildable {
 
-    func build(withListener listener: YodleeScreenListener, data: BankLinkageData) -> YodleeScreenRouting {
+    func build(withListener listener: LinkBankListener, data: BankLinkageData) -> YodleeScreenRouting {
         let webConfiguration = provideYodleeConfiguration()
         let messageHandler = YodleeMessageHandler(webViewConfiguration: webConfiguration)
         let messageService = YodleeMessageService(messageHandler: messageHandler, parser: yodleeMessageParser)

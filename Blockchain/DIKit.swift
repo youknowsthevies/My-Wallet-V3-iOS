@@ -1,4 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+// swiftlint:disable file_length
 
 import AnalyticsKit
 import BitcoinCashKit
@@ -21,13 +22,14 @@ import FeatureTransactionDomain
 import FeatureTransactionUI
 import NetworkKit
 import OpenBanking
+import OpenBankingUI
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
+import RxToolKit
 import StellarKit
 import ToolKit
 import WalletPayloadKit
-import RxToolKit
 
 // MARK: - Settings Dependencies
 
@@ -164,7 +166,10 @@ extension DependencyContainer {
         factory { UIApplication.shared as AppStoreOpening }
 
         factory {
-            BackupFundsRouter(entry: .custody, navigationRouter: NavigationRouter()) as FeatureDashboardUI.BackupRouterAPI
+            BackupFundsRouter(
+                entry: .custody,
+                navigationRouter: NavigationRouter()
+            ) as FeatureDashboardUI.BackupRouterAPI
         }
 
         factory { AnalyticsUserPropertyInteractor() as FeatureDashboardUI.AnalyticsUserPropertyInteracting }
@@ -351,7 +356,6 @@ extension DependencyContainer {
             return featureFetching
         }
 
-
         factory { () -> RxFeatureFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
@@ -439,6 +443,7 @@ extension DependencyContainer {
         // MARK: Helpers
 
         factory { UIApplication.shared as ExternalAppOpener }
+        factory { UIApplication.shared as URLOpener }
 
         // MARK: KYC Module
 
@@ -586,6 +591,8 @@ extension DependencyContainer {
             return AccountPickerViewController() as AccountPickerViewControllable
         }
 
+        // MARK: Open Banking
+
         single { () -> OpenBanking in
             let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
@@ -594,5 +601,13 @@ extension DependencyContainer {
                 network: adapter
             )
         }
+
+        single { () -> OpenBankingUI.FiatCurrencyFormatter in
+            FiatCurrencyFormatter()
+        }
+
+        single { OpenBankingViewController.self as StartOpenBanking.Type }
+
+        single { PresentAccountLinkingFlowAdapter() as PresentAccountLinkingFlow }
     }
 }

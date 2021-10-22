@@ -1,12 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /*
- guard let currency = FiatCurrency(rawValue: symbol),
-       let fiat = FiatValue.create(minor: amount, currency: currency)
- else {
-     return .errorMessage(R.Bank.Payment.error.interpolating(symbol))
- }
- */
+let currency = FiatCurrency(rawValue: symbol)
+let fiat = FiatValue.create(minor: amount, currency: currency)
+*/
 
 public protocol FiatCurrencyFormatter {
     func displayString(amountMinor: String, currency: String) -> String?

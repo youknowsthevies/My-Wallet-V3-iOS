@@ -60,15 +60,54 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     .asSingle()
                 }
                 .map { methods, sddEligible -> [PaymentMethod] in
-                    let paymentMethods: [PaymentMethod] = .init(
+                    var paymentMethods: [PaymentMethod] = .init(
                         methods: methods,
                         currency: fiatCurrency,
                         supportedFiatCurrencies: enabledFiatCurrencies
                     )
+
+                    // swiftlint:disable force_try
+                    // TODO Remove once finished debugging
+//                    paymentMethods.append(
+//                        try! PaymentMethod(
+//                            currency: "GBP",
+//                            method: .init(
+//                                json: [
+//                                    "eligible": true,
+//                                    "type": "BANK_TRANSFER",
+//                                    "limits": [
+//                                        "min": "100",
+//                                        "max": "2500000",
+//                                        "daily": [
+//                                            "limit": 50000000,
+//                                            "available": 50000000,
+//                                            "used": 0
+//                                        ],
+//                                        "weekly": [
+//                                            "limit": 50000000,
+//                                            "available": 50000000,
+//                                            "used": 0
+//                                        ],
+//                                        "annual": [
+//                                            "limit": 50000000,
+//                                            "available": 50000000,
+//                                            "used": 0
+//                                        ]
+//                                    ],
+//                                    "currency": "GBP",
+//                                    "subTypes": [],
+//                                    "visible": true
+//                                ]
+//                            ),
+//                            supportedFiatCurrencies: enabledFiatCurrencies
+//                        )!
+//                    )
+
                     guard sddEligible else {
                         return paymentMethods
                     }
-                    return paymentMethods.filter(\.isVisible) // only visible payment methods should be shown to the user
+                    // only visible payment methods should be shown to the user
+                    return paymentMethods.filter(\.isVisible)
                 }
                 .map { paymentMethods in
                     paymentMethods.filter { paymentMethod in

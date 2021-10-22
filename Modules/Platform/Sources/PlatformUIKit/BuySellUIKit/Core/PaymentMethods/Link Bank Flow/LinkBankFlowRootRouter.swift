@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RIBs
@@ -39,9 +40,14 @@ public protocol LinkBankFlowStarter: AnyObject {
     func startFlow() -> Observable<LinkBankFlowEffect>
 }
 
+public protocol StartOpenBanking {
+    static func link(_ data: BankLinkageData, currency: FiatCurrency, listener: LinkBankListener) -> UIViewController
+    static func pay(amountMinor: String, currency: FiatCurrency) -> UIViewController
+}
+
 protocol LinkBankFlowRootInteractable: Interactable,
     LinkBankSplashScreenListener,
-    YodleeScreenListener,
+    LinkBankListener,
     LinkBankFailureScreenListener
 {
     var linkBankFlowEffect: Observable<LinkBankFlowEffect> { get }
@@ -63,6 +69,10 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     private let splashScreenBuilder: LinkBankSplashScreenBuildable
     private let yodleeScreenBuilder: YodleeScreenBuildable
     private let failureScreenBuilder: LinkBankFailureScreenBuildable
+    private let startOpenBanking: StartOpenBanking.Type
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+
+    private var bag: Set<AnyCancellable> = []
 
     private var navigationController: UINavigationController?
 
@@ -71,12 +81,16 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         splashScreenBuilder: LinkBankSplashScreenBuildable,
         yodleeScreenBuilder: YodleeScreenBuildable,
-        failureScreenBuilder: LinkBankFailureScreenBuildable
+        failureScreenBuilder: LinkBankFailureScreenBuildable,
+        startOpenBanking: StartOpenBanking.Type = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.splashScreenBuilder = splashScreenBuilder
         self.yodleeScreenBuilder = yodleeScreenBuilder
         self.failureScreenBuilder = failureScreenBuilder
+        self.startOpenBanking = startOpenBanking
+        self.fiatCurrencyService = fiatCurrencyService
         super.init(interactor: interactor)
         interactor.router = self
     }
@@ -87,13 +101,35 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
             detachCurrentChild() // in case of a failure we need to detatch the current child
             let router = splashScreenBuilder.build(withListener: interactor, data: data)
             attachChild(router)
-            let navigationController = UINavigationController(rootViewController: router.viewControllable.uiviewController)
+            let navigationController = UINavigationController(
+                rootViewController: router.viewControllable.uiviewController
+            )
             presentingController?.present(navigationController, animated: true, completion: nil)
             self.navigationController = navigationController
         case .yodlee(let data):
             let router = yodleeScreenBuilder.build(withListener: interactor, data: data)
             attachChild(router)
             navigationController?.pushViewController(router.viewControllable.uiviewController, animated: true)
+        case .yapily(let data):
+            fiatCurrencyService.fiatCurrency
+                .publisher
+                .result()
+                .sink { [weak self] result in
+                    guard let self = self else { return }
+                    guard let presentingViewController = self.presentingController else {
+                        fatalError("No presentingViewController, unable to present Open Banking")
+                    }
+                    switch result {
+                    case .success(let currency):
+                        presentingViewController.present(
+                            self.startOpenBanking.link(data, currency: currency, listener: self.interactor),
+                            animated: true
+                        )
+                    case .failure:
+                        self.route(to: .failure(.generic))
+                    }
+                }
+                .store(in: &bag)
         case .failure:
             let router = failureScreenBuilder.build(withListener: interactor)
             attachChild(router)

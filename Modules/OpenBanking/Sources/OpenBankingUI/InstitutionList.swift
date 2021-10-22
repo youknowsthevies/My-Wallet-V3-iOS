@@ -1,12 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
 import OpenBanking
 import SwiftUI
 import ToolKit
 import UIComponentsKit
-import ComponentLibrary
 
 public struct InstitutionListState: Equatable, NavigationState {
 

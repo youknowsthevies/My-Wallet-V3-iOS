@@ -57,7 +57,7 @@ extension Array where Element == NetworkRequest {
 }
 
 extension URLRequest {
-    
+
     public init(_ method: NetworkRequest.NetworkMethod, _ url: URL, _ contentType: NetworkRequest.ContentType = .json) {
         self.init(url: url)
         httpMethod = method.rawValue

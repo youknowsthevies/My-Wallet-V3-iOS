@@ -441,6 +441,8 @@ targets:
         product: NetworkErrors
       - package: OpenBanking
         product: OpenBanking
+      - package: OpenBanking
+        product: OpenBankingUI
       - package: Platform
         product: PlatformKit
       - package: Platform

@@ -1,9 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
-// swiftlint:disable line_length
 
-import OpenBanking
-//import PlatformKit
 import Foundation
+import OpenBanking
 import UIComponentsKit
 
 extension ApproveState.UI {
@@ -44,7 +42,7 @@ extension ApproveState.UI {
             guard let bankName = details?.bankName,
                   let sortCode = details?.sortCode,
                   let accountNumber = details?.accountNumber,
-                  let currency =  bankAccount.currency,
+                  let currency = bankAccount.currency,
                   let amount = environment.fiatCurrencyFormatter.displayString(
                     amountMinor: amountMinor,
                     currency: currency

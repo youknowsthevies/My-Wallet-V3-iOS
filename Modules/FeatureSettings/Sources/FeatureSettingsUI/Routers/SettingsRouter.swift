@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import FeatureKYCDomain
@@ -27,6 +28,20 @@ public protocol AuthenticationCoordinating: AnyObject {
 
 public protocol ExchangeCoordinating: AnyObject {
     func start(from viewController: UIViewController)
+}
+
+public enum PresentAccountLinkingFlowCompletion {
+    case dismiss
+    case select(PaymentMethod)
+}
+
+public protocol PresentAccountLinkingFlow {
+
+    func presentAccountLinkingFlow(
+        from presenter: UIViewController,
+        filter: @escaping (PaymentMethodType) -> Bool,
+        completion: @escaping (PresentAccountLinkingFlowCompletion) -> Void
+    )
 }
 
 final class SettingsRouter: SettingsRouterAPI {
@@ -67,12 +82,14 @@ final class SettingsRouter: SettingsRouterAPI {
     private let pitConnectionAPI: PITConnectionStatusProviding
     private let builder: SettingsBuilding
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     /// The router for linking a new bank
     private var linkBankFlowRouter: LinkBankFlowStarter?
 
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
+    private var bag: Set<AnyCancellable> = []
 
     init(
         appCoordinator: AppCoordinating = resolve(),
@@ -92,7 +109,8 @@ final class SettingsRouter: SettingsRouterAPI {
         tabSwapping: TabSwapping = resolve(),
         passwordRepository: PasswordRepositoryAPI = resolve(),
         repository: DataRepositoryAPI = resolve(),
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.wallet = wallet
         self.appCoordinator = appCoordinator
@@ -111,6 +129,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.passwordRepository = passwordRepository
         self.repository = repository
         self.analyticsRecorder = analyticsRecorder
+        self.featureFlagsService = featureFlagsService
 
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -194,11 +213,21 @@ final class SettingsRouter: SettingsRouterAPI {
             )
             cardRouter.load()
         case .showAddBankScreen(let fiatCurrency):
-            if fiatCurrency == .USD {
+            switch fiatCurrency {
+            case .USD:
                 showLinkBankFlow()
-                return
+            case .GBP, .EUR:
+                featureFlagsService
+                    .isEnabled(.local(.openBanking))
+                    .if(
+                        then: SettingsRouter.showLinkOpenBankingFlow + fiatCurrency,
+                        else: SettingsRouter.showFundTransferDetails + fiatCurrency,
+                        on: self
+                    )
+                    .store(in: &bag)
+            default:
+                showFundTransferDetails(currency: fiatCurrency)
             }
-            appCoordinator.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: false)
         case .showAppStore:
             appStoreOpener.openAppStore()
         case .showBackupScreen:
@@ -305,6 +334,42 @@ final class SettingsRouter: SettingsRouterAPI {
         }
     }
 
+    private func showFundTransferDetails(currency: FiatCurrency) {
+        appCoordinator.showFundTrasferDetails(fiatCurrency: currency, isOriginDeposit: false)
+    }
+
+    private func showLinkOpenBankingFlow(currency: FiatCurrency) {
+
+        guard let viewController = navigationRouter.topMostViewControllerProvider.topMostViewController else {
+            fatalError("Failed to present open banking flow, no view controller available for presentation")
+        }
+
+        (resolve() as PresentAccountLinkingFlow)
+            .presentAccountLinkingFlow(
+                from: viewController,
+                filter: { type in
+                    type.method.isFunds || type.method.isBankTransfer
+                },
+                completion: { [weak self] result in
+                    guard let self = self else { return }
+                    viewController.dismiss(animated: true) {
+                        switch result {
+                        case .dismiss: break
+                        case .select(let method):
+                            switch method.type {
+                            case .funds:
+                                self.showFundTransferDetails(currency: currency)
+                            case .bankTransfer:
+                                self.showLinkBankFlow()
+                            default:
+                                assertionFailure("Unsupported payment method: \(method)")
+                            }
+                        }
+                    }
+                }
+            )
+    }
+
     private func showLinkBankFlow() {
         let builder = LinkBankFlowRootBuilder()
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
@@ -376,4 +441,8 @@ final class SettingsRouter: SettingsRouterAPI {
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting()
     }()
+}
+
+func + <Root, Value, Return>(lhs: @escaping (Root) -> (Value) -> Return, rhs: Value) -> (Root) -> () -> Return {
+    { root in { lhs(root)(rhs) } }
 }

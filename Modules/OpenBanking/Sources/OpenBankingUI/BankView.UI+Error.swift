@@ -39,7 +39,7 @@ extension BankState.UI {
                 .cancel
             ]
         ),
-    .BANK_TRANSFER_ACCOUNT_FAILED: .init(
+        .BANK_TRANSFER_ACCOUNT_FAILED: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),

@@ -33,12 +33,16 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
+    /// OpenBanking
+    case openBanking
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
         case .useTransactionsFlowToBuyCrypto,
              .newAccountPicker,
-             .newOnboardingTour:
+             .newOnboardingTour,
+             .openBanking:
             return true
         case .disableGUIDLogin,
              .interestWithdrawAndDeposit,
@@ -78,6 +82,8 @@ extension InternalFeature {
             return "Unified Sign In"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
+        case .openBanking:
+            return "Open Banking"
         }
     }
 }

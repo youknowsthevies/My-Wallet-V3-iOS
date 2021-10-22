@@ -25,6 +25,17 @@ extension Publisher where Failure == Never {
             handler(root)()
         }
     }
+
+    public func sink<Root, T>(
+        to handler: @escaping (Root) -> (T) -> Void,
+        on root: Root,
+        with value: T
+    ) -> AnyCancellable where Root: AnyObject {
+        sink { [weak root] _ in
+            guard let root = root else { return }
+            handler(root)(value)
+        }
+    }
 }
 
 extension Publisher {
@@ -226,5 +237,54 @@ extension Publisher {
             casePath.extract(from: output) != nil
         }
         .eraseToAnyPublisher()
+    }
+}
+
+extension Publisher {
+
+    public func filter(_ keyPath: KeyPath<Output, Bool>) -> Publishers.Filter<Self> {
+        filter { $0[keyPath: keyPath] }
+    }
+}
+
+extension Publisher where Output == Bool, Failure == Never {
+
+    public func `if`(
+        then yes: @escaping () -> Void,
+        else no: @escaping () -> Void
+    ) -> AnyCancellable {
+        sink { output in
+            if output {
+                yes()
+            } else {
+                no()
+            }
+        }
+    }
+
+    public func `if`<Root>(
+        then yes:@escaping  (Root) -> () -> Void,
+        else no: @escaping (Root) -> () -> Void,
+        on root: Root
+    ) -> AnyCancellable where Root: AnyObject {
+        sink { [weak root] output in
+            guard let root = root else { return }
+            if output {
+                yes(root)()
+            } else {
+                no(root)()
+            }
+        }
+    }
+}
+
+extension AnyCancellable {
+
+    public func store<Object>(
+        withLifetimeOf object: Object,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) where Object: AnyObject {
+        objc_setAssociatedObject(object, file.description + line.description, self, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
 }

@@ -31,7 +31,7 @@ public protocol AddNewPaymentMethodListener: AnyObject {
 }
 
 final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMethodPresentable>,
-    AddNewPaymentMethodInteractable
+                                           AddNewPaymentMethodInteractable
 {
 
     // MARK: - Types
@@ -49,6 +49,7 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
     private let paymentMethodService: SelectPaymentMethodService
     private let loadingViewPresenter: LoadingViewPresenting
     private let eventRecorder: AnalyticsEventRecorderAPI
+    private let filter: (PaymentMethodType) -> Bool
 
     private let selectionRelay = PublishRelay<(method: PaymentMethod, methodType: PaymentMethodType)>()
 
@@ -56,11 +57,13 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
         presenter: AddNewPaymentMethodPresentable,
         paymentMethodService: SelectPaymentMethodService,
         loadingViewPresenter: LoadingViewPresenting = resolve(),
-        eventRecorder: AnalyticsEventRecorderAPI = resolve()
+        eventRecorder: AnalyticsEventRecorderAPI = resolve(),
+        filter: @escaping (PaymentMethodType) -> Bool
     ) {
         self.paymentMethodService = paymentMethodService
         self.loadingViewPresenter = loadingViewPresenter
         self.eventRecorder = eventRecorder
+        self.filter = filter
         super.init(presenter: presenter)
     }
 
@@ -72,7 +75,11 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
             .map { [weak self] (methods: [PaymentMethodType]) -> [AddNewPaymentMethodCellViewModelItem] in
                 guard let self = self else { return [] }
                 return methods.compactMap { type in
-                    self.generateCellType(by: type) ?? nil
+                    if self.filter(type) {
+                        return self.generateCellType(by: type) ?? nil
+                    } else {
+                        return nil
+                    }
                 }
             }
             .map { [AddNewPaymentMethodCellSectionModel(items: $0)] }
@@ -153,7 +160,7 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                         .init(title: LocalizedString.LinkABank.descriptionLimit, titleColor: .titleText, titleFontSize: 14),
                         .init(title: LocalizedString.LinkABank.descriptionInfo, titleColor: .descriptionText, titleFontSize: 12)
                     ],
-                    badgeTitle: nil,
+                    badgeTitle: LocalizedString.Card.badgeTitle,
                     uniqueAccessibilityIdentifier: AccessibilityId.linkedBank
                 )
             case .bankAccount:

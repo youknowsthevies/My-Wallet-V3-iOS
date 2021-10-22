@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import CombineSchedulers
-@testable import OpenBankingUI
 import NetworkKit
+@testable import OpenBankingUI
 import ToolKit
 
 extension OpenBankingEnvironment {
