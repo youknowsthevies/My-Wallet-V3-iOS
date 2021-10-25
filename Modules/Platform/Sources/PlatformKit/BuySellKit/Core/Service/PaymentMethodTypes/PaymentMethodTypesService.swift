@@ -3,6 +3,7 @@
 import DIKit
 import RxRelay
 import RxSwift
+import RxToolKit
 import ToolKit
 
 /// The type of payment method
@@ -261,7 +262,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let linkedBankService: LinkedBanksServiceAPI
     private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
     private let kycTiersService: KYCTiersServiceAPI
-    private let featureFetching: FeatureFetching
+    private let featureFetching: RxFeatureFetching
 
     // MARK: - Setup
 
@@ -274,7 +275,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         linkedBankService: LinkedBanksServiceAPI = resolve(),
         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
-        featureFetching: FeatureFetching = resolve(),
+        featureFetching: RxFeatureFetching = resolve(),
         notificationCenter: NotificationCenter = .default
     ) {
         self.featureFetching = featureFetching

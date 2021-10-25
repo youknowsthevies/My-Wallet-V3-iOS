@@ -4,7 +4,6 @@ import AnalyticsKit
 import DIKit
 import Foundation
 @_exported import NetworkError
-import RxSwift
 
 public enum DIKitContext: String {
     case explorer

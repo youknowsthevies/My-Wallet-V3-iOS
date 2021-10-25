@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import RxCombine
 import RxSwift
+import RxToolKit
 import ToolKit
 
 public protocol WalletUpgradeServicing {

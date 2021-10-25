@@ -1,23 +1,24 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RxSwift
+import ToolKit
 
-public protocol OptionalType {
-    associatedtype Wrapped
+extension ObservableType {
 
-    var value: Wrapped? { get }
-}
-
-extension Optional: OptionalType {
-    public var value: Wrapped? {
-        self
+    public func withPrevious() -> Observable<(Element?, Element)> {
+        scan([]) { previous, current in
+            Array(previous + [current]).suffix(2)
+        }
+        .map { arr -> (previous: Element?, current: Element) in
+            (arr.count > 1 ? arr.first : nil, arr.last!)
+        }
     }
 }
 
-extension ObservableType where Element: OptionalType {
+extension ObservableType where Element: OptionalProtocol {
     func onNil(error: Error) -> Observable<Element.Wrapped> {
         map { element -> Element.Wrapped in
-            guard let value = element.value else {
+            guard let value = element.wrapped else {
                 throw error
             }
             return value

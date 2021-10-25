@@ -94,7 +94,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
             service
                 .fetchInterestAccountLimitsForCryptoCurrency(cryptoCurrency)
                 .asObservable()
-                .map(\.value)
+                .map(\.wrapped)
                 .compactMap { $0?.lockupDescription }
                 .map { .loaded(next: .init(text: $0)) }
                 .bindAndCatch(to: stateRelay)

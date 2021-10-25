@@ -3,6 +3,7 @@
 import DIKit
 import Localization
 import RxSwift
+import RxToolKit
 import ToolKit
 
 protocol WalletUpgradeJSServicing: AnyObject {

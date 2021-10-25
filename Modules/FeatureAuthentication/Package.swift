@@ -52,6 +52,7 @@ let package = Package(
         .package(path: "../NetworkErrors"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
+        .package(path: "../RxTool"),
         .package(path: "../UIComponents"),
         .package(path: "../WalletPayload")
     ],
@@ -62,6 +63,7 @@ let package = Package(
                 .product(name: "HDWalletKit", package: "HDWallet"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "ToolKit", package: "Tool"),
+                .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "Zxcvbn", package: "Zxcvbn")
             ]
         ),
