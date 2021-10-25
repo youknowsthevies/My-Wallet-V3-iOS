@@ -74,7 +74,6 @@ struct InterestAccountListItem: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 14.0, height: 14.0)
                             Text(viewStore.ineligibilityReason.displayString)
-                                .fixedSize()
                                 .font(Font(weight: .semibold, size: 16.0))
                                 .foregroundColor(.white)
                         }

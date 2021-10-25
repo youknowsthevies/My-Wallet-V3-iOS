@@ -2,6 +2,7 @@
 
 import RxCocoa
 import RxSwift
+import SwiftUI
 import ToolKit
 import UIKit
 
@@ -122,5 +123,29 @@ extension Reactive where Base: BadgeView {
                 view.viewModel = nil
             }
         }
+    }
+}
+
+// MARK: - SwiftUI
+
+public struct BadgeViewRepresentable: View, UIViewRepresentable {
+    let viewModel: BadgeViewModel
+    let size: CGFloat
+
+    public init(viewModel: BadgeViewModel, size: CGFloat) {
+        self.viewModel = viewModel
+        self.size = size
+    }
+
+    public func makeUIView(context: Context) -> BadgeView {
+        let view = BadgeView()
+        view.viewModel = viewModel
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layout(size: .edge(size))
+        return view
+    }
+
+    public func updateUIView(_ uiView: BadgeView, context: Context) {
+        // Do nothing
     }
 }

@@ -8,10 +8,6 @@ final class NoOpInterestAccountOverviewRepository: InterestAccountOverviewReposi
     func fetchInterestAccountOverviewListForFiatCurrency(
         _ fiatCurrency: FiatCurrency
     ) -> AnyPublisher<[InterestAccountOverview], InterestAccountOverviewError> {
-        Deferred {
-            Future { _ in
-            }
-        }
-        .eraseToAnyPublisher()
+        Empty().eraseToAnyPublisher()
     }
 }

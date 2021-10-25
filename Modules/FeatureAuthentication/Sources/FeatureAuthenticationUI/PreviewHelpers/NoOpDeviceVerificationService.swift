@@ -36,6 +36,15 @@ final class NoOpDeviceVerificationService: DeviceVerificationServiceAPI {
         }
         .eraseToAnyPublisher()
     }
+
+    func pollForWalletInfo() -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> {
+        Deferred {
+            Future { _ in
+                // no-op
+            }
+        }
+        .eraseToAnyPublisher()
+    }
 }
 
 final class NoOpInternalFeatureFlagService: InternalFeatureFlagServiceAPI {

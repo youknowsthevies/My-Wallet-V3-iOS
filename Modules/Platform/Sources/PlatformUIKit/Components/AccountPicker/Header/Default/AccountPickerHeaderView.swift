@@ -130,8 +130,9 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
 
         uiSearchBar.autocapitalizationType = .none
         uiSearchBar.autocorrectionType = .no
-        uiSearchBar.showsCancelButton = true
         uiSearchBar.searchBarStyle = .minimal
+        uiSearchBar.backgroundColor = .white
+        uiSearchBar.isTranslucent = false
         uiSearchBar.layoutToSuperview(axis: .horizontal, offset: 14)
         uiSearchBar.layoutToSuperview(.bottom, offset: -4)
 
@@ -152,6 +153,11 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
         backgroundColor = .white
         clipsToBounds = true
         model = nil
+
+        uiSearchBar.rx.cancelButtonClicked
+            .map { nil }
+            .bind(to: uiSearchBar.rx.text)
+            .disposed(by: disposeBag)
 
         Observable<Void>
             .merge(
@@ -209,6 +215,7 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
 
     /// Enable search animation block
     private func enableSearchAnimation() {
+        uiSearchBar.showsCancelButton = true
         patternImageView.alpha = 0
         assetImageView.alpha = 0
         titleLabel.alpha = 0
@@ -225,6 +232,7 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
 
     /// Disable search animation block
     private func disableSearchAnimation() {
+        uiSearchBar.showsCancelButton = false
         assetImageView.isHidden = false
         titleLabel.isHidden = false
         subtitleLabel.isHidden = false

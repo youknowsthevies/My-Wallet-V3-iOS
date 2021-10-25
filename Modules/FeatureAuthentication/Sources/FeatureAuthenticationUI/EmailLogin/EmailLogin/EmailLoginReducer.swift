@@ -85,6 +85,7 @@ public struct EmailLoginState: Equatable, NavigationState {
 struct EmailLoginEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let sessionTokenService: SessionTokenServiceAPI
+    let featureFlags: InternalFeatureFlagServiceAPI
     let deviceVerificationService: DeviceVerificationServiceAPI
     let appFeatureConfigurator: FeatureConfiguratorAPI
     let errorRecorder: ErrorRecording
@@ -95,6 +96,7 @@ struct EmailLoginEnvironment {
         mainQueue: AnySchedulerOf<DispatchQueue>,
         sessionTokenService: SessionTokenServiceAPI,
         deviceVerificationService: DeviceVerificationServiceAPI,
+        featureFlags: InternalFeatureFlagServiceAPI,
         appFeatureConfigurator: FeatureConfiguratorAPI,
         errorRecorder: ErrorRecording,
         analyticsRecorder: AnalyticsEventRecorderAPI,
@@ -103,6 +105,7 @@ struct EmailLoginEnvironment {
         self.mainQueue = mainQueue
         self.sessionTokenService = sessionTokenService
         self.deviceVerificationService = deviceVerificationService
+        self.featureFlags = featureFlags
         self.appFeatureConfigurator = appFeatureConfigurator
         self.errorRecorder = errorRecorder
         self.analyticsRecorder = analyticsRecorder
@@ -120,6 +123,7 @@ let emailLoginReducer = Reducer.combine(
                 VerifyDeviceEnvironment(
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
+                    featureFlags: $0.featureFlags,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
                     errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder
@@ -217,9 +221,12 @@ let emailLoginReducer = Reducer.combine(
                             )
                         )
                     )
-                case .networkError,
-                     .expiredEmailCode:
+                case .networkError:
                     // still go to verify device screen if there is network error
+                    break
+                case .expiredEmailCode,
+                     .missingWalletInfo:
+                    // not errors related to send verification email
                     break
                 }
             }

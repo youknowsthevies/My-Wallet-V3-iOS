@@ -3,6 +3,7 @@ import NabuNetworkError
 
 public enum TransactionValidationState: Equatable {
     case uninitialized
+    case noSourcesAvailable
     case addressIsContract
     case belowMinimumLimit
     case canExecute

@@ -35,15 +35,18 @@ public enum PaymentMethodType: Equatable, Identifiable {
     }
 
     public var currency: CurrencyType {
+        // Make sure to use the limits returned with the payment method, not the currency of the linked data.
+        // The currency of the linked data is specific to the payment method's underlying, but the limits get converted into the wallet currency.
+        // This fixes IOS-5671.
         switch self {
         case .card(let data):
-            return .fiat(data.currency)
+            return .fiat(data.topLimit.currency)
         case .account(let data):
             return data.topLimit.currencyType
         case .suggested(let method):
             return method.max.currencyType
         case .linkedBank(let bank):
-            return bank.currency.currencyType
+            return bank.topLimit.currencyType
         }
     }
 

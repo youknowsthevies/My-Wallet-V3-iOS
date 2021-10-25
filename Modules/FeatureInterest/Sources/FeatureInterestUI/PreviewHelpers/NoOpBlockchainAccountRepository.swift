@@ -7,42 +7,26 @@ final class NoOpBlockchainAccountRepository: BlockchainAccountRepositoryAPI {
     func accountsWithCurrencyType(
         _ currency: CurrencyType
     ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError> {
-        Deferred {
-            Future { _ in
-            }
-        }
-        .eraseToAnyPublisher()
+        Empty().eraseToAnyPublisher()
     }
 
     func accountsWithSingleAccountType(
         _ accountType: SingleAccountType
     ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError> {
-        Deferred {
-            Future { _ in
-            }
-        }
-        .eraseToAnyPublisher()
+        Empty().eraseToAnyPublisher()
     }
 
     func accountsWithCurrencyType(
         _ currency: CurrencyType,
         accountType: SingleAccountType
     ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError> {
-        Deferred {
-            Future { _ in
-            }
-        }
-        .eraseToAnyPublisher()
+        Empty().eraseToAnyPublisher()
     }
 
     func accountWithCurrencyType(
         _ currency: CurrencyType,
         accountType: SingleAccountType
     ) -> AnyPublisher<BlockchainAccount, BlockchainAccounRepositoryError> {
-        Deferred {
-            Future { _ in
-            }
-        }
-        .eraseToAnyPublisher()
+        Empty().eraseToAnyPublisher()
     }
 }

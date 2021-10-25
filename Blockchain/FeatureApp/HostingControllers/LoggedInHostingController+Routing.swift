@@ -75,6 +75,7 @@ extension LoggedInHostingController {
 
     func handleInterest() {
         let interestAccountList = InterestAccountListHostingController()
+        interestAccountList.delegate = self
         topMostViewController?.present(
             interestAccountList,
             animated: true

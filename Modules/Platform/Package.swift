@@ -95,9 +95,9 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
+                .product(name: "ComposableNavigation", package: "ComposableNavigation"),
                 .product(name: "RxToolKit", package: "RxTool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload"),
-                .product(name: "ComposableNavigation", package: "ComposableNavigation")
+                .product(name: "WalletPayloadKit", package: "WalletPayload")
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json"),

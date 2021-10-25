@@ -27,7 +27,8 @@ final class InterestAccountBalanceRepository: InterestAccountBalanceRepositoryAP
             cache: cache,
             fetch: { [client] key in
                 client.fetchBalanceWithFiatCurrency(key)
-                    .replaceNil(with: InterestAccountBalanceResponse.empty)
+                    .replaceNil(with: .empty)
+                    .replaceError(with: .empty)
                     .mapError(InterestAccountBalanceRepositoryError.networkError)
                     .map(InterestAccountBalances.init)
                     .eraseToAnyPublisher()
