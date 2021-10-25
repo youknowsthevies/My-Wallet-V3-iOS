@@ -8,6 +8,7 @@ import PlatformKit
 import PlatformUIKit
 import RxCombine
 import RxSwift
+import RxToolKit
 import ToolKit
 
 /// The announcement interactor cross all the preliminary data
@@ -161,7 +162,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let beneficiariesService: BeneficiariesServiceAPI
     private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
     private let simpleBuyEligibilityService: EligibilityServiceAPI
-    private let featureFetcher: FeatureFetching
+    private let featureFetcher: RxFeatureFetching
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let coincore: CoincoreAPI
 
@@ -172,7 +173,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         wallet: WalletProtocol = WalletManager.shared.wallet,
         userService: NabuUserServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
-        featureFetcher: FeatureFetching = resolve(),
+        featureFetcher: RxFeatureFetching = resolve(),
         infoService: GeneralInformationServiceAPI = resolve(),
         supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
         beneficiariesService: BeneficiariesServiceAPI = resolve(),

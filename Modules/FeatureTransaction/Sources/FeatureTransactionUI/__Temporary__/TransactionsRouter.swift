@@ -85,9 +85,9 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         to action: TransactionFlowAction,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
-        loadingViewPresenter.showCircular()
         switch action {
         case .buy:
+            loadingViewPresenter.showCircular()
             // NOTE: This check for pending orders is a hack. Handling pending orders in Transaction Flow requires more planning.
             // The work required will be scoped in IOS-5575. In the meantime pending orders can be handled by the legacy flow.
             // Handling orders in the legacy flow unblocks IOS-5368 and the release of this feature.
@@ -109,6 +109,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                 .eraseToAnyPublisher()
 
         case .sell:
+            loadingViewPresenter.showCircular()
             return featureFlagsService.isEnabled(.remote(.sellUsingTransactionFlowEnabled))
                 .receive(on: DispatchQueue.main)
                 .flatMap { [weak self, loadingViewPresenter] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in

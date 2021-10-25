@@ -7,6 +7,7 @@ import NetworkError
 public enum DeviceVerificationServiceError: Error, Equatable {
     case expiredEmailCode
     case missingSessionToken
+    case missingWalletInfo
     case recaptchaError(GoogleRecaptchaError)
     case networkError(NetworkError)
 
@@ -33,4 +34,8 @@ public protocol DeviceVerificationServiceAPI {
     /// - Parameters: deeplink: The url link received
     /// - Returns: A combine `Publisher` that emits an WalletInfo struct on success or WalletInfoError on failure
     func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError>
+
+    /// An alternative way to retrieve wallet info through polling
+    /// - Returns: A combine `Publisher` that emits an WalletInfo struct on success or DeviceVerificationServiceError on failure
+    func pollForWalletInfo() -> AnyPublisher<WalletInfo, DeviceVerificationServiceError>
 }

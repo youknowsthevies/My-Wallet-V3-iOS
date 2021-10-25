@@ -112,6 +112,7 @@ public let welcomeReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     sessionTokenService: $0.sessionTokenService,
                     deviceVerificationService: $0.deviceVerificationService,
+                    featureFlags: $0.featureFlags,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
                     errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder

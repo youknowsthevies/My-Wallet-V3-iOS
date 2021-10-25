@@ -3,8 +3,6 @@
 import Combine
 import DIKit
 import NetworkError
-import RxCombine
-import RxSwift
 import ToolKit
 
 /// The `Combine` network adapter API, all new uses of networking should consume this API

@@ -24,6 +24,8 @@ public enum VerifyDeviceAction: Equatable, NavigationAction {
 
     // MARK: - Navigation
 
+    case onAppear
+    case onWillDisappear
     case route(RouteIntent<VerifyDeviceRoute>?)
 
     // MARK: - Deeplink handling
@@ -31,6 +33,10 @@ public enum VerifyDeviceAction: Equatable, NavigationAction {
     case didReceiveWalletInfoDeeplink(URL)
     case didExtractWalletInfo(WalletInfo)
     case fallbackToWalletIdentifier
+
+    // MARK: - WalletInfo polling
+
+    case pollWalletInfo
 
     // MARK: - Device Verification
 
@@ -45,6 +51,10 @@ public enum VerifyDeviceAction: Equatable, NavigationAction {
     // MARK: - Utils
 
     case none
+}
+
+private enum VerifyDeviceCancellations {
+    struct WalletInfoPollingId: Hashable {}
 }
 
 // MARK: - Properties
@@ -83,6 +93,7 @@ public struct VerifyDeviceState: Equatable, NavigationState {
 struct VerifyDeviceEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let deviceVerificationService: DeviceVerificationServiceAPI
+    let featureFlags: InternalFeatureFlagServiceAPI
     let appFeatureConfigurator: FeatureConfiguratorAPI
     let errorRecorder: ErrorRecording
     let externalAppOpener: ExternalAppOpener
@@ -91,6 +102,7 @@ struct VerifyDeviceEnvironment {
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         deviceVerificationService: DeviceVerificationServiceAPI,
+        featureFlags: InternalFeatureFlagServiceAPI,
         appFeatureConfigurator: FeatureConfiguratorAPI,
         errorRecorder: ErrorRecording,
         externalAppOpener: ExternalAppOpener = resolve(),
@@ -98,6 +110,7 @@ struct VerifyDeviceEnvironment {
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
+        self.featureFlags = featureFlags
         self.appFeatureConfigurator = appFeatureConfigurator
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
@@ -163,6 +176,16 @@ let verifyDeviceReducer = Reducer.combine(
             return .none
 
         // MARK: - Navigations
+
+        case .onAppear:
+            if environment.featureFlags.isEnabled(.pollingForEmailLogin) {
+                return Effect(value: .pollWalletInfo)
+            } else {
+                return .none
+            }
+
+        case .onWillDisappear:
+            return .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId())
 
         case .route(let route):
             if let routeValue = route?.route {
@@ -232,14 +255,39 @@ let verifyDeviceReducer = Reducer.combine(
         case .didExtractWalletInfo(let walletInfo):
             guard walletInfo.email != nil, walletInfo.emailCode != nil else {
                 state.credentialsContext = .walletIdentifier(guid: walletInfo.guid)
-                return Effect(value: .navigate(to: .credentials))
+                // cancel the polling once wallet info is extracted
+                // it could be from the deeplink or from the polling
+                return .merge(
+                    .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),
+                    .navigate(to: .credentials)
+                )
             }
             state.credentialsContext = .walletInfo(walletInfo)
-            return Effect(value: .navigate(to: .credentials))
+            return .merge(
+                .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),
+                .navigate(to: .credentials)
+            )
 
         case .fallbackToWalletIdentifier:
             state.credentialsContext = .walletIdentifier(guid: "")
             return Effect(value: .navigate(to: .credentials))
+
+        // MARK: - WalletInfo polling
+
+        case .pollWalletInfo:
+            return environment
+                .deviceVerificationService
+                .pollForWalletInfo()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .cancellable(id: VerifyDeviceCancellations.WalletInfoPollingId())
+                .map { result -> VerifyDeviceAction in
+                    // extract wallet info once the polling endpoint receives a value
+                    guard case .success(let walletInfo) = result else {
+                        return .none
+                    }
+                    return .didExtractWalletInfo(walletInfo)
+                }
 
         // MARK: - Device Verification
 

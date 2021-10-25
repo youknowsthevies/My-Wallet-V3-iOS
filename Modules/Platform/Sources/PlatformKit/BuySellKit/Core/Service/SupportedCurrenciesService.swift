@@ -2,6 +2,7 @@
 
 import DIKit
 import RxSwift
+import RxToolKit
 import ToolKit
 
 public protocol SupportedCurrenciesServiceAPI: AnyObject {

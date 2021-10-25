@@ -30,6 +30,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable unified sign in (account upgrade)
     case unifiedSignIn
 
+    /// Enable polling for email login
+    case pollingForEmailLogin
+
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
@@ -38,7 +41,8 @@ public enum InternalFeature: String, CaseIterable {
         switch self {
         case .useTransactionsFlowToBuyCrypto,
              .newAccountPicker,
-             .newOnboardingTour:
+             .newOnboardingTour,
+             .pollingForEmailLogin:
             return true
         case .disableGUIDLogin,
              .interestWithdrawAndDeposit,
@@ -76,6 +80,8 @@ extension InternalFeature {
             return "New Onboarding Tour"
         case .unifiedSignIn:
             return "Unified Sign In"
+        case .pollingForEmailLogin:
+            return "Polling (Email Login)"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
         }

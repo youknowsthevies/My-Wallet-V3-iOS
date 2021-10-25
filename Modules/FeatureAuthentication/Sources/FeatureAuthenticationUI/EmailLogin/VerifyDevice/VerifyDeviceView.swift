@@ -77,43 +77,51 @@ struct VerifyDeviceView: View {
     }
 
     var body: some View {
-        VStack {
+        WithViewStore(store) { viewStore in
             VStack {
-                Spacer()
-                Image.CircleIcon.verifyDevice
-                    .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
-                    .padding(.bottom, Layout.imageBottomPadding)
-                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceImage)
+                VStack {
+                    Spacer()
+                    Image.CircleIcon.verifyDevice
+                        .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
+                        .padding(.bottom, Layout.imageBottomPadding)
+                        .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceImage)
 
-                Text(LocalizedString.VerifyDevice.title)
-                    .textStyle(.title)
-                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceTitleText)
+                    Text(LocalizedString.VerifyDevice.title)
+                        .textStyle(.title)
+                        .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceTitleText)
 
-                Text(LocalizedString.VerifyDevice.description)
-                    .font(Font(weight: .medium, size: Layout.descriptionFontSize))
-                    .foregroundColor(.textSubheading)
-                    .lineSpacing(Layout.descriptionLineSpacing)
-                    .accessibility(
-                        identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceDescriptionText
-                    )
-                Spacer()
+                    Text(LocalizedString.VerifyDevice.description)
+                        .font(Font(weight: .medium, size: Layout.descriptionFontSize))
+                        .foregroundColor(.textSubheading)
+                        .lineSpacing(Layout.descriptionLineSpacing)
+                        .accessibility(
+                            identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceDescriptionText
+                        )
+                    Spacer()
+                }
+                .multilineTextAlignment(.center)
+
+                buttonSection
             }
-            .multilineTextAlignment(.center)
-
-            buttonSection
-        }
-        .padding(
-            EdgeInsets(
-                top: 0,
-                leading: Layout.leadingPadding,
-                bottom: Layout.bottomPadding,
-                trailing: Layout.trailingPadding
+            .onAppear {
+                viewStore.send(.onAppear)
+            }
+            .onWillDisappear {
+                viewStore.send(.onWillDisappear)
+            }
+            .padding(
+                EdgeInsets(
+                    top: 0,
+                    leading: Layout.leadingPadding,
+                    bottom: Layout.bottomPadding,
+                    trailing: Layout.trailingPadding
+                )
             )
-        )
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationRoute(in: store)
-        .hideBackButtonTitle()
-        .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationRoute(in: store)
+            .hideBackButtonTitle()
+            .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
+        }
     }
 
     private var buttonSection: some View {
@@ -150,6 +158,7 @@ struct VerifyDeviceView_Previews: PreviewProvider {
                 environment: .init(
                     mainQueue: .main,
                     deviceVerificationService: NoOpDeviceVerificationService(),
+                    featureFlags: NoOpInternalFeatureFlagService(),
                     appFeatureConfigurator: NoOpFeatureConfigurator(),
                     errorRecorder: NoOpErrorRecorder(),
                     analyticsRecorder: NoOpAnalyticsRecorder()

@@ -16,13 +16,20 @@ struct InterestAccountListState: Equatable, NavigationState {
     var interestAccountOverviews: [InterestAccountOverview] = []
     var interestAccountDetails: IdentifiedArrayOf<InterestAccountDetails> = []
     var interestAccountDetailsState: InterestAccountDetailsState?
+    var isKYCVerified: Bool = false
     var loadingInterestAccountList: Bool = false
     var loadingErrorAlert: AlertState<InterestAccountListAction>?
+}
+
+protocol InterestAccountListViewDelegate: AnyObject {
+    func didTapVerifyMyIdentity()
 }
 
 struct InterestAccountListView: View {
 
     private typealias LocalizationId = LocalizationConstants.Interest.Screen.Overview
+
+    weak var delegate: InterestAccountListViewDelegate?
 
     let store: Store<InterestAccountListState, InterestAccountListAction>
 
@@ -30,6 +37,12 @@ struct InterestAccountListView: View {
         WithViewStore(store) { viewStore in
             NavigationView {
                 List {
+                    if !viewStore.isKYCVerified {
+                        InterestIdentityVerificationView {
+                            delegate?.didTapVerifyMyIdentity()
+                        }
+                        .listRowInsets(EdgeInsets())
+                    }
                     ForEachStore(
                         store.scope(
                             state: \.interestAccountDetails,
@@ -79,6 +92,7 @@ struct InterestAccountListView_Previews: PreviewProvider {
                     accountRepository: NoOpBlockchainAccountRepository(),
                     priceService: NoOpPriceService(),
                     blockchainAccountRepository: NoOpBlockchainAccountRepository(),
+                    kycVerificationService: NoOpKYCVerificationService(),
                     mainQueue: .main
                 )
             )

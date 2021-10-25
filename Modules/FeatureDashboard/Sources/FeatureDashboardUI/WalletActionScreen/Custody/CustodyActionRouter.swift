@@ -7,6 +7,7 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import RxToolKit
 import ToolKit
 
 public protocol BackupRouterAPI {
@@ -48,7 +49,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     private let tabSwapping: TabSwapping
     private let accountProviding: BlockchainAccountProviding
     private let analyticsRecoder: AnalyticsEventRecorderAPI
-    private let featureFetching: FeatureFetching
+    private let featureFetching: RxFeatureFetching
     private var disposeBag = DisposeBag()
 
     /// Represents a reference of the `WithdrawFlowRouter` object
@@ -73,7 +74,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         accountProviding: BlockchainAccountProviding = resolve(),
         analyticsService: SimpleBuyAnalayticsServicing = resolve(),
         walletOperationsRouter: WalletOperationsRouting = resolve(),
-        featureFetching: FeatureFetching = resolve(),
+        featureFetching: RxFeatureFetching = resolve(),
         analyticsRecoder: AnalyticsEventRecorderAPI = resolve(),
         withdrawRouter: WithdrawalRouting = resolve()
     ) {

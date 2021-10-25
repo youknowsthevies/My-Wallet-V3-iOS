@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Nuke
-import NukeUI
 import SwiftUI
 
 public struct CurrencyIcon: View {
@@ -50,12 +48,10 @@ public struct CurrencyIcon: View {
         switch icon {
         case .remote(let url):
             if let url = URL(string: url) {
-                LazyImage(source: url) { state in
-                    if state.image == nil, state.error == nil {
-                        // TODO: Placeholder image
-                        Color.viewPrimaryBackground
-                    }
-                }
+                ImageResourceView(
+                    url: url,
+                    placeholder: Color.viewPrimaryBackground
+                )
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 32, height: 32)
                 .clipShape(Circle())

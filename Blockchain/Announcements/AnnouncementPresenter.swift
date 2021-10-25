@@ -8,6 +8,7 @@ import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import RxToolKit
 import ToolKit
 
 /// Describes the announcement visual. Plays as a presenter / provide for announcements,
@@ -22,7 +23,7 @@ final class AnnouncementPresenter {
     private let settingsStarter: SettingsStarterAPI
     private let tapControllerManagerProvider: TabControllerManagerProvider
 
-    private let featureFetcher: FeatureFetching
+    private let featureFetcher: RxFeatureFetching
     private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
     private let interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting
     private let kycRouter: KYCRouterAPI
@@ -61,7 +62,7 @@ final class AnnouncementPresenter {
         accountsRouter: AccountsRouting = DIKit.resolve(),
         interactor: AnnouncementInteracting = AnnouncementInteractor(),
         topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
-        featureFetcher: FeatureFetching = DIKit.resolve(),
+        featureFetcher: RxFeatureFetching = DIKit.resolve(),
         cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = DIKit.resolve(),
         interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting = DIKit.resolve(),
         tabSwapping: TabSwapping = DIKit.resolve(),
@@ -216,8 +217,10 @@ final class AnnouncementPresenter {
                     data: preliminaryData.assetRename
                 )
             case .celoEUR:
-                announcement = assetRename(
-                    data: preliminaryData.assetRename
+                announcement = celoEUR(
+                    celoEUR: preliminaryData.celoEUR,
+                    user: preliminaryData.user,
+                    tiers: preliminaryData.tiers
                 )
             }
             // Return the first different announcement that should show

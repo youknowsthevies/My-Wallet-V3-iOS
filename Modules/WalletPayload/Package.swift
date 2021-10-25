@@ -24,7 +24,8 @@ let package = Package(
         .package(path: "../CommonCrypto"),
         .package(path: "../Keychain"),
         .package(path: "../Test"),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../RxTool")
     ],
     targets: [
         .target(
@@ -34,6 +35,7 @@ let package = Package(
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "KeychainKit", package: "Keychain"),
                 .product(name: "ToolKit", package: "Tool"),
+                .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "DIKit", package: "DIKit")
             ]
         ),

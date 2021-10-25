@@ -1,11 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RxSwift
+import ToolKit
 
-extension PrimitiveSequenceType where Trait == SingleTrait, Element: OptionalType {
+extension PrimitiveSequenceType where Trait == SingleTrait, Element: OptionalProtocol {
     public func onNil(error: Error) -> Single<Element.Wrapped> {
         map { element -> Element.Wrapped in
-            guard let value = element.value else {
+            guard let value = element.wrapped else {
                 throw error
             }
             return value
@@ -14,7 +15,7 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element: OptionalTyp
 
     public func onNilJustReturn(_ fallback: Element.Wrapped) -> Single<Element.Wrapped> {
         map { element -> Element.Wrapped in
-            guard let value = element.value else {
+            guard let value = element.wrapped else {
                 return fallback
             }
             return value

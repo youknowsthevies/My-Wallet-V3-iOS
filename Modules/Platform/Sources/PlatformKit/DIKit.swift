@@ -119,6 +119,8 @@ extension DependencyContainer {
 
         single { KYCTiersService() as KYCTiersServiceAPI }
 
+        single { KYCTiersService() as KYCVerificationServiceAPI }
+
         single { NabuUserService() as NabuUserServiceAPI }
 
         single { GeneralInformationService() as GeneralInformationServiceAPI }

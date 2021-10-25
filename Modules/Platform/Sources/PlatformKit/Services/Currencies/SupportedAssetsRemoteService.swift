@@ -41,6 +41,7 @@ final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
                     )
                     .eraseError()
                     .publisher
+                    .eraseToAnyPublisher()
             }
             .replaceError(with: ())
             .eraseToAnyPublisher()
@@ -58,6 +59,7 @@ final class SupportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI {
                     )
                     .eraseError()
                     .publisher
+                    .eraseToAnyPublisher()
             }
             .replaceError(with: ())
             .eraseToAnyPublisher()

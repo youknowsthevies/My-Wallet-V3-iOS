@@ -50,7 +50,7 @@ let interestAccountListReducer = Reducer.combine(
                 state.interestAccountDetails = .init(uniqueElements: details)
                 state.loadingInterestAccountList = false
             case .failure(let error):
-                break
+                Logger.shared.error(error)
             }
             return .none
 
@@ -58,6 +58,18 @@ let interestAccountListReducer = Reducer.combine(
             state.loadingErrorAlert = nil
             return .none
 
+        case .setupInterestAccountListScreen:
+            return environment
+                .kycVerificationService
+                .isKYCVerified
+                .receive(on: environment.mainQueue)
+                .eraseToEffect()
+                .map { result in
+                    .didReceiveKYCVerificationResponse(result)
+                }
+        case .didReceiveKYCVerificationResponse(let value):
+            state.isKYCVerified = value
+            return Effect(value: .loadInterestAccounts)
         case .loadInterestAccounts:
             state.loadingInterestAccountList = true
             return environment
