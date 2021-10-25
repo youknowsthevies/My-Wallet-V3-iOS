@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import SwiftUI
+
 public struct BadgeNumberedItemViewModel {
     let badgeViewModel: BadgeViewModel
     let titleLabelContent: LabelContent

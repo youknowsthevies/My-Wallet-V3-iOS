@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import RxSwift
 
 extension Result {
     public var isFailure: Bool {
@@ -29,46 +28,13 @@ extension Result {
     }
 }
 
-extension Result where Success: OptionalType {
+extension Result where Success: OptionalProtocol {
     public func onNil(error: Failure) -> Result<Success.Wrapped, Failure> {
         flatMap { element -> Result<Success.Wrapped, Failure> in
-            guard let value = element.value else {
+            guard let value = element.wrapped else {
                 return .failure(error)
             }
             return .success(value)
-        }
-    }
-}
-
-extension Result {
-    public var single: Single<Success> {
-        switch self {
-        case .success(let value):
-            return Single.just(value)
-        case .failure(let error):
-            return Single.error(error)
-        }
-    }
-}
-
-extension Result {
-    public var completable: Completable {
-        switch self {
-        case .success:
-            return Completable.empty()
-        case .failure(let error):
-            return Completable.error(error)
-        }
-    }
-}
-
-extension Result {
-    public var maybe: Maybe<Success> {
-        switch self {
-        case .success(let value):
-            return Maybe.just(value)
-        case .failure:
-            return Maybe.empty()
         }
     }
 }
@@ -114,27 +80,5 @@ extension Result {
 extension Result {
     public func reduce<NewValue>(_ transform: (Result<Success, Failure>) -> NewValue) -> NewValue {
         transform(self)
-    }
-}
-
-extension Result {
-    public var singleEvent: SingleEvent<Success> {
-        switch self {
-        case .success(let value):
-            return .success(value)
-        case .failure(let error):
-            return .error(error)
-        }
-    }
-}
-
-extension Result {
-    public var publisher: AnyPublisher<Success, Failure> {
-        switch self {
-        case .success(let value):
-            return .just(value)
-        case .failure(let error):
-            return .failure(error)
-        }
     }
 }

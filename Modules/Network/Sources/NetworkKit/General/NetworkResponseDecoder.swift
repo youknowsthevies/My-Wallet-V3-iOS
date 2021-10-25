@@ -3,7 +3,6 @@
 import DIKit
 import Foundation
 import NetworkError
-import RxSwift
 import ToolKit
 
 public protocol NetworkResponseDecoderAPI {

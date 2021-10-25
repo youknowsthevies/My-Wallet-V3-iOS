@@ -33,6 +33,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
             environment: .init(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 deviceVerificationService: MockDeviceVerificationService(),
+                featureFlags: NoOpInternalFeatureFlagService(),
                 appFeatureConfigurator: NoOpFeatureConfigurator(),
                 errorRecorder: NoOpErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),
@@ -52,6 +53,28 @@ final class VerifyDeviceReducerTests: XCTestCase {
         XCTAssertNil(state.credentialsState)
         XCTAssertNil(state.route)
         XCTAssertEqual(state.credentialsContext, .none)
+    }
+
+    func test_on_appear_should_poll_wallet_info() {
+        testStore.assert(
+            .send(.onAppear),
+            .receive(.pollWalletInfo),
+            .do { self.mockMainQueue.advance() },
+            .receive(.didExtractWalletInfo(MockDeviceVerificationService.mockWalletInfo)) { state in
+                state.credentialsContext = .walletInfo(MockDeviceVerificationService.mockWalletInfo)
+            },
+            .receive(.navigate(to: .credentials)) { state in
+                state.credentialsState = CredentialsState(
+                    accountRecoveryEnabled: false,
+                    walletPairingState: WalletPairingState(
+                        emailAddress: MockDeviceVerificationService.mockWalletInfo.email!,
+                        emailCode: MockDeviceVerificationService.mockWalletInfo.emailCode,
+                        walletGuid: MockDeviceVerificationService.mockWalletInfo.guid
+                    )
+                )
+                state.route = RouteIntent(route: .credentials, action: .navigateTo)
+            }
+        )
     }
 
     func test_receive_valid_wallet_deeplink_should_update_wallet_info() {

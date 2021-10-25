@@ -4,6 +4,7 @@ import BitcoinChainKit
 import DIKit
 import PlatformKit
 import RxSwift
+import RxToolKit
 import ToolKit
 
 protocol UnspentOutputRepositoryAPI {

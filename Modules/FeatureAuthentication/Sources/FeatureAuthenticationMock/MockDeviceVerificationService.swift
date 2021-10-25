@@ -46,4 +46,8 @@ final class MockDeviceVerificationService: DeviceVerificationServiceAPI {
             return .failure(.failToDecodeBase64Component)
         }
     }
+
+    func pollForWalletInfo() -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> {
+        .just(MockDeviceVerificationService.mockWalletInfo)
+    }
 }

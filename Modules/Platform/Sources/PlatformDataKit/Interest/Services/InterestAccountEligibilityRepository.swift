@@ -17,6 +17,19 @@ final class InterestAccountEligibilityRepository: InterestAccountEligibilityRepo
         self.client = client
     }
 
+    func fetchAllInterestEnabledCurrencies()
+        -> AnyPublisher<[CurrencyType], InterestAccountEligibilityError>
+    {
+        client
+            .fetchInterestEnabledCurrenciesResponse()
+            .mapError(InterestAccountEligibilityError.networkError)
+            .map(\.instruments)
+            .map { currencyCodes in
+                currencyCodes.compactMap { try? CurrencyType(code: $0) }
+            }
+            .eraseToAnyPublisher()
+    }
+
     func fetchAllInterestAccountEligibility()
         -> AnyPublisher<[InterestAccountEligibility], InterestAccountEligibilityError>
     {
@@ -39,11 +52,11 @@ final class InterestAccountEligibilityRepository: InterestAccountEligibilityRepo
         client
             .fetchInterestAccountEligibilityResponse()
             .mapError(InterestAccountEligibilityError.networkError)
-            .map { [enabledCurrenciesService] response -> [InterestAccountEligibility] in
-                enabledCurrenciesService
-                    .allEnabledCurrencies
+            .zip(fetchAllInterestEnabledCurrencies())
+            .map { eligbilityResponse, enabledCurrencies -> [InterestAccountEligibility] in
+                enabledCurrencies
                     .map { asset -> InterestAccountEligibility in
-                        guard let eligibility = response[asset] else {
+                        guard let eligibility = eligbilityResponse[asset] else {
                             return InterestAccountEligibility.notEligible(currencyType: asset)
                         }
                         return InterestAccountEligibility(currencyType: asset, interestEligibility: eligibility)

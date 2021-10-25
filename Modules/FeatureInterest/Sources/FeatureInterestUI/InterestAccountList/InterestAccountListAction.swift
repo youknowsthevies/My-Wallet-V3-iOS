@@ -8,7 +8,9 @@ import PlatformKit
 enum InterestAccountListAction: Equatable, NavigationAction {
     case didReceiveInterestAccountResponse(Result<[InterestAccountOverview], InterestAccountOverviewError>)
     case dismissLoadingInterestAccountsAlert
+    case setupInterestAccountListScreen
     case loadInterestAccounts
+    case didReceiveKYCVerificationResponse(Bool)
     case interestAccountDetails(InterestAccountDetailsAction)
     case interestTransactionStateFetched(InterestTransactionState)
     case interestAccountButtonTapped(InterestAccountOverview.ID, InterestAccountListItemAction)

@@ -184,7 +184,7 @@ extension MockWalletRepository {
     }
 
     var offlineToken: AnyPublisher<NabuOfflineToken, MissingCredentialsError> {
-        expectedOfflineToken.publisher
+        expectedOfflineToken.publisher.eraseToAnyPublisher()
     }
 
     func set(

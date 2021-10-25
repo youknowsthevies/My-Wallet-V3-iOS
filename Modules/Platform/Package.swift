@@ -64,6 +64,7 @@ let package = Package(
             .branch("swift-package-manager")
         ),
         .package(path: "../Analytics"),
+        .package(path: "../RxAnalytics"),
         .package(path: "../FeatureAuthentication"),
         .package(path: "../CommonCrypto"),
         .package(path: "../Localization"),
@@ -71,6 +72,7 @@ let package = Package(
         .package(path: "../Network"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
+        .package(path: "../RxTool"),
         .package(path: "../WalletPayload"),
         .package(path: "../UIComponents"),
         .package(path: "../ComposableNavigation")
@@ -93,8 +95,9 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload"),
-                .product(name: "ComposableNavigation", package: "ComposableNavigation")
+                .product(name: "ComposableNavigation", package: "ComposableNavigation"),
+                .product(name: "RxToolKit", package: "RxTool"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload")
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json"),
@@ -119,7 +122,7 @@ let package = Package(
                 .target(name: "PlatformKit"),
                 .product(name: "RIBs", package: "RIBs"),
                 .product(name: "RxDataSources", package: "RxDataSources"),
-                .product(name: "RxAnalyticsKit", package: "Analytics"),
+                .product(name: "RxAnalyticsKit", package: "RxAnalytics"),
                 .product(name: "Charts", package: "Charts"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "Nuke", package: "Nuke"),
@@ -154,7 +157,9 @@ let package = Package(
                 .product(name: "NabuNetworkErrorMock", package: "NetworkErrors"),
                 .product(name: "NetworkKitMock", package: "Network"),
                 .product(name: "ToolKitMock", package: "Tool"),
-                .product(name: "TestKit", package: "Test")
+                .product(name: "TestKit", package: "Test"),
+                .product(name: "RxBlocking", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift")
             ],
             resources: [
                 .copy("Fixtures/wallet-data.json")
@@ -166,7 +171,9 @@ let package = Package(
                 .target(name: "PlatformKitMock"),
                 .target(name: "PlatformUIKit"),
                 .target(name: "PlatformUIKitMock"),
-                .product(name: "TestKit", package: "Test")
+                .product(name: "TestKit", package: "Test"),
+                .product(name: "RxBlocking", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift")
             ]
         )
     ]

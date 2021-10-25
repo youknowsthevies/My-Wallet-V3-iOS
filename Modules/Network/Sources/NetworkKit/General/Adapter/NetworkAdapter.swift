@@ -4,8 +4,6 @@ import Combine
 import DIKit
 import Foundation
 import NetworkError
-import RxCombine
-import RxSwift
 import ToolKit
 
 public final class NetworkAdapter: NetworkAdapterAPI {
@@ -128,7 +126,7 @@ extension AnyPublisher where Output == ServerResponse,
         using decoder: NetworkResponseDecoderAPI
     ) -> AnyPublisher<ResponseType, Failure> {
         flatMap { response -> AnyPublisher<ResponseType, Failure> in
-            decoder.decode(response: response, for: request).publisher
+            decoder.decode(response: response, for: request).publisher.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
@@ -145,7 +143,7 @@ extension AnyPublisher where Output == ServerResponse,
                     responseType: responseType,
                     for: request
                 )
-                .publisher
+                .publisher.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
@@ -160,7 +158,7 @@ extension AnyPublisher where Output == ServerResponse,
         using decoder: NetworkResponseDecoderAPI
     ) -> AnyPublisher<ResponseType, NetworkError> {
         flatMap { response -> AnyPublisher<ResponseType, NetworkError> in
-            decoder.decode(response: response, for: request).publisher
+            decoder.decode(response: response, for: request).publisher.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
@@ -177,7 +175,7 @@ extension AnyPublisher where Output == ServerResponse,
                     responseType: responseType,
                     for: request
                 )
-                .publisher
+                .publisher.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }

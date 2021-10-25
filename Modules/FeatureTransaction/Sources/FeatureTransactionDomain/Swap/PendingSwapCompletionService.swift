@@ -3,6 +3,7 @@
 import DIKit
 import PlatformKit
 import RxSwift
+import RxToolKit
 import ToolKit
 
 public typealias PolledSwapOrder = PollResult<SwapActivityItemEvent>

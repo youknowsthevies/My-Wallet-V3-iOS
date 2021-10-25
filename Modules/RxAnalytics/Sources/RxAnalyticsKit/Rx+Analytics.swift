@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import AnalyticsKit
+@_exported import AnalyticsKit
 import Foundation
 import RxSwift
 

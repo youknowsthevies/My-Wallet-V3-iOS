@@ -5,6 +5,7 @@ import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
+import RxToolKit
 import ToolKit
 
 public protocol EthereumHistoricalTransactionServiceAPI: AnyObject {

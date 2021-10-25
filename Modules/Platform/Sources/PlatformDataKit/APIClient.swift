@@ -16,6 +16,7 @@ final class APIClient: PlatformDataAPIClient {
     private enum Path {
         static let interestReceiveAddress = ["payments", "accounts", "savings"]
         static let interestEligibility = ["eligible", "product", "savings"]
+        static let interestEligibleCurrencies = ["savings", "instruments"]
     }
 
     private enum Parameter {
@@ -67,6 +68,18 @@ final class APIClient: PlatformDataAPIClient {
     }
 
     // MARK: - InterestAccountEligibilityClientAPI
+
+    func fetchInterestEnabledCurrenciesResponse()
+        -> AnyPublisher<InterestEnabledCurrenciesResponse, NabuNetworkError>
+    {
+        let request = requestBuilder.get(
+            path: Path.interestEligibleCurrencies,
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request)
+    }
 
     func fetchInterestAccountEligibilityResponse()
         -> AnyPublisher<InterestEligibilityResponse, NabuNetworkError>

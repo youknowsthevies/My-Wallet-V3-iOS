@@ -2,7 +2,6 @@
 
 import ComposableArchitecture
 import FeatureTransactionDomain
-import NukeUI
 import PlatformUIKit
 import SwiftUI
 import UIComponentsKit
@@ -31,7 +30,7 @@ struct CryptoCurrencyQuoteCell: View {
                                     .scaledToFit()
                                     .frame(width: 32.0, height: 32.0)
                             case .url(let url):
-                                LazyImage(source: url)
+                                ImageResourceView(url: url)
                                     .scaledToFit()
                                     .frame(width: 32.0, height: 32.0)
                             }

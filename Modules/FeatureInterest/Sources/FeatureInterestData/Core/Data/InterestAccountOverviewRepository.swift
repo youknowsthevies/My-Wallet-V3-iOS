@@ -28,7 +28,7 @@ final class InterestAccountOverviewRepository: InterestAccountOverviewRepository
 
     // MARK: - InterestAccountOverviewRepositoryAPI
 
-    public func fetchInterestAccountOverviewListForFiatCurrency(
+    func fetchInterestAccountOverviewListForFiatCurrency(
         _ fiatCurrency: FiatCurrency
     ) -> AnyPublisher<[InterestAccountOverview], InterestAccountOverviewError> {
         Publishers.Zip3(

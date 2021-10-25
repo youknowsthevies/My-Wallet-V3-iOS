@@ -6,6 +6,7 @@ import RxSwift
 import RxTest
 import XCTest
 
+@testable import RxToolKit
 @testable import ToolKit
 
 final class CachedValueTests: XCTestCase {

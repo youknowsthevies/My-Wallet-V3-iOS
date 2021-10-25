@@ -3,6 +3,7 @@
 import DIKit
 import RxRelay
 import RxSwift
+import RxToolKit
 import ToolKit
 
 /// The type of payment method
@@ -34,15 +35,18 @@ public enum PaymentMethodType: Equatable, Identifiable {
     }
 
     public var currency: CurrencyType {
+        // Make sure to use the limits returned with the payment method, not the currency of the linked data.
+        // The currency of the linked data is specific to the payment method's underlying, but the limits get converted into the wallet currency.
+        // This fixes IOS-5671.
         switch self {
         case .card(let data):
-            return .fiat(data.currency)
+            return .fiat(data.topLimit.currency)
         case .account(let data):
             return data.topLimit.currencyType
         case .suggested(let method):
             return method.max.currencyType
         case .linkedBank(let bank):
-            return bank.currency.currencyType
+            return bank.topLimit.currencyType
         }
     }
 
@@ -258,7 +262,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let linkedBankService: LinkedBanksServiceAPI
     private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
     private let kycTiersService: KYCTiersServiceAPI
-    private let featureFetching: FeatureFetching
+    private let featureFetching: RxFeatureFetching
 
     // MARK: - Setup
 
@@ -271,7 +275,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         linkedBankService: LinkedBanksServiceAPI = resolve(),
         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
-        featureFetching: FeatureFetching = resolve(),
+        featureFetching: RxFeatureFetching = resolve(),
         notificationCenter: NotificationCenter = .default
     ) {
         self.featureFetching = featureFetching
