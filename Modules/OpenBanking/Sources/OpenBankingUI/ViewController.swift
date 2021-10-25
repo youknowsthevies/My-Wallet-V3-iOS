@@ -15,8 +15,8 @@ public enum OpenBankingEvent {
 
 public final class OpenBankingViewController: UIHostingController<OpenBankingView> {
 
-    public var event$: AnyPublisher<OpenBankingEvent, Never> {
-        rootView.environment.event$.eraseToAnyPublisher()
+    public var eventPublisher: AnyPublisher<OpenBankingEvent, Never> {
+        rootView.environment.eventPublisher.eraseToAnyPublisher()
     }
 
     public convenience init(

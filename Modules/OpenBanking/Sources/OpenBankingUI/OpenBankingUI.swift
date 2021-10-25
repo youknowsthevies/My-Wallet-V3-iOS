@@ -55,13 +55,13 @@ public let openBankingReducer = Reducer<OpenBankingState, OpenBankingAction, Ope
             switch action {
             case .approve(.bank(.fail(let error))),
                  .institutionList(.approve(.bank(.fail(let error)))):
-                environment.event$.send(.failed(error))
+                environment.eventPublisher.send(.failed(error))
                 return .none
             case .institutionList(.approve(.bank(.linked(let account)))):
-                environment.event$.send(.linked(account))
+                environment.eventPublisher.send(.linked(account))
                 return .none
             case .approve(.bank(.authorised(let account, let payment))):
-                environment.event$.send(.authorised(account, payment: payment))
+                environment.eventPublisher.send(.authorised(account, payment: payment))
                 return .none
             case .approve:
                 return .none

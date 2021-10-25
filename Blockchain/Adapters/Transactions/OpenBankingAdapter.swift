@@ -50,7 +50,7 @@ extension OpenBankingUI.OpenBankingViewController: StartOpenBanking {
 
         let navigationController = UINavigationController(rootViewController: viewController)
 
-        viewController.event$.sink { [weak navigationController] event in
+        viewController.eventPublisher.sink { [weak navigationController] event in
             switch event {
             case .failed:
                 break

@@ -11,7 +11,7 @@ import ToolKit
 public struct OpenBankingEnvironment {
 
     public var environment: Self { self }
-    public private(set) var event$ = PassthroughSubject<OpenBankingEvent, Never>()
+    public private(set) var eventPublisher = PassthroughSubject<OpenBankingEvent, Never>()
 
     public var scheduler: Scheduler
     public var openBanking: OpenBanking
