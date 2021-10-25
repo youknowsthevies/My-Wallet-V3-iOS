@@ -52,17 +52,20 @@ final class LinkBankFlowRootInteractor: Interactor,
     private let linkedBankService: LinkedBanksServiceAPI
     private let loadingViewPresenter: LoadingViewPresenting
     private let beneficiariesService: BeneficiariesServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     private var bag: Set<AnyCancellable> = []
 
     init(
         linkedBankService: LinkedBanksServiceAPI = resolve(),
         loadingViewPresenter: LoadingViewPresenting = resolve(),
-        beneficiariesService: BeneficiariesServiceAPI = resolve()
+        beneficiariesService: BeneficiariesServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.linkedBankService = linkedBankService
         self.loadingViewPresenter = loadingViewPresenter
         self.beneficiariesService = beneficiariesService
+        self.featureFlagsService = featureFlagsService
         linkBankFlowEffect = bankFlowEffectRelay
             .asObservable()
             .share(replay: 1, scope: .whileConnected)
@@ -133,7 +136,7 @@ final class LinkBankFlowRootInteractor: Interactor,
             }
             switch data.partner {
             case .yapily:
-                (resolve() as FeatureFlagsServiceAPI)
+                featureFlagsService
                     .isEnabled(.local(.openBanking))
                     .if(
                         then: { [weak self] in self?.route(to: .yapily(data: data)) },

@@ -97,8 +97,8 @@ public struct ApproveView: View {
                         .init(
                             media: .bankIcon,
                             overlay: .init(media: .error),
-                            title: R.Error.title,
-                            subtitle: R.Error.subtitle
+                            title: Localization.Error.title,
+                            subtitle: Localization.Error.subtitle
                         ),
                         in: .openBanking
                     )
@@ -119,11 +119,11 @@ public struct ApproveView: View {
     @ViewBuilder var actionArea: some View {
         WithViewStore(store) { viewStore in
             VStack(spacing: 12.pt.in(.screen)) {
-                Button(R.Approve.Action.approve) {
+                Button(Localization.Approve.Action.approve) {
                     viewStore.send(.approve)
                 }
                 .buttonStyle(PrimaryButtonStyle())
-                Button(R.Approve.Action.deny) {
+                Button(Localization.Approve.Action.deny) {
                     viewStore.send(.deny)
                 }
                 .buttonStyle(SecondaryButtonStyle(foregroundColor: Color.red))

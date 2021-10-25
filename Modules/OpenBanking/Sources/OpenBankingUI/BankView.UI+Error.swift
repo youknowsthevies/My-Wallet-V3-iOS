@@ -19,11 +19,11 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: R.Bank.Error.BANK_TRANSFER_ACCOUNT_NAME_MISMATCH.title,
-                subtitle: R.Bank.Error.BANK_TRANSFER_ACCOUNT_NAME_MISMATCH.subtitle
+                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NAME_MISMATCH.title,
+                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NAME_MISMATCH.subtitle
             ),
             action: [
-                .retry(label: R.Bank.Action.tryADifferentBank, action: .request),
+                .retry(label: Localization.Bank.Action.tryADifferentBank, action: .request),
                 .cancel
             ]
         ),
@@ -31,11 +31,11 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: R.Bank.Error.BANK_TRANSFER_ACCOUNT_EXPIRED.title,
-                subtitle: R.Bank.Error.BANK_TRANSFER_ACCOUNT_EXPIRED.subtitle
+                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_EXPIRED.title,
+                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_EXPIRED.subtitle
             ),
             action: [
-                .retry(label: R.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
                 .cancel
             ]
         ),
@@ -43,11 +43,11 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: R.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED.title,
-                subtitle: R.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED.subtitle
+                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED.title,
+                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED.subtitle
             ),
             action: [
-                .retry(label: R.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
                 .cancel
             ]
         ),
@@ -55,11 +55,11 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: R.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED.title,
-                subtitle: R.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED.subtitle
+                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED.title,
+                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED.subtitle
             ),
             action: [
-                .retry(label: R.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
                 .cancel
             ]
         ),
@@ -67,11 +67,11 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: R.Bank.Error.BANK_TRANSFER_ACCOUNT_INVALID.title,
-                subtitle: R.Bank.Error.BANK_TRANSFER_ACCOUNT_INVALID.subtitle
+                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_INVALID.title,
+                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_INVALID.subtitle
             ),
             action: [
-                .retry(label: R.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
                 .cancel
             ]
         ),
@@ -79,11 +79,11 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: R.Bank.Error.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED.title,
-                subtitle: R.Bank.Error.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED.subtitle
+                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED.title,
+                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED.subtitle
             ),
             action: [
-                .retry(label: R.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
                 .cancel
             ]
         )
@@ -94,11 +94,11 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: R.Bank.Error.default.title,
-                subtitle: R.Bank.Error.default.subtitle
+                title: Localization.Bank.Error.default.title,
+                subtitle: Localization.Bank.Error.default.subtitle
             ),
             action: [
-                .retry(label: R.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
                 .cancel
             ]
         )
@@ -109,11 +109,11 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: R.Bank.Error.default.title,
+                title: Localization.Bank.Error.default.title,
                 subtitle: message
             ),
             action: [
-                .retry(label: R.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
                 .cancel
             ]
         )

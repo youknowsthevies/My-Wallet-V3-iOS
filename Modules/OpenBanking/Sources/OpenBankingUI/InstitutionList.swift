@@ -16,7 +16,7 @@ public struct InstitutionListState: Equatable, NavigationState {
     var selection: ApproveState?
 }
 
-public enum InstitutionListAction: Hashable, NavigationAction, FailAction {
+public enum InstitutionListAction: Hashable, NavigationAction, FailableAction {
 
     case route(RouteIntent<InstitutionListRoute>?)
     case fail(OpenBanking.Error)
@@ -73,7 +73,7 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                 return .fireAndForget(environment.showTransferDetails)
             case .select(let institution):
                 let account = try state.account
-                    .or(throw: OpenBanking.Error.message(R.InstitutionList.Error.invalidAccount))
+                    .or(throw: OpenBanking.Error.message(Localization.InstitutionList.Error.invalidAccount))
                     .get()
                 state.selection = .init(
                     bank: .init(
@@ -124,7 +124,7 @@ public struct InstitutionList: View {
                 case .success(let account):
                     SearchableList(
                         account.attributes.institutions?.map(Item.init) ?? [],
-                        placeholder: R.InstitutionList.search,
+                        placeholder: Localization.InstitutionList.search,
                         content: { bank in
                             Button(
                                 action: { viewStore.send(.select(bank.institution)) },
@@ -140,7 +140,7 @@ public struct InstitutionList: View {
                         .init(
                             media: .bankIcon,
                             overlay: .init(media: .error),
-                            title: R.Error.title,
+                            title: Localization.Error.title,
                             subtitle: "\(error.description)"
                         ),
                         in: .openBanking
@@ -148,7 +148,7 @@ public struct InstitutionList: View {
                 }
             }
             .navigationRoute(in: store)
-            .navigationTitle(R.InstitutionList.title)
+            .navigationTitle(Localization.InstitutionList.title)
             .whiteNavigationBarStyle()
             .trailingNavigationButton(.close) {
                 viewStore.send(.dismiss)
@@ -159,14 +159,14 @@ public struct InstitutionList: View {
     @ViewBuilder var NoSearchResults: some View {
         WithViewStore(store) { view in
             Spacer()
-            Text(R.InstitutionList.Error.couldNotFindBank)
+            Text(Localization.InstitutionList.Error.couldNotFindBank)
                 .typography(.body2)
                 .foregroundColor(.textTitle)
                 .frame(alignment: .center)
                 .padding(10.5.vmin)
                 .multilineTextAlignment(.center)
             Spacer()
-            PrimaryButton(title: R.InstitutionList.Error.showTransferDetails) {
+            PrimaryButton(title: Localization.InstitutionList.Error.showTransferDetails) {
                 view.send(.showTransferDetails)
             }
         }

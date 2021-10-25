@@ -6,13 +6,6 @@ import UIComponentsKit
 
 extension ApproveState.UI {
 
-    private static var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
-        return formatter
-    }()
-
     static func model(
         _ bankAccount: OpenBanking.BankAccount,
         for action: BankState.Action,
@@ -21,7 +14,7 @@ extension ApproveState.UI {
 
         let _90days = DateComponents(day: 90)
         let expiry = Calendar.current.date(byAdding: _90days, to: Date())
-            .map(dateFormatter.string(from:)) ?? R.Approve.Payment.in90Days
+            .map(DateFormatter.long.string(from:)) ?? Localization.Approve.Payment.in90Days
 
         switch action {
         case .link(let institution):
@@ -48,16 +41,16 @@ extension ApproveState.UI {
                       currency: currency
                   )
             else {
-                return .init(title: R.Error.title, tasks: [])
+                return .init(title: Localization.Error.title, tasks: [])
             }
 
             let header = Task.group(
-                Task.label(R.Approve.Payment.approveYourPayment)
+                Task.label(Localization.Approve.Payment.approveYourPayment)
                     .typography(.title3),
                 Task.spacer(4.vmin),
                 Task.group(
                     Task.divider(),
-                    Task.row(R.Approve.Payment.paymentTotal, value: amount)
+                    Task.row(Localization.Approve.Payment.paymentTotal, value: amount)
                         .padding([.top, .bottom], 8.pt),
                     Task.divider()
                 ),
@@ -65,12 +58,12 @@ extension ApproveState.UI {
             )
 
             let information = Task.section(
-                header: R.Approve.Payment.paymentInformation,
+                header: Localization.Approve.Payment.paymentInformation,
                 expandable: true,
                 tasks: [
-                    Task.row(R.Approve.Payment.bankName, value: "\(bankName)"),
-                    Task.row(R.Approve.Payment.sortCode, value: "\(sortCode)"),
-                    Task.row(R.Approve.Payment.accountNumber, value: "\(accountNumber)")
+                    Task.row(Localization.Approve.Payment.bankName, value: "\(bankName)"),
+                    Task.row(Localization.Approve.Payment.sortCode, value: "\(sortCode)"),
+                    Task.row(Localization.Approve.Payment.accountNumber, value: "\(accountNumber)")
                 ]
             )
 
@@ -85,7 +78,7 @@ extension ApproveState.UI {
                     Task.spacer(4.vmin),
                     termsAndConditions(
                         entity: bankAccount.attributes.entity,
-                        bankName: bankAccount.details?.bankName ?? R.Approve.Payment.bank,
+                        bankName: bankAccount.details?.bankName ?? Localization.Approve.Payment.bank,
                         expiry: expiry
                     )
                     .padding()
@@ -101,32 +94,32 @@ extension ApproveState.UI {
     ) -> Task {
         .group(
             .section(
-                header: R.Approve.TermsAndConditions.dataSharing,
+                header: Localization.Approve.TermsAndConditions.dataSharing,
                 expandable: true,
                 tasks: [
-                    .label(R.Approve.TermsAndConditions.dataSharingBody.interpolating(entity))
+                    .label(Localization.Approve.TermsAndConditions.dataSharingBody.interpolating(entity))
                 ]
             ),
             .section(
-                header: R.Approve.TermsAndConditions.secureConnection,
+                header: Localization.Approve.TermsAndConditions.secureConnection,
                 expandable: true,
                 tasks: [
-                    .label(R.Approve.TermsAndConditions.secureConnectionBody)
+                    .label(Localization.Approve.TermsAndConditions.secureConnectionBody)
                 ]
             ),
             .section(
-                header: R.Approve.TermsAndConditions.FCAAuthorisation,
+                header: Localization.Approve.TermsAndConditions.FCAAuthorisation,
                 expandable: true,
                 tasks: [
-                    .label(R.Approve.TermsAndConditions.FCAAuthorisationBody1.interpolating(entity, entity)),
-                    .label(R.Approve.TermsAndConditions.FCAAuthorisationBody2.interpolating(bankName, entity))
+                    .label(Localization.Approve.TermsAndConditions.FCAAuthorisationBody1.interpolating(entity, entity)),
+                    .label(Localization.Approve.TermsAndConditions.FCAAuthorisationBody2.interpolating(bankName, entity))
                 ]
             ),
             .section(
-                header: R.Approve.TermsAndConditions.aboutTheAccess,
+                header: Localization.Approve.TermsAndConditions.aboutTheAccess,
                 expandable: true,
                 tasks: [
-                    .label(R.Approve.TermsAndConditions.aboutTheAccessBody.interpolating(entity, expiry))
+                    .label(Localization.Approve.TermsAndConditions.aboutTheAccessBody.interpolating(entity, expiry))
                 ]
             )
         )

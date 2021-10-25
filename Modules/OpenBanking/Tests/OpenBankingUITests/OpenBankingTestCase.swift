@@ -10,8 +10,7 @@ import ToolKit
 class OpenBankingTestCase: XCTestCase {
 
     private(set) var scheduler = (
-        main: DispatchQueue.test,
-        background: DispatchQueue.test
+        main: DispatchQueue.test, ()
     )
 
     private(set) var showTransferDetails: Bool = false
@@ -40,13 +39,11 @@ class OpenBankingTestCase: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         scheduler = (
-            main: DispatchQueue.test,
-            background: DispatchQueue.test
+            main: DispatchQueue.test, ()
         )
         (environment, network) = OpenBankingEnvironment.test(
             scheduler: .init(
-                main: scheduler.main.eraseToAnyScheduler(),
-                background: scheduler.background.eraseToAnyScheduler()
+                main: scheduler.main.eraseToAnyScheduler()
             ),
             showTransferDetails: { [self] in showTransferDetails = true },
             dismiss: { [self] in dismiss = true },

@@ -92,6 +92,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private var linkBankFlowRouter: LinkBankFlowStarter?
 
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
+    private let presentAccountLinkingFlow: PresentAccountLinkingFlow
 
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
@@ -117,7 +118,8 @@ final class SettingsRouter: SettingsRouterAPI {
         repository: DataRepositoryAPI = resolve(),
         paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve()
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
+        presentAccountLinkingFlow: PresentAccountLinkingFlow = resolve()
     ) {
         self.wallet = wallet
         self.appCoordinator = appCoordinator
@@ -138,6 +140,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.paymentMethodLinker = paymentMethodLinker
         self.analyticsRecorder = analyticsRecorder
         self.featureFlagsService = featureFlagsService
+        self.presentAccountLinkingFlow = presentAccountLinkingFlow
 
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -220,9 +223,14 @@ final class SettingsRouter: SettingsRouterAPI {
                 featureFlagsService
                     .isEnabled(.local(.openBanking))
                     .if(
-                        then: SettingsRouter.showLinkOpenBankingFlow + fiatCurrency,
-                        else: SettingsRouter.showFundTransferDetails + fiatCurrency,
-                        on: self
+                        then: { [weak self] in
+                            guard let self = self else { return }
+                            self.showLinkOpenBankingFlow(currency: fiatCurrency)
+                        },
+                        else: { [weak self] in
+                            guard let self = self else { return }
+                            self.showFundTransferDetails(currency: fiatCurrency)
+                        }
                     )
                     .store(in: &bag)
             default:
@@ -344,7 +352,7 @@ final class SettingsRouter: SettingsRouterAPI {
             fatalError("Failed to present open banking flow, no view controller available for presentation")
         }
 
-        (resolve() as PresentAccountLinkingFlow)
+        presentAccountLinkingFlow
             .presentAccountLinkingFlow(
                 from: viewController,
                 filter: { type in
@@ -354,7 +362,8 @@ final class SettingsRouter: SettingsRouterAPI {
                     guard let self = self else { return }
                     viewController.dismiss(animated: true) {
                         switch result {
-                        case .dismiss: break
+                        case .dismiss:
+                            break
                         case .select(let method):
                             switch method.type {
                             case .funds:
@@ -441,8 +450,4 @@ final class SettingsRouter: SettingsRouterAPI {
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting()
     }()
-}
-
-func + <Root, Value, Return>(lhs: @escaping (Root) -> (Value) -> Return, rhs: Value) -> (Root) -> () -> Return {
-    { root in { lhs(root)(rhs) } }
 }

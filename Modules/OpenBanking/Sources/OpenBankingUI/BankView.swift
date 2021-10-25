@@ -39,12 +39,12 @@ public struct BankState: Equatable {
         case .link(let institution):
             return institution.fullName
         case .pay:
-            return account.details?.bankName ?? R.Bank.yourBank
+            return account.details?.bankName ?? Localization.Bank.yourBank
         }
     }
 }
 
-public enum BankAction: Hashable, FailAction {
+public enum BankAction: Hashable, FailableAction {
 
     case request
 
@@ -244,19 +244,19 @@ public struct BankView: View {
                 switch action {
                 case .ok:
                     return .init(
-                        title: R.Bank.Action.ok,
+                        title: Localization.Bank.Action.ok,
                         action: {
                             if let payment = viewStore.payment {
                                 viewStore.send(.authorised(viewStore.account, payment))
                             } else {
-                                viewStore.send(.fail(.message(R.Bank.Error.failedToGetPaymentDetails)))
+                                viewStore.send(.fail(.message(Localization.Bank.Error.failedToGetPaymentDetails)))
                             }
                         },
                         style: style
                     )
                 case .next:
                     return .init(
-                        title: R.Bank.Action.next,
+                        title: Localization.Bank.Action.next,
                         action: { viewStore.send(.linked(viewStore.account)) },
                         style: style
                     )
@@ -268,7 +268,7 @@ public struct BankView: View {
                     )
                 case .cancel:
                     return .init(
-                        title: R.Bank.Action.cancel,
+                        title: Localization.Bank.Action.cancel,
                         action: { viewStore.send(.cancel) },
                         style: style
                     )

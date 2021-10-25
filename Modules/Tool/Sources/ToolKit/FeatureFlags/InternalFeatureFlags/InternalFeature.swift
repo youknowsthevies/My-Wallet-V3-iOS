@@ -45,7 +45,7 @@ public enum InternalFeature: String, CaseIterable {
         case .useTransactionsFlowToBuyCrypto,
              .newAccountPicker,
              .newOnboardingTour,
-             .openBanking:
+             .openBanking,
              .pollingForEmailLogin:
             return true
         case .disableGUIDLogin,

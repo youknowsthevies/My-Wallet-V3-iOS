@@ -22,16 +22,15 @@ struct FiatCurrencyFormatter: OpenBankingUI.FiatCurrencyFormatter {
 
 extension OpenBankingUI.OpenBankingViewController: StartOpenBanking {
 
-    public static func link(
-        _ data: BankLinkageData,
+    convenience init(
         currency: FiatCurrency,
-        listener: LinkBankListener
-    ) -> UIViewController {
-
-        let viewController = OpenBankingViewController(
+        listener: LinkBankListener,
+        app: AppCoordinating = resolve()
+    ) {
+        self.init(
             environment: OpenBankingEnvironment(
                 showTransferDetails: {
-                    (resolve() as AppCoordinating).showFundTrasferDetails(fiatCurrency: currency, isOriginDeposit: true)
+                    app.showFundTrasferDetails(fiatCurrency: currency, isOriginDeposit: true)
                 },
                 dismiss: {
                     listener.closeFlow(isInteractive: false)
@@ -39,11 +38,22 @@ extension OpenBankingUI.OpenBankingViewController: StartOpenBanking {
                 currency: currency.code
             )
         )
+    }
+
+    public static func link(
+        _ data: BankLinkageData,
+        currency: FiatCurrency,
+        listener: LinkBankListener
+    ) -> UIViewController {
+
+        let viewController = OpenBankingViewController(currency: currency, listener: listener)
 
         let navigationController = UINavigationController(rootViewController: viewController)
 
         viewController.event$.sink { [weak navigationController] event in
             switch event {
+            case .failed:
+                break
             case .linked:
                 navigationController?.dismiss(animated: true) {
                     listener.updateBankLinked()

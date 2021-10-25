@@ -45,16 +45,9 @@ extension OpenBankingEnvironment {
     public struct Scheduler {
 
         public var main: AnySchedulerOf<DispatchQueue>
-        public var background: AnySchedulerOf<DispatchQueue>
 
-        public init(
-            main: AnySchedulerOf<DispatchQueue> = .main,
-            background: AnySchedulerOf<DispatchQueue> = .init(
-                DispatchQueue(label: "com.blockchain.open-banking.background")
-            )
-        ) {
+        public init(main: AnySchedulerOf<DispatchQueue> = .main) {
             self.main = main
-            self.background = background
         }
     }
 }

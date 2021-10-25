@@ -92,8 +92,8 @@ final class InstitutionListTests: OpenBankingTestCase {
     func test_select_invalid() throws {
         store.assert(
             .send(.select(institution)),
-            .receive(.fail(.message(R.InstitutionList.Error.invalidAccount))) { state in
-                state.account = .failure(.message(R.InstitutionList.Error.invalidAccount))
+            .receive(.fail(.message(Localization.InstitutionList.Error.invalidAccount))) { state in
+                state.account = .failure(.message(Localization.InstitutionList.Error.invalidAccount))
             }
         )
     }

@@ -12,10 +12,10 @@ extension BankState.UI {
             info: .init(
                 media: .blockchainLogo,
                 overlay: .init(progress: true),
-                title: R.Bank.Communicating.title.interpolating(institution),
-                subtitle: R.Bank.Communicating.subtitle
+                title: Localization.Bank.Communicating.title.interpolating(institution),
+                subtitle: Localization.Bank.Communicating.subtitle
             ),
-            action: [.retry(label: R.Bank.Action.retry, action: .request)]
+            action: [.retry(label: Localization.Bank.Action.retry, action: .request)]
         )
     }
 
@@ -24,10 +24,10 @@ extension BankState.UI {
             info: .init(
                 media: .blockchainLogo,
                 overlay: .init(progress: true),
-                title: R.Bank.Waiting.title.interpolating(institution),
-                subtitle: R.Bank.Waiting.subtitle
+                title: Localization.Bank.Waiting.title.interpolating(institution),
+                subtitle: Localization.Bank.Waiting.subtitle
             ),
-            action: [.retry(label: R.Bank.Action.retry, action: .request)]
+            action: [.retry(label: Localization.Bank.Action.retry, action: .request)]
         )
     }
 
@@ -35,8 +35,8 @@ extension BankState.UI {
         info: .init(
             media: .blockchainLogo,
             overlay: .init(progress: true),
-            title: R.Bank.Updating.title,
-            subtitle: R.Bank.Updating.subtitle
+            title: Localization.Bank.Updating.title,
+            subtitle: Localization.Bank.Updating.subtitle
         ),
         action: .none
     )
@@ -46,8 +46,8 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .success),
-                title: R.Bank.Linked.title,
-                subtitle: R.Bank.Linked.subtitle.interpolating(institution)
+                title: Localization.Bank.Linked.title,
+                subtitle: Localization.Bank.Linked.subtitle.interpolating(institution)
             ),
             action: [.next]
         )
@@ -67,7 +67,7 @@ extension BankState.UI {
             amountMinor: payment.amount.value,
             currency: payment.amount.symbol
         ) else {
-            return .errorMessage(R.Bank.Payment.error.interpolating(payment.amount.symbol))
+            return .errorMessage(Localization.Bank.Payment.error.interpolating(payment.amount.symbol))
         }
 
         var formatted = (
@@ -84,8 +84,8 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .success),
-                title: R.Bank.Payment.title.interpolating(formatted.amount),
-                subtitle: R.Bank.Payment.subtitle.interpolating(formatted.amount, formatted.currency, formatted.date)
+                title: Localization.Bank.Payment.title.interpolating(formatted.amount),
+                subtitle: Localization.Bank.Payment.subtitle.interpolating(formatted.amount, formatted.currency, formatted.date)
             ),
             action: [.ok]
         )
