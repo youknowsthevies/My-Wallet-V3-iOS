@@ -3,8 +3,8 @@
 @testable import KeychainKit
 @testable import WalletPayloadKit
 
-import KeychainKitMock
 import Combine
+import KeychainKitMock
 import XCTest
 
 class WalletPersistenceTests: XCTestCase {
@@ -71,7 +71,7 @@ class WalletPersistenceTests: XCTestCase {
         var mockDecoderCalled = false
         var decodeResult: Result<WalletRepoState, WalletRepoStateCodingError> = .success(.empty)
 
-        let mockDecoder: WalletRepoStateDecoding = { data in
+        let mockDecoder: WalletRepoStateDecoding = { _ in
             mockDecoderCalled = true
             return decodeResult
         }
@@ -179,11 +179,12 @@ class WalletPersistenceTests: XCTestCase {
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
-                receiveValue: { [mockKeychainAccess] emptyValue in
+                receiveValue: { [mockKeychainAccess] _ in
                     XCTAssertTrue(mockEncoderCalled)
                     XCTAssertTrue(mockKeychainAccess!.writeCalled)
                     expectation.fulfill()
-                })
+                }
+            )
             .store(in: &cancellables)
 
         // setting a value to the repo should trigger a write
@@ -215,7 +216,7 @@ class WalletPersistenceTests: XCTestCase {
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
-                receiveValue: { [mockKeychainAccess] emptyValue in
+                receiveValue: { [mockKeychainAccess] _ in
                     XCTAssertTrue(mockKeychainAccess!.writeCalled)
                     expectation.fulfill()
                 }

@@ -46,7 +46,6 @@ final class WalletPersistence: WalletPersistenceAPI {
         persistenceQueue = queue
     }
 
-
     public func beginPersisting() -> AnyPublisher<EmptyValue, WalletPersistenceError> {
         repo
             .removeDuplicates()

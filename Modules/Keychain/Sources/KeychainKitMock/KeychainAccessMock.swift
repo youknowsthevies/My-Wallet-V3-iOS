@@ -1,12 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import KeychainKit
 import Foundation
+import KeychainKit
 
 public class KeychainAccessMock: KeychainAccessAPI {
-    public required init(service: String) { }
-    public required init(queryProvider: KeychainQueryProvider) { }
-    public required init(service: String, accessGroup: String) { }
+    public required init(service: String) {}
+    public required init(queryProvider: KeychainQueryProvider) {}
+    public required init(service: String, accessGroup: String) {}
 
     public var readCalled: Bool = false
     public var readResult: Result<Data, KeychainAccessError> = .failure(.readFailure(.itemNotFound(account: "")))
