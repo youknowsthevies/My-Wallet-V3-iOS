@@ -2,24 +2,31 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
-/// An icon asset from the Component Library
+/// An icon asset view from the Component Library
 ///
 /// See extension below for supported icons.
+/// Note that coloring the icon is done via `.accentColor(...)` instead of `.foregroundColor(...)`
+/// Apply a fixed width or height to size the icon.
 ///
 /// # Usage:
 ///
-/// `Icon.activity.image`
+/// ```
+/// Icon.activity
+///     .accentColor(.green)
+///     .frame(width: 20)
+/// ```
 ///
 /// # Figma
 ///
 ///  [Assets - Icons](https://www.figma.com/file/3jESURhHQ4VBTQcu0aZkoX/01---Assets-%7C-Icons)
-public struct Icon {
+public struct Icon: View {
     let name: String
 
-    /// A SwiftUI Image View representing the given icon
-    public var image: Image {
-        Image(name, bundle: Bundle.componentLibrary)
+    public var body: some View {
+        ImageViewRepresentable(name: name)
+            .scaledToFit()
     }
 }
 
@@ -152,6 +159,27 @@ extension Icon {
     public static let visibilityOn = Icon(name: "Visibility On")
     public static let wallet = Icon(name: "Wallet")
     public static let withdraw = Icon(name: "Withdraw")
+}
+
+/// SwiftUI's `Image` does not correctly scale up vector images. Images end up extremely blurry.
+/// So, we get around this by reverting back to `UIImageView` to display icons.
+private struct ImageViewRepresentable: UIViewRepresentable {
+    let name: String
+
+    func makeUIView(context: Context) -> some UIView {
+        let view = UIImageView(
+            image: UIImage(
+                named: name,
+                in: .componentLibrary,
+                with: nil
+            )?.withRenderingMode(.alwaysTemplate)
+        )
+        return view
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        // Do nothing
+    }
 }
 
 struct Icon_Previews: PreviewProvider {
@@ -295,7 +323,10 @@ struct Icon_Previews: PreviewProvider {
         LazyVGrid(columns: columns, alignment: .center, spacing: 48) {
             ForEach(allIcons, id: \.name) { icon in
                 VStack {
-                    icon.image
+                    icon
+                        .accentColor(.Semantic.muted)
+                        .frame(width: 20)
+
                     Text(icon.name)
                         .typography(.caption2)
                 }
