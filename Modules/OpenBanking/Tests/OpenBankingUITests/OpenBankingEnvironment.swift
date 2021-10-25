@@ -9,8 +9,7 @@ extension OpenBankingEnvironment {
 
     public static func test(
         scheduler: Scheduler = .init(
-            main: DispatchQueue.test.eraseToAnyScheduler(),
-            background: DispatchQueue.test.eraseToAnyScheduler()
+            main: DispatchQueue.test.eraseToAnyScheduler()
         ),
         showTransferDetails: @escaping () -> Void = {},
         dismiss: @escaping () -> Void = {},
