@@ -17,4 +17,16 @@ final class IconsTests: XCTestCase {
             ]
         )
     }
+
+    func testScaling() {
+        let view = Icon.send.frame(width: 200, height: 200)
+
+        assertSnapshot(matching: view, as: .image)
+    }
+
+    func testColoring() {
+        let view = Icon.send.accentColor(.green)
+
+        assertSnapshot(matching: view, as: .image)
+    }
 }
