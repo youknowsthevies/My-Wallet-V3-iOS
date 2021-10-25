@@ -46,8 +46,11 @@ class CachedValueNewTests: XCTestCase {
         super.setUp()
 
         let refreshControl = PeriodicCacheRefreshControl(refreshInterval: refreshInterval)
-        cache = InMemoryCache(refreshControl: refreshControl)
-            .eraseToAnyCache()
+        cache = InMemoryCache(
+            configuration: .default(),
+            refreshControl: refreshControl
+        )
+        .eraseToAnyCache()
 
         subject = CachedValueNew(cache: cache) { [fetchErrorKey, fetchValue] key in
             switch key {

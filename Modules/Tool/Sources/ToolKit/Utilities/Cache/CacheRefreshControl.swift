@@ -13,11 +13,12 @@ public protocol CacheRefreshControl {
 
 /// A cache refresh control that never expires.
 public final class PerpetualCacheRefreshControl: CacheRefreshControl {
+
+    public init() {}
+
     public func shouldRefresh(lastRefresh: Date) -> Bool {
         false
     }
-
-    public init() {}
 }
 
 /// A periodic cache refresh control, checking cache values that should be refreshed based on a given refresh interval.

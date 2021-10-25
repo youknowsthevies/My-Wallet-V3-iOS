@@ -38,8 +38,8 @@ class TradingBalanceService: TradingBalanceServiceAPI {
         self.client = client
 
         let cache: AnyCache<Key, CustodialAccountBalanceStates> = InMemoryCache(
-            configuration: .onLoginLogout(),
-            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 90)
+            configuration: .onLoginLogoutTransaction(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
         cachedValue = CachedValueNew(

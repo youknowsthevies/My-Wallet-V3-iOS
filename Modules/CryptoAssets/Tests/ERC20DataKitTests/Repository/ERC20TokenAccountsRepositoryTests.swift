@@ -37,8 +37,11 @@ class ERC20TokenAccountsRepositoryTests: XCTestCase {
         fetchAccounts = .stubbed(cryptoCurrency: currency)
 
         let refreshControl = PeriodicCacheRefreshControl(refreshInterval: refreshInterval)
-        cache = InMemoryCache(refreshControl: refreshControl)
-            .eraseToAnyCache()
+        cache = InMemoryCache(
+            configuration: .default(),
+            refreshControl: refreshControl
+        )
+        .eraseToAnyCache()
 
         let enabledCurrenciesService = MockEnabledCurrenciesService()
         enabledCurrenciesService.allEnabledCryptoCurrencies = [currency]

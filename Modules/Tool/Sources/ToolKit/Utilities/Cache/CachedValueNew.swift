@@ -116,27 +116,32 @@ public final class CachedValueNew<Key: Hashable, Value: Equatable, CacheError: E
     ///
     /// - Returns: A publisher that emits the fetched value on success, or a `CacheError` on failure.
     private func fetchAndStore(for key: Key) -> AnyPublisher<Value, CacheError> {
-        inFlightRequests.mutateAndReturn { inFlightRequests in
-            if let request = inFlightRequests[key] {
-                // There is a request in-flight.
+        Deferred { [inFlightRequests, createRemoteRequest, queue] in
+            inFlightRequests.mutateAndReturn { requests -> AnyPublisher<Value, CacheError> in
+                if let request = requests[key] {
+                    // There is a request in-flight.
+                    return request
+                }
+
+                // There is no request in-flight, create a new request.
+                let request = createRemoteRequest(key)
+                    .handleEvents(
+                        receiveCompletion: { [weak inFlightRequests] _ in
+                            // Remove from in-flight requests, after it completed.
+                            inFlightRequests?.mutate { $0[key] = nil }
+                        }
+                    )
+                    .subscribe(on: queue)
+                    .shareReplay()
+                    .eraseToAnyPublisher()
+
+                // Add to in-flight requests.
+                requests[key] = request
+
                 return request
             }
-
-            // There is no request in-flight, create a new request.
-            let request = createRemoteRequest(for: key)
-                .handleEvents(receiveCompletion: { [weak self] _ in
-                    // Remove from in-flight requests, after it completed.
-                    self?.inFlightRequests.mutate { $0[key] = nil }
-                })
-                .subscribe(on: queue)
-                .shareReplay()
-                .eraseToAnyPublisher()
-
-            // Add to in-flight requests.
-            inFlightRequests[key] = request
-
-            return request
         }
+        .eraseToAnyPublisher()
     }
 
     /// Creates a remote data source request for the value associated with given key.
