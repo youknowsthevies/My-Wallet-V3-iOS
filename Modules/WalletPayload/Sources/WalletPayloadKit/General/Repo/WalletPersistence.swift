@@ -5,7 +5,13 @@ import Foundation
 import KeychainKit
 
 public protocol WalletPersistenceAPI {
+    /// Begins the internal persist operation by monitor changes in the `WalletRepo`
+    /// - Returns: A publisher of type `AnyPublisher<EmptyValue, WalletPersistenceError>`
     func beginPersisting() -> AnyPublisher<EmptyValue, WalletPersistenceError>
+
+    /// Retrieves the `WalletStorageState` from the `Keychain` as `AnyPublisher`
+    /// - Returns: An `AnyPublisher<WalletRepoState, WalletPersistenceError>`
+    func retrieve() -> AnyPublisher<WalletRepoState, WalletPersistenceError>
 }
 
 public enum WalletPersistenceError: Error, Equatable {
@@ -14,7 +20,7 @@ public enum WalletPersistenceError: Error, Equatable {
 }
 
 /// An object responsible for observing changes from `WalletStorage` and persisting them.
-final class WalletPersistence {
+final class WalletPersistence: WalletPersistenceAPI {
 
     enum KeychainAccessKey {
         static let walletState = "wallet-repo-state"
@@ -40,9 +46,8 @@ final class WalletPersistence {
         persistenceQueue = queue
     }
 
-    /// Begin the internal persist operation by monitor changes in the `WalletRepo`
-    /// - Returns: A publisher of type `AnyPublisher<EmptyValue, WalletPersistenceError>`
-    func beginPersisting() -> AnyPublisher<EmptyValue, WalletPersistenceError> {
+
+    public func beginPersisting() -> AnyPublisher<EmptyValue, WalletPersistenceError> {
         repo
             .removeDuplicates()
             .setFailureType(to: WalletPersistenceError.self)
@@ -62,9 +67,7 @@ final class WalletPersistence {
             .eraseToAnyPublisher()
     }
 
-    /// Retrieves the `WalletStorageState` from the `Keychain` as `AnyPublisher`
-    /// - Returns: An `AnyPublisher<WalletRepoState, WalletPersistenceError>`
-    func retrieve() -> AnyPublisher<WalletRepoState, WalletPersistenceError> {
+    public func retrieve() -> AnyPublisher<WalletRepoState, WalletPersistenceError> {
         keychainAccess.read(for: KeychainAccessKey.walletState)
             .mapError(WalletPersistenceError.keychainFailure)
             .publisher

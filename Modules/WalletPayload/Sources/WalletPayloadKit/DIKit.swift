@@ -20,7 +20,7 @@ extension DependencyContainer {
             return WalletRepo(initialState: initialStateOrEmpty)
         }
 
-        single { () -> WalletPersistence in
+        single { () -> WalletPersistenceAPI in
             let repo: WalletRepo = DIKit.resolve()
             let queue = DispatchQueue(label: "wallet.persistence.queue", qos: .default)
             let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: WalletRepoKeychain.repoTag)
