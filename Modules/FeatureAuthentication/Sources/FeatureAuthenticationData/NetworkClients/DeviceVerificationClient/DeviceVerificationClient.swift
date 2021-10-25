@@ -14,6 +14,7 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
     private enum Path {
         static let wallet = ["wallet"]
         static let emailReminder = ["auth", "email-reminder"]
+        static let pollWalletInfo = ["wallet", "poll-for-wallet-info"]
     }
 
     private enum Parameters {
@@ -101,5 +102,18 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
             contentType: .formUrlEncoded
         )!
         return networkAdapter.perform(request: request)
+    }
+
+    func pollForWalletInfo(
+        sessionToken: String
+    ) -> AnyPublisher<WalletInfo?, Never> {
+        let headers = [HttpHeaderField.authorization: "Bearer \(sessionToken)"]
+        let request = walletRequestBuilder.get(
+            path: Path.pollWalletInfo,
+            headers: headers
+        )!
+        return networkAdapter.perform(request: request)
+            .replaceError(with: nil)
+            .eraseToAnyPublisher()
     }
 }

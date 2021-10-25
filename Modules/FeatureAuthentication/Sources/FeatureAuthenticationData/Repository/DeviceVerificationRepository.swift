@@ -56,4 +56,18 @@ final class DeviceVerificationRepository: DeviceVerificationRepositoryAPI {
             }
             .eraseToAnyPublisher()
     }
+
+    func pollForWalletInfo(
+        sessionToken: String
+    ) -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> {
+        apiClient
+            .pollForWalletInfo(sessionToken: sessionToken)
+            .flatMap { walletInfoOrNil -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> in
+                guard let walletInfo = walletInfoOrNil else {
+                    return .failure(.missingWalletInfo)
+                }
+                return .just(walletInfo)
+            }
+            .eraseToAnyPublisher()
+    }
 }

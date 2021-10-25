@@ -510,6 +510,8 @@ extension TransactionValidationState {
             return .pendingOrdersLimitReached
         case .nabuError(let error):
             return .nabuError(error)
+        case .noSourcesAvailable:
+            return .unknownError
         }
     }
 }

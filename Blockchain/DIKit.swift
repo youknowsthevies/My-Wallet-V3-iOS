@@ -24,6 +24,7 @@ import OpenBanking
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
+import RxToolKit
 import StellarKit
 import ToolKit
 import WalletPayloadKit
@@ -353,7 +354,12 @@ extension DependencyContainer {
             return featureFetching
         }
 
-        factory { () -> FeatureVariantFetching in
+        factory { () -> RxFeatureFetching in
+            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
+            return featureFetching
+        }
+
+        factory { () -> RxFeatureVariantFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
         }
@@ -485,6 +491,10 @@ extension DependencyContainer {
 
         factory { () -> FeatureTransactionUI.KYCSDDServiceAPI in
             TransactionsKYCAdapter()
+        }
+
+        factory { () -> FeatureSettingsUI.PaymentMethodsLinkerAPI in
+            PaymentMethodsLinkingAdapter()
         }
 
         // MARK: FeatureAuthentication Module

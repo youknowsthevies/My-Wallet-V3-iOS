@@ -36,11 +36,11 @@ extension Publisher {
     }
 }
 
-extension Publisher where Output: OptionalType {
+extension Publisher where Output: OptionalProtocol {
 
     public func onNil(_ error: Failure) -> AnyPublisher<Output.Wrapped, Failure> {
         flatMap { element -> AnyPublisher<Output.Wrapped, Failure> in
-            guard let value = element.value else {
+            guard let value = element.wrapped else {
                 return .failure(error)
             }
             return .just(value)

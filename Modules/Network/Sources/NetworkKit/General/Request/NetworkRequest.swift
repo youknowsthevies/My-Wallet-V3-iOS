@@ -2,7 +2,6 @@
 
 import DIKit
 import Foundation
-import RxSwift
 
 public typealias HTTPHeaders = [String: String]
 

@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FirebaseRemoteConfig
 import PlatformKit
 import RxSwift
+import RxToolKit
 import ToolKit
 
 final class AppFeatureConfigurator {
@@ -66,6 +68,13 @@ extension AppFeatureConfigurator: FeatureConfiguratorAPI {
 // MARK: - FeatureDecoding
 
 extension AppFeatureConfigurator: FeatureFetching {
+
+    func fetch<Feature>(for key: AppFeature) -> AnyPublisher<Feature, FeatureFlagError> where Feature: Decodable {
+        fetch(for: key).publisher.mapError(FeatureFlagError.decodingError).eraseToAnyPublisher()
+    }
+}
+
+extension AppFeatureConfigurator: RxFeatureFetching {
 
     /// Returns an expected decodable construct for the provided feature key
     ///
@@ -134,7 +143,7 @@ extension AppFeatureConfigurator: FeatureFetching {
 
 // MARK: - FeatureVariantFetching
 
-extension AppFeatureConfigurator: FeatureVariantFetching {
+extension AppFeatureConfigurator: RxFeatureVariantFetching {
     /// Returns an expected variant for the provided feature key
     ///
     /// - Parameter feature: the feature key

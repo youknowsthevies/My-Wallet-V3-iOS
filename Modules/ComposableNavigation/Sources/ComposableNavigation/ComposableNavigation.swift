@@ -172,7 +172,7 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
             #if os(macOS)
             EmptyView()
                 .sheet(
-                    isPresented: Binding(binding, to: key, isReady: $isReady),
+                    isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
                         intent.value.route.destination(in: store)
                     }
@@ -200,7 +200,7 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
             #if os(macOS)
             EmptyView()
                 .sheet(
-                    isPresented: Binding(binding, to: key, isReady: $isReady),
+                    isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
                         NavigationView { intent.value.route.destination(in: store) }
                     }

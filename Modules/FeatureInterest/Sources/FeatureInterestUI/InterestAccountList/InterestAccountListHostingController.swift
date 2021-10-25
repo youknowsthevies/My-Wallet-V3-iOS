@@ -1,9 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import SwiftUI
 import UIKit
 
-public final class InterestAccountListHostingController: UIViewController {
+public protocol InterestAccountListHostingControllerDelegate: AnyObject {
+    func presentKYCIfNeeded()
+}
+
+public final class InterestAccountListHostingController: UIViewController, InterestAccountListViewDelegate {
+
+    public weak var delegate: InterestAccountListHostingControllerDelegate?
 
     private let contentView: UIHostingController<InterestAccountListView>
 
@@ -21,6 +28,7 @@ public final class InterestAccountListHostingController: UIViewController {
             )
         )
         super.init(nibName: nil, bundle: nil)
+        contentView.rootView.delegate = self
     }
 
     @available(*, unavailable)
@@ -38,5 +46,11 @@ public final class InterestAccountListHostingController: UIViewController {
     private func setupConstraints() {
         contentView.view.translatesAutoresizingMaskIntoConstraints = false
         contentView.view.fillSuperview()
+    }
+
+    // MARK: - InterestAccountListViewDelegate
+
+    func didTapVerifyMyIdentity() {
+        delegate?.presentKYCIfNeeded()
     }
 }

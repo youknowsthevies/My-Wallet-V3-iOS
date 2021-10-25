@@ -2,7 +2,6 @@
 
 import DIKit
 import Foundation
-import RxSwift
 import ToolKit
 
 public typealias APICode = String

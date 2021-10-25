@@ -13,6 +13,7 @@ struct InterestAccountSelectionEnvironment {
     let accountRepository: BlockchainAccountRepositoryAPI
     let priceService: PriceServiceAPI
     let blockchainAccountRepository: BlockchainAccountRepositoryAPI
+    let kycVerificationService: KYCVerificationServiceAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
@@ -24,6 +25,7 @@ extension InterestAccountSelectionEnvironment {
         accountRepository: resolve(),
         priceService: resolve(),
         blockchainAccountRepository: resolve(),
+        kycVerificationService: resolve(),
         mainQueue: .main
     )
 }

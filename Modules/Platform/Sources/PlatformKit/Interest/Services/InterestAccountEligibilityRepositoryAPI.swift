@@ -4,6 +4,10 @@ import Combine
 
 public protocol InterestAccountEligibilityRepositoryAPI {
 
+    /// Fetches all interest eligible currencies
+    func fetchAllInterestEnabledCurrencies()
+        -> AnyPublisher<[CurrencyType], InterestAccountEligibilityError>
+
     /// Fetches all `InterestAccountEligibility` objects.
     func fetchAllInterestAccountEligibility()
         -> AnyPublisher<[InterestAccountEligibility], InterestAccountEligibilityError>

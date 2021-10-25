@@ -12,7 +12,11 @@ struct InterestEligibilityResponse: Decodable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        interestEligibilities = try container.decode([String: InterestEligibility].self)
+        do {
+            interestEligibilities = try container.decode([String: InterestEligibility].self)
+        } catch {
+            interestEligibilities = [:]
+        }
     }
 
     // MARK: - Subscript
