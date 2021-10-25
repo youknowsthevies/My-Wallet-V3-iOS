@@ -324,7 +324,7 @@ struct Icon_Previews: PreviewProvider {
             ForEach(allIcons, id: \.name) { icon in
                 VStack {
                     icon
-                        .accentColor(.Semantic.muted)
+                        .accentColor(.semantic.muted)
                         .frame(width: 20)
 
                     Text(icon.name)
