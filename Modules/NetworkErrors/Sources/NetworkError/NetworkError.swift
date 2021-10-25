@@ -43,7 +43,7 @@ extension NetworkError: CustomStringConvertible {
                     HTTP \(error.response.statusCode)
                     \(string)
                     """
-            } catch {
+            } catch _ {
                 return
                     """
                     HTTP \(error.response.statusCode)
