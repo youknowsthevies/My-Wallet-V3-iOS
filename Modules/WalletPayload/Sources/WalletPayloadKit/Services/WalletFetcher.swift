@@ -15,7 +15,7 @@ final class WalletFetcher: WalletFetcherAPI {
     func fetch(using password: String) -> AnyPublisher<Bool, WalletError> {
         // 0. load the payload
         // 1. decrypt the payload
-        // 2. save the guid to metadata
+        // 2. save the guid to metadata (revisit this)
         // 3. load the metadata
         // 4. fetch and store:
         //    a) wallet options

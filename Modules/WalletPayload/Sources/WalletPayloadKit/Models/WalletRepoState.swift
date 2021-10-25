@@ -3,7 +3,7 @@
 import Foundation
 
 /// Holds the storage for wallet related access
-public struct WalletStorageState: Equatable {
+public struct WalletRepoState: Equatable, Codable {
 
     /// Stores credential related properties
     public var credentials: WalletCredentials
@@ -19,10 +19,19 @@ public struct WalletStorageState: Equatable {
 
     /// Returns the lifetime token for the user id
     public var lifetimeToken: String
+
+    /// Provides an empty state
+    static let empty = WalletRepoState(
+        credentials: .empty,
+        properties: .empty,
+        encryptedPayload: "",
+        userId: "",
+        lifetimeToken: ""
+    )
 }
 
 /// Holds credential information regarding the wallet
-public struct WalletCredentials: Equatable {
+public struct WalletCredentials: Equatable, Codable {
     /// Returns the stored wallet identifier
     public var guid: String
 
@@ -34,10 +43,17 @@ public struct WalletCredentials: Equatable {
 
     /// Returns the stored password
     public var password: String
+
+    static let empty = WalletCredentials(
+        guid: "",
+        sharedKey: "",
+        sessionToken: "",
+        password: ""
+    )
 }
 
 /// Holds informational properties regarding the wallet
-public struct WalletProperties: Equatable {
+public struct WalletProperties: Equatable, Codable {
     /// Returns `true` if the pub keys should be synchronised
     public var syncPubKeys: Bool
 
@@ -46,4 +62,10 @@ public struct WalletProperties: Equatable {
 
     /// Returns the authenticator type, of the wallet
     public var authenticatorType: WalletAuthenticatorType
+
+    static let empty = WalletProperties(
+        syncPubKeys: false,
+        language: "",
+        authenticatorType: .standard
+    )
 }
