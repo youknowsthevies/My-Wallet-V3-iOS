@@ -53,31 +53,16 @@ extension SellTransactionEngine {
     }
 
     var sourceExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
-            .fiatCurrency
-            .flatMap { [priceService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
-                priceService
-                    .price(of: sourceAsset, in: fiatCurrency)
-                    .map(\.moneyValue)
-                    .asObservable()
-                    .take(1)
-                    .asSingle()
-                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
-            }
+        transactionExchangeRatePair
+            .take(1)
+            .asSingle()
     }
 
     private var destinationExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
-            .fiatCurrency
-            .flatMap { [priceService, target] fiatCurrency in
-                priceService
-                    .price(of: target.currencyType, in: fiatCurrency)
-                    .asObservable()
-                    .take(1)
-                    .asSingle()
-                    .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: target.currencyType), quote: $0) }
-            }
+        transactionExchangeRatePair
+            .map(\.inverseExchangeRate)
+            .take(1)
+            .asSingle()
     }
 
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
