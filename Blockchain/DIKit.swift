@@ -154,7 +154,7 @@ extension DependencyContainer {
         // MARK: - Dashboard
 
         factory { () -> AccountsRouting in
-            let routing: CurrencyRouting & TabSwapping = DIKit.resolve()
+            let routing: TabSwapping = DIKit.resolve()
             return AccountsRouter(
                 routing: routing
             )
@@ -185,16 +185,6 @@ extension DependencyContainer {
         // MARK: - AppCoordinator
 
         single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
-
-        factory { () -> CurrencyRouting & TabSwapping in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveCurrencyRoutingAndTabSwapping() as CurrencyRouting & TabSwapping
-        }
-
-        factory { () -> CurrencyRouting in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveCurrencyRouting() as CurrencyRouting
-        }
 
         factory { () -> TabSwapping in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()

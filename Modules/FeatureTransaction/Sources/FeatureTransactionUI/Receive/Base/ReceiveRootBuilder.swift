@@ -7,7 +7,7 @@ import ToolKit
 import UIComponentsKit
 import UIKit
 
-public final class ReceiveBuilder {
+public final class ReceiveRootBuilder {
     private typealias LocalizedReceive = LocalizationConstants.Receive
 
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI

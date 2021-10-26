@@ -337,6 +337,10 @@ extension LoggedInHostingController {
 
     // MARK: - TabSwapping
 
+    func receive(into account: BlockchainAccount) {
+        tabControllerManager?.receive(into: account)
+    }
+
     func deposit(into account: BlockchainAccount) {
         tabControllerManager?.deposit(into: account)
     }
@@ -397,16 +401,6 @@ extension LoggedInHostingController {
                 })
                 .store(in: &self.cancellables)
         }
-    }
-
-    // MARK: - CurrencyRouting
-
-    func toSend(_ currency: CurrencyType) {
-        tabControllerManager?.showSend(cryptoCurrency: currency.cryptoCurrency!)
-    }
-
-    func toReceive(_ currency: CurrencyType) {
-        tabControllerManager?.showReceive()
     }
 
     // MARK: - CashIdentityVerificationAnnouncementRouting

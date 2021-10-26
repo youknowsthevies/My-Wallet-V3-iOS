@@ -27,6 +27,7 @@ final class TabControllerManager: NSObject {
     private var swapViewController: UIViewController!
     private var swapRouter: ViewableRouting!
     private var sendRouter: SendRootRouting!
+    private var receiveRouter: ReceiveRouterAPI!
     private var depositRouter: DepositRootRouting!
     private var withdrawRouter: WithdrawRootRouting!
 
@@ -121,6 +122,14 @@ final class TabControllerManager: NSObject {
         )
     }
 
+    private func loadReceive() {
+        if receiveNavigationViewController == nil {
+            receiveNavigationViewController = UINavigationController(
+                rootViewController: receiveCoordinator.builder.receive()
+            )
+        }
+    }
+
     func deposit(into account: BlockchainAccount) {
         let router = DepositRootBuilder().build(with: account as! FiatAccount)
         depositRouter = router
@@ -157,11 +166,13 @@ final class TabControllerManager: NSObject {
         setSendAsActive()
     }
 
+    func receive(into account: BlockchainAccount) {
+        loadReceive()
+        receiveCoordinator.routeToReceive(sourceAccount: account)
+    }
+
     func showReceive() {
-        if receiveNavigationViewController == nil {
-            let receive = receiveCoordinator.builder.receive()
-            receiveNavigationViewController = UINavigationController(rootViewController: receive)
-        }
+        loadReceive()
         tabViewController.setActiveViewController(
             receiveNavigationViewController,
             animated: true,
