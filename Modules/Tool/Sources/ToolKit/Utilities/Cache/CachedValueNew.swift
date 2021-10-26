@@ -116,32 +116,33 @@ public final class CachedValueNew<Key: Hashable, Value: Equatable, CacheError: E
     ///
     /// - Returns: A publisher that emits the fetched value on success, or a `CacheError` on failure.
     private func fetchAndStore(for key: Key) -> AnyPublisher<Value, CacheError> {
-        Deferred { [inFlightRequests, createRemoteRequest, queue] in
-            inFlightRequests.mutateAndReturn { requests -> AnyPublisher<Value, CacheError> in
-                if let request = requests[key] {
-                    // There is a request in-flight.
-                    return request
-                }
-
-                // There is no request in-flight, create a new request.
-                let request = createRemoteRequest(key)
-                    .handleEvents(
-                        receiveCompletion: { [weak inFlightRequests] _ in
-                            // Remove from in-flight requests, after it completed.
-                            inFlightRequests?.mutate { $0[key] = nil }
-                        }
-                    )
-                    .subscribe(on: queue)
-                    .shareReplay()
-                    .eraseToAnyPublisher()
-
-                // Add to in-flight requests.
-                requests[key] = request
-
+        inFlightRequests.mutateAndReturn { requests -> AnyPublisher<Value, CacheError> in
+            if let request = requests[key] {
+                // There is a request in-flight.
                 return request
             }
+
+            // There is no request in-flight, create a new request.
+            let request = createRemoteRequest(for: key)
+                .handleEvents(
+                    receiveOutput: { [weak inFlightRequests] _ in
+                        // Remove from in-flight requests, after it receives a value.
+                        inFlightRequests?.mutate { $0[key] = nil }
+                    },
+                    receiveCompletion: { [weak inFlightRequests] _ in
+                        // Remove from in-flight requests, after it completed.
+                        inFlightRequests?.mutate { $0[key] = nil }
+                    }
+                )
+                .subscribe(on: queue)
+                .share()
+                .eraseToAnyPublisher()
+
+            // Add to in-flight requests.
+            requests[key] = request
+
+            return request
         }
-        .eraseToAnyPublisher()
     }
 
     /// Creates a remote data source request for the value associated with given key.

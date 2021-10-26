@@ -160,7 +160,6 @@ class CachedValueNewTests: XCTestCase {
     // MARK: - Get Concurrent
 
     func test_get_singleKeyConcurrent() throws {
-        try XCTSkipIf(true)
         // GIVEN: a key with no value associated
         let key = 0
 
@@ -173,7 +172,6 @@ class CachedValueNewTests: XCTestCase {
         // WHEN: getting that key on multiple queues
         var getPublishers = (0..<getsConcurrent).map { i in
             subject.get(key: key)
-                .subscribe(on: queues[i])
                 .receive(on: queues[i])
                 .eraseToAnyPublisher()
         }

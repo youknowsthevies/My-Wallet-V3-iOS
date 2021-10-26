@@ -184,7 +184,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balance.asPublisher())
+            .zip(balancePublisher)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }

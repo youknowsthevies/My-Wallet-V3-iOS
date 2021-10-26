@@ -43,19 +43,27 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public var isFunded: Single<Bool> {
-        balances.map { $0 != .absent }
+        balances
+            .map { $0 != .absent }
+            .asSingle()
     }
 
     public var pendingBalance: Single<MoneyValue> {
         balances
             .map(\.balance?.pending)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .asSingle()
     }
 
     public var balance: Single<MoneyValue> {
+        balancePublisher.asSingle()
+    }
+
+    public var balancePublisher: AnyPublisher<MoneyValue, Swift.Error> {
         balances
             .map(\.balance?.available)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .mapError()
     }
 
     public var actionableBalance: Single<MoneyValue> {
@@ -67,6 +75,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 }
                 return (balance.available, balance.pending)
             }
+            .asSingle()
             .map { [asset] values -> MoneyValue in
                 guard values.available.isPositive else {
                     return .zero(currency: asset)
@@ -78,7 +87,8 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public var withdrawableBalance: Single<MoneyValue> {
         balances
             .map(\.balance?.withdrawable)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .asSingle()
     }
 
     public var onTxCompleted: (TransactionResult) -> Completable {
@@ -175,7 +185,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
     private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
 
-    private var balances: Single<CustodialAccountBalanceState> {
+    private var balances: AnyPublisher<CustodialAccountBalanceState, Never> {
         balanceService.balance(for: asset.currencyType)
     }
 
@@ -257,7 +267,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balance.asPublisher())
+            .zip(balancePublisher)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
