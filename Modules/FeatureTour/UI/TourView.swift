@@ -9,8 +9,11 @@ public struct TourView: View {
 
     let store: Store<TourState, TourAction>
 
+    private let list: LivePricesList
+
     init(store: Store<TourState, TourAction>) {
         self.store = store
+        list = LivePricesList(store: store)
     }
 
     public init(environment: TourEnvironment) {
@@ -34,10 +37,18 @@ public struct TourView: View {
                     makeButtonsView(viewStore)
                 }
                 .background(
-                    Image("gradient", bundle: Bundle.featureTour)
-                        .resizable()
-                        .ignoresSafeArea(.all)
+                    ZStack {
+                        list
+                        Color.white.ignoresSafeArea()
+                        Image("gradient", bundle: Bundle.featureTour)
+                            .resizable()
+                            .opacity(viewStore.gradientBackgroundOpacity)
+                            .ignoresSafeArea(.all)
+                    }
                 )
+            }
+            .onAppear {
+                viewStore.send(.loadPrices)
             }
         }
     }
@@ -49,7 +60,6 @@ extension TourView {
         case brokerage
         case earn
         case keys
-        case prices
 
         @ViewBuilder public func makeView() -> some View {
             switch self {
@@ -68,8 +78,6 @@ extension TourView {
                     image: Image("carousel-security", bundle: Bundle.featureTour),
                     text: LocalizationConstants.Tour.carouselKeysScreenMessage
                 )
-            case .prices:
-                PriceListView()
             }
         }
 
@@ -93,7 +101,7 @@ extension TourView {
             Carousel.brokerage.makeView()
             Carousel.earn.makeView()
             Carousel.keys.makeView()
-            Carousel.prices.makeView()
+            LivePricesView(store: store, list: list)
         }
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
     }

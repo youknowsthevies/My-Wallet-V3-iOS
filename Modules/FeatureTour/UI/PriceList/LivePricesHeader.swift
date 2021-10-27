@@ -3,29 +3,44 @@
 import Localization
 import SwiftUI
 
-struct PriceListHeader: View {
+struct LivePricesHeader: View {
 
     @State private var circleIsVisible = true
-    @Binding var titleIsVisible: Bool
+
+    @Binding var offset: CGFloat
+
+    private let titleHeight: CGFloat = 64
+    private var clippedTitleHeight: CGFloat {
+        let calculatedHeight = titleHeight + offset
+        switch calculatedHeight {
+        case _ where calculatedHeight <= 0:
+            return 0
+        case _ where calculatedHeight >= titleHeight:
+            return titleHeight
+        default:
+            return calculatedHeight
+        }
+    }
 
     var body: some View {
         VStack(spacing: 16) {
-            if titleIsVisible {
+            VStack {
                 Text(LocalizationConstants.Tour.carouselPricesScreenTitle)
                     .multilineTextAlignment(.center)
-                    .frame(width: 180.0)
+                    .frame(width: 180.0, height: titleHeight)
                     .textStyle(.title)
-                    .transition(AnyTransition.move(edge: .top))
             }
+            .frame(width: 180.0, height: clippedTitleHeight)
+            .clipped()
             HStack(alignment: .firstTextBaseline) {
                 Circle()
                     .fill(Color.green)
+                    .animation(nil)
                     .frame(width: 8, height: 8)
                     .opacity(circleIsVisible ? 1 : 0)
-                    .animation(.easeIn, value: titleIsVisible)
-                    .animation(Animation.linear(duration: 1).repeatForever())
+                    .animation(Animation.easeInOut(duration: 1).repeatForever(autoreverses: true))
                     .onAppear {
-                        self.circleIsVisible = false
+                        circleIsVisible.toggle()
                     }
                 Text(LocalizationConstants.Tour.carouselPricesScreenLivePrices)
                     .textStyle(.heading)
