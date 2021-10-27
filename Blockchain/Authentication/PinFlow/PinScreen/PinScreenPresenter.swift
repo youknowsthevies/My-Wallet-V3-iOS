@@ -203,7 +203,7 @@ final class PinScreenPresenter {
         self.performEffect = performEffect
         self.analyticsRecorder = analyticsRecorder
 
-        self.verificationQueue = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
+        verificationQueue = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
 
         let emptyPinColor: UIColor
         let buttonHighlightColor: UIColor
