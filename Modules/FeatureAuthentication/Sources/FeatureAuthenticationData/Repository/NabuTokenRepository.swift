@@ -1,16 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import FeatureAuthenticationData
+import FeatureAuthenticationDomain
+import Foundation
 import ToolKit
 
-public final class NabuTokenStore {
+final class NabuTokenRepository: NabuTokenRepositoryAPI {
 
-    public var sessionTokenDataPublisher: AnyPublisher<NabuSessionTokenResponse?, Never> {
+    var sessionTokenPublisher: AnyPublisher<NabuSessionToken?, Never> {
         .just(sessionTokenData.value)
     }
 
-    public var sessionToken: String? {
+    var sessionToken: String? {
         sessionTokenData.value?.token
     }
 
@@ -18,7 +19,7 @@ public final class NabuTokenStore {
         .just(sessionTokenData.value == nil)
     }
 
-    private let sessionTokenData = Atomic<NabuSessionTokenResponse?>(nil)
+    private let sessionTokenData = Atomic<NabuSessionToken?>(nil)
 
     init() {
         NotificationCenter.when(.logout) { [weak self] _ in
@@ -38,13 +39,13 @@ public final class NabuTokenStore {
     }
 
     func store(
-        _ sessionTokenData: NabuSessionTokenResponse
-    ) -> AnyPublisher<NabuSessionTokenResponse, Never> {
-        let sessionToken = self.sessionTokenData
+        _ sessionToken: NabuSessionToken
+    ) -> AnyPublisher<NabuSessionToken, Never> {
+        let sessionTokenData = sessionTokenData
         return Deferred {
-            Future { [sessionToken] promise in
-                sessionToken.mutate { $0 = sessionTokenData }
-                promise(.success(sessionTokenData))
+            Future { [sessionTokenData] promise in
+                sessionTokenData.mutate { $0 = sessionToken }
+                promise(.success(sessionToken))
             }
         }
         .eraseToAnyPublisher()

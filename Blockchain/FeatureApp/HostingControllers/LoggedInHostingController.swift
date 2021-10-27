@@ -4,6 +4,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureAppUI
+import FeatureAuthenticationDomain
 import FeatureDashboardUI
 import FeatureInterestUI
 import FeatureOnboardingUI

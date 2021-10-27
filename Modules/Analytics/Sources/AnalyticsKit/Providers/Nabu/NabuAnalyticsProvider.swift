@@ -35,11 +35,11 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
         platform: Platform,
         basePath: String,
         userAgent: String,
-        tokenRepository: TokenRepositoryAPI,
+        tokenProvider: @escaping TokenProvider,
         guidProvider: GuidRepositoryAPI
     ) {
         let client = APIClient(basePath: basePath, userAgent: userAgent)
-        let eventsRepository = NabuAnalyticsEventsRepository(client: client, tokenRepository: tokenRepository)
+        let eventsRepository = NabuAnalyticsEventsRepository(client: client, tokenProvider: tokenProvider)
         let contextProvider = ContextProvider(guidProvider: guidProvider)
         self.init(
             platform: platform,

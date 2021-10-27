@@ -1,9 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import FeatureAuthenticationData
 import NetworkError
 
-enum NabuAuthenticationError: Error, Equatable {
+public enum NabuAuthenticationError: Error, Equatable {
 
     /// 401
     case tokenExpired(statusCode: Int)
@@ -11,7 +10,7 @@ enum NabuAuthenticationError: Error, Equatable {
     /// 409
     case alreadyRegistered(statusCode: Int, walletIdHint: String)
 
-    init?(error: NetworkError) {
+    public init?(error: NetworkError) {
         guard case .rawServerError(let serverError) = error else {
             return nil
         }
@@ -20,7 +19,7 @@ enum NabuAuthenticationError: Error, Equatable {
             self = .tokenExpired(statusCode: 401)
         case 409:
             guard let payload = serverError.payload,
-                  let decodedPayload = try? payload.decode(to: NabuSessionTokenErrorResponse.self)
+                  let decodedPayload = try? payload.decode(to: NabuSessionTokenError.self)
             else {
                 return nil
             }

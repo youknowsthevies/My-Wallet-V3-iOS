@@ -21,7 +21,7 @@ public struct AppEnvironment {
     var cacheSuite: CacheSuite
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
     var certificatePinner: CertificatePinnerAPI
-    var siftService: SiftServiceAPI
+    var siftService: FeatureAuthenticationDomain.SiftServiceAPI
     var alertViewPresenter: AlertViewPresenterAPI
     var deeplinkAppHandler: AppDeeplinkHandlerAPI
     var deeplinkHandler: DeepLinkHandling
@@ -62,7 +62,7 @@ public struct AppEnvironment {
         cacheSuite: CacheSuite,
         remoteNotificationServiceContainer: RemoteNotificationServiceContaining,
         certificatePinner: CertificatePinnerAPI,
-        siftService: SiftServiceAPI,
+        siftService: FeatureAuthenticationDomain.SiftServiceAPI,
         alertViewPresenter: AlertViewPresenterAPI,
         deeplinkAppHandler: AppDeeplinkHandlerAPI,
         deeplinkHandler: DeepLinkHandling,

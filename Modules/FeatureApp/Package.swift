@@ -6,7 +6,9 @@ let package = Package(
     name: "FeatureApp",
     platforms: [.iOS(.v14)],
     products: [
-        .library(name: "FeatureApp", targets: ["FeatureAppUI"])
+        .library(name: "FeatureApp", targets: ["FeatureAppUI", "FeatureAppDomain"]),
+        .library(name: "FeatureAppUI", targets: ["FeatureAppUI"]),
+        .library(name: "FeatureAppDomain", targets: ["FeatureAppDomain"])
     ],
     dependencies: [
         .package(
@@ -57,6 +59,13 @@ let package = Package(
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool")
+            ]
+        ),
+        .target(
+            name: "FeatureAppDomain",
+            dependencies: [
+                .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication")
             ]
         )
     ]

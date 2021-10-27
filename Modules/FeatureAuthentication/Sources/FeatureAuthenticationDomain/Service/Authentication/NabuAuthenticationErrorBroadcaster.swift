@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Foundation
+import ToolKit
 
 public protocol NabuAuthenticationErrorReceiverAPI {
     var userAlreadyRestored: AnyPublisher<String, Never> { get }

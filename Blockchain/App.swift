@@ -5,6 +5,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import ERC20DataKit
+import FeatureAppDomain
 import FeatureAppUI
 import FeatureDebugUI
 import FeatureInterestData
@@ -127,6 +128,7 @@ func defineDependencies() {
         DependencyContainer.featureAuthenticationData
         DependencyContainer.featureAuthenticationDomain
         DependencyContainer.featureAppUI
+        DependencyContainer.featureAppDomain
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

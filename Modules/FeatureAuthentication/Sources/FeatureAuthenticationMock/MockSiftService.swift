@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
+import FeatureAuthenticationDomain
 
-class MockSiftService: SiftServiceAPI {
+class MockSiftService: FeatureAuthenticationDomain.SiftServiceAPI {
 
     var enableCalled = false
 

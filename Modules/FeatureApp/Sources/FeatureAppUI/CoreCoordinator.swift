@@ -117,7 +117,7 @@ struct CoreAppEnvironment {
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
     var sharedContainer: SharedContainerUserDefaults
     var analyticsRecorder: AnalyticsEventRecorderAPI
-    var siftService: SiftServiceAPI
+    var siftService: FeatureAuthenticationDomain.SiftServiceAPI
     var onboardingSettings: OnboardingSettingsAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var appStoreOpener: AppStoreOpening
