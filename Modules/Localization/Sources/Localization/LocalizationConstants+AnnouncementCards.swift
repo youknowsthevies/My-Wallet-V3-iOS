@@ -12,7 +12,7 @@ extension LocalizationConstants {
 
         public enum Welcome {
             public static let title = NSLocalizedString(
-                "Welcome to Blockchain!",
+                "Welcome to Blockchain.com!",
                 comment: "Welcome announcement card title"
             )
             public static let description = NSLocalizedString(

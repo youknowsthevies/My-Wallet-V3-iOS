@@ -18,7 +18,6 @@
 "Scan Pairing Code" = "Eşleştirme Kodunu Tara";
 "Manual Pairing" = "Manuel Eşleştirme";
 "Automatic Pairing" = "Otomatik Eşleştirme";
-"Welcome to Blockchain" = "Blockchain'e Hoşgeldiniz";
 "Recover Funds" = "Fonları Kurtarın";
 "Backup phrase" = "Yedekleme ifadesi";
 "Password" = "Şifre";
@@ -98,7 +97,6 @@
 "Connection Error" = "Bağlantı hatası";
 "We could not connect your Wallet to the Exchange. Please go back to the Exchange and try again." = "Wallet cüzdanınızı Exchange'e bağlayamadık. Lütfen Exchange'e geri dönüp tekrar deneyin.";
 "Success!" = "Başarı!";
-"Welcome to Blockchain!" = "Blockchain'e hoş geldiniz!";
 "Maybe Later" = "Belki sonra";
 "Verify Your Email Address" = "Eposta adresinizi doğrulayın";
 "Verify Email Address" = "E-posta Adresini doğrulayın";

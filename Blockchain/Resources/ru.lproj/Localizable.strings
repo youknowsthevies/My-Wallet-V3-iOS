@@ -18,7 +18,6 @@
 "Scan Pairing Code" = "Отсканируйте код сопряжения";
 "Manual Pairing" = "Ручное сопряжение";
 "Automatic Pairing" = "Автоматическое сопряжение";
-"Welcome to Blockchain" = "Добро пожаловать в блокчейн";
 "Recover Funds" = "Восстановить фонды";
 "Backup phrase" = "Контрольная фраза";
 "Password" = "Пароль";
@@ -98,7 +97,6 @@
 "Connection Error" = "Ошибка подключения";
 "We could not connect your Wallet to the Exchange. Please go back to the Exchange and try again." = "Мы не смогли подключить ваш Кошелек к Бирже. Вернитесь на Биржу и попробуйте снова.";
 "Success!" = "Успех!";
-"Welcome to Blockchain!" = "Добро пожаловать в блокчейн!";
 "Maybe Later" = "Может быть позже";
 "Verify Your Email Address" = "Проверьте свой адрес электронной почты";
 "Verify Email Address" = "подтвердите адрес электронной почты";
