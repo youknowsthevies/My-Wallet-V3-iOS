@@ -375,6 +375,12 @@ extension LoggedInHostingController {
 
     // MARK: - InterestAccountListHostingControllerDelegate
 
+    func presentBuyIfNeeded(_ cryptoCurrency: CryptoCurrency) {
+        dismissTopMost(weak: self) { (self) in
+            self.handleBuyCrypto(currency: cryptoCurrency)
+        }
+    }
+
     func presentKYCIfNeeded() {
         /// Dismiss the Interest List View
         dismissTopMost(weak: self) { (self) in

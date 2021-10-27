@@ -172,9 +172,8 @@ final class Coincore: CoincoreAPI {
         switch action {
         case .buy:
             unimplemented("WIP")
-        case .interestTransfer:
-            return true
-        case .interestWithdraw:
+        case .interestTransfer,
+             .interestWithdraw:
             guard let cryptoAccount = destinationAccount as? CryptoAccount else {
                 return false
             }

@@ -298,9 +298,14 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     private func canPerformInterestTransfer() -> Single<Bool> {
-        disabledReason
+        let isEligible = disabledReason
             .map(\.isEligible)
             .asSingle()
+        let balanceAvailable = balance
+            .map(\.isPositive)
+        return Single
+            .zip(isEligible, balanceAvailable)
+            .map { $0 && $1 }
             .catchError { [label, asset] error in
                 throw Error.loadingFailed(
                     asset: asset.code,
