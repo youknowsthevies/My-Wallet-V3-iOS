@@ -92,6 +92,7 @@ public enum FiatBalanceViewAsset {
                             font: descriptors.quoteFiatFont,
                             color: descriptors.quoteFiatTextColor,
                             alignment: .right,
+                            adjustsFontSizeToFitWidth: .true(factor: 0.4),
                             accessibility: .id("\(descriptors.quoteFiatAccessibility.id!)\(value.quote.code)")
                         )
                     )
