@@ -99,13 +99,7 @@ public final class KYCTiersViewController: UIViewController {
 
     fileprivate func registerSupplementaryViews() {
         guard let collection = collectionView else { return }
-        let header = UINib(nibName: pageModel.header.identifier, bundle: .featureKYCUI)
         let footer = UINib(nibName: KYCTiersFooterView.identifier, bundle: .featureKYCUI)
-        collection.register(
-            header,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: pageModel.header.identifier
-        )
         collection.register(
             footer,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
@@ -206,7 +200,8 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         let model = pageModel.cells[indexPath.row]
-        let width = collectionView.bounds.size.width - layoutAttributes.sectionInsets.left - layoutAttributes.sectionInsets.right
+        let widthInsets = layoutAttributes.sectionInsets.left - layoutAttributes.sectionInsets.right
+        let width = collectionView.bounds.size.width - widthInsets
         let height = KYCTierCell.heightForProposedWidth(width, model: model)
         return CGSize(width: width, height: height)
     }
@@ -234,35 +229,9 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
             }
             footer.configure(with: trigger)
             return footer
-        case UICollectionView.elementKindSectionHeader:
-            guard let header = collectionView.dequeueReusableSupplementaryView(
-                ofKind: UICollectionView.elementKindSectionHeader,
-                withReuseIdentifier: pageModel.header.identifier,
-                for: indexPath
-            ) as? KYCTiersHeaderView else { return UICollectionReusableView() }
-            header.configure(with: pageModel.header)
-            header.delegate = self
-            return header
         default:
             return UICollectionReusableView()
         }
-    }
-
-    public func collectionView(
-        _ collectionView: UICollectionView,
-        layout collectionViewLayout: UICollectionViewLayout,
-        referenceSizeForHeaderInSection section: Int
-    ) -> CGSize {
-        let height = pageModel.header.estimatedHeight(
-            for: collectionView.bounds.width,
-            model: pageModel.header
-        )
-        let width =
-            collectionView.bounds.size.width
-                - layoutAttributes.sectionInsets.left
-                - layoutAttributes.sectionInsets.right
-
-        return CGSize(width: width, height: height)
     }
 
     public func collectionView(
