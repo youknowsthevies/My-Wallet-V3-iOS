@@ -106,6 +106,7 @@ final class PinScreenPresenter {
     // MARK: Rx
 
     private let disposeBag = DisposeBag()
+    private let verificationQueue: ConcurrentDispatchQueueScheduler
 
     private let pinProcessingObservable: Observable<Pin>
     let pin = BehaviorRelay<Pin?>(value: nil)
@@ -201,6 +202,8 @@ final class PinScreenPresenter {
         self.credentialsStore = credentialsStore
         self.performEffect = performEffect
         self.analyticsRecorder = analyticsRecorder
+
+        self.verificationQueue = ConcurrentDispatchQueueScheduler(qos: .userInitiated)
 
         let emptyPinColor: UIColor
         let buttonHighlightColor: UIColor
@@ -544,7 +547,7 @@ extension PinScreenPresenter {
     /// Invoked when user is authenticating himself using pin or biometrics.
     func authenticatePin() -> Completable {
         verify()
-            .observeOn(MainScheduler.instance)
+            .observeOn(verificationQueue)
             .flatMap(weak: self) { (self, pinDecryptionKey) -> Single<String> in
                 self.backupOrRestoreCredentials(pinDecryptionKey: pinDecryptionKey)
                     .andThen(.just(pinDecryptionKey))
@@ -552,6 +555,7 @@ extension PinScreenPresenter {
             .flatMapCompletable(weak: self) { (self, pinDecryptionKey) -> Completable in
                 self.authenticatePin(pinDecryptionKey: pinDecryptionKey)
             }
+            .observeOn(MainScheduler.instance)
     }
 
     /// Invoked during Pin Authentication.

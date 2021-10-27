@@ -106,7 +106,10 @@ public final class PinLoginService: PinLoginServiceAPI {
         encryptedPinPassword
             .map { KeyDataPair<String, String>(key: pinDecryptionKey, data: $0) }
             .flatMap(weak: self) { (self, keyDataPair) -> Single<String> in
-                self.walletCryptoService.decrypt(pair: keyDataPair, pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin)
+                self.walletCryptoService.decrypt(
+                    pair: keyDataPair,
+                    pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin
+                )
             }
     }
 }
