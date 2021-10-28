@@ -127,6 +127,13 @@ extension Typography {
         design: .overlineKerning,
         weight: .semibold
     )
+
+    public static let micro: Typography = .init(
+        name: "Micro (TabBar Text)",
+        size: 10.pt,
+        style: .caption,
+        weight: .medium
+    )
 }
 
 extension View {
@@ -333,7 +340,8 @@ struct Typography_Previews: PreviewProvider {
         .paragraph2,
         .caption1,
         .caption2,
-        .overline
+        .overline,
+        .micro
     ]
 
     static func previewText(for typography: Typography) -> String {

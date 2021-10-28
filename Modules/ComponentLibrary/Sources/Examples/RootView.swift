@@ -13,7 +13,7 @@ public struct RootView: View {
             NavigationLinkProvider(view: IconsExamplesView(), title: "🖼 Icons")
         ],
         "2 - Primitives": [
-            NavigationLinkProvider(view: SampleView())
+            NavigationLinkProvider(view: TabBarExamplesView(), title: "🎼 TabBar")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: Text("Composition Example"))
