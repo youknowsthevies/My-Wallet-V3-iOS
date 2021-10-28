@@ -19,6 +19,7 @@ import WalletPayloadKit
 // swiftlint:disable file_length
 /// Used for canceling publishers
 private enum WalletCancelations {
+    struct FetchId: Hashable {}
     struct DecryptId: Hashable {}
     struct AuthenticationId: Hashable {}
     struct InitializationId: Hashable {}
@@ -64,6 +65,7 @@ public enum CoreAppAction: Equatable {
 
     // Wallet Authentication
     case fetchWallet(password: String)
+    case doFetchWallet(password: String)
     case authenticate
     case didDecryptWallet(WalletDecryption)
     case decryptionFailure(AuthenticationError)
@@ -268,8 +270,21 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 
     case .fetchWallet(let password):
         environment.loadingViewPresenter.showCircular()
+        // As much as I (Dimitris) hate delay-ing work this is one of those method
+        // that I'm going to make an exception, mainly because it's going to be replaced soon.
+        // This is to give a change for the circular loader to appear before
+        // we call `fetch(with: _password_)` which will call the evil that is JS.
+        return .merge(
+            Effect(value: .doFetchWallet(password: password))
+                .delay(for: .milliseconds(200), scheduler: environment.mainQueue)
+                .eraseToEffect()
+                .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true),
+            Effect(value: .authenticate)
+        )
+
+    case .doFetchWallet(let password):
         environment.walletManager.fetch(with: password)
-        return Effect(value: .authenticate)
+        return .cancel(id: WalletCancelations.FetchId())
 
     case .authenticate:
         return .merge(
