@@ -14,12 +14,12 @@ let package = Package(
     dependencies: [
         .package(
             name: "RxSwift",
-            url: "git@github.com:ReactiveX/RxSwift.git",
+            url: "https://github.com/ReactiveX/RxSwift.git",
             from: "5.1.3"
         ),
         .package(
             name: "RxCombine",
-            url: "git@github.com:paulo-bc/RxCombine.git",
+            url: "https://github.com/paulo-bc/RxCombine.git",
             from: "1.6.2"
         ),
         .package(path: "../Tool")
