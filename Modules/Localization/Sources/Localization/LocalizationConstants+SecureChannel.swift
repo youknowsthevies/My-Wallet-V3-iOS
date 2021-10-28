@@ -154,4 +154,39 @@ extension LocalizationConstants.SecureChannel {
             )
         }
     }
+
+    public enum Alert {
+        public static let title = NSLocalizedString(
+            "QR Code Login",
+            comment: "Secure Channel - Alert title"
+        )
+        public static let network = NSLocalizedString(
+            "There was a network error logging in. Please try again.",
+            comment: "Secure Channel - Network error in requests"
+        )
+        public static let ipMismatch = NSLocalizedString(
+            "For security reasons, you must be on the same WiFi as the device you are authorizing the log in for.",
+            comment: "Secure Channel - IP mismatch error"
+        )
+        public static let originIP = NSLocalizedString(
+            "Origin IP",
+            comment: "Secure Channel - Origin IP"
+        )
+        public static let deviceIP = NSLocalizedString(
+            "Device IP",
+            comment: "Secure Channel - Device IP"
+        )
+        public static let connectionExpired = NSLocalizedString(
+            "Your login request has expired. Please regenerate the QR code and try again.",
+            comment: "Secure Channel - Connection expired error"
+        )
+        public static let generic = NSLocalizedString(
+            "There was an error logging in. Please try again.",
+            comment: "Secure Channel - Generic login error"
+        )
+        public static let loginRequired = NSLocalizedString(
+            "You need to authenticate to be able to respond to the login request.",
+            comment: "Secure Channel - Login Required"
+        )
+    }
 }
