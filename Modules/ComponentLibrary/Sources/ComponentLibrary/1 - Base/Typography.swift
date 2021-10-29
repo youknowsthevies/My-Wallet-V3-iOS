@@ -25,6 +25,7 @@ public struct Typography: Hashable, Codable {
 
 extension Typography {
 
+    /// Semibold 40pt
     public static let display: Typography = .init(
         name: "Display",
         size: 40.pt,
@@ -32,6 +33,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Semibold 32pt
     public static let title1: Typography = .init(
         name: "Title 1",
         size: 32.pt,
@@ -39,6 +41,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Semibold 24pt
     public static let title2: Typography = .init(
         name: "Title 2",
         size: 24.pt,
@@ -46,6 +49,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Semibold 20pt
     public static let title3: Typography = .init(
         name: "Title 3",
         size: 20.pt,
@@ -53,6 +57,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Medium 20pt
     public static let subheading: Typography = .init(
         name: "Subheading",
         size: 20.pt,
@@ -60,6 +65,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Medium 16pt, Monospaced with Slashed Zeros
     public static let bodyMono: Typography = .init(
         name: "Body Mono",
         size: 16.pt,
@@ -68,6 +74,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Medium 16pt
     public static let body1: Typography = .init(
         name: "Body 1",
         size: 16.pt,
@@ -75,6 +82,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Semibold 16pt
     public static let body2: Typography = .init(
         name: "Body 2",
         size: 16.pt,
@@ -82,6 +90,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Medium 16pt, Monospaced with Slashed Zeros
     public static let paragraphMono: Typography = .init(
         name: "Paragraph Mono",
         size: 16.pt,
@@ -90,6 +99,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Medium 14pt
     public static let paragraph1: Typography = .init(
         name: "Paragraph 1",
         size: 14.pt,
@@ -97,6 +107,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Semibold 14pt
     public static let paragraph2: Typography = .init(
         name: "Paragraph 2",
         size: 14.pt,
@@ -104,6 +115,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Medium 12pt
     public static let caption1: Typography = .init(
         name: "Caption 1",
         size: 12.pt,
@@ -111,6 +123,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Semibold 12pt
     public static let caption2: Typography = .init(
         name: "Caption 2",
         size: 12.pt,
@@ -118,8 +131,20 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Semibold 12pt, Expanded kerning
+    ///
     /// Note: The custom kerning on this style only works if the typography is applied directly
     /// to a `Text` view, and does not work in the typical cascading modifier way.
+    ///
+    /// # GOOD
+    ///     Text("Foo")
+    ///       .typography(.overline)
+    ///       .padding()
+    ///
+    ///  # BAD
+    ///     Text("Foo")
+    ///       .padding()
+    ///       .typography(.overline)`
     public static let overline: Typography = .init(
         name: "Overline",
         size: 12.pt,
@@ -128,6 +153,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Medium 10pt
     public static let micro: Typography = .init(
         name: "Micro (TabBar Text)",
         size: 10.pt,
