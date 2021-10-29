@@ -13,7 +13,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: IconsExamplesView(), title: "🖼 Icons")
         ],
         "2 - Primitives": [
-            NavigationLinkProvider(view: TabBarExamplesView(), title: "🎼 TabBar")
+            NavigationLinkProvider(view: TabBarExamplesView(), title: "🎼 TabBar"),
+            NavigationLinkProvider(view: ButtonExamplesView(), title: "🕹 Buttons")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: Text("Composition Example"))
@@ -25,7 +26,7 @@ public struct RootView: View {
     public var body: some View {
         NavigationView {
             NavigationLinkProviderView(data: data)
-                .navigationTitle("Component Library")
+                .navigationTitle("📚 Component Library")
         }
     }
 }
