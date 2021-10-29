@@ -86,7 +86,6 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
             )
             .optional()
             .replaceError(with: nil)
-            .eraseToAnyPublisher()
             .map { [asset] account -> CryptoAccountCustodialGroup in
                 guard let account = account else {
                     return CryptoAccountCustodialGroup(asset: asset)
