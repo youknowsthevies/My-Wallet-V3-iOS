@@ -21,6 +21,9 @@ sh ./scripts/recaptcha.sh
 echo "Generating project"
 sh ./scripts/generate_projects.sh
 
+echo "Resolve Package Dependencies"
+xcodebuild -resolvePackageDependencies -clonedSourcePackagesDirPath ./SourcePackages
+
 echo "Install Mockingbird"
 sh ./scripts/install-mockingbird.sh
 
