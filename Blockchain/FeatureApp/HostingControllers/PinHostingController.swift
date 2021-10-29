@@ -50,6 +50,9 @@ final class PinHostingController: UIViewController {
         guard pinRouter == nil || !(pinRouter?.isDisplayingLoginAuthentication ?? false) else {
             return
         }
+        let logout: PinRouting.RoutingType.Logout = { [viewStore] in
+            viewStore.send(.logout)
+        }
         let flow = PinRouting.Flow.authenticate(
             from: .attachedOn(controller: UnretainedContentBox<UIViewController>(self)),
             logoutRouting: logout
@@ -57,7 +60,6 @@ final class PinHostingController: UIViewController {
         pinRouter = PinRouter(flow: flow) { [weak self] input in
             guard let password = input.password else { return }
             self?.viewStore.send(.handleAuthentication(password))
-            self?.pinRouter = nil
         }
         pinRouter?.execute()
     }
@@ -70,7 +72,6 @@ final class PinHostingController: UIViewController {
             guard let self = self else { return }
 //            self.alertPresenter.showMobileNoticeIfNeeded()
             self.viewStore.send(.pinCreated)
-            self.pinRouter = nil
         }
         pinRouter?.execute()
     }
