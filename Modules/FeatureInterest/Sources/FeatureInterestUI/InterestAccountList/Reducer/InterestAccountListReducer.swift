@@ -30,6 +30,7 @@ let interestAccountListReducer = Reducer.combine(
             environment: {
                 InterestAccountDetailsEnvironment(
                     fiatCurrencyService: $0.fiatCurrencyService,
+                    blockchainAccountRepository: $0.blockchainAccountRepository,
                     priceService: $0.priceService,
                     mainQueue: $0.mainQueue
                 )
@@ -103,7 +104,7 @@ let interestAccountListReducer = Reducer.combine(
                 }
 
                 state.interestAccountDetailsState = .init(interestAccountOverview: overview)
-                return .enter(into: .details)
+                return .sheet(into: .details)
             case .earnInterestButtonTapped(let value):
                 let blockchainAccountRepository = environment.blockchainAccountRepository
                 let currency = value.currency
@@ -178,7 +179,7 @@ let interestAccountListReducer = Reducer.combine(
             let isTransfer = transactionState.action == .interestTransfer
             return Effect(
                 value: .interestAccountDetails(
-                    isTransfer ? .startInterestTransfer : .startInterestWithdraw
+                    isTransfer ? .startInterestTransfer(transactionState) : .startInterestWithdraw(transactionState)
                 )
             )
         case .route(let route):
@@ -223,9 +224,22 @@ let interestReducerCore = Reducer<
             .map { transactionState -> InterestAccountListAction in
                 .interestTransactionStateFetched(transactionState)
             }
-    case .interestAccountDetails(.startInterestWithdraw),
-         .interestAccountDetails(.startInterestTransfer):
-        return .sheet(into: .transaction)
+    case .interestAccountDetails(.startInterestWithdraw(let value)):
+        return environment
+            .transactionRouterAPI
+            .presentTransactionFlow(to: .interestWithdraw(value.account))
+            .catchToEffect()
+            .map { _ -> InterestAccountListAction in
+                .loadInterestAccounts
+            }
+    case .interestAccountDetails(.startInterestTransfer(let value)):
+        return environment
+            .transactionRouterAPI
+            .presentTransactionFlow(to: .interestTransfer(value.account))
+            .catchToEffect()
+            .map { _ -> InterestAccountListAction in
+                .loadInterestAccounts
+            }
     default:
         return .none
     }

@@ -177,7 +177,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let eligibilityService: EligibilityServiceAPI
     private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
-    private let featureFetcher: FeatureFetching
+    private let featureFlagService: FeatureFlagsServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let ordersActivity: OrdersActivityServiceAPI
     private let swapActivity: SwapActivityServiceAPI
@@ -195,7 +195,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         ordersActivity: OrdersActivityServiceAPI = resolve(),
         buySellActivity: BuySellActivityItemEventServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
-        featureFetcher: FeatureFetching = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory,
@@ -218,7 +218,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.custodialAddressService = custodialAddressService
         self.custodialPendingDepositService = custodialPendingDepositService
         self.eligibilityService = eligibilityService
-        self.featureFetcher = featureFetcher
+        self.featureFlagService = featureFlagService
         self.kycTiersService = kycTiersService
         self.errorRecorder = errorRecorder
         self.supportedPairsInteractorService = supportedPairsInteractorService
@@ -303,9 +303,12 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .asSingle()
         let balanceAvailable = balance
             .map(\.isPositive)
+        let isFeatureFlagEnabled = featureFlagService
+            .isEnabled(.remote(.interestWithdrawAndDeposit))
+            .asSingle()
         return Single
-            .zip(isEligible, balanceAvailable)
-            .map { $0 && $1 }
+            .zip(isEligible, balanceAvailable, isFeatureFlagEnabled)
+            .map { $0 && $1 && $2 }
             .catchError { [label, asset] error in
                 throw Error.loadingFailed(
                     asset: asset.code,

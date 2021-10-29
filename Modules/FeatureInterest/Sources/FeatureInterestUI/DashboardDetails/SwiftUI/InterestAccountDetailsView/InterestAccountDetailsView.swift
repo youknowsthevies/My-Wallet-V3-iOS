@@ -22,100 +22,114 @@ struct InterestAccountDetailsView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            ActionableView(
-                content: {
-                    List {
-                        if let balance = viewStore.interestAccountBalanceSummary {
-                            VStack {
-                                HStack {
-                                    CurrencyIcon(icon: .image(balance.currency.image))
-                                    VStack(spacing: 4.0) {
+            if viewStore.isLoading {
+                LoadingStateView(title: LocalizationConstants.loading)
+                    .onAppear {
+                        viewStore.send(.loadInterestAccountBalanceInfo)
+                    }
+            } else {
+                NavigationView {
+                    ActionableView(
+                        content: {
+                            List {
+                                if let balance = viewStore.interestAccountBalanceSummary {
+                                    VStack {
                                         HStack {
-                                            Text(LocalizationIds.rewardsAccount)
-                                                .textStyle(.heading)
-                                            Spacer()
-                                            Text(balance.fiatBalance)
-                                                .textStyle(.heading)
+                                            CurrencyIcon(icon: .image(balance.currency.image))
+                                            VStack(spacing: 4.0) {
+                                                HStack {
+                                                    Text(LocalizationIds.rewardsAccount)
+                                                        .textStyle(.heading)
+                                                    Spacer()
+                                                    Text(balance.fiatBalance)
+                                                        .textStyle(.heading)
+                                                }
+                                                HStack {
+                                                    Text(balance.currency.name)
+                                                        .textStyle(.subheading)
+                                                    Spacer()
+                                                    Text(balance.cryptoBalance)
+                                                        .textStyle(.subheading)
+                                                }
+                                            }
                                         }
-                                        HStack {
-                                            Text(balance.currency.name)
-                                                .textStyle(.subheading)
-                                            Spacer()
-                                            Text(balance.cryptoBalance)
-                                                .textStyle(.subheading)
-                                        }
+                                        .padding(
+                                            .init(
+                                                top: 8.0,
+                                                leading: 0.0,
+                                                bottom: 8.0,
+                                                trailing: 0.0
+                                            )
+                                        )
                                     }
                                 }
-                                .padding(
-                                    .init(
-                                        top: 8.0,
-                                        leading: 0.0,
-                                        bottom: 8.0,
-                                        trailing: 0.0
+                                ForEachStore(
+                                    store.scope(
+                                        state: \.interestAccountRowItems,
+                                        action: InterestAccountDetailsAction.interestAccountDescriptorTapped(id:action:)
+                                    )
+                                ) { cellStore in
+                                    InterestAccountDetailsRowItemView(store: cellStore)
+                                }
+                            }
+                        },
+                        buttons: viewStore
+                            .supportedActions
+                            .map { action in
+                                switch action {
+                                case .interestTransfer:
+                                    return .init(
+                                        title: LocalizationIds.deposit,
+                                        action: {
+                                            viewStore.send(
+                                                .interestTransferTapped(viewStore.interestAccountOverview.currency)
+                                            )
+                                        },
+                                        style: .secondary
+                                    )
+                                case .interestWithdraw:
+                                    return .init(
+                                        title: LocalizationIds.withdraw,
+                                        action: {
+                                            viewStore.send(
+                                                .interestWithdrawTapped(viewStore.interestAccountOverview.currency)
+                                            )
+                                        }
+                                    )
+                                default:
+                                    unimplemented("This action type is not supported in this view")
+                                }
+                            }
+                    )
+                    .trailingNavigationButton(.close) {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                    .whiteNavigationBarStyle()
+                    .navigationTitle(LocalizationIds.rewardsSummary)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .onDisappear {
+                        if let actionSelection = viewStore.interestAccountActionSelection {
+                            switch actionSelection.action {
+                            case .interestWithdraw:
+                                viewStore.send(
+                                    .loadCryptoInterestAccount(
+                                        isTransfer: false,
+                                        actionSelection.currency
                                     )
                                 )
+                            case .interestTransfer:
+                                viewStore.send(
+                                    .loadCryptoInterestAccount(
+                                        isTransfer: true,
+                                        actionSelection.currency
+                                    )
+                                )
+                            default:
+                                unimplemented()
                             }
                         }
-                        ForEachStore(
-                            store.scope(
-                                state: \.interestAccountRowItems,
-                                action: InterestAccountDetailsAction.interestAccountDescriptorTapped(id:action:)
-                            )
-                        ) { cellStore in
-                            InterestAccountDetailsRowItemView(store: cellStore)
-                        }
-                    }
-                },
-                buttons: [
-                    .init(
-                        title: LocalizationIds.withdraw,
-                        action: {
-                            viewStore.send(
-                                .interestWithdrawTapped(viewStore.interestAccountOverview.currency)
-                            )
-                        }
-                    ),
-                    .init(
-                        title: LocalizationIds.deposit,
-                        action: {
-                            viewStore.send(
-                                .interestTransferTapped(viewStore.interestAccountOverview.currency)
-                            )
-                        },
-                        style: .secondary
-                    )
-                ]
-            )
-            .trailingNavigationButton(.close) {
-                presentationMode.wrappedValue.dismiss()
-            }
-            .whiteNavigationBarStyle()
-            .navigationTitle(LocalizationIds.rewardsSummary)
-            .navigationBarTitleDisplayMode(.inline)
-            .onDisappear {
-                if let actionSelection = viewStore.interestAccountActionSelection {
-                    switch actionSelection.action {
-                    case .interestWithdraw:
-                        viewStore.send(
-                            .loadCryptoInterestAccount(
-                                isTransfer: false,
-                                actionSelection.currency
-                            )
-                        )
-                    case .interestTransfer:
-                        viewStore.send(
-                            .loadCryptoInterestAccount(
-                                isTransfer: true,
-                                actionSelection.currency
-                            )
-                        )
-                    default:
-                        unimplemented()
                     }
                 }
-            }
-            .onAppear {
-                viewStore.send(.loadInterestAccountBalanceInfo)
             }
         }
     }

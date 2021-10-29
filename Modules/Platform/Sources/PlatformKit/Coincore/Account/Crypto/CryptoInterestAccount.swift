@@ -86,6 +86,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
+    private let featureFlagService: FeatureFlagsServiceAPI
     private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
     private let receiveAddressRepository: InterestAccountReceiveAddressRepositoryAPI
     private let balanceService: InterestAccountOverviewAPI
@@ -101,6 +102,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         balanceService: InterestAccountOverviewAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve(),
         interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     ) {
         label = asset.defaultInterestWalletName
@@ -111,6 +113,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         self.balanceService = balanceService
         self.priceService = priceService
         self.interestEligibilityRepository = interestEligibilityRepository
+        self.featureFlagService = featureFlagService
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
@@ -145,10 +148,16 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     }
 
     private func canPerformInterestWithdraw() -> Single<Bool> {
-        balance
-            .map(\.isPositive)
-            .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in
-                guard isPositive else {
+        Single
+            .zip(
+                featureFlagService
+                    .isEnabled(.remote(.interestWithdrawAndDeposit))
+                    .asSingle(),
+                balance.map(\.isPositive)
+            )
+            .map { $0.0 && $0.1 }
+            .flatMap(weak: self) { (self, isAvailable) -> Single<Bool> in
+                guard isAvailable else {
                     return .just(false)
                 }
                 return self

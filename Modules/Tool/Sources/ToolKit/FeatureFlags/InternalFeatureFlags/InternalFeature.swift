@@ -42,10 +42,10 @@ public enum InternalFeature: String, CaseIterable {
         case .useTransactionsFlowToBuyCrypto,
              .newAccountPicker,
              .newOnboardingTour,
+             .interestWithdrawAndDeposit,
              .pollingForEmailLogin:
             return true
         case .disableGUIDLogin,
-             .interestWithdrawAndDeposit,
              .requestConsoleLogging,
              .secureChannel,
              .unifiedSignIn,

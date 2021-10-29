@@ -145,9 +145,11 @@ extension LocalizationConstants.Interest.Screen.Overview.Action {
 // MARK: - Screen.AccountDetails
 
 extension LocalizationConstants.Interest.Screen.AccountDetails {
+    public static let loading = NSLocalizedString("Loading..", comment: "Loading...")
     public static let annually = NSLocalizedString("Annually", comment: "Annually")
     public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
     public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+    public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
     public static let rewardsSummary = NSLocalizedString("Rewards Summary", comment: "Rewards Summary")
     public static let rewardsAccount = NSLocalizedString("Rewards Account", comment: "Rewards Account")
     public enum Cell {

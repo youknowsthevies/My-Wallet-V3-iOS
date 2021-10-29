@@ -338,6 +338,38 @@ extension LoggedInHostingController {
 
     // MARK: - TabSwapping
 
+    func interestTransfer(into account: BlockchainAccount) {
+        guard let interestAccount = account as? CryptoInterestAccount else {
+            fatalError("Expected a CryptoInterestAccount")
+        }
+        guard let viewController = topMostViewController else {
+            fatalError("Expected a UIViewController")
+        }
+        transactionsAdapter
+            .presentTransactionFlow(
+                to: .interestTransfer(interestAccount),
+                from: viewController
+            ) { result in
+                Logger.shared.info("Interest Transfer Transaction Flow completed with result '\(result)'")
+            }
+    }
+
+    func interestWithdraw(from account: BlockchainAccount) {
+        guard let interestAccount = account as? CryptoInterestAccount else {
+            fatalError("Expected a CryptoInterestAccount")
+        }
+        guard let viewController = topMostViewController else {
+            fatalError("Expected a UIViewController")
+        }
+        transactionsAdapter
+            .presentTransactionFlow(
+                to: .interestWithdraw(interestAccount),
+                from: viewController
+            ) { result in
+                Logger.shared.info("Interest Transfer Transaction Flow completed with result '\(result)'")
+            }
+    }
+
     func receive(into account: BlockchainAccount) {
         tabControllerManager?.receive(into: account)
     }

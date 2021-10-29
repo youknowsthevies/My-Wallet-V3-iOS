@@ -172,12 +172,18 @@ final class Coincore: CoincoreAPI {
         switch action {
         case .buy:
             unimplemented("WIP")
-        case .interestTransfer,
-             .interestWithdraw:
-            guard let cryptoAccount = destinationAccount as? CryptoAccount else {
-                return false
-            }
-            return sourceAccount.asset == cryptoAccount.asset
+        case .interestTransfer:
+            return interestTransferFilter(
+                sourceAccount: sourceAccount,
+                destinationAccount: destinationAccount,
+                action: action
+            )
+        case .interestWithdraw:
+            return interestWithdrawFilter(
+                sourceAccount: sourceAccount,
+                destinationAccount: destinationAccount,
+                action: action
+            )
         case .sell:
             return destinationAccount is FiatAccount
         case .swap:
@@ -196,6 +202,40 @@ final class Coincore: CoincoreAPI {
              .receive,
              .viewActivity,
              .withdraw:
+            return false
+        }
+    }
+
+    private static func interestTransferFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
+        guard destinationAccount.currencyType == sourceAccount.currencyType else {
+            return false
+        }
+        switch (sourceAccount, destinationAccount) {
+        case (is CryptoTradingAccount, is CryptoInterestAccount),
+             (is CryptoNonCustodialAccount, is CryptoInterestAccount):
+            return true
+        default:
+            return false
+        }
+    }
+
+    private static func interestWithdrawFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
+        guard destinationAccount.currencyType == sourceAccount.currencyType else {
+            return false
+        }
+        switch (sourceAccount, destinationAccount) {
+        case (is CryptoInterestAccount, is CryptoTradingAccount),
+             (is CryptoInterestAccount, is CryptoNonCustodialAccount):
+            return true
+        default:
             return false
         }
     }

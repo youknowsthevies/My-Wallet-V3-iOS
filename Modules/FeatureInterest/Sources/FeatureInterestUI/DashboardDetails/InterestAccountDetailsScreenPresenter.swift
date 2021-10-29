@@ -1,9 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import FeatureInterestDomain
 import Localization
+import PlatformKit
 import PlatformUIKit
 import RxSwift
+import ToolKit
 
 public final class InterestAccountDetailsScreenPresenter {
 
@@ -29,6 +32,14 @@ public final class InterestAccountDetailsScreenPresenter {
     }
 
     var sectionObservable: Observable<[DetailSectionViewModel]> {
+        Observable
+            .zip(items, buttons.asObservable())
+            .map { $0.0 + $0.1 }
+            .map { $0.map { presenter in DetailCellViewModel(presenter: presenter) } }
+            .map { [DetailSectionViewModel(identifier: "", items: $0)] }
+    }
+
+    private var items: Observable<[DetailCellPresenter]> {
         interactor
             .interactors
             .map { interactors -> [DetailCellPresenter] in
@@ -65,22 +76,72 @@ public final class InterestAccountDetailsScreenPresenter {
                     }
                 }
             }
-            .map { $0 + [.footer(self.footerPresenter)] }
-            .map { $0.map { presenter in DetailCellViewModel(presenter: presenter) } }
-            .map { [DetailSectionViewModel(identifier: "", items: $0)] }
     }
 
-    private let interactor: InterestAccountDetailsScreenInteractor
-    private let footerPresenter: FooterTableViewCellPresenter
-
-    public init(interactor: InterestAccountDetailsScreenInteractor) {
-        self.interactor = interactor
-        footerPresenter = .init(
-            text: String(
-                format: LocalizationId.Cell.Footer.title,
-                interactor.cryptoCurrency.displayCode
-            ),
-            accessibility: .id(AccessibilityId.footerCellTitle)
+    private var buttons: Single<[DetailCellPresenter]> {
+        Single.zip(
+            interactor.canDeposit,
+            interactor.canWithdraw
         )
+        .map { [primaryButtonViewModel, secondaryButtonViewModel] canDeposit, canWithdraw in
+            var values: [ButtonViewModel] = []
+            if canWithdraw {
+                values.append(secondaryButtonViewModel)
+            }
+            if canDeposit {
+                values.append(primaryButtonViewModel)
+            }
+            return [.buttons(values)]
+        }
+    }
+
+    private let primaryButtonViewModel: ButtonViewModel = .primary(with: LocalizationId.transfer)
+    private let secondaryButtonViewModel: ButtonViewModel = .secondary(with: LocalizationId.withdraw)
+    private let interactor: InterestAccountDetailsScreenInteractor
+    private let topMostViewControllerProvider: TopMostViewControllerProviding
+    private let tabSwapping: TabSwapping
+    private let disposeBag = DisposeBag()
+
+    public init(
+        tabSwapping: TabSwapping = resolve(),
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+        interactor: InterestAccountDetailsScreenInteractor
+    ) {
+        self.topMostViewControllerProvider = topMostViewControllerProvider
+        self.tabSwapping = tabSwapping
+        self.interactor = interactor
+
+        primaryButtonViewModel
+            .tapRelay
+            .bindAndCatch(weak: self) { (self, _) in
+                self.dismiss { [tabSwapping, interactor] in
+                    tabSwapping.interestTransfer(into: interactor.account)
+                }
+            }
+            .disposed(by: disposeBag)
+
+        secondaryButtonViewModel
+            .tapRelay
+            .bindAndCatch(weak: self) { (self, _) in
+                self.dismiss { [tabSwapping, interactor] in
+                    tabSwapping.interestWithdraw(from: interactor.account)
+                }
+            }
+            .disposed(by: disposeBag)
+    }
+
+    /// Dismiss all presented ViewControllers and then execute callback.
+    private func dismiss(completion: @escaping (() -> Void)) {
+        var root: UIViewController? = topMostViewControllerProvider.topMostViewController
+        while root?.presentingViewController != nil {
+            root = root?.presentingViewController
+        }
+        root?
+            .dismiss(
+                animated: true,
+                completion: {
+                    completion()
+                }
+            )
     }
 }

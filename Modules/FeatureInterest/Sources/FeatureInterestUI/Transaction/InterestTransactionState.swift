@@ -2,13 +2,21 @@
 
 import PlatformKit
 
-struct InterestTransactionState: Equatable {
+public struct InterestTransactionState: Equatable {
     var account: CryptoInterestAccount
     var action: AssetAction
+
+    public init(
+        account: CryptoInterestAccount,
+        action: AssetAction
+    ) {
+        self.account = account
+        self.action = action
+    }
 }
 
 extension InterestTransactionState {
-    static func == (
+    public static func == (
         lhs: InterestTransactionState,
         rhs: InterestTransactionState
     ) -> Bool {

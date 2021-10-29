@@ -8,6 +8,11 @@ public enum DetailCellPresenter: IdentifiableType, Equatable {
 
     public var identity: String {
         switch self {
+        case .buttons(let viewModels):
+            return viewModels
+                .map(\.textRelay)
+                .map(\.value)
+                .joined()
         case .currentBalance(let presenter):
             return presenter.identifier
         case .footer(let presenter):
@@ -29,6 +34,7 @@ public enum DetailCellPresenter: IdentifiableType, Equatable {
     }
 
     case currentBalance(CurrentBalanceCellPresenter)
+    case buttons([ButtonViewModel])
     case footer(FooterTableViewCellPresenter)
     case lineItem(LineItemType)
 }
@@ -36,6 +42,8 @@ public enum DetailCellPresenter: IdentifiableType, Equatable {
 extension DetailCellPresenter {
     public static func == (lhs: DetailCellPresenter, rhs: DetailCellPresenter) -> Bool {
         switch (lhs, rhs) {
+        case (.buttons(let left), .buttons(let right)):
+            return left.count == right.count
         case (.currentBalance(let left), .currentBalance(let right)):
             return left.identifier == right.identifier
         case (.footer(let left), .footer(let right)):

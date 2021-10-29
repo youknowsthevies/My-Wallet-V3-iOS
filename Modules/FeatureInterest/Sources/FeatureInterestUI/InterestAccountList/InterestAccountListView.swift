@@ -91,6 +91,7 @@ struct InterestAccountListView_Previews: PreviewProvider {
                     priceService: NoOpPriceService(),
                     blockchainAccountRepository: NoOpBlockchainAccountRepository(),
                     kycVerificationService: NoOpKYCVerificationService(),
+                    transactionRouterAPI: NoOpTransactionsRouter(),
                     mainQueue: .main
                 )
             )

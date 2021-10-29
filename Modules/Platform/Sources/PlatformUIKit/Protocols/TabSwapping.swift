@@ -7,6 +7,8 @@ public protocol TabSwapping: AnyObject {
     func receive(into account: BlockchainAccount)
     func withdraw(from account: BlockchainAccount)
     func deposit(into account: BlockchainAccount)
+    func interestTransfer(into account: BlockchainAccount)
+    func interestWithdraw(from account: BlockchainAccount)
     func switchToSend()
     func switchTabToSwap()
     func switchTabToReceive()

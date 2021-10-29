@@ -37,7 +37,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     var actions: Single<AvailableActions> {
         Single.zip(
             isFunded,
-            canPerformInterestTransfer(),
+            isInterestTransferAvailable.asSingle(),
             featureFlagsService
                 .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
         )
@@ -76,6 +76,19 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
             }
+    }
+
+    private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
+        Single.zip(
+            canPerformInterestTransfer(),
+            featureFlagsService
+                .isEnabled(.remote(.interestWithdrawAndDeposit))
+                .asSingle()
+        )
+        .map { $0.0 && $0.1 }
+        .asPublisher()
+        .replaceError(with: false)
+        .eraseToAnyPublisher()
     }
 
     private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
@@ -135,7 +148,8 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
              .viewActivity:
             return .just(true)
         case .interestTransfer:
-            return canPerformInterestTransfer()
+            return isInterestTransferAvailable
+                .asSingle()
                 .flatMap { [isFunded] isEnabled in
                     isEnabled ? isFunded : .just(false)
                 }
