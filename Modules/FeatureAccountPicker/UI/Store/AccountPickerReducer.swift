@@ -24,8 +24,27 @@ let accountPickerReducer = Reducer<AccountPickerState, AccountPickerAction, Acco
     Reducer { state, action, environment in
         switch action {
 
-        case .rowsLoaded(.success(.accountPickerRow(id: let id, action: .accountPickerRowDidTap))):
+        case .rowsLoaded(.success(.accountPickerRow(
+            id: let id,
+            action: .accountPickerRowDidTap
+        ))):
             environment.rowSelected(id)
+            return .none
+
+        case .rowsLoaded(.success(.accountPickerRow(
+            id: let id,
+            action: .singleAccount(action: .update(balances: let balances))
+        ))):
+            state.fiatBalances[id] = balances.fiatBalance.value
+            state.cryptoBalances[id] = balances.cryptoBalance.value
+            return .none
+
+        case .rowsLoaded(.success(.accountPickerRow(
+            id: let id,
+            action: .accountGroup(action: .update(balances: let balances))
+        ))):
+            state.fiatBalances[id] = balances.fiatBalance.value
+            state.currencyCodes[id] = balances.currencyCode.value
             return .none
 
         case .rowsLoading:
@@ -44,6 +63,11 @@ let accountPickerReducer = Reducer<AccountPickerState, AccountPickerAction, Acco
             return .none
 
         case .failedToUpdateHeader:
+            return .none
+
+        case .search(let text):
+            state.searchText = text
+            environment.search(text)
             return .none
 
         case .subscribeToUpdates:

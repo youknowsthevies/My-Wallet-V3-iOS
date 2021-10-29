@@ -12,8 +12,7 @@ let singleAccountReducer = Reducer<
     AccountPickerRowEnvironment
 > { state, action, environment in
     switch action {
-    case .update(model: let model):
-        state = model
+    case .update:
         return .none
 
     case .failedToUpdate:
@@ -26,8 +25,8 @@ let singleAccountReducer = Reducer<
             .cancellable(id: UpdateAccountId(identity: state.id), cancelInFlight: true)
             .map { result in
                 switch result {
-                case .success(let account):
-                    return .update(model: account)
+                case .success(let balances):
+                    return .update(balances: balances)
                 case .failure(let error):
                     return .failedToUpdate(error)
                 }
@@ -41,8 +40,7 @@ let accountGroupReducer = Reducer<
     AccountPickerRowEnvironment
 > { state, action, environment in
     switch action {
-    case .update(model: let model):
-        state = model
+    case .update:
         return .none
 
     case .failedToUpdate:
@@ -55,8 +53,8 @@ let accountGroupReducer = Reducer<
             .cancellable(id: UpdateAccountId(identity: state.id), cancelInFlight: true)
             .map { result in
                 switch result {
-                case .success(let accountGroup):
-                    return .update(model: accountGroup)
+                case .success(let balances):
+                    return .update(balances: balances)
                 case .failure(let error):
                     return .failedToUpdate(error)
                 }

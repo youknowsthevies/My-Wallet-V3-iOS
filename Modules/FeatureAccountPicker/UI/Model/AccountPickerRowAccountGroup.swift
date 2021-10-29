@@ -9,9 +9,6 @@ extension AccountPickerRow {
 
         // MARK: - Public Properties
 
-        public var fiatBalance: LoadingState<String>
-        public var currencyCode: LoadingState<String>
-
         public let id: AnyHashable
 
         // MARK: - Internal Properties
@@ -24,13 +21,30 @@ extension AccountPickerRow {
         public init(
             id: AnyHashable,
             title: String,
-            description: String,
-            fiatBalance: LoadingState<String>,
-            currencyCode: LoadingState<String>
+            description: String
         ) {
             self.id = id
             self.title = title
             self.description = description
+        }
+    }
+}
+
+extension AccountPickerRow.AccountGroup {
+
+    public struct Balances {
+
+        // MARK: - Public Properties
+
+        public var fiatBalance: LoadingState<String>
+        public var currencyCode: LoadingState<String>
+
+        // MARK: - Init
+
+        public init(
+            fiatBalance: LoadingState<String>,
+            currencyCode: LoadingState<String>
+        ) {
             self.fiatBalance = fiatBalance
             self.currencyCode = currencyCode
         }

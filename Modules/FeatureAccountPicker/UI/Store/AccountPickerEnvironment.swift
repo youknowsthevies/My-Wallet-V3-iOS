@@ -13,11 +13,17 @@ public class AccountPickerEnvironment {
     let rowSelected: (AccountPickerRow.ID) -> Void
     let backButtonTapped: () -> Void
     let closeButtonTapped: () -> Void
+    let search: (String?) -> Void
 
     // State / Input
     let sections: () -> AnyPublisher<[AccountPickerRow], Never>
-    let updateSingleAccount: (AccountPickerRow.SingleAccount) -> AnyPublisher<AccountPickerRow.SingleAccount, Error>?
-    let updateAccountGroup: (AccountPickerRow.AccountGroup) -> AnyPublisher<AccountPickerRow.AccountGroup, Error>?
+
+    let updateSingleAccount: (AccountPickerRow.SingleAccount)
+        -> AnyPublisher<AccountPickerRow.SingleAccount.Balances, Error>?
+
+    let updateAccountGroup: (AccountPickerRow.AccountGroup)
+        -> AnyPublisher<AccountPickerRow.AccountGroup.Balances, Error>?
+
     let header: () -> AnyPublisher<Header, Error>
 
     public init(
@@ -25,10 +31,11 @@ public class AccountPickerEnvironment {
         rowSelected: @escaping (AccountPickerRow.ID) -> Void,
         backButtonTapped: @escaping () -> Void,
         closeButtonTapped: @escaping () -> Void,
+        search: @escaping (String?) -> Void,
         sections: @escaping () -> AnyPublisher<[AccountPickerRow], Never>,
         // swiftlint:disable line_length
-        updateSingleAccount: @escaping (AccountPickerRow.SingleAccount) -> AnyPublisher<AccountPickerRow.SingleAccount, Error>?,
-        updateAccountGroup: @escaping (AccountPickerRow.AccountGroup) -> AnyPublisher<AccountPickerRow.AccountGroup, Error>?,
+        updateSingleAccount: @escaping (AccountPickerRow.SingleAccount) -> AnyPublisher<AccountPickerRow.SingleAccount.Balances, Error>?,
+        updateAccountGroup: @escaping (AccountPickerRow.AccountGroup) -> AnyPublisher<AccountPickerRow.AccountGroup.Balances, Error>?,
         // swiftlint:enable line_length
         header: @escaping () -> AnyPublisher<Header, Error>
     ) {
@@ -36,6 +43,7 @@ public class AccountPickerEnvironment {
         self.rowSelected = rowSelected
         self.backButtonTapped = backButtonTapped
         self.closeButtonTapped = closeButtonTapped
+        self.search = search
         self.sections = sections
         self.updateSingleAccount = updateSingleAccount
         self.updateAccountGroup = updateAccountGroup

@@ -14,20 +14,30 @@ struct AccountPickerRowView: View {
     let badgeView: (AnyHashable) -> AnyView
     let iconView: (AnyHashable) -> AnyView
     let multiBadgeView: (AnyHashable) -> (AnyView)
+    let fiatBalances: [AnyHashable: String]
+    let cryptoBalances: [AnyHashable: String]
+    let currencyCodes: [AnyHashable: String]
 
     // MARK: - Init
 
+    // swiftlint:disable:next function_parameter_count
     static func with(
         badgeView: @escaping (AnyHashable) -> AnyView,
         iconView: @escaping (AnyHashable) -> AnyView,
-        multiBadgeView: @escaping (AnyHashable) -> (AnyView)
+        multiBadgeView: @escaping (AnyHashable) -> (AnyView),
+        fiatBalances: [AnyHashable: String],
+        cryptoBalances: [AnyHashable: String],
+        currencyCodes: [AnyHashable: String]
     ) -> (Store<AccountPickerRow, AccountPickerRowAction>) -> Self {
         { store in
             Self(
                 store: store,
                 badgeView: badgeView,
                 iconView: iconView,
-                multiBadgeView: multiBadgeView
+                multiBadgeView: multiBadgeView,
+                fiatBalances: fiatBalances,
+                cryptoBalances: cryptoBalances,
+                currencyCodes: currencyCodes
             )
         }
     }
@@ -46,7 +56,9 @@ struct AccountPickerRowView: View {
                 case .accountGroup(let model):
                     AccountGroupRow(
                         model: model,
-                        badgeView: badgeView(model.id)
+                        badgeView: badgeView(model.id),
+                        fiatBalance: fiatBalances[model.id],
+                        currencyCode: currencyCodes[model.id]
                     )
                     .onAppear {
                         viewStore.send(.accountGroup(action: .subscribeToUpdates))
@@ -70,7 +82,9 @@ struct AccountPickerRowView: View {
                         model: model,
                         badgeView: badgeView(model.id),
                         iconView: iconView(model.id),
-                        multiBadgeView: multiBadgeView(model.id)
+                        multiBadgeView: multiBadgeView(model.id),
+                        fiatBalance: fiatBalances[model.id],
+                        cryptoBalance: cryptoBalances[model.id]
                     )
                     .onAppear {
                         viewStore.send(.singleAccount(action: .subscribeToUpdates))
@@ -89,8 +103,9 @@ struct AccountPickerRowView: View {
 private struct AccountGroupRow: View {
 
     let model: AccountPickerRow.AccountGroup
-
     let badgeView: AnyView
+    let fiatBalance: String?
+    let currencyCode: String?
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -103,10 +118,10 @@ private struct AccountGroupRow: View {
                         Text(model.title)
                             .textStyle(.heading)
                         Spacer()
-                        Text(model.fiatBalance.value ?? " ")
+                        Text(fiatBalance ?? " ")
                             .textStyle(.heading)
                             .shimmer(
-                                enabled: model.fiatBalance.isLoading,
+                                enabled: fiatBalance == nil,
                                 width: 90
                             )
                     }
@@ -114,10 +129,10 @@ private struct AccountGroupRow: View {
                         Text(model.description)
                             .textStyle(.subheading)
                         Spacer()
-                        Text(model.currencyCode.value ?? " ")
+                        Text(currencyCode ?? " ")
                             .textStyle(.subheading)
                             .shimmer(
-                                enabled: model.currencyCode.isLoading,
+                                enabled: currencyCode == nil,
                                 width: 100
                             )
                     }
@@ -232,6 +247,8 @@ private struct SingleAccountRow: View {
     let badgeView: AnyView
     let iconView: AnyView
     let multiBadgeView: AnyView
+    let fiatBalance: String?
+    let cryptoBalance: String?
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -258,16 +275,16 @@ private struct SingleAccountRow: View {
                         }
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
-                            Text(model.fiatBalance.value ?? " ")
+                            Text(fiatBalance ?? " ")
                                 .textStyle(.heading)
                                 .shimmer(
-                                    enabled: model.fiatBalance.isLoading,
+                                    enabled: fiatBalance == nil,
                                     width: 90
                                 )
-                            Text(model.cryptoBalance.value ?? "")
+                            Text(cryptoBalance ?? "")
                                 .textStyle(.subheading)
                                 .shimmer(
-                                    enabled: model.cryptoBalance.isLoading,
+                                    enabled: cryptoBalance == nil,
                                     width: 100
                                 )
                         }
@@ -287,13 +304,28 @@ private struct SingleAccountRow: View {
 
 struct AccountPickerRowView_Previews: PreviewProvider {
 
+    static let accountGroupIdentifier = UUID()
+    static let singleAccountIdentifier = UUID()
+
+    static let fiatBalances: [AnyHashable: String] = [
+        accountGroupIdentifier: "$2,302.39",
+        singleAccountIdentifier: "$2,302.39"
+    ]
+
+    static let currencyCodes: [AnyHashable: String] = [
+        accountGroupIdentifier: "USD"
+    ]
+
+    static let cryptoBalances: [AnyHashable: String] = [
+        accountGroupIdentifier: "0.21204887 BTC",
+        singleAccountIdentifier: "0.21204887 BTC"
+    ]
+
     static let accountGroupRow = AccountPickerRow.accountGroup(
         AccountPickerRow.AccountGroup(
             id: UUID(),
             title: "All Wallets",
-            description: "Total Balance",
-            fiatBalance: .loaded(next: "$2,302.39"),
-            currencyCode: .loaded(next: "USD")
+            description: "Total Balance"
         )
     )
 
@@ -326,9 +358,7 @@ struct AccountPickerRowView_Previews: PreviewProvider {
         AccountPickerRow.SingleAccount(
             id: UUID(),
             title: "BTC Trading Wallet",
-            description: "Bitcoin",
-            fiatBalance: .loaded(next: "$2,302.39"),
-            cryptoBalance: .loaded(next: "0.21204887 BTC")
+            description: "Bitcoin"
         )
     )
 
@@ -348,7 +378,10 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 ),
                 badgeView: { _ in AnyView(EmptyView()) },
                 iconView: { _ in AnyView(EmptyView()) },
-                multiBadgeView: { _ in AnyView(EmptyView()) }
+                multiBadgeView: { _ in AnyView(EmptyView()) },
+                fiatBalances: fiatBalances,
+                cryptoBalances: cryptoBalances,
+                currencyCodes: currencyCodes
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
@@ -362,7 +395,10 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 ),
                 badgeView: { _ in AnyView(EmptyView()) },
                 iconView: { _ in AnyView(EmptyView()) },
-                multiBadgeView: { _ in AnyView(EmptyView()) }
+                multiBadgeView: { _ in AnyView(EmptyView()) },
+                fiatBalances: fiatBalances,
+                cryptoBalances: cryptoBalances,
+                currencyCodes: currencyCodes
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
@@ -376,7 +412,10 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 ),
                 badgeView: { _ in AnyView(EmptyView()) },
                 iconView: { _ in AnyView(EmptyView()) },
-                multiBadgeView: { _ in AnyView(EmptyView()) }
+                multiBadgeView: { _ in AnyView(EmptyView()) },
+                fiatBalances: fiatBalances,
+                cryptoBalances: cryptoBalances,
+                currencyCodes: currencyCodes
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
@@ -390,7 +429,10 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 ),
                 badgeView: { _ in AnyView(EmptyView()) },
                 iconView: { _ in AnyView(EmptyView()) },
-                multiBadgeView: { _ in AnyView(EmptyView()) }
+                multiBadgeView: { _ in AnyView(EmptyView()) },
+                fiatBalances: fiatBalances,
+                cryptoBalances: cryptoBalances,
+                currencyCodes: currencyCodes
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
@@ -404,7 +446,10 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 ),
                 badgeView: { _ in AnyView(EmptyView()) },
                 iconView: { _ in AnyView(EmptyView()) },
-                multiBadgeView: { _ in AnyView(EmptyView()) }
+                multiBadgeView: { _ in AnyView(EmptyView()) },
+                fiatBalances: fiatBalances,
+                cryptoBalances: cryptoBalances,
+                currencyCodes: currencyCodes
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()

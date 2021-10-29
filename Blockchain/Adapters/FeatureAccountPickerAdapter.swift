@@ -18,6 +18,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
     fileprivate let modelSelectedRelay = PublishRelay<AccountPickerCellItem>()
     fileprivate let backButtonRelay = PublishRelay<Void>()
     fileprivate let closeButtonRelay = PublishRelay<Void>()
+    private let searchRelay = PublishRelay<String?>()
     fileprivate let sections = PassthroughSubject<[AccountPickerRow], Never>()
     fileprivate let header = PassthroughSubject<Header, Error>()
 
@@ -33,6 +34,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
         },
         backButtonTapped: { [unowned self] in self.backButtonRelay.accept(()) },
         closeButtonTapped: { [unowned self] in self.closeButtonRelay.accept(()) },
+        search: { [unowned self] searchText in self.searchRelay.accept(searchText) },
         sections: { [unowned self] in self.sections.eraseToAnyPublisher() },
         updateSingleAccount: { [unowned self] account in
             guard case .singleAccount(let presenter) = self.presenter(for: account.id) else {
@@ -42,16 +44,20 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
             return presenter.assetBalanceViewPresenter.state
                 .asPublisher()
                 .map { value in
-                    var account = account
+                    let balances: AccountPickerRow.SingleAccount.Balances
                     switch value {
                     case .loading:
-                        account.fiatBalance = .loading
-                        account.cryptoBalance = .loading
+                        balances = .init(
+                            fiatBalance: .loading,
+                            cryptoBalance: .loading
+                        )
                     case .loaded(let balance):
-                        account.fiatBalance = .loaded(next: balance.primaryBalance.text)
-                        account.cryptoBalance = .loaded(next: balance.secondaryBalance.text)
+                        balances = .init(
+                            fiatBalance: .loaded(next: balance.primaryBalance.text),
+                            cryptoBalance: .loaded(next: balance.secondaryBalance.text)
+                        )
                     }
-                    return account
+                    return balances
                 }
                 .eraseToAnyPublisher()
         },
@@ -63,16 +69,20 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
             return presenter.walletBalanceViewPresenter.state
                 .asPublisher()
                 .map { value in
-                    var group = group
+                    let balances: AccountPickerRow.AccountGroup.Balances
                     switch value {
                     case .loading:
-                        group.fiatBalance = .loading
-                        group.currencyCode = .loading
+                        balances = .init(
+                            fiatBalance: .loading,
+                            currencyCode: .loading
+                        )
                     case .loaded(let balance):
-                        group.fiatBalance = .loaded(next: balance.fiatBalance.text)
-                        group.currencyCode = .loaded(next: balance.currencyCode.text)
+                        balances = .init(
+                            fiatBalance: .loaded(next: balance.fiatBalance.text),
+                            currencyCode: .loaded(next: balance.currencyCode.text)
+                        )
                     }
-                    return group
+                    return balances
                 }
                 .eraseToAnyPublisher()
         },
@@ -204,6 +214,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
 
 extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable {
 
+    // swiftlint:disable:next function_body_length
     func connect(state: Driver<AccountPickerPresenter.State>) -> Driver<AccountPickerInteractor.Effects> {
         disposeBag = DisposeBag()
 
@@ -235,7 +246,8 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                         title: model.title,
                         subtitle: model.subtitle,
                         image: model.imageContent.imageResource?.image,
-                        tableTitle: model.tableTitle
+                        tableTitle: model.tableTitle,
+                        searchable: model.searchable
                     )
                 case .simple(let model):
                     header = .simple(subtitle: model.subtitle)
@@ -298,9 +310,7 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                 .init(
                                     id: item.identity,
                                     title: presenter.account.label,
-                                    description: LocalizationConstants.Dashboard.Portfolio.totalBalance,
-                                    fiatBalance: .loading,
-                                    currencyCode: .loading
+                                    description: LocalizationConstants.Dashboard.Portfolio.totalBalance
                                 )
                             )
 
@@ -309,9 +319,7 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                 .init(
                                     id: item.identity,
                                     title: presenter.account.label,
-                                    description: presenter.account.currencyType.name,
-                                    fiatBalance: .loading,
-                                    cryptoBalance: .loading
+                                    description: presenter.account.currencyType.name
                                 )
                             )
                         }
@@ -333,6 +341,10 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
             .map { AccountPickerInteractor.Effects.closed }
             .asDriverCatchError()
 
-        return .merge(modelSelected, backButtonEffect, closeButtonEffect)
+        let searchEffect = searchRelay
+            .map { AccountPickerInteractor.Effects.filter($0) }
+            .asDriverCatchError()
+
+        return .merge(modelSelected, backButtonEffect, closeButtonEffect, searchEffect)
     }
 }

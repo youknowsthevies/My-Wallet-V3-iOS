@@ -15,8 +15,11 @@ class HeaderViewTests: XCTestCase {
                 title: "Send Crypto Now",
                 subtitle: "Choose a Wallet to send cypto from.",
                 image: ImageAsset.iconSend.image,
-                tableTitle: "Select a Wallet"
-            )
+                tableTitle: "Select a Wallet",
+                searchable: false
+            ),
+            searchText: .constant(nil),
+            isSearching: .constant(false)
         )
         .fixedSize()
 
@@ -29,8 +32,11 @@ class HeaderViewTests: XCTestCase {
                 title: "Send Crypto Now",
                 subtitle: "Choose a Wallet to send cypto from.",
                 image: nil,
-                tableTitle: "Select a Wallet"
-            )
+                tableTitle: "Select a Wallet",
+                searchable: false
+            ),
+            searchText: .constant(nil),
+            isSearching: .constant(false)
         )
         .fixedSize()
 
@@ -43,10 +49,48 @@ class HeaderViewTests: XCTestCase {
                 title: "Send Crypto Now",
                 subtitle: "Choose a Wallet to send cypto from.",
                 image: ImageAsset.iconSend.image,
-                tableTitle: nil
-            )
+                tableTitle: nil,
+                searchable: false
+            ),
+            searchText: .constant(nil),
+            isSearching: .constant(false)
         )
         .fixedSize()
+
+        assertSnapshot(matching: view, as: .image)
+    }
+
+    func testNormalSearch() {
+        let view = HeaderView(
+            viewModel: .normal(
+                title: "Send Crypto Now",
+                subtitle: "Choose a Wallet to send cypto from.",
+                image: ImageAsset.iconSend.image,
+                tableTitle: nil,
+                searchable: true
+            ),
+            searchText: .constant(nil),
+            isSearching: .constant(false)
+        )
+        .fixedSize()
+
+        assertSnapshot(matching: view, as: .image)
+    }
+
+    func testNormalSearchCollapsed() {
+        let view = HeaderView(
+            viewModel: .normal(
+                title: "Send Crypto Now",
+                subtitle: "Choose a Wallet to send cypto from.",
+                image: ImageAsset.iconSend.image,
+                tableTitle: nil,
+                searchable: true
+            ),
+            searchText: .constant("Search"),
+            isSearching: .constant(true)
+        )
+        .animation(nil)
+        .frame(width: 375)
 
         assertSnapshot(matching: view, as: .image)
     }
@@ -55,7 +99,9 @@ class HeaderViewTests: XCTestCase {
         let view = HeaderView(
             viewModel: .simple(
                 subtitle: "Subtitle"
-            )
+            ),
+            searchText: .constant(nil),
+            isSearching: .constant(false)
         )
         .fixedSize()
 
@@ -64,7 +110,9 @@ class HeaderViewTests: XCTestCase {
 
     func testNone() {
         let view = HeaderView(
-            viewModel: .none
+            viewModel: .none,
+            searchText: .constant(nil),
+            isSearching: .constant(false)
         )
         .fixedSize()
 

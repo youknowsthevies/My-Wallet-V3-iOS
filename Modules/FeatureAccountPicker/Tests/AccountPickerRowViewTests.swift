@@ -20,20 +20,33 @@ class AccountPickerRowViewTests: XCTestCase {
         updateAccountGroup: { _ in nil }
     )
 
-    var accountGroup = AccountPickerRow.AccountGroup(
-        id: UUID(),
+    let accountGroupIdentifier = UUID()
+    let singleAccountIdentifier = UUID()
+
+    lazy var fiatBalances: [AnyHashable: String] = [
+        accountGroupIdentifier: "$2,302.39",
+        singleAccountIdentifier: "$2,302.39"
+    ]
+
+    lazy var currencyCodes: [AnyHashable: String] = [
+        accountGroupIdentifier: "USD"
+    ]
+
+    lazy var cryptoBalances: [AnyHashable: String] = [
+        accountGroupIdentifier: "0.21204887 BTC",
+        singleAccountIdentifier: "0.21204887 BTC"
+    ]
+
+    lazy var accountGroup = AccountPickerRow.AccountGroup(
+        id: accountGroupIdentifier,
         title: "All Wallets",
-        description: "Total Balance",
-        fiatBalance: .loaded(next: "$2,302.39"),
-        currencyCode: .loaded(next: "USD")
+        description: "Total Balance"
     )
 
-    var singleAccount = AccountPickerRow.SingleAccount(
-        id: UUID(),
+    lazy var singleAccount = AccountPickerRow.SingleAccount(
+        id: singleAccountIdentifier,
         title: "BTC Trading Wallet",
-        description: "Bitcoin",
-        fiatBalance: .loaded(next: "$2,302.39"),
-        cryptoBalance: .loaded(next: "0.21204887 BTC")
+        description: "Bitcoin"
     )
 
     lazy var linkedBankAccountModel = AccountPickerRow.LinkedBankAccount(
@@ -191,7 +204,10 @@ class AccountPickerRowViewTests: XCTestCase {
                 default:
                     return AnyView(EmptyView())
                 }
-            }
+            },
+            fiatBalances: fiatBalances,
+            cryptoBalances: cryptoBalances,
+            currencyCodes: currencyCodes
         )
         .fixedSize()
     }
@@ -205,8 +221,8 @@ class AccountPickerRowViewTests: XCTestCase {
     }
 
     func testAccountGroupLoading() {
-        accountGroup.fiatBalance = .loading
-        accountGroup.currencyCode = .loading
+        fiatBalances = [:]
+        currencyCodes = [:]
 
         let accountGroupRow = AccountPickerRow.accountGroup(
             accountGroup
@@ -228,8 +244,8 @@ class AccountPickerRowViewTests: XCTestCase {
     }
 
     func testSingleAccountLoading() {
-        singleAccount.cryptoBalance = .loading
-        singleAccount.fiatBalance = .loading
+        fiatBalances = [:]
+        cryptoBalances = [:]
 
         let singleAccountRow = AccountPickerRow.singleAccount(
             singleAccount

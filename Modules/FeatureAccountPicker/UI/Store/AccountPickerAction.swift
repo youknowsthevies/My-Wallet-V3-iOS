@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableArchitecture
 import SwiftUI
 
 enum AccountPickerAction {
@@ -13,6 +14,8 @@ enum AccountPickerAction {
 
     case updateHeader(_ header: Header)
     case failedToUpdateHeader(Error)
+
+    case search(String?)
 }
 
 enum LoadedRowsAction {
