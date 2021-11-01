@@ -1,14 +1,12 @@
-// Copyright © Blockchain Luxembourg S.A. All rights reserved.
-
 @testable import ComponentLibrary
 import SnapshotTesting
 import SwiftUI
 import XCTest
 
-final class PrimaryButtonTests: XCTestCase {
+final class SecondaryButtonTests: XCTestCase {
     func testSnapshot() {
         let view = VStack(spacing: 5) {
-            PrimaryButton_Previews.previews
+            SecondaryButton_Previews.previews
         }
         .frame(width: 320)
         .fixedSize()

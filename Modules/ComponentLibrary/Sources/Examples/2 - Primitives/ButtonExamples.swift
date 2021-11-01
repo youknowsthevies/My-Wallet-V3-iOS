@@ -9,7 +9,13 @@ struct ButtonExamplesView: View {
         "Icons": [
             NavigationLinkProvider(view: IconButtonExamples(), title: "👤 IconButton")
         ],
-        "Single Buttons": [],
+        "Single Buttons": [
+            NavigationLinkProvider(view: PrimaryButtonExamplesView(), title: "PrimaryButton"),
+            NavigationLinkProvider(view: SecondaryButtonExamplesView(), title: "SecondaryButton"),
+            NavigationLinkProvider(view: MinimalButtonExamplesView(), title: "MinimalButton"),
+            NavigationLinkProvider(view: ExchangeBuyButtonExamplesView(), title: "ExchangeBuyButton"),
+            NavigationLinkProvider(view: ExchangeSellButtonExamplesView(), title: "ExchangeSellButton")
+        ],
         "Multi Buttons": []
     ]
 

@@ -2,12 +2,12 @@
 
 import SwiftUI
 
-/// PrimaryButton from the Figma Component Library.
+/// ExchangeBuyButton from the Figma Component Library.
 ///
 ///
 /// # Usage:
 ///
-/// `PrimaryButton(title: "Tap me") { print("button did tap") }`
+/// `ExchangeBuyButton(title: "Tap me") { print("button did tap") }`
 ///
 /// - Version: 1.0.1
 ///
@@ -15,7 +15,7 @@ import SwiftUI
 ///
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=3%3A367)
 
-public struct PrimaryButton: View, PillButton {
+public struct ExchangeBuyButton: View, PillButton {
 
     let title: String
     let action: () -> Void
@@ -23,14 +23,23 @@ public struct PrimaryButton: View, PillButton {
 
     let colorSet = PillButtonColorSet(
         enabledState: PillButtonStyle.ColorSet(
-            foreground: .semantic.white,
-            background: .semantic.primary,
-            border: .semantic.primary
+            foreground: Color.dynamicColor(
+                light: .semantic.white,
+                dark: .semantic.white
+            ),
+            background: Color.dynamicColor(
+                light: .semantic.success,
+                dark: .semantic.successMuted
+            ),
+            border: Color.dynamicColor(
+                light: .semantic.success,
+                dark: .semantic.successMuted
+            )
         ),
         pressedState: PillButtonStyle.ColorSet(
             foreground: .semantic.white,
-            background: .semantic.primary,
-            border: .semantic.primary
+            background: .semantic.success,
+            border: .semantic.success
         ),
         disabledState: PillButtonStyle.ColorSet(
             foreground: Color.dynamicColor(
@@ -38,12 +47,12 @@ public struct PrimaryButton: View, PillButton {
                 dark: .semantic.white.opacity(0.4)
             ),
             background: Color.dynamicColor(
-                light: .semantic.primaryMuted,
-                dark: .semantic.title
+                light: .semantic.successMuted,
+                dark: .semantic.success
             ),
             border: Color.dynamicColor(
-                light: .semantic.primaryMuted,
-                dark: .semantic.title
+                light: .semantic.successMuted,
+                dark: .semantic.success
             )
         ),
         progressViewRail: Color.semantic.white.opacity(0.8),
@@ -65,20 +74,20 @@ public struct PrimaryButton: View, PillButton {
     }
 }
 
-struct PrimaryButton_Previews: PreviewProvider {
+struct ExchangeBuyButton_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            PrimaryButton(title: "Enabled", action: {})
+            ExchangeBuyButton(title: "Enabled", action: {})
                 .previewLayout(.sizeThatFits)
                 .previewDisplayName("Enabled")
 
-            PrimaryButton(title: "Disabled", action: {})
+            ExchangeBuyButton(title: "Disabled", action: {})
                 .disabled(true)
                 .previewLayout(.sizeThatFits)
                 .previewDisplayName("Disabled")
 
-            PrimaryButton(title: "Loading", isLoading: true, action: {})
+            ExchangeBuyButton(title: "Loading", isLoading: true, action: {})
                 .previewLayout(.sizeThatFits)
                 .previewDisplayName("Loading")
         }

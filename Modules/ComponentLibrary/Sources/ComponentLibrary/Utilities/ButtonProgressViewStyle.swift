@@ -18,10 +18,10 @@ struct ButtonProgressViewStyle: ProgressViewStyle {
                     lineCap: .butt
                 )
                 Circle()
-                    .stroke(railColor, style: style)
+                    .stroke(trackColor, style: style)
                 Circle()
                     .trim(from: 0, to: 0.3)
-                    .stroke(trackColor, style: style)
+                    .stroke(railColor, style: style)
                     .rotationEffect(angle)
                     .onAppear {
                         withAnimation(.linear(duration: 1.0).repeatForever(autoreverses: false)) {
@@ -41,8 +41,8 @@ struct ButtonProgressView_Previews: PreviewProvider {
         ProgressView()
             .progressViewStyle(
                 ButtonProgressViewStyle(
-                    railColor: Color.semantic.light,
-                    trackColor: Color.semantic.primary
+                    railColor: Color.semantic.primary,
+                    trackColor: Color.semantic.light
                 )
             )
             .frame(width: 70, height: 70)
