@@ -58,7 +58,8 @@ let package = Package(
                 "1 - Base/__Snapshots__",
                 "2 - Primitives/__Snapshots__",
                 "2 - Primitives/Buttons/__Snapshots__",
-                "3 - Compositions/__Snapshots__"
+                "3 - Compositions/__Snapshots__",
+                "Utilities/__Snapshots__"
             ]
         ),
         .target(

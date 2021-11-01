@@ -4,16 +4,16 @@ import SwiftUI
 
 // MARK: - Public
 
-/// A button displaying an icon. Commonly used as navigation items.
+/// A button displaying an icon inset within a filled circle. Commonly used as navigation items.
 ///
 /// # Usage
 ///
-///   .navigationBarItems(trailing: IconButton(icon: .qRCode) { openQRCode() })
+///   .navigationBarItems(trailing: CircularIconButton(icon: .chevronLeft) { back() })
 ///
 /// # Figma
 ///
-/// [IconButton](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=209%3A1830)
-public struct IconButton: View {
+/// [CircularIconButton](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=209%3A1830)
+public struct CircularIconButton: View {
     let icon: Icon
     let action: () -> Void
 
@@ -27,24 +27,15 @@ public struct IconButton: View {
 
     public var body: some View {
         Button(action: action) {
-            icon
+            ImageViewRepresentable(image: icon.uiImage?.circled)
         }
         .buttonStyle(IconButtonStyle())
     }
 }
 
-// MARK: - Internal
-
-struct IconButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .accentColor(configuration.isPressed ? .semantic.muted.opacity(0.5) : .semantic.muted)
-    }
-}
-
 // MARK: - Previews
 
-struct IconButton_Previews: PreviewProvider {
+struct CircularIconButton_Previews: PreviewProvider {
     static var previews: some View {
         PreviewContainer()
     }
@@ -60,7 +51,7 @@ struct IconButton_Previews: PreviewProvider {
         }
 
         @ViewBuilder private var navigationItems: some View {
-            IconButton(icon: .qRCode) {
+            CircularIconButton(icon: .chevronLeft) {
                 toggle.toggle()
             }
         }

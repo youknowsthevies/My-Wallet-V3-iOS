@@ -7,7 +7,8 @@ struct ButtonExamplesView: View {
 
     private let data: NavigationLinkProviderList = [
         "Icons": [
-            NavigationLinkProvider(view: IconButtonExamples(), title: "👤 IconButton")
+            NavigationLinkProvider(view: IconButtonExamples(), title: "👤 IconButton"),
+            NavigationLinkProvider(view: CircularIconButtonExamples(), title: "⚪️ CircularIconButton")
         ],
         "Single Buttons": [
             NavigationLinkProvider(view: PrimaryButtonExamplesView(), title: "PrimaryButton"),
