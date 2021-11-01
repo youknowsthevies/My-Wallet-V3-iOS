@@ -1,5 +1,5 @@
 import ComposableArchitecture
-import ComposableNavigation
+import ComposableArchitectureExtensions
 import SwiftUI
 
 enum AccountPickerError: Error {

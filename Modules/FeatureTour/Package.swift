@@ -29,7 +29,7 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../Platform"),
         .package(path: "../UIComponents"),
-        .package(path: "../ComposableNavigation")
+        .package(path: "../ComposableArchitectureExtensions")
     ],
     targets: [
         .target(
@@ -56,7 +56,7 @@ let package = Package(
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "NukeUI", package: "NukeUI"),
-                .product(name: "ComposableNavigation", package: "ComposableNavigation")
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions")
             ],
             path: "UI"
         ),

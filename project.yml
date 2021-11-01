@@ -266,8 +266,8 @@ packages:
     path: Modules/RxAnalytics
   CommonCrypto:
     path: Modules/CommonCrypto
-  ComposableNavigation:
-    path: Modules/ComposableNavigation
+  ComposableArchitectureExtensions:
+    path: Modules/ComposableArchitectureExtensions
   CryptoAssets:
     path: Modules/CryptoAssets
   FeatureApp:

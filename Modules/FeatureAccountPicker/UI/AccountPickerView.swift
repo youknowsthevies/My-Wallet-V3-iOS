@@ -1,6 +1,6 @@
 import Combine
 import ComposableArchitecture
-import ComposableNavigation
+import ComposableArchitectureExtensions
 import FeatureAccountPickerDomain
 import Localization
 import SwiftUI

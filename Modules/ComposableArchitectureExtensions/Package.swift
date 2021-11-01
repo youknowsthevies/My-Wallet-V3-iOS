@@ -3,11 +3,15 @@
 import PackageDescription
 
 let package = Package(
-    name: "ComposableNavigation",
+    name: "ComposableArchitectureExtensions",
     platforms: [
         .iOS(.v14), .macOS(.v11), .tvOS(.v14), .watchOS(.v7)
     ],
     products: [
+        .library(
+            name: "ComposableArchitectureExtensions",
+            targets: ["ComposableArchitectureExtensions"]
+        ),
         .library(
             name: "ComposableNavigation",
             targets: ["ComposableNavigation"]
@@ -20,6 +24,13 @@ let package = Package(
         )
     ],
     targets: [
+        .target(
+            name: "ComposableArchitectureExtensions",
+            dependencies: [
+                .target(name: "ComposableNavigation"),
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
         .target(
             name: "ComposableNavigation",
             dependencies: [

@@ -3,7 +3,7 @@
 Modules/Analytics/ @mburda-bc
 Modules/CommonCrypto/ @jackpooleybc
 Modules/ComponentLibrary/ @mjarvis-bc @oliveratkinson-bc
-Modules/ComposableNavigation/ @oliveratkinson-bc
+Modules/ComposableArchitectureExtensions/ @oliveratkinson-bc
 Modules/CryptoAssets/BitcoinCashKit/ @paulo-bc @jackpooleybc
 Modules/CryptoAssets/BitcoinChainKit/ @paulo-bc @jackpooleybc
 Modules/CryptoAssets/BitcoinKit/ @paulo-bc @jackpooleybc
