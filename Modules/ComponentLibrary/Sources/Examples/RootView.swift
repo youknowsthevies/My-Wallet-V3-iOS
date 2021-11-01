@@ -14,7 +14,8 @@ public struct RootView: View {
         ],
         "2 - Primitives": [
             NavigationLinkProvider(view: TabBarExamplesView(), title: "🎼 TabBar"),
-            NavigationLinkProvider(view: ButtonExamplesView(), title: "🕹 Buttons")
+            NavigationLinkProvider(view: ButtonExamplesView(), title: "🕹 Buttons"),
+            NavigationLinkProvider(view: PrimaryDividerExamples(), title: "🗂 Dividers")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: Text("Composition Example"))
