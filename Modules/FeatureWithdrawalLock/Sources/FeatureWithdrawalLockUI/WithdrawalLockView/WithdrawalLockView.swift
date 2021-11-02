@@ -100,7 +100,7 @@ public struct WithdrawalLockView: View {
             VStack(spacing: 0) {
                 Button {
                     if let withdrawalLocks = viewStore.state.withdrawalLocks {
-                        viewStore.send(.sheet(into: .details(withdrawalLocks: withdrawalLocks)))
+                        viewStore.send(.enter(into: .details(withdrawalLocks: withdrawalLocks)))
                     }
                 } label: {
                     HStack {
