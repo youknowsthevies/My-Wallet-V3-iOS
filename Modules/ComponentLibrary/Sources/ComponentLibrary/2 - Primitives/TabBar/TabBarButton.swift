@@ -19,7 +19,7 @@ struct TabBarButton: View {
             VStack(spacing: 0) {
                 Group { // Group with fixed height to center-align icons
                     icon
-                        .frame(width: 20)
+                        .frame(width: 24)
                 }
                 .frame(height: 32)
 

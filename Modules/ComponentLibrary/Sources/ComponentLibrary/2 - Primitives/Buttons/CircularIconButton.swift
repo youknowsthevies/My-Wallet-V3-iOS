@@ -27,7 +27,7 @@ public struct CircularIconButton: View {
 
     public var body: some View {
         Button(action: action) {
-            ImageViewRepresentable(image: icon.uiImage?.circled)
+            ImageViewRepresentable(image: icon.uiImage?.circled, renderingMode: icon.renderingMode)
         }
         .buttonStyle(IconButtonStyle())
     }

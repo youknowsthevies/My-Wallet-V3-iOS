@@ -23,9 +23,15 @@ import UIKit
 ///  [Assets - Icons](https://www.figma.com/file/3jESURhHQ4VBTQcu0aZkoX/01---Assets-%7C-Icons)
 public struct Icon: View, Equatable {
     let name: String
+    let renderingMode: UIImage.RenderingMode
+
+    init(name: String, renderingMode: UIImage.RenderingMode = .alwaysTemplate) {
+        self.name = name
+        self.renderingMode = renderingMode
+    }
 
     public var body: some View {
-        ImageViewRepresentable(image: uiImage)
+        ImageViewRepresentable(image: uiImage, renderingMode: renderingMode)
             .scaledToFit()
     }
 
@@ -66,7 +72,7 @@ extension Icon {
     public static let chevronRight = Icon(name: "Chevron-Right")
     public static let chevronUp = Icon(name: "Chevron-Up")
     public static let clipboard = Icon(name: "Clipboard")
-    public static let closeCirclev2 = Icon(name: "Close Circle v2")
+    public static let closeCirclev2 = Icon(name: "Close Circle v2", renderingMode: .alwaysOriginal)
     public static let closeCircle = Icon(name: "Close Circle")
     public static let closev2 = Icon(name: "Close v2")
     public static let close = Icon(name: "Close")
@@ -173,11 +179,14 @@ extension Icon {
 /// So, we get around this by reverting back to `UIImageView` to display icons.
 struct ImageViewRepresentable: UIViewRepresentable {
     let image: UIImage?
+    let renderingMode: UIImage.RenderingMode
 
     func makeUIView(context: Context) -> some UIView {
         let view = UIImageView(
-            image: image?.withRenderingMode(.alwaysTemplate)
+            image: image?.withRenderingMode(renderingMode)
         )
+        view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         return view
     }
 
@@ -329,7 +338,7 @@ struct Icon_Previews: PreviewProvider {
                 VStack {
                     icon
                         .accentColor(.semantic.muted)
-                        .frame(width: 20)
+                        .frame(width: 24)
 
                     Text(icon.name)
                         .typography(.caption2)
