@@ -403,7 +403,7 @@ final class OpenBankingPaymentTests: XCTestCase {
         }
 
         switch try result.unwrap() {
-        case .failure(.other(OpenBankingRetry.timeout)):
+        case .failure(.timeout):
             break
         case let value:
             XCTFail("\(value)")

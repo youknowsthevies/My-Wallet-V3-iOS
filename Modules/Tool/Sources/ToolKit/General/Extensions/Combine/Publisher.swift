@@ -32,9 +32,7 @@ extension Publisher {
         to handler: @escaping (Root) -> (Output) -> Void,
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {
-        sink { _ in
-
-        } receiveValue: { [weak root] output in
+        sink { _ in } receiveValue: { [weak root] output in
             guard let root = root else { return }
             handler(root)(output)
         }
@@ -44,9 +42,7 @@ extension Publisher {
         to handler: @escaping (Root) -> () -> Void,
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {
-        sink { _ in
-
-        } receiveValue: { [weak root] output in
+        sink { _ in } receiveValue: { [weak root] _ in
             guard let root = root else { return }
             handler(root)()
         }

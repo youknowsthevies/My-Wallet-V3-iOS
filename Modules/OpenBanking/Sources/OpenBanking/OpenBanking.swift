@@ -154,7 +154,6 @@ extension OpenBanking.BankAccount {
             return banking.network.perform(request: request, responseType: OpenBanking.BankAccount.self)
                 .mapError(OpenBanking.Error.init)
                 .eraseToAnyPublisher()
-
         } catch {
             return Fail(error: .init(error)).eraseToAnyPublisher()
         }
@@ -187,14 +186,17 @@ extension OpenBanking.BankAccount {
     ) -> AnyPublisher<Result<OpenBanking.BankAccount, OpenBanking.Error>, Never> {
         Deferred {
             get(in: banking)
-                .tryMap { account throws -> OpenBanking.BankAccount in
-                    guard account.error == nil else { return account }
-                    guard account.state != "PENDING" else { throw OpenBankingRetry.timeout }
-                    return account
-                }
         }
-        .retry(60, delay: .seconds(2), scheduler: banking.scheduler)
-        .mapError(OpenBanking.Error.init)
+        .poll(
+            max: 60,
+            until: { account in
+                guard account.error == nil else { return true }
+                guard account.state != .PENDING else { return false }
+                return true
+            },
+            delay: .seconds(2),
+            scheduler: banking.scheduler
+        )
         .result()
     }
 
@@ -269,19 +271,21 @@ extension OpenBanking.Payment {
     public func poll(in banking: OpenBanking) -> AnyPublisher<Result<Details, OpenBanking.Error>, Never> {
         Deferred {
             get(in: banking)
-                .tryMap { payment throws -> OpenBanking.Payment.Details in
-                    guard payment.extraAttributes?.error == nil else { return payment }
-                    guard payment.extraAttributes?.authorisationUrl != nil else { throw OpenBankingRetry.timeout }
-                    return payment
-                }
         }
-        .retry(60, delay: .seconds(2), scheduler: banking.scheduler)
-        .mapError(OpenBanking.Error.init)
+        .poll(
+            max: 60,
+            until: { payment in
+                guard payment.extraAttributes?.error == nil else { return true }
+                guard payment.extraAttributes?.authorisationUrl != nil else { return false }
+                return true
+            },
+            delay: .seconds(2),
+            scheduler: banking.scheduler
+        )
         .result()
     }
 }
 
-public enum OpenBankingRetry: Error { case timeout }
 
 extension OpenBanking {
 
@@ -480,10 +484,13 @@ extension OpenBanking.Payment.Details {
 
 extension OpenBanking.Error {
     public static let BANK_TRANSFER_ACCOUNT_ALREADY_LINKED: Self = .code("BANK_TRANSFER_ACCOUNT_ALREADY_LINKED")
-    public static let BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND: Self = .code("BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND")
-    public static let BANK_TRANSFER_ACCOUNT_NAME_MISMATCH: Self = .code("BANK_TRANSFER_ACCOUNT_NAME_MISMATCH")
     public static let BANK_TRANSFER_ACCOUNT_EXPIRED: Self = .code("BANK_TRANSFER_ACCOUNT_EXPIRED")
-    public static let BANK_TRANSFER_ACCOUNT_REJECTED: Self = .code("BANK_TRANSFER_ACCOUNT_REJECTED")
     public static let BANK_TRANSFER_ACCOUNT_FAILED: Self = .code("BANK_TRANSFER_ACCOUNT_FAILED")
+    public static let BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL: Self = .code("BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL")
+    public static let BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND: Self = .code("BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND")
     public static let BANK_TRANSFER_ACCOUNT_INVALID: Self = .code("BANK_TRANSFER_ACCOUNT_INVALID")
+    public static let BANK_TRANSFER_ACCOUNT_NAME_MISMATCH: Self = .code("BANK_TRANSFER_ACCOUNT_NAME_MISMATCH")
+    public static let BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED: Self = .code("BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED")
+    public static let BANK_TRANSFER_ACCOUNT_REJECTED: Self = .code("BANK_TRANSFER_ACCOUNT_REJECTED")
+    public static let BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD: Self = .code("BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD")
 }
