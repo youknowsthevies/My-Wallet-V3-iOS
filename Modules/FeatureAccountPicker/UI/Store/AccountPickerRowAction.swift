@@ -14,7 +14,7 @@ enum AccountPickerRowAction {
 extension AccountPickerRowAction {
     enum SingleAccountAction {
         case subscribeToUpdates
-        case update(model: AccountPickerRow.SingleAccount)
+        case update(balances: AccountPickerRow.SingleAccount.Balances)
         case failedToUpdate(Error)
     }
 
@@ -22,7 +22,7 @@ extension AccountPickerRowAction {
 
     enum AccountGroupAction {
         case subscribeToUpdates
-        case update(model: AccountPickerRow.AccountGroup)
+        case update(balances: AccountPickerRow.AccountGroup.Balances)
         case failedToUpdate(Error)
     }
 

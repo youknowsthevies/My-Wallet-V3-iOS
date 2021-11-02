@@ -34,7 +34,6 @@ final class StellarAsset: CryptoAsset {
                     hdAccountIndex: account.index
                 )
             }
-            .asObservable()
             .asPublisher()
             .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .eraseToAnyPublisher()

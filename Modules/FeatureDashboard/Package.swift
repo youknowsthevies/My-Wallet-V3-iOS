@@ -23,7 +23,7 @@ let package = Package(
         .package(path: "../FeatureTransaction"),
         .package(path: "../Platform"),
         .package(path: "../Tool"),
-        .package(path: "../ComposableNavigation")
+        .package(path: "../ComposableArchitectureExtensions")
     ],
     targets: [
         .target(
@@ -37,7 +37,7 @@ let package = Package(
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxDataSources", package: "RxDataSources"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "ComposableNavigation", package: "ComposableNavigation")
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions")
             ]
         ),
         .testTarget(

@@ -29,18 +29,21 @@ final class CustomerSupportChatService: CustomerSupportChatServiceAPI {
     func buildMessagingScreenForDepartment(
         _ department: CustomerSupportDepartment
     ) -> AnyPublisher<UIViewController, CustomerSupportChatServiceError> {
-        Publishers
-            .Zip(
-                emailSettingsService
-                    .emailPublisher
-                    // Customer support can confirm that the email
-                    // is correct.
-                    .replaceError(with: ""),
-                nabuUserService.user
-                    .map(\.personalDetails)
-                    .map(\.fullName)
-            )
-            .map { email, fullName in
+
+        let fullName = nabuUserService.user
+            .map(\.personalDetails)
+            .map(\.fullName)
+            .mapError(CustomerSupportChatServiceError.unknown)
+
+        let email = emailSettingsService
+            .emailPublisher
+            // Customer support can confirm that the email
+            // is correct.
+            .replaceError(with: "")
+            .mapError(to: CustomerSupportChatServiceError.self)
+
+        return fullName.zip(email)
+            .map { fullName, email in
                 VisitorInformation(email: email, name: fullName)
             }
             .receive(on: DispatchQueue.main)

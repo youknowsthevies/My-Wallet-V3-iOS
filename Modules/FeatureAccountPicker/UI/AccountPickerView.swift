@@ -1,6 +1,6 @@
 import Combine
 import ComposableArchitecture
-import ComposableNavigation
+import ComposableArchitectureExtensions
 import FeatureAccountPickerDomain
 import Localization
 import SwiftUI
@@ -14,6 +14,10 @@ public struct AccountPickerView: View {
     let badgeView: (AnyHashable) -> AnyView
     let iconView: (AnyHashable) -> AnyView
     let multiBadgeView: (AnyHashable) -> (AnyView)
+
+    // MARK: - Private properties
+
+    @State private var isSearching: Bool = false
 
     // MARK: - Init
 
@@ -39,7 +43,10 @@ public struct AccountPickerView: View {
             store: Store(
                 initialState: AccountPickerState(
                     rows: .loading,
-                    header: .none
+                    header: .none,
+                    fiatBalances: [:],
+                    cryptoBalances: [:],
+                    currencyCodes: [:]
                 ),
                 reducer: accountPickerReducer,
                 environment: environment
@@ -66,7 +73,7 @@ public struct AccountPickerView: View {
                     LoadingStateView(title: LocalizationConstants.loading)
                 },
                 success: { store in
-                    WithViewStore(store) { [header = viewStore.header] viewStore in
+                    WithViewStore(store) { [globalViewStore = viewStore] viewStore in
                         if viewStore.state.isEmpty {
                             EmptyStateView(
                                 title: LocalizationConstants.AccountPicker.noWallets,
@@ -74,7 +81,10 @@ public struct AccountPickerView: View {
                                 image: ImageAsset.emptyActivity.image
                             )
                         } else {
-                            contentView(store: store, header: header)
+                            contentView(
+                                store: store,
+                                viewStore: globalViewStore
+                            )
                         }
                     }
                 },
@@ -90,10 +100,17 @@ public struct AccountPickerView: View {
 
     @ViewBuilder func contentView(
         store: Store<IdentifiedArrayOf<AccountPickerRow>, SuccessRowsAction>,
-        header: Header
+        viewStore: ViewStore<AccountPickerState, AccountPickerAction>
     ) -> some View {
         VStack(spacing: .zero) {
-            HeaderView(viewModel: header)
+            HeaderView(
+                viewModel: viewStore.header,
+                searchText: Binding<String?>(
+                    get: { viewStore.searchText },
+                    set: { viewStore.send(.search($0)) }
+                ),
+                isSearching: $isSearching
+            )
             List {
                 ForEachStore(
                     store.scope(
@@ -103,25 +120,54 @@ public struct AccountPickerView: View {
                     content: AccountPickerRowView.with(
                         badgeView: badgeView,
                         iconView: iconView,
-                        multiBadgeView: multiBadgeView
+                        multiBadgeView: multiBadgeView,
+                        fiatBalances: viewStore.fiatBalances,
+                        cryptoBalances: viewStore.cryptoBalances,
+                        currencyCodes: viewStore.currencyCodes
                     )
                 )
                 .listRowInsets(EdgeInsets())
             }
+            .animation(.easeInOut, value: isSearching)
         }
     }
 }
 
 struct AccountPickerView_Previews: PreviewProvider {
+    static let allIdentifier = UUID()
+    static let btcWalletIdentifier = UUID()
+    static let btcTradingWalletIdentifier = UUID()
+    static let ethWalletIdentifier = UUID()
+    static let bchWalletIdentifier = UUID()
+    static let bchTradingWalletIdentifier = UUID()
+
+    static let fiatBalances: [AnyHashable: String] = [
+        allIdentifier: "$2,302.39",
+        btcWalletIdentifier: "$2,302.39",
+        btcTradingWalletIdentifier: "$10,093.13",
+        ethWalletIdentifier: "$807.21",
+        bchWalletIdentifier: "$807.21",
+        bchTradingWalletIdentifier: "$40.30"
+    ]
+
+    static let currencyCodes: [AnyHashable: String] = [
+        allIdentifier: "USD"
+    ]
+
+    static let cryptoBalances: [AnyHashable: String] = [
+        btcWalletIdentifier: "0.21204887 BTC",
+        btcTradingWalletIdentifier: "1.38294910 BTC",
+        ethWalletIdentifier: "0.17039384 ETH",
+        bchWalletIdentifier: "0.00388845 BCH",
+        bchTradingWalletIdentifier: "0.00004829 BCH"
+    ]
 
     static let accountPickerRowList: IdentifiedArrayOf<AccountPickerRow> = [
         .accountGroup(
             AccountPickerRow.AccountGroup(
-                id: UUID(),
+                id: allIdentifier,
                 title: "All Wallets",
-                description: "Total Balance",
-                fiatBalance: .loaded(next: "$2,302.39"),
-                currencyCode: .loaded(next: "USD")
+                description: "Total Balance"
             )
         ),
         .button(
@@ -132,47 +178,37 @@ struct AccountPickerView_Previews: PreviewProvider {
         ),
         .singleAccount(
             AccountPickerRow.SingleAccount(
-                id: UUID(),
+                id: btcWalletIdentifier,
                 title: "BTC Wallet",
-                description: "Bitcoin",
-                fiatBalance: .loaded(next: "$2,302.39"),
-                cryptoBalance: .loaded(next: "0.21204887 BTC")
+                description: "Bitcoin"
             )
         ),
         .singleAccount(
             AccountPickerRow.SingleAccount(
-                id: UUID(),
+                id: btcTradingWalletIdentifier,
                 title: "BTC Trading Wallet",
-                description: "Bitcoin",
-                fiatBalance: .loaded(next: "$10,093.13"),
-                cryptoBalance: .loaded(next: "1.38294910 BTC")
+                description: "Bitcoin"
             )
         ),
         .singleAccount(
             AccountPickerRow.SingleAccount(
-                id: UUID(),
+                id: ethWalletIdentifier,
                 title: "ETH Wallet",
-                description: "Ethereum",
-                fiatBalance: .loaded(next: "$807.21"),
-                cryptoBalance: .loaded(next: "0.17039384 ETH")
+                description: "Ethereum"
             )
         ),
         .singleAccount(
             AccountPickerRow.SingleAccount(
-                id: UUID(),
+                id: bchWalletIdentifier,
                 title: "BCH Wallet",
-                description: "Bitcoin Cash",
-                fiatBalance: .loaded(next: "$807.21"),
-                cryptoBalance: .loaded(next: "0.00388845 BCH")
+                description: "Bitcoin Cash"
             )
         ),
         .singleAccount(
             AccountPickerRow.SingleAccount(
-                id: UUID(),
+                id: bchTradingWalletIdentifier,
                 title: "BCH Trading Wallet",
-                description: "Bitcoin Cash",
-                fiatBalance: .loaded(next: "$40.30"),
-                cryptoBalance: .loaded(next: "0.00004829 BCH")
+                description: "Bitcoin Cash"
             )
         )
     ]
@@ -181,7 +217,8 @@ struct AccountPickerView_Previews: PreviewProvider {
         title: "Send Crypto Now",
         subtitle: "Choose a Wallet to send cypto from.",
         image: ImageAsset.iconSend.image,
-        tableTitle: "Select a Wallet"
+        tableTitle: "Select a Wallet",
+        searchable: false
     )
 
     @ViewBuilder static func view(
@@ -191,13 +228,17 @@ struct AccountPickerView_Previews: PreviewProvider {
             store: Store(
                 initialState: AccountPickerState(
                     rows: rows,
-                    header: header
+                    header: header,
+                    fiatBalances: fiatBalances,
+                    cryptoBalances: cryptoBalances,
+                    currencyCodes: currencyCodes
                 ),
                 reducer: accountPickerReducer,
                 environment: AccountPickerEnvironment(
                     rowSelected: { _ in },
                     backButtonTapped: {},
                     closeButtonTapped: {},
+                    search: { _ in },
                     sections: { Just(Array(accountPickerRowList)).eraseToAnyPublisher() },
                     updateSingleAccount: { _ in nil },
                     updateAccountGroup: { _ in nil },

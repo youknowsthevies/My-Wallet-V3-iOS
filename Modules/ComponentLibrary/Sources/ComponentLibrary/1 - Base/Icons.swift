@@ -25,8 +25,16 @@ public struct Icon: View, Equatable {
     let name: String
 
     public var body: some View {
-        ImageViewRepresentable(name: name)
+        ImageViewRepresentable(image: uiImage)
             .scaledToFit()
+    }
+
+    public var uiImage: UIImage? {
+        UIImage(
+            named: name,
+            in: .componentLibrary,
+            with: nil
+        )
     }
 }
 
@@ -163,16 +171,12 @@ extension Icon {
 
 /// SwiftUI's `Image` does not correctly scale up vector images. Images end up extremely blurry.
 /// So, we get around this by reverting back to `UIImageView` to display icons.
-private struct ImageViewRepresentable: UIViewRepresentable {
-    let name: String
+struct ImageViewRepresentable: UIViewRepresentable {
+    let image: UIImage?
 
     func makeUIView(context: Context) -> some UIView {
         let view = UIImageView(
-            image: UIImage(
-                named: name,
-                in: .componentLibrary,
-                with: nil
-            )?.withRenderingMode(.alwaysTemplate)
+            image: image?.withRenderingMode(.alwaysTemplate)
         )
         return view
     }
