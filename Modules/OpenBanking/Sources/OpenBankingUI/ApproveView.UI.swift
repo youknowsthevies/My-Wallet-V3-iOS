@@ -7,8 +7,7 @@ import UIComponentsKit
 extension ApproveState.UI {
 
     static func model(
-        _ bankAccount: OpenBanking.BankAccount,
-        for action: BankState.Action,
+        for action: OpenBanking.Action,
         in environment: OpenBankingEnvironment
     ) -> ApproveState.UI {
 
@@ -16,7 +15,8 @@ extension ApproveState.UI {
         let expiry = Calendar.current.date(byAdding: _90days, to: Date())
             .map(DateFormatter.long.string(from:)) ?? Localization.Approve.Payment.in90Days
 
-        switch action {
+        let bankAccount = action.account
+        switch action.then {
         case .link(let institution):
             return .init(
                 title: bankAccount.attributes.entity,
@@ -30,61 +30,90 @@ extension ApproveState.UI {
                 ]
             )
 
-        case .pay(let amountMinor, _):
-            let details = bankAccount.details
-            guard let bankName = details?.bankName,
-                  let sortCode = details?.sortCode,
-                  let accountNumber = details?.accountNumber,
-                  let currency = bankAccount.currency,
+        case .confirm(let order):
+            guard let currency = bankAccount.currency,
                   let amount = environment.fiatCurrencyFormatter.displayString(
-                      amountMinor: amountMinor,
-                      currency: currency
+                    amountMinor: order.inputQuantity,
+                    currency: currency
                   )
             else {
                 return .init(title: Localization.Error.title, tasks: [])
             }
-
-            let header = Task.group(
-                Task.label(Localization.Approve.Payment.approveYourPayment)
-                    .typography(.title3),
-                Task.spacer(4.vmin),
-                Task.group(
-                    Task.divider(),
-                    Task.row(Localization.Approve.Payment.paymentTotal, value: amount)
-                        .padding([.top, .bottom], 8.pt),
-                    Task.divider()
-                ),
-                Task.spacer(4.vmin)
+            return payment(
+                of: amount,
+                expires: expiry,
+                from: bankAccount
             )
-
-            let information = Task.section(
-                header: Localization.Approve.Payment.paymentInformation,
-                expandable: true,
-                tasks: [
-                    Task.row(Localization.Approve.Payment.bankName, value: "\(bankName)"),
-                    Task.row(Localization.Approve.Payment.sortCode, value: "\(sortCode)"),
-                    Task.row(Localization.Approve.Payment.accountNumber, value: "\(accountNumber)")
-                ]
-            )
-
-            return .init(
-                title: bankAccount.attributes.entity,
-                tasks: [
-                    Task.group(
-                        header,
-                        information
-                    )
-                    .padding(),
-                    Task.spacer(4.vmin),
-                    termsAndConditions(
-                        entity: bankAccount.attributes.entity,
-                        bankName: bankAccount.details?.bankName ?? Localization.Approve.Payment.bank,
-                        expiry: expiry
-                    )
-                    .padding()
-                ]
+        case .deposit(let amountMinor, _):
+            guard let currency = bankAccount.currency,
+                  let amount = environment.fiatCurrencyFormatter.displayString(
+                    amountMinor: amountMinor,
+                    currency: currency
+                  )
+            else {
+                return .init(title: Localization.Error.title, tasks: [])
+            }
+            return payment(
+                of: amount,
+                expires: expiry,
+                from: bankAccount
             )
         }
+    }
+
+    private static func payment(
+        of amount: String,
+        expires expiry: String,
+        from bankAccount: OpenBanking.BankAccount
+    ) -> ApproveState.UI {
+        let details = bankAccount.details
+        guard let bankName = details?.bankName,
+              let sortCode = details?.sortCode,
+              let accountNumber = details?.accountNumber
+        else {
+            return .init(title: Localization.Error.title, tasks: [])
+        }
+
+        let header = Task.group(
+            Task.label(Localization.Approve.Payment.approveYourPayment)
+                .typography(.title3),
+            Task.spacer(4.vmin),
+            Task.group(
+                Task.divider(),
+                Task.row(Localization.Approve.Payment.paymentTotal, value: amount)
+                    .padding([.top, .bottom], 8.pt),
+                Task.divider()
+            ),
+            Task.spacer(4.vmin)
+        )
+
+        let information = Task.section(
+            header: Localization.Approve.Payment.paymentInformation,
+            expandable: true,
+            tasks: [
+                Task.row(Localization.Approve.Payment.bankName, value: "\(bankName)"),
+                Task.row(Localization.Approve.Payment.sortCode, value: "\(sortCode)"),
+                Task.row(Localization.Approve.Payment.accountNumber, value: "\(accountNumber)")
+            ]
+        )
+
+        return .init(
+            title: bankAccount.attributes.entity,
+            tasks: [
+                Task.group(
+                    header,
+                    information
+                )
+                .padding(),
+                Task.spacer(4.vmin),
+                termsAndConditions(
+                    entity: bankAccount.attributes.entity,
+                    bankName: bankAccount.details?.bankName ?? Localization.Approve.Payment.bank,
+                    expiry: expiry
+                )
+                .padding()
+            ]
+        )
     }
 
     static func termsAndConditions(

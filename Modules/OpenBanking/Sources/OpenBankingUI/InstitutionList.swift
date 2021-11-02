@@ -16,10 +16,10 @@ public struct InstitutionListState: Equatable, NavigationState {
     var selection: ApproveState?
 }
 
-public enum InstitutionListAction: Hashable, NavigationAction, FailableAction {
+public enum InstitutionListAction: Hashable, NavigationAction, FailureAction {
 
     case route(RouteIntent<InstitutionListRoute>?)
-    case fail(OpenBanking.Error)
+    case failure(OpenBanking.Error)
 
     case fetch
     case fetched(OpenBanking.BankAccount)
@@ -61,11 +61,12 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                 state.route = route
                 return .none
             case .fetch:
-                return try environment.openBanking
+                return environment.openBanking
                     .createBankAccount()
                     .receive(on: environment.scheduler.main)
-                    .eraseToEffect()
                     .mapped(to: InstitutionListAction.fetched)
+                    .catch(InstitutionListAction.failure)
+                    .eraseToEffect()
             case .fetched(let account):
                 state.account = .success(account)
                 return .none
@@ -77,8 +78,7 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                     .get()
                 state.selection = .init(
                     bank: .init(
-                        account: account,
-                        action: .link(institution: institution)
+                        action: .init(account: account, then: .link(institution: institution))
                     )
                 )
                 return .navigate(to: .approve)
@@ -93,7 +93,7 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                 return .none
             case .dismiss:
                 return .fireAndForget(environment.dismiss)
-            case .fail(let error):
+            case .failure(let error):
                 state.account = .failure(error)
                 return .none
             }

@@ -27,10 +27,16 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-composable-architecture",
             from: "0.28.1"
         ),
+        .package(
+            name: "swift-case-paths",
+            url: "https://github.com/pointfreeco/swift-case-paths",
+            from: "0.7.0"
+        ),
         .package(path: "../ComposableNavigation"),
         .package(path: "../ComponentLibrary"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
+        .package(path: "../NetworkErrors"),
         .package(path: "../Session"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
@@ -38,8 +44,19 @@ let package = Package(
     ],
     targets: [
         .target(
+            name: "OpenBankingDomain",
+            dependencies: [
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "CasePaths", package: "swift-case-paths"),
+                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "Session", package: "Session"),
+                .product(name: "ToolKit", package: "Tool")
+            ]
+        ),
+        .target(
             name: "OpenBanking",
             dependencies: [
+                .target(name: "OpenBankingDomain"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "Session", package: "Session"),
@@ -49,6 +66,7 @@ let package = Package(
         .target(
             name: "OpenBankingUI",
             dependencies: [
+                .target(name: "OpenBankingDomain"),
                 .target(name: "OpenBanking"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableNavigation"),

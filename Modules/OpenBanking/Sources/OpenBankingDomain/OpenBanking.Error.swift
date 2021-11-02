@@ -11,6 +11,7 @@ extension OpenBanking {
         case code(String)
         case state(State.Error)
         case other(Swift.Error)
+        case timeout
     }
 }
 
@@ -29,7 +30,7 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
 
     public var any: Error {
         switch self {
-        case .message, .code:
+        case .message, .code, .timeout:
             return self
         case .state(let error):
             return error
@@ -48,6 +49,8 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
 
     public var description: String {
         switch self {
+        case .timeout:
+            return String(describing: self)
         case .message(let description), .code(let description):
             return description
         case .state(let error):
@@ -86,3 +89,5 @@ extension OpenBanking.Error: Codable {
         }
     }
 }
+
+extension OpenBanking.Error: TimeoutFailure {}

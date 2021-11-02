@@ -23,178 +23,91 @@ public struct BankState: Equatable {
         public internal(set) var action: [Action]?
     }
 
-    public var account: OpenBanking.BankAccount
-    public var payment: OpenBanking.Payment.Details?
+    public internal(set) var ui: UI?
+    public internal(set) var action: OpenBanking.Action
 
-    public enum Action: Equatable {
-        case link(institution: OpenBanking.Institution)
-        case pay(amountMinor: String, product: String)
+    var account: OpenBanking.BankAccount {
+        action.account
     }
 
-    public internal(set) var ui: UI?
-    public internal(set) var action: Action
-
     var bankName: String {
-        switch action {
+        switch action.then {
         case .link(let institution):
             return institution.fullName
-        case .pay:
+        case .deposit, .confirm:
             return account.details?.bankName ?? Localization.Bank.yourBank
         }
     }
 }
 
-public enum BankAction: Hashable, FailableAction {
-
+public enum BankAction: Hashable, FailureAction {
     case request
-
-    case createPayment(OpenBanking.BankAccount, amountMinor: String, product: String)
-    case waitForApproval(OpenBanking.BankAccount)
-    case waitForPaymentApproval(OpenBanking.Payment)
-
     case launchAuthorisation(URL)
-
-    case updatePayment(OpenBanking.Payment.Details)
-    case updateWallet(OpenBanking.BankAccount)
-
-    case success
+    case finalise(OpenBanking.Success)
     case cancel
     case dismiss
-
-    case linked(OpenBanking.BankAccount)
-    case authorised(OpenBanking.BankAccount, OpenBanking.Payment.Details)
-    case fail(OpenBanking.Error)
+    case finished
+    case failure(OpenBanking.Error)
 }
 
 public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> { state, action, environment in
 
     enum ID {
-        struct Poll: Hashable {}
-        struct LaunchBank: Hashable {}
-        struct Linked: Hashable {}
+        struct OB: Hashable {}
         struct ConsentError: Hashable {}
     }
 
     switch action {
     case .request:
         state.ui = .communicating(to: state.bankName)
-        switch state.action {
-        case .link(let institution):
-            return try state.account
-                .activateBankAccount(with: institution.id, in: environment.openBanking)
-                .receive(on: environment.scheduler.main)
-                .delay(for: .seconds(0.5), scheduler: environment.scheduler.main)
-                .eraseToEffect()
-                .mapped(to: BankAction.waitForApproval)
-        case .pay(amountMinor: let amount, product: let product):
-            return state.account
-                .get(in: environment.openBanking)
-                .tryMap { try ($0.get(), amountMinor: amount, product: product) }
-                .result()
-                .receive(on: environment.scheduler.main)
-                .delay(for: .seconds(0.5), scheduler: environment.scheduler.main)
-                .eraseToEffect()
-                .mapped(to: /BankAction.createPayment)
-        }
-
-    case .createPayment(let account, let amount, let product):
-        state.ui = .communicating(to: state.bankName)
-        return try account.pay(amountMinor: amount, product: product, in: environment.openBanking)
-            .receive(on: environment.scheduler.main)
-            .delay(for: .seconds(0.5), scheduler: environment.scheduler.main)
+        return environment.openBanking.start(action: state.action)
+            .compactMap { state in
+                switch state {
+                case .success(let output):
+                    return BankAction.finalise(output)
+                case .failure(let error):
+                    return BankAction.failure(error)
+                case .launchAuthorisation(let url):
+                    return BankAction.launchAuthorisation(url)
+                }
+            }
             .eraseToEffect()
-            .mapped(to: BankAction.waitForPaymentApproval)
-
-    case .waitForApproval(let account):
-        return try .merge(
-            environment.openBanking.state.publisher(for: .authorisation.url, as: URL.self)
-                .ignoreResultFailure()
-                .receive(on: environment.scheduler.main)
-                .eraseToEffect()
-                .mapped(to: BankAction.launchAuthorisation)
-                .cancellable(id: ID.LaunchBank()),
-            account.poll(in: environment.openBanking)
-                .receive(on: environment.scheduler.main)
-                .eraseToEffect()
-                .mapped(to: BankAction.updateWallet)
-                .cancellable(id: ID.Poll())
-        )
-
-    case .waitForPaymentApproval(let payment):
-        return .merge(
-            environment.openBanking.state.publisher(for: .authorisation.url, as: URL.self)
-                .ignoreResultFailure()
-                .receive(on: environment.scheduler.main)
-                .eraseToEffect()
-                .mapped(to: BankAction.launchAuthorisation)
-                .cancellable(id: ID.LaunchBank()),
-            payment.poll(in: environment.openBanking)
-                .receive(on: environment.scheduler.main)
-                .eraseToEffect()
-                .mapped(to: BankAction.updatePayment)
-                .cancellable(id: ID.Poll())
-        )
-
+            .cancellable(id: ID.OB())
+        
     case .launchAuthorisation(let url):
         state.ui = .waiting(for: state.bankName)
         return .merge(
-            .cancel(id: ID.LaunchBank()),
             .fireAndForget { environment.openURL.open(url) },
             environment.openBanking.state.publisher(for: .consent.error, as: OpenBanking.Error.self)
                 .ignoreResultFailure()
                 .receive(on: environment.scheduler.main)
                 .eraseToEffect()
                 .map(OpenBanking.Error.init)
-                .mapped(to: BankAction.fail)
+                .mapped(to: BankAction.failure)
                 .cancellable(id: ID.ConsentError())
         )
 
-    case .updateWallet(let account):
-        state.account = account
-        if let error = account.error {
-            return Effect(value: BankAction.fail(error))
-        }
-        state.ui = .updatingWallet
-        return .merge(
-            .cancel(id: ID.Poll()),
-            environment.openBanking.state.publisher(for: .is.authorised, as: Bool.self)
-                .ignoreResultFailure()
-                .receive(on: environment.scheduler.main)
-                .filter { $0 }
-                .eraseToEffect()
-                .mapped(to: BankAction.success)
-                .cancellable(id: ID.Linked())
-        )
-
-    case .updatePayment(let payment):
-        state.payment = payment
-        if let error = payment.extraAttributes?.error {
-            return Effect(value: .fail(.code(error)))
-        }
-        if payment.state != .PENDING {
+    case .finalise(let output):
+        switch output {
+        case .link:
+            state.ui = .linked(institution: state.bankName)
+        case .deposit(let payment):
             state.ui = .payment(success: payment, in: environment)
+        case .confirm:
+            fatalError()
         }
-        return .cancel(id: ID.Poll())
-
-    case .success:
-        state.ui = .linked(institution: state.bankName)
-        return .merge(
-            .cancel(id: ID.Linked()),
-            .cancel(id: ID.ConsentError())
-        )
-
+        return .cancel(id: ID.OB())
+        
     case .dismiss:
         return .fireAndForget(environment.dismiss)
 
-    case .linked, .cancel, .authorised:
+    case .finished, .cancel:
         return .none
 
-    case .fail(let error):
+    case .failure(let error):
         state.ui = .error(error)
         return .merge(
-            .cancel(id: ID.LaunchBank()),
-            .cancel(id: ID.Poll()),
-            .cancel(id: ID.Linked()),
+            .cancel(id: ID.OB()),
             .cancel(id: ID.ConsentError())
         )
     }
@@ -248,19 +161,13 @@ public struct BankView: View {
                 case .ok:
                     return .init(
                         title: Localization.Bank.Action.ok,
-                        action: {
-                            if let payment = viewStore.payment {
-                                viewStore.send(.authorised(viewStore.account, payment))
-                            } else {
-                                viewStore.send(.fail(.message(Localization.Bank.Error.failedToGetPaymentDetails)))
-                            }
-                        },
+                        action: { viewStore.send(.finished) },
                         style: style
                     )
                 case .next:
                     return .init(
                         title: Localization.Bank.Action.next,
-                        action: { viewStore.send(.linked(viewStore.account)) },
+                        action: { viewStore.send(.finished) },
                         style: style
                     )
                 case .retry(let label, let action):
@@ -287,9 +194,8 @@ struct BankView_Previews: PreviewProvider {
         BankView(
             store: .init(
                 initialState: BankState(
-                    account: .mock,
                     ui: .linked(institution: "Monzo"),
-                    action: .link(institution: .mock)
+                    action: .init(account: .mock, then: .link(institution: .mock))
                 ),
                 reducer: bankReducer,
                 environment: .mock

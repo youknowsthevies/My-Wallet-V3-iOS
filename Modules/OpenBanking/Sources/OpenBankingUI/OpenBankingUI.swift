@@ -3,6 +3,7 @@
 import ComposableArchitecture
 import ComposableNavigation
 @_exported import OpenBanking
+@_exported import OpenBankingDomain
 import SwiftUI
 
 public enum OpenBankingState: Equatable {
@@ -24,8 +25,31 @@ extension OpenBankingState {
         .approve(
             .init(
                 bank: .init(
-                    account: bankAccount,
-                    action: .pay(amountMinor: amountMinor, product: product)
+                    action: .init(
+                        account: bankAccount,
+                        then: .deposit(
+                            amountMinor: amountMinor,
+                            product: product
+                        )
+                    )
+                )
+            )
+        )
+    }
+
+    public static func confirm(
+        order: OpenBanking.Order,
+        from bankAccount: OpenBanking.BankAccount
+    ) -> Self {
+        .approve(
+            .init(
+                bank: .init(
+                    action: .init(
+                        account: bankAccount,
+                        then: .confirm(
+                            order: order
+                        )
+                    )
                 )
             )
         )
@@ -51,17 +75,14 @@ public let openBankingReducer = Reducer<OpenBankingState, OpenBankingAction, Ope
                 action: /OpenBankingAction.approve,
                 environment: \.environment
             ),
-        .init { _, action, environment in
+        .init { state, action, environment in
             switch action {
-            case .approve(.bank(.fail(let error))),
-                 .institutionList(.approve(.bank(.fail(let error)))):
+            case .approve(.bank(.failure(let error))),
+                 .institutionList(.approve(.bank(.failure(let error)))):
                 environment.eventPublisher.send(.failed(error))
                 return .none
-            case .institutionList(.approve(.bank(.linked(let account)))):
-                environment.eventPublisher.send(.linked(account))
-                return .none
-            case .approve(.bank(.authorised(let account, let payment))):
-                environment.eventPublisher.send(.authorised(account, payment: payment))
+            case .institutionList(.approve(.bank(.finished))):
+                environment.eventPublisher.send(.success)
                 return .none
             case .approve:
                 return .none

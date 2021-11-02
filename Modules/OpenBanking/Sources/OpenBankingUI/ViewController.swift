@@ -8,8 +8,7 @@ import ToolKit
 import UIComponentsKit
 
 public enum OpenBankingEvent {
-    case linked(OpenBanking.BankAccount)
-    case authorised(OpenBanking.BankAccount, payment: OpenBanking.Payment.Details)
+    case success
     case failed(OpenBanking.Error)
 }
 
@@ -17,6 +16,20 @@ public final class OpenBankingViewController: UIHostingController<OpenBankingVie
 
     public var eventPublisher: AnyPublisher<OpenBankingEvent, Never> {
         rootView.environment.eventPublisher.eraseToAnyPublisher()
+    }
+
+    public convenience init(
+        order: OpenBanking.Order,
+        from account: OpenBanking.BankAccount,
+        environment: OpenBankingEnvironment
+    ) {
+        self.init(
+            .confirm(
+                order: order,
+                from: account
+            ),
+            environment: environment
+        )
     }
 
     public convenience init(

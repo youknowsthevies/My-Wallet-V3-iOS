@@ -8,11 +8,11 @@ import TestKit
 /// Used for testing without any UI
 final class OpenBankingFlow: XCTestCase {
 
-    var banking: OpenBanking!
+    var banking: OpenBankingClient!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        banking = OpenBanking(
+        banking = OpenBankingClient(
             requestBuilder: RequestBuilder(
                 config: Network.Config(
                     scheme: "https",
@@ -97,7 +97,7 @@ final class OpenBankingFlow: XCTestCase {
             .first(where: { $0.state == "ACTIVE" })
             .unwrap()
 
-        let payment = try bankAccount.pay(amountMinor: "1000", product: "SIMPLEBUY", in: banking)
+        let payment = try bankAccount.deposit(amountMinor: "1000", product: "SIMPLEBUY", in: banking)
             .wait(timeout: 5)
             .get()
 

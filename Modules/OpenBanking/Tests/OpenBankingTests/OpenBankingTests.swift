@@ -3,6 +3,7 @@
 import CombineSchedulers
 @testable import NetworkKit
 @testable import OpenBanking
+@testable import OpenBankingDomain
 import OpenBankingTestFixture
 import TestKit
 
@@ -11,12 +12,12 @@ import TestKit
 
 final class OpenBankingTests: XCTestCase {
 
-    var banking: OpenBanking!
+    var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        (banking, network) = OpenBanking.test()
+        (banking, network) = OpenBankingClient.test()
     }
 
     func test_create_bank_account_set_state_id() throws {
@@ -26,7 +27,7 @@ final class OpenBankingTests: XCTestCase {
 
     func test_handle_consent_token_without_callback_path() throws {
         banking.state.set(.consent.token, to: "token")
-        let error: OpenBanking.State.Error = try banking.state.get(.consent.error)
+        let error: OpenBankingClient.State.Error = try banking.state.get(.consent.error)
         XCTAssertEqual(error, .keyDoesNotExist(.callback.path))
     }
 
@@ -69,14 +70,14 @@ final class OpenBankingTests: XCTestCase {
 
 final class OpenBankingBankAccountTests: XCTestCase {
 
-    var banking: OpenBanking!
+    var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
     var bankAccount: OpenBanking.BankAccount!
     var institution: OpenBanking.Institution!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        (banking, network) = OpenBanking.test()
+        (banking, network) = OpenBankingClient.test()
         bankAccount = try banking.createBankAccount().wait().get()
         institution = bankAccount.attributes.institutions?[1]
     }
@@ -147,7 +148,7 @@ final class OpenBankingBankAccountTests: XCTestCase {
 
     func test_create_payment() throws {
 
-        let payment = try bankAccount.pay(
+        let payment = try bankAccount.deposit(
             amountMinor: "1000",
             product: "SIMPLEBUY",
             in: banking
@@ -180,7 +181,7 @@ final class OpenBankingBankAccountTests: XCTestCase {
 
 final class OpenBankingBankAccountPollTests: XCTestCase {
 
-    var banking: OpenBanking!
+    var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
     var bankAccount: OpenBanking.BankAccount!
     var institution: OpenBanking.Institution!
@@ -189,7 +190,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         scheduler = DispatchQueue.test
-        (banking, network) = OpenBanking.test(using: scheduler)
+        (banking, network) = OpenBankingClient.test(using: scheduler)
         bankAccount = try banking.createBankAccount().wait().get()
         institution = bankAccount.attributes.institutions?[1]
     }
@@ -286,7 +287,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
     func x_test_poll_realtime() throws {
 
-        (banking, network) = OpenBanking.test(using: DispatchQueue.main)
+        (banking, network) = OpenBankingClient.test(using: DispatchQueue.main)
 
         let request = get()
 
@@ -330,7 +331,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
 final class OpenBankingPaymentTests: XCTestCase {
 
-    var banking: OpenBanking!
+    var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
     var bankAccount: OpenBanking.BankAccount!
     var payment: OpenBanking.Payment!
@@ -339,9 +340,9 @@ final class OpenBankingPaymentTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         scheduler = DispatchQueue.test
-        (banking, network) = OpenBanking.test(using: scheduler)
+        (banking, network) = OpenBankingClient.test(using: scheduler)
         bankAccount = try banking.allBankAccounts().wait().get().first.unwrap()
-        payment = try bankAccount.pay(amountMinor: "1000", product: "SIMPLEBUY", in: banking).wait().get()
+        payment = try bankAccount.deposit(amountMinor: "1000", product: "SIMPLEBUY", in: banking).wait().get()
     }
 
     func test_get() throws {
@@ -357,7 +358,8 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         network[get()] = try OpenBanking.Payment.Details(
             id: "b039317d-df85-413f-932d-2719346a839a",
-            amount: .init(symbol: "GBP", value: "1000"),
+            amount: .init(symbol: "GBP", value: "10.00"),
+            amountMinor: "1000",
             extraAttributes: .init(error: "ERROR_CODE"),
             insertedAt: "DATE",
             state: .FAILED,
@@ -374,7 +376,8 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         network[get()] = try OpenBanking.Payment.Details(
             id: "b039317d-df85-413f-932d-2719346a839a",
-            amount: .init(symbol: "GBP", value: "1000"),
+            amount: .init(symbol: "GBP", value: "10.00"),
+            amountMinor: "1000",
             insertedAt: "DATE",
             state: .PENDING,
             type: "CHARGE",
@@ -408,7 +411,8 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         network[get()] = try OpenBanking.Payment.Details(
             id: "b039317d-df85-413f-932d-2719346a839a",
-            amount: .init(symbol: "GBP", value: "1000"),
+            amount: .init(symbol: "GBP", value: "10.00"),
+            amountMinor: "1000",
             insertedAt: "DATE",
             state: .PENDING,
             type: "CHARGE",
@@ -426,7 +430,8 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         network[get()] = try OpenBanking.Payment.Details(
             id: "b039317d-df85-413f-932d-2719346a839a",
-            amount: .init(symbol: "GBP", value: "1000"),
+            amount: .init(symbol: "GBP", value: "10.00"),
+            amountMinor: "1000",
             extraAttributes: .init(authorisationUrl: "https://monzo.com"),
             insertedAt: "DATE",
             state: .COMPLETE,

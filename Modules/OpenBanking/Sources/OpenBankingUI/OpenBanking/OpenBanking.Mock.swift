@@ -20,6 +20,15 @@ extension OpenBankingEnvironment {
 extension OpenBanking {
 
     static let mock = OpenBanking(
+        state: .init(),
+        banking: OpenBankingClient.mock,
+        app: PrintAppOpen()
+    )
+}
+
+extension OpenBankingClient {
+
+    static let mock = OpenBankingClient(
         requestBuilder: RequestBuilder(
             config: Network.Config(
                 scheme: "https",

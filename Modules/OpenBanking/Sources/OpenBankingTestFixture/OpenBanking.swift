@@ -6,10 +6,10 @@ import Foundation
 import NetworkKit
 @testable import OpenBanking
 
-extension OpenBanking {
+extension OpenBankingClient {
 
     public static func test(_ requests: [URLRequest: Data] = [:]) -> (
-        banking: OpenBanking,
+        banking: OpenBankingClient,
         communicator: ReplayNetworkCommunicator
     ) {
         test(requests, using: DispatchQueue.immediate)
@@ -19,7 +19,7 @@ extension OpenBanking {
         _ requests: [URLRequest: Data] = [:],
         using scheduler: S
     ) -> (
-        banking: OpenBanking,
+        banking: OpenBankingClient,
         communicator: ReplayNetworkCommunicator
     ) where
         S.SchedulerTimeType == DispatchQueue.SchedulerTimeType,
@@ -27,7 +27,7 @@ extension OpenBanking {
     {
         let communicator = ReplayNetworkCommunicator(requests, in: Bundle.module)
         return (
-            OpenBanking(
+            OpenBankingClient(
                 requestBuilder: RequestBuilder(
                     config: Network.Config(
                         scheme: "https",

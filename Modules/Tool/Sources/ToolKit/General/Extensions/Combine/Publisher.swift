@@ -25,20 +25,29 @@ extension Publisher where Failure == Never {
             handler(root)()
         }
     }
-
-    public func sink<Root, T>(
-        to handler: @escaping (Root) -> (T) -> Void,
-        on root: Root,
-        with value: T
-    ) -> AnyCancellable where Root: AnyObject {
-        sink { [weak root] _ in
-            guard let root = root else { return }
-            handler(root)(value)
-        }
-    }
 }
 
 extension Publisher {
+
+    public func sink<Root>(
+        to handler: @escaping (Root) -> (Output) -> Void,
+        on root: Root
+    ) -> AnyCancellable where Root: AnyObject {
+        sink { _ in } receiveValue: { [weak root] output in
+            guard let root = root else { return }
+            handler(root)(output)
+        }
+    }
+
+    public func sink<Root>(
+        to handler: @escaping (Root) -> () -> Void,
+        on root: Root
+    ) -> AnyCancellable where Root: AnyObject {
+        sink { _ in } receiveValue: { [weak root] output in
+            guard let root = root else { return }
+            handler(root)()
+        }
+    }
 
     public func sink<Root>(
         completion completionHandler: @escaping (Root) -> (Subscribers.Completion<Failure>) -> Void,
@@ -286,5 +295,20 @@ extension AnyCancellable {
         line: UInt = #line
     ) where Object: AnyObject {
         objc_setAssociatedObject(object, file.description + line.description, self, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+}
+
+extension Publisher {
+
+    public func mapped<T>(to action: CasePath<T, Output>) -> Publishers.Map<Self, T> {
+        map { output in action.embed(output) }
+    }
+
+    public func mapped<T>(to action: @escaping (Output) -> T) -> Publishers.Map<Self, T> {
+        map(action)
+    }
+
+    public func mapped<T>(to action: @autoclosure @escaping () -> T) -> Publishers.Map<Self, T> {
+        map { _ -> T in action() }
     }
 }

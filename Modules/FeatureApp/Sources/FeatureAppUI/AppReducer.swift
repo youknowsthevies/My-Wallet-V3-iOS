@@ -102,6 +102,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
     case .appDelegate(.willEnterForeground):
         return Effect(value: .core(.appForegrounded))
     case .appDelegate(.handleDelayedEnterBackground):
+        return .none
         return .merge(
             .fireAndForget {
                 if environment.walletManager.walletIsInitialized() {
