@@ -104,7 +104,7 @@ let interestAccountListReducer = Reducer.combine(
                 }
 
                 state.interestAccountDetailsState = .init(interestAccountOverview: overview)
-                return .sheet(into: .details)
+                return .enter(into: .details, context: .none)
             case .earnInterestButtonTapped(let value):
                 let blockchainAccountRepository = environment.blockchainAccountRepository
                 let currency = value.currency

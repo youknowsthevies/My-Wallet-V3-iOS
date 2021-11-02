@@ -14,21 +14,21 @@ final class ComposableNavigationTests: XCTestCase {
         XCTAssertEqual(state.route?.route, .test)
 
         _ = testReducer.run(&state, .enter(into: .story), ())
-        XCTAssertEqual(state.route?.action, .enterInto(fullScreen: false))
+        XCTAssertEqual(state.route?.action, .enterInto(.default))
         XCTAssertEqual(state.route?.route, .story)
 
         _ = testReducer.run(&state, .route(nil), ())
         XCTAssertNil(state.route)
 
-        _ = testReducer.run(&state, .enter(into: .story, fullScreen: true), ())
-        XCTAssertEqual(state.route?.action, .enterInto(fullScreen: true))
+        _ = testReducer.run(&state, .enter(into: .story, context: .fullScreen), ())
+        XCTAssertEqual(state.route?.action, .enterInto(.fullScreen))
         XCTAssertEqual(state.route?.route, .story)
 
         _ = testReducer.run(&state, .route(nil), ())
         XCTAssertNil(state.route)
 
         _ = testReducer.run(&state, .enter(into: .context("Context")), ())
-        XCTAssertEqual(state.route?.action, .enterInto(fullScreen: false))
+        XCTAssertEqual(state.route?.action, .enterInto(.default))
         XCTAssertEqual(state.route?.route, .context("Context"))
     }
 }
