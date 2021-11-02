@@ -72,8 +72,10 @@ public class OpenBanking {
                 .result()
                 .sink(to: OpenBanking.handle(updateConsent:), on: self)
                 .store(in: &bag)
+        } catch let error as OpenBanking.State.Error {
+            state.set(.consent.error, to: OpenBanking.Error.state(error))
         } catch {
-            state.set(.consent.error, to: error)
+            state.set(.consent.error, to: OpenBanking.Error.other(error))
         }
     }
 
@@ -179,7 +181,7 @@ extension OpenBanking.BankAccount {
                 .tryMap { result throws -> OpenBanking.BankAccount in
                     let account = try result.get()
                     guard account.error == nil else { return account }
-                    guard account.state != "PENDING" else { throw OpenBankingRetry.timeout }
+                    guard account.state != .PENDING else { throw OpenBankingRetry.timeout }
                     return account
                 }
         }
@@ -400,6 +402,7 @@ extension OpenBanking.Media {
     public struct MediaType: NewTypeString {
 
         public private(set) var value: String
+
         public init(_ value: String) { self.value = value }
 
         public static let icon: Self = "icon"
@@ -425,6 +428,7 @@ extension OpenBanking.Payment {
 
         public let id: Identity<Self>
         public var amount: Amount
+        public var amountMinor: String
         public var extraAttributes: ExtraAttributes?
         public var insertedAt: String
         public var state: State
@@ -484,4 +488,7 @@ extension OpenBanking.Error {
     public static let BANK_TRANSFER_ACCOUNT_REJECTED: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_REJECTED")
     public static let BANK_TRANSFER_ACCOUNT_FAILED: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_FAILED")
     public static let BANK_TRANSFER_ACCOUNT_INVALID: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_INVALID")
+    public static let BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED")
+    public static let BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL")
+    public static let BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD")
 }

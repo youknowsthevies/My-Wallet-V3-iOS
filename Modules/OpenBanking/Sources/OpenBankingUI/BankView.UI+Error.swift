@@ -23,7 +23,7 @@ extension BankState.UI {
                 subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NAME_MISMATCH.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Action.tryADifferentBank, action: .request),
+                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NAME_MISMATCH.action, action: .request),
                 .cancel
             ]
         ),
@@ -35,7 +35,7 @@ extension BankState.UI {
                 subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_EXPIRED.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_EXPIRED.action, action: .request),
                 .cancel
             ]
         ),
@@ -59,7 +59,7 @@ extension BankState.UI {
                 subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED.action, action: .request),
                 .cancel
             ]
         ),
@@ -71,7 +71,7 @@ extension BankState.UI {
                 subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_INVALID.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_INVALID.action, action: .request),
                 .cancel
             ]
         ),
@@ -83,7 +83,43 @@ extension BankState.UI {
                 subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED.action, action: .request),
+                .cancel
+            ]
+        ),
+        .BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED: .init(
+            info: .init(
+                media: .bankIcon,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED.title,
+                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED.action, action: .request),
+                .cancel
+            ]
+        ),
+        .BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL: .init(
+            info: .init(
+                media: .bankIcon,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL.title,
+                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL.action, action: .request),
+                .cancel
+            ]
+        ),
+        .BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD: .init(
+            info: .init(
+                media: .bankIcon,
+                overlay: .init(media: .error),
+                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD.title,
+                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD.subtitle
+            ),
+            action: [
+                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD.action, action: .request),
                 .cancel
             ]
         )
@@ -98,7 +134,7 @@ extension BankState.UI {
                 subtitle: Localization.Bank.Error.default.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Error.default.action, action: .request),
                 .cancel
             ]
         )
@@ -113,7 +149,7 @@ extension BankState.UI {
                 subtitle: message
             ),
             action: [
-                .retry(label: Localization.Bank.Action.tryAgain, action: .request),
+                .retry(label: Localization.Bank.Error.default.action, action: .request),
                 .cancel
             ]
         )

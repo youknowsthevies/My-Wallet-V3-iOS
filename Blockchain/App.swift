@@ -46,6 +46,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         )
         super.init()
         updateStaticFeatureFlags()
+        _ = featureFlagsService.enable(.local(.openBanking)).subscribe()
     }
 
     // MARK: - App entry point

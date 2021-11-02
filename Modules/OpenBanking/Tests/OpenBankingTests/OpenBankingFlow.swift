@@ -20,7 +20,7 @@ final class OpenBankingFlow: XCTestCase {
                     components: ["nabu-gateway"]
                 ),
                 headers: [
-                    "Authorization": "Bearer ..."
+                    "Authorization": "Bearer "
                 ]
             ),
             network: NetworkAdapter(
@@ -32,6 +32,24 @@ final class OpenBankingFlow: XCTestCase {
             scheduler: DispatchQueue.main.eraseToAnyScheduler(),
             state: .init([.currency: "GBP"])
         )
+    }
+
+    func x_test_delete() throws {
+
+        let accounts = try banking.allBankAccounts()
+            .wait(timeout: 5)
+            .get()
+
+        for account in accounts where account.state != .ACTIVE {
+            print("Deleting \(account.id.value)", terminator: " ")
+            switch try account.delete(in: banking).wait() {
+            case .failure(let error):
+                print("❌")
+                XCTFail("\(error)")
+            case .success:
+                print("✅")
+            }
+        }
     }
 
     func x_test_link() throws {

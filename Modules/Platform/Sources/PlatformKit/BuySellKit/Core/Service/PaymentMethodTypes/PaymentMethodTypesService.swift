@@ -644,8 +644,8 @@ extension Array where Element == PaymentMethodType {
                 }
             case .card(let data):
                 return data.state == .active
-            case .linkedBank(let data) where data.partner != .yodlee:
-                return false
+//            case .linkedBank(let data) where data.partner != .yodlee:
+//                return false
             case .linkedBank(let data):
                 return data.state == .active && data.currency == currentWalletCurrency
             }

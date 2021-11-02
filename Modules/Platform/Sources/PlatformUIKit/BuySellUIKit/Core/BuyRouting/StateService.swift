@@ -107,6 +107,9 @@ public final class StateService: StateServiceAPI {
         /// The user authorized his card payment and should now be referred to partner
         case authorizeCard(order: OrderDetails)
 
+        /// The user authorized open banking payment and should now be referred to partner
+        case authorizeOpenBanking(CheckoutData)
+
         /// The user may cancel their transfer
         case transferCancellation(CheckoutData)
 
@@ -269,6 +272,7 @@ public final class StateService: StateServiceAPI {
              .selectFiat,
              .addCard,
              .authorizeCard,
+             .authorizeOpenBanking,
              .pendingOrderCompleted,
              .ineligible:
             fatalError("\(#function) was called with unhandled state: \(states.debugDescription).")
@@ -679,6 +683,10 @@ extension StateService {
                 )
             case (.bankAccount, true):
                 state = .bankTransferDetails(checkoutData)
+            case (.bankTransfer, _) where checkoutData.linkedBankData?.partner == .yapily:
+                state = .authorizeOpenBanking(
+                    checkoutData
+                )
             case (.bankTransfer, true):
                 state = .pendingOrderCompleted(
                     orderDetails: checkoutData.order
@@ -756,5 +764,17 @@ extension StateService {
         tierUpgradeRouter.presentPromptToUpgradeTier(from: nil) { [weak self] in
             self?.orderCompleted()
         }
+    }
+}
+
+extension StateService {
+
+    public func authorizedOpenBanking(_ data: CheckoutData) {
+        ensureIsOnMainQueue()
+        guard case .authorizeOpenBanking(let order) = statesRelay.value.current else {
+            return assertionFailure("Got authorizedOpenBanking when state was not equal to authorizeOpenBanking")
+        }
+
+       fatalError("TODO") // OB -> Funds, Funds -> Order
     }
 }

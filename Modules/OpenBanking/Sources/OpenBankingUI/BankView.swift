@@ -139,7 +139,14 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         state.ui = .waiting(for: state.bankName)
         return .merge(
             .cancel(id: ID.LaunchBank()),
-            .fireAndForget { environment.openURL.open(url) }
+            .fireAndForget { environment.openURL.open(url) },
+            environment.openBanking.state.publisher(for: .consent.error, as: OpenBanking.Error.self)
+                .ignoreResultFailure()
+                .receive(on: environment.scheduler.main)
+                .eraseToEffect()
+                .map(OpenBanking.Error.init)
+                .mapped(to: BankAction.fail)
+                .cancellable(id: ID.ConsentError())
         )
 
     case .updateWallet(let account):
@@ -156,21 +163,17 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
                 .filter { $0 }
                 .eraseToEffect()
                 .mapped(to: BankAction.success)
-                .cancellable(id: ID.Linked()),
-            environment.openBanking.state.publisher(for: .consent.error, as: OpenBanking.State.Error.self)
-                .ignoreResultFailure()
-                .receive(on: environment.scheduler.main)
-                .eraseToEffect()
-                .map(OpenBanking.Error.init)
-                .mapped(to: BankAction.fail)
-                .cancellable(id: ID.ConsentError())
+                .cancellable(id: ID.Linked())
         )
+
     case .updatePayment(let payment):
         state.payment = payment
         if let error = payment.extraAttributes?.error {
             return Effect(value: .fail(.code(error)))
         }
-        state.ui = .payment(success: payment, in: environment)
+        if payment.state != .PENDING {
+            state.ui = .payment(success: payment, in: environment)
+        }
         return .cancel(id: ID.Poll())
 
     case .success:

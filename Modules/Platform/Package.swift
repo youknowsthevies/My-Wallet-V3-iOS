@@ -75,7 +75,8 @@ let package = Package(
         .package(path: "../RxTool"),
         .package(path: "../WalletPayload"),
         .package(path: "../UIComponents"),
-        .package(path: "../ComposableNavigation")
+        .package(path: "../ComposableNavigation"),
+        .package(path: "../OpenBanking")
     ],
     targets: [
         .target(
@@ -97,7 +98,8 @@ let package = Package(
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "ComposableNavigation", package: "ComposableNavigation"),
                 .product(name: "RxToolKit", package: "RxTool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload")
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "OpenBanking", package: "OpenBanking")
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json"),
@@ -127,7 +129,8 @@ let package = Package(
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "Nuke", package: "Nuke"),
                 .product(name: "PhoneNumberKit", package: "PhoneNumberKit"),
-                .product(name: "Zxcvbn", package: "Zxcvbn")
+                .product(name: "Zxcvbn", package: "Zxcvbn"),
+                .product(name: "OpenBankingUI", package: "OpenBanking")
             ],
             resources: [
                 .copy("PlatformUIKitAssets.xcassets")

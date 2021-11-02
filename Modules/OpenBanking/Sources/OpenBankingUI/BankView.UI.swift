@@ -64,7 +64,7 @@ extension BankState.UI {
     static func payment(success payment: OpenBanking.Payment.Details, in environment: OpenBankingEnvironment) -> Self {
 
         guard let fiat = environment.fiatCurrencyFormatter.displayString(
-            amountMinor: payment.amount.value,
+            amountMinor: payment.amountMinor,
             currency: payment.amount.symbol
         ) else {
             return .errorMessage(Localization.Bank.Payment.error.interpolating(payment.amount.symbol))
@@ -84,8 +84,10 @@ extension BankState.UI {
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .success),
-                title: Localization.Bank.Payment.title.interpolating(formatted.amount),
-                subtitle: Localization.Bank.Payment.subtitle.interpolating(formatted.amount, formatted.currency, formatted.date)
+                title: Localization.Bank.Payment.title
+                    .interpolating(formatted.amount),
+                subtitle: Localization.Bank.Payment.subtitle
+                    .interpolating(formatted.amount, formatted.currency, formatted.date)
             ),
             action: [.ok]
         )

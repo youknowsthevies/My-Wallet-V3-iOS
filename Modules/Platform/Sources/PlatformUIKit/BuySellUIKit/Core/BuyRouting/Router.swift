@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import DIKit
 import Localization
+import OpenBankingUI
 import PlatformKit
 import RxSwift
 import SafariServices
@@ -48,6 +49,7 @@ public final class Router: RouterAPI {
     private let cryptoSelectionService: CryptoCurrencySelectionServiceAPI
     private let navigationRouter: NavigationRouterAPI
     private let alertViewPresenter: AlertViewPresenterAPI
+    private let paymentAccountService: PaymentAccountServiceAPI
 
     private var cardRouter: CardRouter!
 
@@ -56,6 +58,7 @@ public final class Router: RouterAPI {
 
     /// A general dispose bag
     private let disposeBag = DisposeBag()
+    private var bag: Set<AnyCancellable> = []
 
     private let builder: Buildable
 
@@ -79,7 +82,8 @@ public final class Router: RouterAPI {
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         kycRouter: KYCRouterAPI = resolve(), // TODO: merge with the following or remove (IOS-4471)
         newKYCRouter: KYCRouting = resolve(),
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        paymentAccountService: PaymentAccountServiceAPI = resolve()
     ) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
@@ -91,6 +95,7 @@ public final class Router: RouterAPI {
         self.newKYCRouter = newKYCRouter
         self.builder = builder
         self.analyticsRecorder = analyticsRecorder
+        self.paymentAccountService = paymentAccountService
 
         let cryptoSelectionService = CryptoCurrencySelectionService(
             service: supportedPairsInteractor,
@@ -182,6 +187,8 @@ public final class Router: RouterAPI {
             showCheckoutScreen(with: data)
         case .authorizeCard(let data):
             showCardAuthorization(with: data)
+        case .authorizeOpenBanking(let data):
+            showOpenBankingAuthorization(with: data)
         case .pendingOrderCompleted(orderDetails: let orderDetails):
             showPendingOrderCompletionScreen(for: orderDetails)
         case .paymentMethods:
@@ -585,6 +592,76 @@ public final class Router: RouterAPI {
             presenter: presenter
         )
         navigationRouter.present(viewController: viewController)
+    }
+
+    private func showOpenBankingAuthorization(with data: CheckoutData) {
+
+        guard let linkedBank = data.linkedBankData else {
+            fatalError("[impossible] Tried to authorise via OpenBanking without a selected bank")
+        }
+
+        guard let fiatValue = data.fiatValue else {
+            fatalError("[impossible] Tried to authorise via OpenBanking without a fiat currency")
+        }
+
+        let viewController = OpenBankingViewController(
+            pay: fiatValue.minorString,
+            product: "SIMPLEBUY",
+            from: OpenBanking.BankAccount(linkedBank),
+            environment: .init(
+                showTransferDetails: { [weak stateService] in
+                    stateService?.showFundsTransferDetails(for: fiatValue.currency, isOriginDeposit: false)
+                },
+                dismiss: { [weak navigationRouter] in
+                    navigationRouter?.dismiss(using: .modalOverTopMost)
+                },
+                currency: fiatValue.code
+            )
+        )
+
+        viewController.eventPublisher
+            .sink { [weak self] event in
+                self?.handleOpenBanking(
+                    order: data.order,
+                    currency: fiatValue.currency,
+                    event: event
+                )
+            }
+            .store(withLifetimeOf: viewController)
+
+        navigationRouter.present(viewController: viewController)
+    }
+
+    private func handleOpenBanking(
+        order: OrderDetails,
+        currency: FiatCurrency,
+        event: OpenBankingEvent
+    ) -> Void {
+        switch event {
+        case .authorised(let account, let payment):
+            paymentAccountService
+                .paymentAccount(for: currency)
+                .publisher
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure:
+                        self?.showFailureAlert()
+                    }
+                } receiveValue: { [weak self] account in
+                    // OpenBanking will pay into an account in PaymentAccountsServiceAPI, this should be used to finalise the checkout
+                    // TODO
+                    self?.stateService.confirmCheckout(
+                        with: .init(order: order, paymentAccount: account),
+                        isOrderNew: false
+                    )
+                }
+                .store(in: &bag)
+        default:
+            break
+        }
     }
 
     /// Show the pending kyc screen

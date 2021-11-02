@@ -195,8 +195,18 @@ extension LocalizationConstants.OpenBanking {
             )
 
             public static let tryAgain = NSLocalizedString(
-                "Try Again",
+                "Try again",
                 comment: "A button to retry the last step in Open Banking."
+            )
+
+            public static let tryAnotherMethod = NSLocalizedString(
+                "Try another method",
+                comment: "A button to retry the last step in Open Banking."
+            )
+
+            public static let back = NSLocalizedString(
+                "Go back",
+                comment: "A button to reset the progress in Open Banking to start the entire process again."
             )
 
             public static let cancel = NSLocalizedString(
@@ -345,6 +355,42 @@ extension LocalizationConstants.OpenBanking {
                 subtitle: NSLocalizedString(
                     "We noticed this account is already active on another Wallet. If you believe this is incorrect, contact support.",
                     comment: "We noticed this account is already active on another Wallet. If you believe this is incorrect, contact support."
+                ),
+                action: Bank.Action.tryAgain
+            )
+
+            public static let BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED = (
+                title: NSLocalizedString(
+                    "Please link a Current Account.",
+                    comment: "Please link a Current Account."
+                ),
+                subtitle: NSLocalizedString(
+                    "Your bank may charge you extra fees if you buy crypto without a current account.",
+                    comment: "Your bank may charge you extra fees if you buy crypto without a current account."
+                ),
+                action: Bank.Action.back
+            )
+
+            public static let BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL = (
+                title: NSLocalizedString(
+                    "There was a problem linking your checking account ending in %@. Please try again.",
+                    comment: "There was a problem linking your checking account ending in |last{4}|. Please try again."
+                ),
+                subtitle: NSLocalizedString(
+                    "Please try again or select a different payment method.",
+                    comment: "Please try again or select a different payment method."
+                ),
+                action: Bank.Action.tryAnotherMethod
+            )
+
+            public static let BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD = (
+                title: NSLocalizedString(
+                    "There was a problem linking your checking account ending in %@. Please try again.",
+                    comment: "There was a problem linking your checking account ending in |last{4}|. Please try again."
+                ),
+                subtitle: NSLocalizedString(
+                    "Please try again or select a different payment method.",
+                    comment: "Please try again or select a different payment method."
                 ),
                 action: Bank.Action.tryAgain
             )

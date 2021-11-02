@@ -635,6 +635,10 @@ extension LocalizationConstants.SimpleBuy {
                 "Complete Payment",
                 comment: "Simple buy checkout screen - complete payment button"
             )
+            public static let approveButtonTitle = NSLocalizedString(
+                "Approve",
+                comment: "Simple buy checkout screen - approve button"
+            )
         }
 
         public enum Notice {

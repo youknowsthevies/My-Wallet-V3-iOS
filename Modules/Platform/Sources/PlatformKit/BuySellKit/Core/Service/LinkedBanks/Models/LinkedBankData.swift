@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
+import OpenBanking
 
 public struct LinkedBankData {
     public enum Partner: String {
@@ -13,6 +14,8 @@ public struct LinkedBankData {
         public let name: String
         public let type: LinkedBankAccountType
         public let bankName: String
+        public let routingNumber: String?
+        public let sortCode: String?
         public let number: String
 
         init(response: LinkedBankResponse) {
@@ -20,6 +23,8 @@ public struct LinkedBankData {
             name = (response.accountName ?? response.name)
             type = LinkedBankAccountType(from: response.bankAccountType)
             bankName = response.name
+            routingNumber = response.routingNumber
+            sortCode = response.agentRef
             number = accountNumber
         }
     }
@@ -37,6 +42,8 @@ public struct LinkedBankData {
     public let account: Account?
     let state: LinkedBankResponse.State
     public let error: LinkageError?
+    public let errorCode: String?
+    public let entity: String
     public let paymentMethodType: PaymentMethodPayloadType
     public let partner: Partner
 
@@ -58,6 +65,8 @@ public struct LinkedBankData {
         account = Account(response: response)
         state = response.state
         error = LinkageError(from: response.error)
+        errorCode = response.errorCode
+        entity = response.attributes.entity
         paymentMethodType = response.isBankTransferAccount ? .bankTransfer : .bankAccount
         guard let partner = Partner(rawValue: response.partner) else {
             return nil
@@ -90,5 +99,27 @@ extension LinkedBankData.LinkageError {
 extension LinkedBankData: Equatable {
     public static func == (lhs: LinkedBankData, rhs: LinkedBankData) -> Bool {
         lhs.identifier == rhs.identifier
+    }
+}
+
+extension OpenBanking.BankAccount {
+
+    public init(_ linkedBankData: LinkedBankData) {
+        self.init(
+            id: .init(linkedBankData.identifier),
+            partner: linkedBankData.partner.rawValue,
+            state: .init(linkedBankData.state.rawValue),
+            currency: linkedBankData.currency.code,
+            details: .init(
+                bankAccountType: linkedBankData.account?.type.title,
+                routingNumber: linkedBankData.account?.routingNumber,
+                accountNumber: linkedBankData.account?.number,
+                accountName: linkedBankData.account?.name,
+                bankName: linkedBankData.account?.bankName,
+                sortCode: linkedBankData.account?.sortCode
+            ),
+            error: linkedBankData.errorCode.map(OpenBanking.Error.code),
+            attributes: .init(entity: linkedBankData.entity)
+        )
     }
 }

@@ -113,7 +113,12 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             }
         case .bankAccount, .funds, .bankTransfer:
             if data.order.isPendingConfirmation {
-                title = LocalizedSummary.buyButtonTitle
+                switch data.linkedBankData?.partner {
+                case .yapily:
+                    title = LocalizedSummary.approveButtonTitle
+                default:
+                    title = LocalizedSummary.buyButtonTitle
+                }
             } else {
                 title = LocalizedSummary.continueButtonPrefix
             }
