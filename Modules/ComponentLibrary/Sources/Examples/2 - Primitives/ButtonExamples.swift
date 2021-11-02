@@ -27,7 +27,7 @@ struct ButtonExamplesView: View {
 
 struct ButtonExamplesView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        PrimaryNavigationView {
             ButtonExamplesView()
         }
     }

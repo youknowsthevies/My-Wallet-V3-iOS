@@ -18,7 +18,7 @@ struct CircularIconButtonExamples: View {
                 Spacer()
             }
         }
-        .navigationBarItems(trailing: navigationBarItems)
+        .primaryNavigation { navigationBarItems }
     }
 
     @ViewBuilder private var navigationBarItems: some View {
@@ -30,7 +30,7 @@ struct CircularIconButtonExamples: View {
 
 struct CircularIconButtonExamples_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        PrimaryNavigationView {
             CircularIconButtonExamples()
         }
     }

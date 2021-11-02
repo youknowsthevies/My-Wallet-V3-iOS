@@ -44,9 +44,9 @@ struct CircularIconButton_Previews: PreviewProvider {
         @State var toggle: Bool = false
 
         var body: some View {
-            NavigationView {
+            PrimaryNavigationView {
                 Text(toggle ? "Bar" : "Foo")
-                    .navigationBarItems(trailing: navigationItems)
+                    .primaryNavigation(title: "") { navigationItems }
             }
         }
 

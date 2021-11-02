@@ -18,16 +18,16 @@ public struct RootView: View {
             NavigationLinkProvider(view: PrimaryDividerExamples(), title: "🗂 Dividers")
         ],
         "3 - Compositions": [
-            NavigationLinkProvider(view: Text("Composition Example"))
+            NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation")
         ]
     ]
 
     public init() {}
 
     public var body: some View {
-        NavigationView {
+        PrimaryNavigationView {
             NavigationLinkProviderView(data: data)
-                .navigationTitle("📚 Component Library")
+                .primaryNavigation(title: "📚 Component Library")
         }
     }
 }

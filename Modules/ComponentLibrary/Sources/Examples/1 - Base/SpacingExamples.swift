@@ -20,6 +20,9 @@ struct SpacingExamplesView: View {
 
 struct SpacingExamplesView_Previews: PreviewProvider {
     static var previews: some View {
-        SpacingExamplesView()
+        PrimaryNavigationView {
+            SpacingExamplesView()
+                .primaryNavigation(title: "Spacing")
+        }
     }
 }
