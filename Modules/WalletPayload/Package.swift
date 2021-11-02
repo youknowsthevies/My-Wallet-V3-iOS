@@ -22,6 +22,7 @@ let package = Package(
         ),
         .package(path: "../Localization"),
         .package(path: "../CommonCrypto"),
+        .package(path: "../Keychain"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../RxTool")
@@ -32,6 +33,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
+                .product(name: "KeychainKit", package: "Keychain"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "DIKit", package: "DIKit")
@@ -50,6 +52,7 @@ let package = Package(
             dependencies: [
                 .target(name: "WalletPayloadKit"),
                 .target(name: "WalletPayloadKitMock"),
+                .product(name: "KeychainKitMock", package: "Keychain"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift"),
                 .product(name: "TestKit", package: "Test"),

@@ -4,11 +4,11 @@ import Combine
 @testable import WalletPayloadKit
 import XCTest
 
-class WalletStorageTests: XCTestCase {
+class WalletRepoTests: XCTestCase {
 
     private var cancellables: Set<AnyCancellable>!
 
-    private let initialState = WalletStorageState(
+    private let initialState = WalletRepoState(
         credentials: WalletCredentials(
             guid: "guid",
             sharedKey: "sharedKey",
@@ -31,7 +31,7 @@ class WalletStorageTests: XCTestCase {
     }
 
     func test_can_retrieve_state_variables() {
-        let walletStorage = WalletStorage(
+        let walletStorage = WalletRepo(
             initialState: initialState
         )
 
@@ -40,11 +40,11 @@ class WalletStorageTests: XCTestCase {
     }
 
     func test_wallet_storage_can_provide_publisher() {
-        let walletStorage = WalletStorage(
+        let walletStorage = WalletRepo(
             initialState: initialState
         )
 
-        var receivedState: WalletStorageState?
+        var receivedState: WalletRepoState?
         let expectation = expectation(description: "wallet.storage.publisher.expectation")
         walletStorage
             .sink(receiveValue: { state in
@@ -60,7 +60,7 @@ class WalletStorageTests: XCTestCase {
     }
 
     func test_wallet_storage_can_provide_state_variable_as_publisher() {
-        let walletStorage = WalletStorage(
+        let walletStorage = WalletRepo(
             initialState: initialState
         )
 
@@ -99,7 +99,7 @@ class WalletStorageTests: XCTestCase {
     }
 
     func test_wallet_storage_can_change_state() {
-        let walletStorage = WalletStorage(
+        let walletStorage = WalletRepo(
             initialState: initialState
         )
 
@@ -110,11 +110,11 @@ class WalletStorageTests: XCTestCase {
     }
 
     func test_wallet_storage_can_set_a_new_state() {
-        let walletStorage = WalletStorage(
+        let walletStorage = WalletRepo(
             initialState: initialState
         )
 
-        let updatedState = WalletStorageState(
+        let updatedState = WalletRepoState(
             credentials: WalletCredentials(
                 guid: "new-guid",
                 sharedKey: "new-sharedKey",

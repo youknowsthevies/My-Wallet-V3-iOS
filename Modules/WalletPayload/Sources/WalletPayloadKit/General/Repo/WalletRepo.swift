@@ -2,18 +2,18 @@
 
 import Combine
 
-/// A Publisher that provides easy access to `WalletStorageState` for related inforation
+/// A Publisher that provides easy access to `WalletRepoState` for related information
 @dynamicMemberLookup
-public struct WalletStorage: Publisher {
-    public typealias Output = WalletStorageState
+public struct WalletRepo: Publisher {
+    public typealias Output = WalletRepoState
     public typealias Failure = Never
 
-    public let upstream: AnyPublisher<WalletStorageState, Never>
+    public let upstream: AnyPublisher<WalletRepoState, Never>
 
-    private var state: CurrentValueSubject<WalletStorageState, Never>
+    private var state: CurrentValueSubject<WalletRepoState, Never>
 
-    public init(initialState: WalletStorageState) {
-        state = CurrentValueSubject<WalletStorageState, Never>(initialState)
+    public init(initialState: WalletRepoState) {
+        state = CurrentValueSubject<WalletRepoState, Never>(initialState)
         upstream = state.eraseToAnyPublisher()
     }
 
@@ -33,7 +33,7 @@ public struct WalletStorage: Publisher {
 
     /// Returns the resulting value of a given key path.
     public subscript<LocalState>(
-        dynamicMember keyPath: KeyPath<WalletStorageState, LocalState>
+        dynamicMember keyPath: KeyPath<WalletRepoState, LocalState>
     ) -> LocalState {
         state.value[keyPath: keyPath]
     }
@@ -53,7 +53,7 @@ public struct WalletStorage: Publisher {
     ///   - keyPath: A `WritableKeyPath` for the underlying variable
     ///   - value: A value to be to written for the selected keyPath
     public func set<Value>(
-        keyPath: WritableKeyPath<WalletStorageState, Value>,
+        keyPath: WritableKeyPath<WalletRepoState, Value>,
         value: Value
     ) {
         state.value[keyPath: keyPath] = value
@@ -62,7 +62,7 @@ public struct WalletStorage: Publisher {
     /// Sets an new `WalletStorageState` value
     /// - Parameter value: A `WalletStorageState` to be set.
     public func set(
-        value: WalletStorageState
+        value: WalletRepoState
     ) {
         state.send(value)
     }
