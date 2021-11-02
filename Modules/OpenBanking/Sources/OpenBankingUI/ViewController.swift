@@ -7,14 +7,9 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-public enum OpenBankingEvent {
-    case success
-    case failed(OpenBanking.Error)
-}
-
 public final class OpenBankingViewController: UIHostingController<OpenBankingView> {
 
-    public var eventPublisher: AnyPublisher<OpenBankingEvent, Never> {
+    public var eventPublisher: AnyPublisher<Result<Void, OpenBanking.Error>, Never> {
         rootView.environment.eventPublisher.eraseToAnyPublisher()
     }
 

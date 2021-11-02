@@ -134,32 +134,3 @@ public final class OpenBanking {
         }
     }
 }
-
-extension Publisher where Output: ResultProtocol {
-
-    public func mapped<T>(
-        to action: @escaping (Output.Success) -> T
-    ) -> Publishers.Map<Self, T> where T: FailureAction {
-        map { it -> T in
-            switch it.result {
-            case .success(let value):
-                return action(value)
-            case .failure(let error):
-                return T.failure(error)
-            }
-        }
-    }
-
-    public func mapped<T>(
-        to action: CasePath<T, Output.Success>
-    ) -> Publishers.Map<Self, T> where T: FailureAction {
-        map { it -> T in
-            switch it.result {
-            case .success(let value):
-                return action.embed(value)
-            case .failure(let error):
-                return T.failure(error)
-            }
-        }
-    }
-}

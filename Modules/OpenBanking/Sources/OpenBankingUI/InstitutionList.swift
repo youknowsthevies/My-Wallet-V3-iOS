@@ -12,7 +12,8 @@ public struct InstitutionListState: Equatable, NavigationState {
 
     public var route: RouteIntent<InstitutionListRoute>?
 
-    var account: Result<OpenBanking.BankAccount, OpenBanking.Error>?
+    var account: OpenBanking.BankAccount?
+    var error: OpenBanking.Error?
     var selection: ApproveState?
 }
 
@@ -23,7 +24,7 @@ public enum InstitutionListAction: Hashable, NavigationAction, FailureAction {
 
     case fetch
     case fetched(OpenBanking.BankAccount)
-    case select(OpenBanking.Institution)
+    case select(OpenBanking.BankAccount, OpenBanking.Institution)
     case showTransferDetails
 
     case approve(ApproveAction)
@@ -68,14 +69,11 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                     .catch(InstitutionListAction.failure)
                     .eraseToEffect()
             case .fetched(let account):
-                state.account = .success(account)
+                state.account = account
                 return .none
             case .showTransferDetails:
                 return .fireAndForget(environment.showTransferDetails)
-            case .select(let institution):
-                let account = try state.account
-                    .or(throw: OpenBanking.Error.message(Localization.InstitutionList.Error.invalidAccount))
-                    .get()
+            case .select(let account, let institution):
                 state.selection = .init(
                     bank: .init(
                         action: .init(account: account, then: .link(institution: institution))
@@ -94,7 +92,7 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
             case .dismiss:
                 return .fireAndForget(environment.dismiss)
             case .failure(let error):
-                state.account = .failure(error)
+                state.error = error
                 return .none
             }
         }
@@ -114,20 +112,15 @@ public struct InstitutionList: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             ZStack {
-                switch viewStore.account {
-                case .none:
-                    ProgressView(value: 0.25)
-                        .frame(width: 12.vmin, alignment: .center)
-                        .aspectRatio(1, contentMode: .fit)
-                        .progressViewStyle(IndeterminateProgressStyle())
-                        .onAppear { viewStore.send(.fetch) }
-                case .success(let account):
+                if let account = viewStore.account {
                     SearchableList(
                         account.attributes.institutions?.map(Item.init) ?? [],
                         placeholder: Localization.InstitutionList.search,
                         content: { bank in
                             Button(
-                                action: { viewStore.send(.select(bank.institution)) },
+                                action: {
+                                    viewStore.send(.select(account, bank.institution))
+                                },
                                 label: { bank }
                             )
                         },
@@ -135,7 +128,7 @@ public struct InstitutionList: View {
                             NoSearchResults
                         }
                     )
-                case .failure(let error):
+                } else if let error = viewStore.error {
                     InfoView(
                         .init(
                             media: .bankIcon,
@@ -145,6 +138,12 @@ public struct InstitutionList: View {
                         ),
                         in: .openBanking
                     )
+                } else {
+                    ProgressView(value: 0.25)
+                        .frame(width: 12.vmin, alignment: .center)
+                        .aspectRatio(1, contentMode: .fit)
+                        .progressViewStyle(IndeterminateProgressStyle())
+                        .onAppear { viewStore.send(.fetch) }
                 }
             }
             .navigationRoute(in: store)

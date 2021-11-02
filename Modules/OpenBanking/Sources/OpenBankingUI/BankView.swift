@@ -79,11 +79,11 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         return .merge(
             .fireAndForget { environment.openURL.open(url) },
             environment.openBanking.state.publisher(for: .consent.error, as: OpenBanking.Error.self)
-                .ignoreResultFailure()
+                .get()
+                .ignoreFailure(setFailureType: Never.self)
                 .receive(on: environment.scheduler.main)
-                .eraseToEffect()
-                .map(OpenBanking.Error.init)
                 .mapped(to: BankAction.failure)
+                .eraseToEffect()
                 .cancellable(id: ID.ConsentError())
         )
 
