@@ -276,6 +276,8 @@ packages:
     path: Modules/FeatureTour
   FeatureTransaction:
     path: Modules/FeatureTransaction
+  FeatureWithdrawalLock:
+    path: Modules/FeatureWithdrawalLock
   HDWallet:
     path: Modules/HDWallet
   Keychain:
@@ -369,6 +371,7 @@ targets:
       - package: FeatureSettings
       - package: FeatureTour
       - package: FeatureTransaction
+      - package: FeatureWithdrawalLock
 
       - package: BigInt
       - package: ComposableArchitecture

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureWithdrawalLockUI
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -9,6 +10,7 @@ import RxDataSources
 import RxRelay
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 /// A view controller that displays the dashboard
 final class PortfolioViewController: BaseScreenViewController {
@@ -79,6 +81,7 @@ final class PortfolioViewController: BaseScreenViewController {
         fiatBalanceCellProvider.registerFiatBalanceCell(for: tableView)
         tableView.registerNibCell(TotalBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(HistoricalBalanceTableViewCell.self, in: .module)
+        tableView.register(HostingTableViewCell<WithdrawalLockView>.self)
         tableView.separatorColor = .clear
 
         let refreshControl = UIRefreshControl()
@@ -102,6 +105,8 @@ final class PortfolioViewController: BaseScreenViewController {
                 switch item {
                 case .announcement(let model):
                     cell = self.announcementCell(for: indexPath, model: model)
+                case .withdrawalLock:
+                    cell = self.withdrawalLockCell(for: indexPath)
                 case .fiatCustodialBalances(let presenter):
                     cell = self.fiatCustodialBalancesCell(for: indexPath, presenter: presenter)
                 case .totalBalance(let presenter):
@@ -123,6 +128,7 @@ final class PortfolioViewController: BaseScreenViewController {
                 switch model {
                 case .announcement,
                      .totalBalance,
+                     .withdrawalLock,
                      .cryptoSkeleton,
                      .fiatCustodialBalances,
                      .emptyState:
@@ -146,6 +152,14 @@ final class PortfolioViewController: BaseScreenViewController {
     }
 
     // MARK: - Cells
+
+    private func withdrawalLockCell(
+        for indexPath: IndexPath
+    ) -> UITableViewCell {
+        let cell = tableView.dequeue(HostingTableViewCell<WithdrawalLockView>.self, for: indexPath)
+        cell.host(WithdrawalLockView(), parent: self)
+        return cell
+    }
 
     private func fiatCustodialBalancesCell(
         for indexPath: IndexPath,

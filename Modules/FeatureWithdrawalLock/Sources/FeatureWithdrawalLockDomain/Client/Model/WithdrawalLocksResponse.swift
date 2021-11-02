@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct WithdrawLocksResponse: Decodable {
+struct WithdrawalLocksResponse: Decodable {
 
     struct Lock: Decodable {
         let expiresAt: String
@@ -16,5 +16,4 @@ struct WithdrawLocksResponse: Decodable {
 
     let locks: [Lock]
     let totalLocked: Amount
-    let available: Amount
 }

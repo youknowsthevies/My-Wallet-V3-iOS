@@ -47,39 +47,12 @@
         }
       },
       {
-        "package": "Gifu",
-        "repositoryURL": "https://github.com/kaishin/Gifu",
-        "state": {
-          "branch": null,
-          "revision": "51f2eab32903e336f590c013267cfa4d7f8b06c4",
-          "version": "3.3.1"
-        }
-      },
-      {
-        "package": "Lottie",
-        "repositoryURL": "https://github.com/airbnb/lottie-ios.git",
-        "state": {
-          "branch": null,
-          "revision": "79a0b70547f7c40ea54c67487f935fa2f2eaaadc",
-          "version": "3.2.3"
-        }
-      },
-      {
         "package": "Nuke",
         "repositoryURL": "https://github.com/kean/Nuke.git",
         "state": {
           "branch": null,
           "revision": "472a03c15f39592007d94f25abe554350bc8aa2b",
           "version": "10.5.1"
-        }
-      },
-      {
-        "package": "NukeUI",
-        "repositoryURL": "https://github.com/kean/NukeUI.git",
-        "state": {
-          "branch": null,
-          "revision": "0130ce2c1d140a426ced903a9abd68b4b8bf9790",
-          "version": "0.6.8"
         }
       },
       {
@@ -150,8 +123,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "68664c144e0d49d2fff1f45081f1bb57203b88fd",
-          "version": "0.25.1"
+          "revision": "599a2398adaaa7a4e3f5420cde7728c39e33677e",
+          "version": "0.28.1"
         }
       },
       {
@@ -186,8 +159,8 @@
         "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
         "state": {
           "branch": null,
-          "revision": "985832e0a0746608ded3cc3984066f455d28c30f",
-          "version": "2.6.31"
+          "revision": "3d42f6995032828a3e1a0a372fb9873cdd357f03",
+          "version": null
         }
       },
       {

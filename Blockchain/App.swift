@@ -12,6 +12,7 @@ import FeatureInterestData
 import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData
+import FeatureWithdrawalLockDomain
 import Firebase
 import PlatformDataKit
 import ToolKit
@@ -129,6 +130,7 @@ func defineDependencies() {
         DependencyContainer.featureAuthenticationDomain
         DependencyContainer.featureAppUI
         DependencyContainer.featureAppDomain
+        DependencyContainer.withdrawalLockDomain
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

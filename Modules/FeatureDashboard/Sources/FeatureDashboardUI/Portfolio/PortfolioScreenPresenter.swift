@@ -53,7 +53,7 @@ final class PortfolioScreenPresenter {
             interactor: (CryptoCurrency) -> HistoricalBalanceCellInteractor?
         ) -> [PortfolioCellType] {
             var items: [PortfolioCellType] = [
-                .totalBalance(totalBalancePresenter)
+                .totalBalance(totalBalancePresenter) // , .withdrawalLock // temporarily disabled until withdrawal lock work is done
             ]
             if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
