@@ -263,10 +263,21 @@ let verifyDeviceReducer = Reducer.combine(
                 )
             }
             state.credentialsContext = .walletInfo(walletInfo)
-            return .merge(
-                .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),
-                .navigate(to: .credentials)
-            )
+            if upgradeAccountIfNeeded(walletInfo),
+               let userType = walletInfo.userType,
+               environment.featureFlags.isEnabled(.unifiedSignIn) {
+                return .merge(
+                    .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),
+                    .navigate(to:
+                        .upgradeAccount(exchangeOnly: userType == "EXCHANGE")
+                    )
+                )
+            } else {
+                return .merge(
+                    .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),
+                    .navigate(to: .credentials)
+                )
+            }
 
         case .fallbackToWalletIdentifier:
             state.credentialsContext = .walletIdentifier(guid: "")
@@ -347,4 +358,14 @@ extension Reducer where
             }
         )
     }
+}
+
+private func upgradeAccountIfNeeded(_ walletInfo: WalletInfo) -> Bool {
+    guard let unified = walletInfo.unified,
+          let upgradeable = walletInfo.upgradeable,
+          let mergeable = walletInfo.mergeable,
+          walletInfo.userType != nil else {
+        return false
+    }
+    return !unified && (upgradeable || mergeable)
 }

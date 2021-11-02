@@ -57,9 +57,14 @@ struct UpgradeAccountView: View {
     }
 
     private let store: Store<UpgradeAccountState, UpgradeAccountAction>
+    private let exchangeOnly: Bool
 
-    init(store: Store<UpgradeAccountState, UpgradeAccountAction>) {
+    init(
+        store: Store<UpgradeAccountState, UpgradeAccountAction>,
+        exchangeOnly: Bool
+    ) {
         self.store = store
+        self.exchangeOnly = exchangeOnly
     }
 
     var body: some View {
@@ -76,7 +81,7 @@ struct UpgradeAccountView: View {
                 .multilineTextAlignment(.center)
 
                 Spacer()
-                MessageList(messages: createMessages())
+                MessageList(messages: createMessages(exchangeOnly: exchangeOnly))
                 Spacer()
 
                 VStack {
@@ -154,8 +159,8 @@ struct UpgradeAccountView: View {
         }
     }
 
-    private func createMessages() -> [Message] {
-        [
+    private func createMessages(exchangeOnly: Bool) -> [Message] {
+        var messages: [Message] = [
             Message(
                 id: 1,
                 iconName: "number-one",
@@ -167,14 +172,19 @@ struct UpgradeAccountView: View {
                 iconName: "number-two",
                 title: LocalizationConstants.FeatureAuthentication.UpgradeAccount.MessageList.headingTwo,
                 detailedMessage: LocalizationConstants.FeatureAuthentication.UpgradeAccount.MessageList.bodyTwo
-            ),
-            Message(
-                id: 3,
-                iconName: "number-three",
-                title: LocalizationConstants.FeatureAuthentication.UpgradeAccount.MessageList.headingThree,
-                detailedMessage: LocalizationConstants.FeatureAuthentication.UpgradeAccount.MessageList.bodyThree
             )
         ]
+        if exchangeOnly {
+            messages.append(
+                Message(
+                    id: 3,
+                    iconName: "number-three",
+                    title: LocalizationConstants.FeatureAuthentication.UpgradeAccount.MessageList.headingThree,
+                    detailedMessage: LocalizationConstants.FeatureAuthentication.UpgradeAccount.MessageList.bodyThree
+                )
+            )
+        }
+        return messages
     }
 }
 
@@ -194,7 +204,8 @@ struct UpgradeAccountView_Previews: PreviewProvider {
                     appFeatureConfigurator: NoOpFeatureConfigurator(),
                     analyticsRecorder: NoOpAnalyticsRecorder()
                 )
-            )
+            ),
+            exchangeOnly: true
         )
     }
 }

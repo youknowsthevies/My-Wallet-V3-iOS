@@ -9,11 +9,14 @@ struct WebUpgradeAccountView: View {
 
     private enum MessageHandler {
         /// Message handler name for unified sign in communication
-        static let ssi = "BCiOSSSI"
+        static let ssi = "sessionHandler"
     }
 
-    @Binding private var sendMessage: String
+    // TODO: change to dynamic config
+    private static let url = "https://wallet-frontend-pre-release.dev.blockchain.info/#/login?product=wallet&platform=ios"
+
     private let callback: (String) -> Void
+    @Binding private var sendMessage: String
 
     init(
         sendMessage: Binding<String>,
@@ -26,7 +29,7 @@ struct WebUpgradeAccountView: View {
     var body: some View {
         WebView(
             sendMessage: $sendMessage,
-            url: URL(string: Constants.HostURL.loginOnWeb)!,
+            url: URL(string: WebUpgradeAccountView.url)!,
             messageHandlers: [MessageHandler.ssi: callback]
         )
         .navigationBarHidden(true)

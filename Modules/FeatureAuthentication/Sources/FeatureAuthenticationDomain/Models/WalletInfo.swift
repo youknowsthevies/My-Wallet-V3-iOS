@@ -17,6 +17,10 @@ public struct WalletInfo: Decodable, Equatable {
         case isMobileSetup = "is_mobile_setup"
         case hasCloudBackup = "has_cloud_backup"
         case nabu
+        case unified
+        case upgradeable
+        case mergeable
+        case userType = "user_type"
     }
 
     public struct NabuInfo: Decodable, Equatable {
@@ -51,7 +55,11 @@ public struct WalletInfo: Decodable, Equatable {
         emailCode: nil,
         isMobileSetup: nil,
         hasCloudBackup: nil,
-        nabuInfo: nil
+        nabuInfo: nil,
+        unified: nil,
+        upgradeable: nil,
+        mergeable: nil,
+        userType: nil
     )
 
     public let guid: String
@@ -60,6 +68,10 @@ public struct WalletInfo: Decodable, Equatable {
     public let isMobileSetup: Bool?
     public let hasCloudBackup: Bool?
     public let nabuInfo: NabuInfo?
+    public let unified: Bool?
+    public let upgradeable: Bool?
+    public let mergeable: Bool?
+    public let userType: String?
 
     // MARK: - Setup
 
@@ -69,7 +81,11 @@ public struct WalletInfo: Decodable, Equatable {
         emailCode: String? = nil,
         isMobileSetup: Bool? = nil,
         hasCloudBackup: Bool? = nil,
-        nabuInfo: NabuInfo? = nil
+        nabuInfo: NabuInfo? = nil,
+        unified: Bool? = nil,
+        upgradeable: Bool? = nil,
+        mergeable: Bool? = nil,
+        userType: String? = nil
     ) {
         self.guid = guid
         self.email = email
@@ -77,6 +93,10 @@ public struct WalletInfo: Decodable, Equatable {
         self.isMobileSetup = isMobileSetup
         self.hasCloudBackup = hasCloudBackup
         self.nabuInfo = nabuInfo
+        self.unified = unified
+        self.upgradeable = upgradeable
+        self.mergeable = mergeable
+        self.userType = userType
     }
 
     public init(from decoder: Decoder) throws {
@@ -93,5 +113,9 @@ public struct WalletInfo: Decodable, Equatable {
             .decodeIfPresent(Bool.self, forKey: .hasCloudBackup)
         nabuInfo = try wallet
             .decodeIfPresent(NabuInfo.self, forKey: .nabu)
+        unified = try container.decodeIfPresent(Bool.self, forKey: .unified)
+        upgradeable = try container.decodeIfPresent(Bool.self, forKey: .upgradeable)
+        mergeable = try container.decodeIfPresent(Bool.self, forKey: .mergeable)
+        userType = try container.decodeIfPresent(String.self, forKey: .userType)
     }
 }
