@@ -2,7 +2,7 @@
 
 import ComposableArchitecture
 import NetworkKit
-@testable import OpenBankingUI
+@testable import FeatureOpenBankingUI
 import TestKit
 
 final class InstitutionListTests: OpenBankingTestCase {
@@ -54,7 +54,7 @@ final class InstitutionListTests: OpenBankingTestCase {
             .send(.fetch),
             .do { [self] in scheduler.main.run() },
             .receive(.fetched(createAccount)) { [self] state in
-                state.account = .success(createAccount)
+                state.account = createAccount
             }
         )
     }
@@ -72,11 +72,11 @@ final class InstitutionListTests: OpenBankingTestCase {
     var approve: [Store.Step] {
         [
             .send(.fetched(createAccount)) { [self] state in
-                state.account = .success(createAccount)
+                state.account = createAccount
             },
-            .send(.select(institution)) { [self] state in
+            .send(.select(createAccount, institution)) { [self] state in
                 state.selection = .init(
-                    bank: .init(account: createAccount, action: .link(institution: institution))
+                    bank: .init(action: .init(account: createAccount, then: .link(institution: institution)))
                 )
             },
             .receive(.navigate(to: .approve)) { state in
@@ -87,15 +87,6 @@ final class InstitutionListTests: OpenBankingTestCase {
 
     func test_select() throws {
         store.assert(approve)
-    }
-
-    func test_select_invalid() throws {
-        store.assert(
-            .send(.select(institution)),
-            .receive(.fail(.message(Localization.InstitutionList.Error.invalidAccount))) { state in
-                state.account = .failure(.message(Localization.InstitutionList.Error.invalidAccount))
-            }
-        )
     }
 
     func test_approve_deny() throws {
@@ -118,7 +109,7 @@ final class InstitutionListTests: OpenBankingTestCase {
             .receive(.fetch),
             .do { [self] in scheduler.main.advance() },
             .receive(.fetched(createAccount)) { [self] state in
-                state.account = .success(createAccount)
+                state.account = createAccount
             }
         )
     }

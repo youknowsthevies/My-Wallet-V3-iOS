@@ -50,7 +50,7 @@ extension OpenBanking.Error: ExpressibleByError, CustomStringConvertible {
     public var description: String {
         switch self {
         case .timeout:
-            return String(describing: self)
+            return "timeout"
         case .message(let description), .code(let description):
             return description
         case .state(let error):

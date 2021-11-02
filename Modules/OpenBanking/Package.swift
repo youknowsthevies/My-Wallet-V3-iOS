@@ -4,16 +4,16 @@ import Foundation
 import PackageDescription
 
 let package = Package(
-    name: "OpenBanking",
+    name: "FeatureOpenBanking",
     platforms: [.macOS(.v11), .iOS(.v14)],
     products: [
         .library(
-            name: "OpenBanking",
-            targets: ["OpenBanking"]
+            name: "FeatureOpenBankingDomain",
+            targets: ["FeatureOpenBankingDomain"]
         ),
         .library(
-            name: "OpenBankingUI",
-            targets: ["OpenBankingUI"]
+            name: "FeatureOpenBankingUI",
+            targets: ["FeatureOpenBankingUI"]
         )
     ],
     dependencies: [
@@ -44,7 +44,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "OpenBankingDomain",
+            name: "FeatureOpenBankingDomain",
             dependencies: [
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "CasePaths", package: "swift-case-paths"),
@@ -54,9 +54,9 @@ let package = Package(
             ]
         ),
         .target(
-            name: "OpenBanking",
+            name: "FeatureOpenBankingData",
             dependencies: [
-                .target(name: "OpenBankingDomain"),
+                .target(name: "FeatureOpenBankingDomain"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "Session", package: "Session"),
@@ -64,10 +64,10 @@ let package = Package(
             ]
         ),
         .target(
-            name: "OpenBankingUI",
+            name: "FeatureOpenBankingUI",
             dependencies: [
-                .target(name: "OpenBankingDomain"),
-                .target(name: "OpenBanking"),
+                .target(name: "FeatureOpenBankingDomain"),
+                .target(name: "FeatureOpenBankingData"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "ComposableNavigation", package: "ComposableNavigation"),
                 .product(name: "ComponentLibrary", package: "ComponentLibrary"),
@@ -76,9 +76,10 @@ let package = Package(
             ]
         ),
         .target(
-            name: "OpenBankingTestFixture",
+            name: "FeatureOpenBankingTestFixture",
             dependencies: [
-                .target(name: "OpenBanking"),
+                .target(name: "FeatureOpenBankingData"),
+                .target(name: "FeatureOpenBankingDomain"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")
             ],
@@ -99,19 +100,19 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "OpenBankingTests",
+            name: "FeatureOpenBankingDataTests",
             dependencies: [
-                .target(name: "OpenBanking"),
-                .target(name: "OpenBankingTestFixture"),
+                .target(name: "FeatureOpenBankingData"),
+                .target(name: "FeatureOpenBankingTestFixture"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")
             ]
         ),
         .testTarget(
-            name: "OpenBankingUITests",
+            name: "FeatureOpenBankingUITests",
             dependencies: [
-                .target(name: "OpenBankingUI"),
-                .target(name: "OpenBankingTestFixture"),
+                .target(name: "FeatureOpenBankingUI"),
+                .target(name: "FeatureOpenBankingTestFixture"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")
             ]

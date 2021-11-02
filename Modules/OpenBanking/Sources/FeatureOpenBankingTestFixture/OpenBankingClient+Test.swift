@@ -4,7 +4,7 @@ import Combine
 import CombineSchedulers
 import Foundation
 import NetworkKit
-@testable import OpenBanking
+@testable import FeatureOpenBankingData
 
 extension OpenBankingClient {
 

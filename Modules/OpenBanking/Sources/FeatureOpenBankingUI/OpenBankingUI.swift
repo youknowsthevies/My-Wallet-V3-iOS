@@ -2,8 +2,7 @@
 
 import ComposableArchitecture
 import ComposableNavigation
-@_exported import OpenBanking
-@_exported import OpenBankingDomain
+@_exported import FeatureOpenBankingDomain
 import SwiftUI
 
 public enum OpenBankingState: Equatable {

@@ -6,7 +6,7 @@ import Foundation
 import NetworkKit
 import Session
 import ToolKit
-import OpenBankingDomain
+import FeatureOpenBankingDomain
 
 // swiftlint:disable:next duplicate_imports
 @_exported import struct ToolKit.Identity
@@ -15,7 +15,7 @@ import OpenBankingDomain
 
 public class OpenBankingClient {
 
-    public typealias State = OpenBankingDomain.OpenBanking.State
+    public typealias State = FeatureOpenBankingDomain.OpenBanking.State
     public private(set) var state: State
 
     public var scheduler: AnySchedulerOf<DispatchQueue>

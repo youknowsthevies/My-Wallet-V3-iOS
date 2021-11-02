@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import OpenBanking
+import FeatureOpenBankingDomain
 import UIComponentsKit
 
 extension ApproveState.UI {

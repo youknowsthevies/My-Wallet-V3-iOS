@@ -1,9 +1,34 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import CombineSchedulers
 import NetworkKit
-@testable import OpenBankingUI
+@testable import FeatureOpenBankingData
+@testable import FeatureOpenBankingUI
+import FeatureOpenBankingTestFixture
 import ToolKit
+
+extension OpenBanking {
+
+    public static func test<S: Scheduler>(
+        requests: [URLRequest: Data] = [:],
+        state: [OpenBanking.Key: Any] = [:],
+        using scheduler: S
+    ) -> (banking: OpenBanking, network: ReplayNetworkCommunicator) where
+        S.SchedulerTimeType == DispatchQueue.SchedulerTimeType,
+        S.SchedulerOptions == DispatchQueue.SchedulerOptions
+    {
+        let (banking, network) = OpenBankingClient.test(using: scheduler)
+        return (
+            OpenBanking(
+                state: .init(state),
+                banking: banking,
+                scheduler: scheduler.eraseToAnyScheduler()
+            ),
+            network
+        )
+    }
+}
 
 extension OpenBankingEnvironment {
 

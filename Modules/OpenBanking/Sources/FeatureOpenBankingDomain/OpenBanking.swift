@@ -50,34 +50,29 @@ public final class OpenBanking {
     public private(set) var banking: OpenBankingClientProtocol
     public var state: State
 
-    private var app: URLOpener
     private var scheduler: AnySchedulerOf<DispatchQueue>
 
     public convenience init(
         state: Session.State<OpenBanking.Key>,
         banking: OpenBankingClientProtocol,
-        scheduler: DispatchQueue = .main,
-        app: URLOpener = resolve()
+        scheduler: DispatchQueue = .main
     ) {
         self.init(
             state: state,
             banking: banking,
-            scheduler: scheduler.eraseToAnyScheduler(),
-            app: app
+            scheduler: scheduler.eraseToAnyScheduler()
         )
     }
 
     public init(
         state: Session.State<OpenBanking.Key>,
         banking: OpenBankingClientProtocol,
-        scheduler: AnySchedulerOf<DispatchQueue>,
-        app: URLOpener = resolve()
+        scheduler: AnySchedulerOf<DispatchQueue>
     ) {
 
         self.state = state
         self.banking = banking
         self.scheduler = scheduler
-        self.app = app
     }
 
     public func createBankAccount() -> AnyPublisher<OpenBanking.BankAccount, Error> {

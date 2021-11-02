@@ -2,7 +2,7 @@
 
 import CombineSchedulers
 @testable import NetworkKit
-@testable import OpenBanking
+@testable import FeatureOpenBankingData
 import TestKit
 
 /// Used for testing without any UI
@@ -38,11 +38,10 @@ final class OpenBankingFlow: XCTestCase {
 
         let accounts = try banking.allBankAccounts()
             .wait(timeout: 5)
-            .get()
 
         for account in accounts where account.state != .ACTIVE {
             print("Deleting \(account.id.value)", terminator: " ")
-            switch try account.delete(in: banking).wait() {
+            switch Result(catching: { try account.delete(in: banking).wait() }) {
             case .failure(let error):
                 print("❌")
                 XCTFail("\(error)")
@@ -56,14 +55,12 @@ final class OpenBankingFlow: XCTestCase {
 
         let bankAccount = try banking.createBankAccount()
             .wait(timeout: 5)
-            .get()
 
         let activation = try bankAccount.activateBankAccount(
             with: bankAccount.attributes.institutions![1].id,
             in: banking
         )
         .wait(timeout: 5)
-        .get()
 
         let subscription = banking.state.publisher(for: .authorisation.url, as: URL.self).sink { result in
             switch result {
@@ -83,7 +80,6 @@ final class OpenBankingFlow: XCTestCase {
 
         let account = try activation.poll(in: banking)
             .wait(timeout: 120000)
-            .get()
 
         subscription.cancel()
         _ = account
@@ -93,13 +89,11 @@ final class OpenBankingFlow: XCTestCase {
 
         let bankAccount = try banking.allBankAccounts()
             .wait(timeout: 5)
-            .get()
             .first(where: { $0.state == "ACTIVE" })
             .unwrap()
 
         let payment = try bankAccount.deposit(amountMinor: "1000", product: "SIMPLEBUY", in: banking)
             .wait(timeout: 5)
-            .get()
 
         let subscription = banking.state.publisher(for: .authorisation.url, as: URL.self).sink { result in
             switch result {
@@ -119,7 +113,6 @@ final class OpenBankingFlow: XCTestCase {
 
         let details = try payment.poll(in: banking)
             .wait(timeout: 120000)
-            .get()
 
         subscription.cancel()
         _ = details

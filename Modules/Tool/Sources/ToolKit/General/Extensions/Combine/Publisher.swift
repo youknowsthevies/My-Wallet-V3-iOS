@@ -29,6 +29,14 @@ extension Publisher where Failure == Never {
 
 extension Publisher {
 
+    public func sink(
+        receiveValue: @escaping (Output) -> Void
+    ) -> AnyCancellable {
+        sink { _ in } receiveValue: { output in
+            receiveValue(output)
+        }
+    }
+
     public func sink<Root>(
         to handler: @escaping (Root) -> (Output) -> Void,
         on root: Root

@@ -3,7 +3,7 @@
 
 import ComposableArchitecture
 import NetworkKit
-@testable import OpenBankingUI
+@testable import FeatureOpenBankingUI
 import TestKit
 import ToolKit
 

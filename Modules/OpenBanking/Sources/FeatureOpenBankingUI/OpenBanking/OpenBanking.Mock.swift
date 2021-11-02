@@ -6,6 +6,7 @@ import CombineSchedulers
 import Foundation
 import NetworkKit
 import ToolKit
+import FeatureOpenBankingData
 
 extension OpenBankingEnvironment {
 
@@ -21,8 +22,7 @@ extension OpenBanking {
 
     static let mock = OpenBanking(
         state: .init(),
-        banking: OpenBankingClient.mock,
-        app: PrintAppOpen()
+        banking: OpenBankingClient.mock
     )
 }
 

@@ -2,7 +2,7 @@
 
 import ComposableArchitecture
 import ComposableNavigation
-import OpenBanking
+import FeatureOpenBankingDomain
 import SwiftUI
 import UIComponentsKit
 
