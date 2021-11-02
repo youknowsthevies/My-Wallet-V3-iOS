@@ -22,8 +22,7 @@ let package = Package(
         ),
         .package(path: "../FeatureTransaction"),
         .package(path: "../Platform"),
-        .package(path: "../Tool"),
-        .package(path: "../ComponentLibrary")
+        .package(path: "../Tool")
     ],
     targets: [
         .target(
@@ -35,8 +34,7 @@ let package = Package(
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxDataSources", package: "RxDataSources"),
-                .product(name: "ToolKit", package: "Tool"),
-                .product(name: "Examples", package: "ComponentLibrary")
+                .product(name: "ToolKit", package: "Tool")
             ]
         ),
         .testTarget(
