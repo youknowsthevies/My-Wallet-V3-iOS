@@ -19,6 +19,9 @@ class OpenBankingTestCase: XCTestCase {
 
     private(set) var environment: OpenBankingEnvironment!
     private(set) var network: ReplayNetworkCommunicator!
+    private var state: OpenBanking.State {
+        environment.openBanking.state
+    }
 
     // swiftlint:disable:next force_try
     lazy var createAccount = try! network[

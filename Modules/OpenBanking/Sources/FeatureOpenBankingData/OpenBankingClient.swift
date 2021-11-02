@@ -102,8 +102,11 @@ public class OpenBankingClient {
             )!
 
             return network.perform(request: request, responseType: OpenBanking.BankAccount.self)
-                .handleEvents(receiveOutput: { [state] output in
-                    state.set(.id, to: output.id)
+                .handleEvents(receiveOutput: { [state] account in
+                    state.transaction { state in
+                        state.set(.id, to: account.id)
+                        state.set(.account, to: account)
+                    }
                 })
                 .mapError(OpenBanking.Error.init)
                 .eraseToAnyPublisher()
@@ -142,14 +145,6 @@ public class OpenBankingClient {
             )!
 
             return network.perform(request: request, responseType: OpenBanking.Order.self)
-                .handleEvents(receiveOutput: { [state] order in
-                    state.transaction { state in
-                        if let url = order.attributes.authorisationUrl, let callback = order.attributes.callback {
-                            state.set(.authorisation.url, to: url)
-                            state.set(.callback.path, to: callback.dropPrefix("nabu-gateway").string)
-                        }
-                    }
-                })
                 .mapError(OpenBanking.Error.init)
                 .eraseToAnyPublisher()
         } catch {
@@ -182,6 +177,11 @@ extension OpenBanking.BankAccount {
             )!
 
             return banking.network.perform(request: request, responseType: OpenBanking.BankAccount.self)
+                .handleEvents(receiveOutput: { [banking] account in
+                    banking.state.transaction { state in
+                        state.set(.account, to: account)
+                    }
+                })
                 .mapError(OpenBanking.Error.init)
                 .eraseToAnyPublisher()
         } catch {
@@ -199,12 +199,13 @@ extension OpenBanking.BankAccount {
         )!
 
         return banking.network.perform(request: request, responseType: OpenBanking.BankAccount.self)
-            .handleEvents(receiveOutput: { [banking] details in
-                guard let url = details.attributes.authorisationUrl else { return }
-                guard let path = details.attributes.callbackPath else { return }
-                banking.state.transaction { _ in
-                    banking.state.set(.authorisation.url, to: url)
-                    banking.state.set(.callback.path, to: path.dropPrefix("nabu-gateway").string)
+            .handleEvents(receiveOutput: { [banking] account in
+                guard let url = account.attributes.authorisationUrl else { return }
+                guard let path = account.attributes.callbackPath else { return }
+                banking.state.transaction { state in
+                    state.set(.account, to: account)
+                    state.set(.authorisation.url, to: url)
+                    state.set(.callback.path, to: path.dropPrefix("nabu-gateway").string)
                 }
             })
             .mapError(OpenBanking.Error.init)
@@ -326,8 +327,12 @@ extension OpenBanking.Order {
 
         return banking.network.perform(request: request, responseType: OpenBanking.Order.self)
             .handleEvents(receiveOutput: { [banking] order in
-                guard let url = order.attributes.authorisationUrl else { return }
-                banking.state.set(.authorisation.url, to: url)
+                banking.state.transaction { state in
+                    if let url = order.attributes.authorisationUrl, let callback = order.attributes.callback {
+                        state.set(.authorisation.url, to: url)
+                        state.set(.callback.path, to: callback.dropPrefix("nabu-gateway").string)
+                    }
+                }
             })
             .mapError(OpenBanking.Error.init)
             .eraseToAnyPublisher()

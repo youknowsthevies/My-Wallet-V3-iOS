@@ -43,7 +43,7 @@ public struct BankState: Equatable {
 public enum BankAction: Hashable, FailureAction {
     case request
     case launchAuthorisation(URL)
-    case finalise(OpenBanking.Success)
+    case finalise(OpenBanking.Consent)
     case cancel
     case dismiss
     case finished
@@ -63,7 +63,9 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         return environment.openBanking.start(action: state.action)
             .compactMap { state in
                 switch state {
-                case .success(let output):
+                case .waitingForConsent(let consent):
+                    return .none
+                case .consent(let output):
                     return BankAction.finalise(output)
                 case .failure(let error):
                     return BankAction.failure(error)
@@ -96,7 +98,10 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         case .confirm:
             fatalError()
         }
-        return .cancel(id: ID.OB())
+        return .merge(
+            .cancel(id: ID.ConsentError()),
+            .cancel(id: ID.OB())
+        )
         
     case .dismiss:
         return .fireAndForget(environment.dismiss)
