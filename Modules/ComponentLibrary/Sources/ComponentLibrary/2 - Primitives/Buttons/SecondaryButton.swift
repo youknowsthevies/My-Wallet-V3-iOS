@@ -15,24 +15,24 @@ import SwiftUI
 ///
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=3%3A367)
 
-public struct SecondaryButton: View, PillButton {
+public struct SecondaryButton: View {
 
-    let title: String
-    let action: () -> Void
-    let isLoading: Bool
+    private let title: String
+    private let action: () -> Void
+    private let isLoading: Bool
 
-    let colorSet = PillButtonColorSet(
-        enabledState: PillButtonStyle.ColorSet(
+    private let colorCombination = PillButtonStyle.ColorCombination(
+        enabled: PillButtonStyle.ColorSet(
             foreground: .semantic.white,
             background: .semantic.body,
             border: .semantic.body
         ),
-        pressedState: PillButtonStyle.ColorSet(
+        pressed: PillButtonStyle.ColorSet(
             foreground: .semantic.white,
             background: .semantic.title,
             border: .semantic.title
         ),
-        disabledState: PillButtonStyle.ColorSet(
+        disabled: PillButtonStyle.ColorSet(
             foreground: Color.dynamicColor(
                 light: .semantic.white.opacity(0.7),
                 dark: .semantic.white.opacity(0.4)
@@ -61,7 +61,15 @@ public struct SecondaryButton: View, PillButton {
     }
 
     public var body: some View {
-        makeBody()
+        Button(title) {
+            action()
+        }
+        .buttonStyle(
+            PillButtonStyle(
+                isLoading: isLoading,
+                colorCombination: colorCombination
+            )
+        )
     }
 }
 

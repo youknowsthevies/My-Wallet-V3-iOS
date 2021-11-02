@@ -15,14 +15,14 @@ import SwiftUI
 ///
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=3%3A367)
 
-public struct MinimalButton: View, PillButton {
+public struct MinimalButton: View {
 
-    let title: String
-    let action: () -> Void
-    let isLoading: Bool
+    private let title: String
+    private let action: () -> Void
+    private let isLoading: Bool
 
-    let colorSet = PillButtonColorSet(
-        enabledState: PillButtonStyle.ColorSet(
+    private let colorCombination = PillButtonStyle.ColorCombination(
+        enabled: PillButtonStyle.ColorSet(
             foreground: Color.dynamicColor(
                 light: .semantic.primary,
                 dark: .semantic.primaryMuted
@@ -33,7 +33,7 @@ public struct MinimalButton: View, PillButton {
                 dark: .semantic.body
             )
         ),
-        pressedState: PillButtonStyle.ColorSet(
+        pressed: PillButtonStyle.ColorSet(
             foreground: Color.dynamicColor(
                 light: .semantic.primary,
                 dark: .semantic.primaryMuted
@@ -47,7 +47,7 @@ public struct MinimalButton: View, PillButton {
                 dark: .semantic.primaryMuted
             )
         ),
-        disabledState: PillButtonStyle.ColorSet(
+        disabled: PillButtonStyle.ColorSet(
             foreground: Color.dynamicColor(
                 light: .semantic.primary.opacity(0.4),
                 dark: .semantic.body
@@ -79,7 +79,15 @@ public struct MinimalButton: View, PillButton {
     }
 
     public var body: some View {
-        makeBody()
+        Button(title) {
+            action()
+        }
+        .buttonStyle(
+            PillButtonStyle(
+                isLoading: isLoading,
+                colorCombination: colorCombination
+            )
+        )
     }
 }
 
