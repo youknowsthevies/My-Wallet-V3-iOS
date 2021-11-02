@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import FeatureDashboardUI
+import FeatureInterestUI
 import FeatureSettingsUI
 import PlatformUIKit
 
@@ -34,7 +35,6 @@ protocol LoggedInReloadAPI: AnyObject {
 /// class that uses the extended protocols.
 protocol LoggedInBridge: DrawerRouting,
     TabSwapping,
-    CurrencyRouting,
     CashIdentityVerificationAnnouncementRouting,
     InterestIdentityVerificationAnnouncementRouting,
     AppCoordinating,
@@ -43,6 +43,7 @@ protocol LoggedInBridge: DrawerRouting,
     BackupFlowStarterAPI,
     SettingsStarterAPI,
     LoggedInReloadAPI,
+    InterestAccountListHostingControllerDelegate,
     AuthenticationCoordinating {}
 
 protocol LoggedInDependencyBridgeAPI: AnyObject {
@@ -67,16 +68,12 @@ protocol LoggedInDependencyBridgeAPI: AnyObject {
     func resolveDrawerRouting() -> DrawerRouting
     /// Provides `TabSwapping` methods
     func resolveTabSwapping() -> TabSwapping
-    /// Provides `CurrencyRouting` methods
-    func resolveCurrencyRouting() -> CurrencyRouting
     /// Provides `CashIdentityVerificationAnnouncementRouting` methods
     func resolveCashIdentityVerificationAnnouncementRouting() -> CashIdentityVerificationAnnouncementRouting
     /// Provides `InterestIdentityVerificationAnnouncementRouting` methods
     func resolveInterestIdentityVerificationAnnouncementRouting() -> InterestIdentityVerificationAnnouncementRouting
     /// Provides `AppCoordinating` methods
     func resolveAppCoordinating() -> AppCoordinating
-    /// Provides `CurrencyRouting & TabSwapping` methods
-    func resolveCurrencyRoutingAndTabSwapping() -> CurrencyRouting & TabSwapping
     /// Provides `WalletOperationsRouting` methods
     func resolveWalletOperationsRouting() -> WalletOperationsRouting
     /// Provides `AuthenticationCoordinating` methods
@@ -121,10 +118,6 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
         resolve() as TabSwapping
     }
 
-    func resolveCurrencyRouting() -> CurrencyRouting {
-        resolve() as CurrencyRouting
-    }
-
     func resolveCashIdentityVerificationAnnouncementRouting() -> CashIdentityVerificationAnnouncementRouting {
         resolve() as CashIdentityVerificationAnnouncementRouting
     }
@@ -135,10 +128,6 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
 
     func resolveAppCoordinating() -> AppCoordinating {
         resolve() as AppCoordinating
-    }
-
-    func resolveCurrencyRoutingAndTabSwapping() -> CurrencyRouting & TabSwapping {
-        resolve() as CurrencyRouting & TabSwapping
     }
 
     func resolveWalletOperationsRouting() -> WalletOperationsRouting {

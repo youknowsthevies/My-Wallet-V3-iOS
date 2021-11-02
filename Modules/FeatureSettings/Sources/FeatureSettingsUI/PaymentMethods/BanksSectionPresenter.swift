@@ -25,7 +25,7 @@ final class BanksSectionPresenter: SettingsSectionPresenting {
 
         self.addPaymentMethodCellPresenters = addPaymentMethodCellPresenters
 
-        let sectionType = self.sectionType
+        let sectionType = sectionType
         state = interactor.state
             .flatMap { state -> Observable<SettingsSectionLoadingState> in
                 switch state {

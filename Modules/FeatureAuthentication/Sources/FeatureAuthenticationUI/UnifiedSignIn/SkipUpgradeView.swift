@@ -2,11 +2,38 @@
 
 import AnalyticsKit
 import ComposableArchitecture
+import ComposableNavigation
 import FeatureAuthenticationDomain
 import Localization
 import SwiftUI
 import ToolKit
 import UIComponentsKit
+
+public enum SkipUpgradeRoute: NavigationRoute {
+    case credentials
+
+    @ViewBuilder
+    public func destination(
+        in store: Store<SkipUpgradeState, SkipUpgradeAction>
+    ) -> some View {
+        let viewStore = ViewStore(store)
+        switch self {
+        case .credentials:
+            IfLetStore(
+                store.scope(
+                    state: \.credentialsState,
+                    action: SkipUpgradeAction.credentials
+                ),
+                then: { store in
+                    CredentialsView(
+                        context: .walletInfo(viewStore.walletInfo),
+                        store: store
+                    )
+                }
+            )
+        }
+    }
+}
 
 struct SkipUpgradeView: View {
 
@@ -24,62 +51,85 @@ struct SkipUpgradeView: View {
         static let buttonSpacing: CGFloat = 10
     }
 
+    private let store: Store<SkipUpgradeState, SkipUpgradeAction>
+
+    init(store: Store<SkipUpgradeState, SkipUpgradeAction>) {
+        self.store = store
+    }
+
     var body: some View {
-        VStack {
+        WithViewStore(store) { viewStore in
             VStack {
-                Spacer()
-                Image.CircleIcon.warning
-                    .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
-                    .padding(.bottom, Layout.imageBottomPadding)
-                    .accessibility(identifier: AccessibilityIdentifiers.SkipUpgradeScreen.skipUpgradeImage)
+                VStack {
+                    Spacer()
+                    Image.CircleIcon.warning
+                        .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
+                        .padding(.bottom, Layout.imageBottomPadding)
+                        .accessibility(identifier: AccessibilityIdentifiers.SkipUpgradeScreen.skipUpgradeImage)
 
-                Text(LocalizedString.title)
-                    .textStyle(.title)
-                    .accessibility(identifier: AccessibilityIdentifiers.SkipUpgradeScreen.skipUpgradeTitleText)
+                    Text(LocalizedString.title)
+                        .textStyle(.title)
+                        .accessibility(identifier: AccessibilityIdentifiers.SkipUpgradeScreen.skipUpgradeTitleText)
 
-                Text(LocalizedString.message)
-                    .font(Font(weight: .medium, size: Layout.descriptionFontSize))
-                    .foregroundColor(.textSubheading)
-                    .lineSpacing(Layout.descriptionLineSpacing)
-                    .accessibility(identifier: AccessibilityIdentifiers.SkipUpgradeScreen.skipUpgradeMessageText)
-                Spacer()
+                    Text(LocalizedString.message)
+                        .font(Font(weight: .medium, size: Layout.descriptionFontSize))
+                        .foregroundColor(.textSubheading)
+                        .lineSpacing(Layout.descriptionLineSpacing)
+                        .accessibility(identifier: AccessibilityIdentifiers.SkipUpgradeScreen.skipUpgradeMessageText)
+                    Spacer()
+                }
+                .multilineTextAlignment(.center)
+                VStack(spacing: Layout.buttonSpacing) {
+                    PrimaryButton(
+                        title: LocalizedString.Button.skipUpgrade,
+                        action: {
+                            viewStore.send(.navigate(to: .credentials))
+                        }
+                    )
+                    .accessibility(identifier: AccessibilityIdentifiers.SkipUpgradeScreen.skipUpgradeButton)
+
+                    SecondaryButton(
+                        title: LocalizedString.Button.upgradeAccount,
+                        action: {
+                            viewStore.send(.returnToUpgradeButtonTapped)
+                        }
+                    )
+                    .accessibility(identifier: AccessibilityIdentifiers.SkipUpgradeScreen.upgradeAccountButton)
+                }
             }
-            .multilineTextAlignment(.center)
-            VStack(spacing: Layout.buttonSpacing) {
-                PrimaryButton(
-                    title: LocalizedString.Button.skipUpgrade,
-                    action: {
-                        // TODO: add action here
-                    }
+            .padding(
+                EdgeInsets(
+                    top: 0,
+                    leading: Layout.leadingPadding,
+                    bottom: Layout.bottomPadding,
+                    trailing: Layout.trailingPadding
                 )
-                .accessibility(identifier: AccessibilityIdentifiers.SkipUpgradeScreen.skipUpgradeButton)
-
-                SecondaryButton(
-                    title: LocalizedString.Button.upgradeAccount,
-                    action: {
-                        // TODO: add action here
-                    }
-                )
-                .accessibility(identifier: AccessibilityIdentifiers.SkipUpgradeScreen.upgradeAccountButton)
-            }
-        }
-        .padding(
-            EdgeInsets(
-                top: 0,
-                leading: Layout.leadingPadding,
-                bottom: Layout.bottomPadding,
-                trailing: Layout.trailingPadding
             )
-        )
-        .navigationBarTitleDisplayMode(.inline)
-        .hideBackButtonTitle()
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationRoute(in: store)
+            .hideBackButtonTitle()
+        }
     }
 }
 
 #if DEBUG
 struct SkipUpgradeView_Previews: PreviewProvider {
     static var previews: some View {
-        SkipUpgradeView()
+        SkipUpgradeView(
+            store: .init(
+                initialState: .init(
+                    walletInfo: .empty
+                ),
+                reducer: skipUpgradeReducer,
+                environment: SkipUpgradeEnvironment(
+                    mainQueue: .main,
+                    deviceVerificationService: NoOpDeviceVerificationService(),
+                    errorRecorder: NoOpErrorRecoder(),
+                    appFeatureConfigurator: NoOpFeatureConfigurator(),
+                    analyticsRecorder: NoOpAnalyticsRecorder()
+                )
+            )
+        )
     }
 }
 #endif

@@ -30,17 +30,26 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable unified sign in (account upgrade)
     case unifiedSignIn
 
+    /// Enable polling for email login
+    case pollingForEmailLogin
+
+    /// Enables native wallet payload instead of JS
+    case nativeWalletPayload
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .disableGUIDLogin,
-             .interestWithdrawAndDeposit,
+        case .useTransactionsFlowToBuyCrypto,
              .newAccountPicker,
              .newOnboardingTour,
+             .pollingForEmailLogin:
+            return true
+        case .disableGUIDLogin,
+             .interestWithdrawAndDeposit,
              .requestConsoleLogging,
              .secureChannel,
-             .useTransactionsFlowToBuyCrypto,
-             .unifiedSignIn:
+             .unifiedSignIn,
+             .nativeWalletPayload:
             return false
         }
     }
@@ -71,6 +80,10 @@ extension InternalFeature {
             return "New Onboarding Tour"
         case .unifiedSignIn:
             return "Unified Sign In"
+        case .pollingForEmailLogin:
+            return "Polling (Email Login)"
+        case .nativeWalletPayload:
+            return "Native Wallet Payload"
         }
     }
 }

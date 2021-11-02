@@ -19,7 +19,7 @@ class ERC20TokenAccountsRepositoryTests: XCTestCase {
 
     private let refreshInterval: TimeInterval = 3
 
-    private let currency: CryptoCurrency = .erc20(.mock(name: "ERC20 1", sortIndex: 0))
+    private let currency: CryptoCurrency = .erc20(.mockERC20(name: "ERC20 1", sortIndex: 0))
 
     private var fetchAccounts: ERC20TokenAccounts!
 
@@ -37,8 +37,11 @@ class ERC20TokenAccountsRepositoryTests: XCTestCase {
         fetchAccounts = .stubbed(cryptoCurrency: currency)
 
         let refreshControl = PeriodicCacheRefreshControl(refreshInterval: refreshInterval)
-        cache = InMemoryCache(refreshControl: refreshControl)
-            .eraseToAnyCache()
+        cache = InMemoryCache(
+            configuration: .default(),
+            refreshControl: refreshControl
+        )
+        .eraseToAnyCache()
 
         let enabledCurrenciesService = MockEnabledCurrenciesService()
         enabledCurrenciesService.allEnabledCryptoCurrencies = [currency]

@@ -2,7 +2,6 @@
 
 import DIKit
 import Foundation
-import RxSwift
 
 public typealias HTTPHeaders = [String: String]
 
@@ -21,7 +20,7 @@ public struct NetworkRequest {
         case formUrlEncoded = "application/x-www-form-urlencoded"
     }
 
-    var urlRequest: URLRequest {
+    public var urlRequest: URLRequest {
         if authenticated, headers[HttpHeaderField.authorization] == nil {
             fatalError("Missing Autentication Header")
         }
@@ -94,8 +93,8 @@ public struct NetworkRequest {
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: ContentType = .json,
-        decoder: NetworkResponseDecoderAPI = resolve(),
-        responseHandler: NetworkResponseHandlerAPI = resolve(),
+        decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder(),
+        responseHandler: NetworkResponseHandlerAPI = NetworkResponseHandler(),
         recordErrors: Bool = false
     ) {
         self.endpoint = endpoint

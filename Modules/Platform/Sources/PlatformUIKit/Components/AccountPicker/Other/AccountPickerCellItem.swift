@@ -13,6 +13,7 @@ public struct AccountPickerCellItem: IdentifiableType {
         case emptyState(LabelContent)
         case button(ButtonViewModel)
         case linkedBankAccount(LinkedBankAccountCellPresenter)
+        case paymentMethodAccount(PaymentMethodCellPresenter)
         case accountGroup(AccountGroupBalanceCellPresenter)
         case singleAccount(AccountCurrentBalanceCellPresenter)
     }
@@ -21,6 +22,7 @@ public struct AccountPickerCellItem: IdentifiableType {
         case emptyState
         case button(ButtonViewModel)
         case linkedBankAccount(LinkedBankAccount)
+        case paymentMethodAccount(PaymentMethodAccount)
         case accountGroup(AccountGroup, AccountGroupBalanceCellInteractor)
         case singleAccount(SingleAccount, AssetBalanceViewInteracting)
     }
@@ -31,7 +33,10 @@ public struct AccountPickerCellItem: IdentifiableType {
             return "emptyState"
         case .button:
             return "button"
-        case .accountGroup, .linkedBankAccount, .singleAccount:
+        case .accountGroup,
+             .linkedBankAccount,
+             .paymentMethodAccount,
+             .singleAccount:
             if let identifier = account?.identifier {
                 return identifier
             }
@@ -56,11 +61,19 @@ public struct AccountPickerCellItem: IdentifiableType {
         case .button(let viewModel):
             account = nil
             presenter = .button(viewModel)
+
         case .linkedBankAccount(let account):
             self.account = account
             presenter = .linkedBankAccount(
                 .init(account: account, action: assetAction)
             )
+
+        case .paymentMethodAccount(let account):
+            self.account = account
+            presenter = .paymentMethodAccount(
+                .init(account: account, action: assetAction)
+            )
+
         case .singleAccount(let account, let interactor):
             self.account = account
             presenter = .singleAccount(
@@ -70,6 +83,7 @@ public struct AccountPickerCellItem: IdentifiableType {
                     interactor: interactor
                 )
             )
+
         case .accountGroup(let account, let interactor):
             self.account = account
             presenter = .accountGroup(

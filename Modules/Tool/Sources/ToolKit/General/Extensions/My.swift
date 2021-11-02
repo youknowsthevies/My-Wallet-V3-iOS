@@ -16,3 +16,11 @@ extension RawRepresentable {
 extension Sequence {
     public typealias My = Self
 }
+
+extension Decodable {
+    public typealias My = Self
+}
+
+extension Encodable {
+    public typealias My = Self
+}

@@ -13,9 +13,9 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "RxSwift",
-            url: "https://github.com/ReactiveX/RxSwift.git",
-            from: "5.1.3"
+            name: "combine-schedulers",
+            url: "https://github.com/pointfreeco/combine-schedulers",
+            from: "0.5.0"
         ),
         .package(
             name: "SnapshotTesting",
@@ -27,9 +27,8 @@ let package = Package(
         .target(
             name: "TestKit",
             dependencies: [
-                .product(name: "SnapshotTesting", package: "SnapshotTesting"),
-                .product(name: "RxBlocking", package: "RxSwift"),
-                .product(name: "RxTest", package: "RxSwift")
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "SnapshotTesting", package: "SnapshotTesting")
             ]
         )
     ]

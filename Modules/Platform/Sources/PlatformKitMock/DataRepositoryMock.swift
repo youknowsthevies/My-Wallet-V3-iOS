@@ -7,7 +7,7 @@ final class DataRepositoryMock: DataRepositoryAPI {
 
     var underlyingUser: User = UserMock()
 
-    var user: AnyPublisher<User, Never> {
+    var user: AnyPublisher<User, DataRepositoryError> {
         .just(underlyingUser)
     }
 }

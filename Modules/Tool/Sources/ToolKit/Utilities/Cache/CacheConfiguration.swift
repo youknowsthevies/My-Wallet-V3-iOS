@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Foundation
 
 /// A cache configuration.
@@ -18,7 +19,7 @@ public final class CacheConfiguration {
     ///
     /// - Parameters:
     ///   - flushNotificationNames: An array of flush notification names.
-    public init(flushNotificationNames: [Notification.Name] = []) {
+    public init(flushNotificationNames: [Notification.Name]) {
         self.flushNotificationNames = flushNotificationNames
     }
 }
@@ -27,6 +28,6 @@ extension CacheConfiguration {
 
     /// Creates a default cache configuration with no flush notification names.
     public static func `default`() -> CacheConfiguration {
-        CacheConfiguration()
+        CacheConfiguration(flushNotificationNames: [])
     }
 }

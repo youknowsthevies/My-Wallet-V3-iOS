@@ -59,12 +59,13 @@ final class PricesViewController: BaseScreenViewController {
         searchBar.placeholder = LocalizedString.searchPlaceholder
         searchBar.autocapitalizationType = .none
         searchBar.autocorrectionType = .no
-        searchBar.showsCancelButton = true
         searchBar.searchBarStyle = .minimal
+        searchBar.backgroundColor = .white
+        searchBar.isTranslucent = false
 
         searchBar.layoutToSuperview(axis: .horizontal, offset: 12)
         tableView.layoutToSuperview(axis: .horizontal)
-        searchBar.layoutToSuperview(.top)
+        searchBar.layoutToSuperview(.top, offset: 14)
         searchBar.layout(edge: .bottom, to: .top, of: tableView)
         tableView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
         tableView.tableFooterView = UIView()
@@ -92,6 +93,23 @@ final class PricesViewController: BaseScreenViewController {
             .map { $0 ?? "" }
             .asObservable()
             .bind(to: presenter.searchRelay)
+            .disposed(by: disposeBag)
+
+        searchBar.rx.textDidBeginEditing
+            .bind(onNext: { [weak self] _ in
+                self?.searchBar.setShowsCancelButton(true, animated: true)
+            })
+            .disposed(by: disposeBag)
+
+        searchBar.rx.textDidEndEditing
+            .bind(onNext: { [weak self] _ in
+                self?.searchBar.setShowsCancelButton(false, animated: true)
+            })
+            .disposed(by: disposeBag)
+
+        searchBar.rx.cancelButtonClicked
+            .map { nil }
+            .bind(to: searchBar.rx.text)
             .disposed(by: disposeBag)
 
         Observable<Void>

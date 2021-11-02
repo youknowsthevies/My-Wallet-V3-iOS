@@ -116,7 +116,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
         let pair = MoneyValuePair(base: event.amounts.withdrawal, quote: event.amounts.deposit)
         let exchangeRate = pair.exchangeRate
-        let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.code)"
+        let exchangeRateString = "\(exchangeRate.quote.displayString) / \(exchangeRate.base.displayCode)"
         exchangeRatePresenter = TransactionalLineItem.exchangeRate(exchangeRateString).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )

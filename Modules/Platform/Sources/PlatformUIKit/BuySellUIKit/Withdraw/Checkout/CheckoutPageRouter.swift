@@ -31,7 +31,7 @@ final class CheckoutPageRouter: ViewableRouter<CheckoutPageInteractable, Content
     }
 
     func route(to type: CheckoutRoute) {
-        let controllable = self.controllable(for: type)
+        let controllable = controllable(for: type)
         viewController.transition(to: .render(controllable))
     }
 

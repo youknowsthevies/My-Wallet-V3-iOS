@@ -22,12 +22,36 @@ extension InterestTransactionEngine {
 
     // MARK: - Public Functions
 
+    public func modifyEngineConfirmations(
+        _ pendingTransaction: PendingTransaction,
+        termsChecked: Bool,
+        agreementChecked: Bool
+    ) -> PendingTransaction {
+        pendingTransaction
+            .insert(
+                confirmation: .termsOfService(
+                    .init(
+                        value: termsChecked,
+                        type: .agreementInterestTandC
+                    )
+                )
+            )
+            .insert(
+                confirmation: .transferAgreement(
+                    .init(
+                        value: agreementChecked,
+                        type: .agreementInterestTransfer
+                    )
+                )
+            )
+    }
+
     public func checkIfAmountIsBelowMinimumLimit(_ pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
             guard let minimum = pendingTransaction.minimumLimit else {
                 throw TransactionValidationFailure(state: .uninitialized)
             }
-            guard try pendingTransaction.amount > minimum else {
+            guard try pendingTransaction.amount >= minimum else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit)
             }
         }
@@ -42,6 +66,20 @@ extension InterestTransactionEngine {
                 throw TransactionValidationFailure(state: .insufficientFunds)
             }
         }
+    }
+
+    public func getTermsOptionValueFromPendingTransaction(
+        _ pendingTransaction: PendingTransaction
+    ) -> Bool {
+        pendingTransaction
+            .termsOptionValue
+    }
+
+    public func getTransferAgreementOptionValueFromPendingTransaction(
+        _ pendingTransaction: PendingTransaction
+    ) -> Bool {
+        pendingTransaction
+            .agreementOptionValue
     }
 
     public func fiatAmountAndFees(

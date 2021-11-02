@@ -110,10 +110,10 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
         interactor: AmountTranslationInteractor,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         displayBundle: DisplayBundle,
-        inputTypeToggleVisiblity: Visibility
+        inputTypeToggleVisibility: Visibility
     ) {
         self.displayBundle = displayBundle
-        swapButtonVisibilityRelay.accept(inputTypeToggleVisiblity)
+        swapButtonVisibilityRelay.accept(inputTypeToggleVisibility)
         self.interactor = interactor
         fiatPresenter = .init(interactor: interactor.fiatInteractor, currencyCodeSide: .leading)
         cryptoPresenter = .init(interactor: interactor.cryptoInteractor, currencyCodeSide: .trailing)
@@ -191,7 +191,7 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
                     if let event = self.displayBundle.events?.maxTappedAnalyticsEvent {
                         self.analyticsRecorder.record(event: event)
                     }
-                    self.interactor.set(amount: maxValue)
+                    self.interactor.set(maxAmount: maxValue)
                 })
                 .disposed(by: disposeBag)
             return .warning(viewModel)

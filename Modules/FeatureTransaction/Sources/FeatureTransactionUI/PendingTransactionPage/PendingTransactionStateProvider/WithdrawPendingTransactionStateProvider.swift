@@ -17,6 +17,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
             .map(weak: self) { (self, state) in
                 switch state.executionStatus {
                 case .inProgress,
+                     .pending,
                      .notStarted:
                     return self.pending(state: state)
                 case .completed:
@@ -49,7 +50,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                         .primary(
                             image: currency.logoResource,
                             contentColor: .white,
-                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
                             cornerRadius: currency.isFiatCurrency ? .roundedHigh : .round,
                             accessibilityIdSuffix: "PendingTransactionSuccessBadge"
                         )
@@ -61,7 +62,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 
@@ -80,7 +81,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                         .primary(
                             image: currency.logoResource,
                             contentColor: .white,
-                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
                             cornerRadius: currency.isFiatCurrency ? .roundedHigh : .round,
                             accessibilityIdSuffix: "PendingTransactionPendingBadge"
                         )
@@ -88,8 +89,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
                 )
-            ),
-            buttonViewModel: nil
+            )
         )
     }
 
@@ -105,7 +105,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                         .primary(
                             image: currency.logoResource,
                             contentColor: .white,
-                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
                             cornerRadius: currency.isFiatCurrency ? .roundedHigh : .round,
                             accessibilityIdSuffix: "PendingTransactionFailureBadge"
                         )
@@ -117,7 +117,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 }

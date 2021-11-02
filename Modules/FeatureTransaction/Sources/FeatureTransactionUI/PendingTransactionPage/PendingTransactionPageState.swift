@@ -9,6 +9,9 @@ struct PendingTransactionPageState {
         /// Dismiss the pending screen.
         case close
 
+        /// Show KYC upgrade prompt
+        case upgradeKYCTier
+
         /// Do nothing. This is usually only
         /// present when the screen is pending
         /// as opposed to a success or failure state.
@@ -19,21 +22,21 @@ struct PendingTransactionPageState {
     let subtitle: LabelContent
     let compositeViewType: CompositeStatusViewType
     let effect: Effect
-    let buttonViewModel: ButtonViewModel?
+    let primaryButtonViewModel: ButtonViewModel?
+    let secondaryButtonViewModel: ButtonViewModel?
 
     static let empty: PendingTransactionPageState = .init(
         title: "",
-        subtitle: "",
-        compositeViewType: .none,
-        buttonViewModel: nil
+        subtitle: ""
     )
 
     init(
         title: String,
         subtitle: String,
-        compositeViewType: CompositeStatusViewType,
+        compositeViewType: CompositeStatusViewType = .none,
         effect: Effect = .none,
-        buttonViewModel: ButtonViewModel?
+        primaryButtonViewModel: ButtonViewModel? = nil,
+        secondaryButtonViewModel: ButtonViewModel? = nil
     ) {
         self.title = .init(
             text: title,
@@ -52,13 +55,19 @@ struct PendingTransactionPageState {
         )
 
         self.compositeViewType = compositeViewType
-        self.buttonViewModel = buttonViewModel
+        self.primaryButtonViewModel = primaryButtonViewModel
+        self.secondaryButtonViewModel = secondaryButtonViewModel
         self.effect = effect
     }
 }
 
 extension PendingTransactionPageState {
-    var buttonViewModelVisibility: Visibility {
-        buttonViewModel == nil ? .hidden : .visible
+
+    var primaryButtonViewModelVisibility: Visibility {
+        primaryButtonViewModel == nil ? .hidden : .visible
+    }
+
+    var secondaryButtonViewModelVisibility: Visibility {
+        secondaryButtonViewModel == nil ? .hidden : .visible
     }
 }

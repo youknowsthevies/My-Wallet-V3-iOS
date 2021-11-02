@@ -38,7 +38,7 @@ class WalletPayloadServiceTests: XCTestCase {
             let serviceAuthTypePublisher = service.requestUsingSessionToken()
             var serviceAuthType: WalletAuthenticatorType = .standard
             var error: WalletPayloadServiceError?
-            let expectation = self.expectation(description: "2FA Response")
+            let expectation = expectation(description: "2FA Response")
             serviceAuthTypePublisher
                 .sink(
                     receiveCompletion: { completion in
@@ -86,7 +86,7 @@ class WalletPayloadServiceTests: XCTestCase {
             let serviceAuthTypePublisher = service.requestUsingSessionToken()
             var serviceAuthType: WalletAuthenticatorType = .standard
             var error: WalletPayloadServiceError?
-            let expectation = self.expectation(description: "2FA Response")
+            let expectation = expectation(description: "2FA Response")
             serviceAuthTypePublisher
                 .sink(
                     receiveCompletion: { completion in

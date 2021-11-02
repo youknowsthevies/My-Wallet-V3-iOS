@@ -10,9 +10,10 @@ import ToolKit
 /// the network and subsequently cached for faster access.
 final class BlockchainDataRepository: DataRepositoryAPI {
 
-    var user: AnyPublisher<User, Never> {
+    var user: AnyPublisher<User, DataRepositoryError> {
         nabuUserService.user
             .map { $0 }
+            .mapError(DataRepositoryError.failedToFetchUser)
             .eraseToAnyPublisher()
     }
 

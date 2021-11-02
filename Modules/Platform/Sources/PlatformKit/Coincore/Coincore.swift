@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import DIKit
 import RxSwift
 import ToolKit
@@ -46,7 +45,7 @@ final class Coincore: CoincoreAPI {
                     .map { asset in
                         asset.accountGroup(filter: .all)
                     }
-                    .zipMany()
+                    .zip()
             }
             .map { accountGroups -> [SingleAccount] in
                 accountGroups
@@ -102,7 +101,7 @@ final class Coincore: CoincoreAPI {
                             }
                             .eraseToAnyPublisher()
                     }
-                    .zipMany()
+                    .zip()
                     .mapToVoid()
                     .eraseToAnyPublisher()
             }
@@ -120,7 +119,9 @@ final class Coincore: CoincoreAPI {
         action: AssetAction
     ) -> AnyPublisher<[SingleAccount], CoincoreError> {
         switch action {
-        case .swap:
+        case .swap,
+             .interestTransfer,
+             .interestWithdraw:
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
             }
@@ -171,6 +172,13 @@ final class Coincore: CoincoreAPI {
         switch action {
         case .buy:
             unimplemented("WIP")
+        case .interestTransfer:
+            return true
+        case .interestWithdraw:
+            guard let cryptoAccount = destinationAccount as? CryptoAccount else {
+                return false
+            }
+            return sourceAccount.asset == cryptoAccount.asset
         case .sell:
             return destinationAccount is FiatAccount
         case .swap:

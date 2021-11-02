@@ -23,6 +23,7 @@ import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
+import RxToolKit
 import StellarKit
 import ToolKit
 import WalletPayloadKit
@@ -153,7 +154,7 @@ extension DependencyContainer {
         // MARK: - Dashboard
 
         factory { () -> AccountsRouting in
-            let routing: CurrencyRouting & TabSwapping = DIKit.resolve()
+            let routing: TabSwapping = DIKit.resolve()
             return AccountsRouter(
                 routing: routing
             )
@@ -184,16 +185,6 @@ extension DependencyContainer {
         // MARK: - AppCoordinator
 
         single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
-
-        factory { () -> CurrencyRouting & TabSwapping in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveCurrencyRoutingAndTabSwapping() as CurrencyRouting & TabSwapping
-        }
-
-        factory { () -> CurrencyRouting in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveCurrencyRouting() as CurrencyRouting
-        }
 
         factory { () -> TabSwapping in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -349,7 +340,12 @@ extension DependencyContainer {
             return featureFetching
         }
 
-        factory { () -> FeatureVariantFetching in
+        factory { () -> RxFeatureFetching in
+            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
+            return featureFetching
+        }
+
+        factory { () -> RxFeatureVariantFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
         }
@@ -362,6 +358,11 @@ extension DependencyContainer {
         }
 
         factory { () -> FiatCurrencyServiceAPI in
+            let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettingsService
+        }
+
+        factory { () -> FiatCurrencyPublisherAPI in
             let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettingsService
         }
@@ -476,6 +477,10 @@ extension DependencyContainer {
 
         factory { () -> FeatureTransactionUI.KYCSDDServiceAPI in
             TransactionsKYCAdapter()
+        }
+
+        factory { () -> FeatureSettingsUI.PaymentMethodsLinkerAPI in
+            PaymentMethodsLinkingAdapter()
         }
 
         // MARK: FeatureAuthentication Module

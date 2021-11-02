@@ -158,14 +158,18 @@ let package = Package(
             name: "BitcoinCashKitTests",
             dependencies: [
                 .target(name: "BitcoinCashKit"),
-                .product(name: "TestKit", package: "Test")
+                .product(name: "TestKit", package: "Test"),
+                .product(name: "RxBlocking", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift")
             ]
         ),
         .testTarget(
             name: "BitcoinChainKitTests",
             dependencies: [
                 .target(name: "BitcoinChainKit"),
-                .product(name: "TestKit", package: "Test")
+                .product(name: "TestKit", package: "Test"),
+                .product(name: "RxBlocking", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift")
             ]
         ),
         .testTarget(
@@ -173,7 +177,9 @@ let package = Package(
             dependencies: [
                 .target(name: "BitcoinKit"),
                 .target(name: "BitcoinKitMock"),
-                .product(name: "TestKit", package: "Test")
+                .product(name: "TestKit", package: "Test"),
+                .product(name: "RxBlocking", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift")
             ]
         ),
         .testTarget(
@@ -187,7 +193,9 @@ let package = Package(
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "PlatformKitMock", package: "Platform"),
                 .product(name: "TestKit", package: "Test"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "RxBlocking", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift")
             ]
         ),
         .testTarget(
@@ -196,7 +204,9 @@ let package = Package(
                 .target(name: "ERC20Kit"),
                 .target(name: "ERC20KitMock"),
                 .product(name: "PlatformKitMock", package: "Platform"),
-                .product(name: "TestKit", package: "Test")
+                .product(name: "TestKit", package: "Test"),
+                .product(name: "RxBlocking", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift")
             ]
         ),
         .testTarget(
@@ -205,7 +215,9 @@ let package = Package(
                 .target(name: "EthereumKit"),
                 .target(name: "EthereumKitMock"),
                 .product(name: "PlatformKitMock", package: "Platform"),
-                .product(name: "TestKit", package: "Test")
+                .product(name: "TestKit", package: "Test"),
+                .product(name: "RxBlocking", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift")
             ]
         ),
         .testTarget(
@@ -214,7 +226,8 @@ let package = Package(
                 .target(name: "StellarKit"),
                 .target(name: "StellarKitMock"),
                 .product(name: "PlatformKitMock", package: "Platform"),
-                .product(name: "TestKit", package: "Test")
+                .product(name: "TestKit", package: "Test"),
+                .product(name: "RxBlocking", package: "RxSwift")
             ],
             resources: [
                 .copy("account_response.json")

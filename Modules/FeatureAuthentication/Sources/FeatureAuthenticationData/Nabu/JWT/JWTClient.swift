@@ -27,13 +27,13 @@ final class JWTClient: JWTClientAPI {
     }
 
     private enum Path {
-        static let token = ["wallet", "signed-retail-token"]
+        static let wallet = ["wallet"]
     }
 
     private enum Parameter {
+        static let method = "method"
         static let guid = "guid"
         static let sharedKey = "sharedKey"
-        static let apiCode = "api_code"
     }
 
     // MARK: - Properties
@@ -55,7 +55,11 @@ final class JWTClient: JWTClientAPI {
         guid: String,
         sharedKey: String
     ) -> AnyPublisher<String, JWTClient.ClientError> {
-        let queryParameters = [
+        let parameters = [
+            URLQueryItem(
+                name: Parameter.method,
+                value: "signed-retail-token"
+            ),
             URLQueryItem(
                 name: Parameter.guid,
                 value: guid
@@ -63,15 +67,13 @@ final class JWTClient: JWTClientAPI {
             URLQueryItem(
                 name: Parameter.sharedKey,
                 value: sharedKey
-            ),
-            URLQueryItem(
-                name: Parameter.apiCode,
-                value: BlockchainAPI.Parameters.apiCode
             )
         ]
-        let request = requestBuilder.get(
-            path: Path.token,
-            parameters: queryParameters
+        let data = RequestBuilder.body(from: parameters)
+        let request = requestBuilder.post(
+            path: Path.wallet,
+            body: data,
+            contentType: .formUrlEncoded
         )!
         return networkAdapter.perform(request: request)
             .mapError { (networkError: NetworkError) -> JWTClient.ClientError in

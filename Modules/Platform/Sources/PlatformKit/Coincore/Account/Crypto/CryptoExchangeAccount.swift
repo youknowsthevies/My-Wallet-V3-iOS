@@ -56,7 +56,6 @@ public final class CryptoExchangeAccount: ExchangeAccount {
     public var receiveAddress: Single<ReceiveAddress> {
         cryptoReceiveAddressFactory
             .makeExternalAssetAddress(
-                asset: asset,
                 address: address,
                 label: label,
                 onTxCompleted: onTxCompleted
@@ -101,14 +100,14 @@ public final class CryptoExchangeAccount: ExchangeAccount {
 
     private let address: String
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
-    private let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
+    private let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
 
     // MARK: - Init
 
     init(
         response: CryptoExchangeAddressResponse,
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-        cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()
+        cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     ) {
         label = response.assetType.defaultExchangeWalletName
         asset = response.assetType
@@ -116,9 +115,5 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         state = .init(state: response.state)
         self.exchangeAccountProvider = exchangeAccountProvider
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
-    }
-
-    static func from(response: CryptoExchangeAddressResponse) -> Self {
-        Self(response: response)
     }
 }

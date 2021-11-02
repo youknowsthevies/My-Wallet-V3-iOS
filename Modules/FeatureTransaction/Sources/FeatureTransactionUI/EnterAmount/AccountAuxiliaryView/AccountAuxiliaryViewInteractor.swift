@@ -34,17 +34,20 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
         let title: String
         let subtitle: String
         let imageResource: ImageResource
+        let imageBackgroundColor: UIColor
         let isEnabled: Bool
 
         init(
             title: String,
             subtitle: String,
             imageResource: ImageResource,
+            imageBackgroundColor: UIColor,
             isEnabled: Bool = true
         ) {
             self.title = title
             self.subtitle = subtitle
             self.imageResource = imageResource
+            self.imageBackgroundColor = imageBackgroundColor
             self.isEnabled = isEnabled
         }
 
@@ -55,6 +58,7 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
                 name: "icon-bank",
                 bundle: .platformUIKit
             ),
+            imageBackgroundColor: .background,
             isEnabled: false
         )
     }
@@ -89,14 +93,16 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
                     title: bank.label,
                     subtitle: subtitle,
                     imageResource: bank.logoResource,
+                    imageBackgroundColor: bank.logoBackgroundColor,
                     isEnabled: tapEnabled
                 )
 
-            case let linkablePayment as PaymentMethodAccount:
+            case let paymentMethodAccount as PaymentMethodAccount:
                 return .init(
-                    title: linkablePayment.label,
-                    subtitle: linkablePayment.paymentMethodType.balance.displayString,
-                    imageResource: linkablePayment.logoResource,
+                    title: paymentMethodAccount.label,
+                    subtitle: paymentMethodAccount.paymentMethodType.balance.displayString,
+                    imageResource: paymentMethodAccount.logoResource,
+                    imageBackgroundColor: paymentMethodAccount.logoBackgroundColor,
                     isEnabled: tapEnabled
                 )
 
@@ -105,6 +111,7 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
                     title: fiatAccount.label,
                     subtitle: "",
                     imageResource: fiatAccount.logoResource,
+                    imageBackgroundColor: fiatAccount.logoBackgroundColor,
                     isEnabled: tapEnabled
                 )
 

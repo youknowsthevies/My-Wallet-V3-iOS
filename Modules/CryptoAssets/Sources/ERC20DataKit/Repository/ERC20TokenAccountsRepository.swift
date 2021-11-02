@@ -38,10 +38,9 @@ final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
         client: ERC20AccountClientAPI = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
     ) {
-        let configuration: CacheConfiguration = .onLoginLogout()
-        let refreshControl = PeriodicCacheRefreshControl(refreshInterval: 90)
+        let refreshControl = PeriodicCacheRefreshControl(refreshInterval: 60)
         let cache = InMemoryCache<ERC20TokenAccountsKey, ERC20TokenAccounts>(
-            configuration: configuration,
+            configuration: .onLoginLogoutTransaction(),
             refreshControl: refreshControl
         )
         .eraseToAnyCache()

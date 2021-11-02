@@ -17,6 +17,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
             .map(weak: self) { (self, state) in
                 switch state.executionStatus {
                 case .notStarted,
+                     .pending,
                      .inProgress:
                     return self.pending(state: state)
                 case .error:
@@ -39,7 +40,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
             subtitle: String(
                 format: LocalizationIds.Success.description,
                 amount.displayString,
-                amount.code,
+                amount.displayCode,
                 value
             ),
             compositeViewType: .composite(
@@ -48,7 +49,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                         .primary(
                             image: currency.logoResource,
                             contentColor: .white,
-                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
                             cornerRadius: .roundedHigh,
                             accessibilityIdSuffix: "PendingTransactionSuccessBadge"
                         )
@@ -60,7 +61,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 
@@ -79,7 +80,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                         .primary(
                             image: amount.currency.logoResource,
                             contentColor: .white,
-                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
                             cornerRadius: .roundedHigh,
                             accessibilityIdSuffix: "PendingTransactionPendingBadge"
                         )
@@ -87,8 +88,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
                 )
-            ),
-            buttonViewModel: nil
+            )
         )
     }
 
@@ -103,7 +103,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                         .primary(
                             image: currency.logoResource,
                             contentColor: .white,
-                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandUIColor,
                             cornerRadius: .roundedHigh,
                             accessibilityIdSuffix: "PendingTransactionFailureBadge"
                         )
@@ -115,7 +115,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
                 )
             ),
             effect: .close,
-            buttonViewModel: .primary(with: LocalizationConstants.okString)
+            primaryButtonViewModel: .primary(with: LocalizationConstants.okString)
         )
     }
 }

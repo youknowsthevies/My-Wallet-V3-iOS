@@ -13,7 +13,9 @@ extension AssetAction {
              .sell,
              .swap,
              .withdraw,
-             .viewActivity:
+             .viewActivity,
+             .interestWithdraw,
+             .interestTransfer:
             return true
         }
     }

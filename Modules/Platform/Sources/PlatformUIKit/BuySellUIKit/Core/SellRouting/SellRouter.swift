@@ -238,6 +238,6 @@ public final class LegacySellRouter: RIBs.Router<SellRouterInteractor> {
     }
 
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        BottomSheetPresenting(ignoresBackroundTouches: false)
+        BottomSheetPresenting(ignoresBackgroundTouches: false)
     }()
 }

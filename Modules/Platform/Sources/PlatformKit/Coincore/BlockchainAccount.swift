@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import RxSwift
 import ToolKit
 
@@ -25,6 +24,9 @@ public protocol BlockchainAccount: Account {
     /// The total balance on this account.
     var balance: Single<MoneyValue> { get }
 
+    /// The total balance on this account.
+    var balancePublisher: AnyPublisher<MoneyValue, Error> { get }
+
     /// The pending balance of this account.
     var pendingBalance: Single<MoneyValue> { get }
 
@@ -38,6 +40,10 @@ public protocol BlockchainAccount: Account {
     /// Depending of the account implementation, this may not strictly mean a positive balance.
     /// Some accounts may be set as `isFunded` if they have ever had a positive balance in the past.
     var isFunded: Single<Bool> { get }
+
+    /// The reason why the BlockchainAccount is ineligible for Interest.
+    /// This will be `.eligible` if the account is eligible
+    var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> { get }
 
     /// The balance of this account exchanged to the given fiat currency.
     func fiatBalance(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValue, Error>
@@ -67,6 +73,10 @@ public protocol BlockchainAccount: Account {
 
 extension BlockchainAccount {
 
+    public var balancePublisher: AnyPublisher<MoneyValue, Error> {
+        balance.asPublisher()
+    }
+
     public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         let single: Single<Bool> = can(perform: action)
         return single.asPublisher()
@@ -74,6 +84,10 @@ extension BlockchainAccount {
 }
 
 extension BlockchainAccount {
+
+    public var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
+        .just(.eligible)
+    }
 
     public func balancePair(fiatCurrency: FiatCurrency) -> AnyPublisher<MoneyValuePair, Error> {
         balancePair(fiatCurrency: fiatCurrency, at: .now)

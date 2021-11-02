@@ -8,18 +8,20 @@ import PlatformKit
 import ToolKit
 
 typealias FeatureInterestDataAPIClient =
-    InterestAccountEligibilityClientAPI &
     InterestAccountLimitsClientAPI &
     InterestAccountRateClientAPI &
-    InterestAccountBalanceClientAPI
+    InterestAccountBalanceClientAPI &
+    InterestAccountWithdrawClientAPI &
+    InterestAccountTransferClientAPI
 
 final class APIClient: FeatureInterestDataAPIClient {
 
     private enum Path {
-        static let interestEligibility = ["eligible", "product", "savings"]
+        static let withdraw = ["savings", "withdrawals"]
         static let balance = ["accounts", "savings"]
         static let rate = ["savings", "rates"]
         static let limits = ["savings", "limits"]
+        static let transfer = ["custodial", "transfer"]
     }
 
     private enum Parameter {
@@ -42,6 +44,26 @@ final class APIClient: FeatureInterestDataAPIClient {
         self.requestBuilder = requestBuilder
     }
 
+    func createInterestAccountWithdrawal(
+        _ amount: MoneyValue,
+        address: String,
+        currencyCode: String
+    ) -> AnyPublisher<Void, NabuNetworkError> {
+        let body = InterestAccountWithdrawRequest(
+            withdrawalAddress: address,
+            amount: amount.minorString,
+            currency: currencyCode
+        )
+        let request = requestBuilder.post(
+            path: Path.withdraw,
+            body: try? body.encode(),
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request)
+    }
+
     func fetchBalanceWithFiatCurrency(
         _ fiatCurrency: FiatCurrency
     ) -> AnyPublisher<InterestAccountBalanceResponse?, NabuNetworkError> {
@@ -54,18 +76,6 @@ final class APIClient: FeatureInterestDataAPIClient {
         let request = requestBuilder.get(
             path: Path.balance,
             parameters: parameters,
-            authenticated: true
-        )!
-
-        return networkAdapter
-            .perform(request: request)
-    }
-
-    func fetchInterestAccountEligibilityResponse()
-        -> AnyPublisher<InterestEligibilityResponse, NabuNetworkError>
-    {
-        let request = requestBuilder.get(
-            path: Path.interestEligibility,
             authenticated: true
         )!
 
@@ -92,6 +102,18 @@ final class APIClient: FeatureInterestDataAPIClient {
             .perform(request: request)
     }
 
+    func fetchAllInterestAccountRates()
+        -> AnyPublisher<SupportedInterestAccountRatesResponse, NabuNetworkError>
+    {
+        let request = requestBuilder.get(
+            path: Path.rate,
+            authenticated: true
+        )!
+
+        return networkAdapter
+            .perform(request: request)
+    }
+
     func fetchInterestAccountRateForCurrencyCode(
         _ currencyCode: String
     ) -> AnyPublisher<InterestAccountRateResponse, NabuNetworkError> {
@@ -106,6 +128,46 @@ final class APIClient: FeatureInterestDataAPIClient {
             parameters: parameters,
             authenticated: true
         )!
+
+        return networkAdapter
+            .perform(request: request)
+    }
+
+    func createInterestAccountCustodialTransfer(
+        _ amount: MoneyValue
+    ) -> AnyPublisher<Void, NabuNetworkError> {
+        let body = InterestAccountTransferRequest
+            .createTransferRequestWithAmount(
+                amount.minorString,
+                currencyCode: amount.code
+            )
+
+        let request = requestBuilder
+            .post(
+                path: Path.transfer,
+                body: try? body.encode(),
+                authenticated: true
+            )!
+
+        return networkAdapter
+            .perform(request: request)
+    }
+
+    func createInterestAccountCustodialWithdraw(
+        _ amount: MoneyValue
+    ) -> AnyPublisher<Void, NabuNetworkError> {
+        let body = InterestAccountTransferRequest
+            .createWithdrawRequestWithAmount(
+                amount.minorString,
+                currencyCode: amount.code
+            )
+
+        let request = requestBuilder
+            .post(
+                path: Path.transfer,
+                body: try? body.encode(),
+                authenticated: true
+            )!
 
         return networkAdapter
             .perform(request: request)

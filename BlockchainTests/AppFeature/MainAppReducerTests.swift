@@ -14,6 +14,7 @@ import WalletPayloadKit
 import XCTest
 
 @testable import Blockchain
+@testable import ComposableNavigation
 @testable import FeatureAppUI
 @testable import FeatureAuthenticationMock
 @testable import FeatureAuthenticationUI
@@ -273,6 +274,9 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.receive(.onboarding(.welcomeScreen(.requestedToDecryptWallet("password"))))
         testStore.receive(.fetchWallet(password: "password"))
+        testStore.receive(.authenticate)
+        mockMainQueue.advance(by: .seconds(1))
+        testStore.receive(.doFetchWallet(password: "password"))
         mockSettingsApp.guid = String(repeating: "a", count: 36)
         mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
         XCTAssertTrue(mockWallet.fetchCalled)
@@ -281,7 +285,6 @@ final class MainAppReducerTests: XCTestCase {
             sharedKey: mockSettingsApp.sharedKey!,
             password: "password".passwordPartHash
         )
-        testStore.receive(.authenticate)
         mockMainQueue.advance()
 
         // wallet decryptions still expects the original values
@@ -323,13 +326,15 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.passwordScreen(.authenticate("password"))))
 
         testStore.receive(.fetchWallet(password: "password"))
+        testStore.receive(.authenticate)
+        mockMainQueue.advance(by: .seconds(1))
+        testStore.receive(.doFetchWallet(password: "password"))
         XCTAssertTrue(mockWallet.fetchCalled)
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
             sharedKey: mockSettingsApp.sharedKey!,
             password: "password".passwordPartHash
         )
-        testStore.receive(.authenticate)
         mockMainQueue.advance()
 
         let decryption = WalletDecryption(
@@ -369,6 +374,9 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.pin(.handleAuthentication("password"))))
 
         testStore.receive(.fetchWallet(password: "password"))
+        testStore.receive(.authenticate)
+        mockMainQueue.advance(by: .seconds(1))
+        testStore.receive(.doFetchWallet(password: "password"))
         XCTAssertTrue(mockWallet.fetchCalled)
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
@@ -376,7 +384,6 @@ final class MainAppReducerTests: XCTestCase {
             password: "password".passwordPartHash
         )
 
-        testStore.receive(.authenticate)
         mockMainQueue.advance()
 
         let decryption = WalletDecryption(
@@ -571,19 +578,20 @@ final class MainAppReducerTests: XCTestCase {
             state.onboarding?.walletCreationContext = .existing
         }
 
-        testStore.send(.onboarding(.welcomeScreen(.emailLogin(.setVerifyDeviceScreenVisible(true))))) { state in
-            state.onboarding?.welcomeState?.emailLoginState?.isVerifyDeviceScreenVisible = true
+        testStore.send(.onboarding(.welcomeScreen(.emailLogin(.navigate(to: .verifyDevice))))) { state in
             state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState = .init(emailAddress: "")
+            state.onboarding?.welcomeState?.emailLoginState?.route = RouteIntent(route: .verifyDevice, action: .navigateTo)
         }
 
         testStore.send(
             .onboarding(
-                .welcomeScreen(.emailLogin(.verifyDevice(.setCredentialsScreenVisible(true))))
+                .welcomeScreen(.emailLogin(.verifyDevice(.navigate(to: .credentials))))
             )
         ) { state in
-            state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?.isCredentialsScreenVisible = true
             state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?
                 .credentialsState = .init(accountRecoveryEnabled: false)
+            state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?
+                .route = RouteIntent(route: .credentials, action: .navigateTo)
         }
 
         testStore.send(

@@ -9,15 +9,15 @@ import ToolKit
 final class SettingsServiceMock: SettingsServiceAPI {
 
     var singleValuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> {
-        expectedResult.publisher
+        expectedResult.publisher.eraseToAnyPublisher()
     }
 
     var valuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> {
-        expectedResult.publisher
+        expectedResult.publisher.eraseToAnyPublisher()
     }
 
     func fetchPublisher(force: Bool) -> AnyPublisher<WalletSettings, SettingsServiceError> {
-        expectedResult.publisher
+        expectedResult.publisher.eraseToAnyPublisher()
     }
 
     var expectedResult: Result<WalletSettings, SettingsServiceError>!

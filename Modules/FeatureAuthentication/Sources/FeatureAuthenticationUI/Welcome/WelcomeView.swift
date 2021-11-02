@@ -178,7 +178,7 @@ public struct WelcomeView: View {
 
     private var buttonSection: some View {
         VStack(spacing: Layout.buttonSpacing) {
-            PrimaryButton(title: LocalizedString.Button.createWallet) {
+            PrimaryButton(title: LocalizedString.Button.buyCryptoNow) {
                 viewStore.send(.presentScreenFlow(.createWalletScreen))
             }
             .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.createWalletButton)

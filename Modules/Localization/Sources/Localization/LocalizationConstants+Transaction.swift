@@ -37,6 +37,7 @@ extension LocalizationConstants {
             }
 
             public enum Completion {
+                public enum InProgress {}
                 public enum Pending {}
                 public enum Success {}
                 public enum Failure {}
@@ -64,6 +65,22 @@ extension LocalizationConstants {
         }
 
         public enum Deposit {
+            public enum Completion {
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
+            }
+        }
+
+        public enum Transfer {
+            public enum Completion {
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
+            }
+        }
+
+        public enum InterestWithdraw {
             public enum Completion {
                 public enum Pending {}
                 public enum Success {}
@@ -226,6 +243,7 @@ extension LocalizationConstants.Transaction.Swap.KYC {
 extension LocalizationConstants.Transaction {
 
     public static let viewActivity = NSLocalizedString("View Activity", comment: "View Activity")
+    public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
     public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
     public static let sell = NSLocalizedString("Sell", comment: "Sell")
     public static let send = NSLocalizedString("Send", comment: "Send")
@@ -297,6 +315,17 @@ extension LocalizationConstants.Transaction.Withdraw {
     public static let confirmationDisclaimer = NSLocalizedString(
         "Your final amount might change due to market activity. For your security, buy orders with a bank account are subject up to a 14 day holding period. You can Swap or Sell during this time. We will notify you once the funds are fully available.",
         comment: "Your final amount might change due to market activity. For your security, buy orders with a bank account are subject up to a 14 day holding period. You can Swap or Sell during this time. We will notify you once the funds are fully available."
+    )
+}
+
+extension LocalizationConstants.Transaction.Transfer {
+    public static let transferTo = NSLocalizedString(
+        "Transfer to...",
+        comment: "Transfer to..."
+    )
+    public static let transferNow = NSLocalizedString(
+        "Transfer Now",
+        comment: "Transfer Now"
     )
 }
 
@@ -474,6 +503,80 @@ extension LocalizationConstants.Transaction.Swap {
     public static let newSwapDisclaimer = NSLocalizedString(
         "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into.",
         comment: "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into."
+    )
+}
+
+// MARK: - Interest Withdraw
+
+extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Pending {
+    public static let title = NSLocalizedString("Withdrawing %@", comment: "Withdrawing %@")
+    public static let description = NSLocalizedString(
+        "We're completing your withdraw now.",
+        comment: "We're completing your withdraw now."
+    )
+}
+
+extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Success {
+    public static let title = NSLocalizedString("%@ Withdrawn", comment: "%@ Withdrawn")
+    public static let description = NSLocalizedString(
+        "Your %@ has been withdrawn successfully.",
+        comment: "Your %@ has been withdrawn successfully."
+    )
+    public static let action = NSLocalizedString("OK", comment: "OK")
+}
+
+extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Failure {
+    public static let title = NSLocalizedString(
+        "Oops! Something Went Wrong.",
+        comment: "Oops! Something Went Wrong."
+    )
+    public static let description = NSLocalizedString(
+        "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
+    )
+}
+
+// MARK: - Interest Transfer
+
+extension LocalizationConstants.Transaction.Transfer {
+    public static let termsOfService = NSLocalizedString("Terms of Service", comment: "Terms of Service")
+    public static let privacyPolicy = NSLocalizedString("Privacy Policy", comment: "Privacy Policy")
+    public static let termsOfServiceDisclaimer = NSLocalizedString(
+        "I have read and agree to the Terms of Service & Privacy Policy.",
+        comment: "I have read and agree to the Terms of Service & Privacy Policy."
+    )
+
+    public static let transferAgreement = NSLocalizedString(
+        "By accepting this, you agree to transfer %@ from your %@ Wallet to your Rewards Account. An initial hold period of 7 days will be applied to your funds.",
+        comment: "By accepting this, you agree to transfer %@ from your %@ Wallet to your Rewards Account. An initial hold period of 7 days will be applied to your funds."
+    )
+}
+
+extension LocalizationConstants.Transaction.Transfer.Completion.Pending {
+    public static let title = NSLocalizedString("Transferring %@", comment: "Transferring %@")
+    public static let description = NSLocalizedString(
+        "We're completing your transfer now.",
+        comment: "We're completing your transfer now."
+    )
+}
+
+extension LocalizationConstants.Transaction.Transfer.Completion.Success {
+    public static let title = NSLocalizedString("%@ Transferred", comment: "%@ Transferred")
+    public static let description = NSLocalizedString(
+        "Your %@ has been transferred successfully.",
+        comment: "Your %@ has been transferred successfully."
+    )
+    public static let action = NSLocalizedString("OK", comment: "OK")
+}
+
+extension LocalizationConstants.Transaction.Transfer.Completion.Failure {
+    public static let title = NSLocalizedString(
+        "Oops! Something Went Wrong.",
+        comment: "Oops! Something Went Wrong."
+    )
+    public static let description = NSLocalizedString(
+        "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
     )
 }
 
@@ -676,9 +779,13 @@ extension LocalizationConstants.Transaction.Buy.Completion.Success {
         "OK",
         comment: "OK"
     )
+    public static let upgrade = NSLocalizedString(
+        "Want to buy more?",
+        comment: "Prompt to upgrade to a higher KYC Tier"
+    )
 }
 
-extension LocalizationConstants.Transaction.Buy.Completion.Pending {
+extension LocalizationConstants.Transaction.Buy.Completion.InProgress {
     public static let title = NSLocalizedString(
         "Buying %@ with %@",
         comment: "Buying [target crypto] with [source fiat]"
@@ -686,6 +793,25 @@ extension LocalizationConstants.Transaction.Buy.Completion.Pending {
     public static let description = NSLocalizedString(
         "We're completing your buy order now.",
         comment: "We're completing your buy order now."
+    )
+    public static let upgrade = NSLocalizedString(
+        "Want to buy more?",
+        comment: "Prompt to upgrade to a higher KYC Tier"
+    )
+}
+
+extension LocalizationConstants.Transaction.Buy.Completion.Pending {
+    public static let title = NSLocalizedString(
+        "We're still processing your order.",
+        comment: "Order pending title"
+    )
+    public static let description = NSLocalizedString(
+        "This may take some time. We'll let you know when it's done.",
+        comment: "Order peding message."
+    )
+    public static let upgrade = NSLocalizedString(
+        "Want to buy more?",
+        comment: "Prompt to upgrade to a higher KYC Tier"
     )
 }
 
@@ -828,8 +954,8 @@ extension LocalizationConstants.Transaction.Confirmation.Error {
         comment: ""
     )
     public static let pendingOrderLimitReached = NSLocalizedString(
-        "You have 1 Swap in-progress. Once that completes, create a New Swap.",
-        comment: ""
+        "You have too many pending orders in-progress. Once those complete, try again. You can check your order status in 'Activity'.",
+        comment: "User has reached the maximum limit of unfullfilled pending orders and cannot create new orders at this time."
     )
     public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",

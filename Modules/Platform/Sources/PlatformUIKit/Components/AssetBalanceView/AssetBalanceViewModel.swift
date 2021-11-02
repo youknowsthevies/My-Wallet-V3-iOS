@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableNavigation
 import Localization
 import PlatformKit
 
@@ -21,20 +22,20 @@ public enum AssetBalanceViewModel {
 
         /// The interaction value of asset
         public struct Interaction {
-            /// The wallet's balance in fiat
-            let fiatValue: MoneyValue
-            /// The wallet's balance in crypto
-            let cryptoValue: MoneyValue
-            /// The wallet's pending balance in crypto
-            let pendingValue: MoneyValue
+            /// The wallet's primary balance
+            let primaryValue: MoneyValue
+            /// The wallet's secondary balance
+            let secondaryValue: MoneyValue?
+            /// The wallet's pending balance
+            let pendingValue: MoneyValue?
 
             init(
-                fiatValue: MoneyValue,
-                cryptoValue: MoneyValue,
-                pendingValue: MoneyValue
+                primaryValue: MoneyValue,
+                secondaryValue: MoneyValue?,
+                pendingValue: MoneyValue?
             ) {
-                self.fiatValue = fiatValue
-                self.cryptoValue = cryptoValue
+                self.primaryValue = primaryValue
+                self.secondaryValue = secondaryValue
                 self.pendingValue = pendingValue
             }
         }
@@ -47,11 +48,11 @@ public enum AssetBalanceViewModel {
 
             // MARK: - Properties
 
-            /// The balance in fiat
-            public let fiatBalance: LabelContent
+            /// The primary balance displayed on top
+            public let primaryBalance: LabelContent
 
-            /// The balance in crypto
-            public let cryptoBalance: LabelContent
+            /// The optional secondary balance displayed on bottom
+            public let secondaryBalance: LabelContent
 
             /// The visibility state of the `Pending` balance
             let pendingBalanceVisibility: Visibility
@@ -62,29 +63,29 @@ public enum AssetBalanceViewModel {
 
             /// Descriptors that allows customized content and style
             public struct Descriptors {
-                let fiatFont: UIFont
-                let fiatTextColor: UIColor
-                let fiatAccessibility: Accessibility
-                let cryptoFont: UIFont
-                let cryptoTextColor: UIColor
+                let primaryFont: UIFont
+                let primaryTextColor: UIColor
+                let primaryAccessibility: Accessibility
+                let secondaryFont: UIFont
+                let secondaryTextColor: UIColor
                 let pendingTextColor: UIColor
-                let cryptoAccessibility: Accessibility
+                let secondaryAccessibility: Accessibility
 
                 public init(
-                    fiatFont: UIFont,
-                    fiatTextColor: UIColor,
-                    fiatAccessibility: Accessibility,
-                    cryptoFont: UIFont,
-                    cryptoTextColor: UIColor,
+                    primaryFont: UIFont,
+                    primaryTextColor: UIColor,
+                    primaryAccessibility: Accessibility,
+                    secondaryFont: UIFont,
+                    secondaryTextColor: UIColor,
                     pendingTextColor: UIColor = .mutedText,
-                    cryptoAccessibility: Accessibility
+                    secondaryAccessibility: Accessibility
                 ) {
-                    self.fiatFont = fiatFont
-                    self.fiatTextColor = fiatTextColor
-                    self.fiatAccessibility = fiatAccessibility
-                    self.cryptoFont = cryptoFont
-                    self.cryptoTextColor = cryptoTextColor
-                    self.cryptoAccessibility = cryptoAccessibility
+                    self.primaryFont = primaryFont
+                    self.primaryTextColor = primaryTextColor
+                    self.primaryAccessibility = primaryAccessibility
+                    self.secondaryFont = secondaryFont
+                    self.secondaryTextColor = secondaryTextColor
+                    self.secondaryAccessibility = secondaryAccessibility
                     self.pendingTextColor = pendingTextColor
                 }
             }
@@ -101,33 +102,39 @@ public enum AssetBalanceViewModel {
                 default:
                     textAlignment = .natural
                 }
-                fiatBalance = LabelContent(
-                    text: value.fiatValue.toDisplayString(includeSymbol: true, locale: .current),
-                    font: descriptors.fiatFont,
-                    color: descriptors.fiatTextColor,
+                primaryBalance = LabelContent(
+                    text: value.primaryValue.toDisplayString(includeSymbol: true, locale: .current),
+                    font: descriptors.primaryFont,
+                    color: descriptors.primaryTextColor,
                     alignment: textAlignment,
-                    accessibility: descriptors.fiatAccessibility.with(idSuffix: value.cryptoValue.code)
+                    accessibility: descriptors.primaryAccessibility.with(idSuffix: value.primaryValue.code)
                 )
 
-                if value.cryptoValue == value.fiatValue {
-                    cryptoBalance = .empty
-                } else {
-                    cryptoBalance = LabelContent(
-                        text: value.cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
-                        font: descriptors.cryptoFont,
-                        color: descriptors.cryptoTextColor,
+                if let cryptoValue = value.secondaryValue, value.secondaryValue != value.primaryValue {
+                    secondaryBalance = LabelContent(
+                        text: cryptoValue.toDisplayString(includeSymbol: true, locale: .current),
+                        font: descriptors.secondaryFont,
+                        color: descriptors.secondaryTextColor,
                         alignment: textAlignment,
-                        accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.code)
+                        accessibility: descriptors.secondaryAccessibility.with(idSuffix: cryptoValue.code)
                     )
+                } else {
+                    secondaryBalance = .empty
                 }
-                pendingBalanceVisibility = value.pendingValue.isZero ? .hidden : .visible
-                pendingBalance = LabelContent(
-                    text: value.pendingValue.toDisplayString(includeSymbol: true, locale: .current),
-                    font: descriptors.cryptoFont,
-                    color: descriptors.pendingTextColor,
-                    alignment: textAlignment,
-                    accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.code)
-                )
+
+                if let pendingValue = value.pendingValue, !pendingValue.isZero {
+                    pendingBalanceVisibility = .visible
+                    pendingBalance = LabelContent(
+                        text: pendingValue.toDisplayString(includeSymbol: true, locale: .current),
+                        font: descriptors.secondaryFont,
+                        color: descriptors.pendingTextColor,
+                        alignment: textAlignment,
+                        accessibility: descriptors.secondaryAccessibility.with(idSuffix: pendingValue.code)
+                    )
+                } else {
+                    pendingBalanceVisibility = .hidden
+                    pendingBalance = .empty
+                }
             }
         }
     }
@@ -141,12 +148,12 @@ extension AssetBalanceViewModel.Value.Presentation.Descriptors {
         fiatAccessiblitySuffix: String
     ) -> Descriptors {
         Descriptors(
-            fiatFont: .main(.semibold, 16.0),
-            fiatTextColor: .dashboardFiatPriceTitle,
-            fiatAccessibility: .id(fiatAccessiblitySuffix),
-            cryptoFont: .main(.medium, 14.0),
-            cryptoTextColor: .descriptionText,
-            cryptoAccessibility: .id(cryptoAccessiblitySuffix)
+            primaryFont: .main(.semibold, 16.0),
+            primaryTextColor: .dashboardFiatPriceTitle,
+            primaryAccessibility: .id(fiatAccessiblitySuffix),
+            secondaryFont: .main(.medium, 14.0),
+            secondaryTextColor: .descriptionText,
+            secondaryAccessibility: .id(cryptoAccessiblitySuffix)
         )
     }
 
@@ -155,12 +162,12 @@ extension AssetBalanceViewModel.Value.Presentation.Descriptors {
         fiatAccessiblitySuffix: String
     ) -> Descriptors {
         Descriptors(
-            fiatFont: .main(.medium, 16.0),
-            fiatTextColor: .mutedText,
-            fiatAccessibility: .id(fiatAccessiblitySuffix),
-            cryptoFont: .main(.medium, 14.0),
-            cryptoTextColor: .mutedText,
-            cryptoAccessibility: .id(cryptoAccessiblitySuffix)
+            primaryFont: .main(.medium, 16.0),
+            primaryTextColor: .mutedText,
+            primaryAccessibility: .id(fiatAccessiblitySuffix),
+            secondaryFont: .main(.medium, 14.0),
+            secondaryTextColor: .mutedText,
+            secondaryAccessibility: .id(cryptoAccessiblitySuffix)
         )
     }
 
@@ -169,12 +176,12 @@ extension AssetBalanceViewModel.Value.Presentation.Descriptors {
         fiatAccessiblitySuffix: String
     ) -> Descriptors {
         Descriptors(
-            fiatFont: .main(.semibold, 16.0),
-            fiatTextColor: .textFieldText,
-            fiatAccessibility: .id(fiatAccessiblitySuffix),
-            cryptoFont: .main(.medium, 14.0),
-            cryptoTextColor: .descriptionText,
-            cryptoAccessibility: .id(cryptoAccessiblitySuffix)
+            primaryFont: .main(.semibold, 16.0),
+            primaryTextColor: .textFieldText,
+            primaryAccessibility: .id(fiatAccessiblitySuffix),
+            secondaryFont: .main(.medium, 14.0),
+            secondaryTextColor: .descriptionText,
+            secondaryAccessibility: .id(cryptoAccessiblitySuffix)
         )
     }
 }

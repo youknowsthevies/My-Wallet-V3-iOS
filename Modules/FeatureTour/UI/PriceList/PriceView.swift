@@ -2,6 +2,7 @@
 
 import ComposableArchitecture
 import SwiftUI
+import UIComponentsKit
 
 struct PriceView: View {
 
@@ -12,7 +13,6 @@ struct PriceView: View {
             HStack(spacing: 16) {
                 if let image = viewStore.icon {
                     image
-                        .resizable()
                         .scaledToFit()
                         .frame(width: 32.0, height: 32.0)
                 }
@@ -21,16 +21,18 @@ struct PriceView: View {
                         Text(viewStore.title)
                             .textStyle(.heading)
                         Spacer()
-                        Text(viewStore.price)
+                        Text(viewStore.value.value ?? "")
                             .textStyle(.heading)
+                            .shimmer(enabled: viewStore.value.isLoading)
                     }
                     HStack {
                         Text(viewStore.abbreviation)
                             .textStyle(.subheading)
                         Spacer()
-                        Text(viewStore.percentage)
-                            .foregroundColor(viewStore.hasIncreased ? .positiveTrend : .negativeTrend)
+                        Text(viewStore.formattedDelta)
+                            .foregroundColor(Color.trend(for: viewStore.deltaPercentage.value ?? 0))
                             .textStyle(.subheading)
+                            .shimmer(enabled: viewStore.deltaPercentage.isLoading)
                     }
                 }
             }

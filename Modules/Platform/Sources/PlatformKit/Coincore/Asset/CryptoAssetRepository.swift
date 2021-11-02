@@ -24,6 +24,12 @@ public protocol CryptoAssetRepositoryAPI {
     ) -> AnyPublisher<AccountGroup, Never>
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never>
+
+    func parse(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping (TransactionResult) -> Completable
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError>
 }
 
 public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
@@ -50,8 +56,6 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
 
     public var canTransactToCustodial: AnyPublisher<Bool, Never> {
         kycTiersService.tiers
-            .asObservable()
-            .asPublisher()
             .map { tiers in
                 tiers.isTier1Approved || tiers.isTier2Approved
             }
@@ -75,10 +79,13 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
         guard asset.supports(product: .mercuryDeposits) else {
             return .just(CryptoAccountCustodialGroup(asset: asset))
         }
-        return exchangeAccountsProvider.account(for: asset)
+        return exchangeAccountsProvider
+            .account(
+                for: asset,
+                externalAssetAddressFactory: addressFactory
+            )
             .optional()
             .replaceError(with: nil)
-            .eraseToAnyPublisher()
             .map { [asset] account -> CryptoAccountCustodialGroup in
                 guard let account = account else {
                     return CryptoAccountCustodialGroup(asset: asset)
@@ -95,7 +102,10 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
         return .just(
             CryptoAccountCustodialGroup(
                 asset: asset,
-                account: CryptoInterestAccount(asset: asset)
+                account: CryptoInterestAccount(
+                    asset: asset,
+                    cryptoReceiveAddressFactory: addressFactory
+                )
             )
         )
     }
@@ -107,7 +117,10 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
         return .just(
             CryptoAccountCustodialGroup(
                 asset: asset,
-                account: CryptoTradingAccount(asset: asset)
+                account: CryptoTradingAccount(
+                    asset: asset,
+                    cryptoReceiveAddressFactory: addressFactory
+                )
             )
         )
     }
@@ -119,7 +132,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
     private let kycTiersService: KYCTiersServiceAPI
     private let defaultAccountProvider: DefaultAccountProvider
     private let exchangeAccountsProvider: ExchangeAccountsProviderAPI
-    private let addressFactory: CryptoReceiveAddressFactory
+    private let addressFactory: ExternalAssetAddressFactory
 
     // MARK: - Setup
 
@@ -129,7 +142,7 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
         kycTiersService: KYCTiersServiceAPI,
         defaultAccountProvider: @escaping DefaultAccountProvider,
         exchangeAccountsProvider: ExchangeAccountsProviderAPI,
-        addressFactory: CryptoReceiveAddressFactory
+        addressFactory: ExternalAssetAddressFactory
     ) {
         self.asset = asset
         self.errorRecorder = errorRecorder
@@ -157,14 +170,24 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
     }
 
     public func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
-        let receiveAddress = try? addressFactory
-            .makeExternalAssetAddress(
-                asset: asset,
-                address: address,
-                label: address,
-                onTxCompleted: { _ in .empty() }
-            )
-            .get()
+        let receiveAddress = try? parse(
+            address: address,
+            label: address,
+            onTxCompleted: { _ in .empty() }
+        )
+        .get()
         return .just(receiveAddress)
+    }
+
+    public func parse(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping (TransactionResult) -> Completable
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        addressFactory.makeExternalAssetAddress(
+            address: address,
+            label: label,
+            onTxCompleted: onTxCompleted
+        )
     }
 }

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import ToolKit
 
 public enum PaymentMethodPayloadType: String, CaseIterable, Encodable {
@@ -16,10 +17,10 @@ public struct PaymentMethod: Equatable, Comparable {
         /// Card payment method
         case card(Set<CardType>)
 
-        /// Bank account payment method
+        /// Bank account payment method (linking via wire transfer)
         case bankAccount(CurrencyType)
 
-        /// Bank transfer payment method
+        /// Bank transfer payment method (linking via ACH or Open Banking)
         case bankTransfer(CurrencyType)
 
         /// Funds payment method
@@ -205,7 +206,22 @@ public struct PaymentMethod: Equatable, Comparable {
     }
 
     public var label: String {
-        type.rawType.rawValue
+        let localizedString: String
+        let localizationSpace = LocalizationConstants.SimpleBuy.AddPaymentMethodSelectionScreen.self
+        switch type {
+        case .bankAccount:
+            localizedString = localizationSpace.Types.bankAccount
+
+        case .bankTransfer:
+            localizedString = localizationSpace.Types.bankWireTitle
+
+        case .card:
+            localizedString = localizationSpace.Types.cardTitle
+
+        case .funds:
+            localizedString = localizationSpace.DepositCash.title
+        }
+        return localizedString
     }
 
     public init(

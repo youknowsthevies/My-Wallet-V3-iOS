@@ -1,10 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import DIKit
 import RxRelay
 import RxSwift
+import RxToolKit
 import ToolKit
 
 final class EligibilityService: EligibilityServiceAPI {

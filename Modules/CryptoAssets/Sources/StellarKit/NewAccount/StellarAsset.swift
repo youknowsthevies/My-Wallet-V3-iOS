@@ -34,7 +34,6 @@ final class StellarAsset: CryptoAsset {
                     hdAccountIndex: account.index
                 )
             }
-            .asObservable()
             .asPublisher()
             .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .eraseToAnyPublisher()
@@ -99,5 +98,13 @@ final class StellarAsset: CryptoAsset {
 
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
         cryptoAssetRepository.parse(address: address)
+    }
+
+    func parse(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping (TransactionResult) -> Completable
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        cryptoAssetRepository.parse(address: address, label: label, onTxCompleted: onTxCompleted)
     }
 }

@@ -24,4 +24,11 @@ public protocol DeviceVerificationRepositoryAPI {
         sessionToken: String,
         emailCode: String
     ) -> AnyPublisher<Void, DeviceVerificationServiceError>
+
+    /// Attempting to poll for wallet information until the backend return the desired response
+    /// - Parameters: sessionToken: The session token stored in the repository
+    /// - Returns: A combine `Publisher` that emits Void on success or DeviceVerificationServiceError on failure
+    func pollForWalletInfo(
+        sessionToken: String
+    ) -> AnyPublisher<WalletInfo, DeviceVerificationServiceError>
 }

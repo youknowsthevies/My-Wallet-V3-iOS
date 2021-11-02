@@ -33,7 +33,7 @@ final class CustodialCryptoAsset: CryptoAsset {
     private let kycTiersService: KYCTiersServiceAPI
     private let errorRecorder: ErrorRecording
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
-    private let addressFactory: PlainCryptoReceiveAddressFactory
+    private let addressFactory: ExternalAssetAddressFactory
 
     // MARK: - Setup
 
@@ -41,14 +41,13 @@ final class CustodialCryptoAsset: CryptoAsset {
         asset: CryptoCurrency,
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
-        errorRecorder: ErrorRecording = resolve(),
-        addressFactory: PlainCryptoReceiveAddressFactory = .init()
+        errorRecorder: ErrorRecording = resolve()
     ) {
         self.asset = asset
         self.kycTiersService = kycTiersService
         self.exchangeAccountProvider = exchangeAccountProvider
         self.errorRecorder = errorRecorder
-        self.addressFactory = addressFactory
+        addressFactory = PlainCryptoReceiveAddressFactory(asset: asset)
     }
 
     // MARK: - Asset
@@ -77,7 +76,6 @@ final class CustodialCryptoAsset: CryptoAsset {
     func parse(address: String) -> AnyPublisher<ReceiveAddress?, Never> {
         addressFactory
             .makeExternalAssetAddress(
-                asset: asset,
                 address: address,
                 label: address,
                 onTxCompleted: { _ in Completable.empty() }
@@ -90,6 +88,18 @@ final class CustodialCryptoAsset: CryptoAsset {
                 .just(nil)
             }
             .eraseToAnyPublisher()
+    }
+
+    func parse(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping (TransactionResult) -> Completable
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        addressFactory.makeExternalAssetAddress(
+            address: address,
+            label: label,
+            onTxCompleted: onTxCompleted
+        )
     }
 
     private var allAccountsGroup: AnyPublisher<AccountGroup, Never> {

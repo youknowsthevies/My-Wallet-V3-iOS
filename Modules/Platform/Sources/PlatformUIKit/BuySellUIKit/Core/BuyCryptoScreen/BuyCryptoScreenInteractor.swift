@@ -180,10 +180,12 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     // MARK: - Interactor
 
+    // swiftlint:disable:next cyclomatic_complexity
+    // swiftlint:disable function_body_length
     override func didLoad() {
 
-        let cryptoCurrencySelectionService = self.cryptoCurrencySelectionService
-        let fiatCurrencyService = self.fiatCurrencyService
+        let cryptoCurrencySelectionService = cryptoCurrencySelectionService
+        let fiatCurrencyService = fiatCurrencyService
 
         amountTranslationInteractor.effect
             .map(\.toBuyCryptoInteractorEffect)
@@ -309,7 +311,8 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                 }
 
                 guard fiat.currencyType == maxMinFiatValue.currencyType,
-                      fiat.currencyType == maxFiatValue.currencyType else {
+                      fiat.currencyType == maxFiatValue.currencyType
+                else {
                     return .empty(currency: currency)
                 }
 

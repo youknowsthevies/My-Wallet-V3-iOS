@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+@testable import ComposableNavigation
 @testable import FeatureAuthenticationUI
 import Localization
 import ToolKit
@@ -32,6 +33,7 @@ final class EmailLoginReducerTests: XCTestCase {
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
+                featureFlags: NoOpInternalFeatureFlagService(),
                 appFeatureConfigurator: NoOpFeatureConfigurator(),
                 errorRecorder: MockErrorRecorder(),
                 analyticsRecorder: MockAnalyticsRecorder()
@@ -48,9 +50,9 @@ final class EmailLoginReducerTests: XCTestCase {
     func test_verify_initial_state_is_correct() {
         let state = EmailLoginState()
         XCTAssertNil(state.verifyDeviceState)
+        XCTAssertNil(state.route)
         XCTAssertEqual(state.emailAddress, "")
         XCTAssertFalse(state.isEmailValid)
-        XCTAssertFalse(state.isVerifyDeviceScreenVisible)
     }
 
     func test_on_appear_should_setup_session_token() {
@@ -78,9 +80,9 @@ final class EmailLoginReducerTests: XCTestCase {
                 state.isLoading = false
                 state.verifyDeviceState?.sendEmailButtonIsLoading = false
             },
-            .receive(.setVerifyDeviceScreenVisible(true)) { state in
+            .receive(.navigate(to: .verifyDevice)) { state in
                 state.verifyDeviceState = .init(emailAddress: validEmail)
-                state.isVerifyDeviceScreenVisible = true
+                state.route = RouteIntent(route: .verifyDevice, action: .navigateTo)
             }
         )
     }
@@ -89,9 +91,9 @@ final class EmailLoginReducerTests: XCTestCase {
         testStore.assert(
             // should still go to verify device screen if it is a network error
             .send(.didSendDeviceVerificationEmail(.failure(.networkError(.payloadError(.badData(rawPayload: "")))))),
-            .receive(.setVerifyDeviceScreenVisible(true)) { state in
+            .receive(.navigate(to: .verifyDevice)) { state in
                 state.verifyDeviceState = .init(emailAddress: "")
-                state.isVerifyDeviceScreenVisible = true
+                state.route = RouteIntent(route: .verifyDevice, action: .navigateTo)
             },
 
             // should not go to verify device screen if it is a missing session token error
@@ -99,14 +101,18 @@ final class EmailLoginReducerTests: XCTestCase {
             .receive(
                 .alert(
                     .show(
-                        title: LocalizationConstants.EmailLogin.Alerts.SignInError.title,
-                        message: LocalizationConstants.EmailLogin.Alerts.SignInError.message
+                        title: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title,
+                        message: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
                     )
                 )
             ) { state in
-                state.emailLoginFailureAlert = AlertState(
-                    title: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.title),
-                    message: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.message),
+                state.alert = AlertState(
+                    title: TextState(
+                        verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title
+                    ),
+                    message: TextState(
+                        verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
+                    ),
                     dismissButton: .default(
                         TextState(LocalizationConstants.continueString),
                         action: .send(.alert(.dismiss))
@@ -119,14 +125,18 @@ final class EmailLoginReducerTests: XCTestCase {
             .receive(
                 .alert(
                     .show(
-                        title: LocalizationConstants.EmailLogin.Alerts.SignInError.title,
-                        message: LocalizationConstants.EmailLogin.Alerts.SignInError.message
+                        title: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title,
+                        message: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
                     )
                 )
             ) { state in
-                state.emailLoginFailureAlert = AlertState(
-                    title: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.title),
-                    message: TextState(verbatim: LocalizationConstants.EmailLogin.Alerts.SignInError.message),
+                state.alert = AlertState(
+                    title: TextState(
+                        verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.title
+                    ),
+                    message: TextState(
+                        verbatim: LocalizationConstants.FeatureAuthentication.EmailLogin.Alerts.SignInError.message
+                    ),
                     dismissButton: .default(
                         TextState(LocalizationConstants.continueString),
                         action: .send(.alert(.dismiss))

@@ -81,7 +81,7 @@ final class PasswordRequiredScreenInteractor {
         // TODO: [10/15/2021] Move this to CoreCoordinator with the forget wallet logic in the future
         Publishers.Zip3(
             // ignore failure
-            pushNotificationsRepository.revokeToken().ignoreFailure(),
+            pushNotificationsRepository.revokeToken().ignoreFailure(setFailureType: Error.self),
             mobileAuthSyncService.updateMobileSetup(isMobileSetup: false).ignoreFailure(),
             mobileAuthSyncService.verifyCloudBackup(hasCloudBackup: false).ignoreFailure()
         )

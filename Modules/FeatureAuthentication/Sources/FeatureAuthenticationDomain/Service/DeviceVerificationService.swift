@@ -10,6 +10,7 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
 
     // MARK: - Properties
 
+    private let pollingQueue: DispatchQueue
     private let deviceVerificationRepository: DeviceVerificationRepositoryAPI
     private let sessionTokenRepository: SessionTokenRepositoryAPI
     private let recaptchaService: GoogleRecaptchaServiceAPI
@@ -18,11 +19,16 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
     // MARK: - Setup
 
     public init(
+        pollingQueue: DispatchQueue = DispatchQueue(
+            label: "com.blockchain.DeviceVerificationPolling",
+            qos: .background
+        ),
         deviceVerificationRepository: DeviceVerificationRepositoryAPI = resolve(),
         sessionTokenRepository: SessionTokenRepositoryAPI = resolve(),
         recaptchaService: GoogleRecaptchaServiceAPI = resolve(),
         walletIdentifierValidator: @escaping (String) -> Bool = TextValidation.walletIdentifierValidator
     ) {
+        self.pollingQueue = pollingQueue
         self.deviceVerificationRepository = deviceVerificationRepository
         self.sessionTokenRepository = sessionTokenRepository
         self.recaptchaService = recaptchaService
@@ -75,7 +81,7 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
     }
 
     public func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError> {
-        let walletIdentifierValidator = self.walletIdentifierValidator
+        let walletIdentifierValidator = walletIdentifierValidator
         return Deferred {
             Future { promise in
                 let lastPathOrNil = deeplink.absoluteString.components(separatedBy: "/").last
@@ -101,5 +107,23 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
             }
         }
         .eraseToAnyPublisher()
+    }
+
+    public func pollForWalletInfo() -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> {
+        sessionTokenRepository
+            .sessionTokenPublisher
+            .flatMap { token -> AnyPublisher<String, DeviceVerificationServiceError> in
+                guard let sessionToken = token else {
+                    return .failure(.missingSessionToken)
+                }
+                return .just(sessionToken)
+            }
+            .flatMap { [deviceVerificationRepository] sessionToken
+                -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> in
+                deviceVerificationRepository
+                    .pollForWalletInfo(sessionToken: sessionToken)
+            }
+            .retry(120, delay: .seconds(2), scheduler: pollingQueue)
+            .eraseToAnyPublisher()
     }
 }

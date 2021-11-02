@@ -16,7 +16,7 @@ extension DisplayBundle {
         typealias LocalizedString = LocalizationConstants.Transaction
 
         return DisplayBundle(
-            title: LocalizedString.Withdraw.withdraw + " \(sourceAccount.currencyType.code)",
+            title: LocalizedString.Withdraw.withdraw + " \(sourceAccount.currencyType.displayCode)",
             amountDisplayBundle: .init(
                 events: .init(
                     min: WithdrawAnalyticsEvent(),

@@ -17,6 +17,13 @@ final class FiatCustodialAccount: FiatAccount {
         .error(ReceiveAddressError.notSupported)
     }
 
+    var disabledReason: AnyPublisher<InterestAccountIneligibilityReason, Error> {
+        interestEligibilityRepository
+            .fetchInterestAccountEligibilityForCurrencyCode(currencyType.code)
+            .map(\.ineligibilityReason)
+            .eraseError()
+    }
+
     var activity: Single<[ActivityItemEvent]> {
         activityFetcher
             .activity(fiatCurrency: fiatCurrency)
@@ -58,13 +65,20 @@ final class FiatCustodialAccount: FiatAccount {
     var pendingBalance: Single<MoneyValue> {
         balances
             .map(\.balance?.pending)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .asSingle()
     }
 
     var balance: Single<MoneyValue> {
+        balancePublisher
+            .asSingle()
+    }
+
+    var balancePublisher: AnyPublisher<MoneyValue, Error> {
         balances
             .map(\.balance?.available)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .mapError()
     }
 
     var actionableBalance: Single<MoneyValue> {
@@ -75,22 +89,25 @@ final class FiatCustodialAccount: FiatAccount {
         balance.map(\.isPositive)
     }
 
+    private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
     private let activityFetcher: OrdersActivityServiceAPI
     private let balanceService: TradingBalanceServiceAPI
     private let priceService: PriceServiceAPI
     private let paymentMethodService: PaymentMethodTypesServiceAPI
-    private var balances: Single<CustodialAccountBalanceState> {
+    private var balances: AnyPublisher<CustodialAccountBalanceState, Never> {
         balanceService.balance(for: currencyType)
     }
 
     init(
         fiatCurrency: FiatCurrency,
+        interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve(),
         activityFetcher: OrdersActivityServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         paymentMethodService: PaymentMethodTypesServiceAPI = resolve()
     ) {
         label = fiatCurrency.defaultWalletName
+        self.interestEligibilityRepository = interestEligibilityRepository
         self.fiatCurrency = fiatCurrency
         self.activityFetcher = activityFetcher
         self.paymentMethodService = paymentMethodService
@@ -106,7 +123,9 @@ final class FiatCustodialAccount: FiatAccount {
              .send,
              .sell,
              .swap,
-             .receive:
+             .receive,
+             .interestTransfer,
+             .interestWithdraw:
             return .just(false)
         case .deposit:
             return paymentMethodService
@@ -128,7 +147,7 @@ final class FiatCustodialAccount: FiatAccount {
         priceService
             .price(of: self.fiatCurrency, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balance.asPublisher())
+            .zip(balancePublisher)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }

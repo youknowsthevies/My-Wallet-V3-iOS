@@ -29,7 +29,7 @@ final class RemoteNotificationService: RemoteNotificationServicing {
     private let externalService: ExternalNotificationProviding
     private let networkService: RemoteNotificationNetworkServicing
     private let sharedKeyRepository: SharedKeyRepositoryAPI
-    private let guidRepository: GuidRepositoryAPI
+    private let guidRepository: FeatureAuthenticationDomain.GuidRepositoryAPI
 
     private let disposeBag = DisposeBag()
 
@@ -42,7 +42,7 @@ final class RemoteNotificationService: RemoteNotificationServicing {
         externalService: ExternalNotificationProviding = resolve(),
         networkService: RemoteNotificationNetworkServicing = resolve(),
         sharedKeyRepository: SharedKeyRepositoryAPI = resolve(),
-        guidRepository: GuidRepositoryAPI = resolve()
+        guidRepository: FeatureAuthenticationDomain.GuidRepositoryAPI = resolve()
     ) {
         self.authorizer = authorizer
         self.externalService = externalService

@@ -301,7 +301,7 @@ extension UIView {
             assertionFailure("\(String(describing: self)) Error in func: \(#function)")
             return nil
         }
-        let superview = self.superview!
+        let superview = superview!
 
         let secondItem: Any
         if usesSafeAreaLayoutGuide {
@@ -337,7 +337,7 @@ extension UIView {
         guard !edges.isEmpty, prepareForAutoLayout() else {
             return constraints
         }
-        let superview = self.superview!
+        let superview = superview!
 
         let secondItem: Any
         if usesSafeAreaLayoutGuide {

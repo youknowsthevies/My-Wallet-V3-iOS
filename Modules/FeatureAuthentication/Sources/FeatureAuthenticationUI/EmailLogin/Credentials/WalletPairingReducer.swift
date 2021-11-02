@@ -153,7 +153,7 @@ private func approveEmailAuthorization(
                 switch error {
                 case .expiredEmailCode:
                     return .needsEmailAuthorization
-                case .missingSessionToken, .networkError, .recaptchaError:
+                case .missingSessionToken, .networkError, .recaptchaError, .missingWalletInfo:
                     break
                 }
             }
@@ -288,4 +288,6 @@ private func startPolling(
         .map { _ in
             .pollWalletIdentifier
         }
+        .receive(on: environment.mainQueue)
+        .eraseToEffect()
 }

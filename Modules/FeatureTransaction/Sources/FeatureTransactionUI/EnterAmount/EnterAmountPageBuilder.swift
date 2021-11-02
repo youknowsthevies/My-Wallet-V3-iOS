@@ -55,7 +55,9 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         switch action {
         case .swap,
              .sell,
-             .send:
+             .send,
+             .interestWithdraw,
+             .interestTransfer:
             guard let crypto = sourceAccount.currencyType.cryptoCurrency else {
                 fatalError("Expected a crypto as a source account.")
             }
@@ -71,7 +73,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
-                inputTypeToggleVisiblity: .visible
+                inputTypeToggleVisibility: .visible
             )
 
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
@@ -105,7 +107,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                 interactor: amountViewInteracting as! AmountTranslationInteractor,
                 analyticsRecorder: analyticsEventRecorder,
                 displayBundle: displayBundle.amountDisplayBundle,
-                inputTypeToggleVisiblity: .visible
+                inputTypeToggleVisibility: .visible
             )
 
             amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)

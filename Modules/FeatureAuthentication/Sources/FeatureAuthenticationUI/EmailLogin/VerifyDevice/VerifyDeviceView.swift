@@ -2,11 +2,48 @@
 
 import AnalyticsKit
 import ComposableArchitecture
+import ComposableNavigation
 import FeatureAuthenticationDomain
 import Localization
 import SwiftUI
 import ToolKit
 import UIComponentsKit
+
+public enum VerifyDeviceRoute: NavigationRoute {
+    case credentials
+    case upgradeAccount
+
+    @ViewBuilder
+    public func destination(
+        in store: Store<VerifyDeviceState, VerifyDeviceAction>
+    ) -> some View {
+        WithViewStore(store) { viewStore in
+            switch self {
+            case .credentials:
+                IfLetStore(
+                    store.scope(
+                        state: \.credentialsState,
+                        action: VerifyDeviceAction.credentials
+                    ),
+                    then: { store in
+                        CredentialsView(
+                            context: viewStore.credentialsContext,
+                            store: store
+                        )
+                    }
+                )
+            case .upgradeAccount:
+                IfLetStore(
+                    store.scope(
+                        state: \.upgradeAccountState,
+                        action: VerifyDeviceAction.upgradeAccount
+                    ),
+                    then: UpgradeAccountView.init(store:)
+                )
+            }
+        }
+    }
+}
 
 struct VerifyDeviceView: View {
 
@@ -26,11 +63,9 @@ struct VerifyDeviceView: View {
 
     private let store: Store<VerifyDeviceState, VerifyDeviceAction>
     private var showOpenMailAppButton: Bool
-    @ObservedObject private var viewStore: ViewStore<VerifyDeviceState, VerifyDeviceAction>
 
     init(store: Store<VerifyDeviceState, VerifyDeviceAction>) {
         self.store = store
-        viewStore = ViewStore(store)
 
         if let mailAppURL = URL(string: "message://"),
            UIApplication.shared.canOpenURL(mailAppURL)
@@ -42,75 +77,71 @@ struct VerifyDeviceView: View {
     }
 
     var body: some View {
-        VStack {
+        WithViewStore(store) { viewStore in
             VStack {
-                Spacer()
-                Image.CircleIcon.verifyDevice
-                    .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
-                    .padding(.bottom, Layout.imageBottomPadding)
-                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceImage)
+                VStack {
+                    Spacer()
+                    Image.CircleIcon.verifyDevice
+                        .frame(width: Layout.imageSideLength, height: Layout.imageSideLength)
+                        .padding(.bottom, Layout.imageBottomPadding)
+                        .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceImage)
 
-                Text(LocalizedString.VerifyDevice.title)
-                    .textStyle(.title)
-                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceTitleText)
+                    Text(LocalizedString.VerifyDevice.title)
+                        .textStyle(.title)
+                        .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceTitleText)
 
-                Text(LocalizedString.VerifyDevice.description)
-                    .font(Font(weight: .medium, size: Layout.descriptionFontSize))
-                    .foregroundColor(.textSubheading)
-                    .lineSpacing(Layout.descriptionLineSpacing)
-                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceDescriptionText)
-                Spacer()
+                    Text(LocalizedString.VerifyDevice.description)
+                        .font(Font(weight: .medium, size: Layout.descriptionFontSize))
+                        .foregroundColor(.textSubheading)
+                        .lineSpacing(Layout.descriptionLineSpacing)
+                        .accessibility(
+                            identifier: AccessibilityIdentifiers.VerifyDeviceScreen.verifyDeviceDescriptionText
+                        )
+                    Spacer()
+                }
+                .multilineTextAlignment(.center)
+
+                buttonSection
             }
-            .multilineTextAlignment(.center)
-
-            buttonSection
-
-            NavigationLink(
-                destination: IfLetStore(
-                    store.scope(
-                        state: \.credentialsState,
-                        action: VerifyDeviceAction.credentials
-                    ),
-                    then: { store in
-                        CredentialsView(context: viewStore.credentialsContext, store: store)
-                    }
-                ),
-                isActive: viewStore.binding(
-                    get: \.isCredentialsScreenVisible,
-                    send: VerifyDeviceAction.setCredentialsScreenVisible(_:)
-                ),
-                label: EmptyView.init
+            .onAppear {
+                viewStore.send(.onAppear)
+            }
+            .onWillDisappear {
+                viewStore.send(.onWillDisappear)
+            }
+            .padding(
+                EdgeInsets(
+                    top: 0,
+                    leading: Layout.leadingPadding,
+                    bottom: Layout.bottomPadding,
+                    trailing: Layout.trailingPadding
+                )
             )
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationRoute(in: store)
+            .hideBackButtonTitle()
+            .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
         }
-        .padding(
-            EdgeInsets(
-                top: 0,
-                leading: Layout.leadingPadding,
-                bottom: Layout.bottomPadding,
-                trailing: Layout.trailingPadding
-            )
-        )
-        .navigationBarTitleDisplayMode(.inline)
-        .hideBackButtonTitle()
-        .alert(self.store.scope(state: \.verifyDeviceFailureAlert), dismiss: .verifyDeviceFailureAlert(.dismiss))
     }
 
     private var buttonSection: some View {
-        VStack(spacing: Layout.buttonSpacing) {
-            SecondaryButton(
-                title: LocalizedString.Button.sendAgain,
-                action: {
-                    viewStore.send(.sendDeviceVerificationEmail)
-                },
-                loading: viewStore.binding(get: \.sendEmailButtonIsLoading, send: .none)
-            )
-            .disabled(viewStore.sendEmailButtonIsLoading)
-            .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.sendAgainButton)
-            if showOpenMailAppButton {
-                PrimaryButton(title: LocalizedString.Button.openEmail) {
-                    viewStore.send(.openMailApp)
+        WithViewStore(store) { viewStore in
+            VStack(spacing: Layout.buttonSpacing) {
+                SecondaryButton(
+                    title: LocalizedString.Button.sendAgain,
+                    action: {
+                        viewStore.send(.sendDeviceVerificationEmail)
+                    },
+                    loading: viewStore.binding(get: \.sendEmailButtonIsLoading, send: .none)
+                )
+                .disabled(viewStore.sendEmailButtonIsLoading)
+                .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.sendAgainButton)
+                if showOpenMailAppButton {
+                    PrimaryButton(title: LocalizedString.Button.openEmail) {
+                        viewStore.send(.openMailApp)
+                    }
+                    .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.openMailAppButton)
                 }
-                .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.openMailAppButton)
             }
         }
     }
@@ -127,6 +158,7 @@ struct VerifyDeviceView_Previews: PreviewProvider {
                 environment: .init(
                     mainQueue: .main,
                     deviceVerificationService: NoOpDeviceVerificationService(),
+                    featureFlags: NoOpInternalFeatureFlagService(),
                     appFeatureConfigurator: NoOpFeatureConfigurator(),
                     errorRecorder: NoOpErrorRecorder(),
                     analyticsRecorder: NoOpAnalyticsRecorder()

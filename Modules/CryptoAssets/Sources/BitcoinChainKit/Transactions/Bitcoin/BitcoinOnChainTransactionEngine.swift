@@ -4,6 +4,7 @@ import DIKit
 import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
+import RxToolKit
 import ToolKit
 
 final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTransactionEngine, BitPayClientEngine {
@@ -80,13 +81,20 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
         precondition(sourceCryptoAccount.asset == Token.coin.cryptoCurrency)
     }
 
-    func start(sourceAccount: BlockchainAccount, transactionTarget: TransactionTarget, askForRefreshConfirmation: @escaping (Bool) -> Completable) {
+    func start(
+        sourceAccount: BlockchainAccount,
+        transactionTarget: TransactionTarget,
+        askForRefreshConfirmation: @escaping (Bool) -> Completable
+    ) {
         self.sourceAccount = sourceAccount
         self.transactionTarget = transactionTarget
         self.askForRefreshConfirmation = askForRefreshConfirmation
     }
 
-    func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    func restart(
+        transactionTarget: TransactionTarget,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
         defaultRestart(
             transactionTarget: transactionTarget,
             pendingTransaction: pendingTransaction
@@ -179,7 +187,12 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                              BitcoinChainTransactionError.belowDustThreshold(let finalFee, let sweepAmount, let sweepFee),
                              BitcoinChainTransactionError.feeTooLow(let finalFee, let sweepAmount, let sweepFee),
                              BitcoinChainTransactionError.unknown(let finalFee, let sweepAmount, let sweepFee):
-                            candidate = .init(proposal: proposal, fees: finalFee, sweepAmount: sweepAmount, sweepFee: sweepFee)
+                            candidate = .init(
+                                proposal: proposal,
+                                fees: finalFee,
+                                sweepAmount: sweepAmount,
+                                sweepFee: sweepFee
+                            )
                         default:
                             candidate = .init(
                                 proposal: proposal,
@@ -250,7 +263,10 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
 
     // MARK: - BitPayClientEngine
 
-    func doPrepareTransaction(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<EngineTransaction> {
+    func doPrepareTransaction(
+        pendingTransaction: PendingTransaction,
+        secondPassword: String
+    ) -> Single<EngineTransaction> {
         bridge.sign(with: secondPassword)
     }
 
@@ -307,7 +323,9 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
         }
     }
 
-    private func makeFeeSelectionOption(pendingTransaction: PendingTransaction) -> Single<TransactionConfirmation.Model.FeeSelection> {
+    private func makeFeeSelectionOption(
+        pendingTransaction: PendingTransaction
+    ) -> Single<TransactionConfirmation.Model.FeeSelection> {
         Single
             .just(pendingTransaction)
             .map(weak: self) { (self, pendingTransaction) -> FeeState in
@@ -322,7 +340,9 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             }
     }
 
-    private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
+    private func fiatAmountAndFees(
+        from pendingTransaction: PendingTransaction
+    ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
             .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: Token.coin.cryptoCurrency)),

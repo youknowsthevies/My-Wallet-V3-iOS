@@ -29,12 +29,15 @@ public struct TourView: View {
                 Image("logo-blockchain-black", bundle: Bundle.featureTour)
                     .padding(.top)
                     .padding(.horizontal, 24)
-                    .padding(.bottom, 20)
                 ZStack {
                     makeTabView()
                     makeButtonsView(viewStore)
                 }
-                .background(AnimatedGradient().ignoresSafeArea(.all))
+                .background(
+                    Image("gradient", bundle: Bundle.featureTour)
+                        .resizable()
+                        .ignoresSafeArea(.all)
+                )
             }
         }
     }
@@ -52,28 +55,29 @@ extension TourView {
             switch self {
             case .brokerage:
                 makeCarouselView(
-                    image: Image("bitcoin_perspective", bundle: Bundle.featureTour),
+                    image: Image("carousel-brokerage", bundle: Bundle.featureTour),
                     text: LocalizationConstants.Tour.carouselBrokerageScreenMessage
                 )
             case .earn:
                 makeCarouselView(
-                    image: Image("rocket", bundle: Bundle.featureTour),
+                    image: Image("carousel-rewards", bundle: Bundle.featureTour),
                     text: LocalizationConstants.Tour.carouselEarnScreenMessage
                 )
             case .keys:
                 makeCarouselView(
-                    image: Image("lock", bundle: Bundle.featureTour),
+                    image: Image("carousel-security", bundle: Bundle.featureTour),
                     text: LocalizationConstants.Tour.carouselKeysScreenMessage
                 )
             case .prices:
-                PriceListFactory.makePriceList()
+                PriceListView()
             }
         }
 
         @ViewBuilder private func makeCarouselView(image: Image?, text: String) -> some View {
-            VStack(spacing: 25) {
+            VStack {
                 if let image = image {
                     image
+                        .frame(height: 280.0)
                 }
                 Text(text)
                     .multilineTextAlignment(.center)
@@ -89,6 +93,7 @@ extension TourView {
             Carousel.brokerage.makeView()
             Carousel.earn.makeView()
             Carousel.keys.makeView()
+            Carousel.prices.makeView()
         }
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
     }

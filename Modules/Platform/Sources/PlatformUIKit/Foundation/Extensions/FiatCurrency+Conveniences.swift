@@ -1,8 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
+import SwiftUI
 
 extension FiatCurrency {
+
+    public var image: Image {
+        logoResource
+            .image ?? .init("icon-usd", bundle: .platformUIKit)
+    }
 
     public var logoResource: ImageResource {
         switch self {

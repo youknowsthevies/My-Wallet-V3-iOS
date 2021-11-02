@@ -1,5 +1,7 @@
 attributes:
   ORGANIZATIONNAME: Blockchain Luxembourg S.A
+include:
+  Modules/ComponentLibrary/project.yml
 configs:
   Debug Dev: debug
   Debug Production: debug
@@ -225,12 +227,6 @@ packages:
   ZendeskChatSDK:
     url: https://github.com/zendesk/chat_sdk_ios.git
     version: 2.11.1
-  CombineExt:
-    url: https://github.com/CombineCommunity/CombineExt.git
-    version: 1.5.0
-  Lottie:
-    url: https://github.com/airbnb/lottie-ios.git
-    version: 3.2.1
   Nuke:
     url: https://github.com/kean/Nuke.git
     from: 10.3.1
@@ -266,8 +262,12 @@ packages:
     revision: 3d42f6995032828a3e1a0a372fb9873cdd357f03
   Analytics:
     path: Modules/Analytics
+  RxAnalytics:
+    path: Modules/RxAnalytics
   CommonCrypto:
     path: Modules/CommonCrypto
+  ComposableNavigation:
+    path: Modules/ComposableNavigation
   CryptoAssets:
     path: Modules/CryptoAssets
   FeatureApp:
@@ -296,6 +296,8 @@ packages:
     path: Modules/FeatureTransaction
   HDWallet:
     path: Modules/HDWallet
+  Keychain:
+    path: Modules/Keychain
   Localization:
     path: Modules/Localization
   Network:
@@ -310,10 +312,14 @@ packages:
     path: Modules/Test
   Tool:
     path: Modules/Tool
+  RxTool:
+    path: Modules/RxTool
   UIComponents:
     path: Modules/UIComponents
   WalletPayload:
     path: Modules/WalletPayload
+  ComponentLibrary:
+    path: Modules/ComponentLibrary
 targets:
   Blockchain:
     configFiles:
@@ -383,7 +389,6 @@ targets:
       - package: FeatureTransaction
 
       - package: BigInt
-      - package: CombineExt
       - package: ComposableArchitecture
       - package: DIKit
       - package: Nuke
@@ -404,6 +409,8 @@ targets:
 
       - package: Analytics
         product: AnalyticsKit
+      - package: RxAnalytics
+        product: RxAnalyticsKit
       - package: CommonCrypto
         product: CommonCryptoKit
       - package: CryptoAssets
@@ -422,6 +429,8 @@ targets:
         product: StellarKit
       - package: HDWallet
         product: HDWalletKit
+      - package: Keychain
+        product: KeychainKit
       - package: Localization
         product: Localization
       - package: Network
@@ -438,6 +447,8 @@ targets:
         product: RemoteNotificationsKit
       - package: Tool
         product: ToolKit
+      - package: RxTool
+        product: RxToolKit
       - package: UIComponents
         product: UIComponents
       - package: WalletPayload

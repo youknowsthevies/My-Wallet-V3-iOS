@@ -88,6 +88,26 @@ extension TransactionConfirmation.Model {
         }
     }
 
+    public struct TotalCost: TransactionConfirmationModelable {
+
+        public let primaryCurrencyFee: MoneyValue
+        public let secondaryCurrencyFee: MoneyValue?
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            let subtitle: String
+            if let secondaryCurrencyFeeString = secondaryCurrencyFee?.displayString {
+                subtitle = "\(primaryCurrencyFee.displayString) (\(secondaryCurrencyFeeString))"
+            } else {
+                subtitle = primaryCurrencyFee.displayString
+            }
+            return (
+                LocalizedString.total,
+                subtitle
+            )
+        }
+    }
+
     public struct Destination: TransactionConfirmationModelable {
         public let value: String
         public let type: TransactionConfirmation.Kind = .readOnly
@@ -206,6 +226,8 @@ extension TransactionConfirmation.Model {
                 return (LocalizedString.Error.title, LocalizedString.Error.pendingOrderLimitReached)
             case .nabuError(let error):
                 return (LocalizedString.Error.title, error.description)
+            case .noSourcesAvailable:
+                return (LocalizedString.Error.title, LocalizedString.Error.generic)
             }
         }
     }
@@ -395,15 +417,27 @@ extension TransactionConfirmation.Model {
             case withdrawalFee
         }
 
-        public let fee: MoneyValue
+        public let primaryCurrencyFee: MoneyValue
+        public let secondaryCurrencyFee: MoneyValue?
         public let feeType: FeeType
-        public let asset: CurrencyType
         public let type: TransactionConfirmation.Kind = .networkFee
 
+        public init(primaryCurrencyFee: MoneyValue, secondaryCurrencyFee: MoneyValue? = nil, feeType: FeeType) {
+            self.primaryCurrencyFee = primaryCurrencyFee
+            self.secondaryCurrencyFee = secondaryCurrencyFee
+            self.feeType = feeType
+        }
+
         public var formatted: (title: String, subtitle: String)? {
-            (
-                String(format: LocalizedString.networkFee, asset.displayCode),
-                fee.displayString
+            let subtitle: String
+            if let secondaryCurrencyFeeString = secondaryCurrencyFee?.displayString {
+                subtitle = "\(primaryCurrencyFee.displayString) (\(secondaryCurrencyFeeString))"
+            } else {
+                subtitle = primaryCurrencyFee.displayString
+            }
+            return (
+                String(format: LocalizedString.networkFee, primaryCurrencyFee.displayCode),
+                subtitle
             )
         }
     }

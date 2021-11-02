@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import RxSwift
 import ToolKit
 
@@ -63,7 +62,7 @@ extension AccountGroup {
                 account.fiatBalance(fiatCurrency: fiatCurrency, at: time)
                     .replaceError(with: MoneyValue.zero(currency: fiatCurrency))
             }
-            .zipMany()
+            .zip()
             .tryMap { balances -> MoneyValue in
                 try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
             }
@@ -76,7 +75,7 @@ extension AccountGroup {
                 account.balancePair(fiatCurrency: fiatCurrency, at: time)
                     .replaceError(with: .zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currencyType))
             }
-            .zipMany()
+            .zip()
             .tryMap { [currencyType] balancePairs in
                 try balancePairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType), +)
             }

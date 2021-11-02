@@ -47,40 +47,37 @@ final class SecondPasswordPrompter: SecondPasswordPromptable {
     }
 
     private func promptForSecondPassword(type: PasswordScreenType) -> AnyPublisher<String, SecondPasswordError> {
-        AnyPublisher<String, SecondPasswordError>
-            .create { [secondPasswordPrompterHelper, secondPasswordStore] subscriber in
+        Deferred { [secondPasswordPrompterHelper, secondPasswordStore] in
+            Future { promise in
                 secondPasswordPrompterHelper
                     .showPasswordScreen(
                         type: type,
                         confirmHandler: { secondPassword in
                             secondPasswordStore.secondPassword.mutate { $0 = secondPassword }
-                            subscriber.send(secondPassword)
-                            subscriber.send(completion: .finished)
+                            promise(.success(secondPassword))
                         },
                         dismissHandler: {
-                            subscriber.send(completion: .failure(.userDismissed))
+                            promise(.failure(.userDismissed))
                         }
                     )
-                return AnyCancellable {}
             }
-            .subscribe(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
+        }
+        .subscribe(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
     }
 
     private var secondPasswordNeeded: AnyPublisher<Bool, SecondPasswordError> {
-        AnyPublisher<Bool, WalletError>
-            .create { [walletManager] subscriber in
-                switch walletManager.wallet.isInitialized() {
-                case false:
-                    subscriber.send(completion: .failure(.notInitialized))
-                case true:
-                    subscriber.send(walletManager.wallet.needsSecondPassword())
-                    subscriber.send(completion: .finished)
+        Deferred { [walletManager] in
+            Future { promise in
+                if walletManager.wallet.isInitialized() {
+                    promise(.success(walletManager.wallet.needsSecondPassword()))
+                } else {
+                    promise(.failure(.notInitialized))
                 }
-                return AnyCancellable {}
             }
-            .mapError(SecondPasswordError.walletError)
-            .subscribe(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
+        }
+        .mapError(SecondPasswordError.walletError)
+        .subscribe(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
     }
 }

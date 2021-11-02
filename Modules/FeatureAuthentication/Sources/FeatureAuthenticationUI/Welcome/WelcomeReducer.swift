@@ -112,6 +112,7 @@ public let welcomeReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     sessionTokenService: $0.sessionTokenService,
                     deviceVerificationService: $0.deviceVerificationService,
+                    featureFlags: $0.featureFlags,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
                     errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder
@@ -161,6 +162,7 @@ public let welcomeReducer = Reducer.combine(
         WelcomeState,
         WelcomeAction,
         WelcomeEnvironment
+            // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
 
@@ -214,7 +216,9 @@ public let welcomeReducer = Reducer.combine(
             state.emailLoginState = nil
             return .none
 
-        case .emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))):
+        // TODO: refactor this by not relying on access lower level reducers
+        case .emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))),
+             .emailLogin(.verifyDevice(.upgradeAccount(.skipUpgrade(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))))):
             return Effect(value: .requestedToDecryptWallet(password))
 
         case .emailLogin(.verifyDevice(.credentials(.seedPhrase(.restoreWallet(let walletRecovery))))):

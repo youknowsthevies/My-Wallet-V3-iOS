@@ -3,26 +3,24 @@
 import DIKit
 import WalletPayloadKit
 
-final class BrowserIdentityService {
+public enum IdentityError: LocalizedError, Equatable {
+    case identitySaveFailed
+    case identityEncodingFailed
+    case unknownPubKeyHash(String)
 
-    // MARK: Types
-
-    enum IdentityError: LocalizedError {
-        case identitySaveFailed
-        case identityEncodingFailed
-        case unknownPubKeyHash(String)
-
-        var errorDescription: String? {
-            switch self {
-            case .identitySaveFailed:
-                return "BrowserIdentityService: Unable to save browser identity."
-            case .identityEncodingFailed:
-                return "BrowserIdentityService: Unable encode identity."
-            case .unknownPubKeyHash:
-                return "BrowserIdentityService: Browser not recognized."
-            }
+    public var errorDescription: String? {
+        switch self {
+        case .identitySaveFailed:
+            return "BrowserIdentityService: Unable to save browser identity."
+        case .identityEncodingFailed:
+            return "BrowserIdentityService: Unable encode identity."
+        case .unknownPubKeyHash:
+            return "BrowserIdentityService: Browser not recognized."
         }
     }
+}
+
+final class BrowserIdentityService {
 
     // MARK: Private Properties
 

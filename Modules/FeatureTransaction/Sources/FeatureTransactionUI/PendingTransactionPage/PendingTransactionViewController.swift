@@ -14,7 +14,8 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
     private let stackView = UIStackView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
-    private let button = ButtonView()
+    private let primaryButton = ButtonView()
+    private let secondaryButton = ButtonView()
     private let disposeBag = DisposeBag()
     private let compositeStatusView = CompositeStatusView(edge: 72.0)
 
@@ -35,7 +36,6 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
         subtitleLabel.numberOfLines = 0
 
         view.addSubview(stackView)
-        view.addSubview(button)
         view.addSubview(compositeStatusView)
 
         stackView.axis = .vertical
@@ -48,10 +48,18 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
         stackView.addArrangedSubview(subtitleLabel)
         stackView.spacing = 16.0
 
-        button.layout(to: .bottomMargin, of: view, offset: -16.0)
-        button.layout(dimension: .height, to: 48.0)
-        button.layout(to: .leading, of: view, offset: 16.0)
-        button.layout(to: .trailing, of: view, offset: -16)
+        let buttonsContainer = UIStackView(arrangedSubviews: [secondaryButton, primaryButton])
+        buttonsContainer.axis = .vertical
+        buttonsContainer.spacing = 16.0
+
+        view.addSubview(buttonsContainer)
+
+        primaryButton.layout(dimension: .height, to: 48.0)
+        secondaryButton.layout(dimension: .height, to: 48.0)
+
+        buttonsContainer.layout(to: .bottomMargin, of: view, offset: -16.0)
+        buttonsContainer.layout(to: .leading, of: view, offset: 16.0)
+        buttonsContainer.layout(to: .trailing, of: view, offset: -16)
     }
 
     override func viewDidLoad() {
@@ -89,26 +97,44 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
             .disposed(by: disposeBag)
 
         state
-            .map(\.buttonViewModelVisibility)
+            .map(\.primaryButtonViewModelVisibility)
             .map(\.defaultAlpha)
-            .drive(button.rx.alpha)
+            .drive(primaryButton.rx.alpha)
             .disposed(by: disposeBag)
 
         state
-            .compactMap(\.buttonViewModel)
-            .drive(button.rx.viewModel)
+            .map(\.secondaryButtonViewModelVisibility)
+            .map(\.defaultAlpha)
+            .drive(secondaryButton.rx.alpha)
+            .disposed(by: disposeBag)
+
+        state
+            .compactMap(\.primaryButtonViewModel)
+            .drive(primaryButton.rx.viewModel)
+            .disposed(by: disposeBag)
+
+        state
+            .compactMap(\.secondaryButtonViewModel)
+            .drive(secondaryButton.rx.viewModel)
             .disposed(by: disposeBag)
 
         let closeTapped = closeTriggered
             .map { PendingTransactionPageState.Effect.close }
 
-        let tap = state
-            .compactMap(\.buttonViewModel)
+        let primaryButtonTapped = state
+            .compactMap(\.primaryButtonViewModel)
             .flatMap(\.tap)
             .flatMap { state.map(\.effect) }
             .asObservable()
 
-        return Observable.merge(closeTapped, tap)
+        let secondaryButtonTapped = state
+            .compactMap(\.secondaryButtonViewModel)
+            .flatMap(\.tap)
+            .map { PendingTransactionPageState.Effect.upgradeKYCTier }
+            .asObservable()
+
+        return Observable
+            .merge(closeTapped, primaryButtonTapped, secondaryButtonTapped)
             .asDriver(onErrorJustReturn: .close)
     }
 

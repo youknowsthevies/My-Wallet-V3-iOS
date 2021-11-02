@@ -37,9 +37,9 @@ final class EthereumActivityDetailsInteractor {
     func details(identifier: String, createdAt: Date) -> Observable<EthereumActivityDetailsViewModel> {
         let transaction = detailsService
             .details(for: identifier)
-        let note = self.note(for: identifier)
+        let note = note(for: identifier)
             .catchErrorJustReturn(nil)
-        let price = self.price(at: createdAt)
+        let price = price(at: createdAt)
             .optional()
             .catchErrorJustReturn(nil)
 

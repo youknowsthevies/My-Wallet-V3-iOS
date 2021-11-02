@@ -32,4 +32,8 @@ public protocol AmountViewInteracting {
     /// Setting the amount entered. Used for sending the `Max`
     /// - Parameter amount: `String`
     func set(amount: String)
+
+    var minAmountSelected: Observable<Void> { get }
+
+    var maxAmountSelected: Observable<Void> { get }
 }

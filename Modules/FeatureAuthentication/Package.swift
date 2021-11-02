@@ -45,12 +45,14 @@ let package = Package(
             from: "5.1.3"
         ),
         .package(path: "../Analytics"),
+        .package(path: "../ComposableNavigation"),
         .package(path: "../HDWallet"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
+        .package(path: "../RxTool"),
         .package(path: "../UIComponents"),
         .package(path: "../WalletPayload")
     ],
@@ -61,6 +63,7 @@ let package = Package(
                 .product(name: "HDWalletKit", package: "HDWallet"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "ToolKit", package: "Tool"),
+                .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "Zxcvbn", package: "Zxcvbn")
             ]
         ),
@@ -79,6 +82,8 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureAuthenticationDomain"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "ComposableNavigation", package: "ComposableNavigation"),
+                .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),

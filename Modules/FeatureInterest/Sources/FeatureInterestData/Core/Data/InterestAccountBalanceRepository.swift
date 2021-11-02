@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 import DIKit
 import FeatureInterestDomain
 import PlatformKit
@@ -20,15 +19,16 @@ final class InterestAccountBalanceRepository: InterestAccountBalanceRepositoryAP
     init(client: InterestAccountBalanceClientAPI = resolve()) {
         self.client = client
         let cache: AnyCache<FiatCurrency, InterestAccountBalances> = InMemoryCache(
-            configuration: .onLoginLogout(),
-            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 90)
+            configuration: .onLoginLogoutTransaction(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         )
         .eraseToAnyCache()
         cachedValue = CachedValueNew(
             cache: cache,
             fetch: { [client] key in
                 client.fetchBalanceWithFiatCurrency(key)
-                    .replaceNil(with: InterestAccountBalanceResponse.empty)
+                    .replaceNil(with: .empty)
+                    .replaceError(with: .empty)
                     .mapError(InterestAccountBalanceRepositoryError.networkError)
                     .map(InterestAccountBalances.init)
                     .eraseToAnyPublisher()
@@ -36,7 +36,7 @@ final class InterestAccountBalanceRepository: InterestAccountBalanceRepositoryAP
         )
     }
 
-    func interestAccountsBalance(
+    func fetchInterestAccountsBalance(
         fiatCurrency: FiatCurrency
     ) -> AnyPublisher<InterestAccountBalances, InterestAccountBalanceRepositoryError> {
         cachedValue.get(key: fiatCurrency)

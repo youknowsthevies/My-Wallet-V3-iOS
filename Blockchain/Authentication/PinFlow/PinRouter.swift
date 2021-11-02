@@ -145,7 +145,7 @@ extension PinRouter {
         }
 
         // Add cleanup to logout
-        let flow = PinRouting.Flow.change(parent: UnretainedContentBox(self.flow.parent)) { [weak self] in
+        let flow = PinRouting.Flow.change(parent: UnretainedContentBox(flow.parent)) { [weak self] in
             self?.cleanup()
             self?.flow.logoutRouting?()
         }

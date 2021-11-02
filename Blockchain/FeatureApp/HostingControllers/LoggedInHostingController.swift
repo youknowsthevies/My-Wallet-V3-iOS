@@ -36,6 +36,7 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     @Inject var airdropRouter: AirdropRouterAPI
 
     private let onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI
+    private let kycRouter: PlatformUIKit.KYCRouting
 
     var tiersService: KYCTiersServiceAPI
     var simpleBuyEligiblityService: EligibilityServiceAPI
@@ -51,8 +52,10 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
         store: Store<LoggedIn.State, LoggedIn.Action>,
         onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
+        kycRouter: KYCRouting = resolve(),
         eligibilityService: EligibilityServiceAPI = resolve()
     ) {
+        self.kycRouter = kycRouter
         self.store = store
         self.tiersService = tiersService
         simpleBuyEligiblityService = eligibilityService
@@ -252,6 +255,19 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
             }
             .store(in: &cancellables)
     }
+
+    private func dismissTopMost(
+        weak object: LoggedInHostingController,
+        _ selector: @escaping (LoggedInHostingController) -> Void
+    ) {
+        guard let viewController = topMostViewController else {
+            selector(object)
+            return
+        }
+        viewController.dismiss(animated: true, completion: {
+            selector(object)
+        })
+    }
 }
 
 extension LoggedInHostingController: SideMenuViewControllerDelegate {
@@ -321,6 +337,10 @@ extension LoggedInHostingController {
 
     // MARK: - TabSwapping
 
+    func receive(into account: BlockchainAccount) {
+        tabControllerManager?.receive(into: account)
+    }
+
     func deposit(into account: BlockchainAccount) {
         tabControllerManager?.deposit(into: account)
     }
@@ -353,14 +373,34 @@ extension LoggedInHostingController {
         tabControllerManager?.showTransactions()
     }
 
-    // MARK: - CurrencyRouting
+    // MARK: - InterestAccountListHostingControllerDelegate
 
-    func toSend(_ currency: CurrencyType) {
-        tabControllerManager?.showSend(cryptoCurrency: currency.cryptoCurrency!)
-    }
-
-    func toReceive(_ currency: CurrencyType) {
-        tabControllerManager?.showReceive()
+    func presentKYCIfNeeded() {
+        /// Dismiss the Interest List View
+        dismissTopMost(weak: self) { (self) in
+            guard let viewController = self.topMostViewController else {
+                fatalError("Expected a UIViewController")
+            }
+            /// Present KYC
+            self.kycRouter
+                .presentKYCIfNeeded(
+                    from: viewController,
+                    requiredTier: .tier2
+                )
+                .mapToResult()
+                .receive(on: DispatchQueue.main)
+                .sink(receiveValue: { [weak self] result in
+                    switch result {
+                    case .success(let kycRoutingResult):
+                        guard case .completed = kycRoutingResult else { return }
+                        /// Upon successful KYC completion, present Interest
+                        self?.handleInterest()
+                    case .failure(let kycRoutingError):
+                        Logger.shared.error(kycRoutingError)
+                    }
+                })
+                .store(in: &self.cancellables)
+        }
     }
 
     // MARK: - CashIdentityVerificationAnnouncementRouting

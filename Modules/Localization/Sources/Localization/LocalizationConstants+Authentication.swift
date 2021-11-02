@@ -53,6 +53,10 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Create a Wallet",
                 comment: "Welcome screen: create wallet CTA button"
             )
+            public static let buyCryptoNow = NSLocalizedString(
+                "Buy Crypto Now",
+                comment: "Welcome screen: create wallet CTA button"
+            )
             public static let login = NSLocalizedString(
                 "Log In",
                 comment: "Welcome screen: login CTA button"
@@ -223,6 +227,71 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Resend SMS",
                 comment: "Login screen: resend SMS for 2FA CTA button"
             )
+        }
+
+        public enum Alerts {
+            public enum SignInError {
+                public static let title = NSLocalizedString(
+                    "Error Signing In",
+                    comment: "Error alert title"
+                )
+                public static let message = NSLocalizedString(
+                    "For security reasons you cannot proceed with signing in.\nPlease try to log in on web.",
+                    comment: "Error alert message"
+                )
+                public static let continueTitle = NSLocalizedString(
+                    "Continue",
+                    comment: ""
+                )
+            }
+
+            public enum EmailAuthorizationAlert {
+                public static let title = NSLocalizedString(
+                    "Authorization Required",
+                    comment: "Title for email authorization alert"
+                )
+                public static let message = NSLocalizedString(
+                    "Please check your email to approve this login attempt.",
+                    comment: "Message for email authorization alert"
+                )
+            }
+
+            public enum SMSCode {
+                public enum Failure {
+                    public static let title = NSLocalizedString(
+                        "Error Sending SMS",
+                        comment: "Error alert title when sms failed"
+                    )
+
+                    public static let message = NSLocalizedString(
+                        "There was an error sending you the SMS message.\nPlease try again.",
+                        comment: "Error alert message when sms failed"
+                    )
+                }
+
+                public enum Success {
+                    public static let title = NSLocalizedString(
+                        "Message sent",
+                        comment: "Success alert title when sms sent"
+                    )
+
+                    public static let message = NSLocalizedString(
+                        "We have sent you a verification code message.",
+                        comment: "Success alert message when sms sent"
+                    )
+                }
+            }
+
+            public enum GenericNetworkError {
+                public static let title = NSLocalizedString(
+                    "Network Error",
+                    comment: ""
+                )
+                public static let message = NSLocalizedString(
+                    "We cannot establish a connection with our server.\nPlease try to sign in again.",
+                    comment: ""
+                )
+            }
         }
     }
 
@@ -573,7 +642,7 @@ extension LocalizationConstants.FeatureAuthentication {
             comment: "Upgrade Account screen: navigation title"
         )
         public static let heading = NSLocalizedString(
-            "Upgrade to a Unified Blockchain Account",
+            "Upgrade to a Unified\nBlockchain Account",
             comment: "Upgrade Account screen: heading"
         )
         public static let subheading = NSLocalizedString(

@@ -35,10 +35,10 @@ public class BottomSheetPresenter: UIPresentationController {
     public init(
         presentedViewController: UIViewController,
         presenting presentingViewController: UIViewController?,
-        ignoresBackroundTouches: Bool = false
+        ignoresBackgroundTouches: Bool = false
     ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        tapGesture.isEnabled = !ignoresBackroundTouches
+        tapGesture.isEnabled = !ignoresBackgroundTouches
         dimmingView.addGestureRecognizer(tapGesture)
     }
 
@@ -149,14 +149,14 @@ public class BottomSheetPresenter: UIPresentationController {
 
 public class BottomSheetPresenting: NSObject, UIViewControllerTransitioningDelegate {
 
-    private var ignoresBackroundTouches = false
+    private var ignoresBackgroundTouches = false
 
     @objc override public init() {
         super.init()
     }
 
-    public init(ignoresBackroundTouches: Bool) {
-        self.ignoresBackroundTouches = ignoresBackroundTouches
+    public init(ignoresBackgroundTouches: Bool) {
+        self.ignoresBackgroundTouches = ignoresBackgroundTouches
         super.init()
     }
 
@@ -168,7 +168,7 @@ public class BottomSheetPresenting: NSObject, UIViewControllerTransitioningDeleg
         BottomSheetPresenter(
             presentedViewController: presented,
             presenting: presenting,
-            ignoresBackroundTouches: ignoresBackroundTouches
+            ignoresBackgroundTouches: ignoresBackgroundTouches
         )
     }
 }

@@ -129,7 +129,7 @@ public final class SelectionScreenPresenter {
 
     private func setupDefaultSelection() {
 
-        let presenters = self.presenters
+        let presenters = presenters
             .filter { !$0.isEmpty }
 
         let selectedIndex = Observable

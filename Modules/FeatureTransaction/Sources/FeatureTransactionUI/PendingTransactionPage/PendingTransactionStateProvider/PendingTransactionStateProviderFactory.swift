@@ -18,7 +18,12 @@ enum PendingTransctionStateProviderFactory {
             return BuyPendingTransactionStateProvider()
         case .sell:
             return SellPendingTransactionStateProvider()
-        default:
+        case .interestTransfer:
+            return InterestTransferTransactionStateProvider()
+        case .interestWithdraw:
+            return InterestWithdrawTransactionStateProvider()
+        case .viewActivity,
+             .receive:
             unimplemented()
         }
     }

@@ -35,6 +35,10 @@ final class SendRootInteractor: Interactor, SendRootInteractable, SendRootListen
         unimplemented()
     }
 
+    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
+        unimplemented()
+    }
+
     func dismissTransactionFlow() {
         router?.dismissTransactionFlow()
     }

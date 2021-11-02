@@ -49,7 +49,7 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     private let orderIDPresenter: LineItemCellPresenting
     private let dateCreatedPresenter: LineItemCellPresenting
-    private let toPresenter: LineItemCellPresenting
+    private let destinationPresenter: LineItemCellPresenting
 
     // MARK: - Init
 
@@ -104,16 +104,17 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-        let destination: String
+        let destination = event.amount.currency.defaultWalletName
         switch event.type {
         case .deposit:
-            destination = event.amount.currency.defaultWalletName
+            destinationPresenter = TransactionalLineItem.to(destination).defaultPresenter(
+                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            )
         case .withdrawal:
-            destination = ""
+            destinationPresenter = TransactionalLineItem.from(destination).defaultPresenter(
+                accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+            )
         }
-        toPresenter = TransactionalLineItem.to(destination).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
 
         cells = [
             .label(fiatAmountLabelPresenter),
@@ -123,7 +124,7 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .separator,
             .lineItem(dateCreatedPresenter),
             .separator,
-            .lineItem(toPresenter)
+            .lineItem(destinationPresenter)
         ]
     }
 }

@@ -18,9 +18,17 @@ public class RequestBuilder {
     }
 
     private let networkConfig: Network.Config
+    private let decoder: NetworkResponseDecoderAPI
+    private let headers: HTTPHeaders
 
-    init(networkConfig: Network.Config = resolve()) {
-        self.networkConfig = networkConfig
+    public init(
+        config: Network.Config = resolve(),
+        decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder(),
+        headers: HTTPHeaders = [:]
+    ) {
+        networkConfig = config
+        self.decoder = decoder
+        self.headers = headers
     }
 
     // MARK: - GET
@@ -31,7 +39,7 @@ public class RequestBuilder {
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: NetworkRequest.ContentType = .json,
-        decoder: NetworkResponseDecoderAPI = resolve(),
+        decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
         get(
@@ -51,7 +59,7 @@ public class RequestBuilder {
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: NetworkRequest.ContentType = .json,
-        decoder: NetworkResponseDecoderAPI = resolve(),
+        decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
         buildRequest(
@@ -75,7 +83,7 @@ public class RequestBuilder {
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: NetworkRequest.ContentType = .json,
-        decoder: NetworkResponseDecoderAPI = resolve(),
+        decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
         put(
@@ -97,7 +105,7 @@ public class RequestBuilder {
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: NetworkRequest.ContentType = .json,
-        decoder: NetworkResponseDecoderAPI = resolve(),
+        decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
         buildRequest(
@@ -122,7 +130,7 @@ public class RequestBuilder {
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: NetworkRequest.ContentType = .json,
-        decoder: NetworkResponseDecoderAPI = resolve(),
+        decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
         post(
@@ -144,7 +152,7 @@ public class RequestBuilder {
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: NetworkRequest.ContentType = .json,
-        decoder: NetworkResponseDecoderAPI = resolve(),
+        decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
         buildRequest(
@@ -168,7 +176,7 @@ public class RequestBuilder {
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: NetworkRequest.ContentType = .json,
-        decoder: NetworkResponseDecoderAPI = resolve(),
+        decoder: NetworkResponseDecoderAPI? = nil,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
         buildRequest(
@@ -208,7 +216,7 @@ public class RequestBuilder {
         headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: NetworkRequest.ContentType = .json,
-        decoder: NetworkResponseDecoderAPI = resolve(),
+        decoder: NetworkResponseDecoderAPI?,
         recordErrors: Bool = false
     ) -> NetworkRequest? {
         guard let url = buildURL(path: path, parameters: parameters) else {
@@ -218,10 +226,10 @@ public class RequestBuilder {
             endpoint: url,
             method: method,
             body: body,
-            headers: headers,
+            headers: self.headers.merging(headers),
             authenticated: authenticated,
             contentType: contentType,
-            decoder: decoder,
+            decoder: decoder ?? self.decoder,
             recordErrors: recordErrors
         )
     }

@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import CombineExt
 @testable import FeatureAuthenticationDomain
 import RxSwift
 import ToolKit
@@ -93,14 +92,10 @@ final class MockWalletRepository: WalletRepositoryAPI {
     }
 
     private func perform<E: Error>(_ operation: @escaping () -> Void) -> AnyPublisher<Void, E> {
-        AnyPublisher
-            .create { observer -> AnyCancellable in
-                operation()
-                observer.send(())
-                observer.send(completion: .finished)
-                return AnyCancellable {}
-            }
-            .eraseToAnyPublisher()
+        Deferred {
+            Future { $0(.success(operation())) }
+        }
+        .eraseToAnyPublisher()
     }
 }
 
@@ -189,7 +184,7 @@ extension MockWalletRepository {
     }
 
     var offlineToken: AnyPublisher<NabuOfflineToken, MissingCredentialsError> {
-        expectedOfflineToken.publisher
+        expectedOfflineToken.publisher.eraseToAnyPublisher()
     }
 
     func set(

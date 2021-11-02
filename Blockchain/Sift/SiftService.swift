@@ -52,7 +52,7 @@ final class SiftService: SiftServiceAPI {
 
     /// Enables the services
     func enable() {
-        guard let sift = self.sift else { return }
+        guard let sift = sift else { return }
         sift.accountId = identifier
         sift.beaconKey = beacon
         sift.allowUsingMotionSensors = false

@@ -14,6 +14,16 @@ extension AnalyticsEvents.New {
         )
         case buySellViewed(type: Type)
         case buyPaymentMethodSelected(paymentType: PaymentType)
+        case buyAmountMaxClicked(
+            amountCurrency: String?,
+            inputCurrency: String,
+            outputCurrency: String
+        )
+        case buyAmountMinClicked(
+            amountCurrency: String?,
+            inputCurrency: String,
+            outputCurrency: String
+        )
         case buyAmountEntered(
             inputAmount: Double,
             inputCurrency: String,

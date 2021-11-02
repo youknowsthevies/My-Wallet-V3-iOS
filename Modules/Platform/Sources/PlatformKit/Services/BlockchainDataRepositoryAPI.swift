@@ -2,6 +2,10 @@
 
 import Combine
 
+public enum DataRepositoryError: Error {
+    case failedToFetchUser(Error)
+}
+
 public protocol DataRepositoryAPI {
-    var user: AnyPublisher<User, Never> { get }
+    var user: AnyPublisher<User, DataRepositoryError> { get }
 }

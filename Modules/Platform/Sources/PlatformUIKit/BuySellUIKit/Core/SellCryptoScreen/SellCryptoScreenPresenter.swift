@@ -50,9 +50,20 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        interactor.amountTranslationInteractor.minAmountSelectedRelay
+        interactor.amountTranslationInteractor.minAmountSelected
             .map { [interactor] _ in
                 AnalyticsEvents.New.Sell.sellAmountMinClicked(
+                    fromAccountType: .init(interactor.data.source),
+                    inputCurrency: interactor.data.source.currencyType.code,
+                    outputCurrency: interactor.data.destination.currencyType.code
+                )
+            }
+            .subscribe(onNext: analyticsRecorder.record(event:))
+            .disposed(by: disposeBag)
+
+        interactor.amountTranslationInteractor.maxAmountSelected
+            .map { [interactor] _ in
+                AnalyticsEvents.New.Sell.sellAmountMaxClicked(
                     fromAccountType: .init(interactor.data.source),
                     inputCurrency: interactor.data.source.currencyType.code,
                     outputCurrency: interactor.data.destination.currencyType.code
@@ -65,10 +76,10 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
         topSelectionButtonViewModel.trailingContentRelay.accept(.empty)
         bottomAuxiliaryViewModelStateRelay.accept(.maxAvailable(auxiliaryViewPresenter))
         topSelectionButtonViewModel.titleRelay.accept(
-            String(format: LocalizedString.from, interactor.data.source.currencyType.code)
+            String(format: LocalizedString.from, interactor.data.source.currencyType.displayCode)
         )
         topSelectionButtonViewModel.subtitleRelay.accept(
-            String(format: LocalizedString.to, interactor.data.destination.currencyType.code)
+            String(format: LocalizedString.to, interactor.data.destination.currencyType.displayCode)
         )
 
         struct CTAData {
@@ -123,7 +134,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                     switch (data.kycState, data.isSimpleBuyEligible) {
                     case (.completed, false):
                         loader.hide()
-                    // TODO: inelligible
+                    // TODO: ineligible
                     case (.completed, true):
                         self.createOrder(from: data.candidateOrderDetails) { checkoutData in
                             loader.hide()

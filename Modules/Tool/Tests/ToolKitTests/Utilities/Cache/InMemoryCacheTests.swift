@@ -76,7 +76,10 @@ class InMemoryCacheTests: XCTestCase {
         super.setUp()
 
         let refreshControl = PeriodicCacheRefreshControl(refreshInterval: refreshInterval)
-        subject = InMemoryCache(refreshControl: refreshControl)
+        subject = InMemoryCache(
+            configuration: .default(),
+            refreshControl: refreshControl
+        )
         cancellables = []
     }
 

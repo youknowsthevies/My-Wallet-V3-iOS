@@ -6,7 +6,7 @@ import RxSwift
 import ToolKit
 
 final class NonCustodialSellTransactionEngine: SellTransactionEngine {
-    let receiveAddressFactory: CryptoReceiveAddressFactoryService
+    let receiveAddressFactory: ExternalAssetAddressServiceAPI
     let fiatCurrencyService: FiatCurrencyServiceAPI
     let kycTiersService: KYCTiersServiceAPI
     let onChainEngine: OnChainTransactionEngine
@@ -33,7 +33,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
-        receiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()
+        receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
         self.requireSecondPassword = requireSecondPassword
@@ -258,15 +258,15 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         quotesEngine.getRate(direction: orderDirection, pair: pair)
-            .first()
-            .map { [sourceAsset, targetAsset] pricedQuote -> PendingTransaction in
-                guard let pricedQuote = pricedQuote else {
-                    return pendingTransaction
-                }
-
+            .take(1)
+            .asSingle()
+            .map { [targetAsset] pricedQuote -> PendingTransaction in
                 let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let baseValue = MoneyValue.one(currency: pendingTransaction.amount.currency)
                 let sellDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
+                let sellFiatFeeValue: MoneyValue = pendingTransaction.feeAmount.convert(using: resultValue)
+                let sellTotalCryptoValue = (try? pendingTransaction.amount + pendingTransaction.feeAmount)!
+                let sellTotalFiatValue = (try? sellDestinationValue + sellFiatFeeValue)!
 
                 let confirmations: [TransactionConfirmation] = [
                     .sellSourceValue(.init(cryptoValue: pendingTransaction.amount.cryptoValue!)),
@@ -275,9 +275,13 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
                     .networkFee(.init(
-                        fee: pendingTransaction.feeAmount,
-                        feeType: .depositFee,
-                        asset: sourceAsset.currencyType
+                        primaryCurrencyFee: pendingTransaction.feeAmount,
+                        secondaryCurrencyFee: sellFiatFeeValue,
+                        feeType: .withdrawalFee
+                    )),
+                    .totalCost(.init(
+                        primaryCurrencyFee: sellTotalCryptoValue,
+                        secondaryCurrencyFee: sellTotalFiatValue
                     ))
                 ]
 

@@ -19,16 +19,23 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.9.0"
         ),
-        .package(path: "../Tool")
+        .package(
+            name: "swift-case-paths",
+            url: "https://github.com/pointfreeco/swift-case-paths",
+            from: "0.7.0"
+        ),
+        .package(path: "../Tool"),
+        .package(path: "../ComponentLibrary")
     ],
     targets: [
         .target(
             name: "UIComponentsKit",
-            dependencies: [.product(name: "ToolKit", package: "Tool")],
-            path: "UIComponentsKit",
-            resources: [
-                .process("Fonts")
-            ]
+            dependencies: [
+                .product(name: "CasePaths", package: "swift-case-paths"),
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "ComponentLibrary", package: "ComponentLibrary")
+            ],
+            path: "UIComponentsKit"
         ),
         .testTarget(
             name: "UIComponentsKitTests",

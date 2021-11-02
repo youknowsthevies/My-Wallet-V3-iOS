@@ -33,8 +33,8 @@ final class FundsAndBankOrderCreationService: PendingOrderCreationServiceAPI {
         return Single
             .zip(quote, paymentAccount)
             .map { (quote: $0.0, account: $0.1) }
-            .flatMap(weak: self) { (self, payload) in
-                self.orderCreationService.create(using: candidateOrderDetails)
+            .flatMap { [orderCreationService] payload in
+                orderCreationService.create(using: candidateOrderDetails)
                     .map { checkoutData in
                         PendingConfirmationCheckoutData(
                             quote: payload.quote,

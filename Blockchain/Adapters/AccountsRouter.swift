@@ -18,7 +18,7 @@ final class AccountsRouter: AccountsRouting {
     private let disposeBag = DisposeBag()
 
     init(
-        routing: CurrencyRouting & TabSwapping,
+        routing: TabSwapping,
         backupRouter: FeatureDashboardUI.BackupRouterAPI = resolve()
     ) {
         nonCustodialActionRouterAPI = NonCustodialActionRouter(routing: routing)

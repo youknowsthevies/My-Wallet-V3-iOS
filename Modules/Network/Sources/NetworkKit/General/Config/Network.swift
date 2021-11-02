@@ -2,14 +2,13 @@
 
 import DIKit
 import Foundation
-import RxSwift
 import ToolKit
 
 public typealias APICode = String
 
-enum Network {
+public enum Network {
 
-    struct Config {
+    public struct Config {
 
         let apiScheme: String
         let apiHost: String
@@ -53,6 +52,18 @@ enum Network {
     }
 }
 
+extension Network.Config {
+
+    public init(
+        scheme: String,
+        host: String,
+        code: String = BlockchainAPI.Parameters.apiCode,
+        components: [String] = []
+    ) {
+        self.init(apiScheme: scheme, apiHost: host, apiCode: code, pathComponents: components)
+    }
+}
+
 public class UserAgentProvider {
 
     private var deviceInfo: DeviceInfo
@@ -71,25 +82,43 @@ public class UserAgentProvider {
         let systemVersion = deviceInfo.systemVersion
         let modelName = deviceInfo.model
         let versionAndBuild = String(format: "%@ b%@", version, build)
-        return String(format: "Blockchain-iOS/%@ (iOS/%@; %@)", versionAndBuild, systemVersion, modelName)
+        return String(
+            format: "Blockchain-iOS/%@ (iOS/%@; %@)",
+            versionAndBuild,
+            systemVersion,
+            modelName
+        )
     }
 }
 
 protocol NetworkSessionDelegateAPI: AnyObject {
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping AuthChallengeHandler)
+    func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping AuthChallengeHandler
+    )
 }
 
 class DefaultSessionHandler: NetworkSessionDelegateAPI {
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping AuthChallengeHandler) {
+    func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping AuthChallengeHandler
+    ) {
         completionHandler(.performDefaultHandling, nil)
     }
 }
 
+// swiftlint:disable:next type_name
 class BlockchainNetworkCommunicatorSessionHandler: NetworkSessionDelegateAPI {
 
     @Inject var certificatePinner: CertificatePinnerAPI
 
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping AuthChallengeHandler) {
+    func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping AuthChallengeHandler
+    ) {
         guard BlockchainAPI.shared.shouldPinCertificate else {
             completionHandler(.performDefaultHandling, nil)
             return

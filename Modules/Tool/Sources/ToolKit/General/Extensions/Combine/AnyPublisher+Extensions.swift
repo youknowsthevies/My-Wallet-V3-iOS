@@ -36,11 +36,11 @@ extension Publisher {
     }
 }
 
-extension Publisher where Output: OptionalType {
+extension Publisher where Output: OptionalProtocol {
 
     public func onNil(_ error: Failure) -> AnyPublisher<Output.Wrapped, Failure> {
         flatMap { element -> AnyPublisher<Output.Wrapped, Failure> in
-            guard let value = element.value else {
+            guard let value = element.wrapped else {
                 return .failure(error)
             }
             return .just(value)
@@ -72,47 +72,6 @@ extension Publisher {
         }
         .eraseToAnyPublisher()
     }
-}
-
-extension RandomAccessCollection where Element: Publisher {
-
-    public func zipMany() -> AnyPublisher<[Element.Output], Element.Failure> {
-        switch count {
-        case 0:
-            return Just([])
-                .setFailureType(to: Element.Failure.self)
-                .eraseToAnyPublisher()
-        case 1:
-            return self[_0]
-                .map { [$0] }
-                .eraseToAnyPublisher()
-        case 2:
-            return self[_0]
-                .zip(self[_1])
-                .map { [$0, $1] }
-                .eraseToAnyPublisher()
-        case 3:
-            return self[_0]
-                .zip(self[_1], self[_2])
-                .map { [$0, $1, $2] }
-                .eraseToAnyPublisher()
-        case 4:
-            return self[_0]
-                .zip(self[_1], self[_2], self[_3])
-                .map { [$0, $1, $2, $3] }
-                .eraseToAnyPublisher()
-        default:
-            return prefix(4).zipMany()
-                .zip(dropFirst(4).zipMany())
-                .map { $0 + $1 }
-                .eraseToAnyPublisher()
-        }
-    }
-
-    private var _0: Index { startIndex }
-    private var _1: Index { index(after: startIndex) }
-    private var _2: Index { index(after: _1) }
-    private var _3: Index { index(after: _2) }
 }
 
 extension Publisher {

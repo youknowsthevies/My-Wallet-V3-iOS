@@ -23,6 +23,13 @@ final class MockKYCTiersService: PlatformKit.KYCTiersServiceAPI {
     private(set) var recordedInvocations = RecordedInvocations()
     var stubbedResponses = StubbedResponses()
 
+    var isKYCVerified: AnyPublisher<Bool, Never> {
+        fetchTiers()
+            .map(\.isTier2Approved)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
     var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
         fetchTiers()
     }

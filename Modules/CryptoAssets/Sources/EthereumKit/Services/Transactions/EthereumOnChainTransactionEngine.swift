@@ -5,6 +5,7 @@ import DIKit
 import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
+import RxToolKit
 import ToolKit
 
 final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
@@ -240,14 +241,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             .map { transactionHash -> TransactionResult in
                 .hashed(txHash: transactionHash, amount: pendingTransaction.amount)
             }
-    }
-
-    func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        unimplemented()
-    }
-
-    func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        .never()
     }
 
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

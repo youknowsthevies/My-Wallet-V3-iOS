@@ -62,7 +62,7 @@ extension SMSClient {
         // MARK: - API
 
         func build(sessionToken: String, guid: String) -> NetworkRequest {
-            let pathComponents = self.pathComponents + [guid]
+            let pathComponents = pathComponents + [guid]
             let headers = [HeaderKey.cookie.rawValue: "SID=\(sessionToken)"]
             let parameters = [
                 URLQueryItem(

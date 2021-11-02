@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Charts
+import ComposableNavigation
 import PlatformKit
 
 /// Any util / data related to the pie chart presentation / interaction layers

@@ -14,11 +14,11 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
 
     // MARK: - Private Properties
 
-    private let receiveAddressService: CryptoReceiveAddressFactoryService
+    private let receiveAddressService: ExternalAssetAddressServiceAPI
 
     // MARK: - Init
 
-    init(receiveAddressService: CryptoReceiveAddressFactoryService = resolve()) {
+    init(receiveAddressService: ExternalAssetAddressServiceAPI = resolve()) {
         self.receiveAddressService = receiveAddressService
     }
 

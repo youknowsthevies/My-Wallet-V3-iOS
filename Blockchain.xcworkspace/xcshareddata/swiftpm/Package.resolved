@@ -47,15 +47,6 @@
         }
       },
       {
-        "package": "CombineExt",
-        "repositoryURL": "https://github.com/CombineCommunity/CombineExt.git",
-        "state": {
-          "branch": null,
-          "revision": "fc3e405ea46ee748649bd8b71587b2a9c37e1422",
-          "version": "1.5.0"
-        }
-      },
-      {
         "package": "ZendeskCommonUISDK",
         "repositoryURL": "https://github.com/zendesk/commonui_sdk_ios",
         "state": {
@@ -89,15 +80,6 @@
           "branch": null,
           "revision": "51f2eab32903e336f590c013267cfa4d7f8b06c4",
           "version": "3.3.1"
-        }
-      },
-      {
-        "package": "Lottie",
-        "repositoryURL": "https://github.com/airbnb/lottie-ios.git",
-        "state": {
-          "branch": null,
-          "revision": "b3c60ba1716baab6faeeb217d8ce1da336f92718",
-          "version": "3.2.1"
         }
       },
       {

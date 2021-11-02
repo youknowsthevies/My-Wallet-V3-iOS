@@ -164,39 +164,37 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
     private func ethereumWallets(
         secondPassword: String?
     ) -> AnyPublisher<[EthereumWalletAccount], Error> {
-        AnyPublisher<[[String: Any]], Error>
-            .create { [weak self] subscriber in
+        Deferred { [weak self] in
+            Future<[[String: Any]], Error> { promise in
                 guard let wallet = self?.wallet else {
-                    subscriber.send(completion: .failure(WalletError.notInitialized))
-                    return AnyCancellable {}
+                    return promise(.failure(WalletError.notInitialized))
                 }
                 wallet.ethereumAccounts(
                     with: secondPassword,
                     success: { accounts in
-                        subscriber.send(accounts)
-                        subscriber.send(completion: .finished)
+                        promise(.success(accounts))
                     },
                     error: { _ in
-                        subscriber.send(completion: .failure(EthereumWalletError.ethereumAccountsFailed))
+                        promise(.failure(EthereumWalletError.ethereumAccountsFailed))
                     }
                 )
-                return AnyCancellable {}
             }
-            .map { accounts in
-                accounts.decodeJSONObjects(type: LegacyEthereumWalletAccount.self)
-            }
-            .map { legacyWallets in
-                legacyWallets.enumerated()
-                    .map { offset, account in
-                        EthereumWalletAccount(
-                            index: offset,
-                            publicKey: account.addr,
-                            label: account.label,
-                            archived: false
-                        )
-                    }
-            }
-            .eraseError()
-            .eraseToAnyPublisher()
+        }
+        .map { accounts in
+            accounts.decodeJSONObjects(type: LegacyEthereumWalletAccount.self)
+        }
+        .map { legacyWallets in
+            legacyWallets.enumerated()
+                .map { offset, account in
+                    EthereumWalletAccount(
+                        index: offset,
+                        publicKey: account.addr,
+                        label: account.label,
+                        archived: false
+                    )
+                }
+        }
+        .eraseError()
+        .eraseToAnyPublisher()
     }
 }
