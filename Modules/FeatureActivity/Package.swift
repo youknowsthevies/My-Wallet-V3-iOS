@@ -6,8 +6,9 @@ let package = Package(
     name: "FeatureActivity",
     platforms: [.iOS(.v14)],
     products: [
-        .library(name: "FeatureActivity", targets: ["FeatureActivityDomain", "FeatureActivityUI"]),
+        .library(name: "FeatureActivity", targets: ["FeatureActivityDomain", "FeatureActivityUI", "FeatureActivityData"]),
         .library(name: "FeatureActivityDomain", targets: ["FeatureActivityDomain"]),
+        .library(name: "FeatureActivityData", targets: ["FeatureActivityData"]),
         .library(name: "FeatureActivityUI", targets: ["FeatureActivityUI"])
     ],
     dependencies: [
@@ -16,11 +17,17 @@ let package = Package(
             url: "https://github.com/ReactiveX/RxSwift.git",
             from: "5.1.3"
         ),
+        .package(
+            name: "DIKit",
+            url: "https://github.com/jackpooleybc/DIKit.git",
+            .branch("safe-property-wrappers")
+        ),
         .package(path: "../CommonCrypto"),
         .package(path: "../CryptoAssets"),
         .package(path: "../FeatureAuthentication"),
         .package(path: "../FeatureKYC"),
         .package(path: "../Network"),
+        .package(path: "../NetworkErrors"),
         .package(path: "../Platform"),
         .package(path: "../Tool"),
         .package(path: "../WalletPayload")
@@ -46,6 +53,15 @@ let package = Package(
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload")
+            ]
+        ),
+        .target(
+            name: "FeatureActivityData",
+            dependencies: [
+                .target(name: "FeatureActivityDomain"),
+                .product(name: "DIKit", package: "DIKit"),
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
+                .product(name: "NetworkKit", package: "Network")
             ]
         ),
         .target(
