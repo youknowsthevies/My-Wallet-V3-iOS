@@ -1,8 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Examples
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import SwiftUI
 import ToolKit
 import UIKit
 
@@ -93,6 +95,10 @@ final class DebugCoordinator: NSObject, DebugCoordinating {
         case .interalFeatureFlags:
             let viewModel = InternalFeatureFlagViewModel()
             let viewController = InternalFeatureFlagViewController(viewModel: viewModel)
+            navigationController?.pushViewController(viewController, animated: true)
+        case .componentLibraryExamples:
+            let view = Examples.RootView()
+            let viewController = UIHostingController(rootView: view)
             navigationController?.pushViewController(viewController, animated: true)
         }
     }
