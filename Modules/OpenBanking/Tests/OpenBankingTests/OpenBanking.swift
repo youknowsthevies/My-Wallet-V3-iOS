@@ -42,7 +42,7 @@ extension OpenBanking {
                     communicator: communicator
                 ),
                 scheduler: scheduler.eraseToAnyScheduler(),
-                state: .init([.currency: "GBP"])
+                state: .init([.currency: "GBP", .callback.base.url: "https://blockchainwallet.page.link" as URL])
             ),
             communicator
         )

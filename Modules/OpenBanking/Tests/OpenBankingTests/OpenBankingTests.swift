@@ -19,7 +19,7 @@ final class OpenBankingTests: XCTestCase {
     }
 
     func test_create_bank_account_set_state_id() throws {
-        _ = try banking.createBankAccount().wait().get()
+        _ = try banking.createBankAccount().wait()
         try XCTAssertEqual(banking.state.get(.id), Identity<OpenBanking.BankAccount>("a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c"))
     }
 
@@ -79,13 +79,13 @@ final class OpenBankingBankAccountTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         (banking, network) = OpenBanking.test()
-        bankAccount = try banking.createBankAccount().wait().get()
+        bankAccount = try banking.createBankAccount().wait()
         institution = bankAccount.attributes.institutions?[1]
     }
 
     func test_activate_institution() throws {
 
-        let account = try bankAccount.activateBankAccount(with: institution.id, in: banking).wait().get()
+        let account = try bankAccount.activateBankAccount(with: institution.id, in: banking).wait()
 
         XCTAssertEqual(account.state, "PENDING")
 
@@ -106,7 +106,7 @@ final class OpenBankingBankAccountTests: XCTestCase {
 
     func test_get_sets_authorisation_state() throws {
 
-        let account = try bankAccount.get(in: banking).wait().get()
+        let account = try bankAccount.get(in: banking).wait()
 
         XCTAssertEqual(account.id, bankAccount.id)
         try XCTAssertEqual(account.attributes.authorisationUrl, banking.state.get(.authorisation.url))
@@ -120,7 +120,7 @@ final class OpenBankingBankAccountTests: XCTestCase {
         banking.state.set(.authorisation.url, to: "url")
         banking.state.set(.callback.path, to: "path")
 
-        _ = try bankAccount.activateBankAccount(with: institution.id, in: banking).wait().get()
+        _ = try bankAccount.activateBankAccount(with: institution.id, in: banking).wait()
 
         XCTAssertThrowsError(try banking.state.get(.authorisation.url))
         XCTAssertThrowsError(try banking.state.get(.callback.path))
@@ -155,7 +155,6 @@ final class OpenBankingBankAccountTests: XCTestCase {
             in: banking
         )
         .wait()
-        .get()
 
         let request = network.requests[
             .post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c/payment"
@@ -192,7 +191,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
         try super.setUpWithError()
         scheduler = DispatchQueue.test
         (banking, network) = OpenBanking.test(using: scheduler)
-        bankAccount = try banking.createBankAccount().wait().get()
+        bankAccount = try banking.createBankAccount().wait()
         institution = bankAccount.attributes.institutions?[1]
     }
 
@@ -231,7 +230,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
         .data()
 
         var result: Result<OpenBanking.BankAccount, OpenBanking.Error>?
-        let subscription = try bankAccount.poll(in: banking)
+        let subscription = bankAccount.poll(in: banking)
             .sink { result = $0 }
 
         XCTAssertNil(result)
@@ -259,7 +258,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
         .data()
 
         var result: Result<OpenBanking.BankAccount, OpenBanking.Error>?
-        let subscription = try bankAccount.poll(in: banking)
+        let subscription = bankAccount.poll(in: banking)
             .sink { result = $0 }
 
         for _ in 0..<10 {
@@ -308,7 +307,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
         var result: Result<OpenBanking.BankAccount, OpenBanking.Error>?
 
-        let subscription = try bankAccount.poll(in: banking)
+        let subscription = bankAccount.poll(in: banking)
             .sink {
                 result = $0; promise.fulfill()
             }
@@ -346,11 +345,11 @@ final class OpenBankingPaymentTests: XCTestCase {
         scheduler = DispatchQueue.test
         (banking, network) = OpenBanking.test(using: scheduler)
         bankAccount = try banking.allBankAccounts().wait().get().first.unwrap()
-        payment = try bankAccount.pay(amountMinor: "1000", product: "SIMPLEBUY", in: banking).wait().get()
+        payment = try bankAccount.pay(amountMinor: "1000", product: "SIMPLEBUY", in: banking).wait()
     }
 
     func test_get() throws {
-        _ = try payment.get(in: banking).wait().get()
+        _ = try payment.get(in: banking).wait()
         XCTAssertNoThrow(try banking.state.get(.authorisation.url))
     }
 

@@ -38,14 +38,12 @@ final class OpenBankingFlow: XCTestCase {
 
         let bankAccount = try banking.createBankAccount()
             .wait(timeout: 5)
-            .get()
 
         let activation = try bankAccount.activateBankAccount(
             with: bankAccount.attributes.institutions![1].id,
             in: banking
         )
         .wait(timeout: 5)
-        .get()
 
         let subscription = banking.state.publisher(for: .authorisation.url, as: URL.self).sink { result in
             switch result {
@@ -81,7 +79,6 @@ final class OpenBankingFlow: XCTestCase {
 
         let payment = try bankAccount.pay(amountMinor: "1000", product: "SIMPLEBUY", in: banking)
             .wait(timeout: 5)
-            .get()
 
         let subscription = banking.state.publisher(for: .authorisation.url, as: URL.self).sink { result in
             switch result {

@@ -22,7 +22,10 @@ extension OpenBanking.Key {
         error: Self(name: my + ".consent.error")
     )
     public static let callback = (
-        path: Self(name: my + ".callback.path"), ()
+        path: Self(name: my + ".callback.path"),
+        base: (
+            url: Self(name: my + ".callback.base.url"), ()
+        )
     )
     public static let `is` = (
         authorised: Self(name: my + ".is.authorised"), ()

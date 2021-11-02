@@ -29,6 +29,30 @@ extension Publisher where Failure == Never {
 extension Publisher {
 
     public func sink<Root>(
+        to handler: @escaping (Root) -> (Output) -> Void,
+        on root: Root
+    ) -> AnyCancellable where Root: AnyObject {
+        sink { _ in
+
+        } receiveValue: { [weak root] output in
+            guard let root = root else { return }
+            handler(root)(output)
+        }
+    }
+
+    public func sink<Root>(
+        to handler: @escaping (Root) -> () -> Void,
+        on root: Root
+    ) -> AnyCancellable where Root: AnyObject {
+        sink { _ in
+
+        } receiveValue: { [weak root] output in
+            guard let root = root else { return }
+            handler(root)()
+        }
+    }
+
+    public func sink<Root>(
         completion completionHandler: @escaping (Root) -> (Subscribers.Completion<Failure>) -> Void,
         receiveValue receiveValueHandler: @escaping (Root) -> (Output) -> Void,
         on root: Root
