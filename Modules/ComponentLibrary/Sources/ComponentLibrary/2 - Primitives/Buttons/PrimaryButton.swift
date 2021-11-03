@@ -14,12 +14,13 @@ import SwiftUI
 /// # Figma
 ///
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=3%3A367)
-
 public struct PrimaryButton: View {
 
     private let title: String
     private let action: () -> Void
     private let isLoading: Bool
+
+    @Environment(\.pillButtonSize) private var size
 
     private let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
@@ -67,6 +68,7 @@ public struct PrimaryButton: View {
         .buttonStyle(
             PillButtonStyle(
                 isLoading: isLoading,
+                size: size,
                 colorCombination: colorCombination
             )
         )

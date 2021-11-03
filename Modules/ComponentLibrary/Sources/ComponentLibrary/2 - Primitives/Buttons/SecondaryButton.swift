@@ -21,6 +21,8 @@ public struct SecondaryButton: View {
     private let action: () -> Void
     private let isLoading: Bool
 
+    @Environment(\.pillButtonSize) private var size
+
     private let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
             foreground: .semantic.white,
@@ -67,6 +69,7 @@ public struct SecondaryButton: View {
         .buttonStyle(
             PillButtonStyle(
                 isLoading: isLoading,
+                size: size,
                 colorCombination: colorCombination
             )
         )

@@ -76,6 +76,7 @@ public struct ExchangeBuyButton: View {
         .buttonStyle(
             PillButtonStyle(
                 isLoading: isLoading,
+                size: .standard,
                 colorCombination: colorCombination
             )
         )

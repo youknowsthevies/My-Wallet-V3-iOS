@@ -5,11 +5,11 @@ import SnapshotTesting
 import SwiftUI
 import XCTest
 
-final class PrimaryButtonTests: XCTestCase {
+final class SmallMinimalButtonTests: XCTestCase {
 
     func testSnapshot() {
         let view = VStack(spacing: Spacing.baseline) {
-            PrimaryButton_Previews.previews
+            SmallMinimalButton_Previews.previews
         }
         .frame(width: 320)
         .fixedSize()

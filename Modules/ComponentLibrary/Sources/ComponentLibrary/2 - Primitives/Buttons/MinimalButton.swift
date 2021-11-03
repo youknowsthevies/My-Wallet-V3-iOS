@@ -21,6 +21,8 @@ public struct MinimalButton: View {
     private let action: () -> Void
     private let isLoading: Bool
 
+    @Environment(\.pillButtonSize) private var size
+
     private let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
             foreground: Color.dynamicColor(
@@ -85,6 +87,7 @@ public struct MinimalButton: View {
         .buttonStyle(
             PillButtonStyle(
                 isLoading: isLoading,
+                size: size,
                 colorCombination: colorCombination
             )
         )

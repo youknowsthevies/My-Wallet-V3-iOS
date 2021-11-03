@@ -21,6 +21,7 @@ struct PillButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
 
     let isLoading: Bool
+    let size: PillButtonSize
     let colorCombination: ColorCombination
 
     func makeBody(configuration: Configuration) -> some View {
@@ -33,21 +34,22 @@ struct PillButtonStyle: ButtonStyle {
                             trackColor: colorCombination.progressViewTrack
                         )
                     )
-                    .frame(width: 24, height: 24)
+                    .frame(width: size.minHeight / 2, height: size.minHeight / 2)
             } else {
                 configuration
                     .label
-                    .typography(.body2)
+                    .typography(size.typograhy)
             }
         }
         .foregroundColor(colorSet(for: configuration).foreground)
-        .frame(maxWidth: .infinity, minHeight: 48)
+        .frame(maxWidth: size.maxWidth, minHeight: size.minHeight)
+        .padding(size.padding)
         .background(
-            RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
+            RoundedRectangle(cornerRadius: size.borderRadius)
                 .fill(colorSet(for: configuration).background)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
+            RoundedRectangle(cornerRadius: size.borderRadius)
                 .stroke(colorSet(for: configuration).border)
         )
     }
@@ -60,5 +62,25 @@ struct PillButtonStyle: ButtonStyle {
         } else {
             return colorCombination.disabled
         }
+    }
+}
+
+private struct PillButtonSizeEnvironmentKey: EnvironmentKey {
+
+    static var defaultValue: PillButtonSize = .standard
+}
+
+extension EnvironmentValues {
+
+    var pillButtonSize: PillButtonSize {
+        get { self[PillButtonSizeEnvironmentKey.self] }
+        set { self[PillButtonSizeEnvironmentKey.self] = newValue }
+    }
+}
+
+extension View {
+
+    public func pillButtonSize(_ size: PillButtonSize) -> some View {
+        environment(\.pillButtonSize, size)
     }
 }
