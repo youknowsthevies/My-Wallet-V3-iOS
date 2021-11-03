@@ -10,6 +10,7 @@ final class SourceTargetSectionHeaderView: UIView {
     var model: SourceTargetSectionHeaderModel! {
         didSet {
             titleLabel.content = model?.sectionTitleLabel ?? .empty
+            separator.isHidden = model?.showSeparator == false
         }
     }
 
