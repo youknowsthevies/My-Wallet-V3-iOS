@@ -39,8 +39,6 @@ public enum AppFeature: Int, CaseIterable {
 
     // MARK: - SSO
 
-    case accountRecovery
-
     case unifiedSignIn
 
     // MARK: - SDD
@@ -90,8 +88,6 @@ extension AppFeature {
             return "show_email_verification_in_onboarding_ios"
         case .showEmailVerificationInBuyFlow:
             return "show_email_verification_in_buy_flow_ios"
-        case .accountRecovery:
-            return "sso_account_recovery_enabled_ios"
         case .unifiedSignIn:
             return "sso_unified_sign_in_enabled_ios"
         case .sddEnabled:
@@ -129,8 +125,6 @@ extension AppFeature {
         case .showEmailVerificationInOnboarding:
             return false
         case .showEmailVerificationInBuyFlow:
-            return false
-        case .accountRecovery:
             return false
         case .unifiedSignIn:
             return false
