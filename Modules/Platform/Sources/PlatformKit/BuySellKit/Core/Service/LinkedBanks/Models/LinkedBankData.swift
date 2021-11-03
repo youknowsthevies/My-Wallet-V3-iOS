@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureOpenBankingDomain
 import Localization
-import OpenBanking
 
 public struct LinkedBankData {
     public enum Partner: String {

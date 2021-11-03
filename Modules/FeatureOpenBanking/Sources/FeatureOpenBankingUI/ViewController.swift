@@ -28,13 +28,13 @@ public final class OpenBankingViewController: UIHostingController<OpenBankingVie
     }
 
     public convenience init(
-        pay amountMinor: String,
+        deposit amountMinor: String,
         product: String,
         from account: OpenBanking.BankAccount,
         environment: OpenBankingEnvironment
     ) {
         self.init(
-            .pay(
+            .deposit(
                 amountMinor: amountMinor,
                 product: product,
                 from: account

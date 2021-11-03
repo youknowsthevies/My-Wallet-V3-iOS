@@ -41,7 +41,7 @@ public struct BankState: Equatable {
 public enum BankAction: Hashable, FailureAction {
     case request
     case launchAuthorisation(URL)
-    case finalise(OpenBanking.Consent)
+    case finalise(OpenBanking.Output)
     case cancel
     case dismiss
     case finished
@@ -63,7 +63,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
                 switch state {
                 case .waitingForConsent(let consent):
                     return .none
-                case .consent(let output):
+                case .success(let output):
                     return BankAction.finalise(output)
                 case .failure(let error):
                     return BankAction.failure(error)
@@ -71,9 +71,10 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
                     return BankAction.launchAuthorisation(url)
                 }
             }
+            .receive(on: environment.scheduler.main)
             .eraseToEffect()
             .cancellable(id: ID.OB())
-        
+
     case .launchAuthorisation(let url):
         state.ui = .waiting(for: state.bankName)
         return .merge(
@@ -89,18 +90,18 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
 
     case .finalise(let output):
         switch output {
-        case .link:
+        case .linked:
             state.ui = .linked(institution: state.bankName)
-        case .deposit(let payment):
+        case .deposited(let payment):
             state.ui = .payment(success: payment, in: environment)
-        case .confirm:
-            fatalError()
+        case .confirmed:
+            return Effect(value: .finished)
         }
         return .merge(
             .cancel(id: ID.ConsentError()),
             .cancel(id: ID.OB())
         )
-        
+
     case .dismiss:
         return .fireAndForget(environment.dismiss)
 

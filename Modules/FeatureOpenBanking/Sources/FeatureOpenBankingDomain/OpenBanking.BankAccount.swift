@@ -130,7 +130,46 @@ extension OpenBanking {
 
     public struct Order: Codable, Hashable {
 
+        public init(
+            id: Identity<OpenBanking.Order>,
+            state: OpenBanking.Order.State,
+            inputCurrency: String,
+            inputQuantity: String,
+            outputCurrency: String,
+            outputQuantity: String,
+            price: String?,
+            paymentMethodId: String,
+            paymentType: String,
+            attributes: OpenBanking.Order.Attributes = .init()
+        ) {
+            self.id = id
+            self.state = state
+            self.inputCurrency = inputCurrency
+            self.inputQuantity = inputQuantity
+            self.outputCurrency = outputCurrency
+            self.outputQuantity = outputQuantity
+            self.price = price
+            self.paymentMethodId = paymentMethodId
+            self.paymentType = paymentType
+            self.attributes = attributes
+        }
+
         public struct Attributes: Codable, Hashable {
+
+            public init(
+                callback: String? = nil,
+                qrCodeUrl: URL? = nil,
+                authorisationUrl: URL? = nil,
+                consentId: String? = nil,
+                expiresAt: String? = nil
+            ) {
+                self.callback = callback
+                self.qrCodeUrl = qrCodeUrl
+                self.authorisationUrl = authorisationUrl
+                self.consentId = consentId
+                self.expiresAt = expiresAt
+            }
+
             public var callback: String?
             public var qrCodeUrl: URL?
             public var authorisationUrl: URL?
@@ -138,21 +177,16 @@ extension OpenBanking {
             public var expiresAt: String?
         }
 
-        public let id: Identity<Self>
-        public let pair: String
-        public let state: State
-        public let inputCurrency: String
-        public let inputQuantity: String
-        public let outputCurrency: String
-        public let outputQuantity: String
-        public let insertedAt: String
-        public let updatedAt: String
-        public let expiresAt: String
-        public let price: String
-        public let fee: String
-        public let paymentMethodId: String
-        public let paymentType: String
-        public let attributes: Attributes
+        public var id: Identity<Self>
+        public var state: State
+        public var inputCurrency: String
+        public var inputQuantity: String
+        public var outputCurrency: String
+        public var outputQuantity: String
+        public var price: String?
+        public var paymentMethodId: String
+        public var paymentType: String
+        public var attributes: Attributes = .init()
     }
 }
 
@@ -164,13 +198,13 @@ extension OpenBanking.Order {
 
         public init(_ value: String) { self.value = value }
 
-        public static let PENDING_DEPOSIT = "PENDING_DEPOSIT"
-        public static let PENDING_CONFIRMATION = "PENDING_CONFIRMATION"
-        public static let CANCELED = "CANCELED"
-        public static let DEPOSIT_MATCHED = "DEPOSIT_MATCHED"
-        public static let FAILED = "FAILED"
-        public static let EXPIRED = "EXPIRED"
-        public static let FINISHED = "FINISHED"
+        public static let PENDING_DEPOSIT: Self = "PENDING_DEPOSIT"
+        public static let PENDING_CONFIRMATION: Self = "PENDING_CONFIRMATION"
+        public static let CANCELED: Self = "CANCELED"
+        public static let DEPOSIT_MATCHED: Self = "DEPOSIT_MATCHED"
+        public static let FAILED: Self = "FAILED"
+        public static let EXPIRED: Self = "EXPIRED"
+        public static let FINISHED: Self = "FINISHED"
     }
 }
 

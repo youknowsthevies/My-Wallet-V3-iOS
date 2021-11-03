@@ -121,10 +121,12 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
                     }
                     switch result {
                     case .success(let currency):
-                        presentingViewController.present(
-                            self.startOpenBanking.link(data, currency: currency, listener: self.interactor),
-                            animated: true
-                        )
+                        DispatchQueue.main.async {
+                            presentingViewController.present(
+                                self.startOpenBanking.link(data, currency: currency, listener: self.interactor),
+                                animated: true
+                            )
+                        }
                     case .failure:
                         self.route(to: .failure(.generic))
                     }

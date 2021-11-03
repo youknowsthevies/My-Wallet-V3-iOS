@@ -1,9 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import CombineSchedulers
 import ToolKit
+import Session
 
 public protocol OpenBankingClientProtocol {
+
+    var scheduler: AnySchedulerOf<DispatchQueue> { get }
+    var state: Session.State<OpenBanking.Key> { get }
 
     func createBankAccount() -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error>
 

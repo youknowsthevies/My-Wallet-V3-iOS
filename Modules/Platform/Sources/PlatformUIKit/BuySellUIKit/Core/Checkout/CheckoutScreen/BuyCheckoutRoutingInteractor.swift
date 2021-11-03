@@ -2,11 +2,11 @@
 
 import AnalyticsKit
 import DIKit
-import OpenBankingUI
+import FeatureOpenBankingUI
+import PlatformKit
 import RxRelay
 import RxSwift
 import ToolKit
-import PlatformKit
 
 public class BuyCheckoutRoutingInteractor: CheckoutRoutingInteracting {
 

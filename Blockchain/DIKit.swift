@@ -16,13 +16,14 @@ import FeatureDebugUI
 import FeatureKYCDomain
 import FeatureKYCUI
 import FeatureOnboardingUI
+import FeatureOpenBankingData
+import FeatureOpenBankingDomain
+import FeatureOpenBankingUI
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import NetworkKit
-import OpenBanking
-import OpenBankingUI
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -600,13 +601,14 @@ extension DependencyContainer {
         single { () -> OpenBanking in
             let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
-            return OpenBanking(
+            let client = OpenBankingClient(
                 requestBuilder: builder,
                 network: adapter
             )
+            return OpenBanking(banking: client)
         }
 
-        single { () -> OpenBankingUI.FiatCurrencyFormatter in
+        single { () -> FeatureOpenBankingUI.FiatCurrencyFormatter in
             FiatCurrencyFormatter()
         }
 

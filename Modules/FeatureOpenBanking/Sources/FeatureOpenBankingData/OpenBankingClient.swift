@@ -2,11 +2,11 @@
 
 import Combine
 import CombineSchedulers
+import FeatureOpenBankingDomain
 import Foundation
 import NetworkKit
 import Session
 import ToolKit
-import FeatureOpenBankingDomain
 
 // swiftlint:disable:next duplicate_imports
 @_exported import struct ToolKit.Identity
@@ -330,7 +330,18 @@ extension OpenBanking.Order {
                 banking.state.transaction { state in
                     if let url = order.attributes.authorisationUrl, let callback = order.attributes.callback {
                         state.set(.authorisation.url, to: url)
-                        state.set(.callback.path, to: callback.dropPrefix("nabu-gateway").string)
+                        let callback = try URL(string: callback)
+                            .or(throw: OpenBanking.Error.message("\(callback) is not a valid URL"))
+                        let callbackURL = try callback.queryArgs["callbackUrl"]
+                            .or(
+                                throw: OpenBanking.Error.message(
+                                    """
+                                    'callbackUrl' was not found in the query arguments.
+                                    Found \(callback.queryArgs.keys.joined(separator: ", "))
+                                    """
+                                )
+                            )
+                        state.set(.callback.path, to: callbackURL.dropPrefix("nabu-gateway").string)
                     }
                 }
             })

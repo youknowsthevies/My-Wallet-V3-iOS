@@ -3,10 +3,10 @@
 #if DEBUG
 
 import CombineSchedulers
+import FeatureOpenBankingData
 import Foundation
 import NetworkKit
 import ToolKit
-import FeatureOpenBankingData
 
 extension OpenBankingEnvironment {
 
@@ -21,7 +21,6 @@ extension OpenBankingEnvironment {
 extension OpenBanking {
 
     static let mock = OpenBanking(
-        state: .init(),
         banking: OpenBankingClient.mock
     )
 }

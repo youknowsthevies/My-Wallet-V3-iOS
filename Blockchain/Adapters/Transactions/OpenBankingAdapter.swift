@@ -2,14 +2,14 @@
 
 import Combine
 import DIKit
+import FeatureOpenBankingDomain
+import FeatureOpenBankingUI
 import FeatureSettingsUI
 import FeatureTransactionUI
-import OpenBanking
-import OpenBankingUI
 import PlatformKit
 import PlatformUIKit
 
-struct FiatCurrencyFormatter: OpenBankingUI.FiatCurrencyFormatter {
+struct FiatCurrencyFormatter: FeatureOpenBankingUI.FiatCurrencyFormatter {
 
     func displayString(amountMinor: String, currency: String) -> String? {
         guard
@@ -20,7 +20,7 @@ struct FiatCurrencyFormatter: OpenBankingUI.FiatCurrencyFormatter {
     }
 }
 
-extension OpenBankingUI.OpenBankingViewController: StartOpenBanking {
+extension FeatureOpenBankingUI.OpenBankingViewController: StartOpenBanking {
 
     convenience init(
         currency: FiatCurrency,
@@ -52,14 +52,12 @@ extension OpenBankingUI.OpenBankingViewController: StartOpenBanking {
 
         viewController.eventPublisher.sink { [weak navigationController] event in
             switch event {
-            case .failed:
+            case .failure:
                 break
-            case .linked:
+            case .success:
                 navigationController?.dismiss(animated: true) {
                     listener.updateBankLinked()
                 }
-            default:
-                fatalError("\(event)")
             }
         }
         .store(withLifetimeOf: viewController)
@@ -83,8 +81,10 @@ struct PresentAccountLinkingFlowAdapter: PresentAccountLinkingFlow {
     ) {
         base.presentAccountLinkingFlow(from: presenter, filter: filter) { result in
             switch result {
-            case .abandoned: completion(.dismiss)
-            case .completed(let method): completion(.select(method))
+            case .abandoned:
+                completion(.dismiss)
+            case .completed(let method):
+                completion(.select(method))
             }
         }
     }

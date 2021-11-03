@@ -2,9 +2,9 @@
 
 import DIKit
 import FeatureKYCDomain
+import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import FirebaseAnalytics
-import OpenBanking
 import PlatformKit
 import PlatformUIKit
 import ToolKit

@@ -3,8 +3,8 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import FeatureOpenBankingUI
 import Localization
-import OpenBankingUI
 import PlatformKit
 import RxSwift
 import SafariServices
@@ -605,8 +605,7 @@ public final class Router: RouterAPI {
         }
 
         let viewController = OpenBankingViewController(
-            pay: fiatValue.minorString,
-            product: "SIMPLEBUY",
+            order: .init(data.order),
             from: OpenBanking.BankAccount(linkedBank),
             environment: .init(
                 showTransferDetails: { [weak stateService] in
@@ -620,6 +619,7 @@ public final class Router: RouterAPI {
         )
 
         viewController.eventPublisher
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 self?.handleOpenBanking(
                     order: data.order,
@@ -635,30 +635,11 @@ public final class Router: RouterAPI {
     private func handleOpenBanking(
         order: OrderDetails,
         currency: FiatCurrency,
-        event: OpenBankingEvent
-    ) -> Void {
+        event: Result<Void, OpenBanking.Error>
+    ) {
         switch event {
-        case .authorised(let account, let payment):
-            paymentAccountService
-                .paymentAccount(for: currency)
-                .publisher
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] completion in
-                    switch completion {
-                    case .finished:
-                        break
-                    case .failure:
-                        self?.showFailureAlert()
-                    }
-                } receiveValue: { [weak self] account in
-                    // OpenBanking will pay into an account in PaymentAccountsServiceAPI, this should be used to finalise the checkout
-                    // TODO
-                    self?.stateService.confirmCheckout(
-                        with: .init(order: order, paymentAccount: account),
-                        isOrderNew: false
-                    )
-                }
-                .store(in: &bag)
+        case .success:
+            stateService.orderPending(with: order)
         default:
             break
         }

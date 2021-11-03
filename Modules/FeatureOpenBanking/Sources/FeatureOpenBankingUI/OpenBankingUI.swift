@@ -16,7 +16,7 @@ extension OpenBankingState {
         .institutionList(.init())
     }
 
-    public static func pay(
+    public static func deposit(
         amountMinor: String,
         product: String,
         from bankAccount: OpenBanking.BankAccount

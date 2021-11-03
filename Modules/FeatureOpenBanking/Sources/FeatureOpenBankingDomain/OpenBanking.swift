@@ -31,46 +31,27 @@ public final class OpenBanking {
         public let account: OpenBanking.BankAccount
         public let action: Action
     }
-    
-    public enum Consent: Hashable {
-        case link
-        case deposit(OpenBanking.Payment.Details)
-        case confirm
+
+    public enum Output: Hashable {
+        case linked(OpenBanking.BankAccount, institution: OpenBanking.Institution)
+        case deposited(OpenBanking.Payment.Details)
+        case confirmed(OpenBanking.Order)
     }
 
     public enum Action: FailureAction, Hashable {
         case launchAuthorisation(URL)
-        case waitingForConsent(Consent)
-        case consent(Consent)
+        case waitingForConsent(Output)
+        case success(Output)
         case failure(OpenBanking.Error)
     }
 
     public private(set) var banking: OpenBankingClientProtocol
-    public var state: State
 
-    private var scheduler: AnySchedulerOf<DispatchQueue>
+    public var state: State { banking.state }
+    private var scheduler: AnySchedulerOf<DispatchQueue> { banking.scheduler }
 
-    public convenience init(
-        state: Session.State<OpenBanking.Key>,
-        banking: OpenBankingClientProtocol,
-        scheduler: DispatchQueue = .main
-    ) {
-        self.init(
-            state: state,
-            banking: banking,
-            scheduler: scheduler.eraseToAnyScheduler()
-        )
-    }
-
-    public init(
-        state: Session.State<OpenBanking.Key>,
-        banking: OpenBankingClientProtocol,
-        scheduler: AnySchedulerOf<DispatchQueue>
-    ) {
-
-        self.state = state
+    public init(banking: OpenBankingClientProtocol) {
         self.banking = banking
-        self.scheduler = scheduler
     }
 
     public func createBankAccount() -> AnyPublisher<OpenBanking.BankAccount, Error> {
@@ -91,7 +72,7 @@ public final class OpenBanking {
                                 return Just(account).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
                             }
                         }
-                        .mapped(to: Action.waitingForConsent(.link))
+                        .mapped(to: Action.waitingForConsent(.linked(output, institution: institution)))
                         .catch(Action.failure)
                         .merge(
                             with: state.publisher(for: .authorisation.url, as: URL.self)
@@ -116,7 +97,7 @@ public final class OpenBanking {
                                 return Just(payment).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
                             }
                         }
-                        .mapped(to: (/Action.waitingForConsent).appending(path: /Consent.deposit))
+                        .mapped(to: (/Action.waitingForConsent).appending(path: /Output.deposited))
                         .catch(Action.failure)
                         .merge(
                             with: state.publisher(for: .authorisation.url, as: URL.self)
@@ -131,7 +112,7 @@ public final class OpenBanking {
             poll = banking.confirm(order: order.id, using: order.paymentMethodId)
                 .flatMap { [state, banking] order in
                     banking.poll(order: order)
-                        .mapped(to: Action.waitingForConsent(.confirm))
+                        .mapped(to: Action.waitingForConsent(.confirmed(order)))
                         .catch(Action.failure)
                         .merge(
                             with: state.publisher(for: .authorisation.url, as: URL.self)
@@ -153,7 +134,7 @@ public final class OpenBanking {
                         .ignoreResultFailure()
                         .flatMap { authorised -> AnyPublisher<Action, Never> in
                             if authorised {
-                                return Just(Action.consent(consent))
+                                return Just(Action.success(consent))
                                     .eraseToAnyPublisher()
                             } else {
                                 return state.result(for: .consent.error, as: OpenBanking.Error.self)

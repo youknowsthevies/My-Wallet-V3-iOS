@@ -771,10 +771,15 @@ extension StateService {
 
     public func authorizedOpenBanking(_ data: CheckoutData) {
         ensureIsOnMainQueue()
-        guard case .authorizeOpenBanking(let order) = statesRelay.value.current else {
+        guard case .authorizeOpenBanking(let data) = statesRelay.value.current else {
             return assertionFailure("Got authorizedOpenBanking when state was not equal to authorizeOpenBanking")
         }
 
-       fatalError("TODO") // OB -> Funds, Funds -> Order
+        let states = self.states(
+            byAppending: .pendingOrderCompleted(
+                orderDetails: data.order
+            )
+        )
+        self.apply(action: .next(to: states.current), states: states)
     }
 }

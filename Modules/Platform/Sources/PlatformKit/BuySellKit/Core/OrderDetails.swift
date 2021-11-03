@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import BigInt
+import FeatureOpenBankingDomain
 import Localization
 
 /// `OrderDetails` is the primary model that should be accessed by
@@ -150,7 +151,7 @@ public struct OrderDetails {
     }
 
     public var isAwaitingAction: Bool {
-        isPendingDepositBankWire || isPendingConfirmation || isPending3DSCardOrder
+        isPendingDeposit || isPendingDepositBankWire || isPendingConfirmation || isPending3DSCardOrder
     }
 
     public var isBankWire: Bool {
@@ -233,5 +234,23 @@ extension AnalyticsEvents {
                 return ["data": date]
             }
         }
+    }
+}
+
+extension OpenBanking.Order {
+
+    public init(_ order: OrderDetails) {
+        self.init(
+            id: .init(order.identifier),
+            state: .init(order.state.rawValue),
+            inputCurrency: order.inputValue.code,
+            inputQuantity: order.inputValue.minorString,
+            outputCurrency: order.outputValue.code,
+            outputQuantity: order.outputValue.minorString,
+            price: order.price?.minorString,
+            paymentMethodId: order.paymentMethodId!,
+            paymentType: order.paymentMethod.rawType.rawValue,
+            attributes: .init()
+        )
     }
 }

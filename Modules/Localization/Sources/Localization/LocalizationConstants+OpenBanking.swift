@@ -23,7 +23,7 @@ extension LocalizationConstants.OpenBanking {
 
         public static let network = NSLocalizedString(
             "It looks like there is a problem communicating with Blockchain.com. We are unable to continue, please try again later.",
-            comment: "The body message of a network erro"
+            comment: "The body message of a network error"
         )
     }
 
