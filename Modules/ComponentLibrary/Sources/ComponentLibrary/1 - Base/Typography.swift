@@ -16,11 +16,11 @@ import SwiftUI
 ///
 ///  [Typography](https://www.figma.com/file/dvXlzvYoDEulsmwkE8iO0i/02---Assets-%7C-Typography?node-id=0%3A1)
 public struct Typography: Hashable, Codable {
-    let name: String
-    var size: Length
+    public let name: String
+    public var size: Length
     var style: TextStyle
     var design: Design = .default
-    var weight: Weight = .bold
+    public var weight: Weight = .bold
 }
 
 extension Typography {
@@ -356,11 +356,8 @@ extension Typography {
             }
         }
     }
-}
 
-struct Typography_Previews: PreviewProvider {
-
-    static let allTypography: [Typography] = [
+    public static let allTypography: [Typography] = [
         .display,
         .title1,
         .title2,
@@ -377,6 +374,9 @@ struct Typography_Previews: PreviewProvider {
         .overline,
         .micro
     ]
+}
+
+struct Typography_Previews: PreviewProvider {
 
     static func previewText(for typography: Typography) -> String {
         switch typography {
@@ -390,7 +390,7 @@ struct Typography_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                ForEach(allTypography, id: \.self) { typography in
+                ForEach(Typography.allTypography, id: \.self) { typography in
 
                     Text(typography.name)
                         .typography(typography)

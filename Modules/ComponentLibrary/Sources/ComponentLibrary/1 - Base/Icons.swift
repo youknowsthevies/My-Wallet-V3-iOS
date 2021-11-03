@@ -22,7 +22,7 @@ import UIKit
 ///
 ///  [Assets - Icons](https://www.figma.com/file/3jESURhHQ4VBTQcu0aZkoX/01---Assets-%7C-Icons)
 public struct Icon: View, Equatable {
-    let name: String
+    public let name: String
     let renderingMode: UIImage.RenderingMode
 
     init(name: String, renderingMode: UIImage.RenderingMode = .alwaysTemplate) {
@@ -175,28 +175,8 @@ extension Icon {
     public static let withdraw = Icon(name: "Withdraw")
 }
 
-/// SwiftUI's `Image` does not correctly scale up vector images. Images end up extremely blurry.
-/// So, we get around this by reverting back to `UIImageView` to display icons.
-struct ImageViewRepresentable: UIViewRepresentable {
-    let image: UIImage?
-    let renderingMode: UIImage.RenderingMode
-
-    func makeUIView(context: Context) -> some UIView {
-        let view = UIImageView(
-            image: image?.withRenderingMode(renderingMode)
-        )
-        view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        return view
-    }
-
-    func updateUIView(_ uiView: UIViewType, context: Context) {
-        // Do nothing
-    }
-}
-
-struct Icon_Previews: PreviewProvider {
-    static let allIcons: [Icon] = [
+extension Icon {
+    public static let allIcons: [Icon] = [
         .activity,
         .airdrop,
         .alert,
@@ -326,7 +306,29 @@ struct Icon_Previews: PreviewProvider {
         .wallet,
         .withdraw
     ]
+}
 
+/// SwiftUI's `Image` does not correctly scale up vector images. Images end up extremely blurry.
+/// So, we get around this by reverting back to `UIImageView` to display icons.
+struct ImageViewRepresentable: UIViewRepresentable {
+    let image: UIImage?
+    let renderingMode: UIImage.RenderingMode
+
+    func makeUIView(context: Context) -> some UIView {
+        let view = UIImageView(
+            image: image?.withRenderingMode(renderingMode)
+        )
+        view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        return view
+    }
+
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        // Do nothing
+    }
+}
+
+struct Icon_Previews: PreviewProvider {
     static let columns = Array(
         repeating: GridItem(.fixed(110)),
         count: 3
@@ -334,7 +336,7 @@ struct Icon_Previews: PreviewProvider {
 
     static var previews: some View {
         LazyVGrid(columns: columns, alignment: .center, spacing: 48) {
-            ForEach(allIcons, id: \.name) { icon in
+            ForEach(Icon.allIcons, id: \.name) { icon in
                 VStack {
                     icon
                         .accentColor(.semantic.muted)

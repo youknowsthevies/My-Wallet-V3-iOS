@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct ButtonExamplesView: View {

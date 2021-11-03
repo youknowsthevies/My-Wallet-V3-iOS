@@ -1,12 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct MinimalButtonExamplesView: View {
 
     var body: some View {
-        MinimalButton_Previews.previews
+        VStack(spacing: Spacing.padding1) {
+            MinimalButton(title: "Enabled", action: {})
+
+            MinimalButton(title: "Disabled", action: {})
+                .disabled(true)
+
+            MinimalButton(title: "Loading", isLoading: true, action: {})
+        }
+        .padding(Spacing.padding())
     }
 }
 

@@ -1,12 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct PrimaryButtonExamplesView: View {
 
     var body: some View {
-        PrimaryButton_Previews.previews
+        VStack(spacing: Spacing.padding1) {
+            PrimaryButton(title: "Enabled", action: { print("foo") })
+
+            PrimaryButton(title: "Disabled", action: {})
+                .disabled(true)
+
+            PrimaryButton(title: "Loading", isLoading: true, action: {})
+        }
+        .padding(Spacing.padding())
     }
 }
 
