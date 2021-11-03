@@ -8,6 +8,14 @@ let package = Package(
     platforms: [.macOS(.v11), .iOS(.v14)],
     products: [
         .library(
+            name: "FeatureOpenBanking",
+            targets: ["FeatureOpenBankingData", "FeatureOpenBankingDomain", "FeatureOpenBankingUI"]
+        ),
+        .library(
+            name: "FeatureOpenBankingData",
+            targets: ["FeatureOpenBankingData"]
+        ),
+        .library(
             name: "FeatureOpenBankingDomain",
             targets: ["FeatureOpenBankingDomain"]
         ),
@@ -103,6 +111,16 @@ let package = Package(
             name: "FeatureOpenBankingDataTests",
             dependencies: [
                 .target(name: "FeatureOpenBankingData"),
+                .target(name: "FeatureOpenBankingTestFixture"),
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "TestKit", package: "Test")
+            ]
+        ),
+        .testTarget(
+            name: "FeatureOpenBankingDomainTests",
+            dependencies: [
+                .target(name: "FeatureOpenBankingData"),
+                .target(name: "FeatureOpenBankingDomain"),
                 .target(name: "FeatureOpenBankingTestFixture"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")

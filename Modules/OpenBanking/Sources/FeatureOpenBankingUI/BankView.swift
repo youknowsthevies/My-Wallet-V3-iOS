@@ -24,14 +24,12 @@ public struct BankState: Equatable {
     }
 
     public internal(set) var ui: UI?
-    public internal(set) var action: OpenBanking.Action
+    public internal(set) var data: OpenBanking.Data
 
-    var account: OpenBanking.BankAccount {
-        action.account
-    }
+    var account: OpenBanking.BankAccount { data.account }
 
     var bankName: String {
-        switch action.then {
+        switch data.action {
         case .link(let institution):
             return institution.fullName
         case .deposit, .confirm:
@@ -60,7 +58,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
     switch action {
     case .request:
         state.ui = .communicating(to: state.bankName)
-        return environment.openBanking.start(action: state.action)
+        return environment.openBanking.start(state.data)
             .compactMap { state in
                 switch state {
                 case .waitingForConsent(let consent):
@@ -200,7 +198,7 @@ struct BankView_Previews: PreviewProvider {
             store: .init(
                 initialState: BankState(
                     ui: .linked(institution: "Monzo"),
-                    action: .init(account: .mock, then: .link(institution: .mock))
+                    data: .init(account: .mock, action: .link(institution: .mock))
                 ),
                 reducer: bankReducer,
                 environment: .mock

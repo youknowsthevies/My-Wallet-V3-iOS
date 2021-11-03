@@ -76,7 +76,7 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
             case .select(let account, let institution):
                 state.selection = .init(
                     bank: .init(
-                        action: .init(account: account, then: .link(institution: institution))
+                        data: .init(account: account, action: .link(institution: institution))
                     )
                 )
                 return .navigate(to: .approve)

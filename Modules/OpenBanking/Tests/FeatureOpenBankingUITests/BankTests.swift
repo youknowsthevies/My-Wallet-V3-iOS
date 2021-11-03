@@ -36,7 +36,7 @@ final class BankLinkTests: OpenBankingTestCase {
     }
 
     var initialState: BankState {
-        .init(action: .init(account: createAccount, then: .link(institution: institution)))
+        .init(data: .init(account: createAccount, action: .link(institution: institution)))
     }
 
     func test_initial_state() throws {
@@ -141,7 +141,7 @@ final class BankPaymentTests: OpenBankingTestCase {
     }
 
     var initialState: BankState {
-        .init(action: .init(account: createAccount, then: .deposit(amountMinor: "1000", product: "SIMPLEBUY")))
+        .init(data: .init(account: createAccount, action: .deposit(amountMinor: "1000", product: "SIMPLEBUY")))
     }
 
     func test_initial_state() throws {

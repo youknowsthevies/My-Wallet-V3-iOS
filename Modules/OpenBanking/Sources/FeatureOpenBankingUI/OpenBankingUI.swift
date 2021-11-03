@@ -24,9 +24,9 @@ extension OpenBankingState {
         .approve(
             .init(
                 bank: .init(
-                    action: .init(
+                    data: .init(
                         account: bankAccount,
-                        then: .deposit(
+                        action: .deposit(
                             amountMinor: amountMinor,
                             product: product
                         )
@@ -43,9 +43,9 @@ extension OpenBankingState {
         .approve(
             .init(
                 bank: .init(
-                    action: .init(
+                    data: .init(
                         account: bankAccount,
-                        then: .confirm(
+                        action: .confirm(
                             order: order
                         )
                     )

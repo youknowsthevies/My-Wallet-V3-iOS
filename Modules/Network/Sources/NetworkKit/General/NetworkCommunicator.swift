@@ -194,6 +194,11 @@ public class ReplayNetworkCommunicator: NetworkCommunicatorAPI {
         set { data[makeKey(request)] = newValue }
     }
 
+    public subscript(request: NetworkRequest) -> Data? {
+        get { self[request.urlRequest] }
+        set { self[request.urlRequest] = newValue }
+    }
+
     public func error(_ request: URLRequest) {
         errors[makeKey(request)] = .badServerResponse
     }

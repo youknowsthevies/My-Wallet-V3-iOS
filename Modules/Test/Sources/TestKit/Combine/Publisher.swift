@@ -70,3 +70,10 @@ extension Publisher {
         }
     }
 }
+
+extension AnyCancellable {
+
+    public func teardown(in testCase: XCTestCase) {
+        testCase.addTeardownBlock(cancel)
+    }
+}

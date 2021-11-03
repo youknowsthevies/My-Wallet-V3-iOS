@@ -7,7 +7,7 @@ import UIComponentsKit
 extension ApproveState.UI {
 
     static func model(
-        for action: OpenBanking.Action,
+        for data: OpenBanking.Data,
         in environment: OpenBankingEnvironment
     ) -> ApproveState.UI {
 
@@ -15,8 +15,8 @@ extension ApproveState.UI {
         let expiry = Calendar.current.date(byAdding: _90days, to: Date())
             .map(DateFormatter.long.string(from:)) ?? Localization.Approve.Payment.in90Days
 
-        let bankAccount = action.account
-        switch action.then {
+        let bankAccount = data.account
+        switch data.action {
         case .link(let institution):
             return .init(
                 title: bankAccount.attributes.entity,

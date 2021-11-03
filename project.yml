@@ -304,7 +304,7 @@ packages:
     path: Modules/Network
   NetworkErrors:
     path: Modules/NetworkErrors
-  OpenBanking:
+  FeatureOpenBanking:
     path: Modules/OpenBanking
   Platform:
     path: Modules/Platform
@@ -377,15 +377,16 @@ targets:
       - embed: false
         framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
 
-      - package: FeatureApp
       - package: FeatureAccountPicker
       - package: FeatureActivity
+      - package: FeatureApp
       - package: FeatureAuthentication
       - package: FeatureDashboard
       - package: FeatureDebug
       - package: FeatureInterest
       - package: FeatureKYC
       - package: FeatureOnboarding
+      - package: FeatureOpenBanking
       - package: FeatureSettings
       - package: FeatureTour
       - package: FeatureTransaction
@@ -439,10 +440,6 @@ targets:
         product: NetworkKit
       - package: NetworkErrors
         product: NetworkErrors
-      - package: OpenBanking
-        product: OpenBanking
-      - package: OpenBanking
-        product: OpenBankingUI
       - package: Platform
         product: PlatformKit
       - package: Platform

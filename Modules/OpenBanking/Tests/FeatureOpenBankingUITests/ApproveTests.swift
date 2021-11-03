@@ -28,7 +28,7 @@ final class ApproveTests: OpenBankingTestCase {
 
     var initialState: ApproveState {
         ApproveState(
-            bank: .init(action: .init(account: createAccount, then: .link(institution: institution)))
+            bank: .init(data: .init(account: createAccount, action: .link(institution: institution)))
         )
     }
 
@@ -41,7 +41,7 @@ final class ApproveTests: OpenBankingTestCase {
     func test_onAppear() throws {
         store.assert(
             .send(.onAppear) { [self] state in
-                state.ui = .model(for: .init(account: createAccount, then: .link(institution: institution)), in: environment)
+                state.ui = .model(for: .init(account: createAccount, action: .link(institution: institution)), in: environment)
             }
         )
     }
@@ -50,7 +50,7 @@ final class ApproveTests: OpenBankingTestCase {
 
         store = .init(
             initialState: ApproveState(
-                bank: .init(action: .init(account: createAccount, then: .deposit(amountMinor: "1000", product: "SIMPLEBUY")))
+                bank: .init(data: .init(account: createAccount, action: .deposit(amountMinor: "1000", product: "SIMPLEBUY")))
             ),
             reducer: approveReducer,
             environment: environment
@@ -58,7 +58,7 @@ final class ApproveTests: OpenBankingTestCase {
 
         store.assert(
             .send(.onAppear) { [self] state in
-                state.ui = .model(for: .init(account: createAccount, then: .deposit(amountMinor: "1000", product: "SIMPLEBUY")), in: environment)
+                state.ui = .model(for: .init(account: createAccount, action: .deposit(amountMinor: "1000", product: "SIMPLEBUY")), in: environment)
             }
         )
     }

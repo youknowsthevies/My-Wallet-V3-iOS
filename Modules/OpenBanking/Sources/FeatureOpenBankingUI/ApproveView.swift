@@ -60,7 +60,7 @@ public let approveReducer = Reducer<ApproveState, ApproveAction, OpenBankingEnvi
             state.route = route
             return .none
         case .onAppear:
-            state.ui = .model(for: state.bank.action, in: environment)
+            state.ui = .model(for: state.bank.data, in: environment)
             return .none
         case .approve:
             return .navigate(to: .bank)
@@ -146,7 +146,7 @@ struct ApproveView_Previews: PreviewProvider {
             ApproveView(
                 store: .init(
                     initialState: .init(
-                        bank: .init(action: .init(account: .mock, then: .link(institution: .mock)))
+                        bank: .init(data: .init(account: .mock, action: .link(institution: .mock)))
                     ),
                     reducer: approveReducer,
                     environment: .mock
