@@ -31,13 +31,16 @@ protocol TransactionFlowRouting: Routing {
     /// on the top right of the screen.
     func closeFlow()
 
+    /// The back button was tapped.
+    func didTapBack()
+
     /// Show the failure screen. Sometimes an error is thrown when selecting an
     /// account or entering in transaction details. If this error occurs, we should
     /// show a failure screen.
     func showFailure(error: Error)
 
-    /// The back button was tapped.
-    func didTapBack()
+    /// Presents a modal with information  about the transaction error state and, if needed, a call to action for the user to resolve that error state.
+    func showErrorRecoverySuggestion(errorState: TransactionErrorState, transactionModel: TransactionModel)
 
     /// Show the `source` selection screen. This replaces the root.
     func routeToSourceAccountPicker(
@@ -496,6 +499,12 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
         case .securityConfirmation:
             router?.routeToSecurityChecks(
+                transactionModel: transactionModel
+            )
+
+        case .errorRecoveryInfo:
+            router?.showErrorRecoverySuggestion(
+                errorState: newState.errorState,
                 transactionModel: transactionModel
             )
 

@@ -63,6 +63,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
 
+    private let featureFlagService: FeatureFlagsServiceAPI
     private let analyticsHook: TransactionAnalyticsHook
 
     init(
@@ -71,12 +72,14 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         amountInteractor: AmountViewInteracting,
         action: AssetAction,
         navigationModel: ScreenNavigationModel,
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve()
     ) {
         self.action = action
         self.transactionModel = transactionModel
         amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
+        featureFlagService = featureFlagsService
         self.analyticsHook = analyticsHook
         sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
         sendAuxiliaryViewPresenter = SendAuxiliaryViewPresenter(
@@ -104,6 +107,22 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .subscribe { [weak self] effect in
                 self?.handleAmountTranslation(effect: effect)
             }
+            .disposeOnDeactivate(interactor: self)
+
+        amountViewInteractor
+            .auxiliaryButtonTappedRelay
+            .asObservable()
+            .flatMap { [featureFlagService] _ -> Observable<Bool> in
+                featureFlagService
+                    .isEnabled(.local(.newTxFlowLimitsUIEnabled))
+                    .asObservable()
+            }
+            .subscribeOn(MainScheduler.instance)
+            .subscribe(onNext: { [transactionModel] isNewLimitsUIEnabled in
+                if isNewLimitsUIEnabled {
+                    transactionModel.process(action: .showErrorRecoverySuggestion)
+                }
+            })
             .disposeOnDeactivate(interactor: self)
 
         amountViewInteractor

@@ -21,6 +21,9 @@ public protocol AmountViewInteracting {
     /// The state of the interactor
     var stateRelay: BehaviorRelay<AmountInteractorState> { get }
 
+    /// A relay responsible for accepting taps from the amount view's auxiliary button
+    var auxiliaryButtonTappedRelay: PublishRelay<Void> { get }
+
     /// API for connecting user inputs and deriving a state of the interactor
     /// - Parameter input: Can be inserting or removing a character
     func connect(input: Driver<AmountInteractorInput>) -> Driver<AmountInteractorState>

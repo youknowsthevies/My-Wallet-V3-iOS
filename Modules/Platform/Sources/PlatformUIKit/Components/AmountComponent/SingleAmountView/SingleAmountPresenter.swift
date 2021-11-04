@@ -71,8 +71,9 @@ public final class SingleAmountPresenter: AmountViewPresenting {
                 accessibilityId: AccessibilityId.min
             )
             viewModel.elementOnTap
-                .emit(onNext: { [weak self] amount in
-                    self?.interactor.set(amount: amount)
+                .emit(onNext: { [weak interactor] amount in
+                    interactor?.set(amount: amount)
+                    interactor?.auxiliaryButtonTappedRelay.accept(())
                 })
                 .disposed(by: disposeBag)
             return .showLimitButton(viewModel)
@@ -84,8 +85,9 @@ public final class SingleAmountPresenter: AmountViewPresenting {
                 accessibilityId: AccessibilityId.max
             )
             viewModel.elementOnTap
-                .emit(onNext: { [weak self] amount in
-                    self?.interactor.set(amount: amount)
+                .emit(onNext: { [weak interactor] amount in
+                    interactor?.set(amount: amount)
+                    interactor?.auxiliaryButtonTappedRelay.accept(())
                 })
                 .disposed(by: disposeBag)
             return .showLimitButton(viewModel)
