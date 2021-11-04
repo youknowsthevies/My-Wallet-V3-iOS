@@ -5,6 +5,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import ERC20DataKit
+import FeatureActivityData
 import FeatureAppDomain
 import FeatureAppUI
 import FeatureDebugUI
@@ -115,6 +116,7 @@ func defineDependencies() {
         DependencyContainer.stellarKit
         DependencyContainer.featureTransactionData
         DependencyContainer.featureTransactionDomain
+        DependencyContainer.featureActivityDataKit
         DependencyContainer.featureTransactionUI
         DependencyContainer.buySellKit
         DependencyContainer.featureActivityDomain

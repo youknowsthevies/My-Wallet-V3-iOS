@@ -29,8 +29,8 @@ struct InterestIdentityVerificationView: View {
                                     cornerRadius: .round,
                                     imageViewContent: .init(
                                         imageResource: .local(
-                                            name: "icon_interest",
-                                            bundle: .platformUIKit
+                                            name: Icon.interest.name,
+                                            bundle: .componentLibrary
                                         ),
                                         accessibility: .none,
                                         renderingMode: .template(.white)

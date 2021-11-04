@@ -28,8 +28,8 @@ struct InterestActivityItemEventResponse: Decodable {
 
     let amount: InterestAmount
     let amountMinor: String
-    let extraAttibutes: InterestAttributes?
-    let identifier: String
+    let extraAttributes: InterestAttributes?
+    let id: String
     let insertedAt: String
     let state: State
     let type: String

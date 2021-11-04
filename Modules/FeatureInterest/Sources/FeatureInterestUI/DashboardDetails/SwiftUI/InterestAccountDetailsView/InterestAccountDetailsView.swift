@@ -79,13 +79,13 @@ struct InterestAccountDetailsView: View {
                                 switch action {
                                 case .interestTransfer:
                                     return .init(
-                                        title: LocalizationIds.deposit,
+                                        title: LocalizationIds.transfer,
                                         action: {
                                             viewStore.send(
                                                 .interestTransferTapped(viewStore.interestAccountOverview.currency)
                                             )
                                         },
-                                        style: .secondary
+                                        style: .primary
                                     )
                                 case .interestWithdraw:
                                     return .init(
@@ -94,7 +94,8 @@ struct InterestAccountDetailsView: View {
                                             viewStore.send(
                                                 .interestWithdrawTapped(viewStore.interestAccountOverview.currency)
                                             )
-                                        }
+                                        },
+                                        style: .secondary
                                     )
                                 default:
                                     unimplemented("This action type is not supported in this view")

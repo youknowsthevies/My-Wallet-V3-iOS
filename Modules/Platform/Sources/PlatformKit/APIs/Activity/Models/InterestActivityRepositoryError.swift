@@ -1,5 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public enum InterestActivityServiceError: Error {
+public enum InterestActivityRepositoryError: Error {
     case networkError(Error)
 }

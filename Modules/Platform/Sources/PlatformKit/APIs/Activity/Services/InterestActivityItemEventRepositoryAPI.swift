@@ -2,8 +2,8 @@
 
 import Combine
 
-public protocol InterestActivityItemEventServiceAPI: AnyObject {
+public protocol InterestActivityItemEventRepositoryAPI: AnyObject {
     func fetchInterestActivityItemEventsForCryptoCurrency(
         _ cryptoCurrency: CryptoCurrency
-    ) -> AnyPublisher<[InterestActivityItemEvent], InterestActivityServiceError>
+    ) -> AnyPublisher<[InterestActivityItemEvent], InterestActivityRepositoryError>
 }

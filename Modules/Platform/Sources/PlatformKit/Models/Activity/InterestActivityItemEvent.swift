@@ -20,24 +20,27 @@ public enum InterestTransactionType: String {
 }
 
 public struct InterestAttributes: Decodable {
-    let address: String
-    let confirmations: Int
-    let hash: String
-    let identifier: String
-    let transactionHash: String
-    let beneficiary: InterestBeneficiary?
+    public let address: String?
+    public let confirmations: Int?
+    public let hash: String?
+    public let identifier: String?
+    public let transactionHash: String?
+    public let beneficiary: InterestBeneficiary?
 }
 
 public struct InterestBeneficiary: Decodable {
-    let user: String
-    let accountRef: String
+    public let user: String
+    public let accountRef: String
 }
 
-public struct InterestActivityItemEvent {
+public struct InterestActivityItemEvent: Equatable {
     public let value: CryptoValue
     public let cryptoCurrency: CryptoCurrency
     public let identifier: String
     public let insertedAt: Date
+    public let confirmations: Int
+    public let accountRef: String
+    public let recipientAddress: String
     public let state: InterestActivityItemEventState
     public let type: InterestTransactionType
 
@@ -46,11 +49,17 @@ public struct InterestActivityItemEvent {
         cryptoCurrency: CryptoCurrency,
         identifier: String,
         insertedAt: Date,
+        confirmations: Int = 0,
+        accountRef: String,
+        recipientAddress: String,
         state: InterestActivityItemEventState,
         type: InterestTransactionType
     ) {
         self.value = value
         self.cryptoCurrency = cryptoCurrency
+        self.confirmations = confirmations
+        self.accountRef = accountRef
+        self.recipientAddress = recipientAddress
         self.identifier = identifier
         self.insertedAt = insertedAt
         self.state = state

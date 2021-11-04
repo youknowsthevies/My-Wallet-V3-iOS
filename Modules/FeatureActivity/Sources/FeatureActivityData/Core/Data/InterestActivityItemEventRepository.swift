@@ -5,7 +5,7 @@ import DIKit
 import PlatformKit
 import ToolKit
 
-final class InterestActivityItemEventService: InterestActivityItemEventServiceAPI {
+final class InterestActivityItemEventRepository: InterestActivityItemEventRepositoryAPI {
 
     // MARK: - Private Properties
 
@@ -17,18 +17,18 @@ final class InterestActivityItemEventService: InterestActivityItemEventServiceAP
         self.client = client
     }
 
-    // MARK: - InterestActivityItemEventServiceAPI
+    // MARK: - InterestActivityItemEventRepositoryAPI
 
     func fetchInterestActivityItemEventsForCryptoCurrency(
         _ cryptoCurrency: CryptoCurrency
-    ) -> AnyPublisher<[InterestActivityItemEvent], InterestActivityServiceError> {
+    ) -> AnyPublisher<[InterestActivityItemEvent], InterestActivityRepositoryError> {
         client
             .fetchInterestActivityItemEventsForCryptoCurrency(
                 cryptoCurrency
             )
-            .mapError(InterestActivityServiceError.networkError)
             .map(\.items)
-            .map { items in
+            .mapError(InterestActivityRepositoryError.networkError)
+            .map { items -> [InterestActivityItemEvent] in
                 items.map { response in
                     InterestActivityItemEvent(
                         response,
@@ -48,8 +48,11 @@ extension InterestActivityItemEvent {
         self.init(
             value: .create(minor: response.amountMinor, currency: currency) ?? .zero(currency: currency),
             cryptoCurrency: currency,
-            identifier: response.identifier,
+            identifier: response.id,
             insertedAt: DateFormatter.iso8601Format.date(from: response.insertedAt) ?? Date(),
+            confirmations: response.extraAttributes?.confirmations ?? 0,
+            accountRef: response.extraAttributes?.beneficiary?.accountRef ?? "",
+            recipientAddress: response.extraAttributes?.address ?? "",
             state: InterestActivityItemEvent.interestStateFromResponseState(response.state),
             type: InterestActivityItemEvent.transactionTypeFromString(response.type)
         )
@@ -87,11 +90,12 @@ extension InterestActivityItemEvent {
         switch value {
         case "DEPOSIT":
             return .transfer
-        case "WITHDRAW":
+        case "WITHDRAWAL":
             return .withdraw
         case "INTEREST_OUTGOING":
             return .interestEarned
         default:
+            Logger.shared.error("Unhandled InterestTransactionType: \(value)")
             return .unknown
         }
     }

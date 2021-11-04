@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import ComponentLibrary
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -36,7 +37,7 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement, Actio
         return .init(
             type: type,
             badgeImage: .init(
-                image: .local(name: "icon_interest", bundle: .platformUIKit),
+                image: .local(name: Icon.interest.name, bundle: .componentLibrary),
                 contentColor: .white,
                 backgroundColor: .defaultBadge,
                 cornerRadius: .round,

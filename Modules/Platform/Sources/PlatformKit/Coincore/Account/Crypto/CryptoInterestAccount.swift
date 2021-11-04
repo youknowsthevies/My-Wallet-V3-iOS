@@ -29,11 +29,11 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .fetchInterestAccountReceiveAddressForCurrencyCode(asset.code)
             .eraseToAnyPublisher()
             .asSingle()
-            .flatMap { [cryptoReceiveAddressFactory, onTxCompleted] addressString in
+            .flatMap { [cryptoReceiveAddressFactory, onTxCompleted, asset] addressString in
                 cryptoReceiveAddressFactory
                     .makeExternalAssetAddress(
                         address: addressString,
-                        label: "",
+                        label: "\(asset.code) \(LocalizationConstants.rewardsAccount)",
                         onTxCompleted: onTxCompleted
                     )
                     .single
@@ -75,12 +75,16 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     public var actions: Single<AvailableActions> {
         canPerformInterestWithdraw()
             .map { canPerformWithdraw in
-                canPerformWithdraw ? [.interestWithdraw] : []
+                canPerformWithdraw ? [.interestWithdraw, .viewActivity] : [.viewActivity]
             }
     }
 
     public var activity: Single<[ActivityItemEvent]> {
-        .just([])
+        interestActivityEventRepository
+            .fetchInterestActivityItemEventsForCryptoCurrency(asset)
+            .replaceError(with: [])
+            .map { $0.map { .interest($0) } }
+            .asSingle()
     }
 
     let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
@@ -89,6 +93,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     private let featureFlagService: FeatureFlagsServiceAPI
     private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
     private let receiveAddressRepository: InterestAccountReceiveAddressRepositoryAPI
+    private let interestActivityEventRepository: InterestActivityItemEventRepositoryAPI
     private let balanceService: InterestAccountOverviewAPI
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset)
@@ -103,9 +108,11 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         exchangeProviding: ExchangeProviding = resolve(),
         interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve(),
         featureFlagService: FeatureFlagsServiceAPI = resolve(),
+        interestActivityEventRepository: InterestActivityItemEventRepositoryAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     ) {
         label = asset.defaultInterestWalletName
+        self.interestActivityEventRepository = interestActivityEventRepository
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
         self.receiveAddressRepository = receiveAddressRepository
         self.asset = asset
@@ -120,6 +127,10 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         switch action {
         case .interestWithdraw:
             return canPerformInterestWithdraw()
+        case .viewActivity:
+            return activity
+                .map(\.count)
+                .map { $0 > 0 }
         case .send,
              .swap,
              .deposit,
@@ -127,7 +138,6 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
              .withdraw,
              .sell,
              .receive,
-             .viewActivity,
              .interestTransfer:
             return .just(false)
         }
