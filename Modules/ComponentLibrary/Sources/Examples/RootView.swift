@@ -18,7 +18,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: PrimaryDividerExamples(), title: "🗂 Dividers")
         ],
         "3 - Compositions": [
-            NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation")
+            NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
+            NavigationLinkProvider(view: CalloutCardExamples(), title: "💬 CalloutCard")
         ]
     ]
 

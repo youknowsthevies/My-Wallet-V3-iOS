@@ -60,6 +60,20 @@ extension Color {
         public static let medium: Color = Palette.grey100.color()
 
         public static let light: Color = Palette.grey000.color()
+
+        public static var background1: Color {
+            Color.dynamicColor(
+                light: .semantic.white,
+                dark: .semantic.black
+            )
+        }
+
+        public static var background2: Color {
+            Color.dynamicColor(
+                light: .semantic.white,
+                dark: Palette.dark800.color()
+            )
+        }
     }
 }
 

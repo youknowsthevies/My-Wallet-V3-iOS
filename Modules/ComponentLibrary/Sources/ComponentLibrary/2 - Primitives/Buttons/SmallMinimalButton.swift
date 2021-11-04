@@ -19,7 +19,7 @@ public struct SmallMinimalButton: View {
 
     public init(
         title: String,
-        isLoading: Bool,
+        isLoading: Bool = false,
         action: @escaping () -> Void
     ) {
         self.title = title
