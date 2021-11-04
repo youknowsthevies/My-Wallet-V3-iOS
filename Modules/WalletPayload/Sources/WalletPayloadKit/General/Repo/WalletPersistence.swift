@@ -3,24 +3,25 @@
 import Combine
 import Foundation
 import KeychainKit
+import ToolKit
 
-public protocol WalletPersistenceAPI {
+public protocol WalletRepoPersistenceAPI {
     /// Begins the internal persist operation by monitor changes in the `WalletRepo`
     /// - Returns: A publisher of type `AnyPublisher<EmptyValue, WalletPersistenceError>`
-    func beginPersisting() -> AnyPublisher<EmptyValue, WalletPersistenceError>
+    func beginPersisting() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError>
 
     /// Retrieves the `WalletStorageState` from the `Keychain` as `AnyPublisher`
     /// - Returns: An `AnyPublisher<WalletRepoState, WalletPersistenceError>`
-    func retrieve() -> AnyPublisher<WalletRepoState, WalletPersistenceError>
+    func retrieve() -> AnyPublisher<WalletRepoState, WalletRepoPersistenceError>
 }
 
-public enum WalletPersistenceError: Error, Equatable {
+public enum WalletRepoPersistenceError: Error, Equatable {
     case keychainFailure(KeychainAccessError)
     case decodingFailed(WalletRepoStateCodingError)
 }
 
 /// An object responsible for observing changes from `WalletStorage` and persisting them.
-final class WalletPersistence: WalletPersistenceAPI {
+final class WalletRepoPersistence: WalletRepoPersistenceAPI {
 
     enum KeychainAccessKey {
         static let walletState = "wallet-repo-state"
@@ -46,34 +47,34 @@ final class WalletPersistence: WalletPersistenceAPI {
         persistenceQueue = queue
     }
 
-    public func beginPersisting() -> AnyPublisher<EmptyValue, WalletPersistenceError> {
+    func beginPersisting() -> AnyPublisher<EmptyValue, WalletRepoPersistenceError> {
         repo
             .removeDuplicates()
-            .setFailureType(to: WalletPersistenceError.self)
+            .setFailureType(to: WalletRepoPersistenceError.self)
             .receive(on: persistenceQueue)
             .flatMap { [encoder] state in
                 encoder(state)
                     .publisher
-                    .mapError(WalletPersistenceError.decodingFailed)
+                    .mapError(WalletRepoPersistenceError.decodingFailed)
             }
             .flatMap { [keychainAccess] data in
                 keychainAccess
                     .write(value: data, for: KeychainAccessKey.walletState)
                     .publisher
-                    .mapError(WalletPersistenceError.keychainFailure)
+                    .mapError(WalletRepoPersistenceError.keychainFailure)
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
 
-    public func retrieve() -> AnyPublisher<WalletRepoState, WalletPersistenceError> {
+    func retrieve() -> AnyPublisher<WalletRepoState, WalletRepoPersistenceError> {
         keychainAccess.read(for: KeychainAccessKey.walletState)
-            .mapError(WalletPersistenceError.keychainFailure)
+            .mapError(WalletRepoPersistenceError.keychainFailure)
             .publisher
             .receive(on: persistenceQueue)
-            .flatMap { [decoder] data -> AnyPublisher<WalletRepoState, WalletPersistenceError> in
+            .flatMap { [decoder] data -> AnyPublisher<WalletRepoState, WalletRepoPersistenceError> in
                 decoder(data)
-                    .mapError(WalletPersistenceError.decodingFailed)
+                    .mapError(WalletRepoPersistenceError.decodingFailed)
                     .publisher
                     .eraseToAnyPublisher()
             }
@@ -89,7 +90,7 @@ func retrieveWalletRepoState(
     keychainAccess: KeychainAccessAPI,
     decoder: WalletRepoStateDecoding = walletRepoStateDecoder
 ) -> WalletRepoState? {
-    let readResult = keychainAccess.read(for: WalletPersistence.KeychainAccessKey.walletState)
+    let readResult = keychainAccess.read(for: WalletRepoPersistence.KeychainAccessKey.walletState)
     guard case .success(let data) = readResult else {
         return nil
     }

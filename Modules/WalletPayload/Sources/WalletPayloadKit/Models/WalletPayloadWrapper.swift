@@ -3,7 +3,7 @@
 import Foundation
 
 /// The wallet payload as it is returned by the server
-public struct WalletPayloadWrapper {
+public struct WalletPayloadWrapper: Equatable {
 
     /// Possible errors for payload
     public enum MappingError: Error {

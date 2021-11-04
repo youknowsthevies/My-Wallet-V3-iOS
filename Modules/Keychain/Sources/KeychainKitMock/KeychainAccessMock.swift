@@ -2,6 +2,7 @@
 
 import Foundation
 import KeychainKit
+import ToolKit
 
 public class KeychainAccessMock: KeychainAccessAPI {
     public required init(service: String) {}

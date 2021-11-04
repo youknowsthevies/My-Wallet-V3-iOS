@@ -56,9 +56,11 @@ let package = Package(
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift"),
                 .product(name: "TestKit", package: "Test"),
+                .product(name: "ToolKit", package: "Tool"),
                 .product(name: "ToolKitMock", package: "Tool")
             ],
             resources: [
+                .copy("Fixtures/wallet-wrapper-v4.json"),
                 .copy("Fixtures/wallet-data.json"),
                 .copy("Fixtures/address-label.json"),
                 .copy("Fixtures/hdaccount.v3.json"),

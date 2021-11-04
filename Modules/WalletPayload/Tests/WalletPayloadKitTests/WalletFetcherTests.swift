@@ -1,15 +1,22 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
 @testable import WalletPayloadKit
+
+import Combine
+import TestKit
+import ToolKit
 import XCTest
 
 class WalletFetcherTests: XCTestCase {
 
+    let jsonV4 = Fixtures.loadJSONData(filename: "wallet-wrapper-v4", in: .module)!
+
     private var cancellables: Set<AnyCancellable>!
+    private var walletRepo: WalletRepo!
 
     override func setUp() {
         super.setUp()
+        walletRepo = WalletRepo(initialState: .empty)
         cancellables = []
     }
 
@@ -17,13 +24,26 @@ class WalletFetcherTests: XCTestCase {
         // skip test until it is finalized and working
         try XCTSkipIf(true)
 
-        let walletFetcher = WalletFetcher()
+        let dispatchQueue = DispatchQueue(label: "wallet.fetcher.op-queue")
+        let payloadCrypto = PayloadCrypto(cryptor: AESCryptor())
+        let walletLogic = WalletLogic()
+        let walletFetcher = WalletFetcher(
+            walletRepo: walletRepo,
+            payloadCrypto: payloadCrypto,
+            walletLogic: walletLogic,
+            operationsQueue: dispatchQueue
+        )
 
-        var receivedValue: Bool?
+        let encryptedPayload = try JSONDecoder().decode(WalletPayloadWrapper.self, from: jsonV4)
+        walletRepo.set(
+            keyPath: \.encryptedPayload,
+            value: encryptedPayload
+        )
+        var receivedValue: EmptyValue?
         var error: Error?
         let expectation = expectation(description: "wallet-fetching-expectation")
 
-        walletFetcher.fetch(using: "a-password")
+        walletFetcher.fetch(using: "misura12!")
             .sink { completion in
                 switch completion {
                 case .finished:
@@ -31,15 +51,15 @@ class WalletFetcherTests: XCTestCase {
                 case .failure(let failureError):
                     error = failureError
                 }
-                expectation.fulfill()
             } receiveValue: { value in
                 receivedValue = value
+                expectation.fulfill()
             }
             .store(in: &cancellables)
 
-        waitForExpectations(timeout: 1)
+        waitForExpectations(timeout: 2)
 
-        XCTAssertTrue(receivedValue!)
+        XCTAssertEqual(receivedValue, .noValue)
         XCTAssertNil(error)
     }
 }

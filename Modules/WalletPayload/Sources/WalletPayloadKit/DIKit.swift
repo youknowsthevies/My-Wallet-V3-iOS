@@ -20,11 +20,11 @@ extension DependencyContainer {
             return WalletRepo(initialState: initialStateOrEmpty)
         }
 
-        single { () -> WalletPersistenceAPI in
+        single { () -> WalletRepoPersistenceAPI in
             let repo: WalletRepo = DIKit.resolve()
             let queue = DispatchQueue(label: "wallet.persistence.queue", qos: .default)
             let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: WalletRepoKeychain.repoTag)
-            return WalletPersistence(
+            return WalletRepoPersistence(
                 repo: repo,
                 keychainAccess: keychainAccess,
                 queue: queue
@@ -32,7 +32,7 @@ extension DependencyContainer {
         }
 
         single(tag: WalletRepoKeychain.repoTag) { () -> KeychainAccessAPI in
-            KeychainAccess(service: "wallet-repo")
+            KeychainAccess(service: "com.blockchain.wallet-repo")
         }
 
         factory { WalletCryptoService() as WalletCryptoServiceAPI }
