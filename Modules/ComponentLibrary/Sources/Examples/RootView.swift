@@ -5,6 +5,8 @@ import SwiftUI
 
 public struct RootView: View {
 
+    @State var colorScheme: ColorScheme = .light
+
     private let data: NavigationLinkProviderList = [
         "1 - Base": [
             NavigationLinkProvider(view: ColorsExamplesView(), title: "🌈 Colors"),
@@ -28,8 +30,13 @@ public struct RootView: View {
     public var body: some View {
         PrimaryNavigationView {
             NavigationLinkProviderView(data: data)
-                .primaryNavigation(title: "📚 Component Library")
+                .primaryNavigation(title: "📚 Component Library") {
+                    Button("⚫️ / ⚪️") {
+                        colorScheme = colorScheme == .light ? .dark : .light
+                    }
+                }
         }
+        .colorScheme(colorScheme)
     }
 }
 
