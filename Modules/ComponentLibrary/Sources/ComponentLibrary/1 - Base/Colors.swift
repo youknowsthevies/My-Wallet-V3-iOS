@@ -18,11 +18,24 @@ import SwiftUI
 extension Color {
 
     static func dynamicColor(light: Color, dark: Color) -> Color {
+        #if canImport(UIKit)
         Color(
             UIColor { traitCollection in
                 traitCollection.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
             }
         )
+        #else
+        Color(
+            NSColor(name: nil) { appearance in
+                switch appearance.bestMatch(from: [.aqua, .darkAqua]) {
+                case .some(.darkAqua):
+                    return NSColor(dark)
+                default:
+                    return NSColor(light)
+                }
+            }
+        )
+        #endif
     }
 
     public static let semantic: Semantic.Type = Semantic.self

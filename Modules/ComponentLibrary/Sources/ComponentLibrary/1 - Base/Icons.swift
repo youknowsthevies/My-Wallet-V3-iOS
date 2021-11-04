@@ -2,7 +2,9 @@
 
 import Foundation
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#endif
 
 /// An icon asset view from the Component Library
 ///
@@ -24,18 +26,26 @@ import UIKit
 public struct Icon: View, Equatable {
 
     public let name: String
-    let renderingMode: UIImage.RenderingMode
+    let renderingMode: Image.TemplateRenderingMode
 
-    init(name: String, renderingMode: UIImage.RenderingMode = .alwaysTemplate) {
+    init(name: String, renderingMode: Image.TemplateRenderingMode = .template) {
         self.name = name
         self.renderingMode = renderingMode
     }
 
     public var body: some View {
+        #if canImport(UIKit)
         ImageViewRepresentable(image: uiImage, renderingMode: renderingMode)
             .scaledToFit()
+        #else
+        Image(name, bundle: .componentLibrary)
+            .renderingMode(renderingMode)
+            .resizable()
+            .scaledToFit()
+        #endif
     }
 
+    #if canImport(UIKit)
     public var uiImage: UIImage? {
         UIImage(
             named: name,
@@ -43,6 +53,7 @@ public struct Icon: View, Equatable {
             with: nil
         )
     }
+    #endif
 }
 
 extension Icon {
@@ -73,7 +84,7 @@ extension Icon {
     public static let chevronRight = Icon(name: "Chevron-Right")
     public static let chevronUp = Icon(name: "Chevron-Up")
     public static let clipboard = Icon(name: "Clipboard")
-    public static let closeCirclev2 = Icon(name: "Close Circle v2", renderingMode: .alwaysOriginal)
+    public static let closeCirclev2 = Icon(name: "Close Circle v2", renderingMode: .original)
     public static let closeCircle = Icon(name: "Close Circle")
     public static let closev2 = Icon(name: "Close v2")
     public static let close = Icon(name: "Close")
@@ -309,15 +320,27 @@ extension Icon {
     ]
 }
 
+#if canImport(UIKit)
 /// SwiftUI's `Image` does not correctly scale up vector images. Images end up extremely blurry.
 /// So, we get around this by reverting back to `UIImageView` to display icons.
 struct ImageViewRepresentable: UIViewRepresentable {
     let image: UIImage?
-    let renderingMode: UIImage.RenderingMode
+    let renderingMode: Image.TemplateRenderingMode
+
+    private var uiRenderingMode: UIImage.RenderingMode {
+        switch renderingMode {
+        case .original:
+            return .alwaysOriginal
+        case .template:
+            return .alwaysTemplate
+        @unknown default:
+            return .alwaysOriginal
+        }
+    }
 
     func makeUIView(context: Context) -> some UIView {
         let view = UIImageView(
-            image: image?.withRenderingMode(renderingMode)
+            image: image?.withRenderingMode(uiRenderingMode)
         )
         view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
@@ -328,6 +351,7 @@ struct ImageViewRepresentable: UIViewRepresentable {
         // Do nothing
     }
 }
+#endif
 
 struct Icon_Previews: PreviewProvider {
     static let columns = Array(

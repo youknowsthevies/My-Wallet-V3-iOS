@@ -1,6 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 // MARK: - Public
 
@@ -72,6 +75,9 @@ public struct PrimaryNavigationView<Content: View>: View {
     }
 
     public var body: some View {
+        #if os(macOS)
+        NavigationView(content: content)
+        #else
         NavigationView(content: content)
             // StackNavigationViewStyle is to fix a bug on iPhone where the following
             // console error appears, and the navigation bar goes blank.
@@ -80,6 +86,7 @@ public struct PrimaryNavigationView<Content: View>: View {
             //
             // If we add iPad layout, we can re-enable other styles conditionally.
             .navigationViewStyle(StackNavigationViewStyle())
+        #endif
     }
 }
 
@@ -148,21 +155,42 @@ private struct PrimaryNavigationModifier<Trailing: View>: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .navigationBarTitleDisplayMode(.inline)
-            .background(NavigationConfigurator())
+            .if(true) {
+                #if canImport(UIKit)
+                $0
+                    .navigationBarTitleDisplayMode(.inline)
+                    .background(NavigationConfigurator())
+                #else
+                $0
+                #endif
+            }
             .ifLet(title) { view, title in
                 view
                     .navigationTitle(title)
-                    .toolbar {
-                        ToolbarItem(placement: isSecondaryViewInNavigation ? .principal : .navigationBarLeading) {
-                            Text(title)
-                                .typography(.title2)
-                                .foregroundColor(.semantic.title)
-                                .padding(.leading, Spacing.padding1)
+                    .if(true) {
+                        #if os(macOS)
+                        $0
+                        #else
+                        $0.toolbar {
+                            ToolbarItem(placement: isSecondaryViewInNavigation ? .principal : .navigationBarLeading) {
+                                Text(title)
+                                    .typography(.title2)
+                                    .foregroundColor(.semantic.title)
+                                    .padding(.leading, Spacing.padding1)
+                            }
                         }
+                        #endif
                     }
             }
             .ifLet(trailing) { view, trailing in
+                #if os(macOS)
+                view
+                    .toolbar {
+                        ToolbarItem {
+                            trailing()
+                        }
+                    }
+                #else
                 view
                     .navigationBarItems(
                         trailing: HStack(spacing: Spacing.padding3) {
@@ -171,6 +199,7 @@ private struct PrimaryNavigationModifier<Trailing: View>: ViewModifier {
                         .padding(.trailing, Spacing.padding1)
                         .accentColor(.semantic.muted)
                     )
+                #endif
             }
     }
 }
@@ -192,6 +221,7 @@ extension EnvironmentValues {
     }
 }
 
+#if canImport(UIKit)
 /// Customizing `UINavigationController` without using `UIAppearance`
 private struct NavigationConfigurator: UIViewControllerRepresentable {
     @Environment(\.navigationUsesCircledBackButton) var usesCircledBackButton
@@ -264,6 +294,7 @@ private struct NavigationConfigurator: UIViewControllerRepresentable {
         }
     }
 }
+#endif
 
 // MARK: - Previews
 
