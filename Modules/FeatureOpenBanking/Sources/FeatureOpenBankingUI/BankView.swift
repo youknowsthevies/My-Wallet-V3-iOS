@@ -39,8 +39,10 @@ public struct BankState: Equatable {
 }
 
 public enum BankAction: Hashable, FailureAction {
+    case retry
     case request
     case launchAuthorisation(URL)
+    case waitingForConsent
     case finalise(OpenBanking.Output)
     case cancel
     case dismiss
@@ -52,28 +54,43 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
 
     enum ID {
         struct OB: Hashable {}
+        struct LaunchBank: Hashable {}
         struct ConsentError: Hashable {}
     }
 
     switch action {
+    case .retry:
+        return .merge(
+            .fireAndForget {
+                environment.openBanking.state.clear(.authorisation.url)
+            },
+            .cancel(id: ID.OB()),
+            .cancel(id: ID.LaunchBank()),
+            Effect(value: .request)
+        )
     case .request:
         state.ui = .communicating(to: state.bankName)
         return environment.openBanking.start(state.data)
             .compactMap { state in
                 switch state {
-                case .waitingForConsent(let consent):
-                    return .none
+                case .waitingForConsent:
+                    return .waitingForConsent
                 case .success(let output):
-                    return BankAction.finalise(output)
+                    return .finalise(output)
                 case .failure(let error):
                     return BankAction.failure(error)
-                case .launchAuthorisation(let url):
-                    return BankAction.launchAuthorisation(url)
                 }
             }
             .receive(on: environment.scheduler.main)
             .eraseToEffect()
             .cancellable(id: ID.OB())
+
+    case .waitingForConsent:
+        return environment.openBanking.state.publisher(for: .authorisation.url, as: URL.self)
+            .ignoreResultFailure()
+            .mapped(to: BankAction.launchAuthorisation)
+            .eraseToEffect()
+            .cancellable(id: ID.LaunchBank())
 
     case .launchAuthorisation(let url):
         state.ui = .waiting(for: state.bankName)
@@ -106,13 +123,13 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         return .fireAndForget(environment.dismiss)
 
     case .finished, .cancel:
-        return .none
+        return .cancel(id: ID.OB())
 
     case .failure(let error):
         state.ui = .error(error)
         return .merge(
-            .cancel(id: ID.OB()),
-            .cancel(id: ID.ConsentError())
+            .cancel(id: ID.ConsentError()),
+            .cancel(id: ID.LaunchBank())
         )
     }
 }

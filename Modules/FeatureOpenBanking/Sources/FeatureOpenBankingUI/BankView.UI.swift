@@ -15,7 +15,7 @@ extension BankState.UI {
                 title: Localization.Bank.Communicating.title.interpolating(institution),
                 subtitle: Localization.Bank.Communicating.subtitle
             ),
-            action: [.retry(label: Localization.Bank.Action.retry, action: .request)]
+            action: [.retry(label: Localization.Bank.Action.retry, action: .retry)]
         )
     }
 
@@ -27,7 +27,7 @@ extension BankState.UI {
                 title: Localization.Bank.Waiting.title.interpolating(institution),
                 subtitle: Localization.Bank.Waiting.subtitle
             ),
-            action: [.retry(label: Localization.Bank.Action.retry, action: .request)]
+            action: [.retry(label: Localization.Bank.Action.retry, action: .retry)]
         )
     }
 

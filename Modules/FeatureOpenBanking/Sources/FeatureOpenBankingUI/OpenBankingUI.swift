@@ -80,9 +80,13 @@ public let openBankingReducer = Reducer<OpenBankingState, OpenBankingAction, Ope
                  .institutionList(.approve(.bank(.failure(let error)))):
                 environment.eventPublisher.send(.failure(error))
                 return .none
-            case .institutionList(.approve(.bank(.finished))):
+            case .institutionList(.approve(.bank(.finished))), .approve(.bank(.finished)):
                 environment.eventPublisher.send(.success(()))
                 return .none
+            case .approve(.bank(.cancel)):
+                guard let action = (/OpenBankingState.approve).extract(from: state)?.bank.data.action else { return .none }
+                guard (/OpenBanking.Data.Action.confirm).extract(from: action) != nil else { return .none}
+                return .fireAndForget(environment.cancel)
             case .approve:
                 return .none
             case .institutionList:

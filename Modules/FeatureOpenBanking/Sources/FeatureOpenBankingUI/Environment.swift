@@ -17,6 +17,7 @@ public struct OpenBankingEnvironment {
     public var openBanking: OpenBanking
     public var showTransferDetails: () -> Void
     public var dismiss: () -> Void
+    public var cancel: () -> Void
     public var openURL: URLOpener
     public var fiatCurrencyFormatter: FiatCurrencyFormatter
 
@@ -25,6 +26,7 @@ public struct OpenBankingEnvironment {
         openBanking: OpenBanking = resolve(),
         showTransferDetails: @escaping () -> Void = {},
         dismiss: @escaping () -> Void = {},
+        cancel: @escaping () -> Void = {},
         openURL: URLOpener = resolve(),
         fiatCurrencyFormatter: FiatCurrencyFormatter = resolve(),
         currency: String
@@ -33,6 +35,7 @@ public struct OpenBankingEnvironment {
         self.openBanking = openBanking
         self.showTransferDetails = showTransferDetails
         self.dismiss = dismiss
+        self.cancel = cancel
         self.openURL = openURL
         self.fiatCurrencyFormatter = fiatCurrencyFormatter
 

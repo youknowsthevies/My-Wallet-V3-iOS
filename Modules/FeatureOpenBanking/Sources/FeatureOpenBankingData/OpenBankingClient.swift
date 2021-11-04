@@ -328,20 +328,9 @@ extension OpenBanking.Order {
         return banking.network.perform(request: request, responseType: OpenBanking.Order.self)
             .handleEvents(receiveOutput: { [banking] order in
                 banking.state.transaction { state in
-                    if let url = order.attributes.authorisationUrl, let callback = order.attributes.callback {
+                    if let url = order.attributes?.authorisationUrl, let callback = order.attributes?.callbackPath {
                         state.set(.authorisation.url, to: url)
-                        let callback = try URL(string: callback)
-                            .or(throw: OpenBanking.Error.message("\(callback) is not a valid URL"))
-                        let callbackURL = try callback.queryArgs["callbackUrl"]
-                            .or(
-                                throw: OpenBanking.Error.message(
-                                    """
-                                    'callbackUrl' was not found in the query arguments.
-                                    Found \(callback.queryArgs.keys.joined(separator: ", "))
-                                    """
-                                )
-                            )
-                        state.set(.callback.path, to: callbackURL.dropPrefix("nabu-gateway").string)
+                        state.set(.callback.path, to: callback.dropPrefix("nabu-gateway").string)
                     }
                 }
             })
@@ -356,7 +345,7 @@ extension OpenBanking.Order {
         .poll(
             max: 60,
             until: { payment in
-                guard payment.attributes.authorisationUrl != nil else { return false }
+                guard payment.attributes?.authorisationUrl != nil else { return false }
                 return true
             },
             delay: .seconds(2),

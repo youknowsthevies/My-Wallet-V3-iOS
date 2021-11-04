@@ -769,17 +769,19 @@ extension StateService {
 
 extension StateService {
 
-    public func authorizedOpenBanking(_ data: CheckoutData) {
+    public func authorizedOpenBanking() {
         ensureIsOnMainQueue()
-        guard case .authorizeOpenBanking(let data) = statesRelay.value.current else {
-            return assertionFailure("Got authorizedOpenBanking when state was not equal to authorizeOpenBanking")
-        }
+        DispatchQueue.main.async { [self] in
+            guard case .authorizeOpenBanking(let data) = statesRelay.value.current else {
+                return assertionFailure("Got authorizedOpenBanking when state was not equal to authorizeOpenBanking")
+            }
 
-        let states = self.states(
-            byAppending: .pendingOrderCompleted(
-                orderDetails: data.order
+            let states = states(
+                byAppending: .pendingOrderCompleted(
+                    orderDetails: data.order
+                )
             )
-        )
-        self.apply(action: .next(to: states.current), states: states)
+            apply(action: .next(to: states.current), states: states)
+        }
     }
 }

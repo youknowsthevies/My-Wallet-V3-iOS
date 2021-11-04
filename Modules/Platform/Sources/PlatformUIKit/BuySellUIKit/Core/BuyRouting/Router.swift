@@ -614,6 +614,9 @@ public final class Router: RouterAPI {
                 dismiss: { [weak navigationRouter] in
                     navigationRouter?.dismiss(using: .modalOverTopMost)
                 },
+                cancel: { [weak navigationRouter] in
+                    navigationRouter?.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+                },
                 currency: fiatValue.code
             )
         )
@@ -639,8 +642,8 @@ public final class Router: RouterAPI {
     ) {
         switch event {
         case .success:
-            stateService.orderPending(with: order)
-        default:
+            stateService.authorizedOpenBanking()
+        case .failure:
             break
         }
     }

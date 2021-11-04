@@ -157,20 +157,20 @@ extension OpenBanking {
         public struct Attributes: Codable, Hashable {
 
             public init(
-                callback: String? = nil,
+                callbackPath: String? = nil,
                 qrCodeUrl: URL? = nil,
                 authorisationUrl: URL? = nil,
                 consentId: String? = nil,
                 expiresAt: String? = nil
             ) {
-                self.callback = callback
+                self.callbackPath = callbackPath
                 self.qrCodeUrl = qrCodeUrl
                 self.authorisationUrl = authorisationUrl
                 self.consentId = consentId
                 self.expiresAt = expiresAt
             }
 
-            public var callback: String?
+            public var callbackPath: String?
             public var qrCodeUrl: URL?
             public var authorisationUrl: URL?
             public var consentId: String?
@@ -186,7 +186,7 @@ extension OpenBanking {
         public var price: String?
         public var paymentMethodId: String
         public var paymentType: String
-        public var attributes: Attributes = .init()
+        public var attributes: Attributes? = .init()
     }
 }
 
