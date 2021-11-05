@@ -6,9 +6,29 @@ import ToolKit
 
 final class WalletLogic {
 
-    func initialize(using payload: Data) -> AnyPublisher<EmptyValue, WalletError> {
+    private let holder: WalletHolderAPI
+    private let creator: WalletCreating
+
+    init(
+        holder: WalletHolderAPI,
+        creator: @escaping WalletCreating = createWallet(from:)
+    ) {
+        self.holder = holder
+        self.creator = creator
+    }
+
+    /// Initialises a `Wallet` using the given payload data
+    /// - Parameter payload: A `Data` value representing a valid decrypted wallet payload
+    /// - Returns: `AnyPublisher<EmptyValue, WalletError>`
+    func initialize(
+        using payload: Data
+    ) -> AnyPublisher<Wallet, WalletError> {
         decode(data: payload)
-            .map { _ in .noValue }
+            .flatMap { [holder, creator] blockchainWallet -> AnyPublisher<Wallet, Never> in
+                holder.hold(
+                    using: creator(blockchainWallet)
+                )
+            }
             .eraseToAnyPublisher()
     }
 

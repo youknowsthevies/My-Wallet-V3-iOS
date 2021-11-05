@@ -50,7 +50,7 @@ final class WalletFetcher: WalletFetcherAPI {
                 .mapError { _ in WalletError.decryption(.decryptionError) }
                 .eraseToAnyPublisher()
             }
-            .flatMap { [walletLogic] string -> AnyPublisher<EmptyValue, WalletError>in
+            .flatMap { [walletLogic] string -> AnyPublisher<Wallet, WalletError>in
                 guard let data = string.data(using: .utf8) else {
                     return .failure(.decryption(.decryptionError))
                 }
@@ -60,7 +60,7 @@ final class WalletFetcher: WalletFetcherAPI {
             }
             .map { _ in .noValue }
             .eraseToAnyPublisher()
-        // 2. save the guid to metadata (revisit this)
+        // 2. save the guid to metadata (metadata can get this from WalletRepo)
         // 3. load the metadata (lazy)
         // 4. fetch and store:
         //    a) wallet options

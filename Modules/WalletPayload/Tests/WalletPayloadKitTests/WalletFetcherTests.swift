@@ -26,7 +26,8 @@ class WalletFetcherTests: XCTestCase {
 
         let dispatchQueue = DispatchQueue(label: "wallet.fetcher.op-queue")
         let payloadCrypto = PayloadCrypto(cryptor: AESCryptor())
-        let walletLogic = WalletLogic()
+        let walletHolder = WalletHolder()
+        let walletLogic = WalletLogic(holder: walletHolder, creator: createWallet(from:))
         let walletFetcher = WalletFetcher(
             walletRepo: walletRepo,
             payloadCrypto: payloadCrypto,
@@ -59,6 +60,7 @@ class WalletFetcherTests: XCTestCase {
 
         waitForExpectations(timeout: 2)
 
+        XCTAssertNotNil(walletHolder.wallet)
         XCTAssertEqual(receivedValue, .noValue)
         XCTAssertNil(error)
     }

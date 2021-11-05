@@ -31,6 +31,40 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> WalletFetcherAPI in
+            let queue = DispatchQueue(label: "wallet.fetching.op.queue", qos: .userInitiated)
+            return WalletFetcher(
+                walletRepo: DIKit.resolve(),
+                payloadCrypto: DIKit.resolve(),
+                walletLogic: DIKit.resolve(),
+                operationsQueue: queue
+            )
+        }
+
+        factory {
+            WalletLogic(
+                holder: DIKit.resolve(),
+                creator: createWallet(from:)
+            )
+        }
+
+        factory { () -> ReleasableWalletAPI in
+            let holder: WalletHolder = DIKit.resolve()
+            return holder as ReleasableWalletAPI
+        }
+
+        factory { () -> InMemoryWalletProviderAPI in
+            let holder: WalletHolder = DIKit.resolve()
+            return holder as InMemoryWalletProviderAPI
+        }
+
+        factory { () -> WalletHolderAPI in
+            let holder: WalletHolder = DIKit.resolve()
+            return holder as WalletHolderAPI
+        }
+
+        single { WalletHolder() }
+
         single(tag: WalletRepoKeychain.repoTag) { () -> KeychainAccessAPI in
             KeychainAccess(service: "com.blockchain.wallet-repo")
         }
