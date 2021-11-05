@@ -2,10 +2,10 @@
 
 import Combine
 import CombineSchedulers
-@testable import NetworkKit
 @testable import FeatureOpenBankingData
 @testable import FeatureOpenBankingDomain
 import FeatureOpenBankingTestFixture
+@testable import NetworkKit
 import TestKit
 
 // swiftlint:disable line_length

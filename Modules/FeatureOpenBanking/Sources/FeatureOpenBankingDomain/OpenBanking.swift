@@ -69,7 +69,7 @@ public final class OpenBanking {
                 return confirm(order: order, data: data)
             }
         }()
-        .share()
+            .share()
 
         let consentErrorPublisher = banking.state.result(for: .consent.error, as: OpenBanking.Error.self)
             .publisher
@@ -80,7 +80,7 @@ public final class OpenBanking {
 
         switch data.action {
         case .link(let institution):
-            return  publisher
+            return publisher
                 .flatMap { [banking] action -> AnyPublisher<Action, Never> in
                     switch action {
                     case .waitingForConsent:
@@ -91,7 +91,7 @@ public final class OpenBanking {
                                     .map { (authorised, $0) }
                                     .eraseToAnyPublisher()
                             }
-                            .flatMap { (authorised, account) -> AnyPublisher<Action, Never> in
+                            .flatMap { authorised, account -> AnyPublisher<Action, Never> in
                                 if authorised {
                                     if let error = account.error {
                                         return Just(Action.failure(error))
@@ -135,7 +135,6 @@ public final class OpenBanking {
                     }
                 }
                 .eraseToAnyPublisher()
-
         }
     }
 
