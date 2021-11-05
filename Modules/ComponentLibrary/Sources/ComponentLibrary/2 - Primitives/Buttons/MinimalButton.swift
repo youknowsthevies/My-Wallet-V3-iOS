@@ -25,48 +25,36 @@ public struct MinimalButton: View {
 
     private let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.primary,
-                dark: .semantic.primaryMuted
-            ),
-            background: .semantic.white.opacity(0),
-            border: Color.dynamicColor(
-                light: .semantic.medium,
-                dark: .semantic.body
+            foreground: .semantic.primary,
+            background: .palette.white.opacity(0),
+            border: Color(
+                light: .palette.grey100,
+                dark: .palette.dark300
             )
         ),
         pressed: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.primary,
-                dark: .semantic.primaryMuted
-            ),
-            background: Color.dynamicColor(
-                light: .semantic.light,
-                dark: .semantic.dark
-            ),
-            border: Color.dynamicColor(
-                light: .semantic.primary,
-                dark: .semantic.primaryMuted
-            )
+            foreground: .semantic.primary,
+            background: .semantic.light,
+            border: .semantic.primary
         ),
         disabled: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.primary.opacity(0.4),
-                dark: .semantic.body
+            foreground: Color(
+                light: .palette.blue600.opacity(0.4),
+                dark: .palette.grey600
             ),
-            background: .semantic.white.opacity(0),
-            border: Color.dynamicColor(
-                light: .semantic.light,
-                dark: .semantic.body
+            background: .palette.white.opacity(0),
+            border: Color(
+                light: .palette.grey000,
+                dark: .palette.grey700
             )
         ),
-        progressViewRail: Color.dynamicColor(
-            light: .semantic.primary,
-            dark: .semantic.primaryMuted
+        progressViewRail: Color(
+            light: .palette.blue600,
+            dark: .palette.blue000
         ),
-        progressViewTrack: Color.dynamicColor(
-            light: .semantic.primaryMuted,
-            dark: .semantic.white.opacity(0.25)
+        progressViewTrack: Color(
+            light: .palette.blue400,
+            dark: .palette.white.opacity(0.25)
         )
     )
 

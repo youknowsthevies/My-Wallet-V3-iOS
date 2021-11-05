@@ -25,31 +25,31 @@ public struct SecondaryButton: View {
 
     private let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
-            foreground: .semantic.white,
-            background: .semantic.body,
-            border: .semantic.body
+            foreground: .palette.white,
+            background: .palette.grey800,
+            border: .palette.grey800
         ),
         pressed: PillButtonStyle.ColorSet(
-            foreground: .semantic.white,
-            background: .semantic.title,
-            border: .semantic.title
+            foreground: .palette.white,
+            background: .palette.grey900,
+            border: .palette.grey900
         ),
         disabled: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.white.opacity(0.7),
-                dark: .semantic.white.opacity(0.4)
+            foreground: Color(
+                light: .palette.white.opacity(0.7),
+                dark: .palette.white.opacity(0.4)
             ),
-            background: Color.dynamicColor(
-                light: .semantic.muted,
-                dark: .semantic.title
+            background: Color(
+                light: .palette.grey500,
+                dark: .palette.dark800
             ),
-            border: Color.dynamicColor(
-                light: .semantic.muted,
-                dark: .semantic.title
+            border: Color(
+                light: .palette.grey500,
+                dark: .palette.dark800
             )
         ),
-        progressViewRail: Color.semantic.white.opacity(0.8),
-        progressViewTrack: Color.semantic.white.opacity(0.25)
+        progressViewRail: .palette.white.opacity(0.8),
+        progressViewTrack: .palette.white.opacity(0.25)
     )
 
     public init(

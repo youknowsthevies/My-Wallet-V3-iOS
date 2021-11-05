@@ -23,40 +23,34 @@ public struct ExchangeBuyButton: View {
 
     private let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.white,
-                dark: .semantic.white
+            foreground: Color(
+                light: .palette.white,
+                dark: .palette.white
             ),
-            background: Color.dynamicColor(
-                light: .semantic.success,
-                dark: .semantic.successMuted
-            ),
-            border: Color.dynamicColor(
-                light: .semantic.success,
-                dark: .semantic.successMuted
-            )
-        ),
-        pressed: PillButtonStyle.ColorSet(
-            foreground: .semantic.white,
             background: .semantic.success,
             border: .semantic.success
         ),
+        pressed: PillButtonStyle.ColorSet(
+            foreground: .palette.white,
+            background: .palette.green600,
+            border: .palette.green600
+        ),
         disabled: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.white.opacity(0.7),
-                dark: .semantic.white.opacity(0.4)
+            foreground: Color(
+                light: .palette.white.opacity(0.7),
+                dark: .palette.white.opacity(0.4)
             ),
-            background: Color.dynamicColor(
-                light: .semantic.successMuted,
-                dark: .semantic.success
+            background: Color(
+                light: .palette.green400,
+                dark: .palette.green600
             ),
-            border: Color.dynamicColor(
-                light: .semantic.successMuted,
-                dark: .semantic.success
+            border: Color(
+                light: .palette.green400,
+                dark: .palette.green600
             )
         ),
-        progressViewRail: Color.semantic.white.opacity(0.8),
-        progressViewTrack: Color.semantic.white.opacity(0.25)
+        progressViewRail: .palette.white.opacity(0.8),
+        progressViewTrack: .palette.white.opacity(0.25)
     )
 
     public init(

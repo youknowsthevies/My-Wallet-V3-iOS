@@ -152,7 +152,7 @@ struct BottomSheetModal<Content: View>: View {
                 )
         }
         .padding(Spacing.padding3)
-        .background(Color.Semantic.white)
+        .background(Color.semantic.background)
     }
 }
 
