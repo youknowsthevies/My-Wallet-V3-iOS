@@ -1,18 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import CombineSchedulers
+@testable import FeatureOpenBankingData
 @testable import NetworkKit
-@testable import OpenBanking
 import TestKit
 
 /// Used for testing without any UI
 final class OpenBankingFlow: XCTestCase {
 
-    var banking: OpenBanking!
+    var banking: OpenBankingClient!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        banking = OpenBanking(
+        banking = OpenBankingClient(
             requestBuilder: RequestBuilder(
                 config: Network.Config(
                     scheme: "https",
@@ -20,7 +20,7 @@ final class OpenBankingFlow: XCTestCase {
                     components: ["nabu-gateway"]
                 ),
                 headers: [
-                    "Authorization": "Bearer ..."
+                    "Authorization": "Bearer "
                 ]
             ),
             network: NetworkAdapter(
@@ -32,6 +32,22 @@ final class OpenBankingFlow: XCTestCase {
             scheduler: DispatchQueue.main.eraseToAnyScheduler(),
             state: .init([.currency: "GBP"])
         )
+    }
+
+    func x_test_delete() throws {
+
+        let accounts = try banking.allBankAccounts()
+            .wait(timeout: 5)
+
+        for account in accounts where account.state != .ACTIVE {
+            print("Deleting \(account.id.value)", terminator: " ")
+            switch Result(catching: { try account.delete(in: banking).wait() }) {
+            case .failure(let error):
+                print("❌ \(error)")
+            case .success:
+                print("✅")
+            }
+        }
     }
 
     func x_test_link() throws {
@@ -63,7 +79,6 @@ final class OpenBankingFlow: XCTestCase {
 
         let account = try activation.poll(in: banking)
             .wait(timeout: 120000)
-            .get()
 
         subscription.cancel()
         _ = account
@@ -73,11 +88,10 @@ final class OpenBankingFlow: XCTestCase {
 
         let bankAccount = try banking.allBankAccounts()
             .wait(timeout: 5)
-            .get()
             .first(where: { $0.state == "ACTIVE" })
             .unwrap()
 
-        let payment = try bankAccount.pay(amountMinor: "1000", product: "SIMPLEBUY", in: banking)
+        let payment = try bankAccount.deposit(amountMinor: "1000", product: "SIMPLEBUY", in: banking)
             .wait(timeout: 5)
 
         let subscription = banking.state.publisher(for: .authorisation.url, as: URL.self).sink { result in
@@ -98,7 +112,6 @@ final class OpenBankingFlow: XCTestCase {
 
         let details = try payment.poll(in: banking)
             .wait(timeout: 120000)
-            .get()
 
         subscription.cancel()
         _ = details

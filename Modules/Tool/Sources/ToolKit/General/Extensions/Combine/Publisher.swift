@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import CasePaths
 import Combine
 import Foundation
 
@@ -27,6 +28,14 @@ extension Publisher where Failure == Never {
 }
 
 extension Publisher {
+
+    public func sink(
+        receiveValue: @escaping (Output) -> Void
+    ) -> AnyCancellable {
+        sink { _ in } receiveValue: { output in
+            receiveValue(output)
+        }
+    }
 
     public func sink<Root>(
         to handler: @escaping (Root) -> (Output) -> Void,
@@ -85,6 +94,10 @@ extension Publisher {
 
     public func `catch`(_ handler: @escaping (Failure) -> Output) -> Publishers.Catch<Self, Just<Output>> {
         `catch` { error in Just(handler(error)) }
+    }
+
+    public func `catch`(_ output: @autoclosure @escaping () -> Output) -> Publishers.Catch<Self, Just<Output>> {
+        `catch` { error in Just(output()) }
     }
 }
 
@@ -178,5 +191,122 @@ extension Publisher where Failure == Never {
 
     public func assign(to published: inout Published<Output?>.Publisher) {
         map(Output?.init).assign(to: &published)
+    }
+}
+
+extension Publisher where Output: ResultProtocol {
+
+    public func ignoreResultFailure() -> Publishers.CompactMap<Self, Output.Success> {
+        compactMap { output in
+            switch output.result {
+            case .success(let o):
+                return o
+            case .failure:
+                return nil
+            }
+        }
+    }
+
+    public func ignore<T>(output casePath: CasePath<Output.Success, T>) -> AnyPublisher<Output, Failure> {
+        filter { output in
+            switch output.result {
+            case .failure:
+                return true
+            case .success(let success):
+                return casePath.extract(from: success) != nil
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
+    public func ignore<T>(failure casePath: CasePath<Output.Failure, T>) -> AnyPublisher<Output, Failure> {
+        filter { output in
+            switch output.result {
+            case .failure(let error):
+                return casePath.extract(from: error) != nil
+            case .success:
+                return true
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+extension Publisher where Output: ResultProtocol, Failure == Never {
+
+    public func get() -> AnyPublisher<Output.Success, Output.Failure> {
+        flatMap { output -> AnyPublisher<Output.Success, Output.Failure> in
+            switch output.result {
+            case .failure(let error):
+                return Fail(error: error).eraseToAnyPublisher()
+            case .success(let success):
+                return Just(success).setFailureType(to: Output.Failure.self).eraseToAnyPublisher()
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+extension Publisher {
+
+    public func filter(_ keyPath: KeyPath<Output, Bool>) -> Publishers.Filter<Self> {
+        filter { $0[keyPath: keyPath] }
+    }
+}
+
+extension Publisher where Output == Bool, Failure == Never {
+
+    public func `if`(
+        then yes: @escaping () -> Void,
+        else no: @escaping () -> Void
+    ) -> AnyCancellable {
+        sink { output in
+            if output {
+                yes()
+            } else {
+                no()
+            }
+        }
+    }
+
+    public func `if`<Root>(
+        then yes: @escaping (Root) -> () -> Void,
+        else no: @escaping (Root) -> () -> Void,
+        on root: Root
+    ) -> AnyCancellable where Root: AnyObject {
+        sink { [weak root] output in
+            guard let root = root else { return }
+            if output {
+                yes(root)()
+            } else {
+                no(root)()
+            }
+        }
+    }
+}
+
+extension AnyCancellable {
+
+    public func store<Object>(
+        withLifetimeOf object: Object,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) where Object: AnyObject {
+        objc_setAssociatedObject(object, file.description + line.description, self, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+}
+
+extension Publisher {
+
+    public func mapped<T>(to action: CasePath<T, Output>) -> Publishers.Map<Self, T> {
+        map { output in action.embed(output) }
+    }
+
+    public func mapped<T>(to action: @escaping (Output) -> T) -> Publishers.Map<Self, T> {
+        map(action)
+    }
+
+    public func mapped<T>(to action: @autoclosure @escaping () -> T) -> Publishers.Map<Self, T> {
+        map { _ -> T in action() }
     }
 }

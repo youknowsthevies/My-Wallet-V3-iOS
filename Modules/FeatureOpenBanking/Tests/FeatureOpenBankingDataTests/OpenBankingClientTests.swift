@@ -1,8 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import CombineSchedulers
 @testable import NetworkKit
-@testable import OpenBanking
+@testable import FeatureOpenBankingData
+@testable import FeatureOpenBankingDomain
+import FeatureOpenBankingTestFixture
 import TestKit
 
 // swiftlint:disable line_length
@@ -10,12 +13,12 @@ import TestKit
 
 final class OpenBankingTests: XCTestCase {
 
-    var banking: OpenBanking!
+    var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        (banking, network) = OpenBanking.test()
+        (banking, network) = OpenBankingClient.test()
     }
 
     func test_create_bank_account_set_state_id() throws {
@@ -25,17 +28,14 @@ final class OpenBankingTests: XCTestCase {
 
     func test_handle_consent_token_without_callback_path() throws {
         banking.state.set(.consent.token, to: "token")
-        let error: OpenBanking.State.Error = try banking.state.get(.consent.error)
-        XCTAssertEqual(error, .keyDoesNotExist(.callback.path))
+        let error: OpenBanking.Error = try banking.state.get(.consent.error)
+        XCTAssertEqual(error, .state(.keyDoesNotExist(.callback.path)))
     }
 
     func test_handle_consent_token_error() throws {
 
         network.error(
-            URLRequest(
-                url: "https://api.blockchain.info/nabu-gateway/payments/banktransfer/one-time-token",
-                method: .post
-            ).json()
+            URLRequest(.post, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/one-time-token")
         )
 
         banking.state.transaction { state in
@@ -63,7 +63,7 @@ final class OpenBankingTests: XCTestCase {
     }
 
     func test_get_all() throws {
-        _ = try banking.allBankAccounts().wait().get()
+        _ = try banking.allBankAccounts().wait()
         let request = try network.requests[.get, "https://api.blockchain.info/nabu-gateway/payments/banktransfer"].unwrap()
         XCTAssertTrue(request.authenticated)
     }
@@ -71,14 +71,14 @@ final class OpenBankingTests: XCTestCase {
 
 final class OpenBankingBankAccountTests: XCTestCase {
 
-    var banking: OpenBanking!
+    var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
     var bankAccount: OpenBanking.BankAccount!
     var institution: OpenBanking.Institution!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        (banking, network) = OpenBanking.test()
+        (banking, network) = OpenBankingClient.test()
         bankAccount = try banking.createBankAccount().wait()
         institution = bankAccount.attributes.institutions?[1]
     }
@@ -149,7 +149,7 @@ final class OpenBankingBankAccountTests: XCTestCase {
 
     func test_create_payment() throws {
 
-        let payment = try bankAccount.pay(
+        let payment = try bankAccount.deposit(
             amountMinor: "1000",
             product: "SIMPLEBUY",
             in: banking
@@ -181,7 +181,7 @@ final class OpenBankingBankAccountTests: XCTestCase {
 
 final class OpenBankingBankAccountPollTests: XCTestCase {
 
-    var banking: OpenBanking!
+    var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
     var bankAccount: OpenBanking.BankAccount!
     var institution: OpenBanking.Institution!
@@ -190,16 +190,13 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         scheduler = DispatchQueue.test
-        (banking, network) = OpenBanking.test(using: scheduler)
+        (banking, network) = OpenBankingClient.test(using: scheduler)
         bankAccount = try banking.createBankAccount().wait()
         institution = bankAccount.attributes.institutions?[1]
     }
 
     func get() -> URLRequest {
-        URLRequest(
-            url: "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c",
-            method: .get
-        ).json()
+        URLRequest(.get, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c")
     }
 
     func test_poll_with_error() throws {
@@ -212,7 +209,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
         )
         .data()
 
-        let account = try bankAccount.poll(in: banking).wait().get()
+        let account = try bankAccount.poll(in: banking).wait()
 
         XCTAssertEqual(account.error, .BANK_TRANSFER_ACCOUNT_ALREADY_LINKED)
     }
@@ -231,6 +228,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
         var result: Result<OpenBanking.BankAccount, OpenBanking.Error>?
         let subscription = bankAccount.poll(in: banking)
+            .result()
             .sink { result = $0 }
 
         XCTAssertNil(result)
@@ -259,6 +257,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
         var result: Result<OpenBanking.BankAccount, OpenBanking.Error>?
         let subscription = bankAccount.poll(in: banking)
+            .result()
             .sink { result = $0 }
 
         for _ in 0..<10 {
@@ -275,7 +274,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
             id: "a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c",
             partner: "YAPILY",
             state: .ACTIVE,
-            attributes: .init(entity: "SafeConnect(UK)")
+            attributes: .init(entity: "SafeConnect(UK)", authorisationUrl: "http://blockchain.com")
         )
         .data()
 
@@ -290,7 +289,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
     func x_test_poll_realtime() throws {
 
-        (banking, network) = OpenBanking.test(using: DispatchQueue.main)
+        (banking, network) = OpenBankingClient.test(using: DispatchQueue.main)
 
         let request = get()
 
@@ -308,6 +307,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
         var result: Result<OpenBanking.BankAccount, OpenBanking.Error>?
 
         let subscription = bankAccount.poll(in: banking)
+            .result()
             .sink {
                 result = $0; promise.fulfill()
             }
@@ -334,7 +334,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
 final class OpenBankingPaymentTests: XCTestCase {
 
-    var banking: OpenBanking!
+    var banking: OpenBankingClient!
     var network: ReplayNetworkCommunicator!
     var bankAccount: OpenBanking.BankAccount!
     var payment: OpenBanking.Payment!
@@ -343,9 +343,9 @@ final class OpenBankingPaymentTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         scheduler = DispatchQueue.test
-        (banking, network) = OpenBanking.test(using: scheduler)
-        bankAccount = try banking.allBankAccounts().wait().get().first.unwrap()
-        payment = try bankAccount.pay(amountMinor: "1000", product: "SIMPLEBUY", in: banking).wait()
+        (banking, network) = OpenBankingClient.test(using: scheduler)
+        bankAccount = try banking.allBankAccounts().wait().first.unwrap()
+        payment = try bankAccount.deposit(amountMinor: "1000", product: "SIMPLEBUY", in: banking).wait()
     }
 
     func test_get() throws {
@@ -354,19 +354,16 @@ final class OpenBankingPaymentTests: XCTestCase {
     }
 
     func get() -> URLRequest {
-        URLRequest(
-            url: "https://api.blockchain.info/nabu-gateway/payments/payment/b039317d-df85-413f-932d-2719346a839a",
-            method: .get
-        )
-        .json()
+        URLRequest(.get, "https://api.blockchain.info/nabu-gateway/payments/payment/b039317d-df85-413f-932d-2719346a839a")
     }
 
     func test_poll_error() throws {
 
         network[get()] = try OpenBanking.Payment.Details(
             id: "b039317d-df85-413f-932d-2719346a839a",
-            amount: .init(symbol: "GBP", value: "1000"),
-            extraAttributes: .init(error: "ERROR_CODE"),
+            amount: .init(symbol: "GBP", value: "10.00"),
+            amountMinor: "1000",
+            extraAttributes: .init(error: .code("ERROR_CODE")),
             insertedAt: "DATE",
             state: .FAILED,
             type: "CHARGE",
@@ -374,15 +371,16 @@ final class OpenBankingPaymentTests: XCTestCase {
         )
         .data()
 
-        let details = try payment.poll(in: banking).wait().get()
-        XCTAssertEqual(details.extraAttributes?.error, "ERROR_CODE")
+        let details = try payment.poll(in: banking).wait()
+        XCTAssertEqual(details.extraAttributes?.error, .code("ERROR_CODE"))
     }
 
     func test_poll_pending_timeout() throws {
 
         network[get()] = try OpenBanking.Payment.Details(
             id: "b039317d-df85-413f-932d-2719346a839a",
-            amount: .init(symbol: "GBP", value: "1000"),
+            amount: .init(symbol: "GBP", value: "10.00"),
+            amountMinor: "1000",
             insertedAt: "DATE",
             state: .PENDING,
             type: "CHARGE",
@@ -392,6 +390,7 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         var result: Result<OpenBanking.Payment.Details, OpenBanking.Error>!
         let subscription = payment.poll(in: banking)
+            .result()
             .sink { result = $0 }
 
         scheduler.advance(by: .seconds(2))
@@ -403,7 +402,7 @@ final class OpenBankingPaymentTests: XCTestCase {
         }
 
         switch try result.unwrap() {
-        case .failure(.timeout):
+        case .failure(OpenBanking.Error.timeout):
             break
         case let value:
             XCTFail("\(value)")
@@ -416,7 +415,8 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         network[get()] = try OpenBanking.Payment.Details(
             id: "b039317d-df85-413f-932d-2719346a839a",
-            amount: .init(symbol: "GBP", value: "1000"),
+            amount: .init(symbol: "GBP", value: "10.00"),
+            amountMinor: "1000",
             insertedAt: "DATE",
             state: .PENDING,
             type: "CHARGE",
@@ -426,6 +426,7 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         var result: Result<OpenBanking.Payment.Details, OpenBanking.Error>?
         let subscription = payment.poll(in: banking)
+            .result()
             .sink { result = $0 }
 
         for _ in 0..<10 {
@@ -434,7 +435,8 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         network[get()] = try OpenBanking.Payment.Details(
             id: "b039317d-df85-413f-932d-2719346a839a",
-            amount: .init(symbol: "GBP", value: "1000"),
+            amount: .init(symbol: "GBP", value: "10.00"),
+            amountMinor: "1000",
             extraAttributes: .init(authorisationUrl: "https://monzo.com"),
             insertedAt: "DATE",
             state: .COMPLETE,
@@ -450,20 +452,5 @@ final class OpenBankingPaymentTests: XCTestCase {
         XCTAssertEqual(account.state, .COMPLETE)
 
         subscription.cancel()
-    }
-}
-
-extension Array where Element == NetworkRequest {
-
-    subscript(method: NetworkRequest.NetworkMethod, url: URL) -> NetworkRequest? {
-        first(where: { $0.method == method && $0.urlRequest.url == url })
-    }
-}
-
-extension URLRequest {
-    func json() -> Self {
-        var request = self
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        return request
     }
 }
