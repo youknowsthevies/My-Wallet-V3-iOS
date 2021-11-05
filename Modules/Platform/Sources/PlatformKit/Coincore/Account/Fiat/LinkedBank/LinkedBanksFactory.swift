@@ -85,9 +85,9 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
     func bankTransferLimits(for currency: FiatCurrency) -> Single<PaymentLimits> {
         paymentMethodService
             .eligiblePaymentMethods(for: currency)
-            .map {
-                $0.filter {
-                    $0.method == .bankAccount(.fiat(currency)) || $0.method == .bankTransfer(.fiat(currency))
+            .map { types in
+               types.filter { type in
+                    type.method == .bankAccount(.fiat(currency)) || type.method == .bankTransfer(.fiat(currency))
                 }
             }
             .map { paymentMetodTypes in
