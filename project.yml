@@ -297,8 +297,6 @@ packages:
     path: Modules/Network
   NetworkErrors:
     path: Modules/NetworkErrors
-  FeatureOpenBanking:
-    path: Modules/FeatureOpenBanking
   Platform:
     path: Modules/Platform
   RemoteNotifications:
