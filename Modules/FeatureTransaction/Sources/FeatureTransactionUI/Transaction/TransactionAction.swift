@@ -74,7 +74,6 @@ extension TransactionAction {
     // swiftlint:disable function_body_length
     // swiftlint:disable cyclomatic_complexity
     func reduce(oldState: TransactionState) -> TransactionState {
-        Logger.shared.debug("[Transaction Flow] Reducing Action: \(self)")
         switch self {
         case .pendingTransactionStarted(let allowFiatInput):
             var newState = oldState
@@ -374,6 +373,7 @@ extension TransactionAction {
 
         case .modifyTransactionConfirmation:
             return oldState
+                .update(keyPath: \.nextEnabled, value: false)
 
         case .invalidateTransaction:
             return oldState
