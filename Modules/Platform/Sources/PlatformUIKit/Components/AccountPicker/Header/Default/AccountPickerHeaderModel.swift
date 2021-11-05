@@ -19,7 +19,7 @@ public struct AccountPickerHeaderModel: Equatable {
     // MARK: Properties
 
     var height: CGFloat {
-        searchable ? 189 : 169
+        searchable ? 184 : 144
     }
 
     var titleLabel: LabelContent {

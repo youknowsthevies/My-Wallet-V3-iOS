@@ -25,7 +25,7 @@ let package = Package(
         .package(path: "../Tool"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../UIComponents"),
-        .package(path: "../FeatureWithdrawalLock")
+        .package(path: "../FeatureWithdrawalLocks")
     ],
     targets: [
         .target(
@@ -41,7 +41,7 @@ let package = Package(
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "UIComponents", package: "UIComponents"),
-                .product(name: "FeatureWithdrawalLockUI", package: "FeatureWithdrawalLock")
+                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks")
             ]
         ),
         .testTarget(

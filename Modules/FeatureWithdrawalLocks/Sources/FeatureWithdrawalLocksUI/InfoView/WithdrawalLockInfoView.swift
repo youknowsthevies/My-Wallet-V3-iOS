@@ -2,10 +2,9 @@
 
 import ComponentLibrary
 import ComposableArchitecture
-import ComposableArchitectureExtensions
 import ComposableNavigation
 import DIKit
-import FeatureWithdrawalLockDomain
+import FeatureWithdrawalLocksDomain
 import Localization
 import SwiftUI
 
@@ -87,7 +86,7 @@ struct WithdrawalLockInfoView: View {
                         .navigationRoute(in: store)
                         .padding()
 
-                    Divider()
+                    PrimaryDivider()
 
                     HStack {
                         Text(LocalizationIds.availableToWithdrawTitle)
@@ -99,7 +98,7 @@ struct WithdrawalLockInfoView: View {
                     .frame(height: 55)
                     .padding()
 
-                    Divider()
+                    PrimaryDivider()
 
                     SecondaryButton(title: LocalizationIds.seeDetailsButtonTitle) {
                         viewStore.send(.navigate(to: .details))

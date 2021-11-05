@@ -5,28 +5,27 @@ import ComponentLibrary
 import ComposableArchitecture
 import ComposableNavigation
 import DIKit
-import FeatureWithdrawalLockDomain
+import FeatureWithdrawalLocksDomain
 import Localization
 import SwiftUI
 import UIComponentsKit
 
-struct WithdrawalLockState: Hashable, NavigationState {
-    var route: RouteIntent<WithdrawalLockRoute>?
+struct WithdrawalLocksState: Hashable, NavigationState {
+    var route: RouteIntent<WithdrawalLocksRoute>?
     var withdrawalLocks: WithdrawalLocks?
     var amountEventObserverIdToken = "WithdrawalLockState.amountEventObserverIdToken"
 }
 
-enum WithdrawalLockAction: Hashable, NavigationAction {
+enum WithdrawalLocksAction: Hashable, NavigationAction {
     case loadWithdrawalLocks
-    case cleanUp
     case present(withdrawalLocks: WithdrawalLocks?)
-    case route(RouteIntent<WithdrawalLockRoute>?)
+    case route(RouteIntent<WithdrawalLocksRoute>?)
 }
 
-enum WithdrawalLockRoute: NavigationRoute {
+enum WithdrawalLocksRoute: NavigationRoute {
     case details(withdrawalLocks: WithdrawalLocks)
 
-    func destination(in store: Store<WithdrawalLockState, WithdrawalLockAction>) -> some View {
+    func destination(in store: Store<WithdrawalLocksState, WithdrawalLocksAction>) -> some View {
         switch self {
         case .details(let withdrawalLocks):
             return WithdrawalLockDetailsView(withdrawalLocks: withdrawalLocks)
@@ -34,40 +33,37 @@ enum WithdrawalLockRoute: NavigationRoute {
     }
 }
 
-struct WithdrawalLockEnvironment {
+struct WithdrawalLocksEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
 
-    let withdrawalLockUseCase: WithdrawalLocksUseCaseAPI
+    let withdrawalLockService: WithdrawalLocksServiceAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
-        withdrawalLockUseCase: WithdrawalLocksUseCaseAPI = resolve()
+        withdrawalLockService: WithdrawalLocksServiceAPI = resolve()
     ) {
         self.mainQueue = mainQueue
-        self.withdrawalLockUseCase = withdrawalLockUseCase
+        self.withdrawalLockService = withdrawalLockService
     }
 }
 
-let withdrawalLockReducer = Reducer<
-    WithdrawalLockState,
-    WithdrawalLockAction,
-    WithdrawalLockEnvironment
+let withdrawalLocksReducer = Reducer<
+    WithdrawalLocksState,
+    WithdrawalLocksAction,
+    WithdrawalLocksEnvironment
 > { state, action, environment in
 
     switch action {
     case .loadWithdrawalLocks:
         return .merge(
-            environment.withdrawalLockUseCase
+            environment.withdrawalLockService
                 .withdrawLocks
                 .receive(on: environment.mainQueue)
                 .eraseToEffect()
                 .map { withdrawalLocks in
                     .present(withdrawalLocks: withdrawalLocks)
                 }
-                .cancellable(id: state.amountEventObserverIdToken)
         )
-    case .cleanUp:
-        return .cancel(id: state.amountEventObserverIdToken)
     case .present(withdrawalLocks: let withdrawalLocks):
         state.withdrawalLocks = withdrawalLocks
         return .none
@@ -77,19 +73,19 @@ let withdrawalLockReducer = Reducer<
     }
 }
 
-public struct WithdrawalLockView: View {
+public struct WithdrawalLocksView: View {
 
-    let store: Store<WithdrawalLockState, WithdrawalLockAction>
+    let store: Store<WithdrawalLocksState, WithdrawalLocksAction>
 
     public init() {
         store = .init(
             initialState: .init(withdrawalLocks: nil),
-            reducer: withdrawalLockReducer,
-            environment: WithdrawalLockEnvironment()
+            reducer: withdrawalLocksReducer,
+            environment: WithdrawalLocksEnvironment()
         )
     }
 
-    init(store: Store<WithdrawalLockState, WithdrawalLockAction>) {
+    init(store: Store<WithdrawalLocksState, WithdrawalLocksAction>) {
         self.store = store
     }
 
@@ -107,44 +103,39 @@ public struct WithdrawalLockView: View {
                         Text(LocalizationIds.onHoldTitle)
                         Icon.questionCircle
                             .accentColor(.semantic.muted)
-                            .scaleEffect(0.7)
                             .frame(height: 14)
                         Spacer()
 
                         let amount = viewStore.withdrawalLocks?.amount
                         Text(amount ?? " ")
-                            .shimmer(
-                                enabled: amount == nil,
-                                width: 50
-                            )
+                            .shimmer(enabled: amount == nil, width: 50)
                     }
                     .foregroundColor(.semantic.body)
                     .typography(.paragraph2)
                     .padding()
                 }
                 .navigationRoute(in: store)
-                Divider()
-                    .foregroundColor(.semantic.light)
+
+                PrimaryDivider()
             }
             .onAppear {
                 viewStore.send(.loadWithdrawalLocks)
-            }
-            .onDisappear {
-                viewStore.send(.cleanUp)
             }
         }
     }
 }
 
 // swiftlint:disable type_name
-struct WithdrawalLockView_PreviewProvider: PreviewProvider {
+struct WithdrawalLocksView_PreviewProvider: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            WithdrawalLockView(store:
+            WithdrawalLocksView(store:
                 .init(
                     initialState: .init(withdrawalLocks: nil),
-                    reducer: withdrawalLockReducer,
-                    environment: WithdrawalLockEnvironment()
+                    reducer: withdrawalLocksReducer,
+                    environment: WithdrawalLocksEnvironment(
+                        withdrawalLockService: NoOpWithdrawalLocksService()
+                    )
                 )
             )
         }

@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import FeatureWithdrawalLockUI
+import FeatureWithdrawalLocksUI
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -81,7 +81,7 @@ final class PortfolioViewController: BaseScreenViewController {
         fiatBalanceCellProvider.registerFiatBalanceCell(for: tableView)
         tableView.registerNibCell(TotalBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(HistoricalBalanceTableViewCell.self, in: .module)
-        tableView.register(HostingTableViewCell<WithdrawalLockView>.self)
+        tableView.register(HostingTableViewCell<WithdrawalLocksView>.self)
         tableView.separatorColor = .clear
 
         let refreshControl = UIRefreshControl()
@@ -156,8 +156,8 @@ final class PortfolioViewController: BaseScreenViewController {
     private func withdrawalLockCell(
         for indexPath: IndexPath
     ) -> UITableViewCell {
-        let cell = tableView.dequeue(HostingTableViewCell<WithdrawalLockView>.self, for: indexPath)
-        cell.host(WithdrawalLockView(), parent: self)
+        let cell = tableView.dequeue(HostingTableViewCell<WithdrawalLocksView>.self, for: indexPath)
+        cell.host(WithdrawalLocksView(), parent: self)
         return cell
     }
 

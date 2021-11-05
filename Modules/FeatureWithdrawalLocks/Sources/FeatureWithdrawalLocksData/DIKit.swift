@@ -1,15 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureWithdrawalLocksDomain
 
 extension DependencyContainer {
 
-    public static var withdrawalLockDomain = module {
+    public static var withdrawalLocksData = module {
 
         factory { APIClient() as WithdrawalLocksClientAPI }
 
         factory { WithdrawalLocksRepository() as WithdrawalLocksRepositoryAPI }
-
-        single { WithdrawalLocksUseCase() as WithdrawalLocksUseCaseAPI }
     }
 }

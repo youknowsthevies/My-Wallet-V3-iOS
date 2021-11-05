@@ -322,6 +322,8 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                     description: presenter.account.currencyType.name
                                 )
                             )
+                        case .withdrawalLocks:
+                            fatalError("Withdrawal Locks are only supported in Send.")
                         }
                     }
                 self.sections.send(sections)

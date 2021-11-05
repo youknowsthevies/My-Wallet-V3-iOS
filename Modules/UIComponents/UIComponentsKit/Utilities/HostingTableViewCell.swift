@@ -4,67 +4,40 @@ import Foundation
 import SwiftUI
 import UIKit
 
-public class HostingTableViewCell<Content: View>: UITableViewCell {
+public final class HostingTableViewCell<Content: View>: UITableViewCell {
+    private var hostingController: UIHostingController<Content?>?
 
-    private weak var controller: UIHostingController<Content>?
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        hostingController?.view.backgroundColor = .clear
+    }
 
-    public func host(_ view: Content, parent: UIViewController) {
-        controller?.view.removeFromSuperview()
-        let swiftUICellViewController = UIHostingController(rootView: view)
-        controller = swiftUICellViewController
-        swiftUICellViewController.view.backgroundColor = .clear
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-        layoutIfNeeded()
+    public func host(_ rootView: Content, parent: UIViewController) {
+        hostingController?.view.removeFromSuperview()
+        hostingController?.rootView = nil
+        hostingController = .init(rootView: rootView)
 
-        parent.addChild(swiftUICellViewController)
-        contentView.addSubview(swiftUICellViewController.view)
-        swiftUICellViewController.view.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addConstraint(
-            NSLayoutConstraint(
-                item: swiftUICellViewController.view!,
-                attribute: NSLayoutConstraint.Attribute.leading,
-                relatedBy: NSLayoutConstraint.Relation.equal,
-                toItem: contentView,
-                attribute: NSLayoutConstraint.Attribute.leading,
-                multiplier: 1.0,
-                constant: 0.0
-            )
-        )
-        contentView.addConstraint(
-            NSLayoutConstraint(
-                item: swiftUICellViewController.view!,
-                attribute: NSLayoutConstraint.Attribute.trailing,
-                relatedBy: NSLayoutConstraint.Relation.equal,
-                toItem: contentView,
-                attribute: NSLayoutConstraint.Attribute.trailing,
-                multiplier: 1.0,
-                constant: 0.0
-            )
-        )
-        contentView.addConstraint(
-            NSLayoutConstraint(
-                item: swiftUICellViewController.view!,
-                attribute: NSLayoutConstraint.Attribute.top,
-                relatedBy: NSLayoutConstraint.Relation.equal,
-                toItem: contentView,
-                attribute: NSLayoutConstraint.Attribute.top,
-                multiplier: 1.0,
-                constant: 0.0
-            )
-        )
-        contentView.addConstraint(
-            NSLayoutConstraint(
-                item: swiftUICellViewController.view!,
-                attribute: NSLayoutConstraint.Attribute.bottom,
-                relatedBy: NSLayoutConstraint.Relation.equal,
-                toItem: contentView,
-                attribute: NSLayoutConstraint.Attribute.bottom,
-                multiplier: 1.0,
-                constant: 0.0
-            )
-        )
+        guard let hostingController = hostingController else {
+            return
+        }
+        hostingController.view.invalidateIntrinsicContentSize()
+        let requiresControllerMove = hostingController.parent != parent
+        if requiresControllerMove {
+            parent.addChild(hostingController)
+        }
 
-        swiftUICellViewController.didMove(toParent: parent)
-        swiftUICellViewController.view.layoutIfNeeded()
+        if !contentView.subviews.contains(hostingController.view) {
+            contentView.addSubview(hostingController.view)
+            hostingController.view.constraint(edgesTo: contentView, insets: .zero)
+        }
+
+        if requiresControllerMove {
+            hostingController.didMove(toParent: parent)
+        }
     }
 }

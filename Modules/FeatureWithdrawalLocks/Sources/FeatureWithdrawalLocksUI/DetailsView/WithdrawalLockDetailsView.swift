@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComponentLibrary
-import FeatureWithdrawalLockDomain
+import FeatureWithdrawalLocksDomain
 import Localization
 import SwiftUI
 
@@ -19,6 +19,18 @@ struct WithdrawalLockDetailsView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
+            HStack {
+                Spacer()
+                Button {
+                    presentationMode.wrappedValue.dismiss()
+                } label: {
+                    Icon.closeCircle
+                        .accentColor(.semantic.muted)
+                        .frame(height: 24.pt)
+                }
+            }
+            .padding([.trailing])
+
             VStack {
                 Text(
                     String(
@@ -44,17 +56,18 @@ struct WithdrawalLockDetailsView: View {
                     Text(LocalizationIds.noLocks)
                         .typography(.paragraph1)
                         .foregroundColor(.semantic.muted)
+                        .padding()
                 } else {
                     HStack {
-                        Text(LocalizationIds.heldUntilTitle)
+                        Text(LocalizationIds.heldUntilTitle.uppercased())
                         Spacer()
-                        Text(LocalizationIds.amountTitle)
+                        Text(LocalizationIds.amountTitle.uppercased())
                     }
                     .padding([.leading, .trailing])
                     .foregroundColor(.semantic.muted)
                     .typography(.overline)
 
-                    Divider()
+                    PrimaryDivider()
 
                     ForEach(withdrawalLocks.items) { item in
                         WithdrawalLockItemView(item: item)
@@ -62,23 +75,12 @@ struct WithdrawalLockDetailsView: View {
                 }
 
                 Spacer()
+
                 PrimaryButton(title: LocalizationConstants.WithdrawalLock.learnMoreButtonTitle) {
                     openURL(url)
                 }
                 .padding()
             }
-
-            HStack {
-                Spacer()
-                Button {
-                    presentationMode.wrappedValue.dismiss()
-                } label: {
-                    Icon.closeCircle
-                        .accentColor(.semantic.muted)
-                        .frame(height: 24.pt)
-                }
-            }
-            .padding([.trailing])
         }
         .padding(.top, 24.pt)
     }
@@ -97,17 +99,16 @@ struct WithdrawalLockItemView: View {
         .typography(.paragraph2)
         .frame(height: 44)
         .padding([.leading, .trailing])
-        Divider()
+
+        PrimaryDivider()
     }
 }
 
 // swiftlint:disable type_name
 struct WithdrawalLockDetailsView_PreviewProvider: PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            WithdrawalLockDetailsView(
-                withdrawalLocks: .init(items: [], amount: "$100")
-            )
-        }
+        WithdrawalLockDetailsView(
+            withdrawalLocks: .init(items: [], amount: "$100")
+        )
     }
 }

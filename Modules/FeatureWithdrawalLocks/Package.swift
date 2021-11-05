@@ -4,13 +4,18 @@
 import PackageDescription
 
 let package = Package(
-    name: "FeatureWithdrawalLock",
+    name: "FeatureWithdrawalLocks",
     defaultLocalization: "en",
     platforms: [.iOS(.v14)],
     products: [
-        .library(name: "FeatureWithdrawalLock", targets: ["FeatureWithdrawalLockDomain", "FeatureWithdrawalLockUI"]),
-        .library(name: "FeatureWithdrawalLockDomain", targets: ["FeatureWithdrawalLockDomain"]),
-        .library(name: "FeatureWithdrawalLockUI", targets: ["FeatureWithdrawalLockUI"])
+        .library(name: "FeatureWithdrawalLocks", targets: [
+            "FeatureWithdrawalLocksDomain",
+            "FeatureWithdrawalLocksUI",
+            "FeatureWithdrawalLocksData"
+        ]),
+        .library(name: "FeatureWithdrawalLocksDomain", targets: ["FeatureWithdrawalLocksDomain"]),
+        .library(name: "FeatureWithdrawalLocksUI", targets: ["FeatureWithdrawalLocksUI"]),
+        .library(name: "FeatureWithdrawalLocksData", targets: ["FeatureWithdrawalLocksData"])
     ],
     dependencies: [
         .package(
@@ -28,13 +33,22 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../UIComponents"),
         .package(path: "../Network"),
-        .package(path: "../NetworkErrors"),
-        .package(path: "../Platform")
+        .package(path: "../NetworkErrors")
     ],
     targets: [
         .target(
-            name: "FeatureWithdrawalLockDomain",
+            name: "FeatureWithdrawalLocksDomain",
             dependencies: [
+                .product(
+                    name: "DIKit",
+                    package: "DIKit"
+                )
+            ]
+        ),
+        .target(
+            name: "FeatureWithdrawalLocksData",
+            dependencies: [
+                .target(name: "FeatureWithdrawalLocksDomain"),
                 .product(
                     name: "NetworkKit",
                     package: "Network"
@@ -46,17 +60,13 @@ let package = Package(
                 .product(
                     name: "DIKit",
                     package: "DIKit"
-                ),
-                .product(
-                    name: "PlatformKit",
-                    package: "Platform"
                 )
             ]
         ),
         .target(
-            name: "FeatureWithdrawalLockUI",
+            name: "FeatureWithdrawalLocksUI",
             dependencies: [
-                .target(name: "FeatureWithdrawalLockDomain"),
+                .target(name: "FeatureWithdrawalLocksDomain"),
                 .product(
                     name: "DIKit",
                     package: "DIKit"
@@ -84,12 +94,17 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "FeatureWithdrawalLockDomainTests",
+            name: "FeatureWithdrawalLocksDomainTests",
             dependencies: [
             ]
         ),
         .testTarget(
-            name: "FeatureWithdrawalLockUITests",
+            name: "FeatureWithdrawalLocksDataTests",
+            dependencies: [
+            ]
+        ),
+        .testTarget(
+            name: "FeatureWithdrawalLocksUITests",
             dependencies: [
             ]
         )

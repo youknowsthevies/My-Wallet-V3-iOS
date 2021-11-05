@@ -36,7 +36,8 @@ let package = Package(
         .package(path: "../Platform"),
         .package(path: "../Tool"),
         .package(path: "../WalletPayload"),
-        .package(path: "../RemoteNotifications")
+        .package(path: "../RemoteNotifications"),
+        .package(path: "../FeatureWithdrawalLocks")
     ],
     targets: [
         .target(
@@ -65,7 +66,9 @@ let package = Package(
             name: "FeatureAppDomain",
             dependencies: [
                 .product(name: "PlatformKit", package: "Platform"),
-                .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication")
+                .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
+                .product(name: "FeatureWithdrawalLocksData", package: "FeatureWithdrawalLocks"),
+                .product(name: "FeatureWithdrawalLocksDomain", package: "FeatureWithdrawalLocks")
             ]
         )
     ]
