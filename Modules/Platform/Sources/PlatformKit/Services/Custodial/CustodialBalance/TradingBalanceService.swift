@@ -1,14 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxSwift
 import ToolKit
 
 public protocol TradingBalanceServiceAPI: AnyObject {
-    var balances: Single<CustodialAccountBalanceStates> { get }
+    var balances: AnyPublisher<CustodialAccountBalanceStates, Never> { get }
 
-    func balance(for currencyType: CurrencyType) -> Single<CustodialAccountBalanceState>
-    func fetchBalances() -> Single<CustodialAccountBalanceStates>
+    func balance(for currencyType: CurrencyType) -> AnyPublisher<CustodialAccountBalanceState, Never>
+    func fetchBalances() -> AnyPublisher<CustodialAccountBalanceStates, Never>
 }
 
 class TradingBalanceService: TradingBalanceServiceAPI {
@@ -17,10 +18,10 @@ class TradingBalanceService: TradingBalanceServiceAPI {
 
     // MARK: - Properties
 
-    var balances: Single<CustodialAccountBalanceStates> {
+    var balances: AnyPublisher<CustodialAccountBalanceStates, Never> {
         cachedValue.get(key: Key())
-            .asSingle()
-            .catchErrorJustReturn(.absent)
+            .replaceError(with: .absent)
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Properties
@@ -38,8 +39,8 @@ class TradingBalanceService: TradingBalanceServiceAPI {
         self.client = client
 
         let cache: AnyCache<Key, CustodialAccountBalanceStates> = InMemoryCache(
-            configuration: .onLoginLogout(),
-            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 90)
+            configuration: .onLoginLogoutTransaction(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         ).eraseToAnyCache()
 
         cachedValue = CachedValueNew(
@@ -60,17 +61,18 @@ class TradingBalanceService: TradingBalanceServiceAPI {
 
     // MARK: - Methods
 
-    func balance(for currencyType: CurrencyType) -> Single<CustodialAccountBalanceState> {
+    func balance(for currencyType: CurrencyType) -> AnyPublisher<CustodialAccountBalanceState, Never> {
         balances
             .map { response -> CustodialAccountBalanceState in
                 response[currencyType]
             }
+            .eraseToAnyPublisher()
     }
 
-    func fetchBalances() -> Single<CustodialAccountBalanceStates> {
+    func fetchBalances() -> AnyPublisher<CustodialAccountBalanceStates, Never> {
         cachedValue
             .get(key: Key(), forceFetch: true)
-            .asSingle()
-            .catchErrorJustReturn(.absent)
+            .replaceError(with: .absent)
+            .eraseToAnyPublisher()
     }
 }

@@ -11,7 +11,7 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
 
     private enum Constants {
         static let animationDuration: TimeInterval = 0.25
-        static let defaultHeight: CGFloat = 169
+        static let defaultHeight: CGFloat = 144
         static let heightSearchBarFocus: CGFloat = 64
     }
 
@@ -23,16 +23,13 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
                 assetImageView.image = nil
                 titleLabel.content = .empty
                 subtitleLabel.content = .empty
-                selectWalletLabel.content = .empty
                 return
             }
             assetImageView.set(model.imageContent)
             titleLabel.content = model.titleLabel
             subtitleLabel.content = model.subtitleLabel
-            selectWalletLabel.content = model.tableTitleLabel ?? .empty
             separator.isHidden = model.tableTitleLabel == nil || model.searchable
             uiSearchBar.isHidden = !model.searchable
-            selectWalletLabel.isHidden = model.searchable
             heightConstraint?.constant = model.height
         }
     }
@@ -51,7 +48,6 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
     private let assetImageView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
-    private let selectWalletLabel = UILabel()
     private let separator = UIView()
     private let fadeMask = CAGradientLayer()
     private let uiSearchBar = UISearchBar()
@@ -87,7 +83,6 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
         addSubview(assetImageView)
         addSubview(titleLabel)
         addSubview(subtitleLabel)
-        addSubview(selectWalletLabel)
         addSubview(separator)
 
         // MARK: Background Image View
@@ -113,18 +108,12 @@ final class AccountPickerHeaderView: UIView, AccountPickerHeaderViewAPI {
         subtitleLabel.layoutToSuperview(axis: .horizontal, offset: 24)
         subtitleLabel.numberOfLines = 0
 
-        // MARK: Select a Wallet Label
-
-        selectWalletLabel.layoutToSuperview(.leading, offset: 24)
-        selectWalletLabel.layoutToSuperview(.bottom, offset: -4)
-
         // MARK: Separator
 
         separator.backgroundColor = .lightBorder
         separator.layout(dimension: .height, to: 1)
-        separator.layout(edge: .leading, to: .trailing, of: selectWalletLabel, offset: 8)
-        separator.layoutToSuperview(.trailing)
-        separator.layout(edge: .bottom, to: .lastBaseline, of: selectWalletLabel)
+        separator.layoutToSuperview(axis: .horizontal)
+        separator.layoutToSuperview(.bottom)
 
         // MARK: Search Bar
 

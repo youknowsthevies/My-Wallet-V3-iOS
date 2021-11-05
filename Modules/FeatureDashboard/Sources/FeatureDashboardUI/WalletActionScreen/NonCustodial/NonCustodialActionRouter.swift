@@ -18,14 +18,14 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     private var stateService: NonCustodialActionStateService!
     private let walletOperationsRouter: WalletOperationsRouting
     private let navigationRouter: NavigationRouterAPI
-    private let routing: CurrencyRouting & TabSwapping
+    private let routing: TabSwapping
     private var disposeBag = DisposeBag()
     private var account: BlockchainAccount!
 
     public init(
         navigationRouter: NavigationRouterAPI = NavigationRouter(),
         walletOperationsRouter: WalletOperationsRouting = resolve(),
-        routing: CurrencyRouting & TabSwapping
+        routing: TabSwapping
     ) {
         self.walletOperationsRouter = walletOperationsRouter
         self.navigationRouter = navigationRouter
@@ -82,44 +82,44 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     }
 
     private func showSwapScreen() {
-        dismiss { [weak self] _ in
-            self?.routing.switchTabToSwap()
+        dismiss { [routing] _ in
+            routing.switchTabToSwap()
         }
     }
 
     private func showActivityScreen() {
-        dismiss { [weak self] currencyType in
-            self?.routing.switchToActivity(for: currencyType)
+        dismiss { [routing] account in
+            routing.switchToActivity(for: account.currencyType)
         }
     }
 
     private func showReceiveScreen() {
-        dismiss { [weak self] currencyType in
-            self?.routing.toReceive(currencyType)
+        dismiss { [routing] account in
+            routing.receive(into: account)
         }
     }
 
     private func showBuyScreen() {
-        dismiss { [walletOperationsRouter, account] _ in
+        dismiss { [walletOperationsRouter] account in
             walletOperationsRouter.handleBuyCrypto(account: account as? CryptoAccount)
         }
     }
 
     private func showSellScreen() {
-        dismiss { [walletOperationsRouter, account] _ in
+        dismiss { [walletOperationsRouter] account in
             walletOperationsRouter.handleSellCrypto(account: account as? CryptoAccount)
         }
     }
 
     private func showSendScreen() {
-        dismiss { [weak self] currencyType in
-            self?.routing.toSend(currencyType)
+        dismiss { [routing] account in
+            routing.send(from: account)
         }
     }
 
     /// Dismiss all presented ViewControllers and then execute callback.
-    private func dismiss(completion: ((CurrencyType) -> Void)? = nil) {
-        let currencyType = account.currencyType
+    private func dismiss(completion: ((BlockchainAccount) -> Void)? = nil) {
+        let account: BlockchainAccount = account
         var root: UIViewController? = navigationRouter.topMostViewControllerProvider.topMostViewController
         while root?.presentingViewController != nil {
             root = root?.presentingViewController
@@ -128,12 +128,12 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
             .dismiss(
                 animated: true,
                 completion: {
-                    completion?(currencyType)
+                    completion?(account)
                 }
             )
     }
 
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        BottomSheetPresenting(ignoresBackroundTouches: false)
+        BottomSheetPresenting(ignoresBackgroundTouches: false)
     }()
 }

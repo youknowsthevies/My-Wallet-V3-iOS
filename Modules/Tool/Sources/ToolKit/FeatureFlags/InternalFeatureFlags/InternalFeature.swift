@@ -36,17 +36,21 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
+    /// Enables the new Limits UI in Transaction Flow
+    case newTxFlowLimitsUIEnabled
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
         case .useTransactionsFlowToBuyCrypto,
              .newAccountPicker,
              .newOnboardingTour,
+             .interestWithdrawAndDeposit,
              .pollingForEmailLogin:
             return true
         case .disableGUIDLogin,
-             .interestWithdrawAndDeposit,
              .requestConsoleLogging,
+             .newTxFlowLimitsUIEnabled,
              .secureChannel,
              .unifiedSignIn,
              .nativeWalletPayload:
@@ -84,6 +88,8 @@ extension InternalFeature {
             return "Polling (Email Login)"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
+        case .newTxFlowLimitsUIEnabled:
+            return "New Limits UI"
         }
     }
 }

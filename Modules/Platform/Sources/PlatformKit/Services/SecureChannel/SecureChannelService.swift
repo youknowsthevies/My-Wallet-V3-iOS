@@ -4,7 +4,9 @@ import Combine
 import CommonCryptoKit
 import DIKit
 import FeatureAuthenticationDomain
+import Localization
 import RxSwift
+import ToolKit
 
 public protocol SecureChannelAPI: AnyObject {
     func isPairingQRCode(msg: String) -> Bool
@@ -15,41 +17,52 @@ public protocol SecureChannelAPI: AnyObject {
     /// Creates a `SecureChannelConnectionCandidate` from the given `userInfo` notification payload.
     /// - Parameter userInfo: Received notification payload.
     /// - Returns: Single that emits a `SecureChannelConnectionCandidate` object or nil if the payload is malformed or the browser identity is unknown.
-    func createSecureChannelConnectionCandidate(_ userInfo: [AnyHashable: Any]) -> Single<SecureChannelConnectionCandidate>
+    func createSecureChannelConnectionCandidate(
+        _ userInfo: [AnyHashable: Any]
+    ) -> Single<SecureChannelConnectionCandidate>
+}
+
+public enum SecureChannelError: LocalizedError, Equatable {
+
+    private typealias LocalizedString = LocalizationConstants.SecureChannel.Alert
+
+    case missingGUID
+    case missingSharedKey
+    case missingPassword
+    case malformedPayload
+    case ipMismatch(originIP: String, deviceIP: String)
+    case cantValidateIP
+    case connectionExpired
+    case identityError(IdentityError)
+    case messageError(MessageError)
+
+    public var errorDescription: String {
+        switch self {
+        case .missingGUID,
+             .missingSharedKey,
+             .missingPassword,
+             .malformedPayload:
+            return LocalizedString.network
+        case .ipMismatch(let originIP, let deviceIP):
+            // only show IPs in internal build
+            if BuildFlag.isInternal {
+                return "\(LocalizedString.ipMismatch)\n\n" +
+                    "\(LocalizedString.originIP): \(originIP)\n" +
+                    "\(LocalizedString.deviceIP): \(deviceIP)"
+            } else {
+                return LocalizedString.ipMismatch
+            }
+        case .connectionExpired:
+            return LocalizedString.connectionExpired
+        case .cantValidateIP,
+             .identityError,
+             .messageError:
+            return LocalizedString.generic
+        }
+    }
 }
 
 final class SecureChannelService: SecureChannelAPI {
-
-    // MARK: Types
-
-    enum SecureChannelError: LocalizedError {
-        case missingGUID
-        case missingSharedKey
-        case missingPassword
-        case malformedPayload
-        case ipMismatch
-        case cantValidateIP
-        case connectionExpired
-
-        var errorDescription: String? {
-            switch self {
-            case .cantValidateIP:
-                return "Secure Channel: Unable to validate IP."
-            case .ipMismatch:
-                return "Secure Channel: IP doesn't match."
-            case .malformedPayload:
-                return "Secure Channel: Malformed payload."
-            case .missingGUID:
-                return "Secure Channel: Missing GUID."
-            case .missingPassword:
-                return "Secure Channel: Missing password."
-            case .missingSharedKey:
-                return "Secure Channel: Missing shared key."
-            case .connectionExpired:
-                return "Secure Channel: Connection expired."
-            }
-        }
-    }
 
     // MARK: Private Properties
 
@@ -78,13 +91,16 @@ final class SecureChannelService: SecureChannelAPI {
         decodePairingCode(payload: msg) != nil
     }
 
-    func createSecureChannelConnectionCandidate(_ userInfo: [AnyHashable: Any]) -> Single<SecureChannelConnectionCandidate> {
+    func createSecureChannelConnectionCandidate(
+        _ userInfo: [AnyHashable: Any]
+    ) -> Single<SecureChannelConnectionCandidate> {
         guard let details = SecureChannelConnectionDetails(userInfo) else {
             return .error(SecureChannelError.malformedPayload)
         }
         return browserIdentityService.getBrowserIdentity(pubKeyHash: details.pubkeyHash)
-            .eraseError()
-            .flatMap { browserIdentity -> Result<(SecureChannelConnectionCandidate, BrowserIdentity), Error> in
+            .mapError(SecureChannelError.identityError)
+            .flatMap { browserIdentity
+                -> Result<(SecureChannelConnectionCandidate, BrowserIdentity), SecureChannelError> in
                 decryptMessage(details.messageRawEncrypted, pubKeyHash: details.pubkeyHash)
                     .map { message -> SecureChannelConnectionCandidate in
                         SecureChannelConnectionCandidate(
@@ -101,8 +117,12 @@ final class SecureChannelService: SecureChannelAPI {
             .single
             .flatMap(weak: self) { (self, data) -> Single<SecureChannelConnectionCandidate> in
                 let (candidate, browserIdentity) = data
-                return self.shouldAcceptSecureChannel(details: details, candidate: candidate, browserIdentity: browserIdentity)
-                    .andThen(Single.just(candidate))
+                return self.shouldAcceptSecureChannel(
+                    details: details,
+                    candidate: candidate,
+                    browserIdentity: browserIdentity
+                )
+                .andThen(Single.just(candidate))
             }
     }
 
@@ -115,11 +135,12 @@ final class SecureChannelService: SecureChannelAPI {
     }
 
     func didAcceptSecureChannel(details: SecureChannelConnectionDetails) -> Completable {
-        browserIdentityService.addBrowserIdentityAuthorization(pubKeyHash: details.pubkeyHash, authorized: true)
+        browserIdentityService
+            .addBrowserIdentityAuthorization(pubKeyHash: details.pubkeyHash, authorized: true)
             .flatMap {
                 browserIdentityService.updateBrowserIdentityUsedTimestamp(pubKeyHash: details.pubkeyHash)
             }
-            .eraseError()
+            .mapError(SecureChannelError.identityError)
             .flatMap {
                 decryptMessage(details.messageRawEncrypted, pubKeyHash: details.pubkeyHash)
             }
@@ -173,7 +194,10 @@ final class SecureChannelService: SecureChannelAPI {
         }
     }
 
-    private func validateIPAddress(details: SecureChannelConnectionDetails, browserIdentity: BrowserIdentity) -> Completable {
+    private func validateIPAddress(
+        details: SecureChannelConnectionDetails,
+        browserIdentity: BrowserIdentity
+    ) -> Completable {
         guard !browserIdentity.authorized else {
             // IP Check only applies to new connections.
             return .empty()
@@ -181,13 +205,10 @@ final class SecureChannelService: SecureChannelAPI {
         return secureChannelNetwork.getIp()
             .mapError { _ in SecureChannelError.cantValidateIP }
             .flatMap { ip -> AnyPublisher<Void, SecureChannelError> in
-                if details.originIP == ip {
-                    return Fail(error: SecureChannelError.ipMismatch).eraseToAnyPublisher()
-                } else {
-                    return Just(())
-                        .setFailureType(to: SecureChannelError.self)
-                        .eraseToAnyPublisher()
+                guard details.originIP == ip else {
+                    return .failure(.ipMismatch(originIP: details.originIP, deviceIP: ip))
                 }
+                return .just(())
             }
             .eraseToAnyPublisher()
             .asObservable()
@@ -255,9 +276,10 @@ final class SecureChannelService: SecureChannelAPI {
     private func decryptMessage(
         _ message: String,
         pubKeyHash: String
-    ) -> Result<SecureChannel.BrowserMessage, Error> {
-        browserIdentityService.getBrowserIdentity(pubKeyHash: pubKeyHash)
-            .eraseError()
+    ) -> Result<SecureChannel.BrowserMessage, SecureChannelError> {
+        browserIdentityService
+            .getBrowserIdentity(pubKeyHash: pubKeyHash)
+            .mapError(SecureChannelError.identityError)
             .flatMap { browserIdentity in
                 let deviceKey = browserIdentityService.getDeviceKey()
                 return messageService
@@ -266,7 +288,7 @@ final class SecureChannelService: SecureChannelAPI {
                         publicKey: Data(hex: browserIdentity.pubKey),
                         deviceKey: deviceKey
                     )
-                    .eraseError()
+                    .mapError(SecureChannelError.messageError)
             }
     }
 

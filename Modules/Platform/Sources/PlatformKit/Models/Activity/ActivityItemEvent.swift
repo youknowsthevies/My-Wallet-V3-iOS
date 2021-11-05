@@ -7,6 +7,8 @@ public enum ActivityItemEvent {
     case transactional(TransactionalActivityItemEvent)
     // Buy Sell
     case buySell(BuySellActivityItemEvent)
+    // Interest
+    case interest(InterestActivityItemEvent)
     // Fiat
     case fiat(CustodialActivityEvent.Fiat)
     // Custodial Crypto Transfer
@@ -24,6 +26,7 @@ public enum ActivityItemEvent {
 
         public enum ProductEventStatus {
             case swap(SwapActivityItemEvent.EventStatus)
+            case interest(InterestActivityItemEventState)
             case buySell(BuySellActivityItemEvent.EventStatus)
             case custodial(CustodialActivityEvent.State)
         }
@@ -41,6 +44,8 @@ public enum ActivityItemEvent {
         switch self {
         case .buySell(let event):
             return event.creationDate
+        case .interest(let event):
+            return event.insertedAt
         case .swap(let swap):
             return swap.date
         case .transactional(let transaction):
@@ -65,6 +70,9 @@ extension ActivityItemEvent: Hashable {
         case .buySell(let event):
             hasher.combine("buySell")
             hasher.combine(event.identifier)
+        case .interest(let event):
+            hasher.combine("interest")
+            hasher.combine(event.identifier)
         case .swap(let event):
             hasher.combine("swap")
             hasher.combine(event.identifier)
@@ -87,6 +95,8 @@ extension ActivityItemEvent {
         switch self {
         case .buySell(let event):
             return event.inputValue
+        case .interest(let event):
+            return event.value.moneyValue
         case .swap(let event):
             return event.amounts.deposit
         case .transactional(let event):
@@ -117,6 +127,8 @@ extension ActivityItemEvent {
         switch self {
         case .buySell(let event):
             return event.identifier
+        case .interest(let event):
+            return event.identifier
         case .swap(let event):
             return event.identifier
         case .transactional(let event):
@@ -132,6 +144,8 @@ extension ActivityItemEvent {
         switch self {
         case .buySell(let event):
             return .product(.buySell(event.status))
+        case .interest(let event):
+            return .product(.interest(event.state))
         case .swap(let event):
             return .product(.swap(event.status))
         case .transactional(let event):
@@ -157,6 +171,8 @@ extension ActivityItemEvent: Equatable {
     public static func == (lhs: ActivityItemEvent, rhs: ActivityItemEvent) -> Bool {
         switch (lhs, rhs) {
         case (.swap(let left), .swap(let right)):
+            return left == right
+        case (.interest(let left), .interest(let right)):
             return left == right
         case (.transactional(let left), .transactional(let right)):
             return left == right

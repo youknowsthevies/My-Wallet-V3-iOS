@@ -84,6 +84,11 @@ final class MockTransactionsRouter: FeatureTransactionUI.TransactionsRouterAPI {
     private(set) var recordedInvocations = RecordedInvocations()
     var stubbedResults = StubbedResults()
 
+    func presentTransactionFlow(to action: TransactionFlowAction) -> AnyPublisher<TransactionFlowResult, Never> {
+        recordedInvocations.presentTransactionFlow.append((action, UIViewController()))
+        return stubbedResults.presentTransactionFlow
+    }
+
     func presentTransactionFlow(to action: TransactionFlowAction, from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
         recordedInvocations.presentTransactionFlow.append((action, presenter))
         return stubbedResults.presentTransactionFlow

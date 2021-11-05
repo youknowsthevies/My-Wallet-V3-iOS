@@ -15,6 +15,13 @@ typealias InterestAccountListReducer = Reducer<
 >
 
 let interestAccountListReducer = Reducer.combine(
+    interestNoEligibleWalletsReducer
+        .optional()
+        .pullback(
+            state: \.interestNoEligibleWalletsState,
+            action: /InterestAccountListAction.interestAccountNoEligibleWallets,
+            environment: { _ in .init() }
+        ),
     interestAccountDetailsReducer
         .optional()
         .pullback(
@@ -23,6 +30,7 @@ let interestAccountListReducer = Reducer.combine(
             environment: {
                 InterestAccountDetailsEnvironment(
                     fiatCurrencyService: $0.fiatCurrencyService,
+                    blockchainAccountRepository: $0.blockchainAccountRepository,
                     priceService: $0.priceService,
                     mainQueue: $0.mainQueue
                 )
@@ -46,19 +54,18 @@ let interestAccountListReducer = Reducer.combine(
                         rate: accountOverview.interestAccountRate.rate
                     )
                 }
+                .sorted { $0.balance.isPositive && !$1.balance.isPositive }
+
                 state.interestAccountOverviews = accountOverviews
                 state.interestAccountDetails = .init(uniqueElements: details)
-                state.loadingInterestAccountList = false
+                state.loadingStatus = .loaded
             case .failure(let error):
                 Logger.shared.error(error)
             }
             return .none
 
-        case .dismissLoadingInterestAccountsAlert:
-            state.loadingErrorAlert = nil
-            return .none
-
         case .setupInterestAccountListScreen:
+            state.loadingStatus = .fetchingAccountStatus
             return environment
                 .kycVerificationService
                 .isKYCVerified
@@ -71,7 +78,7 @@ let interestAccountListReducer = Reducer.combine(
             state.isKYCVerified = value
             return Effect(value: .loadInterestAccounts)
         case .loadInterestAccounts:
-            state.loadingInterestAccountList = true
+            state.loadingStatus = .fetchingRewardsAccounts
             return environment
                 .fiatCurrencyService
                 .fiatCurrencyPublisher
@@ -97,27 +104,89 @@ let interestAccountListReducer = Reducer.combine(
                 }
 
                 state.interestAccountDetailsState = .init(interestAccountOverview: overview)
-                return .enter(into: .details)
-            case .earnInterestButtonTapped:
-                // TODO:
+                return .enter(into: .details, context: .none)
+            case .earnInterestButtonTapped(let value):
+                let blockchainAccountRepository = environment.blockchainAccountRepository
+                let currency = value.currency
+
+                return blockchainAccountRepository
+                    .accountWithCurrencyType(
+                        currency,
+                        accountType: .custodial(.savings)
+                    )
+                    .compactMap { $0 as? CryptoInterestAccount }
+                    .flatMap { account -> AnyPublisher<(Bool, InterestTransactionState), Never> in
+                        let availableAccounts = blockchainAccountRepository
+                            .accountsAvailableToPerformAction(
+                                .interestTransfer,
+                                target: account
+                            )
+                            .map { $0.filter { $0.currencyType == account.currencyType } }
+                            .map { !$0.isEmpty }
+                            .replaceError(with: false)
+                            .eraseToAnyPublisher()
+
+                        let interestTransactionState = InterestTransactionState(
+                            account: account,
+                            action: .interestTransfer
+                        )
+
+                        return Publishers.Zip(
+                            availableAccounts,
+                            Just(interestTransactionState)
+                        )
+                        .eraseToAnyPublisher()
+                    }
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .map { values -> InterestAccountListAction in
+                        guard let (areAccountsAvailable, transactionState) = values.successData else {
+                            impossible()
+                        }
+                        if areAccountsAvailable {
+                            return .interestTransactionStateFetched(transactionState)
+                        }
+
+                        let ineligibleWalletsState = InterestNoEligibleWalletsState(
+                            interestAccountRate: InterestAccountRate(
+                                currencyCode: currency.code,
+                                rate: value.rate
+                            )
+                        )
+                        return .interestAccountIsWithoutEligibleWallets(ineligibleWalletsState)
+                    }
+            }
+        case .interestAccountIsWithoutEligibleWallets(let ineligibleWalletsState):
+            state.interestNoEligibleWalletsState = ineligibleWalletsState
+            return .enter(into: .noWalletsError)
+        case .interestAccountNoEligibleWallets(let action):
+            switch action {
+            case .startBuyTapped:
+                return .none
+            case .dismissNoEligibleWalletsScreen:
+                return .enter(into: nil)
+            case .startBuyAfterDismissal(let cryptoCurrency):
+                state.loadingStatus = .fetchingRewardsAccounts
+                return Effect(value: .dismissAndLaunchBuy(cryptoCurrency))
+            case .startBuyOnDismissalIfNeeded:
                 return .none
             }
-        case .interestAccountDetails:
-            return .none
-        case .route(let route):
-            state.route = route
+        case .dismissAndLaunchBuy(let cryptoCurrency):
+            state.buyCryptoCurrency = cryptoCurrency
             return .none
         case .interestTransactionStateFetched(let transactionState):
             state.interestTransactionState = transactionState
             let isTransfer = transactionState.action == .interestTransfer
-            return .merge(
-                .cancel(id: TransactionFetchIdentifier()),
-                Effect(
-                    value: .interestAccountDetails(
-                        isTransfer ? .startInterestTransfer : .startInterestWithdraw
-                    )
+            return Effect(
+                value: .interestAccountDetails(
+                    isTransfer ? .startInterestTransfer(transactionState) : .startInterestWithdraw(transactionState)
                 )
             )
+        case .route(let route):
+            state.route = route
+            return .none
+        case .interestAccountDetails:
+            return .none
         }
     },
     interestReducerCore
@@ -131,48 +200,46 @@ let interestReducerCore = Reducer<
     switch action {
     case .interestAccountDetails(.dismissInterestDetailsScreen):
         return .enter(into: nil)
-    case .interestAccountDetails(
-        .loadCryptoInterestAccount(
-            isTransfer: let isTransfer,
-            let currency
-        )
-    ):
-        return .merge(
-            environment
-                .blockchainAccountRepository
-                .accountWithCurrencyType(
-                    currency,
-                    accountType: .custodial(.savings)
+    case .interestAccountDetails(.loadCryptoInterestAccount(isTransfer: let isTransfer, let currency)):
+        return environment
+            .blockchainAccountRepository
+            .accountWithCurrencyType(
+                currency,
+                accountType: .custodial(.savings)
+            )
+            .compactMap { $0 as? CryptoInterestAccount }
+            .map { account in
+                InterestTransactionState(
+                    account: account,
+                    action: isTransfer ? .interestTransfer : .interestWithdraw
                 )
-                .compactMap { $0 as? CryptoInterestAccount }
-                .map { account in
-                    InterestTransactionState(
-                        account: account,
-                        action: isTransfer ? .interestTransfer : .interestWithdraw
-                    )
+            }
+            .catchToEffect()
+            .map { transactionState in
+                guard let value = transactionState.successData else {
+                    unimplemented()
                 }
-                .catchToEffect()
-                .cancellable(id: TransactionFetchIdentifier())
-                .map { transactionState in
-                    guard let value = transactionState.successData else {
-                        unimplemented()
-                    }
-                    return value
-                }
-                .map { transactionState -> InterestAccountListAction in
-                    .interestTransactionStateFetched(transactionState)
-                }
-        )
-    case .interestAccountDetails(.startInterestWithdraw):
-        return .merge(
-            .enter(into: nil),
-            .sheet(into: .transaction)
-        )
-    case .interestAccountDetails(.startInterestTransfer):
-        return .merge(
-            .enter(into: nil),
-            .sheet(into: .transaction)
-        )
+                return value
+            }
+            .map { transactionState -> InterestAccountListAction in
+                .interestTransactionStateFetched(transactionState)
+            }
+    case .interestAccountDetails(.startInterestWithdraw(let value)):
+        return environment
+            .transactionRouterAPI
+            .presentTransactionFlow(to: .interestWithdraw(value.account))
+            .catchToEffect()
+            .map { _ -> InterestAccountListAction in
+                .loadInterestAccounts
+            }
+    case .interestAccountDetails(.startInterestTransfer(let value)):
+        return environment
+            .transactionRouterAPI
+            .presentTransactionFlow(to: .interestTransfer(value.account))
+            .catchToEffect()
+            .map { _ -> InterestAccountListAction in
+                .loadInterestAccounts
+            }
     default:
         return .none
     }

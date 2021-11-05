@@ -49,6 +49,16 @@ private enum TargetDestinationTitle {
             return LocalizationConstants.Transaction.receive
         }
     }
+
+    var showSeparator: Bool {
+        switch self {
+        case .orSelect:
+            return false
+        case .to,
+             .receive:
+            return true
+        }
+    }
 }
 
 // MARK: - Non Trading Source DestinationStrategy
@@ -102,7 +112,9 @@ private func provideSectionHeader(action: AssetAction, title: TargetDestinationT
         return TargetSelectionHeaderBuilder(
             headerType: .section(
                 .init(
-                    sectionTitle: title.text
+                    sectionTitle: title.text,
+                    titleDisplayStyle: title.showSeparator ? .medium : .small,
+                    showSeparator: title.showSeparator
                 )
             )
         )

@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
-import ComposableNavigation
+import ComposableArchitectureExtensions
 import NukeUI
 import PlatformKit
 import PlatformUIKit

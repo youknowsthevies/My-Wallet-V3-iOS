@@ -43,19 +43,27 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public var isFunded: Single<Bool> {
-        balances.map { $0 != .absent }
+        balances
+            .map { $0 != .absent }
+            .asSingle()
     }
 
     public var pendingBalance: Single<MoneyValue> {
         balances
             .map(\.balance?.pending)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .asSingle()
     }
 
     public var balance: Single<MoneyValue> {
+        balancePublisher.asSingle()
+    }
+
+    public var balancePublisher: AnyPublisher<MoneyValue, Swift.Error> {
         balances
             .map(\.balance?.available)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .mapError()
     }
 
     public var actionableBalance: Single<MoneyValue> {
@@ -67,6 +75,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 }
                 return (balance.available, balance.pending)
             }
+            .asSingle()
             .map { [asset] values -> MoneyValue in
                 guard values.available.isPositive else {
                     return .zero(currency: asset)
@@ -78,7 +87,8 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public var withdrawableBalance: Single<MoneyValue> {
         balances
             .map(\.balance?.withdrawable)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .asSingle()
     }
 
     public var onTxCompleted: (TransactionResult) -> Completable {
@@ -167,7 +177,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let eligibilityService: EligibilityServiceAPI
     private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
-    private let featureFetcher: FeatureFetching
+    private let featureFlagService: FeatureFlagsServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let ordersActivity: OrdersActivityServiceAPI
     private let swapActivity: SwapActivityServiceAPI
@@ -175,7 +185,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
     private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
 
-    private var balances: Single<CustodialAccountBalanceState> {
+    private var balances: AnyPublisher<CustodialAccountBalanceState, Never> {
         balanceService.balance(for: asset.currencyType)
     }
 
@@ -185,7 +195,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         ordersActivity: OrdersActivityServiceAPI = resolve(),
         buySellActivity: BuySellActivityItemEventServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
-        featureFetcher: FeatureFetching = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory,
@@ -208,7 +218,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.custodialAddressService = custodialAddressService
         self.custodialPendingDepositService = custodialPendingDepositService
         self.eligibilityService = eligibilityService
-        self.featureFetcher = featureFetcher
+        self.featureFlagService = featureFlagService
         self.kycTiersService = kycTiersService
         self.errorRecorder = errorRecorder
         self.supportedPairsInteractorService = supportedPairsInteractorService
@@ -257,7 +267,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balance.asPublisher())
+            .zip(balancePublisher)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
@@ -288,9 +298,17 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     private func canPerformInterestTransfer() -> Single<Bool> {
-        disabledReason
+        let isEligible = disabledReason
             .map(\.isEligible)
             .asSingle()
+        let balanceAvailable = balance
+            .map(\.isPositive)
+        let isFeatureFlagEnabled = featureFlagService
+            .isEnabled(.remote(.interestWithdrawAndDeposit))
+            .asSingle()
+        return Single
+            .zip(isEligible, balanceAvailable, isFeatureFlagEnabled)
+            .map { $0 && $1 && $2 }
             .catchError { [label, asset] error in
                 throw Error.loadingFailed(
                     asset: asset.code,

@@ -74,6 +74,13 @@ extension ObservableType {
             loader.hide()
         })
     }
+
+    /// Hides the loader and returns `Element`
+    public func hideOnError(loader: LoadingViewPresenting) -> Observable<Element> {
+        self.do(onError: { _ in
+            loader.hide()
+        })
+    }
 }
 
 /// Extension for `ObservableType` that enables the loader to take part in a chain of observables

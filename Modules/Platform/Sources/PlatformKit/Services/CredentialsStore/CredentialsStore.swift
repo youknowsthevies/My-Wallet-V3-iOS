@@ -120,8 +120,20 @@ final class CredentialsStore: CredentialsStoreAPI {
     ) -> Completable {
         Single
             .zip(
-                cryptoService.encrypt(pair: KeyDataPair(key: pinDecryptionKey, data: guid), pbkdf2Iterations: PBKDF2Iterations.guid),
-                cryptoService.encrypt(pair: KeyDataPair(key: pinDecryptionKey, data: sharedKey), pbkdf2Iterations: PBKDF2Iterations.sharedKey)
+                cryptoService.encrypt(
+                    pair: KeyDataPair(
+                        key: pinDecryptionKey,
+                        data: guid
+                    ),
+                    pbkdf2Iterations: PBKDF2Iterations.guid
+                ),
+                cryptoService.encrypt(
+                    pair: KeyDataPair(
+                        key: pinDecryptionKey,
+                        data: sharedKey
+                    ),
+                    pbkdf2Iterations: PBKDF2Iterations.sharedKey
+                )
             )
             .do(
                 onSuccess: { [weak self] payload in
@@ -159,7 +171,13 @@ final class CredentialsStore: CredentialsStoreAPI {
         else { return .error(CredentialsStoreError.incompleteData) }
         return Single
             .zip(
-                cryptoService.decrypt(pair: KeyDataPair(key: pinDecryptionKey, data: encryptedGuid), pbkdf2Iterations: PBKDF2Iterations.guid),
+                cryptoService.decrypt(
+                    pair: KeyDataPair(
+                        key: pinDecryptionKey,
+                        data: encryptedGuid
+                    ),
+                    pbkdf2Iterations: PBKDF2Iterations.guid
+                ),
                 cryptoService.decrypt(
                     pair: KeyDataPair(
                         key: pinDecryptionKey,

@@ -19,8 +19,8 @@ final class InterestAccountBalanceRepository: InterestAccountBalanceRepositoryAP
     init(client: InterestAccountBalanceClientAPI = resolve()) {
         self.client = client
         let cache: AnyCache<FiatCurrency, InterestAccountBalances> = InMemoryCache(
-            configuration: .onLoginLogout(),
-            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 90)
+            configuration: .onLoginLogoutTransaction(),
+            refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         )
         .eraseToAnyCache()
         cachedValue = CachedValueNew(

@@ -319,14 +319,15 @@ extension LocalizationConstants.Transaction.Withdraw {
 }
 
 extension LocalizationConstants.Transaction.Transfer {
-    public static let transferTo = NSLocalizedString(
-        "Transfer to...",
-        comment: "Transfer to..."
+    public static let transferFrom = NSLocalizedString(
+        "Transfer from...",
+        comment: "Transfer from..."
     )
     public static let transferNow = NSLocalizedString(
         "Transfer Now",
         comment: "Transfer Now"
     )
+    public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
 }
 
 extension LocalizationConstants.Transaction.Deposit {

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import ToolKit
 
 /// Provides read and write access to Keychain
 public final class KeychainAccess: KeychainAccessAPI {

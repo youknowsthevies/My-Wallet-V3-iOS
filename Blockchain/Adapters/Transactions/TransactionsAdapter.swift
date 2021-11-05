@@ -14,6 +14,10 @@ enum TransactionType: Equatable {
     case sell(CryptoAccount?)
     /// Performs a swap. If `CrytoCurrency` is `nil`, the users will be presented with a crypto currency selector.
     case swap(CryptoAccount?)
+    /// Performs an interest transfer.
+    case interestTransfer(CryptoInterestAccount)
+    /// Performs an interest withdraw.
+    case interestWithdraw(CryptoInterestAccount)
 
     static func == (lhs: TransactionType, rhs: TransactionType) -> Bool {
         switch (lhs, rhs) {
@@ -23,6 +27,10 @@ enum TransactionType: Equatable {
             return lhsAccount?.identifier == rhsAccount?.identifier
         case (.swap(let lhsAccount), .swap(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
+        case (.interestTransfer(let lhsAccount), .interestTransfer(let rhsAccount)):
+            return lhsAccount.identifier == rhsAccount.identifier
+        case (.interestWithdraw(let lhsAccount), .interestWithdraw(let rhsAccount)):
+            return lhsAccount.identifier == rhsAccount.identifier
         default:
             return false
         }
@@ -67,12 +75,16 @@ extension TransactionType {
 
     fileprivate var transactionFlowActionValue: TransactionFlowAction {
         switch self {
-        case .buy(let cryptoCurrency):
-            return .buy(cryptoCurrency)
-        case .sell(let cryptoCurrency):
-            return .sell(cryptoCurrency)
-        case .swap(let cryptoCurrency):
-            return .swap(cryptoCurrency)
+        case .buy(let cryptoAccount):
+            return .buy(cryptoAccount)
+        case .sell(let cryptoAccount):
+            return .sell(cryptoAccount)
+        case .swap(let cryptoAccount):
+            return .swap(cryptoAccount)
+        case .interestTransfer(let cryptoInterestAccount):
+            return .interestTransfer(cryptoInterestAccount)
+        case .interestWithdraw(let cryptoInterestAccount):
+            return .interestWithdraw(cryptoInterestAccount)
         }
     }
 }

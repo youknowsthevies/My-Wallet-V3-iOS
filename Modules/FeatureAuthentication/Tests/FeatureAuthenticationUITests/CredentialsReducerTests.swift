@@ -29,9 +29,7 @@ final class CredentialsReducerTests: XCTestCase {
         mockMainQueue = DispatchQueue.test
         mockPollingQueue = DispatchQueue.test
         testStore = TestStore(
-            initialState: .init(
-                accountRecoveryEnabled: true
-            ),
+            initialState: .init(),
             reducer: credentialsReducer,
             environment: .init(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
@@ -57,9 +55,7 @@ final class CredentialsReducerTests: XCTestCase {
     }
 
     func test_verify_initial_state_is_correct() {
-        let state = CredentialsState(
-            accountRecoveryEnabled: false
-        )
+        let state = CredentialsState()
         XCTAssertNotNil(state.walletPairingState)
         XCTAssertNotNil(state.passwordState)
         XCTAssertNil(state.twoFAState)

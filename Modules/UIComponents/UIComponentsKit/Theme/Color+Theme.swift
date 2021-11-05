@@ -45,6 +45,7 @@ extension Color {
     // MARK: Text
 
     public static let textTitle = Color(paletteColor: .grey900)
+    public static let textDetail = Color(paletteColor: .grey600)
     public static let textHeading = Color(paletteColor: .grey900)
     public static let textSubheading = Color(paletteColor: .grey600)
     public static let textBody = Color(paletteColor: .grey900)

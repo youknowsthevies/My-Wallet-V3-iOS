@@ -200,6 +200,7 @@ final class ExchangeCoordinator {
         // page and not the Exchange landing page.
         guard let exchangeURL = URL(string: BlockchainAPI.shared.exchangeURL + "/trade") else { return }
         repository.syncDepositAddresses()
+            .asCompletable()
             .andThen(hasLinkedExchangeAccount())
             .flatMap(weak: self) { (self, hasLinkedExchangeAccount) -> Single<URL> in
                 hasLinkedExchangeAccount ? Single.just(exchangeURL) : self.authenticator.exchangeURL
@@ -222,7 +223,7 @@ final class ExchangeCoordinator {
             .flatMapCompletable(weak: self) { (self, linkID) -> Completable in
                 self.authenticator.linkToExistingExchangeUser(linkID: linkID)
             }
-            .andThen(repository.syncDepositAddresses())
+            .andThen(repository.syncDepositAddresses().asCompletable())
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .observeOn(MainScheduler.instance)
             .showSheetOnSubscription(bottomAlertSheet: syncingBottomAlertSheet)
@@ -241,6 +242,7 @@ final class ExchangeCoordinator {
 
     private func hasLinkedExchangeAccount() -> Single<Bool> {
         repository.hasLinkedExchangeAccount
+            .asSingle()
             .observeOn(MainScheduler.instance)
     }
 

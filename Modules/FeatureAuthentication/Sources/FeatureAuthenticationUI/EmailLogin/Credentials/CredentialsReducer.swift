@@ -44,8 +44,6 @@ private typealias CredentialsLocalization = LocalizationConstants.FeatureAuthent
 // MARK: - Properties
 
 struct CredentialsState: Equatable {
-    // TODO: this is a temporary solution for inserting a feature flag, remove this later
-    var accountRecoveryEnabled: Bool
     var walletPairingState: WalletPairingState
     var passwordState: PasswordState
     var twoFAState: TwoFAState?
@@ -61,7 +59,6 @@ struct CredentialsState: Equatable {
     var isLoading: Bool
 
     init(
-        accountRecoveryEnabled: Bool,
         walletPairingState: WalletPairingState = .init(),
         passwordState: PasswordState = .init(),
         twoFAState: TwoFAState? = nil,
@@ -76,7 +73,6 @@ struct CredentialsState: Equatable {
         credentialsFailureAlert: AlertState<CredentialsAction>? = nil,
         isLoading: Bool = false
     ) {
-        self.accountRecoveryEnabled = accountRecoveryEnabled
         self.walletPairingState = walletPairingState
         self.passwordState = passwordState
         self.twoFAState = twoFAState

@@ -26,7 +26,6 @@ public enum Onboarding {
         case informSecondPasswordDetected
         case forgetWallet
         case createAccountScreenClosed
-        case legacyRecoverWalletScreenClosed
     }
 
     public struct State: Equatable {
@@ -36,7 +35,6 @@ public enum Onboarding {
         public var welcomeState: WelcomeState?
         public var displayAlert: Alert?
         public var showLegacyCreateWalletScreen: Bool = false
-        public var showLegacyRecoverWalletScreen: Bool = false
         public var deeplinkContent: URIContent?
         public var walletCreationContext: WalletCreationContext?
         public var walletRecoveryContext: WalletRecoveryContext?
@@ -48,9 +46,6 @@ public enum Onboarding {
         mutating func hideLegacyScreenIfNeeded() {
             if showLegacyCreateWalletScreen {
                 showLegacyCreateWalletScreen = false
-            }
-            if showLegacyRecoverWalletScreen {
-                showLegacyRecoverWalletScreen = false
             }
         }
 
@@ -144,10 +139,6 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             state.showLegacyCreateWalletScreen = false
             state.walletCreationContext = nil
             return .none
-        case .legacyRecoverWalletScreenClosed:
-            state.showLegacyRecoverWalletScreen = false
-            state.walletCreationContext = nil
-            return .none
         case .welcomeScreen(.presentScreenFlow(.welcomeScreen)):
             // don't clear the state if the state is .new when dismissing the modal by setting the screen flow back to welcome screen
             if state.walletCreationContext == .existing || state.walletCreationContext == .recovery {
@@ -163,11 +154,6 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return .none
 
         case .welcomeScreen(.presentScreenFlow(.restoreWalletScreen)):
-            state.walletCreationContext = .recovery
-            return .none
-
-        case .welcomeScreen(.presentScreenFlow(.legacyRestoreWalletScreen)):
-            state.showLegacyRecoverWalletScreen = true
             state.walletCreationContext = .recovery
             return .none
         case .welcomeScreen:

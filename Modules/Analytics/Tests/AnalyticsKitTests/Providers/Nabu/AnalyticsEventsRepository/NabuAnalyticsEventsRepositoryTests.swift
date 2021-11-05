@@ -11,7 +11,7 @@ final class NabuAnalyticsEventsRepositoryTests: XCTestCase {
     var analyticsEventsRepository: NabuAnalyticsEventsRepository?
 
     let clientMock = mock(EventSendingAPI.self)
-    let tokenRepository = mock(TokenRepositoryAPI.self)
+    let tokenProvider = { "token" }
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -19,7 +19,7 @@ final class NabuAnalyticsEventsRepositoryTests: XCTestCase {
         try super.setUpWithError()
         analyticsEventsRepository = NabuAnalyticsEventsRepository(
             client: clientMock,
-            tokenRepository: tokenRepository
+            tokenProvider: tokenProvider
         )
     }
 
@@ -31,7 +31,6 @@ final class NabuAnalyticsEventsRepositoryTests: XCTestCase {
     func test_nabuAnalyticsEventsRepository_callsClientWithEventsAndToken() {
         let events = 1
         let token = "token"
-        given(tokenRepository.getSessionToken()) ~> token
         given(clientMock.publish(events: events, token: token)) ~> Empty().eraseToAnyPublisher()
 
         _ = analyticsEventsRepository?.publish(events: events)

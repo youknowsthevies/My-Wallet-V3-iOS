@@ -12,18 +12,44 @@ extension UILabel {
                 color: textColor,
                 alignment: textAlignment,
                 lineSpacing: 1,
+                lineBreakMode: lineBreakMode,
+                adjustsFontSizeToFitWidth: adjustsFontSizeToFitWidth ? .true(factor: minimumScaleFactor) : .false,
                 accessibility: accessibility
             )
         }
         set {
-            text = newValue.text
+            // Set Accessibility
+            accessibility = newValue.accessibility.copy(label: newValue.text)
+
+            // Set Font and Text Color properties.
             font = newValue.font
             textColor = newValue.color
-            let attrString = NSMutableAttributedString(string: newValue.text)
-            attrString.add(lineSpacing: newValue.lineSpacing)
-            attributedText = attrString
+
+            // Set new text
+            text = newValue.text
+
+            // Get the attributedText that was just generated.
+            let mutableAttributedString = attributedText.flatMap(NSMutableAttributedString.init)
+                ?? NSMutableAttributedString(string: newValue.text)
+
+            // Set lineSpacing.
+            mutableAttributedString.add(lineSpacing: newValue.lineSpacing)
+            // Set attributedText.
+            attributedText = mutableAttributedString
+
+            // Set style-related properties.
             textAlignment = newValue.alignment
-            accessibility = newValue.accessibility.copy(label: newValue.text)
+            lineBreakMode = newValue.lineBreakMode
+            switch newValue.adjustsFontSizeToFitWidth {
+            case .false:
+                adjustsFontSizeToFitWidth = false
+                minimumScaleFactor = 1
+            case .true(factor: let factor):
+                adjustsFontSizeToFitWidth = true
+                minimumScaleFactor = factor
+            }
+
+            // Size to fit.
             sizeToFit()
         }
     }
@@ -31,6 +57,8 @@ extension UILabel {
 
 extension Reactive where Base: UILabel {
     public var content: Binder<LabelContent> {
-        Binder(base) { $0.content = $1 }
+        Binder(base) { view, content in
+            view.content = content
+        }
     }
 }

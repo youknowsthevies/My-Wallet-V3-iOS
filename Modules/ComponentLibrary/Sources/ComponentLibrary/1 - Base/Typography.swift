@@ -16,15 +16,16 @@ import SwiftUI
 ///
 ///  [Typography](https://www.figma.com/file/dvXlzvYoDEulsmwkE8iO0i/02---Assets-%7C-Typography?node-id=0%3A1)
 public struct Typography: Hashable, Codable {
-    let name: String
-    var size: Length
+    public let name: String
+    public var size: Length
     var style: TextStyle
     var design: Design = .default
-    var weight: Weight = .bold
+    public var weight: Weight = .bold
 }
 
 extension Typography {
 
+    /// Semibold 40pt
     public static let display: Typography = .init(
         name: "Display",
         size: 40.pt,
@@ -32,6 +33,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Semibold 32pt
     public static let title1: Typography = .init(
         name: "Title 1",
         size: 32.pt,
@@ -39,6 +41,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Semibold 24pt
     public static let title2: Typography = .init(
         name: "Title 2",
         size: 24.pt,
@@ -46,6 +49,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Semibold 20pt
     public static let title3: Typography = .init(
         name: "Title 3",
         size: 20.pt,
@@ -53,6 +57,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Medium 20pt
     public static let subheading: Typography = .init(
         name: "Subheading",
         size: 20.pt,
@@ -60,6 +65,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Medium 16pt, Monospaced with Slashed Zeros
     public static let bodyMono: Typography = .init(
         name: "Body Mono",
         size: 16.pt,
@@ -68,6 +74,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Medium 16pt
     public static let body1: Typography = .init(
         name: "Body 1",
         size: 16.pt,
@@ -75,6 +82,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Semibold 16pt
     public static let body2: Typography = .init(
         name: "Body 2",
         size: 16.pt,
@@ -82,6 +90,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Medium 16pt, Monospaced with Slashed Zeros
     public static let paragraphMono: Typography = .init(
         name: "Paragraph Mono",
         size: 16.pt,
@@ -90,6 +99,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Medium 14pt
     public static let paragraph1: Typography = .init(
         name: "Paragraph 1",
         size: 14.pt,
@@ -97,6 +107,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Semibold 14pt
     public static let paragraph2: Typography = .init(
         name: "Paragraph 2",
         size: 14.pt,
@@ -104,6 +115,7 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Medium 12pt
     public static let caption1: Typography = .init(
         name: "Caption 1",
         size: 12.pt,
@@ -111,6 +123,7 @@ extension Typography {
         weight: .medium
     )
 
+    /// Semibold 12pt
     public static let caption2: Typography = .init(
         name: "Caption 2",
         size: 12.pt,
@@ -118,8 +131,22 @@ extension Typography {
         weight: .semibold
     )
 
+    /// Semibold 12pt, Expanded kerning
+    ///
     /// Note: The custom kerning on this style only works if the typography is applied directly
     /// to a `Text` view, and does not work in the typical cascading modifier way.
+    ///
+    /// Note: You must apply `.textCase(.uppercase)` yourself for uppercased text.
+    ///
+    /// # GOOD, kerning works
+    ///     Text("Foo")
+    ///       .typography(.overline)
+    ///       .textCase(.uppercase)
+    ///
+    ///  # BAD, kerning breaks
+    ///     Text("Foo")
+    ///       .textCase(.uppercase)
+    ///       .typography(.overline)
     public static let overline: Typography = .init(
         name: "Overline",
         size: 12.pt,
@@ -127,13 +154,21 @@ extension Typography {
         design: .overlineKerning,
         weight: .semibold
     )
+
+    /// Medium 10pt
+    public static let micro: Typography = .init(
+        name: "Micro (TabBar Text)",
+        size: 10.pt,
+        style: .caption,
+        weight: .medium
+    )
 }
 
 extension View {
 
     @ViewBuilder public func typography(_ typography: Typography) -> some View {
         if case .overlineKerning = typography.design {
-            modifier(typography).textCase(.uppercase)
+            modifier(typography)
         } else {
             modifier(typography)
         }
@@ -150,19 +185,19 @@ extension View {
 
 extension Text {
 
-    @ViewBuilder public func typography(_ typography: Typography) -> some View {
+    public func typography(_ typography: Typography) -> Text {
         if case .overlineKerning = typography.design {
-            kerning(1).modifier(typography).textCase(.uppercase)
+            return font(typography.font).kerning(1)
         } else {
-            modifier(typography)
+            return font(typography.font)
         }
     }
 
-    @ViewBuilder public func typography(_ typography: Typography?) -> some View {
+    public func typography(_ typography: Typography?) -> Text {
         if let typography = typography {
-            self.typography(typography)
+            return self.typography(typography)
         } else {
-            self
+            return self
         }
     }
 }
@@ -195,7 +230,6 @@ extension Typography {
 // swiftlint:disable switch_case_on_newline
 
 extension Typography: ViewModifier {
-
     var fontName: FontResource {
         switch weight {
         case .regular: return .interRegular
@@ -314,12 +348,16 @@ extension Typography {
             case .overlineKerning: return .default
             }
         }
+
+        var isOverlineKerning: Bool {
+            switch self {
+            case .overlineKerning: return true
+            default: return false
+            }
+        }
     }
-}
 
-struct Typography_Previews: PreviewProvider {
-
-    static let allTypography: [Typography] = [
+    public static let allTypography: [Typography] = [
         .display,
         .title1,
         .title2,
@@ -333,8 +371,12 @@ struct Typography_Previews: PreviewProvider {
         .paragraph2,
         .caption1,
         .caption2,
-        .overline
+        .overline,
+        .micro
     ]
+}
+
+struct Typography_Previews: PreviewProvider {
 
     static func previewText(for typography: Typography) -> String {
         switch typography {
@@ -348,10 +390,13 @@ struct Typography_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                ForEach(allTypography, id: \.self) { typography in
+                ForEach(Typography.allTypography, id: \.self) { typography in
 
                     Text(typography.name)
                         .typography(typography)
+                        .if(typography.design.isOverlineKerning) {
+                            $0.textCase(.uppercase)
+                        }
 
                     Text("\(typography.weight.rawValue) \(typography.size.description)")
                         .typography(.caption1.weight(typography.weight))
@@ -361,6 +406,9 @@ struct Typography_Previews: PreviewProvider {
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 15))
+                        .if(typography.design.isOverlineKerning) {
+                            $0.textCase(.uppercase)
+                        }
 
                     Divider()
                 }

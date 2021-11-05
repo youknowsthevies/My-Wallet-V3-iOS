@@ -256,7 +256,7 @@ final class MainAppReducerTests: XCTestCase {
         }
         testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.manualLoginScreen)))) { state in
             state.onboarding?.welcomeState?.screenFlow = .manualLoginScreen
-            state.onboarding?.welcomeState?.manualCredentialsState = .init(accountRecoveryEnabled: false)
+            state.onboarding?.welcomeState?.manualCredentialsState = .init()
         }
         testStore.send(
             .onboarding(
@@ -274,6 +274,9 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.receive(.onboarding(.welcomeScreen(.requestedToDecryptWallet("password"))))
         testStore.receive(.fetchWallet(password: "password"))
+        testStore.receive(.authenticate)
+        mockMainQueue.advance(by: .seconds(1))
+        testStore.receive(.doFetchWallet(password: "password"))
         mockSettingsApp.guid = String(repeating: "a", count: 36)
         mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
         XCTAssertTrue(mockWallet.fetchCalled)
@@ -282,7 +285,6 @@ final class MainAppReducerTests: XCTestCase {
             sharedKey: mockSettingsApp.sharedKey!,
             password: "password".passwordPartHash
         )
-        testStore.receive(.authenticate)
         mockMainQueue.advance()
 
         // wallet decryptions still expects the original values
@@ -324,13 +326,15 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.passwordScreen(.authenticate("password"))))
 
         testStore.receive(.fetchWallet(password: "password"))
+        testStore.receive(.authenticate)
+        mockMainQueue.advance(by: .seconds(1))
+        testStore.receive(.doFetchWallet(password: "password"))
         XCTAssertTrue(mockWallet.fetchCalled)
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
             sharedKey: mockSettingsApp.sharedKey!,
             password: "password".passwordPartHash
         )
-        testStore.receive(.authenticate)
         mockMainQueue.advance()
 
         let decryption = WalletDecryption(
@@ -370,6 +374,9 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.pin(.handleAuthentication("password"))))
 
         testStore.receive(.fetchWallet(password: "password"))
+        testStore.receive(.authenticate)
+        mockMainQueue.advance(by: .seconds(1))
+        testStore.receive(.doFetchWallet(password: "password"))
         XCTAssertTrue(mockWallet.fetchCalled)
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
@@ -377,7 +384,6 @@ final class MainAppReducerTests: XCTestCase {
             password: "password".passwordPartHash
         )
 
-        testStore.receive(.authenticate)
         mockMainQueue.advance()
 
         let decryption = WalletDecryption(
@@ -583,7 +589,7 @@ final class MainAppReducerTests: XCTestCase {
             )
         ) { state in
             state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?
-                .credentialsState = .init(accountRecoveryEnabled: false)
+                .credentialsState = .init()
             state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?
                 .route = RouteIntent(route: .credentials, action: .navigateTo)
         }

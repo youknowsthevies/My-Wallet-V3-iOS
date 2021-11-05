@@ -126,7 +126,7 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.send(.start(.none))
         mockMainQueue.advance()
 
-        XCTAssertTrue(mockExchangeAccountRepository.syncDepositAddressesIfLinkedPublisherCalled)
+        XCTAssertTrue(mockExchangeAccountRepository.syncDepositAddressesIfLinkedCalled)
 
         XCTAssertTrue(mockRemoteNotificationServiceContainer.sendTokenIfNeededPublisherCalled)
 

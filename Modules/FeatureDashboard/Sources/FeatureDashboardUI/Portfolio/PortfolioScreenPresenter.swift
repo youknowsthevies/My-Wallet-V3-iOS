@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import ComposableNavigation
+import ComposableArchitectureExtensions
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -54,6 +54,7 @@ final class PortfolioScreenPresenter {
         ) -> [PortfolioCellType] {
             var items: [PortfolioCellType] = [
                 .totalBalance(totalBalancePresenter)
+                // .withdrawalLock
             ]
             if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))

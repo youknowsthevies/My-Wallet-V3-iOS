@@ -68,7 +68,6 @@ public final class AmountTranslationView: UIView, AmountViewable {
         cryptoAmountLabelView.presenter = presenter.cryptoPresenter.presenter
 
         func setupConstraints(for amountLabelView: UIView, isActive: Bool) -> AmountLabelConstraints {
-
             amountLabelView.layoutToSuperview(.centerX)
             amountLabelView.layout(dimension: .height, to: 48)
 

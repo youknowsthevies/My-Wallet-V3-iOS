@@ -4,6 +4,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureAppUI
+import FeatureAuthenticationDomain
 import FeatureDashboardUI
 import FeatureInterestUI
 import FeatureOnboardingUI
@@ -337,6 +338,42 @@ extension LoggedInHostingController {
 
     // MARK: - TabSwapping
 
+    func interestTransfer(into account: BlockchainAccount) {
+        guard let interestAccount = account as? CryptoInterestAccount else {
+            fatalError("Expected a CryptoInterestAccount")
+        }
+        guard let viewController = topMostViewController else {
+            fatalError("Expected a UIViewController")
+        }
+        transactionsAdapter
+            .presentTransactionFlow(
+                to: .interestTransfer(interestAccount),
+                from: viewController
+            ) { result in
+                Logger.shared.info("Interest Transfer Transaction Flow completed with result '\(result)'")
+            }
+    }
+
+    func interestWithdraw(from account: BlockchainAccount) {
+        guard let interestAccount = account as? CryptoInterestAccount else {
+            fatalError("Expected a CryptoInterestAccount")
+        }
+        guard let viewController = topMostViewController else {
+            fatalError("Expected a UIViewController")
+        }
+        transactionsAdapter
+            .presentTransactionFlow(
+                to: .interestWithdraw(interestAccount),
+                from: viewController
+            ) { result in
+                Logger.shared.info("Interest Transfer Transaction Flow completed with result '\(result)'")
+            }
+    }
+
+    func receive(into account: BlockchainAccount) {
+        tabControllerManager?.receive(into: account)
+    }
+
     func deposit(into account: BlockchainAccount) {
         tabControllerManager?.deposit(into: account)
     }
@@ -371,6 +408,12 @@ extension LoggedInHostingController {
 
     // MARK: - InterestAccountListHostingControllerDelegate
 
+    func presentBuyIfNeeded(_ cryptoCurrency: CryptoCurrency) {
+        dismissTopMost(weak: self) { (self) in
+            self.handleBuyCrypto(currency: cryptoCurrency)
+        }
+    }
+
     func presentKYCIfNeeded() {
         /// Dismiss the Interest List View
         dismissTopMost(weak: self) { (self) in
@@ -397,16 +440,6 @@ extension LoggedInHostingController {
                 })
                 .store(in: &self.cancellables)
         }
-    }
-
-    // MARK: - CurrencyRouting
-
-    func toSend(_ currency: CurrencyType) {
-        tabControllerManager?.showSend(cryptoCurrency: currency.cryptoCurrency!)
-    }
-
-    func toReceive(_ currency: CurrencyType) {
-        tabControllerManager?.showReceive()
     }
 
     // MARK: - CashIdentityVerificationAnnouncementRouting

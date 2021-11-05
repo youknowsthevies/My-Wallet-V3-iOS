@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import FeatureAuthenticationDomain
 import PlatformKit
 
 final class MockUserAlreadyRestoredHandler: UserAlreadyRestoredHandlerAPI {

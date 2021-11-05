@@ -59,7 +59,6 @@ final class SettingsRouter: SettingsRouterAPI {
 
     private let navigationRouter: NavigationRouterAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
-    private unowned let currencyRouter: CurrencyRouting
     private unowned let tabSwapping: TabSwapping
     private unowned let appCoordinator: AppCoordinating
     private unowned let authenticationCoordinator: AuthenticationCoordinating
@@ -94,7 +93,6 @@ final class SettingsRouter: SettingsRouterAPI {
         cardListService: CardListServiceAPI = resolve(),
         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
         pitConnectionAPI: PITConnectionStatusProviding = resolve(),
-        currencyRouter: CurrencyRouting = resolve(),
         tabSwapping: TabSwapping = resolve(),
         passwordRepository: PasswordRepositoryAPI = resolve(),
         repository: DataRepositoryAPI = resolve(),
@@ -110,7 +108,6 @@ final class SettingsRouter: SettingsRouterAPI {
         self.navigationRouter = navigationRouter
         self.alertPresenter = alertPresenter
         self.analyticsRecording = analyticsRecording
-        self.currencyRouter = currencyRouter
         self.tabSwapping = tabSwapping
         self.guidRepositoryAPI = guidRepositoryAPI
         self.paymentMethodTypesService = paymentMethodTypesService

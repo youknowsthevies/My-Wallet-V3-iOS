@@ -1,14 +1,28 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct IconsExamplesView: View {
+    let columns = Array(
+        repeating: GridItem(.fixed(110)),
+        count: 3
+    )
+
     var body: some View {
         ScrollView {
-            Icon_Previews
-                .previews
-                .padding(.vertical, 8)
+            LazyVGrid(columns: columns, alignment: .center, spacing: 48) {
+                ForEach(Icon.allIcons, id: \.name) { icon in
+                    VStack {
+                        icon
+                            .accentColor(.semantic.muted)
+                            .frame(width: 24)
+
+                        Text(icon.name)
+                            .typography(.caption2)
+                    }
+                }
+            }
         }
     }
 }

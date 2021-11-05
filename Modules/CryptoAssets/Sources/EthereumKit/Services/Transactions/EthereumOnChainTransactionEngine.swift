@@ -243,10 +243,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        unimplemented()
-    }
-
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         unimplemented()
     }

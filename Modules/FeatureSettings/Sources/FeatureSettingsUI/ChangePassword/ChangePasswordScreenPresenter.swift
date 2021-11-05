@@ -43,6 +43,7 @@ final class ChangePasswordScreenPresenter {
     private let interactor: ChangePasswordScreenInteractor
     private let alertPresenter: AlertViewPresenter
     private let loadingViewPresenter: LoadingViewPresenting
+    private let coordinator: AuthenticationCoordinating
 
     // MARK: - Accessors
 
@@ -57,12 +58,14 @@ final class ChangePasswordScreenPresenter {
         alertPresenter: AlertViewPresenter = .shared,
         loadingViewPresenter: LoadingViewPresenting = resolve(),
         previousAPI: RoutingPreviousStateEmitterAPI,
-        interactor: ChangePasswordScreenInteractor
+        interactor: ChangePasswordScreenInteractor,
+        coordinator: AuthenticationCoordinating = resolve()
     ) {
         self.previousAPI = previousAPI
         self.interactor = interactor
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter
+        self.coordinator = coordinator
 
         descriptionContent = .init(
             text: LocalizationIDs.description,
@@ -133,7 +136,9 @@ final class ChangePasswordScreenPresenter {
             .bindAndCatch(to: interactor.triggerRelay)
             .disposed(by: disposeBag)
 
-        interactor.state
+        let interactorState = interactor.state.share(replay: 1, scope: .whileConnected)
+
+        interactorState
             .map(\.isLoading)
             .bindAndCatch(weak: self, onNext: { (self, isLoading) in
                 switch isLoading {
@@ -145,13 +150,21 @@ final class ChangePasswordScreenPresenter {
             })
             .disposed(by: disposeBag)
 
-        interactor.state
+        interactorState
             .filter(\.isComplete)
             .mapToVoid()
             .bindAndCatch(to: previousAPI.previousRelay)
             .disposed(by: disposeBag)
 
-        interactor.state
+        interactorState
+            .filter(\.isComplete)
+            .mapToVoid()
+            .subscribe { [weak self] _ in
+                self?.coordinator.changePin()
+            }
+            .disposed(by: disposeBag)
+
+        interactorState
             .filter { $0 == .incorrectPassword }
             .bindAndCatch(weak: self) { (self) in
                 self.handleInteraction(error: "Your password is incorrect.")

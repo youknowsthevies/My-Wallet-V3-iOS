@@ -49,34 +49,6 @@ extension DependencyContainer {
 
         factory { CustodialClient() as TradingBalanceClientAPI }
 
-        // MARK: - Authentication
-
-        single { NabuTokenStore() }
-
-        single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
-
-        single { NabuAuthenticationErrorBroadcaster() }
-
-        factory { () -> NabuAuthenticationErrorReceiverAPI in
-            let broadcaster: NabuAuthenticationErrorBroadcaster = DIKit.resolve()
-            return broadcaster as NabuAuthenticationErrorReceiverAPI
-        }
-
-        factory { () -> UserAlreadyRestoredHandlerAPI in
-            let broadcaster: NabuAuthenticationErrorBroadcaster = DIKit.resolve()
-            return broadcaster as UserAlreadyRestoredHandlerAPI
-        }
-
-        // swiftlint:disable opening_brace
-        factory { () -> NabuAuthenticationExecutorProvider in
-            { () -> NabuAuthenticationExecutorAPI in
-                DIKit.resolve()
-            }
-        }
-        // swiftlint:enable opening_brace
-
-        factory { NabuAuthenticator() as AuthenticatorAPI }
-
         // MARK: - Wallet
 
         factory { WalletNabuSynchronizerService() as WalletNabuSynchronizerServiceAPI }
@@ -98,9 +70,9 @@ extension DependencyContainer {
             return repository as NabuOfflineTokenRepositoryAPI
         }
 
-        factory { () -> NabuAuthenticationExecutor.CredentialsRepository in
+        factory { () -> CredentialsRepositoryAPI & NabuOfflineTokenRepositoryAPI in
             let repository: WalletRepositoryAPI = DIKit.resolve()
-            return repository as NabuAuthenticationExecutor.CredentialsRepository
+            return repository as CredentialsRepositoryAPI & NabuOfflineTokenRepositoryAPI
         }
 
         // MARK: - Secure Channel

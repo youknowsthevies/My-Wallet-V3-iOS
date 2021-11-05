@@ -256,8 +256,6 @@ public final class SelectionButtonView: UIView {
         titleLabel.verticalContentHuggingPriority = .required
         titleLabel.verticalContentCompressionResistancePriority = .required
 
-        subtitleLabel.adjustsFontSizeToFitWidth = true
-        subtitleLabel.minimumScaleFactor = 0.7
         subtitleLabel.verticalContentHuggingPriority = .required
         subtitleLabel.verticalContentCompressionResistancePriority = .required
 

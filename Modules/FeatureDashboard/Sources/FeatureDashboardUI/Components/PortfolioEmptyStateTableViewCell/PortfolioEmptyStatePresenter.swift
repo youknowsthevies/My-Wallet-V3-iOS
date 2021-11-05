@@ -12,18 +12,18 @@ final class PortfolioEmptyStatePresenter {
     typealias LocalizedString = LocalizationConstants.Dashboard.Portfolio.EmptyState
 
     let title = LabelContent(
-        text: "Welcome to Blockchain.com!",
+        text: LocalizedString.title,
         font: .main(.semibold, 20),
         color: .darkTitleText,
         alignment: .center
     )
     let subtitle = LabelContent(
-        text: "All your crypto balances will show up here once you buy or receive.",
+        text: LocalizedString.subtitle,
         font: .main(.medium, 14),
         color: .darkTitleText,
         alignment: .center
     )
-    let cta = ButtonViewModel.primary(with: "Buy Crypto")
+    let cta = ButtonViewModel.primary(with: LocalizedString.cta)
     let didTapReceive: PublishRelay<Void> = .init()
     let didTapDeposit: PublishRelay<Void> = .init()
 

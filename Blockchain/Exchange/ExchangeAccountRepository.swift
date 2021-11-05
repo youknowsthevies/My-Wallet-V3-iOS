@@ -1,17 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BitcoinCashKit
-import BitcoinKit
 import Combine
 import DIKit
-import FeatureSettingsDomain
 import PlatformKit
-import RxSwift
-
-enum ExchangeLinkingAPIError: Error {
-    case noLinkID
-    case unknown
-}
 
 final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
 
@@ -29,57 +20,75 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
         self.coincore = coincore
     }
 
-    var hasLinkedExchangeAccount: Single<Bool> {
+    var hasLinkedExchangeAccount: AnyPublisher<Bool, ExchangeAccountRepositoryError> {
         nabuUserService.user
             .map(\.hasLinkedExchangeAccount)
-            .asSingle()
+            .replaceError(with: ExchangeAccountRepositoryError.failedCheckLinkedExchange)
     }
 
-    func syncDepositAddressesIfLinked() -> Completable {
+    func syncDepositAddressesIfLinked() -> AnyPublisher<Void, ExchangeAccountRepositoryError> {
         hasLinkedExchangeAccount
-            .flatMapCompletable(weak: self) { (self, linked) -> Completable in
-                if linked {
-                    return self.syncDepositAddresses()
-                } else {
-                    return Completable.empty()
+            .flatMap { [syncDepositAddresses] isLinked -> AnyPublisher<Void, ExchangeAccountRepositoryError> in
+                guard isLinked else {
+                    return .just(())
+                }
+                return syncDepositAddresses()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func syncDepositAddresses() -> AnyPublisher<Void, ExchangeAccountRepositoryError> {
+        cryptoReceiveAddressesToSync()
+            .flatMap { [client] addresses -> AnyPublisher<Void, ExchangeAccountRepositoryError> in
+                client.syncDepositAddress(accounts: addresses)
+                    .replaceError(with: ExchangeAccountRepositoryError.failedToSyncAddresses)
+            }
+            .eraseToAnyPublisher()
+    }
+
+    /// CryptoReceiveAddress array that should be synced to the Exchange.
+    private func cryptoReceiveAddressesToSync() -> AnyPublisher<[CryptoReceiveAddress], Never> {
+        accountsToSync()
+            .flatMap { accounts -> AnyPublisher<[ReceiveAddress?], Never> in
+                accounts
+                    .map { account in
+                        account.receiveAddress
+                            .publisher
+                            .optional()
+                            .replaceError(with: nil)
+                    }
+                    .zip()
+            }
+            .map { addresses -> [CryptoReceiveAddress] in
+                addresses.compactMap { address in
+                    address as? CryptoReceiveAddress
                 }
             }
+            .eraseToAnyPublisher()
     }
 
-    func syncDepositAddressesIfLinkedPublisher() -> AnyPublisher<Void, Error> {
-        syncDepositAddressesIfLinked()
-            .asPublisher()
-            .mapToVoid()
-    }
-
-    func syncDepositAddresses() -> Completable {
-        Single
-            .just(coincore.cryptoAssets)
-            .flatMap { cryptoAssets -> Single<[SingleAccount?]> in
-                Single.zip(
-                    cryptoAssets
-                        .map { asset -> Single<SingleAccount?> in
-                            asset.defaultAccount
-                                .optional()
-                                .replaceError(with: nil)
-                                .eraseToAnyPublisher()
-                                .asSingle()
-                        }
-                )
+    /// SingleAccount array that should sync their Receive Address to the Exchange.
+    private func accountsToSync() -> AnyPublisher<[SingleAccount], Never> {
+        Deferred { [coincore] in
+            Future<[CryptoAsset], Never> { promise in
+                let cryptoAssets = coincore.cryptoAssets
+                    .filter {
+                        $0.asset.assetModel.supports(product: .mercuryDeposits)
+                            || $0.asset.assetModel.supports(product: .mercuryWithdrawals)
+                    }
+                promise(.success(cryptoAssets))
             }
-            .map { accounts -> [SingleAccount] in
-                accounts.compactMap { $0 }
-            }
-            .flatMap { accounts -> Single<[ReceiveAddress]> in
-                Single.zip(accounts.map(\.receiveAddress))
-            }
-            .map { receiveAddresses -> [CryptoReceiveAddress] in
-                receiveAddresses as? [CryptoReceiveAddress] ?? []
-            }
-            .flatMapCompletable { [client] receiveAddresses in
-                client.syncDepositAddress(accounts: receiveAddresses)
-                    .asObservable()
-                    .ignoreElements()
-            }
+        }
+        .flatMap { cryptoAssets in
+            cryptoAssets
+                .map { asset in
+                    asset.defaultAccount.optional().replaceError(with: nil)
+                }
+                .zip()
+                .map { accounts in
+                    accounts.compactMap { $0 }
+                }
+        }
+        .eraseToAnyPublisher()
     }
 }

@@ -19,6 +19,8 @@ public final class SingleAmountInteractor: AmountViewInteracting {
             .share(replay: 1, scope: .whileConnected)
     }
 
+    public let auxiliaryButtonTappedRelay = PublishRelay<Void>()
+
     /// Streams the amount of `MoneyValue`
     public let amount: Observable<MoneyValue>
 

@@ -73,20 +73,18 @@ public struct CredentialsView: View {
             passwordField
                 .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.passwordGroup)
 
-            if viewStore.accountRecoveryEnabled {
-                Button(
-                    action: {
-                        viewStore.send(.setTroubleLoggingInScreenVisible(true))
-                    },
-                    label: {
-                        Text(LocalizedString.Link.troubleLogInLink)
-                            .font(Font(weight: .medium, size: Layout.linkTextFontSize))
-                            .foregroundColor(.buttonLinkText)
-                    }
-                )
-                .padding(.top, Layout.troubleLogInTextTopPadding)
-                .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.troubleLoggingInButton)
-            }
+            Button(
+                action: {
+                    viewStore.send(.setTroubleLoggingInScreenVisible(true))
+                },
+                label: {
+                    Text(LocalizedString.Link.troubleLogInLink)
+                        .font(Font(weight: .medium, size: Layout.linkTextFontSize))
+                        .foregroundColor(.buttonLinkText)
+                }
+            )
+            .padding(.top, Layout.troubleLogInTextTopPadding)
+            .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.troubleLoggingInButton)
 
             if let state = viewStore.twoFAState, state.isTwoFACodeFieldVisible {
                 twoFAField
@@ -363,7 +361,7 @@ struct PasswordLoginView_Previews: PreviewProvider {
         CredentialsView(
             context: .none,
             store: Store(
-                initialState: .init(accountRecoveryEnabled: true),
+                initialState: .init(),
                 reducer: credentialsReducer,
                 environment: .init(
                     mainQueue: .main,

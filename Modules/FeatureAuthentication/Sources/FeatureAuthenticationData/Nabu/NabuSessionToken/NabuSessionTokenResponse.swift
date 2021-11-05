@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureAuthenticationDomain
 import Foundation
 import ToolKit
 
@@ -43,5 +44,17 @@ extension NabuSessionTokenResponse: Decodable {
         isActive = try values.decode(Bool.self, forKey: .isActive)
         let expiresAtString = try values.decode(String.self, forKey: .expiresAt)
         expiresAt = DateFormatter.sessionDateFormat.date(from: expiresAtString)
+    }
+}
+
+extension NabuSessionToken {
+    init(from response: NabuSessionTokenResponse) {
+        self.init(
+            identifier: response.identifier,
+            userId: response.userId,
+            token: response.token,
+            isActive: response.isActive,
+            expiresAt: response.expiresAt
+        )
     }
 }

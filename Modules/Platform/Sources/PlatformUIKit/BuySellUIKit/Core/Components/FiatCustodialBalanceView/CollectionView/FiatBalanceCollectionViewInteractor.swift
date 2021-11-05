@@ -29,7 +29,6 @@ public final class FiatBalanceCollectionViewInteractor {
     // MARK: - Injected Properties
 
     private let tiersService: KYCTiersServiceAPI
-    private let tradingBalanceService: TradingBalanceServiceAPI
     private let paymentMethodsService: PaymentMethodsServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
@@ -83,7 +82,6 @@ public final class FiatBalanceCollectionViewInteractor {
 
     public init(
         tiersService: KYCTiersServiceAPI = resolve(),
-        tradingBalanceService: TradingBalanceServiceAPI = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
@@ -91,7 +89,6 @@ public final class FiatBalanceCollectionViewInteractor {
     ) {
         self.coincore = coincore
         self.tiersService = tiersService
-        self.tradingBalanceService = tradingBalanceService
         self.paymentMethodsService = paymentMethodsService
         self.enabledCurrenciesService = enabledCurrenciesService
         self.fiatCurrencyService = fiatCurrencyService

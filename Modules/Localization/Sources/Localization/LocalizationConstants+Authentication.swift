@@ -49,10 +49,6 @@ extension LocalizationConstants.FeatureAuthentication {
         }
 
         public enum Button {
-            public static let createWallet = NSLocalizedString(
-                "Create a Wallet",
-                comment: "Welcome screen: create wallet CTA button"
-            )
             public static let buyCryptoNow = NSLocalizedString(
                 "Buy Crypto Now",
                 comment: "Welcome screen: create wallet CTA button"
@@ -72,7 +68,7 @@ extension LocalizationConstants.FeatureAuthentication {
         }
 
         public static let title = NSLocalizedString(
-            "Welcome to Blockchain",
+            "Welcome to Blockchain.com",
             comment: "Welcome screen: title"
         )
     }

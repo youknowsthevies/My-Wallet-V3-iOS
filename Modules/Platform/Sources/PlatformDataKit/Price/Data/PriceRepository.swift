@@ -27,12 +27,13 @@ final class PriceRepository: PriceRepositoryAPI {
 
     init(client: PriceClientAPI = resolve()) {
         self.client = client
-        let inMemoryCache = InMemoryCache<PriceRequest.IndexMulti.Key, [String: PriceQuoteAtTime]>(
+        let indexMultiCache = InMemoryCache<PriceRequest.IndexMulti.Key, [String: PriceQuoteAtTime]>(
+            configuration: .default(),
             refreshControl: PeriodicCacheRefreshControl(refreshInterval: 60)
         )
         .eraseToAnyCache()
         indexMultiCachedValue = CachedValueNew(
-            cache: inMemoryCache,
+            cache: indexMultiCache,
             fetch: { key in
                 client
                     .price(of: key.base, in: key.quote.code, time: key.time.timestamp)
@@ -48,11 +49,13 @@ final class PriceRepository: PriceRepositoryAPI {
                     .eraseToAnyPublisher()
             }
         )
+        let symbolsCache = InMemoryCache<PriceRequest.Symbols.Key, Set<String>>(
+            configuration: .default(),
+            refreshControl: PerpetualCacheRefreshControl()
+        )
+        .eraseToAnyCache()
         symbolsCachedValue = CachedValueNew(
-            cache: InMemoryCache<PriceRequest.Symbols.Key, Set<String>>(
-                refreshControl: PerpetualCacheRefreshControl()
-            )
-            .eraseToAnyCache(),
+            cache: symbolsCache,
             fetch: { _ in
                 client.symbols()
                     .map(\.base.keys)

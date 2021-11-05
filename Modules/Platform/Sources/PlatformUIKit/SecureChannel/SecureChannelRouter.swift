@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Localization
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -8,10 +9,13 @@ import ToolKit
 public protocol SecureChannelRouting {
     func didScanPairingQRCode(msg: String)
     func didReceiveSecureChannelCandidate(_ candidate: SecureChannelConnectionCandidate)
-    func didReceiveError(_ error: Error)
+    func didReceiveError(_ error: SecureChannelError)
 }
 
 final class SecureChannelRouter: SecureChannelRouting {
+
+    private typealias LocalizedString = LocalizationConstants.SecureChannel.Alert
+
     private let service: SecureChannelAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let loadingViewPresenter: LoadingViewPresenting
@@ -92,7 +96,10 @@ final class SecureChannelRouter: SecureChannelRouting {
             .disposed(by: disposeBag)
     }
 
-    private func didReceiveSecureChannelCandidate(_ candidate: SecureChannelConnectionCandidate, isReadyForSecureChannel: Bool) {
+    private func didReceiveSecureChannelCandidate(
+        _ candidate: SecureChannelConnectionCandidate,
+        isReadyForSecureChannel: Bool
+    ) {
         guard isReadyForSecureChannel else {
             store.store(candidate)
             showNeedLoginAlert()
@@ -101,11 +108,11 @@ final class SecureChannelRouter: SecureChannelRouting {
         showDetailsScreen(with: candidate)
     }
 
-    func didReceiveError(_ error: Error) {
+    func didReceiveError(_ error: SecureChannelError) {
         alertViewPresenter.notify(
             content: AlertViewContent(
-                title: "QR Code Login",
-                message: String(describing: error)
+                title: LocalizedString.title,
+                message: error.errorDescription
             ),
             in: nil
         )
@@ -114,8 +121,8 @@ final class SecureChannelRouter: SecureChannelRouting {
     private func showNeedLoginAlert() {
         alertViewPresenter.notify(
             content: AlertViewContent(
-                title: "QR Code Login",
-                message: "You need to authenticate to be able to respond to the login request."
+                title: LocalizedString.title,
+                message: LocalizedString.loginRequired
             ),
             in: nil
         )

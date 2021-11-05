@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import DIKit
 import FeatureInterestDomain
 import Localization
@@ -36,7 +37,7 @@ public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboa
         self.router = router
         announcement = .init(
             badgeImage: .init(
-                image: .local(name: "icon_interest", bundle: .platformUIKit),
+                image: .local(name: Icon.interest.name, bundle: .componentLibrary),
                 contentColor: .white,
                 backgroundColor: .defaultBadge,
                 cornerRadius: .round,

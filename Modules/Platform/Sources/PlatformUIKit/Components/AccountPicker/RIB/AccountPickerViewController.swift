@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureWithdrawalLocksUI
 import PlatformKit
 import RIBs
 import RxCocoa
@@ -7,6 +8,7 @@ import RxDataSources
 import RxRelay
 import RxSwift
 import ToolKit
+import UIComponentsKit
 import UIKit
 
 public protocol AccountPickerViewControllable: ViewControllable {
@@ -87,6 +89,10 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
                     for: indexPath,
                     presenter: presenter
                 )
+            case .withdrawalLocks:
+                cell = self.withdrawalLocksTableViewCell(
+                    for: indexPath
+                )
             }
             cell.selectionStyle = .none
             return cell
@@ -106,6 +112,7 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self, in: .module)
         tableView.registerNibCell(ButtonsTableViewCell.self, in: .module)
+        tableView.register(HostingTableViewCell<WithdrawalLocksView>.self)
     }
 
     public init() {
@@ -326,13 +333,21 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         cell.models = [viewModel]
         return cell
     }
+
+    private func withdrawalLocksTableViewCell(
+        for indexPath: IndexPath
+    ) -> UITableViewCell {
+        let cell = tableView.dequeue(HostingTableViewCell<WithdrawalLocksView>.self, for: indexPath)
+        cell.host(WithdrawalLocksView(), parent: self)
+        return cell
+    }
 }
 
 extension AccountPickerViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         headerBuilderForTableView(section: section)?
             .view(
-                fittingWidth: view.bounds.width,
+                fittingWidth: tableView.bounds.width,
                 customHeight: nil
             )
     }

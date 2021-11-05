@@ -1,12 +1,15 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import RxSwift
+
+public enum ExchangeAccountRepositoryError: Error {
+    case failedCheckLinkedExchange
+    case failedToSyncAddresses
+}
 
 public protocol ExchangeAccountRepositoryAPI {
-    var hasLinkedExchangeAccount: Single<Bool> { get }
+    var hasLinkedExchangeAccount: AnyPublisher<Bool, ExchangeAccountRepositoryError> { get }
 
-    func syncDepositAddresses() -> Completable
-    func syncDepositAddressesIfLinked() -> Completable
-    func syncDepositAddressesIfLinkedPublisher() -> AnyPublisher<Void, Error>
+    func syncDepositAddresses() -> AnyPublisher<Void, ExchangeAccountRepositoryError>
+    func syncDepositAddressesIfLinked() -> AnyPublisher<Void, ExchangeAccountRepositoryError>
 }
