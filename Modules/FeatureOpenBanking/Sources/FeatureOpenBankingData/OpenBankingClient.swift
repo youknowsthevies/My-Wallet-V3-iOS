@@ -269,7 +269,8 @@ extension OpenBanking.BankAccount {
 
             return banking.network.perform(request: request, responseType: OpenBanking.Payment.self)
                 .handleEvents(receiveOutput: { [banking] payment in
-                    banking.state.set(.callback.path, to: payment.attributes.callbackPath.dropPrefix("nabu-gateway").string)
+                    let path = payment.attributes.callbackPath.dropPrefix("nabu-gateway").string
+                    banking.state.set(.callback.path, to: path)
                 })
                 .mapError(OpenBanking.Error.init)
                 .eraseToAnyPublisher()
