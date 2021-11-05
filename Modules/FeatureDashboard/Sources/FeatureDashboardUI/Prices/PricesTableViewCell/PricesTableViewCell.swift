@@ -16,6 +16,7 @@ final class PricesTableViewCell: UITableViewCell {
         static let badgeImageEdge: CGFloat = 32
         static let badgeImageMargin: CGFloat = 24
         static let textToBadgeImage: CGFloat = 16
+        static let textToAccessory: CGFloat = 8
         static let textOffCenter: CGFloat = 2
     }
 
@@ -73,9 +74,11 @@ final class PricesTableViewCell: UITableViewCell {
         badgeImageView.layoutToSuperview(.leading, offset: Design.badgeImageMargin)
 
         titleLabel.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: Design.textToBadgeImage)
+        titleLabel.layoutToSuperview(.trailing, offset: -Design.textToAccessory)
         titleLabel.layout(edge: .bottom, to: .centerY, of: contentView, offset: -Design.textOffCenter)
 
         subtitleLabel.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: Design.textToBadgeImage)
+        subtitleLabel.layoutToSuperview(.trailing, offset: -Design.textToAccessory)
         subtitleLabel.layout(edge: .top, to: .centerY, of: contentView, offset: Design.textOffCenter)
     }
 

@@ -52,7 +52,6 @@ enum TransactionAction: MviAction {
     case updateFeeLevelAndAmount(FeeLevel, MoneyValue?)
     case sourceDestinationPair(MoneyValuePair)
     case transactionFiatRatePairs(TransactionMoneyValuePairs)
-    case fatalTransactionError(Error)
     case validateTransaction
     case createOrder
     case orderCreated(TransactionOrder?)
@@ -64,6 +63,8 @@ enum TransactionAction: MviAction {
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
     case modifyTransactionConfirmation(TransactionConfirmation)
+    case fatalTransactionError(Error)
+    case showErrorRecoverySuggestion
     case invalidateTransaction
 }
 
@@ -360,6 +361,10 @@ extension TransactionAction {
             newState.executionStatus = .error
             return newState.withUpdatedBackstack(oldState: oldState)
 
+        case .showErrorRecoverySuggestion:
+            return oldState
+                .stateForMovingForward(to: .errorRecoveryInfo)
+
         case .validateTransaction:
             return oldState
 
@@ -476,6 +481,7 @@ extension TransactionState {
 }
 
 extension TransactionValidationState {
+
     var mapToTransactionErrorState: TransactionErrorState {
         switch self {
         case .addressIsContract:

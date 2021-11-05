@@ -11,6 +11,7 @@ public struct AccountPickerCellItem: IdentifiableType {
 
     public enum Presenter {
         case emptyState(LabelContent)
+        case withdrawalLocks
         case button(ButtonViewModel)
         case linkedBankAccount(LinkedBankAccountCellPresenter)
         case paymentMethodAccount(PaymentMethodCellPresenter)
@@ -20,6 +21,7 @@ public struct AccountPickerCellItem: IdentifiableType {
 
     enum Interactor {
         case emptyState
+        case withdrawalLocks
         case button(ButtonViewModel)
         case linkedBankAccount(LinkedBankAccount)
         case paymentMethodAccount(PaymentMethodAccount)
@@ -33,6 +35,8 @@ public struct AccountPickerCellItem: IdentifiableType {
             return "emptyState"
         case .button:
             return "button"
+        case .withdrawalLocks:
+            return "withdrawalLocks"
         case .accountGroup,
              .linkedBankAccount,
              .paymentMethodAccount,
@@ -58,6 +62,9 @@ public struct AccountPickerCellItem: IdentifiableType {
                 alignment: .center
             )
             presenter = .emptyState(labelContent)
+        case .withdrawalLocks:
+            account = nil
+            presenter = .withdrawalLocks
         case .button(let viewModel):
             account = nil
             presenter = .button(viewModel)

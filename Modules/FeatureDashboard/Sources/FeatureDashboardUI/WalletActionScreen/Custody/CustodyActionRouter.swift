@@ -210,7 +210,11 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             guard let self = self else {
                 return
             }
-            self.tabSwapping.switchTabToReceive()
+            if let account = self.account {
+                self.tabSwapping.receive(into: account)
+            } else {
+                self.tabSwapping.switchTabToReceive()
+            }
         }
     }
 
@@ -370,6 +374,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        BottomSheetPresenting(ignoresBackroundTouches: false)
+        BottomSheetPresenting(ignoresBackgroundTouches: false)
     }()
 }

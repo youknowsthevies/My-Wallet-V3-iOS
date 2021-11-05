@@ -31,9 +31,7 @@ public struct WelcomeState: Equatable {
         case welcomeScreen
         case createWalletScreen
         case emailLoginScreen
-        case restoreScreen
         case restoreWalletScreen
-        case legacyRestoreWalletScreen
         /// this should only be used for internal builds
         case manualLoginScreen
     }
@@ -178,22 +176,14 @@ public let welcomeReducer = Reducer.combine(
             switch screenFlow {
             case .emailLoginScreen:
                 state.emailLoginState = .init()
-            case .restoreScreen:
-                guard environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled else {
-                    return Effect(value: .presentScreenFlow(.legacyRestoreWalletScreen))
-                }
-                return Effect(value: .presentScreenFlow(.restoreWalletScreen))
             case .restoreWalletScreen:
                 state.restoreWalletState = .init()
-            case .welcomeScreen, .createWalletScreen, .manualLoginScreen, .legacyRestoreWalletScreen:
+            case .welcomeScreen, .createWalletScreen, .manualLoginScreen:
                 state.emailLoginState = nil
                 state.restoreWalletState = nil
             }
             if BuildFlag.isInternal, screenFlow == .manualLoginScreen {
-                state.manualCredentialsState = .init(
-                    accountRecoveryEnabled:
-                    environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled
-                )
+                state.manualCredentialsState = .init()
             }
             return .none
 

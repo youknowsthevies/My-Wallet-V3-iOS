@@ -1,5 +1,5 @@
 import ComposableArchitecture
-import ComposableNavigation
+import ComposableArchitectureExtensions
 import SwiftUI
 
 enum AccountPickerError: Error {
@@ -11,4 +11,10 @@ struct AccountPickerState: Equatable {
 
     var rows: RowState
     var header: Header
+
+    var searchText: String?
+
+    var fiatBalances: [AnyHashable: String]
+    var cryptoBalances: [AnyHashable: String]
+    var currencyCodes: [AnyHashable: String]
 }

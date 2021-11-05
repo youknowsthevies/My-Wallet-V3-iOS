@@ -6,31 +6,44 @@ import RxSwift
 
 public final class CheckboxViewModel: IdentifiableType {
 
+    struct Content {
+        let title: String
+
+        static let empty: Content = .init(title: "")
+    }
+
     // MARK: - Public Properties
 
     public let image: Driver<UIImage?>
 
-    public let labelContent: Driver<LabelContent>
+    public var labelContent: Driver<LabelContent> {
+        contentRelay
+            .map(\.title)
+            .map {
+                .init(
+                    text: $0,
+                    font: .main(.medium, 12.0),
+                    color: .textFieldText
+                )
+            }
+            .asDriver(onErrorJustReturn: .empty)
+    }
 
     public let selectedRelay = BehaviorRelay<Bool>(value: false)
 
     // MARK: - RxDataSources
 
-    public let identity: AnyHashable
+    public var identity: AnyHashable {
+        contentRelay.value.title
+    }
+
+    // MARK: - Private Properties
+
+    private let contentRelay = BehaviorRelay<Content>(value: .empty)
 
     // MARK: - Init
 
-    public init(
-        text: String
-    ) {
-        identity = text
-        labelContent = .just(
-            .init(
-                text: text,
-                font: .main(.medium, 12.0),
-                color: .textFieldText
-            )
-        )
+    public init() {
         image = selectedRelay
             .asObservable()
             .map { $0 ? "checkbox-on" : "checkbox-off" }
@@ -41,6 +54,10 @@ public final class CheckboxViewModel: IdentifiableType {
                 }
                 return nil
             }
+    }
+
+    public func apply(text: String) {
+        contentRelay.accept(.init(title: text))
     }
 }
 

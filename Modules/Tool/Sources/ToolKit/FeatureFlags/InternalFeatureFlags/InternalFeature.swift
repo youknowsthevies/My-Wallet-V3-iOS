@@ -39,6 +39,9 @@ public enum InternalFeature: String, CaseIterable {
     /// OpenBanking
     case openBanking
 
+    /// Enables the new Limits UI in Transaction Flow
+    case newTxFlowLimitsUIEnabled
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -46,11 +49,12 @@ public enum InternalFeature: String, CaseIterable {
              .newAccountPicker,
              .newOnboardingTour,
              .openBanking,
+             .interestWithdrawAndDeposit,
              .pollingForEmailLogin:
             return true
         case .disableGUIDLogin,
-             .interestWithdrawAndDeposit,
              .requestConsoleLogging,
+             .newTxFlowLimitsUIEnabled,
              .secureChannel,
              .unifiedSignIn,
              .nativeWalletPayload:
@@ -90,6 +94,8 @@ extension InternalFeature {
             return "Native Wallet Payload"
         case .openBanking:
             return "Open Banking"
+        case .newTxFlowLimitsUIEnabled:
+            return "New Limits UI"
         }
     }
 }

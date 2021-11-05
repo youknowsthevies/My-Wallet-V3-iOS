@@ -97,7 +97,7 @@ extension Publisher {
     }
 
     public func `catch`(_ output: @autoclosure @escaping () -> Output) -> Publishers.Catch<Self, Just<Output>> {
-        `catch` { error in Just(output()) }
+        `catch` { _ in Just(output()) }
     }
 }
 
@@ -242,20 +242,6 @@ extension Publisher where Output: ResultProtocol, Failure == Never {
             case .success(let success):
                 return Just(success).setFailureType(to: Output.Failure.self).eraseToAnyPublisher()
             }
-        }
-        .eraseToAnyPublisher()
-    }
-}
-
-extension Publisher {
-
-    public func filter<T>(_ casePath: CasePath<Output, T>) -> Publishers.CompactMap<Self, T> {
-        compactMap(casePath.extract(from:))
-    }
-
-    public func ignore<T>(output casePath: CasePath<Output, T>) -> AnyPublisher<Output, Failure> {
-        filter { output in
-            casePath.extract(from: output) != nil
         }
         .eraseToAnyPublisher()
     }

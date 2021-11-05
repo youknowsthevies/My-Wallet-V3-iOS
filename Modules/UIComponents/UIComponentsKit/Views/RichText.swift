@@ -32,7 +32,7 @@ public struct RichText: View {
 
     private let elements: [Element]
 
-    init(_ content: String) {
+    public init(_ content: String) {
         elements = content.elements
     }
 

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import DIKit
 import FeatureTransactionDomain
 import FeatureOpenBankingUI
@@ -8,6 +9,7 @@ import PlatformKit
 import PlatformUIKit
 import RIBs
 import RxSwift
+import SwiftUI
 import ToolKit
 
 protocol TransactionFlowInteractable: Interactable,
@@ -43,6 +45,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
 
+    private let bottomSheetPresenter = BottomSheetPresenting(ignoresBackgroundTouches: true)
     private let disposeBag = DisposeBag()
 
     private var linkBankFlowRouter: LinkBankFlowStarter?
@@ -102,17 +105,58 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         }
     }
 
+    func showErrorRecoverySuggestion(errorState: TransactionErrorState, transactionModel: TransactionModel) {
+        // NOTE: this will be fixed in IOS-5576
+        let view = ErrorRecoveryView(
+            store: .init(
+                initialState: ErrorRecoveryState(
+                    title: "Not Enough ETH",
+                    // swiftlint:disable:next line_length
+                    message: "The max you can send from this wallet is **0.14391831 ETH**. Buy **0.14381931 ETH** now to send this amount.",
+                    callouts: [
+                        ErrorRecoveryState.Callout(
+                            image: ImageResource.local(
+                                name: "crypto-eth",
+                                bundle: .platformUIKit
+                            ).image!,
+                            title: "Get More ETH",
+                            message: "Buy 0.14381931 ETH",
+                            callToAction: "BUY"
+                        )
+                    ]
+                ),
+                reducer: errorRecoveryReducer,
+                environment: ErrorRecoveryEnvironment(
+                    close: {
+                        transactionModel.process(action: .returnToPreviousStep)
+                    },
+                    calloutTapped: { _ in
+                        print("Callout Tapped")
+                    }
+                )
+            )
+        )
+        let viewController = UIHostingController(rootView: view)
+        viewController.transitioningDelegate = bottomSheetPresenter
+        viewController.modalPresentationStyle = .custom
+        let presenter = topMostViewControllerProvider.topMostViewController
+        presenter?.present(viewController, animated: true, completion: nil)
+    }
+
     func pop() {
         viewController.pop()
     }
 
     func dismiss() {
-        guard let top = topMostViewControllerProvider.topMostViewController else {
+        guard let topVC = topMostViewControllerProvider.topMostViewController else {
             return
         }
-        guard let child = children.last else { return }
-        top.dismiss(animated: true) { [weak self] in
+        let topRouter = children.last
+        topVC.presentingViewController?.dismiss(animated: true) { [weak self] in
             // Detatch child in completion block to avoid false-positive leak checks
+            guard let child = topRouter as? ViewableRouting, child.viewControllable.uiviewController === topVC else {
+                return
+            }
             self?.detachChild(child)
         }
     }

@@ -1,20 +1,38 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct PaddingExamplesView: View {
     var body: some View {
         ScrollView {
             VStack {
-                Spacing_Previews.paddingView(for: Spacing.padding1)
-                Spacing_Previews.paddingView(for: Spacing.padding2)
-                Spacing_Previews.paddingView(for: Spacing.padding3)
-                Spacing_Previews.paddingView(for: Spacing.padding4)
-                Spacing_Previews.paddingView(for: Spacing.padding5)
-                Spacing_Previews.paddingView(for: Spacing.padding6)
+                paddingView(for: Spacing.padding1, title: "padding1")
+                paddingView(for: Spacing.padding2, title: "padding2")
+                paddingView(for: Spacing.padding3, title: "padding3")
+                paddingView(for: Spacing.padding4, title: "padding4")
+                paddingView(for: Spacing.padding5, title: "padding5")
+                paddingView(for: Spacing.padding6, title: "padding6")
             }
         }
+    }
+
+    @ViewBuilder func paddingView(for padding: CGFloat, title: String) -> some View {
+        ZStack {
+            Rectangle()
+                .foregroundColor(.white)
+                .border(Color.red, width: 0.5)
+                .padding(padding)
+
+            VStack(spacing: Spacing.padding1) {
+                Text(title)
+                    .typography(.title3)
+                Text("\(padding)")
+                    .typography(.body1)
+            }
+        }
+        .frame(height: 188)
+        .background(Color.gray.opacity(0.1))
     }
 }
 

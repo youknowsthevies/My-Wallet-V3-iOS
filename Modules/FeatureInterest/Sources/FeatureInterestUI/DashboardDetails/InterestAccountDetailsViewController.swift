@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import PlatformUIKit
 import RxDataSources
 import RxSwift
@@ -14,6 +15,7 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
 
     private let tableView: SelfSizingTableView
     private let presenter: InterestAccountDetailsScreenPresenter
+    private let loadingViewPresenter: LoadingViewPresenting = resolve()
     private let disposeBag = DisposeBag()
 
     public init(presenter: InterestAccountDetailsScreenPresenter) {
@@ -38,6 +40,7 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         super.viewDidLoad()
         setupTableView()
         setupNavigationBar()
+        loadingViewPresenter.showCircular()
 
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
@@ -49,6 +52,7 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         tableView.separatorInset = .zero
         tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.register(CurrentBalanceTableViewCell.self)
+        tableView.registerNibCell(ButtonsTableViewCell.self, in: .platformUIKit)
         tableView.registerNibCell(LineItemTableViewCell.self, in: .platformUIKit)
         tableView.register(FooterTableViewCell.self)
 
@@ -56,6 +60,8 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
             guard let self = self else { return UITableViewCell() }
             let cell: UITableViewCell
             switch item.presenter {
+            case .buttons(let viewModels):
+                cell = self.buttonsCell(for: indexPath, viewModels: viewModels)
             case .currentBalance(let presenter):
                 cell = self.balanceCell(for: indexPath, presenter: presenter)
             case .footer(let presenter):
@@ -71,6 +77,8 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
         })
 
         presenter.sectionObservable
+            .hide(loader: loadingViewPresenter)
+            .hideOnError(loader: loadingViewPresenter)
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
     }
@@ -87,19 +95,37 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
 
 extension InterestAccountDetailsViewController {
 
-    private func balanceCell(for indexPath: IndexPath, presenter: CurrentBalanceCellPresenter) -> CurrentBalanceTableViewCell {
+    private func buttonsCell(
+        for indexPath: IndexPath,
+        viewModels: [ButtonViewModel]
+    ) -> ButtonsTableViewCell {
+        let cell = tableView.dequeue(ButtonsTableViewCell.self, for: indexPath)
+        cell.models = viewModels
+        return cell
+    }
+
+    private func balanceCell(
+        for indexPath: IndexPath,
+        presenter: CurrentBalanceCellPresenter
+    ) -> CurrentBalanceTableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func footerCell(for indexPath: IndexPath, presenter: FooterTableViewCellPresenter) -> FooterTableViewCell {
+    private func footerCell(
+        for indexPath: IndexPath,
+        presenter: FooterTableViewCellPresenter
+    ) -> FooterTableViewCell {
         let cell = tableView.dequeue(FooterTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func lineItemCell(for indexPath: IndexPath, presenter: LineItemCellPresenting) -> LineItemTableViewCell {
+    private func lineItemCell(
+        for indexPath: IndexPath,
+        presenter: LineItemCellPresenting
+    ) -> LineItemTableViewCell {
         let cell = tableView.dequeue(LineItemTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell

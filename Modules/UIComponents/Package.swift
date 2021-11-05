@@ -35,7 +35,10 @@ let package = Package(
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "ComponentLibrary", package: "ComponentLibrary")
             ],
-            path: "UIComponentsKit"
+            path: "UIComponentsKit",
+            resources: [
+                .copy("Lottie/loader_v2.json")
+            ]
         ),
         .testTarget(
             name: "UIComponentsKitTests",

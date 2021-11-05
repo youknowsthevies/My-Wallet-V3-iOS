@@ -4,9 +4,11 @@ import ComposableArchitecture
 import DIKit
 import FeatureSettingsDomain
 import ToolKit
+import WalletPayloadKit
 
 enum AppCancellations {
     struct DeeplinkId: Hashable {}
+    struct WalletPersistenceId: Hashable {}
 }
 
 public struct AppState: Equatable {
@@ -25,6 +27,14 @@ public struct AppState: Equatable {
 public enum AppAction: Equatable {
     case appDelegate(AppDelegateAction)
     case core(CoreAppAction)
+    case walletPersistence(WalletPersistenceAction)
+    case none
+}
+
+public enum WalletPersistenceAction: Equatable {
+    case begin
+    case cancel
+    case persisted(Result<EmptyValue, WalletRepoPersistenceError>)
 }
 
 public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
@@ -144,8 +154,43 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
                 }
                 return AppAction.core(.deeplink(data))
             }
+    case .core(.onboarding(.forgetWallet)):
+        return .none
     case .core(.start):
-        return .init(value: .core(.onboarding(.start)))
+        return .merge(
+            environment.featureFlagsService
+                .isEnabled(.local(.nativeWalletPayload))
+                .eraseToEffect()
+                .map { isEnabled in
+                    guard isEnabled else {
+                        return .none
+                    }
+                    return .walletPersistence(.begin)
+                },
+            Effect(value: .core(.onboarding(.start)))
+        )
+    case .walletPersistence(.begin):
+        let crashlyticsRecorder = environment.crashlyticsRecorder
+        return environment.walletRepoPersistence
+            .beginPersisting()
+            .receive(on: environment.mainQueue)
+            .catchToEffect()
+            .cancellable(
+                id: AppCancellations.WalletPersistenceId(),
+                cancelInFlight: true
+            )
+            .map { AppAction.walletPersistence(.persisted($0)) }
+    case .walletPersistence(.persisted(.failure(let error))):
+        // record the error if we encounter one and restart the persistence
+        environment.crashlyticsRecorder.error(error)
+        return .concatenate(
+            .cancel(id: AppCancellations.WalletPersistenceId()),
+            Effect(value: .walletPersistence(.begin))
+        )
+    case .walletPersistence(.persisted(.success)):
+        return .none
+    case .none:
+        return .none
     default:
         return .none
     }

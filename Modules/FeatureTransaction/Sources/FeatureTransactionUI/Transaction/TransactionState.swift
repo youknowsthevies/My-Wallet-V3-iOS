@@ -360,6 +360,7 @@ enum TransactionFlowStep: Equatable {
     case confirmDetail
     case inProgress
     case securityConfirmation
+    case errorRecoveryInfo
     case closed
 }
 
@@ -371,6 +372,7 @@ extension TransactionFlowStep {
              .selectTarget,
              .enterAddress,
              .enterAmount,
+             .errorRecoveryInfo,
              .inProgress,
              .linkBankViaWire,
              .confirmDetail,
@@ -405,6 +407,7 @@ extension TransactionFlowStep {
              .enterAddress,
              .enterAmount,
              .enterPassword,
+             .errorRecoveryInfo,
              .inProgress,
              .initial,
              .selectSource,

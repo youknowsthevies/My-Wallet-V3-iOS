@@ -23,9 +23,10 @@ then
     fi
 fi
 
-echo "Installing Mockingbird"
-
-xcodebuild -resolvePackageDependencies
-
-DERIVED_DATA=$(xcodebuild -showBuildSettings | pcregrep -o1 'OBJROOT = (/.*)/Build')
-(cd "${DERIVED_DATA}/SourcePackages/checkouts/mockingbird" && make install-prebuilt)
+MOCKINBIRDPATH="./SourcePackages/checkouts/mockingbird"
+if [ -e "$MOCKINBIRDPATH" ]; then
+    echo "Installing Mockingbird"   
+    (cd "./SourcePackages/checkouts/mockingbird" && make install-prebuilt)
+else
+    echo "$MOCKINBIRDPATH does not exists. You must resolve packages to './SourcePackages' before running this script."
+fi

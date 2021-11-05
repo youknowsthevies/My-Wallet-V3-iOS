@@ -69,7 +69,7 @@ public final class OpenBanking {
                 return confirm(order: order, data: data)
             }
         }()
-        .share()
+            .share()
 
         let consentErrorPublisher = banking.state.result(for: .consent.error, as: OpenBanking.Error.self)
             .publisher
@@ -80,19 +80,18 @@ public final class OpenBanking {
 
         switch data.action {
         case .link(let institution):
-            return [
-                publisher.eraseToAnyPublisher(),
-                publisher
-                    .filter(/Action.waitingForConsent)
-                    .flatMap { [data, banking] _ -> AnyPublisher<Action, Never> in
-                        banking.state.publisher(for: .is.authorised, as: Bool.self)
+            return publisher
+                .flatMap { [banking] action -> AnyPublisher<Action, Never> in
+                    switch action {
+                    case .waitingForConsent:
+                        return banking.state.publisher(for: .is.authorised, as: Bool.self)
                             .ignoreResultFailure()
                             .flatMap { authorised -> AnyPublisher<(Bool, OpenBanking.BankAccount), OpenBanking.Error> in
                                 banking.poll(account: data.account, until: \.isNotPending)
                                     .map { (authorised, $0) }
                                     .eraseToAnyPublisher()
                             }
-                            .flatMap { (authorised, account) -> AnyPublisher<Action, Never> in
+                            .flatMap { authorised, account -> AnyPublisher<Action, Never> in
                                 if authorised {
                                     if let error = account.error {
                                         return Just(Action.failure(error))
@@ -106,19 +105,19 @@ public final class OpenBanking {
                                 }
                             }
                             .catch(Action.failure)
+                            .merge(with: Just(action))
                             .eraseToAnyPublisher()
+                    default:
+                        return Just(action).eraseToAnyPublisher()
                     }
-                    .eraseToAnyPublisher()
-            ]
-            .merge()
-            .eraseToAnyPublisher()
+                }
+                .eraseToAnyPublisher()
         default:
-            return [
-                publisher.eraseToAnyPublisher(),
-                publisher
-                    .filter(/Action.waitingForConsent)
-                    .flatMap { [banking] consent -> AnyPublisher<Action, Never> in
-                        banking.state.publisher(for: .is.authorised, as: Bool.self)
+            return publisher
+                .flatMap { [banking] action -> AnyPublisher<Action, Never> in
+                    switch action {
+                    case .waitingForConsent(let consent):
+                        return banking.state.publisher(for: .is.authorised, as: Bool.self)
                             .ignoreResultFailure()
                             .flatMap { authorised -> AnyPublisher<Action, Never> in
                                 if authorised {
@@ -129,12 +128,13 @@ public final class OpenBanking {
                                 }
                             }
                             .catch(Action.failure)
+                            .merge(with: Just(action))
                             .eraseToAnyPublisher()
+                    default:
+                        return Just(action).eraseToAnyPublisher()
                     }
-                    .eraseToAnyPublisher()
-            ]
-            .merge()
-            .eraseToAnyPublisher()
+                }
+                .eraseToAnyPublisher()
         }
     }
 

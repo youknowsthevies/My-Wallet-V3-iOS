@@ -17,15 +17,34 @@ targets:
     platform: iOS
     type: application
     sources:
-      - path: Example/
+      - path: Example/ExampleApp.swift
+      - path: Example/Info.plist
     dependencies: 
       - package: ComponentLibrary
         product: Examples
 
     settings:
       base:
+        INFOPLIST_FILE: Example/Info.plist
         TARGETED_DEVICE_FAMILY: 1
         PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.componentLibrary
+
+  ComponentLibraryExampleMac:
+
+    platform: macOS
+    type: application
+    sources:
+      - path: Example/ExampleApp.swift
+      - path: Example/Info-macOS.plist
+    dependencies:
+      - package: ComponentLibrary
+        product: Examples
+
+    settings:
+      base:
+        INFOPLIST_FILE: Example/Info-macOS.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.componentLibrary
+
 
 schemes:
         
@@ -33,3 +52,8 @@ schemes:
     build:
       targets:
         ComponentLibraryExample: all
+
+  ComponentLibraryExampleMac:
+    build:
+      targets:
+        ComponentLibraryExampleMac: all

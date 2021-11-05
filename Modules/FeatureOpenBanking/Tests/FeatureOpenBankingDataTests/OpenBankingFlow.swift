@@ -34,7 +34,7 @@ final class OpenBankingFlow: XCTestCase {
         )
     }
 
-    func test_delete() throws {
+    func x_test_delete() throws {
 
         let accounts = try banking.allBankAccounts()
             .wait(timeout: 5)

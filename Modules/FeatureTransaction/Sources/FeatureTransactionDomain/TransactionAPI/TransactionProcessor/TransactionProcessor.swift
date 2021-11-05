@@ -40,6 +40,7 @@ public final class TransactionProcessor {
     // MARK: - Private properties
 
     private let engine: TransactionEngine
+    private let notificationCenter: NotificationCenter
     private let pendingTxSubject: BehaviorSubject<PendingTransaction>
     private let disposeBag = DisposeBag()
 
@@ -48,9 +49,11 @@ public final class TransactionProcessor {
     init(
         sourceAccount: BlockchainAccount,
         transactionTarget: TransactionTarget,
-        engine: TransactionEngine
+        engine: TransactionEngine,
+        notificationCenter: NotificationCenter = .default
     ) {
         self.engine = engine
+        self.notificationCenter = notificationCenter
         pendingTxSubject = BehaviorSubject(value: .zero(currencyType: sourceAccount.currencyType))
         engine.start(
             sourceAccount: sourceAccount,
@@ -153,28 +156,44 @@ public final class TransactionProcessor {
 
     public func execute(order: TransactionOrder?, secondPassword: String) -> Single<TransactionResult> {
         Logger.shared.debug("!TRANSACTION!> in `execute`")
+        let pendingTransaction: PendingTransaction
         do {
             if engine.requireSecondPassword, secondPassword.isEmpty {
                 throw PlatformKitError.illegalStateException(message: "Second password not supplied")
             }
-            let pendingTransaction = try pendingTransaction()
-            return engine
-                .doValidateAll(pendingTransaction: pendingTransaction)
-                .do(onSuccess: { transaction in
-                    guard transaction.validationState == .canExecute else {
-                        throw PlatformKitError.illegalStateException(message: "PendingTx is not executable")
-                    }
-                })
-                .flatMap { [engine] transaction in
-                    engine.execute(
-                        pendingTransaction: transaction,
-                        pendingOrder: order,
-                        secondPassword: secondPassword
-                    )
-                }
+            pendingTransaction = try self.pendingTransaction()
         } catch {
             return .error(error)
         }
+        return engine
+            .doValidateAll(pendingTransaction: pendingTransaction)
+            .map { validatedTransaction in
+                guard validatedTransaction.validationState == .canExecute else {
+                    throw PlatformKitError.illegalStateException(message: "PendingTx is not executable")
+                }
+                return validatedTransaction
+            }
+            .flatMap { [engine] transaction in
+                engine.execute(
+                    pendingTransaction: transaction,
+                    pendingOrder: order,
+                    secondPassword: secondPassword
+                )
+            }
+            .flatMap { [engine] transactionResult in
+                engine
+                    .doPostExecute(transactionResult: transactionResult)
+                    .andThen(.just(transactionResult))
+                    .catchErrorJustReturn(transactionResult)
+            }
+            .do(
+                afterSuccess: { [notificationCenter] _ in
+                    notificationCenter.post(
+                        name: .transaction,
+                        object: nil
+                    )
+                }
+            )
     }
 
     public func validateAll() -> Completable {

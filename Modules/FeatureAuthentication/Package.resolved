@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/attaswift/BigInt.git",
         "state": {
           "branch": null,
-          "revision": "889a1ecacd73ccc189c5cb29288048f186c44ed9",
-          "version": "5.2.1"
+          "revision": "0ed110f7555c34ff468e72e1686e59721f2b0da6",
+          "version": "5.3.0"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/pointfreeco/combine-schedulers",
         "state": {
           "branch": null,
-          "revision": "6dcc7c034d28fe7ac652453faeae07656f723909",
-          "version": "0.5.1"
+          "revision": "4cf088c29a20f52be0f2ca54992b492c54e0076b",
+          "version": "0.5.3"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
         "state": {
           "branch": null,
-          "revision": "8d4f6384e0a8cc41f2005247241dd553963a492a",
-          "version": "1.4.1"
+          "revision": "4b0565384d3c4c588af09e660535b2c7c9bf5b39",
+          "version": "1.4.2"
         }
       },
       {
@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/apple/swift-collections",
         "state": {
           "branch": null,
-          "revision": "0959ba76a1d4a98fd11163aa83fd49c25b93bfae",
-          "version": "0.0.5"
+          "revision": "2d33a0ea89c961dcb2b3da2157963d9c0370347e",
+          "version": "1.0.1"
         }
       },
       {
@@ -78,8 +78,17 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "96cdc7e38e2d1d89b95b0ad80c914eb369476c4b",
-          "version": "0.24.0"
+          "revision": "599a2398adaaa7a4e3f5420cde7728c39e33677e",
+          "version": "0.28.1"
+        }
+      },
+      {
+        "package": "swift-custom-dump",
+        "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
+        "state": {
+          "branch": null,
+          "revision": "21f8fdbb3226e5e28a1a2fffac3e0f3deec34bf0",
+          "version": "0.2.1"
         }
       },
       {
@@ -87,8 +96,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-identified-collections",
         "state": {
           "branch": null,
-          "revision": "edececbdb56b07e9402f2f3f5b907d220a28b4ea",
-          "version": "0.1.1"
+          "revision": "680bf440178a78a627b1c2c64c0855f6523ad5b9",
+          "version": "0.3.2"
         }
       },
       {
@@ -105,8 +114,8 @@
         "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
         "state": {
           "branch": null,
-          "revision": "3d42f6995032828a3e1a0a372fb9873cdd357f03",
-          "version": null
+          "revision": "985832e0a0746608ded3cc3984066f455d28c30f",
+          "version": "2.6.31"
         }
       },
       {
@@ -114,8 +123,8 @@
         "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
         "state": {
           "branch": null,
-          "revision": "b9eeb1a7ea3fd6fea54ce57dee2f5794b667c8df",
-          "version": "0.2.0"
+          "revision": "50a70a9d3583fe228ce672e8923010c8df2deddd",
+          "version": "0.2.1"
         }
       },
       {
@@ -123,7 +132,7 @@
         "repositoryURL": "https://github.com/oliveratkinson-bc/zxcvbn-ios.git",
         "state": {
           "branch": "swift-package-manager",
-          "revision": "bb9e884fdfa75d4cc2cddc2419f6a4818e164361",
+          "revision": "c0db9d5278bbc07b28937278406cc042e4bebf68",
           "version": null
         }
       }

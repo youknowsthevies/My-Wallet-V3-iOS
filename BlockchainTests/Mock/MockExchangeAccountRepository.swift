@@ -2,25 +2,26 @@
 
 import Combine
 import PlatformKit
-import RxSwift
-
-@testable import Blockchain
 
 class MockExchangeAccountRepository: ExchangeAccountRepositoryAPI {
-    var hasLinkedExchangeAccount: Single<Bool> = .just(false)
 
-    func syncDepositAddresses() -> Completable {
-        .just(event: .completed)
+    // MARK: - Mock Properties
+
+    var hasLinkedExchangeAccountValue: Bool = false
+    var syncDepositAddressesIfLinkedCalled: Bool = false
+
+    // MARK: - ExchangeAccountRepositoryAPI
+
+    var hasLinkedExchangeAccount: AnyPublisher<Bool, ExchangeAccountRepositoryError> {
+        .just(hasLinkedExchangeAccountValue)
     }
 
-    func syncDepositAddressesIfLinked() -> Completable {
-        .just(event: .completed)
+    func syncDepositAddresses() -> AnyPublisher<Void, ExchangeAccountRepositoryError> {
+        .just(())
     }
 
-    var syncDepositAddressesIfLinkedPublisherCalled: Bool = false
-
-    func syncDepositAddressesIfLinkedPublisher() -> AnyPublisher<Void, Error> {
-        syncDepositAddressesIfLinkedPublisherCalled = true
+    func syncDepositAddressesIfLinked() -> AnyPublisher<Void, ExchangeAccountRepositoryError> {
+        syncDepositAddressesIfLinkedCalled = true
         return .just(())
     }
 }

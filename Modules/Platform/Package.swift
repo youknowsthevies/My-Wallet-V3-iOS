@@ -75,8 +75,10 @@ let package = Package(
         .package(path: "../RxTool"),
         .package(path: "../WalletPayload"),
         .package(path: "../UIComponents"),
-        .package(path: "../ComposableNavigation"),
-        .package(path: "../FeatureOpenBanking")
+        .package(path: "../FeatureOpenBanking"),
+        .package(path: "../ComposableArchitectureExtensions"),
+        .package(path: "../ComponentLibrary"),
+        .package(path: "../FeatureWithdrawalLocks")
     ],
     targets: [
         .target(
@@ -96,7 +98,8 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "ComposableNavigation", package: "ComposableNavigation"),
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
+                .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions"),
                 .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking")
@@ -130,7 +133,9 @@ let package = Package(
                 .product(name: "Nuke", package: "Nuke"),
                 .product(name: "PhoneNumberKit", package: "PhoneNumberKit"),
                 .product(name: "Zxcvbn", package: "Zxcvbn"),
-                .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking")
+                .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
+                .product(name: "ComponentLibrary", package: "ComponentLibrary"),
+                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks")
             ],
             resources: [
                 .copy("PlatformUIKitAssets.xcassets")

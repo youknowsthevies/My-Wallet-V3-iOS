@@ -361,7 +361,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
                 cardListService.fetchCards(),
-                tradingBalanceService.balances,
+                tradingBalanceService.balances.asSingle(),
                 featureFetching.fetchBool(for: .withdrawAndDepositACH)
             )
             .map {
@@ -403,7 +403,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
                 cardListService.cardsSingle,
-                tradingBalanceService.balances,
+                tradingBalanceService.balances.asSingle(),
                 linkedBankService.fetchLinkedBanks(),
                 featureFetching.fetchBool(for: .withdrawAndDepositACH)
             )

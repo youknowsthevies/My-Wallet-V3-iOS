@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureInterestDomain
 import Localization
@@ -17,6 +18,25 @@ public final class InterestAccountDetailsScreenInteractor {
     private typealias CellInteractor = DefaultLineItemCellInteractor
 
     typealias Interactors = Observable<[DetailCellInteractor]>
+
+    var canWithdraw: Single<Bool> {
+        account
+            .actions
+            .map { $0.contains(.interestWithdraw) }
+    }
+
+    var canDeposit: Single<Bool> {
+        blockchainAccountRepository
+            .accountsAvailableToPerformAction(
+                .interestTransfer,
+                target: account as BlockchainAccount
+            )
+            .map { [account] accounts in
+                accounts.contains(where: { $0.currencyType == account.currencyType })
+            }
+            .replaceError(with: false)
+            .asSingle()
+    }
 
     var interactors: Interactors {
         _ = setup
@@ -80,20 +100,28 @@ public final class InterestAccountDetailsScreenInteractor {
     }()
 
     let cryptoCurrency: CryptoCurrency
+    let account: CryptoInterestAccount
     let currentBalanceCellInteractor: CurrentBalanceCellInteracting
 
     private let interactorsRelay = BehaviorRelay<[DetailCellInteractor]>(value: [])
     private let service: InterestAccountServiceAPI
+    private let blockchainAccountRepository: BlockchainAccountRepositoryAPI
     private let disposeBag = DisposeBag()
 
     public init(
         service: InterestAccountServiceAPI = resolve(),
+        blockchainAccountRepository: BlockchainAccountRepositoryAPI = resolve(),
         account: BlockchainAccount
     ) {
         self.service = service
+        self.blockchainAccountRepository = blockchainAccountRepository
         cryptoCurrency = account.currencyType.cryptoCurrency!
         currentBalanceCellInteractor = CurrentBalanceCellInteractor(
             account: account
         )
+        guard let account = account as? CryptoInterestAccount else {
+            impossible()
+        }
+        self.account = account
     }
 }

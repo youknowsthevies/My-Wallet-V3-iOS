@@ -7,6 +7,11 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
+enum ExchangeLinkingAPIError: Error {
+    case noLinkID
+    case unknown
+}
+
 protocol ExchangeAccountAuthenticatorAPI {
     typealias LinkID = String
 

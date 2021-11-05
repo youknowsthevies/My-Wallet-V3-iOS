@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import PlatformKit
+@testable import FeatureAuthenticationDomain
 
-final class SiftServiceMock: SiftServiceAPI {
+final class SiftServiceMock: FeatureAuthenticationDomain.SiftServiceAPI {
 
     func enable() {}
 

@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/pointfreeco/combine-schedulers",
         "state": {
           "branch": null,
-          "revision": "6bde3b0063ba8e7537b43744948535ca7e9e0dad",
-          "version": "0.5.2"
+          "revision": "4cf088c29a20f52be0f2ca54992b492c54e0076b",
+          "version": "0.5.3"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
         "state": {
           "branch": null,
-          "revision": "8d4f6384e0a8cc41f2005247241dd553963a492a",
-          "version": "1.4.1"
+          "revision": "4b0565384d3c4c588af09e660535b2c7c9bf5b39",
+          "version": "1.4.2"
         }
       },
       {
@@ -56,6 +56,15 @@
         }
       },
       {
+        "package": "swift-case-paths",
+        "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
+        "state": {
+          "branch": null,
+          "revision": "d226d167bd4a68b51e352af5655c92bce8ee0463",
+          "version": "0.7.0"
+        }
+      },
+      {
         "package": "SnapshotTesting",
         "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing",
         "state": {
@@ -69,8 +78,17 @@
         "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
         "state": {
           "branch": null,
-          "revision": "3d42f6995032828a3e1a0a372fb9873cdd357f03",
-          "version": null
+          "revision": "985832e0a0746608ded3cc3984066f455d28c30f",
+          "version": "2.6.31"
+        }
+      },
+      {
+        "package": "xctest-dynamic-overlay",
+        "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
+        "state": {
+          "branch": null,
+          "revision": "50a70a9d3583fe228ce672e8923010c8df2deddd",
+          "version": "0.2.1"
         }
       }
     ]

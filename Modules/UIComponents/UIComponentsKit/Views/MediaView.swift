@@ -152,7 +152,7 @@ extension MediaView where Failure == EmptyView {
 struct MediaView_Previews: PreviewProvider {
 
     static var previews: some View {
-        Image(Icon.blockchainCircle.name, bundle: .componentLibrary)
+        Image(Icon.chartBubble.name, bundle: .componentLibrary)
             .resizable()
             .aspectRatio(contentMode: .fit)
             .imageScale(.small)
@@ -161,3 +161,4 @@ struct MediaView_Previews: PreviewProvider {
     }
 }
 #endif
+

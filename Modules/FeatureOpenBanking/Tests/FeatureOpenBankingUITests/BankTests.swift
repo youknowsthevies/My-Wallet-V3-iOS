@@ -60,7 +60,8 @@ final class BankLinkTests: OpenBankingTestCase {
             .do { [self] in scheduler.main.advance(by: .seconds(1)) },
             .send(.failure(.timeout)) { state in
                 state.ui = .error(.timeout)
-            }
+            },
+            .send(.cancel)
         )
     }
 
@@ -70,15 +71,17 @@ final class BankLinkTests: OpenBankingTestCase {
             .send(.request) { state in
                 state.ui = .communicating(to: state.bankName)
             },
+            .do { [self] in scheduler.main.advance() },
+            .receive(.waitingForConsent),
             .receive(.launchAuthorisation(update.attributes.authorisationUrl.unwrap())) { state in
                 state.ui = .waiting(for: state.bankName)
             },
-            .do { [self] in
-                environment.openBanking.state.set(.is.authorised, to: true)
-            },
-            .receive(.finalise(.linked(createAccount, institution: institution))) { state in
+            .do { [self] in state.set(.is.authorised, to: true) },
+            .do { [self] in scheduler.main.advance() },
+            .receive(.finalise(.linked(account, institution: institution))) { state in
                 state.ui = .linked(institution: state.bankName)
-            }
+            },
+            .send(.cancel)
         )
 
         try XCTAssertEqual(openedURL, account.attributes.authorisationUrl.unwrap())
@@ -157,15 +160,17 @@ final class BankPaymentTests: OpenBankingTestCase {
             .send(.request) { state in
                 state.ui = .communicating(to: state.bankName)
             },
+            .do { [self] in scheduler.main.advance() },
+            .receive(.waitingForConsent),
             .receive(.launchAuthorisation(update.attributes.authorisationUrl.unwrap())) { state in
                 state.ui = .waiting(for: state.bankName)
             },
-            .do { [self] in
-                environment.openBanking.state.set(.is.authorised, to: true)
-            },
+            .do { [self] in state.set(.is.authorised, to: true) },
+            .do { [self] in scheduler.main.advance() },
             .receive(.finalise(.deposited(details))) { [self] state in
                 state.ui = .payment(success: details, in: environment)
-            }
+            },
+            .send(.cancel)
         )
 
         try XCTAssertEqual(openedURL, account.attributes.authorisationUrl.unwrap())

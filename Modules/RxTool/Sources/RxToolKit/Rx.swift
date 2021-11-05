@@ -42,4 +42,9 @@ extension Publisher {
             .take(1)
             .asSingle()
     }
+
+    public func asCompletable() -> Completable {
+        asSingle()
+            .asCompletable()
+    }
 }

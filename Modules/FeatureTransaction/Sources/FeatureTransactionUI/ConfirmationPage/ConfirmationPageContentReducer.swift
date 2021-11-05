@@ -35,12 +35,10 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     var cells: [DetailsScreen.CellType]
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
-    let termsCheckboxViewModel: CheckboxViewModel = .init(
-        text: LocalizedString.Transfer.termsOfServiceDisclaimer
-    )
-    let transferCheckboxViewModel: CheckboxViewModel = .init(
-        text: LocalizedString.Transfer.transferAgreement
-    )
+
+    let termsCheckboxViewModel = CheckboxViewModel()
+    let transferCheckboxViewModel = CheckboxViewModel()
+
     let messageRecorder: MessageRecording
     let transferAgreementUpdated = PublishRelay<Bool>()
     let termsUpdated = PublishRelay<Bool>()
@@ -61,11 +59,28 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             validator: TextValidationFactory.General.alwaysValid,
             messageRecorder: messageRecorder
         )
+
+        termsCheckboxViewModel
+            .apply(
+                text: LocalizedString.Transfer.termsOfServiceDisclaimer
+            )
     }
 
     func setup(for state: TransactionState) {
         disposeBag = DisposeBag()
         continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
+        let amount = state.amount
+        let fee = state.pendingTransaction?.feeAmount ?? .zero(currency: amount.currency)
+        let value = (try? amount + fee) ?? .zero(currency: amount.currency)
+
+        let sourceLabel = state.source?.label ?? ""
+        transferCheckboxViewModel.apply(
+            text: String(
+                format: LocalizedString.Transfer.transferAgreement,
+                value.displayString,
+                sourceLabel
+            )
+        )
 
         guard let pendingTransaction = state.pendingTransaction else {
             cells = []
@@ -189,8 +204,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         }
 
         var checkboxModels: [DetailsScreen.CellType] = []
-        if let terms = terms,
-           let transferAgreement = transferAgreement
+        if let _ = terms,
+           let _ = transferAgreement
         {
             termsCheckboxViewModel
                 .selectedRelay

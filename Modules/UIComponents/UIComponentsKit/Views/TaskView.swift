@@ -362,22 +362,18 @@ struct TaskView_Previews: PreviewProvider {
 
     static var previews: some View {
         VStack {
-            TaskView(
-                .media(.image(named: Icon.blockchainCircle.name)),
-                in: .componentLibrary
-            ).background(Color.red)
-//            NavigationView {
-//                ScrollView {
-//                    TaskView(
-//                        Task.group(
-//                            payment(),
-//                            Task.spacer(4.vmin),
-//                            safeconnect()
-//                        )
-//                        .padding()
-//                    )
-//                }
-//            }
+            NavigationView {
+                ScrollView {
+                    TaskView(
+                        Task.group(
+                            payment(),
+                            Task.spacer(4.vmin),
+                            safeconnect()
+                        )
+                        .padding()
+                    )
+                }
+            }
         }
     }
 }

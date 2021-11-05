@@ -21,6 +21,9 @@ sh ./scripts/recaptcha.sh
 echo "Generating project"
 sh ./scripts/generate_projects.sh
 
+echo "Resolve Package Dependencies"
+xcodebuild -resolvePackageDependencies -clonedSourcePackagesDirPath ./SourcePackages
+
 echo "Install Mockingbird"
 sh ./scripts/install-mockingbird.sh
 
@@ -28,4 +31,4 @@ echo "Install Mocks"
 sh ./scripts/install-mocks.sh
 
 echo "Opening project"
-open Blockchain.xcworkspace
+open Blockchain.xcodeproj

@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import FeatureAuthenticationData
-import FeatureAuthenticationDomain
+@testable import FeatureAuthenticationData
+@testable import FeatureAuthenticationDomain
 @testable import NetworkKit
 @testable import PlatformKit
 import ToolKit
@@ -18,42 +18,40 @@ import XCTest
 class NabuAuthenticationExecutorTests: XCTestCase {
 
     private var cancellables: Set<AnyCancellable>!
-    private var userCreationClient: NabuUserCreationClientMock!
-    private var sessionTokenClient: NabuSessionTokenClientMock!
+    private var store: NabuTokenRepositoryAPI!
     private var errorBroadcaster: MockUserAlreadyRestoredHandler!
-    private var store: NabuTokenStore!
-    private var settingsService: SettingsServiceMock!
-    private var siftService: SiftServiceMock!
-    private var jwtService: JWTServiceMock!
     private var walletRepository: MockWalletRepository!
+    private var nabuRepository: MockNabuRepository!
+    private var nabuUserEmailProvider: NabuUserEmailProvider = { .just("abcd@abcd.com") }
     private var deviceInfo: MockDeviceInfo!
-    private var subject: NabuAuthenticationExecutor!
+    private var jwtService: JWTServiceMock!
+    private var siftService: SiftServiceMock!
+    private var checkAuthenticated: CheckAuthenticated = { _ in .just(true) }
+    private var subject: NabuAuthenticationExecutorAPI!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
 
         cancellables = Set<AnyCancellable>([])
-        sessionTokenClient = NabuSessionTokenClientMock()
-        userCreationClient = NabuUserCreationClientMock()
+        store = NabuTokenRepository()
         errorBroadcaster = MockUserAlreadyRestoredHandler()
-        store = NabuTokenStore()
-        settingsService = SettingsServiceMock()
-        siftService = SiftServiceMock()
-        jwtService = JWTServiceMock()
+        nabuRepository = MockNabuRepository()
         walletRepository = MockWalletRepository()
         deviceInfo = MockDeviceInfo(
             systemVersion: "1.2.3",
             model: "iPhone5S",
             uuidString: "uuid"
         )
+        jwtService = JWTServiceMock()
+        siftService = SiftServiceMock()
         subject = NabuAuthenticationExecutor(
             store: store,
             errorBroadcaster: errorBroadcaster,
-            userCreationClient: userCreationClient,
-            settingsService: settingsService,
+            nabuRepository: nabuRepository,
+            nabuUserEmailProvider: nabuUserEmailProvider,
             siftService: siftService,
+            checkAuthenticated: checkAuthenticated,
             jwtService: jwtService,
-            sessionTokenClient: sessionTokenClient,
             credentialsRepository: walletRepository,
             deviceInfo: deviceInfo
         )
@@ -61,11 +59,9 @@ class NabuAuthenticationExecutorTests: XCTestCase {
 
     override func tearDownWithError() throws {
         cancellables = nil
-        sessionTokenClient = nil
-        userCreationClient = nil
+        nabuRepository = nil
         errorBroadcaster = nil
         store = nil
-        settingsService = nil
         siftService = nil
         jwtService = nil
         walletRepository = nil
@@ -88,24 +84,6 @@ class NabuAuthenticationExecutorTests: XCTestCase {
 
         jwtService.expectedResult = .success("jwt-token")
 
-        settingsService.expectedResult = .success(
-            .init(
-                response: .init(
-                    language: "en",
-                    currency: "USD",
-                    email: "abcd@abcd.com",
-                    guid: "guid",
-                    emailNotificationsEnabled: false,
-                    smsNumber: nil,
-                    smsVerified: false,
-                    emailVerified: false,
-                    authenticator: 0,
-                    countryCode: "US",
-                    invited: [:]
-                )
-            )
-        )
-
         let offlineTokenResponseSetExpectation = expectation(
             description: "The offline token was set successfully"
         )
@@ -123,8 +101,8 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             }, receiveValue: { _ in })
             .store(in: &cancellables)
 
-        sessionTokenClient.expectedResult = .success(
-            NabuSessionTokenResponse(
+        nabuRepository.expectedSessionToken = .success(
+            NabuSessionToken(
                 identifier: "identifier",
                 userId: "user-id",
                 token: expectedSessionTokenValue,
@@ -232,34 +210,15 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         // Arrange
         let expectedSessionTokenValue = "session-token"
 
-        let offlineTokenResponse = NabuOfflineTokenResponse(userId: "user-id", token: "offline-token")
         let offlineToken = NabuOfflineToken(userId: "user-id", token: "offline-token")
 
         // Offline token is missing - user creation will be attempted
         walletRepository.expectedOfflineToken = .failure(.offlineToken)
         jwtService.expectedResult = .success("jwt-token")
-        userCreationClient.expectedResult = .success(offlineTokenResponse)
+        nabuRepository.expectedOfflineToken = .success(offlineToken)
 
-        settingsService.expectedResult = .success(
-            .init(
-                response: .init(
-                    language: "en",
-                    currency: "USD",
-                    email: "abcd@abcd.com",
-                    guid: "guid",
-                    emailNotificationsEnabled: false,
-                    smsNumber: nil,
-                    smsVerified: false,
-                    emailVerified: false,
-                    authenticator: 0,
-                    countryCode: "US",
-                    invited: [:]
-                )
-            )
-        )
-
-        sessionTokenClient.expectedResult = .success(
-            NabuSessionTokenResponse(
+        nabuRepository.expectedSessionToken = .success(
+            NabuSessionToken(
                 identifier: "identifier",
                 userId: "user-id",
                 token: expectedSessionTokenValue,
@@ -362,7 +321,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             token: "offline-token"
         )
 
-        let expiredSessionTokenResponse = NabuSessionTokenResponse(
+        let expiredSessionToken = NabuSessionToken(
             identifier: "identifier",
             userId: "user-id",
             token: "expired-session-token",
@@ -370,7 +329,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             expiresAt: Date.distantPast
         )
 
-        let newSessionTokenResponse = NabuSessionTokenResponse(
+        let newSessionToken = NabuSessionToken(
             identifier: "identifier",
             userId: "user-id",
             token: "new-session-token",
@@ -382,7 +341,8 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             description: "The expired auth token was successfully stored"
         )
         // Store expired session token
-        store.store(expiredSessionTokenResponse)
+        store
+            .store(expiredSessionToken)
             .sink(
                 receiveCompletion: { completion in
                     switch completion {
@@ -395,25 +355,8 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             .store(in: &cancellables)
 
         jwtService.expectedResult = .success("jwt-token")
-        settingsService.expectedResult = .success(
-            .init(
-                response: .init(
-                    language: "en",
-                    currency: "USD",
-                    email: "abcd@abcd.com",
-                    guid: "guid",
-                    emailNotificationsEnabled: false,
-                    smsNumber: nil,
-                    smsVerified: false,
-                    emailVerified: false,
-                    authenticator: 0,
-                    countryCode: "US",
-                    invited: [:]
-                )
-            )
-        )
 
-        sessionTokenClient.expectedResult = .success(newSessionTokenResponse)
+        nabuRepository.expectedSessionToken = .success(newSessionToken)
 
         wait(for: [expiredAuthTokenStoredExpectation], timeout: 5, enforceOrder: true)
 
@@ -486,7 +429,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         // Act
         subject
             .authenticate { token -> AnyPublisher<ServerResponse, NetworkError> in
-                if token == newSessionTokenResponse.token {
+                if token == newSessionToken.token {
                     return AnyPublisher.just(
                         ServerResponse(
                             payload: token.data(using: .utf8),
@@ -532,7 +475,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                     XCTFail("Failed with error: \(String(describing: error))")
                 }
             }, receiveValue: { value in
-                XCTAssertEqual(value, newSessionTokenResponse.token)
+                XCTAssertEqual(value, newSessionToken.token)
                 receivedValidTokenExpectation.fulfill()
             })
             .store(in: &cancellables)
@@ -559,23 +502,6 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         walletRepository.expectedGuid = "guid"
         walletRepository.expectedSharedKey = "shared-key"
         jwtService.expectedResult = .success("jwt-token")
-        settingsService.expectedResult = .success(
-            .init(
-                response: .init(
-                    language: "en",
-                    currency: "USD",
-                    email: "abcd@abcd.com",
-                    guid: "guid",
-                    emailNotificationsEnabled: false,
-                    smsNumber: nil,
-                    smsVerified: false,
-                    emailVerified: false,
-                    authenticator: 0,
-                    countryCode: "US",
-                    invited: [:]
-                )
-            )
-        )
 
         let mockHttpResponse = HTTPURLResponse(
             url: URL(string: "https://www.blockchain.com")!,
@@ -596,7 +522,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 payload: mockPayload
             )
         )
-        sessionTokenClient.expectedResult = .failure(mockNetworkError)
+        nabuRepository.expectedSessionToken = .failure(mockNetworkError)
 
         // Act (409 server error response)
         subject

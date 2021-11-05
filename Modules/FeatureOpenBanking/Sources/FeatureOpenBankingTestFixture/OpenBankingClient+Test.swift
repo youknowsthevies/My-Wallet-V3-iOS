@@ -2,10 +2,10 @@
 
 import Combine
 import CombineSchedulers
-import Foundation
-import NetworkKit
 @testable import FeatureOpenBankingData
 @testable import FeatureOpenBankingDomain
+import Foundation
+@testable import NetworkKit
 
 extension OpenBanking {
 

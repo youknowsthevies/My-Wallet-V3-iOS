@@ -5,9 +5,9 @@ import XCTest
 import CasePaths
 import Combine
 import CombineSchedulers
+import FeatureOpenBankingData
 @testable import FeatureOpenBankingDomain
 import FeatureOpenBankingTestFixture
-import FeatureOpenBankingData
 import NetworkKit
 import TestKit
 
@@ -59,12 +59,13 @@ final class OpenBankingTests: XCTestCase {
 
         start(.link(institution: institution))
 
+        guard actions.count == 1 else { return XCTFail("Expected 1 action") }
         XCTAssertExtract(/OpenBanking.Action.waitingForConsent, from: actions[0])
-        XCTAssertExtract(/OpenBanking.Action.launchAuthorisation, from: actions[1])
 
         banking.state.set(.is.authorised, to: true)
 
-        XCTAssertExtract(/OpenBanking.Action.consent, from: actions[2])
+        guard actions.count == 2 else { return XCTFail("Expected 2 actions") }
+        XCTAssertExtract(/OpenBanking.Action.success, from: actions[1])
 
         XCTAssertNotNil(
             network.requests[
@@ -83,12 +84,13 @@ final class OpenBankingTests: XCTestCase {
 
         start(.deposit(amountMinor: "1000", product: "SIMPLEBUY"))
 
+        guard actions.count == 1 else { return XCTFail("Expected 1 action, got \(actions.count)") }
         XCTAssertExtract(/OpenBanking.Action.waitingForConsent, from: actions[0])
-        XCTAssertExtract(/OpenBanking.Action.launchAuthorisation, from: actions[1])
 
         banking.state.set(.is.authorised, to: true)
 
-        XCTAssertExtract(/OpenBanking.Action.consent, from: actions[2])
+        guard actions.count == 2 else { return XCTFail("Expected 2 actions, got \(actions.count)") }
+        XCTAssertExtract(/OpenBanking.Action.success, from: actions[1])
 
         XCTAssertNotNil(
             network.requests[
@@ -107,10 +109,6 @@ final class OpenBankingTests: XCTestCase {
                 .get, "https://api.blockchain.info/nabu-gateway/payments/banktransfer/a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c"
             ]
         )
-    }
-
-    func test_start_order_confirmation() throws {
-        // TODO
     }
 }
 

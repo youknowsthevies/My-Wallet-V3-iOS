@@ -43,7 +43,7 @@ final class InstitutionListTests: OpenBankingTestCase {
 
         store.assert(
             .send(.enter(into: .approve)) { state in
-                state.route = .init(route: .approve, action: .enterInto(fullScreen: false))
+                state.route = .init(route: .approve, action: .enterInto(.default))
             }
         )
     }

@@ -52,8 +52,6 @@ extension FeatureSettingsUI.BackupFundsRouter: FeatureDashboardUI.BackupRouterAP
 
 extension BlockchainSettings.App: AnalyticsKit.GuidRepositoryAPI {}
 
-extension NabuTokenStore: AnalyticsKit.TokenRepositoryAPI {}
-
 // MARK: - Blockchain Module
 
 extension DependencyContainer {
@@ -96,7 +94,17 @@ extension DependencyContainer {
 
         single { TradeLimitsService() as TradeLimitsAPI }
 
-        factory { SiftService() as SiftServiceAPI }
+        factory { SiftService() }
+
+        factory { () -> FeatureAuthenticationDomain.SiftServiceAPI in
+            let service: SiftService = DIKit.resolve()
+            return service as FeatureAuthenticationDomain.SiftServiceAPI
+        }
+
+        factory { () -> PlatformKit.SiftServiceAPI in
+            let service: SiftService = DIKit.resolve()
+            return service as PlatformKit.SiftServiceAPI
+        }
 
         single { SecondPasswordHelper() }
 
@@ -158,7 +166,7 @@ extension DependencyContainer {
         // MARK: - Dashboard
 
         factory { () -> AccountsRouting in
-            let routing: CurrencyRouting & TabSwapping = DIKit.resolve()
+            let routing: TabSwapping = DIKit.resolve()
             return AccountsRouter(
                 routing: routing
             )
@@ -192,16 +200,6 @@ extension DependencyContainer {
         // MARK: - AppCoordinator
 
         single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
-
-        factory { () -> CurrencyRouting & TabSwapping in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveCurrencyRoutingAndTabSwapping() as CurrencyRouting & TabSwapping
-        }
-
-        factory { () -> CurrencyRouting in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveCurrencyRouting() as CurrencyRouting
-        }
 
         factory { () -> TabSwapping in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -559,11 +557,6 @@ extension DependencyContainer {
 
         // MARK: Analytics
 
-        single { () -> AnalyticsKit.TokenRepositoryAPI in
-            let tokenRepository: NabuTokenStore = DIKit.resolve()
-            return tokenRepository as AnalyticsKit.TokenRepositoryAPI
-        }
-
         single { () -> AnalyticsKit.GuidRepositoryAPI in
             let guidRepository: BlockchainSettings.App = DIKit.resolve()
             return guidRepository as AnalyticsKit.GuidRepositoryAPI
@@ -576,7 +569,7 @@ extension DependencyContainer {
                 platform: .wallet,
                 basePath: BlockchainAPI.shared.apiUrl,
                 userAgent: userAgent,
-                tokenRepository: DIKit.resolve(),
+                tokenProvider: DIKit.resolve(),
                 guidProvider: DIKit.resolve()
             )
             return AnalyticsEventRecorder(analyticsServiceProviders: [

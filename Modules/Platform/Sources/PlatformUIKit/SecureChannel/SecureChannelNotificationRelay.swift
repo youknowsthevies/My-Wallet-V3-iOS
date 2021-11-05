@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
@@ -28,16 +29,19 @@ public protocol SecureChannelNotificationRelaying {
 final class SecureChannelNotificationRelay: SecureChannelNotificationRelaying {
     private typealias LocalizedString = LocalizationConstants.SecureChannel.Notification
 
-    let router: SecureChannelRouting
-    let service: SecureChannelAPI
-    let disposeBag = DisposeBag()
+    private let router: SecureChannelRouting
+    private let service: SecureChannelAPI
+    private let disposeBag = DisposeBag()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(
         router: SecureChannelRouting = resolve(),
-        service: SecureChannelAPI = resolve()
+        service: SecureChannelAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.router = router
         self.service = service
+        self.analyticsRecorder = analyticsRecorder
     }
 
     func didReceiveRemoteNotification(
@@ -64,6 +68,28 @@ final class SecureChannelNotificationRelay: SecureChannelNotificationRelaying {
             )
             .disposed(by: disposeBag)
         return true
+    }
+
+    func isSecureChannelNotification(_ userInfo: [AnyHashable: Any]) -> Bool {
+        (userInfo["type"] as? String) == "secure_channel"
+    }
+
+    func didReceiveSecureChannelNotification(_ userInfo: [AnyHashable: Any]) {
+        service.createSecureChannelConnectionCandidate(userInfo)
+            .subscribe(
+                onSuccess: { [weak self] candidate in
+                    self?.router.didReceiveSecureChannelCandidate(candidate)
+                },
+                onError: { [weak self] error in
+                    Logger.shared.debug("Secure Channel Error: \(String(describing: error))")
+                    guard let secureChannelError = error as? SecureChannelError else {
+                        return
+                    }
+                    self?.analyticsRecorder.record(event: .secureChannelErrorReceived(error: secureChannelError))
+                    self?.router.didReceiveError(secureChannelError)
+                }
+            )
+            .disposed(by: disposeBag)
     }
 
     private func scheduleLocalNotification(userInfo: [AnyHashable: Any]) -> Completable {
@@ -109,23 +135,5 @@ final class SecureChannelNotificationRelay: SecureChannelNotificationRelaying {
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.add(request)
         return .empty()
-    }
-
-    func isSecureChannelNotification(_ userInfo: [AnyHashable: Any]) -> Bool {
-        (userInfo["type"] as? String) == "secure_channel"
-    }
-
-    func didReceiveSecureChannelNotification(_ userInfo: [AnyHashable: Any]) {
-        service.createSecureChannelConnectionCandidate(userInfo)
-            .subscribe(
-                onSuccess: { [weak self] candidate in
-                    self?.router.didReceiveSecureChannelCandidate(candidate)
-                },
-                onError: { [weak self] error in
-                    Logger.shared.debug("Secure Channel Error: \(String(describing: error))")
-                    self?.router.didReceiveError(error)
-                }
-            )
-            .disposed(by: disposeBag)
     }
 }

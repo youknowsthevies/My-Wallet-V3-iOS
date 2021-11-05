@@ -2,8 +2,8 @@
 
 import Combine
 import CombineSchedulers
-import ToolKit
 import Session
+import ToolKit
 
 public protocol OpenBankingClientProtocol {
 

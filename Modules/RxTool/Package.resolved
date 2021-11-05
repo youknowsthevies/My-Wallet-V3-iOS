@@ -21,7 +21,7 @@
       },
       {
         "package": "RxCombine",
-        "repositoryURL": "git@github.com:paulo-bc/RxCombine.git",
+        "repositoryURL": "https://github.com/paulo-bc/RxCombine.git",
         "state": {
           "branch": null,
           "revision": "0762454fba26dcf315aaa7ac5ed5fbdecd50fef2",
@@ -30,7 +30,7 @@
       },
       {
         "package": "RxSwift",
-        "repositoryURL": "git@github.com:ReactiveX/RxSwift.git",
+        "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
         "state": {
           "branch": null,
           "revision": "cec68169a048a079f461ba203fe85636548d7a89",

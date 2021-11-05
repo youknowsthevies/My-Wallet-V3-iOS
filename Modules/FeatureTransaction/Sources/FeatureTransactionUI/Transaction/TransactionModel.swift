@@ -169,6 +169,8 @@ final class TransactionModel {
             return nil
         case .fatalTransactionError:
             return nil
+        case .showErrorRecoverySuggestion:
+            return nil
         case .validateTransaction:
             return processValidateTransaction()
         case .createOrder:

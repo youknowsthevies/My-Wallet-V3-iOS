@@ -40,9 +40,8 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-case-paths",
             from: "0.7.0"
         ),
-        .package(path: "../ComposableNavigation"),
+        .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../ComponentLibrary"),
-        .package(path: "../Localization"),
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
         .package(path: "../Session"),
@@ -77,9 +76,8 @@ let package = Package(
                 .target(name: "FeatureOpenBankingDomain"),
                 .target(name: "FeatureOpenBankingData"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "ComposableNavigation", package: "ComposableNavigation"),
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "ComponentLibrary", package: "ComponentLibrary"),
-                .product(name: "Localization", package: "Localization"),
                 .product(name: "UIComponents", package: "UIComponents")
             ]
         ),

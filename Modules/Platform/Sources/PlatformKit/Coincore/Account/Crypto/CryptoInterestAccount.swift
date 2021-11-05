@@ -29,11 +29,11 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .fetchInterestAccountReceiveAddressForCurrencyCode(asset.code)
             .eraseToAnyPublisher()
             .asSingle()
-            .flatMap { [cryptoReceiveAddressFactory, onTxCompleted] addressString in
+            .flatMap { [cryptoReceiveAddressFactory, onTxCompleted, asset] addressString in
                 cryptoReceiveAddressFactory
                     .makeExternalAssetAddress(
                         address: addressString,
-                        label: "",
+                        label: "\(asset.code) \(LocalizationConstants.rewardsAccount)",
                         onTxCompleted: onTxCompleted
                     )
                     .single
@@ -75,19 +75,25 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     public var actions: Single<AvailableActions> {
         canPerformInterestWithdraw()
             .map { canPerformWithdraw in
-                canPerformWithdraw ? [.interestWithdraw] : []
+                canPerformWithdraw ? [.interestWithdraw, .viewActivity] : [.viewActivity]
             }
     }
 
     public var activity: Single<[ActivityItemEvent]> {
-        .just([])
+        interestActivityEventRepository
+            .fetchInterestActivityItemEventsForCryptoCurrency(asset)
+            .replaceError(with: [])
+            .map { $0.map { .interest($0) } }
+            .asSingle()
     }
 
     let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
+    private let featureFlagService: FeatureFlagsServiceAPI
     private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
     private let receiveAddressRepository: InterestAccountReceiveAddressRepositoryAPI
+    private let interestActivityEventRepository: InterestActivityItemEventRepositoryAPI
     private let balanceService: InterestAccountOverviewAPI
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset)
@@ -101,9 +107,12 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         balanceService: InterestAccountOverviewAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve(),
         interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve(),
+        interestActivityEventRepository: InterestActivityItemEventRepositoryAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     ) {
         label = asset.defaultInterestWalletName
+        self.interestActivityEventRepository = interestActivityEventRepository
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
         self.receiveAddressRepository = receiveAddressRepository
         self.asset = asset
@@ -111,12 +120,17 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         self.balanceService = balanceService
         self.priceService = priceService
         self.interestEligibilityRepository = interestEligibilityRepository
+        self.featureFlagService = featureFlagService
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
         switch action {
         case .interestWithdraw:
             return canPerformInterestWithdraw()
+        case .viewActivity:
+            return activity
+                .map(\.count)
+                .map { $0 > 0 }
         case .send,
              .swap,
              .deposit,
@@ -124,7 +138,6 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
              .withdraw,
              .sell,
              .receive,
-             .viewActivity,
              .interestTransfer:
             return .just(false)
         }
@@ -137,7 +150,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         priceService
             .price(of: asset, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balance.asPublisher())
+            .zip(balancePublisher)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }
@@ -145,10 +158,16 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     }
 
     private func canPerformInterestWithdraw() -> Single<Bool> {
-        balance
-            .map(\.isPositive)
-            .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in
-                guard isPositive else {
+        Single
+            .zip(
+                featureFlagService
+                    .isEnabled(.remote(.interestWithdrawAndDeposit))
+                    .asSingle(),
+                balance.map(\.isPositive)
+            )
+            .map { $0.0 && $0.1 }
+            .flatMap(weak: self) { (self, isAvailable) -> Single<Bool> in
+                guard isAvailable else {
                     return .just(false)
                 }
                 return self

@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 // swiftlint:disable line_length
 
+import ComponentLibrary
+
 #if DEBUG
 extension TaskView_Previews {
 

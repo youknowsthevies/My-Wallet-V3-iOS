@@ -4,7 +4,7 @@ import stellarsdk
 
 private enum HorizonServer {
     fileprivate enum Blockchain {
-        fileprivate static let production = "https://horizon.blockchain.info"
+        fileprivate static let production = "https://api.blockchain.info/stellar"
     }
 
     fileprivate enum Stellar {

@@ -2,10 +2,10 @@
 
 import Combine
 import CombineSchedulers
-@testable import NetworkKit
 @testable import FeatureOpenBankingData
 @testable import FeatureOpenBankingDomain
 import FeatureOpenBankingTestFixture
+@testable import NetworkKit
 import TestKit
 
 // swiftlint:disable line_length
@@ -274,7 +274,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
             id: "a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c",
             partner: "YAPILY",
             state: .ACTIVE,
-            attributes: .init(entity: "SafeConnect(UK)")
+            attributes: .init(entity: "SafeConnect(UK)", authorisationUrl: "http://blockchain.com")
         )
         .data()
 

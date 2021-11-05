@@ -6,6 +6,7 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import ToolKit
 
 enum ActivityDetailsPresenterFactory {
 
@@ -14,6 +15,8 @@ enum ActivityDetailsPresenterFactory {
         router: ActivityRouterAPI
     ) -> DetailsScreenPresenterAPI {
         switch event {
+        case .interest(let interest):
+            return InterestActivityDetailsPresenter(event: interest)
         case .fiat(let fiat):
             return FiatActivityDetailsPresenter(event: fiat)
         case .crypto(let crypto):

@@ -65,7 +65,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
             },
             .receive(.navigate(to: .credentials)) { state in
                 state.credentialsState = CredentialsState(
-                    accountRecoveryEnabled: false,
                     walletPairingState: WalletPairingState(
                         emailAddress: MockDeviceVerificationService.mockWalletInfo.email!,
                         emailCode: MockDeviceVerificationService.mockWalletInfo.emailCode,
@@ -86,7 +85,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
             },
             .receive(.navigate(to: .credentials)) { state in
                 state.credentialsState = CredentialsState(
-                    accountRecoveryEnabled: false,
                     walletPairingState: WalletPairingState(
                         emailAddress: MockDeviceVerificationService.mockWalletInfo.email!,
                         emailCode: MockDeviceVerificationService.mockWalletInfo.emailCode,
@@ -106,7 +104,6 @@ final class VerifyDeviceReducerTests: XCTestCase {
         }
         testStore.receive(.navigate(to: .credentials)) { state in
             state.credentialsState = CredentialsState(
-                accountRecoveryEnabled: false,
                 walletPairingState: WalletPairingState(
                     emailAddress: "",
                     walletGuid: MockDeviceVerificationService.mockWalletInfo.guid
@@ -122,7 +119,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
             state.credentialsContext = .walletIdentifier(guid: "")
         }
         testStore.receive(.navigate(to: .credentials)) { state in
-            state.credentialsState = .init(accountRecoveryEnabled: false)
+            state.credentialsState = .init()
             state.route = RouteIntent(route: .credentials, action: .navigateTo)
         }
     }
