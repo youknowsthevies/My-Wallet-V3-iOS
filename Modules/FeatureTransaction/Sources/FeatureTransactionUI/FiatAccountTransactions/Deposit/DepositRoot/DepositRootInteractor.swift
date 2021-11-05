@@ -81,17 +81,20 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let targetAccount: FiatAccount
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         targetAccount: FiatAccount,
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.targetAccount = targetAccount
         self.analyticsRecorder = analyticsRecorder
         self.linkedBanksFactory = linkedBanksFactory
         self.fiatCurrencyService = fiatCurrencyService
+        self.featureFlagsService = featureFlagsService
         super.init()
     }
 
@@ -101,17 +104,20 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
         Single.zip(
             linkedBanksFactory.linkedBanks,
             paymentMethodTypes,
-            .just(targetAccount.fiatCurrency)
+            .just(targetAccount.fiatCurrency),
+            featureFlagsService
+                .isEnabled(.local(.openBanking))
+                .asSingle()
         )
         .observeOn(MainScheduler.asyncInstance)
         .subscribe(onSuccess: { [weak self] values in
             guard let self = self else { return }
-            let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
+            let (linkedBanks, paymentMethodTypes, fiatCurrency, openBanking) = values
             // An array of linked bank accounts that can be used for Deposit
             let filteredLinkedBanks = linkedBanks.filter { linkedBank in
                 linkedBank.fiatCurrency == fiatCurrency
                     && linkedBank.paymentType == .bankTransfer
-                    && linkedBank.supportsDeposit
+                    && (linkedBank.partner != .yapily || openBanking)
             }
 
             if filteredLinkedBanks.isEmpty {

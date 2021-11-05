@@ -112,8 +112,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
             .receiveAddress
             .map(\.address)
             .flatMap(weak: self) { (self, identifier) -> Single<String> in
-                // TODO: Handle OB
-                self.bankTransferRepository
+                return self.bankTransferRepository
                     .startBankTransfer(
                         id: identifier,
                         amount: pendingTransaction.amount
@@ -126,7 +125,6 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     }
 
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        // TODO: Handle OB
         .just(event: .completed)
     }
 

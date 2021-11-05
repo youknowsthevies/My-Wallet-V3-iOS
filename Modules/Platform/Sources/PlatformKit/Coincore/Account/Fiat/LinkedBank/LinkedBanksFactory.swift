@@ -12,12 +12,6 @@ public protocol LinkedBanksFactoryAPI {
     func bankTransferLimits(for currency: FiatCurrency) -> Single<PaymentLimits>
 }
 
-/// A top-level closure that checks if the passed `LinkedBankData.Partner` is of type `yodlee`
-/// Currently we only support deposit for linked accounts via `Yodlee` not `Yapily` (aka Open Banking)
-var checkDepositSupport = { (partner: LinkedBankData.Partner) -> Bool in
-    partner == .yodlee
-}
-
 final class LinkedBanksFactory: LinkedBanksFactoryAPI {
 
     private let linkedBankService: LinkedBanksServiceAPI
@@ -46,7 +40,8 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
                         accountType: data.account?.type ?? .checking,
                         currency: data.currency,
                         paymentType: data.paymentMethodType,
-                        supportsDeposit: checkDepositSupport(data.partner)
+                        partner: data.partner,
+                        data: data
                     )
                 }
             }
@@ -70,7 +65,8 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
                         accountType: data.account?.type ?? .checking,
                         currency: data.currency,
                         paymentType: data.paymentMethodType,
-                        supportsDeposit: checkDepositSupport(data.partner)
+                        partner: data.partner,
+                        data: data
                     )
                 }
             }
@@ -89,7 +85,11 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
     func bankTransferLimits(for currency: FiatCurrency) -> Single<PaymentLimits> {
         paymentMethodService
             .eligiblePaymentMethods(for: currency)
-            .map { $0.filter { $0.method == .bankTransfer(.fiat(currency)) } }
+            .map {
+                $0.filter {
+                    $0.method == .bankAccount(.fiat(currency)) || $0.method == .bankTransfer(.fiat(currency))
+                }
+            }
             .map { paymentMetodTypes in
                 guard let item = paymentMetodTypes.first else {
                     fatalError("Expected a suggested payment method type")

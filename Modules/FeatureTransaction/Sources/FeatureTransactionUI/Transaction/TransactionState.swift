@@ -351,6 +351,7 @@ enum TransactionFlowStep: Equatable {
     case linkACard
     case linkABank
     case linkBankViaWire
+    case authorizeOpenBanking
     case enterAddress
     case selectTarget
     case enterAmount
@@ -372,7 +373,8 @@ extension TransactionFlowStep {
              .enterAmount,
              .inProgress,
              .linkBankViaWire,
-             .confirmDetail:
+             .confirmDetail,
+             .authorizeOpenBanking:
             return true
         case .closed,
              .enterPassword,
@@ -395,7 +397,8 @@ extension TransactionFlowStep {
              .linkACard,
              .linkABank,
              .linkBankViaWire,
-             .securityConfirmation:
+             .securityConfirmation,
+             .authorizeOpenBanking:
             return true
         case .closed,
              .confirmDetail,

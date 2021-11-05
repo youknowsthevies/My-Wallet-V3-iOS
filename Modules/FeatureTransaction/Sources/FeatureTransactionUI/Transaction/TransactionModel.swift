@@ -8,6 +8,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+// swiftlint:disable type_body_length
 final class TransactionModel {
 
     // MARK: - Private Properties
@@ -146,6 +147,7 @@ final class TransactionModel {
             return nil
         case .executeTransaction:
             return processExecuteTransaction(
+                source: previousState.source,
                 order: previousState.order,
                 secondPassword: previousState.secondPassword
             )
@@ -329,8 +331,16 @@ final class TransactionModel {
             }
     }
 
-    private func processExecuteTransaction(order: TransactionOrder?, secondPassword: String) -> Disposable {
-        interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
+    private func processExecuteTransaction(
+        source: BlockchainAccount?,
+        order: TransactionOrder?,
+        secondPassword: String
+    ) -> Disposable {
+        if (source as? LinkedBankAccount)?.partner == .yapily {
+            return Single<Any>.never().subscribe()
+        }
+
+        return interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
             .subscribe(onSuccess: { [weak self] result in
                 switch result {
                 case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:
