@@ -119,7 +119,8 @@ final class TransactionInteractor {
         action: AssetAction,
         transactionTarget: TransactionTarget?
     ) -> Single<[SingleAccount]> {
-        let allEligibleCryptoAccounts: Single<[CryptoAccount]> = coincore.allAccounts
+        let allEligibleCryptoAccounts: Single<[CryptoAccount]> = coincore
+            .allAccounts
             .eraseError()
             .map(\.accounts)
             .flatMapFilter(

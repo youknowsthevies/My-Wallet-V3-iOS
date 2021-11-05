@@ -14,16 +14,16 @@ final class NabuAnalyticsEventsRepository: NabuAnalyticsEventsRepositoryAPI {
     // MARK: - Private properties
 
     private let client: EventSendingAPI
-    private let tokenRepository: TokenRepositoryAPI
+    private let tokenProvider: TokenProvider
 
     // MARK: - Setup
 
     init(
         client: EventSendingAPI,
-        tokenRepository: TokenRepositoryAPI
+        tokenProvider: @escaping TokenProvider
     ) {
         self.client = client
-        self.tokenRepository = tokenRepository
+        self.tokenProvider = tokenProvider
     }
 
     // MARK: - AnalyticsEventsRepositoryAPI
@@ -31,7 +31,8 @@ final class NabuAnalyticsEventsRepository: NabuAnalyticsEventsRepositoryAPI {
     func publish<Events: Encodable>(
         events: Events
     ) -> AnyPublisher<Never, URLError> {
-        client.publish(events: events, token: tokenRepository.sessionToken)
+        client
+            .publish(events: events, token: tokenProvider())
             .eraseToAnyPublisher()
     }
 }

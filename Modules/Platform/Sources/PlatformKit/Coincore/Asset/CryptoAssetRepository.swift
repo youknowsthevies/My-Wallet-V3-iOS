@@ -56,8 +56,6 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
 
     public var canTransactToCustodial: AnyPublisher<Bool, Never> {
         kycTiersService.tiers
-            .asObservable()
-            .asPublisher()
             .map { tiers in
                 tiers.isTier1Approved || tiers.isTier2Approved
             }
@@ -88,7 +86,6 @@ public final class CryptoAssetRepository: CryptoAssetRepositoryAPI {
             )
             .optional()
             .replaceError(with: nil)
-            .eraseToAnyPublisher()
             .map { [asset] account -> CryptoAccountCustodialGroup in
                 guard let account = account else {
                     return CryptoAccountCustodialGroup(asset: asset)

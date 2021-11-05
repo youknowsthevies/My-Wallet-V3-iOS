@@ -1,20 +1,21 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-import RxSwift
+import Combine
+@testable import PlatformKit
 
 class TradingBalanceServiceAPIMock: TradingBalanceServiceAPI {
+    var underlyingBalanceState: CustodialAccountBalanceState = .absent
+    var underlyingBalanceStates: CustodialAccountBalanceStates = .absent
 
-    var underlyingCustodialBalance: CustodialAccountBalanceStates!
-    var balances: Single<CustodialAccountBalanceStates> {
-        .just(underlyingCustodialBalance)
+    var balances: AnyPublisher<CustodialAccountBalanceStates, Never> {
+        .just(underlyingBalanceStates)
     }
 
-    func balance(for currencyType: CurrencyType) -> Single<CustodialAccountBalanceState> {
-        fatalError("TODO")
+    func balance(for currencyType: CurrencyType) -> AnyPublisher<CustodialAccountBalanceState, Never> {
+        .just(underlyingBalanceState)
     }
 
-    func fetchBalances() -> Single<CustodialAccountBalanceStates> {
-        balances
+    func fetchBalances() -> AnyPublisher<CustodialAccountBalanceStates, Never> {
+        .just(underlyingBalanceStates)
     }
 }

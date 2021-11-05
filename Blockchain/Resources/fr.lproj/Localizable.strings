@@ -18,7 +18,7 @@
 "Scan Pairing Code" = "Scannez le code de jumelage";
 "Manual Pairing" = "Couplage manuel";
 "Automatic Pairing" = "Couplage automatique";
-"Welcome to Blockchain" = "Bienvenue sur Blockchain";
+"Welcome to Blockchain.com" = "Bienvenue sur Blockchain.com";
 "Recover Funds" = "Récupérer des fonds";
 "Backup phrase" = "Phrase de sauvegarde";
 "Password" = "Mot de passe";
@@ -98,7 +98,7 @@
 "Connection Error" = "Erreur de connexion";
 "We could not connect your Wallet to the Exchange. Please go back to the Exchange and try again." = "Nous n'avons pas pu connecter votre Portefeuille à Exchange. Veuillez retourner à Exchange et réessayer.";
 "Success!" = "Succès!";
-"Welcome to Blockchain!" = "Bienvenue sur Blockchain!";
+"Welcome to Blockchain.com!" = "Bienvenue sur Blockchain.com!";
 "Maybe Later" = "Peut-être plus tard";
 "Verify Your Email Address" = "Vérifiez votre adresse e-mail";
 "Verify Email Address" = "Vérifier l'adresse e-mail";
@@ -754,7 +754,6 @@
 "Verify your identity and buy crypto with the fastest experience in the market." = "Vérifiez votre identité et achetez une crypto avec l'expérience la plus rapide du marché.";
 "View Home" = "Afficher l'Accueil";
 "Visa" = "Visa";
-"Welcome to Blockchain.com" = "Bienvenue sur Blockchain.com";
 "We’ll notify you when your order is complete." = "Nous vous informerons lorsque votre commande sera terminée.";
 "We’re completing your purchase now." = "Nous finalisons maintenant votre achat.";
 "You can have a maximum of three cards" = "Vous pouvez avoir un maximum de trois cartes";
@@ -1254,7 +1253,6 @@ Pour utiliser l'application mobile, connectez-vous sur le web pour activer la 2F
 "Bought" = "Acheté";
 "Swapped" = "Échangé";
 "Fund Recovery Failed" = "Échec de la récupération des fonds";
-"Welcome to Blockchain.com!" = "Bienvenue sur Blockchain.com !";
 "% annually" = "% par an";
 "Accrued Rewards This Month" = "Récompenses accumulées ce mois-ci";
 "Add %@ to your Rewards Account" = "Ajoutez %@ à votre Compte de récompenses";

@@ -196,7 +196,9 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         }
     }
 
-    private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
+    private func fiatAmountAndFees(
+        from pendingTransaction: PendingTransaction
+    ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
             .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: sourceCryptoCurrency)),

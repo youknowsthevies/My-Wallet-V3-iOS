@@ -1,27 +1,50 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct BorderRadiiExamplesView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Spacing.padding2) {
-                Spacing_Previews.radiusView(
+                radiusView(
                     for: Spacing.buttonBorderRadius,
+                    name: "buttonBorderRadius",
                     title: "8pt (Buttons)"
                 )
-                Spacing_Previews.radiusView(
+                radiusView(
                     for: Spacing.containerBorderRadius,
+                    name: "containerBorderRadius",
                     title: "16pt (Containers)"
                 )
-                Spacing_Previews.radiusView(
+                radiusView(
                     for: Spacing.roundedBorderRadius(for: 188),
+                    name: "roundedBorderRadius(for:)",
                     title: "100% (Alerts)"
                 )
             }
             .padding(Spacing.padding())
         }
+    }
+
+    @ViewBuilder func radiusView(for radius: CGFloat, name: String, title: String) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: radius)
+                .fill(Color.white)
+
+            RoundedRectangle(cornerRadius: radius)
+                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [5, 3]))
+                .foregroundColor(.red)
+
+            VStack(spacing: Spacing.padding1) {
+                Text(name)
+                    .typography(.title3)
+
+                Text(title)
+                    .typography(.body1)
+            }
+        }
+        .frame(height: 188)
     }
 }
 

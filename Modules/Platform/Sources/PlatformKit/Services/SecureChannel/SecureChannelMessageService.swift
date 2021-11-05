@@ -2,13 +2,24 @@
 
 import CommonCryptoKit
 
-final class SecureChannelMessageService {
+public enum MessageError: LocalizedError, Equatable {
+    case decryptionFailed
+    case encryptionFailed
+    case jsonEncodingError
 
-    enum MessageError: Error {
-        case decryptionFailed
-        case encryptionFailed
-        case jsonEncodingError
+    public var errorDescription: String? {
+        switch self {
+        case .decryptionFailed:
+            return "Message Error: Decryption failed."
+        case .encryptionFailed:
+            return "Message Error: Encryption failed."
+        case .jsonEncodingError:
+            return "Message Error: Error encoding JSON data."
+        }
     }
+}
+
+final class SecureChannelMessageService {
 
     func decryptMessage(
         _ message: String,

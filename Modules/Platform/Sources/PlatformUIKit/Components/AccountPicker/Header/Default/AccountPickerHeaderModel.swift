@@ -14,13 +14,12 @@ public struct AccountPickerHeaderModel: Equatable {
     public let subtitle: String
     public let tableTitle: String?
     public let title: String
+    public let searchable: Bool
 
     // MARK: Properties
 
-    let searchable: Bool
-
     var height: CGFloat {
-        searchable ? 189 : 169
+        searchable ? 184 : 144
     }
 
     var titleLabel: LabelContent {

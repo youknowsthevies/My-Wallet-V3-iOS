@@ -3,6 +3,6 @@
 import PlatformKit
 
 enum InterestAccountListItemAction: Equatable {
-    case earnInterestButtonTapped
+    case earnInterestButtonTapped(InterestAccountDetails)
     case viewInterestButtonTapped(InterestAccountDetails)
 }

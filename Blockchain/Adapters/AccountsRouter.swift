@@ -18,7 +18,7 @@ final class AccountsRouter: AccountsRouting {
     private let disposeBag = DisposeBag()
 
     init(
-        routing: CurrencyRouting & TabSwapping,
+        routing: TabSwapping,
         backupRouter: FeatureDashboardUI.BackupRouterAPI = resolve()
     ) {
         nonCustodialActionRouterAPI = NonCustodialActionRouter(routing: routing)
@@ -27,7 +27,9 @@ final class AccountsRouter: AccountsRouting {
 
     private func routeToInterestAccount(for account: BlockchainAccount) {
         let interactor = InterestAccountDetailsScreenInteractor(account: account)
-        let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
+        let presenter = InterestAccountDetailsScreenPresenter(
+            interactor: interactor
+        )
         let controller = InterestAccountDetailsViewController(presenter: presenter)
 
         let navigationRouter: NavigationRouterAPI = resolve()

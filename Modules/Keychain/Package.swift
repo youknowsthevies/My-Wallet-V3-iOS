@@ -9,11 +9,27 @@ let package = Package(
         .library(
             name: "KeychainKit",
             targets: ["KeychainKit"]
+        ),
+        .library(
+            name: "KeychainKitMock",
+            targets: ["KeychainKitMock"]
         )
+    ],
+    dependencies: [
+        .package(path: "../Tool")
     ],
     targets: [
         .target(
-            name: "KeychainKit"
+            name: "KeychainKit",
+            dependencies: [
+                .product(name: "ToolKit", package: "Tool")
+            ]
+        ),
+        .target(
+            name: "KeychainKitMock",
+            dependencies: [
+                .target(name: "KeychainKit")
+            ]
         ),
         .testTarget(
             name: "KeychainKitTests",

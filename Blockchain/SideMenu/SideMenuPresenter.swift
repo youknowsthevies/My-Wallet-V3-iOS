@@ -49,9 +49,9 @@ class SideMenuPresenter {
 
     private var menuItems: AnyPublisher<[SideMenuItem], Never> {
         featureFlagsService
-            .isEnabled(.local(.interestWithdrawAndDeposit))
+            .isEnabled(.remote(.interestWithdrawAndDeposit))
             .receive(on: DispatchQueue.main)
-            .map { [wallet] interestWithdrawDepositIsEnabled -> [SideMenuItem] in
+            .map { interestWithdrawDepositIsEnabled -> [SideMenuItem] in
                 var items: [SideMenuItem] = []
 
                 if interestWithdrawDepositIsEnabled {

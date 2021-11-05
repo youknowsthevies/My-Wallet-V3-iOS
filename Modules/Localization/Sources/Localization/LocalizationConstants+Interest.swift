@@ -13,11 +13,24 @@ extension LocalizationConstants {
                 public enum Action {}
             }
 
+            public enum NoEligibleWallets {}
             public enum IdentityVerification {}
             public enum Announcement {}
             public enum AccountDetails {}
         }
     }
+}
+
+// MARK: - Screen.NoEligibleWallets
+
+extension LocalizationConstants.Interest.Screen.NoEligibleWallets {
+
+    public static let title = NSLocalizedString("Not Enough %@", comment: "Not Enough %@")
+    public static let description = NSLocalizedString(
+        "You’ll need buy or receive %@ to your %@ Trading Account before you can start earning %@ on %@.",
+        comment: "You’ll need buy or receive %@ to your %@ Trade Wallet before you can start earning %@ on %@"
+    )
+    public static let action = NSLocalizedString("Buy %@ Now", comment: "Buy %@ Now")
 }
 
 // MARK: - Screen.Announcement
@@ -89,16 +102,19 @@ extension LocalizationConstants.Interest.Screen.IdentityVerification {
 
 extension LocalizationConstants.Interest.Screen.Overview {
     public static let title = NSLocalizedString(
-        "Interest Accounts",
-        comment: "Interest Accounts"
+        "Rewards Account",
+        comment: "Rewards Account"
     )
+    public static let loading = NSLocalizedString("Loading...", comment: "Loading...")
+    public static let fetchingAccountStatus = NSLocalizedString("Fetching Your Account Status...", comment: "Fetching Your Account Status...")
+    public static let fetchingRewardsAccounts = NSLocalizedString("Fetching Rewards Accounts...", comment: "Fetching Rewards Accounts...")
     public static let earnUpTo = NSLocalizedString(
         "Earn up to %@ annually on your %@",
         comment: "Earn up to %@ annually on your %@"
     )
     public static let totalEarned = NSLocalizedString(
-        "Total Interest Earned",
-        comment: "Total Interest Earned"
+        "Total Rewards Earned",
+        comment: "Total Rewards Earned"
     )
     public static let balance = NSLocalizedString("Balance", comment: "Balance")
     public static let annually = NSLocalizedString("annually", comment: "annually")
@@ -109,16 +125,16 @@ extension LocalizationConstants.Interest.Screen.Overview {
 extension LocalizationConstants.Interest.Screen.Overview.Action {
     public static let view = NSLocalizedString("View", comment: "View")
     public static let earnInterest = NSLocalizedString(
-        "Earn Interest",
-        comment: "Earn Interest"
+        "Earn Rewards",
+        comment: "Earn Rewards"
     )
     public static let notAvailable = NSLocalizedString(
         "Not available in your region",
         comment: "Not available in your region"
     )
     public static let tierTooLow = NSLocalizedString(
-        "You need to be Gold verified to start Earning Interest",
-        comment: "You need to be Gold verified to start Earning Interest"
+        "You need to be Gold verified to start Earning Rewards",
+        comment: "You need to be Gold verified to start Earning Rewards"
     )
     public static let unavailable = NSLocalizedString(
         "Currently unavailable, please check again later",
@@ -129,9 +145,11 @@ extension LocalizationConstants.Interest.Screen.Overview.Action {
 // MARK: - Screen.AccountDetails
 
 extension LocalizationConstants.Interest.Screen.AccountDetails {
+    public static let loading = NSLocalizedString("Loading..", comment: "Loading...")
     public static let annually = NSLocalizedString("Annually", comment: "Annually")
     public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
     public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+    public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
     public static let rewardsSummary = NSLocalizedString("Rewards Summary", comment: "Rewards Summary")
     public static let rewardsAccount = NSLocalizedString("Rewards Account", comment: "Rewards Account")
     public enum Cell {

@@ -65,13 +65,20 @@ final class FiatCustodialAccount: FiatAccount {
     var pendingBalance: Single<MoneyValue> {
         balances
             .map(\.balance?.pending)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .asSingle()
     }
 
     var balance: Single<MoneyValue> {
+        balancePublisher
+            .asSingle()
+    }
+
+    var balancePublisher: AnyPublisher<MoneyValue, Error> {
         balances
             .map(\.balance?.available)
-            .onNilJustReturn(.zero(currency: currencyType))
+            .replaceNil(with: .zero(currency: currencyType))
+            .mapError()
     }
 
     var actionableBalance: Single<MoneyValue> {
@@ -87,7 +94,7 @@ final class FiatCustodialAccount: FiatAccount {
     private let balanceService: TradingBalanceServiceAPI
     private let priceService: PriceServiceAPI
     private let paymentMethodService: PaymentMethodTypesServiceAPI
-    private var balances: Single<CustodialAccountBalanceState> {
+    private var balances: AnyPublisher<CustodialAccountBalanceState, Never> {
         balanceService.balance(for: currencyType)
     }
 
@@ -140,7 +147,7 @@ final class FiatCustodialAccount: FiatAccount {
         priceService
             .price(of: self.fiatCurrency, in: fiatCurrency, at: time)
             .eraseError()
-            .zip(balance.asPublisher())
+            .zip(balancePublisher)
             .tryMap { fiatPrice, balance in
                 MoneyValuePair(base: balance, exchangeRate: fiatPrice.moneyValue)
             }

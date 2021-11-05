@@ -2,12 +2,17 @@
 
 import Combine
 import DIKit
+import NabuNetworkError
 import ToolKit
 
-public protocol NabuUserServiceAPI: AnyObject {
-    var user: AnyPublisher<NabuUser, Never> { get }
+public enum NabuUserServiceError: Error {
+    case failedToFetchUser(NabuNetworkError)
+}
 
-    func fetchUser() -> AnyPublisher<NabuUser, Never>
+public protocol NabuUserServiceAPI: AnyObject {
+    var user: AnyPublisher<NabuUser, NabuUserServiceError> { get }
+
+    func fetchUser() -> AnyPublisher<NabuUser, NabuUserServiceError>
 }
 
 final class NabuUserService: NabuUserServiceAPI {
@@ -18,10 +23,9 @@ final class NabuUserService: NabuUserServiceAPI {
 
     // MARK: - Exposed Properties
 
-    var user: AnyPublisher<NabuUser, Never> {
+    var user: AnyPublisher<NabuUser, NabuUserServiceError> {
         cachedValue
             .get(key: Key())
-            .ignoreFailure()
     }
 
     // MARK: - Properties
@@ -31,7 +35,7 @@ final class NabuUserService: NabuUserServiceAPI {
     private let cachedValue: CachedValueNew<
         Key,
         NabuUser,
-        Error
+        NabuUserServiceError
     >
 
     // MARK: - Setup
@@ -60,14 +64,14 @@ final class NabuUserService: NabuUserServiceAPI {
                             }
                         }
                     )
-                    .eraseError()
+                    .mapError(NabuUserServiceError.failedToFetchUser)
+                    .eraseToAnyPublisher()
             }
         )
     }
 
-    func fetchUser() -> AnyPublisher<NabuUser, Never> {
+    func fetchUser() -> AnyPublisher<NabuUser, NabuUserServiceError> {
         cachedValue
             .get(key: Key(), forceFetch: true)
-            .ignoreFailure()
     }
 }

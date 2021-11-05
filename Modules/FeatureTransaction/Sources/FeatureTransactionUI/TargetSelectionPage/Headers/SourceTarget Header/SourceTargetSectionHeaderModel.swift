@@ -4,6 +4,12 @@ import PlatformUIKit
 import UIKit
 
 public struct SourceTargetSectionHeaderModel: Equatable {
+
+    public enum TitleDisplayStyle {
+        case medium
+        case small
+    }
+
     static let defaultHeight: CGFloat = 20
 
     private let sectionTitle: String
@@ -11,12 +17,22 @@ public struct SourceTargetSectionHeaderModel: Equatable {
     var sectionTitleLabel: LabelContent {
         LabelContent(
             text: sectionTitle,
-            font: .main(.medium, 14),
-            color: .descriptionText
+            font: .main(.medium, titleDisplayStyle == .medium ? 14 : 12),
+            color: titleDisplayStyle == .medium ? .titleText : .textFieldPlaceholder
         )
     }
 
-    public init(sectionTitle: String) {
+    public let showSeparator: Bool
+
+    public let titleDisplayStyle: TitleDisplayStyle
+
+    public init(
+        sectionTitle: String,
+        titleDisplayStyle: TitleDisplayStyle = .medium,
+        showSeparator: Bool = true
+    ) {
         self.sectionTitle = sectionTitle
+        self.titleDisplayStyle = titleDisplayStyle
+        self.showSeparator = showSeparator
     }
 }

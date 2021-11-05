@@ -134,3 +134,10 @@ public struct MediaView<Failure: View>: View {
         }
     }
 }
+
+extension MediaView where Failure == EmptyView {
+
+    public init(_ media: Media, in bundle: Bundle = .main) {
+        self.init(media, in: bundle, failure: EmptyView.init)
+    }
+}

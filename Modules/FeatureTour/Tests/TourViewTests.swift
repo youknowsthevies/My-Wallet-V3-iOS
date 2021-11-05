@@ -41,19 +41,21 @@ class TourViewTests: XCTestCase {
             Price(currency: .coin(.bitcoinCash), value: .loaded(next: "$618.05"), deltaPercentage: .loaded(next: -3.46)),
             Price(currency: .coin(.stellar), value: .loaded(next: "$0.36"), deltaPercentage: .loaded(next: 12.50))
         ]
-        var priceListState = PriceListState()
-        priceListState.items = IdentifiedArray(uniqueElements: items)
-        let mockPriceListReducer: Reducer<PriceListState, PriceListAction, PriceListEnvironment> = Reducer { _, _, _ in
+        var tourState = TourState()
+        tourState.items = IdentifiedArray(uniqueElements: items)
+        let mockTourReducer: Reducer<TourState, TourAction, TourEnvironment> = Reducer { _, _, _ in
             .none
         }
-        let pricesView = PriceListView(
-            store: Store(
-                initialState: priceListState,
-                reducer: mockPriceListReducer,
-                environment: PriceListEnvironment()
-            )
+        let tourStore = Store(
+            initialState: tourState,
+            reducer: mockTourReducer,
+            environment: TourEnvironment(createAccountAction: {}, restoreAction: {}, logInAction: {})
         )
-        assertSnapshot(matching: pricesView, as: .image(layout: .device(config: .iPhone8)))
+        let livePricesView = LivePricesView(
+            store: tourStore,
+            list: LivePricesList(store: tourStore)
+        )
+        assertSnapshot(matching: livePricesView, as: .image(layout: .device(config: .iPhone8)))
     }
 }
 

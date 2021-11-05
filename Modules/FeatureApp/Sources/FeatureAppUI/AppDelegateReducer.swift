@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import DIKit
+import FeatureAuthenticationDomain
 import FeatureDebugUI
 import FeatureSettingsDomain
 import NetworkKit
@@ -67,7 +68,7 @@ struct AppDelegateEnvironment {
     var remoteNotificationAuthorizer: RemoteNotificationRegistering
     var remoteNotificationTokenReceiver: RemoteNotificationDeviceTokenReceiving
     var certificatePinner: CertificatePinnerAPI
-    var siftService: SiftServiceAPI
+    var siftService: FeatureAuthenticationDomain.SiftServiceAPI
     var customerSupportChatService: CustomerSupportChatServiceAPI
     var blurEffectHandler: BlurVisualEffectHandlerAPI
     var backgroundAppHandler: BackgroundAppHandlerAPI
@@ -233,7 +234,7 @@ private func applyCertificatePinning(
 }
 
 private func enableSift(
-    using service: SiftServiceAPI
+    using service: FeatureAuthenticationDomain.SiftServiceAPI
 ) -> AppDelegateEffect {
     Effect.fireAndForget {
         service.enable()

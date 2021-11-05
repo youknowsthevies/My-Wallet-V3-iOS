@@ -84,7 +84,7 @@ let skipUpgradeReducer = Reducer.combine(
         SkipUpgradeState,
         SkipUpgradeAction,
         SkipUpgradeEnvironment
-    > { state, action, environment in
+    > { state, action, _ in
         switch action {
 
         // MARK: - Transitions and Navigations
@@ -94,8 +94,6 @@ let skipUpgradeReducer = Reducer.combine(
                 switch routeValue {
                 case .credentials:
                     state.credentialsState = .init(
-                        accountRecoveryEnabled:
-                        environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled,
                         walletPairingState: WalletPairingState(
                             emailAddress: state.walletInfo.email ?? "",
                             emailCode: state.walletInfo.emailCode,

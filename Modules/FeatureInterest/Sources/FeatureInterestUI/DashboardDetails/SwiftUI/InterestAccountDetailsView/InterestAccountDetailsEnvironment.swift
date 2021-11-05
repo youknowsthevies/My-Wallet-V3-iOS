@@ -6,6 +6,7 @@ import PlatformKit
 
 struct InterestAccountDetailsEnvironment {
     let fiatCurrencyService: FiatCurrencyPublisherAPI
+    let blockchainAccountRepository: BlockchainAccountRepositoryAPI
     let priceService: PriceServiceAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
 }
@@ -13,6 +14,7 @@ struct InterestAccountDetailsEnvironment {
 extension InterestAccountDetailsEnvironment {
     static let `default`: InterestAccountDetailsEnvironment = .init(
         fiatCurrencyService: resolve(),
+        blockchainAccountRepository: resolve(),
         priceService: resolve(),
         mainQueue: .main
     )

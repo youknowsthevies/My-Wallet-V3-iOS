@@ -19,7 +19,7 @@ public class ReceiveCoordinator {
 
     // MARK: - Public Properties
 
-    public let builder: ReceiveBuilder
+    public let builder: ReceiveRootBuilder
 
     // MARK: - Private Properties
 
@@ -27,6 +27,7 @@ public class ReceiveCoordinator {
     private let receiveRouter: ReceiveRouterAPI
     private let kycStatusChecker: KYCStatusChecking
     private let analyticsHook: TransactionAnalyticsHook
+    private let receiveSelectionService: AccountSelectionServiceAPI
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
@@ -43,7 +44,8 @@ public class ReceiveCoordinator {
         self.receiveRouter = receiveRouter
         self.kycStatusChecker = kycStatusChecker
         self.analyticsHook = analyticsHook
-        builder = ReceiveBuilder(
+        self.receiveSelectionService = receiveSelectionService
+        builder = ReceiveRootBuilder(
             internalFeatureFlagService: internalFeatureFlagService,
             receiveSelectionService: receiveSelectionService
         )
@@ -74,6 +76,12 @@ public class ReceiveCoordinator {
                 }
             })
             .disposed(by: disposeBag)
+    }
+
+    // MARK: - Methods
+
+    public func routeToReceive(sourceAccount: BlockchainAccount) {
+        receiveSelectionService.record(selection: sourceAccount)
     }
 
     // MARK: - Private Methods

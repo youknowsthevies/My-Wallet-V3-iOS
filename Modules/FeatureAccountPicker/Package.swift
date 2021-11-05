@@ -33,7 +33,7 @@ let package = Package(
         .package(path: "../Test"),
         .package(path: "../Platform"),
         .package(path: "../Localization"),
-        .package(path: "../ComposableNavigation")
+        .package(path: "../ComposableArchitectureExtensions")
     ],
     targets: [
         .target(
@@ -58,7 +58,8 @@ let package = Package(
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
-                .product(name: "ComposableNavigation", package: "ComposableNavigation")
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
+                .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions")
             ],
             path: "UI"
         ),

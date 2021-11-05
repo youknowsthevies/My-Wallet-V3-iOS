@@ -26,6 +26,7 @@ final class TransactionsRouterTests: XCTestCase {
             pendingOrdersService: MockPendingOrderDetailsService(),
             kycRouter: MockTransactionsKYCRouter(),
             alertViewPresenter: MockAlertViewPresenter(),
+            topMostViewControllerProvider: MockTopMostViewControllerProvider(),
             loadingViewPresenter: MockLoadingViewPresenter(),
             legacyBuyRouter: mockLegacyBuyFlowRouter,
             buyFlowBuilder: mockBuyFlowBuilder

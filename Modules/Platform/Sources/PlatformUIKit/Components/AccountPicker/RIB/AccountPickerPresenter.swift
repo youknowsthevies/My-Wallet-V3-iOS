@@ -28,6 +28,7 @@ public final class AccountPickerPresenter: Presenter<AccountPickerViewControllab
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
     private let headerModel: AccountPickerHeaderType
+    private let showsWithdrawalLocks: Bool
 
     // MARK: - Init
 
@@ -36,26 +37,35 @@ public final class AccountPickerPresenter: Presenter<AccountPickerViewControllab
         action: AssetAction,
         navigationModel: ScreenNavigationModel,
         headerModel: AccountPickerHeaderType,
-        buttonViewModel: ButtonViewModel? = nil
+        buttonViewModel: ButtonViewModel? = nil,
+        showsWithdrawalLocks: Bool = false
     ) {
         self.action = action
         button = buttonViewModel
         self.navigationModel = navigationModel
         self.headerModel = headerModel
+        self.showsWithdrawalLocks = showsWithdrawalLocks
         super.init(viewController: viewController)
     }
 
     // MARK: - Methods
 
     public func connect(state: Driver<AccountPickerInteractor.State>) -> Driver<AccountPickerInteractor.Effects> {
-        let action = action
         let sections = state.map(\.interactors)
-            .map { items -> [AccountPickerCellItem] in
+            .map { [action] items -> [AccountPickerCellItem] in
                 items.map { interactor in
                     AccountPickerCellItem(interactor: interactor, assetAction: action)
                 }
             }
-            .map { AccountPickerSectionViewModel(items: $0) }
+            .map { [action, showsWithdrawalLocks] items -> AccountPickerSectionViewModel in
+                if showsWithdrawalLocks {
+                    return AccountPickerSectionViewModel(
+                        items: [AccountPickerCellItem(interactor: .withdrawalLocks, assetAction: action)] + items
+                    )
+                } else {
+                    return AccountPickerSectionViewModel(items: items)
+                }
+            }
             .map { [$0] }
             .startWith([])
 

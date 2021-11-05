@@ -35,14 +35,18 @@ public final class InMemoryCache<Key: Hashable, Value: Equatable>: CacheAPI {
     /// - Parameters:
     ///   - configuration:  A cache configuration.
     ///   - refreshControl: A cache refresh control.
-    public init(configuration: CacheConfiguration = .default(), refreshControl: CacheRefreshControl) {
+    public init(
+        configuration: CacheConfiguration,
+        refreshControl: CacheRefreshControl,
+        notificationCenter: NotificationCenter = .default
+    ) {
         self.refreshControl = refreshControl
 
         for flushNotificationName in configuration.flushNotificationNames {
-            NotificationCenter.default
+            notificationCenter
                 .publisher(for: flushNotificationName)
                 .flatMap { [removeAll] _ in removeAll() }
-                .sink(receiveCompletion: { _ in }, receiveValue: { _ in })
+                .subscribe()
                 .store(in: &cancellables)
         }
     }

@@ -236,6 +236,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
                     text: subtitle,
                     font: font,
                     color: color,
+                    adjustsFontSizeToFitWidth: .true(factor: 0.7),
                     accessibility: accessibility
                 )
             }

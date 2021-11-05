@@ -33,7 +33,7 @@ final class ActivityItemPresenter: IdentifiableType {
     init(interactor: ActivityItemInteractor) {
         viewModel = ActivityItemViewModel(event: interactor.event)
         badgeImageViewModel = .template(
-            image: .local(name: viewModel.imageName, bundle: .platformUIKit),
+            image: viewModel.imageResource,
             templateColor: viewModel.eventColor,
             backgroundColor: viewModel.backgroundColor,
             cornerRadius: .round,

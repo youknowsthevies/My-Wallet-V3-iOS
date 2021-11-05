@@ -24,6 +24,9 @@ public protocol BlockchainAccount: Account {
     /// The total balance on this account.
     var balance: Single<MoneyValue> { get }
 
+    /// The total balance on this account.
+    var balancePublisher: AnyPublisher<MoneyValue, Error> { get }
+
     /// The pending balance of this account.
     var pendingBalance: Single<MoneyValue> { get }
 
@@ -69,6 +72,10 @@ public protocol BlockchainAccount: Account {
 }
 
 extension BlockchainAccount {
+
+    public var balancePublisher: AnyPublisher<MoneyValue, Error> {
+        balance.asPublisher()
+    }
 
     public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         let single: Single<Bool> = can(perform: action)

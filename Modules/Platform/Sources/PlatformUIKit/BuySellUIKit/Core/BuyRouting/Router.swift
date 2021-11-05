@@ -710,6 +710,6 @@ public final class Router: RouterAPI {
     }
 
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        BottomSheetPresenting(ignoresBackroundTouches: true)
+        BottomSheetPresenting(ignoresBackgroundTouches: true)
     }()
 }

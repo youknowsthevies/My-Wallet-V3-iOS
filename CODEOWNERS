@@ -1,11 +1,45 @@
 # https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
 
-Modules/TransactionFeature/ @paulo-bc @thisisalexmcgregor
-
+Modules/Analytics/ @mburda-bc
+Modules/CommonCrypto/ @jackpooleybc
+Modules/ComponentLibrary/ @mjarvis-bc @oliveratkinson-bc
+Modules/ComposableArchitectureExtensions/ @oliveratkinson-bc
+Modules/CryptoAssets/BitcoinCashKit/ @paulo-bc @jackpooleybc
+Modules/CryptoAssets/BitcoinChainKit/ @paulo-bc @jackpooleybc
+Modules/CryptoAssets/BitcoinKit/ @paulo-bc @jackpooleybc
+Modules/CryptoAssets/BitcoinKitMock/ @paulo-bc @jackpooleybc
+Modules/CryptoAssets/ERC20DataKit/ @jackpooleybc @paulo-bc
+Modules/CryptoAssets/ERC20DataKitMock/ @jackpooleybc @paulo-bc
+Modules/CryptoAssets/ERC20Kit/ @jackpooleybc @paulo-bc
+Modules/CryptoAssets/ERC20KitMock/ @jackpooleybc @paulo-bc
+Modules/CryptoAssets/EthereumKit/ @jackpooleybc @paulo-bc
+Modules/CryptoAssets/EthereumKitMock/ @jackpooleybc @paulo-bc
+Modules/CryptoAssets/StellarKit/ @thisisalexmcgregor
+Modules/CryptoAssets/StellarKitMock/ @thisisalexmcgregor
+Modules/FeatureAccountPicker/ @mjarvis-bc
+Modules/FeatureActivity/ @thisisalexmcgregor @oliveratkinson-bc
+Modules/FeatureApp/ @dchatzieleftheriou-bc
+Modules/FeatureAuthentication/ @grayson-bc @dchatzieleftheriou-bc
+Modules/FeatureDashboard/ @paulo-bc @dchatzieleftheriou-bc
+Modules/FeatureDebug/ @dchatzieleftheriou-bc
+Modules/FeatureInterest/ @thisisalexmcgregor
+Modules/FeatureKYC/ @gtranchedone-bc
+Modules/FeatureOnboarding/ @gtranchedone-bc
+Modules/FeatureSettings/ @thisisalexmcgregor @mburda-bc @dchatzieleftheriou-bc
+Modules/FeatureTour/ @dvelasquez-bc
+Modules/FeatureTransaction/ @thisisalexmcgregor @mburda-bc @oliveratkinson-bc
+Modules/HDWallet/ @jackpooleybc
+Modules/Keychain/ @dchatzieleftheriou-bc
+Modules/Metadata/ @jackpooleybc
 Modules/Network/ @jackpooleybc
-
-Modules/ComponentLibrary/ @mjarvis-bc
-
-Modules/ComposableNavigation/ @oliveratkinson-bc
-Modules/Session/ @oliveratkinson-bc
+Modules/NetworkErrors/ @jackpooleybc
 Modules/OpenBanking/ @oliveratkinson-bc
+Modules/Platform/ @paulo-bc @thisisalexmcgregor @dchatzieleftheriou-bc @jackpooleybc
+Modules/RemoteNotifications/ @paulo-bc
+Modules/RxAnalytics/ @mburda-bc
+Modules/RxTool/ @jackpooleybc
+Modules/Session/ @oliveratkinson-bc
+Modules/Test/ @gtranchedone-bc @paulo-bc
+Modules/Tool/ @jackpooleybc
+Modules/UIComponents/ @gtranchedone-bc @oliveratkinson-bc
+Modules/WalletPayload/ @jackpooleybc @dchatzieleftheriou-bc

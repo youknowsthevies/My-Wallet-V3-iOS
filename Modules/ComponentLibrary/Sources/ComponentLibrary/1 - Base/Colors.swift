@@ -7,7 +7,7 @@ import SwiftUI
 ///
 /// # Usage:
 ///
-/// `Text("Hello World!").foregroundColor(Color.Semantic.title)`
+/// `Text("Hello World!").foregroundColor(.semantic.title)`
 ///
 /// - Version: 1.0.1
 ///
@@ -18,12 +18,27 @@ import SwiftUI
 extension Color {
 
     static func dynamicColor(light: Color, dark: Color) -> Color {
+        #if canImport(UIKit)
         Color(
             UIColor { traitCollection in
                 traitCollection.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
             }
         )
+        #else
+        Color(
+            NSColor(name: nil) { appearance in
+                switch appearance.bestMatch(from: [.aqua, .darkAqua]) {
+                case .some(.darkAqua):
+                    return NSColor(dark)
+                default:
+                    return NSColor(light)
+                }
+            }
+        )
+        #endif
     }
+
+    public static let semantic: Semantic.Type = Semantic.self
 
     public enum Semantic {
 
@@ -58,6 +73,20 @@ extension Color {
         public static let medium: Color = Palette.grey100.color()
 
         public static let light: Color = Palette.grey000.color()
+
+        public static var background1: Color {
+            Color.dynamicColor(
+                light: .semantic.white,
+                dark: .semantic.black
+            )
+        }
+
+        public static var background2: Color {
+            Color.dynamicColor(
+                light: .semantic.white,
+                dark: Palette.dark800.color()
+            )
+        }
     }
 }
 
@@ -126,22 +155,22 @@ struct Colors_Previews: PreviewProvider {
     }
 
     static let allColors: [ColorMap] = [
-        ColorMap(color: Color.Semantic.white, name: "white"),
-        ColorMap(color: Color.Semantic.black, name: "black"),
-        ColorMap(color: Color.Semantic.primary, name: "primary"),
-        ColorMap(color: Color.Semantic.primaryMuted, name: "primaryMuted"),
-        ColorMap(color: Color.Semantic.success, name: "success"),
-        ColorMap(color: Color.Semantic.successMuted, name: "successMuted"),
-        ColorMap(color: Color.Semantic.warning, name: "warning"),
-        ColorMap(color: Color.Semantic.warningMuted, name: "warningMuted"),
-        ColorMap(color: Color.Semantic.error, name: "error"),
-        ColorMap(color: Color.Semantic.errorMuted, name: "errorMuted"),
-        ColorMap(color: Color.Semantic.title, name: "title"),
-        ColorMap(color: Color.Semantic.body, name: "body"),
-        ColorMap(color: Color.Semantic.muted, name: "muted"),
-        ColorMap(color: Color.Semantic.dark, name: "dark"),
-        ColorMap(color: Color.Semantic.medium, name: "medium"),
-        ColorMap(color: Color.Semantic.light, name: "light")
+        ColorMap(color: .semantic.white, name: "white"),
+        ColorMap(color: .semantic.black, name: "black"),
+        ColorMap(color: .semantic.primary, name: "primary"),
+        ColorMap(color: .semantic.primaryMuted, name: "primaryMuted"),
+        ColorMap(color: .semantic.success, name: "success"),
+        ColorMap(color: .semantic.successMuted, name: "successMuted"),
+        ColorMap(color: .semantic.warning, name: "warning"),
+        ColorMap(color: .semantic.warningMuted, name: "warningMuted"),
+        ColorMap(color: .semantic.error, name: "error"),
+        ColorMap(color: .semantic.errorMuted, name: "errorMuted"),
+        ColorMap(color: .semantic.title, name: "title"),
+        ColorMap(color: .semantic.body, name: "body"),
+        ColorMap(color: .semantic.muted, name: "muted"),
+        ColorMap(color: .semantic.dark, name: "dark"),
+        ColorMap(color: .semantic.medium, name: "medium"),
+        ColorMap(color: .semantic.light, name: "light")
     ]
 
     static var previews: some View {
@@ -164,12 +193,12 @@ struct Colors_Previews: PreviewProvider {
                 .lineLimit(1)
                 .padding()
                 .truncationMode(.tail)
-                .foregroundColor(Color.dynamicColor(light: Color.Semantic.title, dark: Color.Semantic.light))
+                .foregroundColor(Color.dynamicColor(light: .semantic.title, dark: .semantic.light))
         }
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.dynamicColor(light: Color.Semantic.black, dark: Color.Semantic.white), lineWidth: 0.5)
+                .stroke(Color.dynamicColor(light: .semantic.black, dark: .semantic.white), lineWidth: 0.5)
         )
     }
 }

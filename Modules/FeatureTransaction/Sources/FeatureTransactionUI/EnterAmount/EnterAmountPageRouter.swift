@@ -59,6 +59,6 @@ final class EnterAmountPageRouter: ViewableRouter<EnterAmountPageInteractable, E
     }
 
     private lazy var sheetPresenter: BottomSheetPresenting = {
-        BottomSheetPresenting(ignoresBackroundTouches: true)
+        BottomSheetPresenting(ignoresBackgroundTouches: true)
     }()
 }

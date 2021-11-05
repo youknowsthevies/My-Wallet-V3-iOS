@@ -1,11 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import PlatformKit
 import SwiftUI
 import UIKit
 
 public protocol InterestAccountListHostingControllerDelegate: AnyObject {
     func presentKYCIfNeeded()
+    func presentBuyIfNeeded(_ cryptoCurrency: CryptoCurrency)
 }
 
 public final class InterestAccountListHostingController: UIViewController, InterestAccountListViewDelegate {
@@ -20,7 +22,7 @@ public final class InterestAccountListHostingController: UIViewController, Inter
                 store: .init(
                     initialState: InterestAccountListState(
                         interestAccountDetails: .init(uniqueElements: []),
-                        loadingInterestAccountList: true
+                        loadingStatus: .fetchingAccountStatus
                     ),
                     reducer: interestAccountListReducer,
                     environment: InterestAccountSelectionEnvironment.default
@@ -52,5 +54,9 @@ public final class InterestAccountListHostingController: UIViewController, Inter
 
     func didTapVerifyMyIdentity() {
         delegate?.presentKYCIfNeeded()
+    }
+
+    func didTapBuyCrypto(_ cryptoCurrency: CryptoCurrency) {
+        delegate?.presentBuyIfNeeded(cryptoCurrency)
     }
 }

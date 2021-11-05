@@ -19,7 +19,7 @@ let package = Package(
         .package(
             name: "WalletCore",
             url: "https://github.com/oliveratkinson-bc/wallet-core.git",
-            .revision("3d42f6995032828a3e1a0a372fb9873cdd357f03")
+            from: "2.6.31"
         ),
         .package(path: "../Test")
     ],

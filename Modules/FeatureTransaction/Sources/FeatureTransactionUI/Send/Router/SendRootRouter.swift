@@ -67,7 +67,8 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
         let sendAccountPickerRouter = builder.build(
             listener: .simple(didSelect),
             navigationModel: navigationModel,
-            headerModel: .default(header)
+            headerModel: .default(header),
+            showsWithdrawalLocks: false
         )
         attachChild(sendAccountPickerRouter)
         viewController.replaceRoot(

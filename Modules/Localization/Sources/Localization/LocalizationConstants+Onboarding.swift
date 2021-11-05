@@ -11,11 +11,11 @@ extension LocalizationConstants {
 extension LocalizationConstants.Onboarding {
     public enum CreateWalletScreen {
         public static let title = NSLocalizedString(
-            "Create New Wallet",
+            "Buy Crypto Now",
             comment: "Create new wallet screen title"
         )
         public static let button = NSLocalizedString(
-            "Create Wallet",
+            "Buy Crypto Now",
             comment: "Create new wallet screen CTA button"
         )
         public enum TermsOfUse {

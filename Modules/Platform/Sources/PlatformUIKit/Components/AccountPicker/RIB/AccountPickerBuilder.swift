@@ -21,11 +21,13 @@ public protocol AccountPickerBuildable: RIBs.Buildable {
     ///   - navigationModel: Navigation Model for the UINavigationController
     ///   - headerModel: Header Model
     ///   - buttonViewModel: Optional button. (e.g. `+Add New` below a list of banks)
+    ///   - showsWithdrawalLocks: flags that determines if Withdrawal Lock should be shown
     func build(
         listener: AccountPickerListenerBridge,
         navigationModel: ScreenNavigationModel,
         headerModel: AccountPickerHeaderType,
-        buttonViewModel: ButtonViewModel?
+        buttonViewModel: ButtonViewModel?,
+        showsWithdrawalLocks: Bool
     ) -> AccountPickerRouting
 }
 
@@ -73,7 +75,8 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
         listener: AccountPickerListenerBridge,
         navigationModel: ScreenNavigationModel,
         headerModel: AccountPickerHeaderType,
-        buttonViewModel: ButtonViewModel? = nil
+        buttonViewModel: ButtonViewModel? = nil,
+        showsWithdrawalLocks: Bool = false
     ) -> AccountPickerRouting {
         let shouldOverrideNavigationEffects: Bool
         switch listener {
@@ -89,7 +92,8 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
             action: action,
             navigationModel: navigationModel,
             headerModel: headerModel,
-            buttonViewModel: buttonViewModel
+            buttonViewModel: buttonViewModel,
+            showsWithdrawalLocks: showsWithdrawalLocks
         )
         let interactor = AccountPickerInteractor(
             presenter: presenter,

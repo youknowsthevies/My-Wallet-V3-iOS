@@ -22,6 +22,10 @@ final class IconsTests: XCTestCase {
         let view = Icon.send.frame(width: 200, height: 200)
 
         assertSnapshot(matching: view, as: .image)
+
+        let smaller = Icon.send.frame(width: 10, height: 10)
+
+        assertSnapshot(matching: smaller, as: .image)
     }
 
     func testColoring() {

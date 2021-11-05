@@ -5,12 +5,16 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import ERC20DataKit
+import FeatureActivityData
+import FeatureAppDomain
 import FeatureAppUI
 import FeatureDebugUI
 import FeatureInterestData
 import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData
+import FeatureWithdrawalLocksData
+import FeatureWithdrawalLocksDomain
 import Firebase
 import PlatformDataKit
 import ToolKit
@@ -113,6 +117,7 @@ func defineDependencies() {
         DependencyContainer.stellarKit
         DependencyContainer.featureTransactionData
         DependencyContainer.featureTransactionDomain
+        DependencyContainer.featureActivityDataKit
         DependencyContainer.featureTransactionUI
         DependencyContainer.buySellKit
         DependencyContainer.featureActivityDomain
@@ -127,6 +132,9 @@ func defineDependencies() {
         DependencyContainer.featureAuthenticationData
         DependencyContainer.featureAuthenticationDomain
         DependencyContainer.featureAppUI
+        DependencyContainer.featureAppDomain
+        DependencyContainer.withdrawalLocksData
+        DependencyContainer.withdrawalLocksDomain
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif
