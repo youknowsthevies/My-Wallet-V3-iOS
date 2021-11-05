@@ -288,8 +288,6 @@ packages:
     path: Modules/Network
   NetworkErrors:
     path: Modules/NetworkErrors
-  OpenBanking:
-    path: Modules/OpenBanking
   Platform:
     path: Modules/Platform
   RemoteNotifications:
@@ -418,8 +416,6 @@ targets:
         product: NetworkKit
       - package: NetworkErrors
         product: NetworkErrors
-      - package: OpenBanking
-        product: OpenBanking
       - package: Platform
         product: PlatformKit
       - package: Platform
