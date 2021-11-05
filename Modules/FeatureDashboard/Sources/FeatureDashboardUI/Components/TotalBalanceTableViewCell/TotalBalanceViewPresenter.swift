@@ -56,15 +56,18 @@ extension PortfolioBalanceChangeProvider: AssetPriceViewInteracting {
         changeObservable
             .map { state in
                 switch state {
-                case .calculating, .invalid:
+                case .calculating,
+                     .invalid:
                     return .loading
                 case .value(let change):
-                    return .loaded(next: .init(
-                        time: .hours(24),
-                        fiatValue: change.balance.fiatValue!,
-                        changePercentage: change.changePercentage,
-                        fiatChange: change.change.fiatValue!
-                    ))
+                    return .loaded(
+                        next: .init(
+                            currentPrice: change.balance,
+                            time: .hours(24),
+                            changePercentage: change.changePercentage,
+                            priceChange: change.change
+                        )
+                    )
                 }
             }
     }
