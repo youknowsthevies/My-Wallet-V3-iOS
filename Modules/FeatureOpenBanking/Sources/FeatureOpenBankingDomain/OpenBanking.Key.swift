@@ -6,6 +6,7 @@ extension OpenBanking {
 
     public struct Key: Hashable {
         let name: String
+
         init(_ name: String, _ type: Any.Type) { self.name = name }
     }
 }

@@ -151,7 +151,7 @@ public struct OrderDetails {
     }
 
     public var isAwaitingAction: Bool {
-        isPendingDeposit || isPendingDepositBankWire || isPendingConfirmation || isPending3DSCardOrder
+        isPendingDepositBankWire || isPendingConfirmation || isPending3DSCardOrder
     }
 
     public var isBankWire: Bool {

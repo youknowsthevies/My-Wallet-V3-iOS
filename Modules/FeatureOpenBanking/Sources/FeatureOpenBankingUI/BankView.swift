@@ -89,6 +89,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         return environment.openBanking.state.publisher(for: .authorisation.url, as: URL.self)
             .ignoreResultFailure()
             .mapped(to: BankAction.launchAuthorisation)
+            .receive(on: environment.scheduler.main)
             .eraseToEffect()
             .cancellable(id: ID.LaunchBank())
 

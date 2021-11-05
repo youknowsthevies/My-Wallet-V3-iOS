@@ -139,7 +139,7 @@ public class OpenBankingClient {
                     "paymentMethodId": paymentMethod,
                     "attributes": [
                         "callback": "https://blockchainwallet.page.link/obapproval"
-                    ],
+                    ]
                 ].json(options: .sortedKeys),
                 authenticated: true
             )!
@@ -213,7 +213,8 @@ extension OpenBanking.BankAccount {
     }
 
     public func poll(
-        in banking: OpenBankingClient
+        in banking: OpenBankingClient,
+        until condition: @escaping (OpenBanking.BankAccount) -> Bool = { $0.attributes.authorisationUrl != nil }
     ) -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error> {
         Deferred {
             get(in: banking)
@@ -222,8 +223,7 @@ extension OpenBanking.BankAccount {
             max: 60,
             until: { account in
                 guard account.error == nil else { return true }
-                guard account.state != .PENDING else { return false }
-                return true
+                return condition(account)
             },
             delay: .seconds(2),
             scheduler: banking.scheduler
@@ -305,8 +305,7 @@ extension OpenBanking.Payment {
             max: 60,
             until: { payment in
                 guard payment.extraAttributes?.error == nil else { return true }
-                guard payment.extraAttributes?.authorisationUrl != nil else { return false }
-                return true
+                return payment.extraAttributes?.authorisationUrl != nil
             },
             delay: .seconds(2),
             scheduler: banking.scheduler
@@ -345,8 +344,7 @@ extension OpenBanking.Order {
         .poll(
             max: 60,
             until: { payment in
-                guard payment.attributes?.authorisationUrl != nil else { return false }
-                return true
+                payment.attributes?.authorisationUrl != nil
             },
             delay: .seconds(2),
             scheduler: banking.scheduler
@@ -380,9 +378,10 @@ extension OpenBankingClient: OpenBankingClientProtocol {
     }
 
     public func poll(
-        account: OpenBanking.BankAccount
+        account: OpenBanking.BankAccount,
+        until condition: @escaping (OpenBanking.BankAccount) -> Bool
     ) -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error> {
-        account.poll(in: self)
+        account.poll(in: self, until: condition)
     }
 
     public func get(

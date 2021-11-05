@@ -33,7 +33,8 @@ public protocol OpenBankingClientProtocol {
     ) -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error>
 
     func poll(
-        account: OpenBanking.BankAccount
+        account: OpenBanking.BankAccount,
+        until condition: @escaping (OpenBanking.BankAccount) -> Bool
     ) -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error>
 
     func get(

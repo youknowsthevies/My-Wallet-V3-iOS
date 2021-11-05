@@ -28,7 +28,7 @@ final class InstitutionListTests: OpenBankingTestCase {
 
     func test_initial_state() throws {
         let state = InstitutionListState()
-        XCTAssertNil(state.account)
+        XCTAssertNil(state.result)
         XCTAssertNil(state.selection)
         XCTAssertNil(state.route)
     }
@@ -54,7 +54,7 @@ final class InstitutionListTests: OpenBankingTestCase {
             .send(.fetch),
             .do { [self] in scheduler.main.run() },
             .receive(.fetched(createAccount)) { [self] state in
-                state.account = createAccount
+                state.result = .success(createAccount)
             }
         )
     }
@@ -72,7 +72,7 @@ final class InstitutionListTests: OpenBankingTestCase {
     var approve: [Store.Step] {
         [
             .send(.fetched(createAccount)) { [self] state in
-                state.account = createAccount
+                state.result = .success(createAccount)
             },
             .send(.select(createAccount, institution)) { [self] state in
                 state.selection = .init(
@@ -104,12 +104,12 @@ final class InstitutionListTests: OpenBankingTestCase {
             .do { [self] in scheduler.main.advance() },
             .send(.approve(.bank(.cancel))) { state in
                 state.route = nil
-                state.account = nil
+                state.result = nil
             },
             .receive(.fetch),
             .do { [self] in scheduler.main.advance() },
             .receive(.fetched(createAccount)) { [self] state in
-                state.account = createAccount
+                state.result = .success(createAccount)
             }
         )
     }

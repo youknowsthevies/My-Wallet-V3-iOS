@@ -12,8 +12,7 @@ public struct InstitutionListState: Equatable, NavigationState {
 
     public var route: RouteIntent<InstitutionListRoute>?
 
-    var account: OpenBanking.BankAccount?
-    var error: OpenBanking.Error?
+    var result: Result<OpenBanking.BankAccount, OpenBanking.Error>?
     var selection: ApproveState?
 }
 
@@ -69,7 +68,7 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                     .catch(InstitutionListAction.failure)
                     .eraseToEffect()
             case .fetched(let account):
-                state.account = account
+                state.result = .success(account)
                 return .none
             case .showTransferDetails:
                 return .fireAndForget(environment.showTransferDetails)
@@ -85,14 +84,14 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                 return .none
             case .approve(.bank(.cancel)):
                 state.route = nil
-                state.account = nil
+                state.result = nil
                 return Effect(value: .fetch)
             case .approve:
                 return .none
             case .dismiss:
                 return .fireAndForget(environment.dismiss)
             case .failure(let error):
-                state.error = error
+                state.result = .failure(error)
                 return .none
             }
         }
@@ -110,9 +109,10 @@ public struct InstitutionList: View {
     }
 
     public var body: some View {
-        WithViewStore(store) { viewStore in
+        WithViewStore(store.scope(state: \.result)) { viewStore in
             ZStack {
-                if let account = viewStore.account {
+                switch viewStore.state {
+                case .success(let account) where account.attributes.institutions != nil:
                     SearchableList(
                         account.attributes.institutions?.map(Item.init) ?? [],
                         placeholder: Localization.InstitutionList.search,
@@ -128,7 +128,7 @@ public struct InstitutionList: View {
                             NoSearchResults
                         }
                     )
-                } else if let error = viewStore.error {
+                case .failure(let error):
                     InfoView(
                         .init(
                             media: .bankIcon,
@@ -138,7 +138,7 @@ public struct InstitutionList: View {
                         ),
                         in: .openBanking
                     )
-                } else {
+                default:
                     ProgressView(value: 0.25)
                         .frame(width: 12.vmin, alignment: .center)
                         .aspectRatio(1, contentMode: .fit)
@@ -159,15 +159,16 @@ public struct InstitutionList: View {
         WithViewStore(store) { view in
             Spacer()
             Text(Localization.InstitutionList.Error.couldNotFindBank)
-                .typography(.body2)
-                .foregroundColor(.textTitle)
+                .typography(.paragraph1)
+                .foregroundColor(.textDetail)
                 .frame(alignment: .center)
-                .padding(10.5.vmin)
                 .multilineTextAlignment(.center)
+                .padding([.leading, .trailing], 12.5.vmin)
             Spacer()
-            PrimaryButton(title: Localization.InstitutionList.Error.showTransferDetails) {
+            SecondaryButton(title: Localization.InstitutionList.Error.showTransferDetails) {
                 view.send(.showTransferDetails)
             }
+            .padding(10.5.vmin)
         }
     }
 }
@@ -206,7 +207,8 @@ extension InstitutionList {
                 }
                 .frame(width: 12.vw, height: 12.vw, alignment: .center)
                 Text(title)
-                    .typography(.title3)
+                    .typography(.body2)
+                    .foregroundColor(.textTitle)
                 Spacer()
                 Image(systemName: "chevron.right")
                     .frame(width: 8.pt)

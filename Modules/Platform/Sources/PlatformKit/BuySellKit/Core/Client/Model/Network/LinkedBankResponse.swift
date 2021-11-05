@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureOpenBankingDomain
+
 public struct LinkedBankResponse: Decodable {
     enum AccountType: String, Decodable {
         case savings = "SAVINGS"
@@ -55,7 +57,7 @@ public struct LinkedBankResponse: Decodable {
         isBankTransferAccount = (try container.decodeIfPresent(Bool.self, forKey: .isBankTransferAccount) ?? false)
         name = try (container.decodeIfPresent(String.self, forKey: .name) ?? "")
         attributes = try container.decode(Attributes.self, forKey: .attributes)
-        error = try container.decodeIfPresent(Error.self, forKey: .error)
+        error = try? container.decodeIfPresent(Error.self, forKey: .error) ?? .unknown
         errorCode = try container.decodeIfPresent(String.self, forKey: .error)
         let accountType = try container.decodeIfPresent(AccountType.self, forKey: .bankAccountType)
         bankAccountType = accountType ?? .none
@@ -102,9 +104,11 @@ enum BankLinkagePartner: String, Decodable {
 
 struct CreateBankLinkageResponse: Decodable {
     struct LinkBankAttrsResponse: Decodable {
+        let entity: String
         let token: String?
         let fastlinkUrl: String?
         let fastlinkParams: FastlinkParameters?
+        let institutions: [OpenBanking.Institution]?
     }
 
     let id: String

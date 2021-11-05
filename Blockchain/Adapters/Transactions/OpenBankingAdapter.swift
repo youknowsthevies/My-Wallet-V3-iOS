@@ -23,11 +23,13 @@ struct FiatCurrencyFormatter: FeatureOpenBankingUI.FiatCurrencyFormatter {
 extension FeatureOpenBankingUI.OpenBankingViewController: StartOpenBanking {
 
     convenience init(
+        account: OpenBanking.BankAccount,
         currency: FiatCurrency,
         listener: LinkBankListener,
         app: AppCoordinating = resolve()
     ) {
         self.init(
+            account: account,
             environment: OpenBankingEnvironment(
                 showTransferDetails: {
                     app.showFundTrasferDetails(fiatCurrency: currency, isOriginDeposit: true)
@@ -41,12 +43,16 @@ extension FeatureOpenBankingUI.OpenBankingViewController: StartOpenBanking {
     }
 
     public static func link(
-        _ data: BankLinkageData,
+        account data: BankLinkageData,
         currency: FiatCurrency,
         listener: LinkBankListener
     ) -> UIViewController {
 
-        let viewController = OpenBankingViewController(currency: currency, listener: listener)
+        let viewController = OpenBankingViewController(
+            account: .init(data),
+            currency: currency,
+            listener: listener
+        )
 
         let navigationController = UINavigationController(rootViewController: viewController)
 

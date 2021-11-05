@@ -76,7 +76,7 @@ final class BankLinkTests: OpenBankingTestCase {
             .do { [self] in
                 environment.openBanking.state.set(.is.authorised, to: true)
             },
-            .receive(.finalise(.link)) { state in
+            .receive(.finalise(.linked(createAccount, institution: institution))) { state in
                 state.ui = .linked(institution: state.bankName)
             }
         )
@@ -163,7 +163,7 @@ final class BankPaymentTests: OpenBankingTestCase {
             .do { [self] in
                 environment.openBanking.state.set(.is.authorised, to: true)
             },
-            .receive(.finalise(.deposit(details))) { [self] state in
+            .receive(.finalise(.deposited(details))) { [self] state in
                 state.ui = .payment(success: details, in: environment)
             }
         )

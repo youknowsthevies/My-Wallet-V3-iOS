@@ -43,8 +43,8 @@ public final class OpenBankingViewController: UIHostingController<OpenBankingVie
         )
     }
 
-    public convenience init(environment: OpenBankingEnvironment) {
-        self.init(.linkBankAccount, environment: environment)
+    public convenience init(account: OpenBanking.BankAccount, environment: OpenBankingEnvironment) {
+        self.init(.linkBankAccount(account), environment: environment)
     }
 
     required init(_ state: OpenBankingState, environment: OpenBankingEnvironment) {

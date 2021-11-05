@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import CombineSchedulers
-@testable import NetworkKit
 @testable import FeatureOpenBankingData
+@testable import NetworkKit
 import TestKit
 
 /// Used for testing without any UI
@@ -34,7 +34,7 @@ final class OpenBankingFlow: XCTestCase {
         )
     }
 
-    func x_test_delete() throws {
+    func test_delete() throws {
 
         let accounts = try banking.allBankAccounts()
             .wait(timeout: 5)
@@ -43,8 +43,7 @@ final class OpenBankingFlow: XCTestCase {
             print("Deleting \(account.id.value)", terminator: " ")
             switch Result(catching: { try account.delete(in: banking).wait() }) {
             case .failure(let error):
-                print("❌")
-                XCTFail("\(error)")
+                print("❌ \(error)")
             case .success:
                 print("✅")
             }

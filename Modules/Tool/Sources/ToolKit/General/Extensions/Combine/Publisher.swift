@@ -51,7 +51,7 @@ extension Publisher {
         to handler: @escaping (Root) -> () -> Void,
         on root: Root
     ) -> AnyCancellable where Root: AnyObject {
-        sink { _ in } receiveValue: { [weak root] output in
+        sink { _ in } receiveValue: { [weak root] _ in
             guard let root = root else { return }
             handler(root)()
         }
@@ -94,6 +94,10 @@ extension Publisher {
 
     public func `catch`(_ handler: @escaping (Failure) -> Output) -> Publishers.Catch<Self, Just<Output>> {
         `catch` { error in Just(handler(error)) }
+    }
+
+    public func `catch`(_ output: @autoclosure @escaping () -> Output) -> Publishers.Catch<Self, Just<Output>> {
+        `catch` { error in Just(output()) }
     }
 }
 

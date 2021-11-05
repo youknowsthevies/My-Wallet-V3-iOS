@@ -71,46 +71,77 @@ public final class OpenBanking {
         }()
         .share()
 
-        return [
-            publisher.eraseToAnyPublisher(),
-            publisher
-                .compactMap { action -> Output? in
-                    switch action {
-                    case .waitingForConsent(let output):
-                        return output
-                    default:
-                        return nil
-                    }
-                }
-                .flatMap { [state] consent -> AnyPublisher<Action, Never> in
-                    state.publisher(for: .is.authorised, as: Bool.self)
-                        .ignoreResultFailure()
-                        .flatMap { authorised -> AnyPublisher<Action, Never> in
-                            if authorised {
-                                return Just(Action.success(consent))
-                                    .eraseToAnyPublisher()
-                            } else {
-                                return state.result(for: .consent.error, as: OpenBanking.Error.self)
-                                    .publisher
-                                    .mapError(OpenBanking.Error.init)
-                                    .mapped(to: Action.failure)
-                                    .catch(Action.failure)
+        let consentErrorPublisher = banking.state.result(for: .consent.error, as: OpenBanking.Error.self)
+            .publisher
+            .mapError(OpenBanking.Error.init)
+            .mapped(to: Action.failure)
+            .catch(Action.failure)
+            .eraseToAnyPublisher()
+
+        switch data.action {
+        case .link(let institution):
+            return [
+                publisher.eraseToAnyPublisher(),
+                publisher
+                    .filter(/Action.waitingForConsent)
+                    .flatMap { [data, banking] _ -> AnyPublisher<Action, Never> in
+                        banking.state.publisher(for: .is.authorised, as: Bool.self)
+                            .ignoreResultFailure()
+                            .flatMap { authorised -> AnyPublisher<(Bool, OpenBanking.BankAccount), OpenBanking.Error> in
+                                banking.poll(account: data.account, until: \.isNotPending)
+                                    .map { (authorised, $0) }
                                     .eraseToAnyPublisher()
                             }
-                        }
-                        .catch(Action.failure)
-                        .eraseToAnyPublisher()
-                }
-                .eraseToAnyPublisher()
-        ]
-        .merge()
-        .eraseToAnyPublisher()
+                            .flatMap { (authorised, account) -> AnyPublisher<Action, Never> in
+                                if authorised {
+                                    if let error = account.error {
+                                        return Just(Action.failure(error))
+                                            .eraseToAnyPublisher()
+                                    } else {
+                                        return Just(Action.success(.linked(account, institution: institution)))
+                                            .eraseToAnyPublisher()
+                                    }
+                                } else {
+                                    return consentErrorPublisher
+                                }
+                            }
+                            .catch(Action.failure)
+                            .eraseToAnyPublisher()
+                    }
+                    .eraseToAnyPublisher()
+            ]
+            .merge()
+            .eraseToAnyPublisher()
+        default:
+            return [
+                publisher.eraseToAnyPublisher(),
+                publisher
+                    .filter(/Action.waitingForConsent)
+                    .flatMap { [banking] consent -> AnyPublisher<Action, Never> in
+                        banking.state.publisher(for: .is.authorised, as: Bool.self)
+                            .ignoreResultFailure()
+                            .flatMap { authorised -> AnyPublisher<Action, Never> in
+                                if authorised {
+                                    return Just(Action.success(consent))
+                                        .eraseToAnyPublisher()
+                                } else {
+                                    return consentErrorPublisher
+                                }
+                            }
+                            .catch(Action.failure)
+                            .eraseToAnyPublisher()
+                    }
+                    .eraseToAnyPublisher()
+            ]
+            .merge()
+            .eraseToAnyPublisher()
+        }
     }
 
     private func link(_ institution: OpenBanking.Institution, data: Data) -> AnyPublisher<Action, Never> {
         banking.activate(bankAccount: data.account, with: institution.id)
             .flatMap { [banking] output -> AnyPublisher<Action, Never> in
-                banking.poll(account: output)
+                banking.poll(account: output, until: \.hasAuthorizationURL)
                     .flatMap { account -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error> in
                         if let error = account.error {
                             return Fail(error: error).eraseToAnyPublisher()
@@ -170,5 +201,16 @@ public final class OpenBanking {
             }
             .catch(Action.failure)
             .eraseToAnyPublisher()
+    }
+}
+
+extension OpenBanking.BankAccount {
+
+    var isNotPending: Bool {
+        state != .PENDING
+    }
+
+    var hasAuthorizationURL: Bool {
+        attributes.authorisationUrl != nil
     }
 }

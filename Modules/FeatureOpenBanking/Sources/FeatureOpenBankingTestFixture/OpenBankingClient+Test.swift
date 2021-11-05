@@ -18,11 +18,7 @@ extension OpenBanking {
     {
         let (banking, network) = OpenBankingClient.test(using: scheduler)
         return (
-            OpenBanking(
-                state: banking.state,
-                banking: banking,
-                scheduler: scheduler.eraseToAnyScheduler()
-            ),
+            OpenBanking(banking: banking),
             network
         )
     }

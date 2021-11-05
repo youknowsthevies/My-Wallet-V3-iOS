@@ -12,8 +12,12 @@ public enum OpenBankingState: Equatable {
 
 extension OpenBankingState {
 
-    public static var linkBankAccount: Self {
-        .institutionList(.init())
+    public static func linkBankAccount(_ bankAccount: OpenBanking.BankAccount? = nil) -> Self {
+        if let bankAccount = bankAccount {
+            return .institutionList(.init(result: .success(bankAccount)))
+        } else {
+            return .institutionList(.init())
+        }
     }
 
     public static func deposit(
@@ -84,8 +88,6 @@ public let openBankingReducer = Reducer<OpenBankingState, OpenBankingAction, Ope
                 environment.eventPublisher.send(.success(()))
                 return .none
             case .approve(.bank(.cancel)):
-                guard let action = (/OpenBankingState.approve).extract(from: state)?.bank.data.action else { return .none }
-                guard (/OpenBanking.Data.Action.confirm).extract(from: action) != nil else { return .none}
                 return .fireAndForget(environment.cancel)
             case .approve:
                 return .none
