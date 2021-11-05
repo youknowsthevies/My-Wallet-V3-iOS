@@ -6,25 +6,6 @@ import ToolKit
 
 public struct Task: Codable, Hashable {
 
-    public struct Style: Codable, Hashable {
-
-        public struct Text: Codable, Hashable {
-            var typography: Typography?
-        }
-
-        public struct Padding: Codable, Hashable {
-            var top: Length?
-            var leading: Length?
-            var bottom: Length?
-            var trailing: Length?
-        }
-
-        var text: Text?
-        var padding: Padding?
-        var foreground: Texture?
-        var background: Texture?
-    }
-
     public struct Row: Codable, Hashable {
         var title: String
         var value: String
@@ -61,6 +42,25 @@ public struct Task: Codable, Hashable {
     var divider: Bool?
     var group: Group?
     var style: Style?
+}
+
+public struct Style: Codable, Hashable {
+
+    public struct Text: Codable, Hashable {
+        var typography: Typography?
+    }
+
+    public struct Padding: Codable, Hashable {
+        var top: Length?
+        var leading: Length?
+        var bottom: Length?
+        var trailing: Length?
+    }
+
+    var text: Text?
+    var padding: Padding?
+    var foreground: Texture?
+    var background: Texture?
 }
 
 public struct TaskView: View {
@@ -245,32 +245,26 @@ extension Task {
     }
 
     public func typography(_ typography: Typography) -> Task {
-        var copy = self
-        copy.style = with(style ?? .init()) { style in
+        with(self, at: \.style, default: .init()) { style in
             style.text = .init(typography: typography)
         }
-        return copy
     }
 
     public func padding(
         _ edges: Edge.Set = [.leading, .trailing],
         _ length: Length? = 6.5.vmin
     ) -> Task {
-        var copy = self
-        copy.style = with(style ?? .init()) { style in
+        with(self, at: \.style, default: .init()) { style in
             style.padding = .init(length, edges: edges)
         }
-        return copy
     }
 
     public func foreground(
         _ color: Color
     ) -> Task {
-        var copy = self
-        copy.style = with(style ?? .init()) { style in
+        with(self, at: \.style, default: .init()) { style in
             style.foreground = color.texture
         }
-        return copy
     }
 
     public static func media(_ media: Media) -> Task {
@@ -335,7 +329,7 @@ extension Collection where Element == Task {
     }
 }
 
-extension Task.Style.Padding {
+extension Style.Padding {
 
     fileprivate init(_ length: Length?, edges: Edge.Set) {
         guard let length = length else { return }
@@ -367,16 +361,18 @@ extension Task.Style.Padding {
 struct TaskView_Previews: PreviewProvider {
 
     static var previews: some View {
-        NavigationView {
-            ScrollView {
-                TaskView(
-                    Task.group(
-                        payment(),
-                        Task.spacer(4.vmin),
-                        safeconnect()
+        VStack {
+            NavigationView {
+                ScrollView {
+                    TaskView(
+                        Task.group(
+                            payment(),
+                            Task.spacer(4.vmin),
+                            safeconnect()
+                        )
+                        .padding()
                     )
-                    .padding()
-                )
+                }
             }
         }
     }
