@@ -2,9 +2,9 @@
 
 import Combine
 import CombineSchedulers
-import NetworkKit
-@testable import FeatureOpenBankingUI
 import FeatureOpenBankingTestFixture
+@testable import FeatureOpenBankingUI
+import NetworkKit
 import ToolKit
 
 extension OpenBankingEnvironment {

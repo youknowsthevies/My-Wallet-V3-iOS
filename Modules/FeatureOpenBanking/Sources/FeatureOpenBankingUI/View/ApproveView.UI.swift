@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
 import FeatureOpenBankingDomain
+import Foundation
 import UIComponentsKit
 
 extension ApproveState.UI {
@@ -33,8 +33,8 @@ extension ApproveState.UI {
         case .confirm(let order):
             guard let currency = bankAccount.currency,
                   let amount = environment.fiatCurrencyFormatter.displayString(
-                    amountMinor: order.inputQuantity,
-                    currency: currency
+                      amountMinor: order.inputQuantity,
+                      currency: currency
                   )
             else {
                 return .init(title: Localization.Error.title, tasks: [])
@@ -47,8 +47,8 @@ extension ApproveState.UI {
         case .deposit(let amountMinor, _):
             guard let currency = bankAccount.currency,
                   let amount = environment.fiatCurrencyFormatter.displayString(
-                    amountMinor: amountMinor,
-                    currency: currency
+                      amountMinor: amountMinor,
+                      currency: currency
                   )
             else {
                 return .init(title: Localization.Error.title, tasks: [])
