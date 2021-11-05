@@ -31,4 +31,4 @@ echo "Install Mocks"
 sh ./scripts/install-mocks.sh
 
 echo "Opening project"
-open Blockchain.xcworkspace
+open Blockchain.xcodeproj
