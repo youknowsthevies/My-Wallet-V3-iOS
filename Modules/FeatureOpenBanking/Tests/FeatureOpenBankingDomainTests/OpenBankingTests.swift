@@ -110,10 +110,6 @@ final class OpenBankingTests: XCTestCase {
             ]
         )
     }
-
-    func test_start_order_confirmation() throws {
-        // TODO:
-    }
 }
 
 extension XCTestCase {
