@@ -377,7 +377,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .authorizeOpenBanking:
             guard let bankAccount = previousState?.source as? LinkedBankAccount else { return }
             guard let order = previousState?.pendingTransaction else { return }
-            self.router?.presentOpenBanking(
+            router?.presentOpenBanking(
                 transactionModel: transactionModel,
                 account: bankAccount,
                 order: order

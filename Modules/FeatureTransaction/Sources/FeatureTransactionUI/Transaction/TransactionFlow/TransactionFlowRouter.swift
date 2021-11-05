@@ -2,8 +2,8 @@
 
 import ComponentLibrary
 import DIKit
-import FeatureTransactionDomain
 import FeatureOpenBankingUI
+import FeatureTransactionDomain
 import Localization
 import PlatformKit
 import PlatformUIKit

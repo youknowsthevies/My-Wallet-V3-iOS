@@ -5,7 +5,7 @@ import DIKit
 import RxSwift
 import ToolKit
 
-public class LinkedBankAccount: Equatable, FiatAccount, BankAccount {
+public class LinkedBankAccount: FiatAccount, BankAccount {
 
     // MARK: - Public
 
@@ -109,9 +109,5 @@ public class LinkedBankAccount: Equatable, FiatAccount, BankAccount {
 
     public func can(perform action: AssetAction) -> Single<Bool> {
         actions.map { $0.contains(action) }
-    }
-
-    public static func == (lhs: LinkedBankAccount, rhs: LinkedBankAccount) -> Bool {
-        lhs.data == rhs.data
     }
 }

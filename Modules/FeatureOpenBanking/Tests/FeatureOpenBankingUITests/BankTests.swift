@@ -2,9 +2,9 @@
 // swiftlint:disable line_length
 
 import ComposableArchitecture
-import NetworkKit
 @testable import FeatureOpenBankingDomain
 @testable import FeatureOpenBankingUI
+import NetworkKit
 import TestKit
 
 final class BankLinkTests: OpenBankingTestCase {

@@ -112,7 +112,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
             .receiveAddress
             .map(\.address)
             .flatMap(weak: self) { (self, identifier) -> Single<String> in
-                return self.bankTransferRepository
+                self.bankTransferRepository
                     .startBankTransfer(
                         id: identifier,
                         amount: pendingTransaction.amount

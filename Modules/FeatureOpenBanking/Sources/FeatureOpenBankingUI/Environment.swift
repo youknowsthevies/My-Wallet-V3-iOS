@@ -3,8 +3,8 @@
 import Combine
 import CombineSchedulers
 import DIKit
-import NetworkKit
 import FeatureOpenBankingDomain
+import NetworkKit
 import SwiftUI
 import ToolKit
 

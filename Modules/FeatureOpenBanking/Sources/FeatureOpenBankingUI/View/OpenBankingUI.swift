@@ -78,7 +78,7 @@ public let openBankingReducer = Reducer<OpenBankingState, OpenBankingAction, Ope
                 action: /OpenBankingAction.approve,
                 environment: \.environment
             ),
-        .init { state, action, environment in
+        .init { _, action, environment in
             switch action {
             case .approve(.bank(.failure(let error))),
                  .institutionList(.approve(.bank(.failure(let error)))):

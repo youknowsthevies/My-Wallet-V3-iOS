@@ -68,4 +68,3 @@ public class BuyCheckoutRoutingInteractor: CheckoutRoutingInteracting {
         analyticsRecorder.record(event: analyticsEvent)
     }
 }
-

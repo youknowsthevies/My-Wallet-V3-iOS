@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
 import FeatureOpenBankingDomain
+import Foundation
 
 public struct FastlinkConfiguration {
     public let config: String?
