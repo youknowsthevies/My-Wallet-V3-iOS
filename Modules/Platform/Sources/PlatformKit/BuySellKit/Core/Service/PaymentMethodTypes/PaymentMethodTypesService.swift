@@ -191,10 +191,13 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         Observable
             .combineLatest(
                 fiatCurrencyService.fiatCurrencyObservable,
-                kycTiersService.tiers.map(\.isTier2Approved).asObservable()
+                kycTiersService.tiers.map(\.isTier2Approved).asObservable(),
+                featureFlagsService
+                    .isEnabled(.local(.openBanking))
+                    .asObservable()
             )
             .flatMap(weak: self) { (self, payload) in
-                let (fiatCurrency, isTier2Approved) = payload
+                let (fiatCurrency, isTier2Approved, isOpenBankingEnabled) = payload
                 // In case of no preselection we want the first eligible, if none present, check if available is only 1 and
                 // preselect it. Otherwise, don't preselect anything, this is in parallel with Android logic
                 return self.methodTypes
@@ -202,7 +205,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                         // we filter valid methods for buy
                         types.filterValidForBuy(
                             currentWalletCurrency: fiatCurrency,
-                            accountForEligibility: isTier2Approved
+                            accountForEligibility: isTier2Approved,
+                            isOpenBankingEnabled: isOpenBankingEnabled
                         )
                     }
             }
@@ -263,6 +267,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let featureFetching: RxFeatureFetching
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     // MARK: - Setup
 
@@ -276,6 +281,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
         featureFetching: RxFeatureFetching = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         notificationCenter: NotificationCenter = .default
     ) {
         self.featureFetching = featureFetching
@@ -287,6 +293,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         self.linkedBankService = linkedBankService
         self.beneficiariesServiceUpdater = beneficiariesServiceUpdater
         self.kycTiersService = kycTiersService
+        self.featureFlagsService = featureFlagsService
         notificationCenter.when(.login) { [weak self] _ in
             self?.preferredPaymentMethodTypeRelay.accept(nil)
         }
@@ -621,7 +628,11 @@ extension Array where Element == PaymentMethodType {
     ///   - accountForEligibility: Pass `true` if the eligibly flag of a suggested paymentMethod should be taken in consideration,
     ///                            otherwise `false`
     /// - Returns: An array of `PaymentMethodType` objects that are valid for buy
-    public func filterValidForBuy(currentWalletCurrency: FiatCurrency, accountForEligibility: Bool) -> [PaymentMethodType] {
+    public func filterValidForBuy(
+        currentWalletCurrency: FiatCurrency,
+        accountForEligibility: Bool,
+        isOpenBankingEnabled: Bool
+    ) -> [PaymentMethodType] {
         filter { method in
             switch method {
             case .account(let data):
@@ -644,8 +655,8 @@ extension Array where Element == PaymentMethodType {
                 }
             case .card(let data):
                 return data.state == .active
-//            case .linkedBank(let data) where data.partner != .yodlee:
-//                return false
+            case .linkedBank(let data) where !isOpenBankingEnabled && data.partner != .yodlee:
+                return false
             case .linkedBank(let data):
                 return data.state == .active && data.currency == currentWalletCurrency
             }

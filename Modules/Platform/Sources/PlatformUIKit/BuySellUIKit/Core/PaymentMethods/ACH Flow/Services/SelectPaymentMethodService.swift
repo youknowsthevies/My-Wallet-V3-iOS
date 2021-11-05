@@ -3,6 +3,7 @@
 import DIKit
 import PlatformKit
 import RxSwift
+import ToolKit
 
 public final class SelectPaymentMethodService {
 
@@ -18,14 +19,18 @@ public final class SelectPaymentMethodService {
             .zip(
                 isUserEligibleForFunds,
                 methodTypes,
-                fiatCurrencyService.fiatCurrency
+                fiatCurrencyService.fiatCurrency,
+                featureFlagsService
+                    .isEnabled(.local(.openBanking))
+                    .asSingle()
             )
             .map { payload in
-                let (isUserEligibleForFunds, methods, fiatCurrency) = payload
+                let (isUserEligibleForFunds, methods, fiatCurrency, isOpenBankingEnabled) = payload
                 return methods
                     .filterValidForBuy(
                         currentWalletCurrency: fiatCurrency,
-                        accountForEligibility: isUserEligibleForFunds
+                        accountForEligibility: isUserEligibleForFunds,
+                        isOpenBankingEnabled: isOpenBankingEnabled
                     )
             }
     }
@@ -55,17 +60,20 @@ public final class SelectPaymentMethodService {
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let kycTiers: KYCTiersServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     // MARK: - Setup
 
     public init(
         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        kycTiers: KYCTiersServiceAPI = resolve()
+        kycTiers: KYCTiersServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiers = kycTiers
+        self.featureFlagsService = featureFlagsService
     }
 
     func select(method: PaymentMethodType) {

@@ -339,7 +339,6 @@ final class TransactionModel {
         if (source as? LinkedBankAccount)?.partner == .yapily {
             return Single<Any>.never().subscribe()
         }
-
         return interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
             .subscribe(onSuccess: { [weak self] result in
                 switch result {
