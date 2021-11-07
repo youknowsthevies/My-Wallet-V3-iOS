@@ -4,7 +4,6 @@ import DIKit
 import FeatureKYCDomain
 import FeatureSettingsDomain
 import FirebaseAnalytics
-import FeatureOpenBankingDomain
 import PlatformKit
 import PlatformUIKit
 import ToolKit
@@ -17,12 +16,10 @@ final class DeepLinkHandler: DeepLinkHandling {
 
     init(
         appSettings: BlockchainSettings.App = resolve(),
-        kycSettings: KYCSettingsAPI = resolve(),
-        openBanking: OpenBanking = resolve()
+        kycSettings: KYCSettingsAPI = resolve()
     ) {
         self.appSettings = appSettings
         self.kycSettings = kycSettings
-        self.openBanking = openBanking
     }
 
     func handle(
@@ -48,8 +45,6 @@ final class DeepLinkHandler: DeepLinkHandling {
         case .exchangeVerifyEmail,
              .exchangeLinking:
             handleExchangeLinking(payload.params)
-        case .openBankingLink, .openBankingApprove:
-            handleOpenBanking(payload.params)
         }
     }
 
@@ -71,28 +66,5 @@ final class DeepLinkHandler: DeepLinkHandling {
 
     private func handleKyc() {
         kycSettings.didTapOnKycDeepLink = true
-    }
-
-    /// # Examples
-    ///
-    /// success: ?one-time-token=...#/open/ob-bank-link
-    ///          ?callbackUrl=nabu-gateway/payments/banktransfer/one-time-token
-    ///
-    /// failure: ?callbackUrl=nabu-gateway%2Fpayments%2Fbanktransfer%2Fone-time-token
-    ///          &application-user-id=beneficiary%3A95e826e7-fb58-4020-8815-c4c2839fe8bc
-    ///          &user-uuid=c69af99b-291b-4bd9-85af-099a1b948442
-    ///          &institution=monzo_ob
-    ///          &error=uncategorized_error
-    ///          &error-source=institution
-    ///          &error-description=VGhpcyByZXF1ZXN0IGhhcyBhbHJlYWR5IGJlZW4gYXV0aG9yaXNlZA%3D%3D
-    private func handleOpenBanking(_ params: [String: String]) {
-        openBanking.state.transaction { state in
-            if let token = params["one-time-token"] {
-                state.set(.consent.token, to: token)
-            }
-            if let error = params["error"] {
-                state.set(.consent.error, to: error)
-            }
-        }
     }
 }
