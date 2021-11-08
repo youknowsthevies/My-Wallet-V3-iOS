@@ -60,6 +60,7 @@ let interestAccountListReducer = Reducer.combine(
                 state.interestAccountDetails = .init(uniqueElements: details)
                 state.loadingStatus = .loaded
             case .failure(let error):
+                state.loadingStatus = .loaded
                 Logger.shared.error(error)
             }
             return .none

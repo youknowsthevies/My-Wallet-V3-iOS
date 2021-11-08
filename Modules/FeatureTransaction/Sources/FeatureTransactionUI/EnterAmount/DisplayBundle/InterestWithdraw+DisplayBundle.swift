@@ -6,21 +6,21 @@ import PlatformKit
 import PlatformUIKit
 import ToolKit
 
-private class InterestTransferAnalyticsEvent: AnalyticsEvent {
+private class InterestWithdrawAnalyticsEvent: AnalyticsEvent {
     var name: String = ""
 }
 
 extension DisplayBundle {
 
-    static func interestTransfer(sourceAccount: SingleAccount) -> DisplayBundle {
-        typealias LocalizedString = LocalizationConstants.Interest.Screen.EnterAmount.Transfer
+    static func interestWithdraw(sourceAccount: SingleAccount) -> DisplayBundle {
+        typealias LocalizedString = LocalizationConstants.Interest.Screen.EnterAmount.Withdraw
         let code = sourceAccount.currencyType.displayCode
         return DisplayBundle(
             title: LocalizedString.title + " \(code)",
             amountDisplayBundle: .init(
                 events: .init(
-                    min: InterestTransferAnalyticsEvent(),
-                    max: InterestTransferAnalyticsEvent()
+                    min: InterestWithdrawAnalyticsEvent(),
+                    max: InterestWithdrawAnalyticsEvent()
                 ),
                 strings: .init(
                     useMin: LocalizedString.useMin,
