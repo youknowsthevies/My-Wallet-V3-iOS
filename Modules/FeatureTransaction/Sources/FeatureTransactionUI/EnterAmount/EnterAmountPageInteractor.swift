@@ -94,6 +94,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
     // TODO: Clean up this function
     // swiftlint:disable function_body_length
+    // swiftlint:disable cyclomatic_complexity
     override func didBecomeActive() {
         super.didBecomeActive()
 
@@ -212,7 +213,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .map(\.availableTargets)
             .share(scope: .whileConnected)
 
-        let bottomAuxiliaryViewEnabled = Observable
+        let bottomAuxiliaryAccounts = Observable
             .zip(
                 availableSources,
                 availableTargets
@@ -223,8 +224,29 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 }
                 return availableSources
             }
-            .map(\.count)
-            .map { $0 > 1 }
+
+        let userKYCTier = transactionState
+            .map(\.userKYCTiers)
+            .map(\.?.latestApprovedTier)
+            .share(scope: .whileConnected)
+
+        let bottomAuxiliaryViewEnabled = Observable
+            .combineLatest(
+                userKYCTier,
+                bottomAuxiliaryAccounts
+            )
+            .map { [action] userKYCTier, accounts -> Bool in
+                guard let userKYCTier = userKYCTier, action == .buy && userKYCTier < .tier2 else {
+                    return !accounts.isEmpty
+                }
+                // SDD eligible users cannot add more than 1 payment method so they should have no suggested accounts they can link.
+                // Non-SDD eligible users will have a set of suggested accounts they can link, so the button should be enabled.
+                let suggestedPaymentMethods: [Account] = accounts
+                    .compactMap { $0 as? PaymentMethodAccount }
+                    .filter(\.paymentMethodType.isSuggested)
+                // Checking for accounts > 1 just in case we allowed some SDD users to add more than 1 payment methods
+                return accounts.count > 1 || suggestedPaymentMethods.count > 1
+            }
 
         accountAuxiliaryViewInteractor
             .connect(
@@ -365,6 +387,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .bindAndCatch(to: sendAuxiliaryViewPresenter.stateRelay)
             .disposeOnDeactivate(interactor: self)
     }
+
+    // swiftlint:enable function_body_length
+    // swiftlint:enable cyclomatic_complexity
 
     // MARK: - Private methods
 

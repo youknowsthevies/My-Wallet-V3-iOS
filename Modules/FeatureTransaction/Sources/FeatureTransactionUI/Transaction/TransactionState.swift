@@ -81,6 +81,7 @@ extension TransactionState: Equatable {
             && lhs.stepsBackStack == rhs.stepsBackStack
             && lhs.availableSources.map(\.identifier) == rhs.availableSources.map(\.identifier)
             && lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
+            && lhs.userKYCTiers == rhs.userKYCTiers
     }
 }
 

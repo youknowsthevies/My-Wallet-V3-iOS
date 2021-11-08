@@ -28,3 +28,10 @@ public enum Visibility: Int {
         self == .hidden ? .visible : .hidden
     }
 }
+
+extension Visibility {
+
+    public init(boolValue: Bool) {
+        self = boolValue ? .visible : .hidden
+    }
+}
