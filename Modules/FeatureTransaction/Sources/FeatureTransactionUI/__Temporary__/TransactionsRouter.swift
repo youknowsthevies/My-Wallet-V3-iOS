@@ -123,7 +123,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
             let checkPendingOrders = pendingOrdersService.pendingOrderDetails
                 .asPublisher()
                 .replaceError(with: nil)
-            return featureFlagsService.isEnabled(.local(.useTransactionsFlowToBuyCrypto))
+            return featureFlagsService.isEnabled(.remote(.useTransactionsFlowToBuyCrypto))
                 .zip(checkPendingOrders)
                 .receive(on: DispatchQueue.main)
                 .flatMap { [weak self, loadingViewPresenter] tuple -> AnyPublisher<TransactionFlowResult, Never> in

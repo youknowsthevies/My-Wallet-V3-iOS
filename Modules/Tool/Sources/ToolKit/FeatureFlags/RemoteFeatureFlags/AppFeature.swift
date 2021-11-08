@@ -60,6 +60,11 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable Dynamic Assets
     case dynamicAssetsEnabled
+
+    // MARK: - Transactions Flow
+
+    /// Uses the Transactions Flow implementation of Buy when enabled
+    case useTransactionsFlowToBuyCrypto
 }
 
 extension AppFeature {
@@ -98,6 +103,8 @@ extension AppFeature {
             return "sell_using_transaction_flow_enabled_ios"
         case .dynamicAssetsEnabled:
             return "dynamic_assets_ios"
+        case .useTransactionsFlowToBuyCrypto:
+            return "use_transaction_flow_buy_ios"
         }
     }
 
@@ -133,6 +140,7 @@ extension AppFeature {
         case .customerSupportChat:
             return false
         case .sellUsingTransactionFlowEnabled,
+             .useTransactionsFlowToBuyCrypto,
              .dynamicAssetsEnabled:
             return true
         }
