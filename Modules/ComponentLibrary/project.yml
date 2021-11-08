@@ -21,6 +21,8 @@ targets:
     type: application
     info:
       path: Example/Info.plist
+      properties:
+            UILaunchScreen:
     sources:
       - path: ./Example/ExampleApp.swift
     dependencies: 
