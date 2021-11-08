@@ -8,9 +8,10 @@ import SwiftUI
 struct WithdrawalLockDetailsView: View {
 
     let withdrawalLocks: WithdrawalLocks
-    let url = URL(
-        string: "https://support.blockchain.com/hc/en-us/articles/360051018131-Trading-Account-Withdrawal-Holds"
-    )!
+    let withdrawalLocksSupportUrl = URL(
+        "https://support.blockchain.com/hc/en-us/articles/360051018131-Trading-Account-Withdrawal-Holds"
+    )
+    let contactSupportUrl = URL("https://support.blockchain.com/hc/en-us/requests/new")
 
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.openURL) var openURL
@@ -45,14 +46,25 @@ struct WithdrawalLockDetailsView: View {
                 )
                 .padding([.top, .leading, .trailing])
 
-                Text(LocalizationIds.holdingPeriodDescription)
-                    .typography(.paragraph1)
-                    .padding([.leading, .trailing])
-                    .padding(.top, 8)
-                    .padding(.bottom, 32)
+                VStack(spacing: 16) {
+                    Text(LocalizationIds.holdingPeriodDescription)
+                    if !withdrawalLocks.items.isEmpty {
+                        Text(LocalizationIds.doesNotLookRightDescription)
+                        Text(LocalizationIds.contactSupportTitle)
+                            .foregroundColor(.semantic.primary)
+                            .onTapGesture {
+                                openURL(contactSupportUrl)
+                            }
+                    }
+                }
+                .multilineTextAlignment(.leading)
+                .typography(.paragraph1)
+                .padding([.leading, .trailing])
+                .padding(.top, 8)
 
                 if withdrawalLocks.items.isEmpty {
                     Spacer()
+
                     Text(LocalizationIds.noLocks)
                         .typography(.paragraph1)
                         .foregroundColor(.semantic.muted)
@@ -63,26 +75,32 @@ struct WithdrawalLockDetailsView: View {
                         Spacer()
                         Text(LocalizationIds.amountTitle.uppercased())
                     }
+                    .padding(.top, 32)
                     .padding([.leading, .trailing])
                     .foregroundColor(.semantic.muted)
                     .typography(.overline)
 
                     PrimaryDivider()
 
-                    ForEach(withdrawalLocks.items) { item in
-                        WithdrawalLockItemView(item: item)
+                    ScrollView {
+                        ForEach(withdrawalLocks.items) { item in
+                            WithdrawalLockItemView(item: item)
+                        }
                     }
                 }
 
                 Spacer()
 
-                PrimaryButton(title: LocalizationConstants.WithdrawalLock.learnMoreButtonTitle) {
-                    openURL(url)
+                PrimaryButton(
+                    title: LocalizationConstants.WithdrawalLock.learnMoreButtonTitle
+                ) {
+                    openURL(withdrawalLocksSupportUrl)
                 }
                 .padding()
             }
         }
         .padding(.top, 24.pt)
+        .navigationBarHidden(true)
     }
 }
 
@@ -107,8 +125,15 @@ struct WithdrawalLockItemView: View {
 // swiftlint:disable type_name
 struct WithdrawalLockDetailsView_PreviewProvider: PreviewProvider {
     static var previews: some View {
-        WithdrawalLockDetailsView(
-            withdrawalLocks: .init(items: [], amount: "$100")
-        )
+        Group {
+            WithdrawalLockDetailsView(
+                withdrawalLocks: .init(items: [], amount: "$0")
+            )
+            WithdrawalLockDetailsView(
+                withdrawalLocks: .init(items: [
+                    .init(date: "28 September, 2032", amount: "$100")
+                ], amount: "$100")
+            )
+        }
     }
 }

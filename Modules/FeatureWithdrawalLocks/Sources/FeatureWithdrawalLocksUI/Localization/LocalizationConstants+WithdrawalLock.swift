@@ -20,6 +20,16 @@ extension LocalizationConstants {
             comment: "Withdrawal Locks: Holding period description"
         )
 
+        static let doesNotLookRightDescription = NSLocalizedString(
+            "See that something doesn't look right?",
+            comment: "Withdrawal Locks: Something doesn't look right question"
+        )
+
+        static let contactSupportTitle = NSLocalizedString(
+            "Contact support",
+            comment: "Withdrawal Locks: Contact support title"
+        )
+
         static let noLocks = NSLocalizedString(
             "You do not have any pending withdrawal locks.",
             comment: "Withdrawal Locks: Held Until section title"
