@@ -22,7 +22,7 @@ public struct PrimaryButton: View {
 
     @Environment(\.pillButtonSize) private var size
 
-    private let colorCombination = PillButtonStyle.ColorCombination(
+    static let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
             foreground: .palette.white,
             background: .palette.blue600,
@@ -69,7 +69,7 @@ public struct PrimaryButton: View {
             PillButtonStyle(
                 isLoading: isLoading,
                 size: size,
-                colorCombination: colorCombination
+                colorCombination: Self.colorCombination
             )
         )
     }
