@@ -109,21 +109,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             }
             .disposeOnDeactivate(interactor: self)
 
-        amountViewInteractor
-            .auxiliaryButtonTappedRelay
-            .asObservable()
-            .flatMap { [featureFlagService] _ -> Observable<Bool> in
-                featureFlagService
-                    .isEnabled(.local(.newTxFlowLimitsUIEnabled))
-                    .asObservable()
-            }
-            .subscribeOn(MainScheduler.instance)
-            .subscribe(onNext: { [transactionModel] isNewLimitsUIEnabled in
-                if isNewLimitsUIEnabled {
-                    transactionModel.process(action: .showErrorRecoverySuggestion)
-                }
-            })
-            .disposeOnDeactivate(interactor: self)
+        disableAmountViewBadgeIfNeeded()
 
         amountViewInteractor
             .amount
@@ -308,15 +294,28 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .bindAndCatch(to: amountViewInteractor.stateRelay)
             .disposeOnDeactivate(interactor: self)
 
-        let interactorState = transactionState
-            .scan(initialState()) { [weak self] currentState, updater -> State in
+        let transactionStateAndLimitsFeature: Observable<(TransactionState, Bool)> = Observable
+            .combineLatest(
+                transactionState,
+                featureFlagService
+                    .isEnabled(.local(.newTxFlowLimitsUIEnabled))
+                    .asObservable()
+            )
+
+        let interactorState = transactionStateAndLimitsFeature
+            .scan(initialState()) { [weak self] currentState, tuple -> State in
+                let (updater, newLimitsUIEnabled) = tuple
                 guard let self = self else {
                     return currentState
                 }
-                return self.calculateNextState(
+                let newState = self.calculateNextState(
                     with: currentState,
                     updater: updater
                 )
+                // NOTE: temporary overrides to check for the feature flag's value
+                return newState
+                    .update(\.showContinueAction, value: !newLimitsUIEnabled || newState.showContinueAction)
+                    .update(\.showErrorRecoveryAction, value: newLimitsUIEnabled && newState.showErrorRecoveryAction)
             }
             .asDriverCatchError()
 
@@ -396,9 +395,20 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         updater: TransactionState
     ) -> State {
         state
+            .update(\.errorState, value: updater.errorState)
             .update(\.canContinue, value: updater.nextEnabled)
+            .update(\.showContinueAction, value: canShowContinueAction(for: updater))
+            .update(\.showErrorRecoveryAction, value: canShowErrorAction(for: updater))
             .update(\.topAuxiliaryViewPresenter, value: topAuxiliaryView(for: updater))
             .update(\.bottomAuxiliaryViewPresenter, value: bottomAuxiliaryView(for: updater))
+    }
+
+    private func canShowContinueAction(for state: TransactionState) -> Bool {
+        state.errorState == .none && state.pendingTransaction?.amount.isZero == false
+    }
+
+    private func canShowErrorAction(for state: TransactionState) -> Bool {
+        state.errorState != .none && state.pendingTransaction?.amount.isZero == false
     }
 
     private func topAuxiliaryView(for transactionState: TransactionState) -> AuxiliaryViewPresenting? {
@@ -438,6 +448,16 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             break
         }
     }
+
+    private func disableAmountViewBadgeIfNeeded() {
+        featureFlagService
+            .isEnabled(.local(.newTxFlowLimitsUIEnabled))
+            .asSingle()
+            .subscribe(onSuccess: { [amountViewInteractor] isNewLimitsUIEnabled in
+                amountViewInteractor.set(auxiliaryViewEnabled: !isNewLimitsUIEnabled)
+            })
+            .disposeOnDeactivate(interactor: self)
+    }
 }
 
 extension EnterAmountPageInteractor {
@@ -447,12 +467,18 @@ extension EnterAmountPageInteractor {
         var bottomAuxiliaryViewPresenter: AuxiliaryViewPresenting?
         var navigationModel: ScreenNavigationModel
         var canContinue: Bool
+        var showContinueAction: Bool
+        var showErrorRecoveryAction: Bool
+        var errorState: TransactionErrorState
 
         static func == (lhs: EnterAmountPageInteractor.State, rhs: EnterAmountPageInteractor.State) -> Bool {
             lhs.topAuxiliaryViewPresenter === rhs.topAuxiliaryViewPresenter
                 && lhs.bottomAuxiliaryViewPresenter === rhs.bottomAuxiliaryViewPresenter
                 && lhs.navigationModel == rhs.navigationModel
                 && lhs.canContinue == rhs.canContinue
+                && lhs.errorState == rhs.errorState
+                && lhs.showContinueAction == rhs.showContinueAction
+                && lhs.showErrorRecoveryAction == rhs.showErrorRecoveryAction
         }
     }
 
@@ -461,7 +487,10 @@ extension EnterAmountPageInteractor {
             topAuxiliaryViewPresenter: nil,
             bottomAuxiliaryViewPresenter: nil,
             navigationModel: navigationModel,
-            canContinue: false
+            canContinue: false,
+            showContinueAction: false,
+            showErrorRecoveryAction: false,
+            errorState: .none
         )
     }
 }

@@ -461,7 +461,9 @@ extension TransactionState {
         return update(keyPath: \.stepsBackStack, value: stepsBackStack)
             .update(keyPath: \.step, value: previousStep)
             .update(keyPath: \.isGoingBack, value: true)
-            .update(keyPath: \.errorState, value: .none)
+            // Not sure why we're resetting this to none, but if we're coming back from an error recovery suggestion
+            // we don't want to remove that error state so the user can still see the error on screen if needed.
+            .update(keyPath: \.errorState, value: step == .errorRecoveryInfo ? errorState : .none)
     }
 
     fileprivate func withUpdatedBackstack(oldState: TransactionState) -> TransactionState {

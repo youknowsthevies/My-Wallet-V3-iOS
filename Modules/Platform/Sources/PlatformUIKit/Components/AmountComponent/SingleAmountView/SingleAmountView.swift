@@ -3,6 +3,7 @@
 import RxCocoa
 import RxSwift
 import ToolKit
+import UIComponentsKit
 import UIKit
 
 public final class SingleAmountView: UIView, AmountViewable {
@@ -48,21 +49,28 @@ public final class SingleAmountView: UIView, AmountViewable {
     }
 
     public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
-        presenter.connect(input: input)
-            .map { [weak self] state in
-                guard let self = self else { return .empty }
-                return self.performEffect(state: state)
-            }
+        Driver.combineLatest(
+            presenter.connect(input: input),
+            presenter.auxiliaryButtonEnabled
+        )
+        .map { (state: $0.0, auxiliaryEnabled: $0.1) }
+        .map { [weak self] state, auxiliaryEnabled in
+            guard let self = self else { return .empty }
+            return self.performEffect(state: state, auxiliaryEnabled: auxiliaryEnabled)
+        }
     }
 
-    private func performEffect(state: AmountPresenterState) -> AmountPresenterState {
+    private func performEffect(state: AmountPresenterState, auxiliaryEnabled: Bool) -> AmountPresenterState {
         let limitButtonVisibility: Visibility
+        let textColor: UIColor
         switch state {
         case .showLimitButton(let viewModel):
             labeledButtonView.viewModel = viewModel
-            limitButtonVisibility = .visible
+            limitButtonVisibility = auxiliaryEnabled ? .visible : .hidden
+            textColor = auxiliaryEnabled ? .validInput : .invalidInput
         case .empty:
             limitButtonVisibility = .hidden
+            textColor = .validInput
         case .warning,
              .showSecondaryAmountLabel:
             unimplemented()
@@ -73,6 +81,7 @@ public final class SingleAmountView: UIView, AmountViewable {
             options: [.beginFromCurrentState, .curveEaseInOut],
             animations: {
                 self.labeledButtonView.alpha = limitButtonVisibility.defaultAlpha
+                self.fiatAmountLabelView.textColor = textColor
             },
             completion: nil
         )
