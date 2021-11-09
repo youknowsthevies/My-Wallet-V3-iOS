@@ -2,10 +2,11 @@
 
 // TICKET: IOS-1145 - Combine PostalAddress and UserAddress models.
 public struct UserAddress {
-    public let lineOne: String
+
+    public let lineOne: String?
     public let lineTwo: String?
-    public let postalCode: String
-    public let city: String
+    public let postalCode: String?
+    public let city: String?
     public let state: String?
     public let countryCode: String
 
@@ -15,7 +16,15 @@ public struct UserAddress {
 }
 
 extension UserAddress {
-    public init(lineOne: String, lineTwo: String, postalCode: String, city: String, state: String, countryCode: String) {
+
+    public init(
+        lineOne: String,
+        lineTwo: String,
+        postalCode: String,
+        city: String,
+        state: String,
+        countryCode: String
+    ) {
         self.lineOne = lineOne
         self.lineTwo = lineTwo
         self.postalCode = postalCode
@@ -26,6 +35,7 @@ extension UserAddress {
 }
 
 extension UserAddress: Equatable {
+
     public static func == (lhs: UserAddress, rhs: UserAddress) -> Bool {
         lhs.lineOne == rhs.lineOne &&
             lhs.lineTwo == rhs.lineTwo &&
@@ -37,6 +47,7 @@ extension UserAddress: Equatable {
 }
 
 extension UserAddress: Codable {
+
     public enum CodingKeys: String, CodingKey {
         case lineOne = "line1"
         case lineTwo = "line2"
