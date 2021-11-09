@@ -310,6 +310,10 @@ extension LocalizationConstants.Transaction.Withdraw {
         comment: "Withdraw to..."
     )
     public static let account = NSLocalizedString("Account", comment: "Account")
+    public static let availableToWithdrawTitle = NSLocalizedString(
+        "Available to Withdraw",
+        comment: "Available to Withdraw"
+    )
 
     // swiftlint:disable line_length
     public static let confirmationDisclaimer = NSLocalizedString(

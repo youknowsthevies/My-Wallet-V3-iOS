@@ -5,18 +5,14 @@ import FeatureWithdrawalLocksDomain
 import Localization
 import SwiftUI
 
-struct WithdrawalLockDetailsView: View {
+struct WithdrawalLocksDetailsView: View {
 
     let withdrawalLocks: WithdrawalLocks
-    let withdrawalLocksSupportUrl = URL(
-        "https://support.blockchain.com/hc/en-us/articles/360051018131-Trading-Account-Withdrawal-Holds"
-    )
-    let contactSupportUrl = URL("https://support.blockchain.com/hc/en-us/requests/new")
 
     @Environment(\.presentationMode) private var presentationMode
-    @Environment(\.openURL) var openURL
+    @Environment(\.openURL) private var openURL
 
-    private typealias LocalizationIds = LocalizationConstants.WithdrawalLock
+    private typealias LocalizationIds = LocalizationConstants.WithdrawalLocks
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -53,7 +49,7 @@ struct WithdrawalLockDetailsView: View {
                         Text(LocalizationIds.contactSupportTitle)
                             .foregroundColor(.semantic.primary)
                             .onTapGesture {
-                                openURL(contactSupportUrl)
+                                openURL(Constants.contactSupportUrl)
                             }
                     }
                 }
@@ -92,9 +88,9 @@ struct WithdrawalLockDetailsView: View {
                 Spacer()
 
                 PrimaryButton(
-                    title: LocalizationConstants.WithdrawalLock.learnMoreButtonTitle
+                    title: LocalizationConstants.WithdrawalLocks.learnMoreButtonTitle
                 ) {
-                    openURL(withdrawalLocksSupportUrl)
+                    openURL(Constants.withdrawalLocksSupportUrl)
                 }
                 .padding()
             }
@@ -126,10 +122,10 @@ struct WithdrawalLockItemView: View {
 struct WithdrawalLockDetailsView_PreviewProvider: PreviewProvider {
     static var previews: some View {
         Group {
-            WithdrawalLockDetailsView(
+            WithdrawalLocksDetailsView(
                 withdrawalLocks: .init(items: [], amount: "$0")
             )
-            WithdrawalLockDetailsView(
+            WithdrawalLocksDetailsView(
                 withdrawalLocks: .init(items: [
                     .init(date: "28 September, 2032", amount: "$100")
                 ], amount: "$100")

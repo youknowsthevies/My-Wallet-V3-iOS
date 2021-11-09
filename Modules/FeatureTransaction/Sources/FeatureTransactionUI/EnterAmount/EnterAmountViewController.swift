@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableArchitecture
+import FeatureWithdrawalLocksUI
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -56,6 +58,7 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     // MARK: - Other Properties
 
+    private let bottomSheetPresenting = BottomSheetPresenting(ignoresBackgroundTouches: true)
     private let amountViewable: AmountViewable
     private let digitPadView = DigitPadView()
     private var digitPadHeightConstraint: NSLayoutConstraint!
@@ -333,6 +336,23 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     override func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
+    }
+
+    // MARK: - Withdrawal Locks
+
+    func presentWithdrawalLocks(amountAvailable: String) {
+        let store = Store<WithdrawalLocksInfoState, WithdrawalLocksInfoAction>(
+            initialState: WithdrawalLocksInfoState(amountAvailable: amountAvailable),
+            reducer: withdrawalLockInfoReducer,
+            environment: WithdrawalLocksInfoEnvironment { [weak self] in
+                self?.dismiss(animated: true, completion: nil)
+            }
+        )
+        let rootView = WithdrawalLocksInfoView(store: store)
+        let viewController = UIHostingController(rootView: rootView)
+        viewController.transitioningDelegate = bottomSheetPresenting
+        viewController.modalPresentationStyle = .custom
+        present(viewController, animated: true, completion: nil)
     }
 }
 

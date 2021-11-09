@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableArchitecture
 import FeatureWithdrawalLocksUI
 import PlatformKit
 import RIBs
@@ -338,7 +339,12 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
         for indexPath: IndexPath
     ) -> UITableViewCell {
         let cell = tableView.dequeue(HostingTableViewCell<WithdrawalLocksView>.self, for: indexPath)
-        cell.host(WithdrawalLocksView(), parent: self)
+        let store = Store<WithdrawalLocksState, WithdrawalLocksAction>(
+            initialState: .init(),
+            reducer: withdrawalLocksReducer,
+            environment: WithdrawalLocksEnvironment()
+        )
+        cell.host(WithdrawalLocksView(store: store), parent: self)
         return cell
     }
 }

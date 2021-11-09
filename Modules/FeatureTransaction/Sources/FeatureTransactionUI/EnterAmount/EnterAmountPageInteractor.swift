@@ -27,6 +27,8 @@ protocol EnterAmountPagePresentable: Presentable {
 
     var continueButtonTapped: Signal<Void> { get }
 
+    func presentWithdrawalLocks(amountAvailable: String)
+
     func connect(
         state: Driver<EnterAmountPageInteractor.State>
     ) -> Driver<EnterAmountPageInteractor.NavigationEffects>
@@ -397,6 +399,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         switch state.action {
         case .buy:
             transactionModel.process(action: .showTargetSelection)
+        case .withdraw:
+            presenter.presentWithdrawalLocks(amountAvailable: state.maxSpendable.displayString)
         default:
             break
         }
@@ -444,7 +448,10 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 transactionState: transactionState
             )
         } else {
-            presenter = InfoAuxiliaryViewPresenter(transactionState: transactionState)
+            presenter = InfoAuxiliaryViewPresenter(
+                transactionState: transactionState,
+                delegate: self
+            )
         }
         topAuxiliaryViewPresenter = presenter
         return presenter

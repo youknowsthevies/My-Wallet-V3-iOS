@@ -29,10 +29,7 @@ enum TransactionFlowDescriptor {
                 }
                 return prefix + source.label
             case .withdraw:
-                guard let source = state.source as? FiatAccount else {
-                    fatalError("Expected a FiatAccount")
-                }
-                return "\(source.fiatCurrency.displayCode) " + LocalizedString.Withdraw.account
+                return LocalizedString.Withdraw.availableToWithdrawTitle
             case .interestTransfer,
                  .interestWithdraw:
                 guard let account = state.source else {
@@ -78,7 +75,7 @@ enum TransactionFlowDescriptor {
                 }
                 return prefix + account.label
             case .withdraw:
-                return formatForHeader(moneyValue: state.availableBalance)
+                return formatForHeader(moneyValue: state.maxSpendable)
             case .interestTransfer,
                  .interestWithdraw:
                 guard let destination = state.destination else {
