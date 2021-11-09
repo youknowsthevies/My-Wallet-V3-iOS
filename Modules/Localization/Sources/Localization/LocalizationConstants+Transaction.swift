@@ -1086,8 +1086,8 @@ extension LocalizationConstants.Transaction.Error {
         comment: ""
     )
     public static let pendingOrderLimitReached = NSLocalizedString(
-        "You have 1 Swap in-progress. Once that completes, create a New Swap.",
-        comment: ""
+        "You have too many pending orders in-progress. Once those complete, try again. You can check your order status in 'Activity'.",
+        comment: "User has reached the maximum limit of unfullfilled pending orders and cannot create new orders at this time."
     )
     public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",
