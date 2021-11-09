@@ -63,6 +63,11 @@ let package = Package(
             url: "https://github.com/oliveratkinson-bc/zxcvbn-ios.git",
             .branch("swift-package-manager")
         ),
+        .package(
+            name: "swift-algorithms",
+            url: "https://github.com/apple/swift-algorithms.git",
+            from: "0.2.1"
+        ),
         .package(path: "../Analytics"),
         .package(path: "../RxAnalytics"),
         .package(path: "../FeatureAuthentication"),
@@ -100,7 +105,8 @@ let package = Package(
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions"),
                 .product(name: "RxToolKit", package: "RxTool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload")
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "Algorithms", package: "swift-algorithms")
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json"),
