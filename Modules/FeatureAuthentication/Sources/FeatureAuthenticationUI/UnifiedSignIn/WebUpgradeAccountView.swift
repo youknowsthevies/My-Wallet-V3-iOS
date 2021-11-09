@@ -7,30 +7,37 @@ import UIComponentsKit
 
 struct WebUpgradeAccountView: View {
 
-    private enum MessageHandler {
-        /// Message handler name for unified sign in communication
-        static let ssi = "sessionHandler"
+    private enum MessageHandlers {
+        /// Message handlers name for unified sign in communication
+        static let connectionStatus = "connectionStatusHandler"
+        static let credentials = "credentialsHandler"
     }
 
     // TODO: change to dynamic config
     private static let url = "https://wallet-frontend-pre-release.dev.blockchain.info/#/login?product=wallet&platform=ios"
 
-    private let callback: (String) -> Void
+    private let connectionStatusCallback: (String) -> Void
+    private let credentialsCallback: (String) -> Void
     @Binding private var sendMessage: String
 
     init(
         sendMessage: Binding<String>,
-        callback: @escaping (String) -> Void
+        connectionStatusCallback: @escaping (String) -> Void,
+        credentialsCallback: @escaping (String) -> Void
     ) {
         _sendMessage = sendMessage
-        self.callback = callback
+        self.connectionStatusCallback = connectionStatusCallback
+        self.credentialsCallback = credentialsCallback
     }
 
     var body: some View {
         WebView(
             sendMessage: $sendMessage,
             url: URL(string: WebUpgradeAccountView.url)!,
-            messageHandlers: [MessageHandler.ssi: callback]
+            messageHandlers: [
+                MessageHandlers.connectionStatus: connectionStatusCallback,
+                MessageHandlers.credentials: credentialsCallback
+            ]
         )
         .navigationBarHidden(true)
     }
@@ -41,7 +48,8 @@ struct WebUpgradeAccountView_Previews: PreviewProvider {
     static var previews: some View {
         WebUpgradeAccountView(
             sendMessage: .constant("Test Message"),
-            callback: { print($0) }
+            connectionStatusCallback: { print($0) },
+            credentialsCallback: { print($0) }
         )
     }
 }

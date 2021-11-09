@@ -30,7 +30,11 @@ public enum UpgradeAccountRoute: NavigationRoute {
         case .webUpgrade:
             WebUpgradeAccountView(
                 sendMessage: .constant("Test Message"),
-                callback: { _ in
+                connectionStatusCallback: { status in
+                    print(status)
+                },
+                credentialsCallback: { credentails in
+                    print(credentails)
                     // dismiss the web upgrade screen when received a callback
                     viewStore.send(.enter(into: nil, context: .fullScreen))
                 }
@@ -52,6 +56,7 @@ struct UpgradeAccountView: View {
         static let headingBottomPadding: CGFloat = 8
         static let subheadingFontSize: CGFloat = 16
         static let subheadingLineSpacing: CGFloat = 5
+        static let subheadingBottomPadding: CGFloat = 32
 
         static let buttonSpacing: CGFloat = 10
     }
@@ -79,8 +84,8 @@ struct UpgradeAccountView: View {
                         .font(Font(weight: .medium, size: Layout.subheadingFontSize))
                 }
                 .multilineTextAlignment(.center)
+                .padding(.bottom, Layout.subheadingBottomPadding)
 
-                Spacer()
                 MessageList(messages: createMessages(exchangeOnly: exchangeOnly))
                 Spacer()
 
