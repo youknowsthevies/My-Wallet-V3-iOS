@@ -28,4 +28,7 @@ public enum NabuErrorType: String, Codable, Equatable {
     case invalidRole = "INVALID_ROLE"
     case alreadyLoggedIn = "ALREADY_LOGGED_IN"
     case invalidStatus = "INVALID_STATUS"
+
+    // Trade Errors
+    case missingTradePermissions = "NO_TRADE_PERMISSION"
 }
