@@ -23,20 +23,12 @@ public final class DashboardScreenBuilder {
     }
 
     public func build() -> UIViewController {
-        switch StaticFeatureFlags.isDynamicAssetsEnabled {
-        case true:
-            return SegmentedViewController(
-                presenter: DashboardSegmentedViewScreenPresenter(
-                    drawerRouter: drawerRouter,
-                    fiatBalanceCellProvider: fiatBalanceCellProvider,
-                    dashboardScreenPresenter: .init()
-                )
-            )
-        case false:
-            return PortfolioViewController(
+        SegmentedViewController(
+            presenter: DashboardSegmentedViewScreenPresenter(
+                drawerRouter: drawerRouter,
                 fiatBalanceCellProvider: fiatBalanceCellProvider,
-                presenter: .init()
+                dashboardScreenPresenter: .init()
             )
-        }
+        )
     }
 }
