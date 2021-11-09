@@ -17,10 +17,12 @@ final class DeepLinkHandler: DeepLinkHandling {
 
     init(
         appSettings: BlockchainSettings.App = resolve(),
-        kycSettings: KYCSettingsAPI = resolve()
+        kycSettings: KYCSettingsAPI = resolve(),
+        openBanking: OpenBanking = resolve()
     ) {
         self.appSettings = appSettings
         self.kycSettings = kycSettings
+        self.openBanking = openBanking
     }
 
     func handle(
@@ -46,6 +48,8 @@ final class DeepLinkHandler: DeepLinkHandling {
         case .exchangeVerifyEmail,
              .exchangeLinking:
             handleExchangeLinking(payload.params)
+        case .openBankingLink, .openBankingApprove:
+            handleOpenBanking(payload.params)
         }
     }
 

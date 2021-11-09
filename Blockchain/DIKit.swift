@@ -608,5 +608,6 @@ extension DependencyContainer {
         single { OpenBankingViewController.self as StartOpenBanking.Type }
 
         single { PresentAccountLinkingFlowAdapter() as PresentAccountLinkingFlow }
+
     }
 }

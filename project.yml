@@ -277,6 +277,8 @@ packages:
     path: Modules/FeatureInterest
   FeatureKYC:
     path: Modules/FeatureKYC
+  FeatureOpenBanking:
+    path: Modules/FeatureOpenBanking
   FeatureOnboarding:
     path: Modules/FeatureOnboarding
   FeatureSettings:
