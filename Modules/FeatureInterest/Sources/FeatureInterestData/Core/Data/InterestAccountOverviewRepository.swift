@@ -13,17 +13,20 @@ final class InterestAccountOverviewRepository: InterestAccountOverviewRepository
     private let interestAccountEligibilityRepository: InterestAccountEligibilityRepositoryAPI
     private let interestAccountRateRepository: InterestAccountRateRepositoryAPI
     private let interestAccountBalanceRepository: InterestAccountBalanceRepositoryAPI
+    private let interestAccountLimitsRepository: InterestAccountLimitsRepositoryAPI
 
     // MARK: - Init
 
     init(
         interestAccountEligibilityRepository: InterestAccountEligibilityRepositoryAPI = resolve(),
         interestAccountRateRepository: InterestAccountRateRepositoryAPI = resolve(),
-        interestAccountBalanceRepository: InterestAccountBalanceRepositoryAPI = resolve()
+        interestAccountBalanceRepository: InterestAccountBalanceRepositoryAPI = resolve(),
+        interestAccountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve()
     ) {
         self.interestAccountRateRepository = interestAccountRateRepository
         self.interestAccountEligibilityRepository = interestAccountEligibilityRepository
         self.interestAccountBalanceRepository = interestAccountBalanceRepository
+        self.interestAccountLimitsRepository = interestAccountLimitsRepository
     }
 
     // MARK: - InterestAccountOverviewRepositoryAPI
@@ -31,7 +34,7 @@ final class InterestAccountOverviewRepository: InterestAccountOverviewRepository
     func fetchInterestAccountOverviewListForFiatCurrency(
         _ fiatCurrency: FiatCurrency
     ) -> AnyPublisher<[InterestAccountOverview], InterestAccountOverviewError> {
-        Publishers.Zip3(
+        Publishers.Zip4(
             interestAccountEligibilityRepository
                 .fetchAllInterestAccountEligibility()
                 .mapError(InterestAccountOverviewError.networkError),
@@ -40,18 +43,30 @@ final class InterestAccountOverviewRepository: InterestAccountOverviewRepository
                 .mapError(InterestAccountOverviewError.networkError),
             interestAccountBalanceRepository
                 .fetchInterestAccountsBalance(fiatCurrency: fiatCurrency)
+                .mapError(InterestAccountOverviewError.networkError),
+            interestAccountLimitsRepository
+                .fetchInterestAccountLimitsForAllAssets(fiatCurrency)
                 .mapError(InterestAccountOverviewError.networkError)
         )
-        .map { accountEligibilities, accountRates, accountBalances -> [InterestAccountOverview] in
+        .map { accountEligibilities, accountRates, accountBalances, limits -> [InterestAccountOverview] in
             accountEligibilities
                 .compactMap { accountEligibility -> InterestAccountOverview? in
                     let currencyType = accountEligibility.currencyType
                     let code = accountEligibility.currencyType.code
-                    let rates = accountRates
-                        .filter { .crypto($0.cryptoCurrency) == currencyType }
+                    let rate = accountRates
+                        .first(where: { .crypto($0.cryptoCurrency) == currencyType })
                     let balance = accountBalances.balances[code]
+                    let accountLimits = limits
+                        .first(where: { .crypto($0.cryptoCurrency) == currencyType })
 
-                    guard let interestAccountRate = rates.first else {
+                    guard let interestAccountLimits = accountLimits else {
+                        Logger.shared.debug(
+                            "Interest account limits unavailable for currency code: \(accountEligibility.currencyType.code)"
+                        )
+                        return nil
+                    }
+
+                    guard let interestAccountRate = rate else {
                         Logger.shared.debug(
                             "Interest rate unavailable for currency code: \(accountEligibility.currencyType.code)"
                         )
@@ -60,6 +75,7 @@ final class InterestAccountOverviewRepository: InterestAccountOverviewRepository
                     return InterestAccountOverview(
                         interestAccountEligibility: accountEligibility,
                         interestAccountRate: interestAccountRate,
+                        interestAccountLimits: interestAccountLimits,
                         balanceDetails: balance
                     )
                 }

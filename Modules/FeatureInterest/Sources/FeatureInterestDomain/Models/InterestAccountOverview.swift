@@ -31,6 +31,10 @@ public struct InterestAccountOverview: Equatable {
             .ineligibilityReason
     }
 
+    public var lockupDurationDescription: String {
+        interestAccountLimits.lockupDescription
+    }
+
     public var nextPaymentDate: String {
         var components = calendar.dateComponents([.year, .month, .day], from: Date())
         components.day = 1
@@ -43,6 +47,7 @@ public struct InterestAccountOverview: Equatable {
 
     public let interestAccountEligibility: InterestAccountEligibility
     public let interestAccountRate: InterestAccountRate
+    public let interestAccountLimits: InterestAccountLimits
     public let balanceDetails: InterestAccountBalanceDetails?
 
     // MARK: - Private Properties
@@ -57,10 +62,12 @@ public struct InterestAccountOverview: Equatable {
         dateFormatter: DateFormatter = .long,
         interestAccountEligibility: InterestAccountEligibility,
         interestAccountRate: InterestAccountRate,
+        interestAccountLimits: InterestAccountLimits,
         balanceDetails: InterestAccountBalanceDetails? = nil
     ) {
         self.calendar = calendar
         self.dateFormatter = dateFormatter
+        self.interestAccountLimits = interestAccountLimits
         self.interestAccountEligibility = interestAccountEligibility
         self.interestAccountRate = interestAccountRate
         self.balanceDetails = balanceDetails
@@ -80,6 +87,7 @@ extension InterestAccountOverview {
     ) -> Bool {
         lhs.interestAccountEligibility == rhs.interestAccountEligibility &&
             lhs.balanceDetails == rhs.balanceDetails &&
+            lhs.interestAccountLimits == rhs.interestAccountLimits &&
             lhs.interestAccountRate == rhs.interestAccountRate
     }
 }

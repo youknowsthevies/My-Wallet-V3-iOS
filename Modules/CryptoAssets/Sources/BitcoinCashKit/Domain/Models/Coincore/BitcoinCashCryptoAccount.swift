@@ -91,8 +91,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
         Single.zip(
             canPerformInterestTransfer(),
-            featureFlagsService
-                .isEnabled(.remote(.interestWithdrawAndDeposit))
+            isInterestWithdrawAndDepositEnabled
                 .asSingle()
         )
         .map { $0.0 && $0.1 }
@@ -117,6 +116,16 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
             .catchErrorJustReturn([])
     }
 
+    private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
+        featureFlagsService
+            .isEnabled(
+                .remote(.interestWithdrawAndDeposit)
+            )
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let xPub: XPub
     private let hdAccountIndex: Int
     private let balanceService: BalanceServiceAPI
@@ -124,7 +133,6 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     private let bridge: BitcoinCashWalletBridgeAPI
     private let transactionsService: BitcoinCashHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
-    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         xPub: XPub,

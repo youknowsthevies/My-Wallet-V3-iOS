@@ -513,6 +513,13 @@ extension LocalizationConstants.Transaction.Swap {
 
 // MARK: - Interest Withdraw
 
+extension LocalizationConstants.Transaction.InterestWithdraw {
+    public static let confirmationDisclaimer = NSLocalizedString(
+        "After confirming this withdrawal, you will not continue to earn rewards on the amount withdrawn. Your %@ will be available in your %@ within 2 days.",
+        comment: "After confirming this withdrawal, you will not continue to earn rewards on the amount withdrawn. Your %@ will be available within 2 days."
+    )
+}
+
 extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Pending {
     public static let title = NSLocalizedString("Withdrawing %@", comment: "Withdrawing %@")
     public static let description = NSLocalizedString(

@@ -25,11 +25,16 @@ extension InterestAccountOverview {
             title: LocalizationId.Rate.title,
             description: "\(interestAccountRate.rate)%"
         )
+        let lockupDuration = InterestAccountOverviewRowItem(
+            title: LocalizationId.Hold.title,
+            description: lockupDurationDescription
+        )
         return [
             total,
             next,
             accrued,
-            rate
+            rate,
+            lockupDuration
         ]
     }
 }

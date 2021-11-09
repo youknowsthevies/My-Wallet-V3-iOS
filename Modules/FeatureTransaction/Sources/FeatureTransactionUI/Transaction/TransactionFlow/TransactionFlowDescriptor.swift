@@ -220,6 +220,7 @@ enum TransactionFlowDescriptor {
         switch action {
         case .swap,
              .withdraw,
+             .interestWithdraw,
              .buy:
             return true
         case .deposit,
@@ -227,13 +228,16 @@ enum TransactionFlowDescriptor {
              .sell,
              .send,
              .viewActivity,
-             .interestWithdraw,
              .interestTransfer:
             return false
         }
     }
 
-    static func confirmDisclaimerText(action: AssetAction) -> String {
+    static func confirmDisclaimerText(
+        action: AssetAction,
+        currencyCode: String = "",
+        accountLabel: String = ""
+    ) -> String {
         switch action {
         case .swap:
             return LocalizedString.Swap.confirmationDisclaimer
@@ -241,6 +245,12 @@ enum TransactionFlowDescriptor {
             return LocalizedString.Withdraw.confirmationDisclaimer
         case .buy:
             return LocalizedString.Buy.confirmationDisclaimer
+        case .interestWithdraw:
+            return String(
+                format: LocalizedString.InterestWithdraw.confirmationDisclaimer,
+                currencyCode,
+                accountLabel
+            )
         case .deposit,
              .receive,
              .sell,
