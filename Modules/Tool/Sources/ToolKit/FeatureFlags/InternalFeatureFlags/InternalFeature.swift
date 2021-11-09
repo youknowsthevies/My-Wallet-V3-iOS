@@ -11,9 +11,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enabled console logging of network requests for debug builds
     case requestConsoleLogging
 
-    /// Enable interest withdraw and deposit
-    case interestWithdrawAndDeposit
-
     /// Disable the guid login at welcome screen, useful for demo purposes
     /// - Note: Old manual guid login screen is used only for internal builds
     case disableGUIDLogin
@@ -41,7 +38,6 @@ public enum InternalFeature: String, CaseIterable {
         switch self {
         case .newAccountPicker,
              .newOnboardingTour,
-             .interestWithdrawAndDeposit,
              .pollingForEmailLogin:
             return true
         case .disableGUIDLogin,
@@ -64,8 +60,6 @@ extension InternalFeature {
     /// The title displayed at the Debug menu.
     public var displayTitle: String {
         switch self {
-        case .interestWithdrawAndDeposit:
-            return "Rewards - Deposit and Withdraw"
         case .secureChannel:
             return "Secure Channel"
         case .requestConsoleLogging:

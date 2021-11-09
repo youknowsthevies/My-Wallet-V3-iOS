@@ -146,6 +146,13 @@ struct InterestAccountDetailsView_Previews: PreviewProvider {
                 ineligibilityReason: .eligible
             ),
             interestAccountRate: .init(currencyCode: "BTC", rate: 4.9),
+            interestAccountLimits: .init(
+                interestLockupDuration: 4.0,
+                cryptoCurrency: .coin(.bitcoin),
+                nextInterestPayment: Date(),
+                minDepositAmount: .zero(currency: .USD),
+                maxWithdrawalAmount: .zero(currency: .USD)
+            ),
             balanceDetails: .init(
                 balance: "10000000000",
                 pendingInterest: "1000",

@@ -47,9 +47,17 @@ class SideMenuPresenter {
 
     // MARK: - Private Properties
 
-    private var menuItems: AnyPublisher<[SideMenuItem], Never> {
+    private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
         featureFlagsService
-            .isEnabled(.remote(.interestWithdrawAndDeposit))
+            .isEnabled(
+                .remote(.interestWithdrawAndDeposit)
+            )
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
+    private var menuItems: AnyPublisher<[SideMenuItem], Never> {
+        isInterestWithdrawAndDepositEnabled
             .receive(on: DispatchQueue.main)
             .map { interestWithdrawDepositIsEnabled -> [SideMenuItem] in
                 var items: [SideMenuItem] = []

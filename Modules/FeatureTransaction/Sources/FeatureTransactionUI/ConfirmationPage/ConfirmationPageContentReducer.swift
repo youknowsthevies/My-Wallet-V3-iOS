@@ -230,7 +230,12 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         var disclaimer: [DetailsScreen.CellType] = []
         if TransactionFlowDescriptor.confirmDisclaimerVisibility(action: state.action) {
             let content = LabelContent(
-                text: TransactionFlowDescriptor.confirmDisclaimerText(action: state.action),
+                text: TransactionFlowDescriptor
+                    .confirmDisclaimerText(
+                        action: state.action,
+                        currencyCode: state.asset.code,
+                        accountLabel: state.destination?.label ?? ""
+                    ),
                 font: .main(.medium, 12),
                 color: .descriptionText,
                 alignment: .left,
