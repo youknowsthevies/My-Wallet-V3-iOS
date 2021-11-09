@@ -111,14 +111,16 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
 
         let termsChanged = contentReducer
             .termsUpdated
-            .map { value in
+            .distinctUntilChanged()
+            .map { value -> ConfirmationPageInteractor.Effects in
                 ConfirmationPageInteractor.Effects.toggleToSAgreement(value)
             }
             .asDriverCatchError()
 
         let transferAgreementChanged = contentReducer
             .transferAgreementUpdated
-            .map { value in
+            .distinctUntilChanged()
+            .map { value -> ConfirmationPageInteractor.Effects in
                 ConfirmationPageInteractor.Effects.toggleHoldPeriodAgreement(value)
             }
             .asDriverCatchError()

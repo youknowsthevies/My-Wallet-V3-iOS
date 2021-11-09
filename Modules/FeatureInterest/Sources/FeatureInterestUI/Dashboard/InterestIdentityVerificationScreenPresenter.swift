@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import DIKit
 import Localization
 import PlatformKit
@@ -50,7 +51,7 @@ public final class InterestIdentityVerificationScreenPresenter: InterestDashboar
         ]
         announcement = .init(
             badgeImage: .init(
-                image: .local(name: "icon_interest", bundle: .platformUIKit),
+                image: .local(name: Icon.interest.name, bundle: .componentLibrary),
                 contentColor: .white,
                 backgroundColor: .defaultBadge,
                 cornerRadius: .round,

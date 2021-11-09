@@ -1,12 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct ExchangeBuyButtonExamplesView: View {
 
     var body: some View {
-        ExchangeBuyButton_Previews.previews
+        VStack(spacing: Spacing.padding1) {
+            ExchangeBuyButton(title: "Enabled", action: {})
+
+            ExchangeBuyButton(title: "Disabled", action: {})
+                .disabled(true)
+
+            ExchangeBuyButton(title: "Loading", isLoading: true, action: {})
+        }
+        .padding(Spacing.padding())
     }
 }
 

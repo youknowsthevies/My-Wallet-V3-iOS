@@ -252,11 +252,11 @@ public class TextFieldView: UIView {
                 accessoryView.addSubview(button)
 
                 button.layoutToSuperview(.leading)
-                button.layoutToSuperview(.trailing, offset: -16)
+                button.layoutToSuperview(.trailing, offset: -8)
                 button.layoutToSuperview(axis: .vertical)
 
                 badgeImageView.layoutToSuperview(.leading)
-                badgeImageView.layoutToSuperview(.trailing, offset: -16)
+                badgeImageView.layoutToSuperview(.trailing, offset: -8)
                 badgeImageView.layoutToSuperview(axis: .vertical)
             }
         case .badgeLabel(let viewModel):

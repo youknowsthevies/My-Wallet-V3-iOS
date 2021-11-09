@@ -9,9 +9,16 @@ import Foundation
 extension LocalizationConstants {
     public enum Interest {
         public enum Screen {
+            public enum EnterAmount {
+                public enum Transfer {}
+                public enum Withdraw {}
+            }
+
             public enum Overview {
                 public enum Action {}
             }
+
+            public enum OverviewError {}
 
             public enum NoEligibleWallets {}
             public enum IdentityVerification {}
@@ -62,6 +69,20 @@ extension LocalizationConstants.Interest.Screen.Announcement {
             public static let title = NSLocalizedString("Visit Blockchain.com", comment: "Visit Blockchain.com")
         }
     }
+}
+
+// MARK: - Screen.EnterAmount
+
+extension LocalizationConstants.Interest.Screen.EnterAmount.Transfer {
+    public static let title = NSLocalizedString("Transfer", comment: "Transfer")
+    public static let useMin = NSLocalizedString("Minimum transfer of %@ required", comment: "Minimum transfer of %@ required")
+    public static let useMax = NSLocalizedString("You can transfer up to %@", comment: "You can transfer up to %@")
+}
+
+extension LocalizationConstants.Interest.Screen.EnterAmount.Withdraw {
+    public static let title = NSLocalizedString("Withdraw", comment: "Withdraw")
+    public static let useMin = NSLocalizedString("Minimum withdraw of %@ required", comment: "Minimum withdraw of %@ required")
+    public static let useMax = NSLocalizedString("You can withdraw up to %@", comment: "You can withdraw up to %@")
 }
 
 // MARK: - Screen.IdentityVerification
@@ -118,6 +139,16 @@ extension LocalizationConstants.Interest.Screen.Overview {
     )
     public static let balance = NSLocalizedString("Balance", comment: "Balance")
     public static let annually = NSLocalizedString("annually", comment: "annually")
+}
+
+// MARK: - Screen.OverviewError
+
+extension LocalizationConstants.Interest.Screen.OverviewError {
+    public static let navigationTitle = NSLocalizedString("Rewards Account", comment: "Rewards Account")
+    public static let title = NSLocalizedString("Can't load Rewards Details", comment: "Can't load Rewards Details")
+    public static let description = NSLocalizedString("An error occured while loading Rewards Account details.", comment: "An error occured while loading Rewards Account details.")
+    public static let body = NSLocalizedString("Please check your Internet connection and try again or Contact Support if the issue persists.", comment: "Please check your Internet connection and try again or Contact Support if the issue persists.")
+    public static let action = NSLocalizedString("Tap to Refresh", comment: "Tap to Refresh")
 }
 
 // MARK: - Screen.Overview.Actions

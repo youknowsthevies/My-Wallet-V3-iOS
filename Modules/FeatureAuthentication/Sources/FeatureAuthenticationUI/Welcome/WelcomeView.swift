@@ -200,7 +200,7 @@ public struct WelcomeView: View {
     private var supplementarySection: some View {
         HStack {
             Button(LocalizedString.Button.restoreWallet) {
-                viewStore.send(.presentScreenFlow(.restoreScreen))
+                viewStore.send(.presentScreenFlow(.restoreWalletScreen))
             }
             .font(Font(weight: .semibold, size: Layout.supplmentaryTextFontSize))
             .foregroundColor(.buttonLinkText)

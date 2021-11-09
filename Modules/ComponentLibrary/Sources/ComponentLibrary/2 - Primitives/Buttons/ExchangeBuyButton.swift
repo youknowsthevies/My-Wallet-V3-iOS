@@ -15,48 +15,42 @@ import SwiftUI
 ///
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=3%3A367)
 
-public struct ExchangeBuyButton: View, PillButton {
+public struct ExchangeBuyButton: View {
 
-    let title: String
-    let action: () -> Void
-    let isLoading: Bool
+    private let title: String
+    private let action: () -> Void
+    private let isLoading: Bool
 
-    let colorSet = PillButtonColorSet(
-        enabledState: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.white,
-                dark: .semantic.white
+    private let colorCombination = PillButtonStyle.ColorCombination(
+        enabled: PillButtonStyle.ColorSet(
+            foreground: Color(
+                light: .palette.white,
+                dark: .palette.white
             ),
-            background: Color.dynamicColor(
-                light: .semantic.success,
-                dark: .semantic.successMuted
-            ),
-            border: Color.dynamicColor(
-                light: .semantic.success,
-                dark: .semantic.successMuted
-            )
-        ),
-        pressedState: PillButtonStyle.ColorSet(
-            foreground: .semantic.white,
             background: .semantic.success,
             border: .semantic.success
         ),
-        disabledState: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.white.opacity(0.7),
-                dark: .semantic.white.opacity(0.4)
+        pressed: PillButtonStyle.ColorSet(
+            foreground: .palette.white,
+            background: .palette.green600,
+            border: .palette.green600
+        ),
+        disabled: PillButtonStyle.ColorSet(
+            foreground: Color(
+                light: .palette.white.opacity(0.7),
+                dark: .palette.white.opacity(0.4)
             ),
-            background: Color.dynamicColor(
-                light: .semantic.successMuted,
-                dark: .semantic.success
+            background: Color(
+                light: .palette.green400,
+                dark: .palette.green600
             ),
-            border: Color.dynamicColor(
-                light: .semantic.successMuted,
-                dark: .semantic.success
+            border: Color(
+                light: .palette.green400,
+                dark: .palette.green600
             )
         ),
-        progressViewRail: Color.semantic.white.opacity(0.8),
-        progressViewTrack: Color.semantic.white.opacity(0.25)
+        progressViewRail: .palette.white.opacity(0.8),
+        progressViewTrack: .palette.white.opacity(0.25)
     )
 
     public init(
@@ -70,7 +64,16 @@ public struct ExchangeBuyButton: View, PillButton {
     }
 
     public var body: some View {
-        makeBody()
+        Button(title) {
+            action()
+        }
+        .buttonStyle(
+            PillButtonStyle(
+                isLoading: isLoading,
+                size: .standard,
+                colorCombination: colorCombination
+            )
+        )
     }
 }
 

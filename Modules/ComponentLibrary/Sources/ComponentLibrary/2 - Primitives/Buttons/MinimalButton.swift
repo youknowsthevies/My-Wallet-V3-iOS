@@ -15,56 +15,43 @@ import SwiftUI
 ///
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=3%3A367)
 
-public struct MinimalButton: View, PillButton {
+public struct MinimalButton: View {
 
-    let title: String
-    let action: () -> Void
-    let isLoading: Bool
+    private let title: String
+    private let action: () -> Void
+    private let isLoading: Bool
 
-    let colorSet = PillButtonColorSet(
-        enabledState: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.primary,
-                dark: .semantic.primaryMuted
-            ),
-            background: .semantic.white.opacity(0),
-            border: Color.dynamicColor(
+    @Environment(\.pillButtonSize) private var size
+
+    private let colorCombination = PillButtonStyle.ColorCombination(
+        enabled: PillButtonStyle.ColorSet(
+            foreground: .semantic.primary,
+            background: .semantic.background.opacity(0),
+            border: Color(
                 light: .semantic.medium,
-                dark: .semantic.body
+                dark: .palette.dark300
             )
         ),
-        pressedState: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.primary,
-                dark: .semantic.primaryMuted
+        pressed: PillButtonStyle.ColorSet(
+            foreground: .semantic.primary,
+            background: .semantic.light,
+            border: .semantic.primary
+        ),
+        disabled: PillButtonStyle.ColorSet(
+            foreground: Color(
+                light: .semantic.primary.opacity(0.7),
+                dark: .palette.grey600
             ),
-            background: Color.dynamicColor(
+            background: .semantic.background.opacity(0),
+            border: Color(
                 light: .semantic.light,
-                dark: .semantic.dark
-            ),
-            border: Color.dynamicColor(
-                light: .semantic.primary,
-                dark: .semantic.primaryMuted
+                dark: .palette.grey700
             )
         ),
-        disabledState: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.primary.opacity(0.4),
-                dark: .semantic.body
-            ),
-            background: .semantic.white.opacity(0),
-            border: Color.dynamicColor(
-                light: .semantic.light,
-                dark: .semantic.body
-            )
-        ),
-        progressViewRail: Color.dynamicColor(
-            light: .semantic.primary,
-            dark: .semantic.primaryMuted
-        ),
-        progressViewTrack: Color.dynamicColor(
-            light: .semantic.primaryMuted,
-            dark: .semantic.white.opacity(0.25)
+        progressViewRail: .semantic.primary,
+        progressViewTrack: Color(
+            light: .semantic.blueBG,
+            dark: .palette.white.opacity(0.25)
         )
     )
 
@@ -79,7 +66,16 @@ public struct MinimalButton: View, PillButton {
     }
 
     public var body: some View {
-        makeBody()
+        Button(title) {
+            action()
+        }
+        .buttonStyle(
+            PillButtonStyle(
+                isLoading: isLoading,
+                size: size,
+                colorCombination: colorCombination
+            )
+        )
     }
 }
 

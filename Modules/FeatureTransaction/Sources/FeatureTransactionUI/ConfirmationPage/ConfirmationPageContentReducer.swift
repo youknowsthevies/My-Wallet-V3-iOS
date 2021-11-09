@@ -69,12 +69,15 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     func setup(for state: TransactionState) {
         disposeBag = DisposeBag()
         continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
-        let amount = state.amount.displayString
+        let amount = state.amount
+        let fee = state.pendingTransaction?.feeAmount ?? .zero(currency: amount.currency)
+        let value = (try? amount + fee) ?? .zero(currency: amount.currency)
+
         let sourceLabel = state.source?.label ?? ""
         transferCheckboxViewModel.apply(
             text: String(
                 format: LocalizedString.Transfer.transferAgreement,
-                amount,
+                value.displayString,
                 sourceLabel
             )
         )
@@ -201,8 +204,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         }
 
         var checkboxModels: [DetailsScreen.CellType] = []
-        if let terms = terms,
-           let transferAgreement = transferAgreement
+        if let _ = terms,
+           let _ = transferAgreement
         {
             termsCheckboxViewModel
                 .selectedRelay

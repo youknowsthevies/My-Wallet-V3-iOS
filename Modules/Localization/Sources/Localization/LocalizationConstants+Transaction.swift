@@ -1107,6 +1107,75 @@ extension LocalizationConstants.Transaction.Error {
         comment: ""
     )
 
+    public static let insufficientFundsShort = NSLocalizedString(
+        "Insufficient funds",
+        comment: ""
+    )
+    public static let insufficientGasShort = NSLocalizedString(
+        "Insufficient gas",
+        comment: ""
+    )
+    public static let addressIsContractShort = NSLocalizedString(
+        "Invalid address",
+        comment: ""
+    )
+    public static let optionInvalidShort = NSLocalizedString(
+        "Review T&Cs",
+        comment: ""
+    )
+    public static let invoiceExpiredShort = NSLocalizedString(
+        "Invoice expired",
+        comment: ""
+    )
+    public static let belowMinimumLimitShort = NSLocalizedString(
+        "Below minimum",
+        comment: ""
+    )
+    public static let overMaximumLimitShort = NSLocalizedString(
+        "Over your limit",
+        comment: ""
+    )
+    public static let underMinBitcoinFeeShort = NSLocalizedString(
+        "Fee too low",
+        comment: ""
+    )
+    public static let invalidAmountShort = NSLocalizedString(
+        "Invalid fee",
+        comment: ""
+    )
+    public static let transactionInFlightShort = NSLocalizedString(
+        "Transaction in progress",
+        comment: ""
+    )
+    public static let pendingOrdersLimitReachedShort = NSLocalizedString(
+        "Too many active orders",
+        comment: ""
+    )
+    public static let unknownErrorShort = NSLocalizedString(
+        "Unexpected error",
+        comment: ""
+    )
+    public static let fatalErrorShort = NSLocalizedString(
+        "Fatal error",
+        comment: ""
+    )
+    public static let nextworkErrorShort = NSLocalizedString(
+        "Network error",
+        comment: ""
+    )
+    public static let invalidPasswordShort = NSLocalizedString(
+        "Incorrect password",
+        comment: ""
+    )
+    public static let invalidAddressShort = NSLocalizedString(
+        "Invalid address",
+        comment: ""
+    )
+    public static let insufficientFundsForFeesShort = NSLocalizedString(
+        "Not enough funds",
+        comment: ""
+    )
+
     // MARK: - Transaction Flow Pending Error Descriptions
 
     public static let unknownError = NSLocalizedString(

@@ -18,7 +18,7 @@ struct IconButtonExamples: View {
                 Spacer()
             }
         }
-        .navigationBarItems(trailing: navigationBarItems)
+        .primaryNavigation { navigationBarItems }
     }
 
     @ViewBuilder private var navigationBarItems: some View {
@@ -30,7 +30,7 @@ struct IconButtonExamples: View {
 
 struct IconButtonExamples_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        PrimaryNavigationView {
             IconButtonExamples()
         }
     }

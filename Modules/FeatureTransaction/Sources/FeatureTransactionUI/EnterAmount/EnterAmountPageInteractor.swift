@@ -63,6 +63,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
 
+    private let featureFlagService: FeatureFlagsServiceAPI
     private let analyticsHook: TransactionAnalyticsHook
 
     init(
@@ -71,12 +72,14 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         amountInteractor: AmountViewInteracting,
         action: AssetAction,
         navigationModel: ScreenNavigationModel,
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve()
     ) {
         self.action = action
         self.transactionModel = transactionModel
         amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
+        featureFlagService = featureFlagsService
         self.analyticsHook = analyticsHook
         sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
         sendAuxiliaryViewPresenter = SendAuxiliaryViewPresenter(
@@ -91,6 +94,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
     // TODO: Clean up this function
     // swiftlint:disable function_body_length
+    // swiftlint:disable cyclomatic_complexity
     override func didBecomeActive() {
         super.didBecomeActive()
 
@@ -105,6 +109,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 self?.handleAmountTranslation(effect: effect)
             }
             .disposeOnDeactivate(interactor: self)
+
+        disableAmountViewBadgeIfNeeded()
 
         amountViewInteractor
             .amount
@@ -207,7 +213,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .map(\.availableTargets)
             .share(scope: .whileConnected)
 
-        let bottomAuxiliaryViewEnabled = Observable
+        let bottomAuxiliaryAccounts = Observable
             .zip(
                 availableSources,
                 availableTargets
@@ -218,8 +224,29 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 }
                 return availableSources
             }
-            .map(\.count)
-            .map { $0 > 1 }
+
+        let userKYCTier = transactionState
+            .map(\.userKYCTiers)
+            .map(\.?.latestApprovedTier)
+            .share(scope: .whileConnected)
+
+        let bottomAuxiliaryViewEnabled = Observable
+            .combineLatest(
+                userKYCTier,
+                bottomAuxiliaryAccounts
+            )
+            .map { [action] userKYCTier, accounts -> Bool in
+                guard let userKYCTier = userKYCTier, action == .buy && userKYCTier < .tier2 else {
+                    return !accounts.isEmpty
+                }
+                // SDD eligible users cannot add more than 1 payment method so they should have no suggested accounts they can link.
+                // Non-SDD eligible users will have a set of suggested accounts they can link, so the button should be enabled.
+                let suggestedPaymentMethods: [Account] = accounts
+                    .compactMap { $0 as? PaymentMethodAccount }
+                    .filter(\.paymentMethodType.isSuggested)
+                // Checking for accounts > 1 just in case we allowed some SDD users to add more than 1 payment methods
+                return accounts.count > 1 || suggestedPaymentMethods.count > 1
+            }
 
         accountAuxiliaryViewInteractor
             .connect(
@@ -289,15 +316,28 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .bindAndCatch(to: amountViewInteractor.stateRelay)
             .disposeOnDeactivate(interactor: self)
 
-        let interactorState = transactionState
-            .scan(initialState()) { [weak self] currentState, updater -> State in
+        let transactionStateAndLimitsFeature: Observable<(TransactionState, Bool)> = Observable
+            .combineLatest(
+                transactionState,
+                featureFlagService
+                    .isEnabled(.local(.newTxFlowLimitsUIEnabled))
+                    .asObservable()
+            )
+
+        let interactorState = transactionStateAndLimitsFeature
+            .scan(initialState()) { [weak self] currentState, tuple -> State in
+                let (updater, newLimitsUIEnabled) = tuple
                 guard let self = self else {
                     return currentState
                 }
-                return self.calculateNextState(
+                let newState = self.calculateNextState(
                     with: currentState,
                     updater: updater
                 )
+                // NOTE: temporary overrides to check for the feature flag's value
+                return newState
+                    .update(\.showContinueAction, value: !newLimitsUIEnabled || newState.showContinueAction)
+                    .update(\.showErrorRecoveryAction, value: newLimitsUIEnabled && newState.showErrorRecoveryAction)
             }
             .asDriverCatchError()
 
@@ -348,6 +388,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
     }
 
+    // swiftlint:enable function_body_length
+    // swiftlint:enable cyclomatic_complexity
+
     // MARK: - Private methods
 
     private func handleTopAuxiliaryViewTapped(state: TransactionState) {
@@ -377,9 +420,20 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         updater: TransactionState
     ) -> State {
         state
+            .update(\.errorState, value: updater.errorState)
             .update(\.canContinue, value: updater.nextEnabled)
+            .update(\.showContinueAction, value: canShowContinueAction(for: updater))
+            .update(\.showErrorRecoveryAction, value: canShowErrorAction(for: updater))
             .update(\.topAuxiliaryViewPresenter, value: topAuxiliaryView(for: updater))
             .update(\.bottomAuxiliaryViewPresenter, value: bottomAuxiliaryView(for: updater))
+    }
+
+    private func canShowContinueAction(for state: TransactionState) -> Bool {
+        state.errorState == .none && state.pendingTransaction?.amount.isZero == false
+    }
+
+    private func canShowErrorAction(for state: TransactionState) -> Bool {
+        state.errorState != .none && state.pendingTransaction?.amount.isZero == false
     }
 
     private func topAuxiliaryView(for transactionState: TransactionState) -> AuxiliaryViewPresenting? {
@@ -419,6 +473,16 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             break
         }
     }
+
+    private func disableAmountViewBadgeIfNeeded() {
+        featureFlagService
+            .isEnabled(.local(.newTxFlowLimitsUIEnabled))
+            .asSingle()
+            .subscribe(onSuccess: { [amountViewInteractor] isNewLimitsUIEnabled in
+                amountViewInteractor.set(auxiliaryViewEnabled: !isNewLimitsUIEnabled)
+            })
+            .disposeOnDeactivate(interactor: self)
+    }
 }
 
 extension EnterAmountPageInteractor {
@@ -428,12 +492,18 @@ extension EnterAmountPageInteractor {
         var bottomAuxiliaryViewPresenter: AuxiliaryViewPresenting?
         var navigationModel: ScreenNavigationModel
         var canContinue: Bool
+        var showContinueAction: Bool
+        var showErrorRecoveryAction: Bool
+        var errorState: TransactionErrorState
 
         static func == (lhs: EnterAmountPageInteractor.State, rhs: EnterAmountPageInteractor.State) -> Bool {
             lhs.topAuxiliaryViewPresenter === rhs.topAuxiliaryViewPresenter
                 && lhs.bottomAuxiliaryViewPresenter === rhs.bottomAuxiliaryViewPresenter
                 && lhs.navigationModel == rhs.navigationModel
                 && lhs.canContinue == rhs.canContinue
+                && lhs.errorState == rhs.errorState
+                && lhs.showContinueAction == rhs.showContinueAction
+                && lhs.showErrorRecoveryAction == rhs.showErrorRecoveryAction
         }
     }
 
@@ -442,7 +512,10 @@ extension EnterAmountPageInteractor {
             topAuxiliaryViewPresenter: nil,
             bottomAuxiliaryViewPresenter: nil,
             navigationModel: navigationModel,
-            canContinue: false
+            canContinue: false,
+            showContinueAction: false,
+            showErrorRecoveryAction: false,
+            errorState: .none
         )
     }
 }

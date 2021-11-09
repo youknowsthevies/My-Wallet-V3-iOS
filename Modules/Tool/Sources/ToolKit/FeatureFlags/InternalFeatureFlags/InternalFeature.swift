@@ -11,9 +11,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enabled console logging of network requests for debug builds
     case requestConsoleLogging
 
-    /// Uses the Transactions Flow implementation of Buy when enabled
-    case useTransactionsFlowToBuyCrypto
-
     /// Enable interest withdraw and deposit
     case interestWithdrawAndDeposit
 
@@ -36,17 +33,20 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
+    /// Enables the new Limits UI in Transaction Flow
+    case newTxFlowLimitsUIEnabled
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .useTransactionsFlowToBuyCrypto,
-             .newAccountPicker,
+        case .newAccountPicker,
              .newOnboardingTour,
              .interestWithdrawAndDeposit,
              .pollingForEmailLogin:
             return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
+             .newTxFlowLimitsUIEnabled,
              .secureChannel,
              .unifiedSignIn,
              .nativeWalletPayload:
@@ -70,8 +70,6 @@ extension InternalFeature {
             return "Secure Channel"
         case .requestConsoleLogging:
             return "Enable Network Request Console Logs"
-        case .useTransactionsFlowToBuyCrypto:
-            return "Buy: Uses Transactions Flow to Buy Crypto"
         case .disableGUIDLogin:
             return "Disable manual (guid) login option"
         case .newAccountPicker:
@@ -84,6 +82,8 @@ extension InternalFeature {
             return "Polling (Email Login)"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
+        case .newTxFlowLimitsUIEnabled:
+            return "New Limits UI"
         }
     }
 }

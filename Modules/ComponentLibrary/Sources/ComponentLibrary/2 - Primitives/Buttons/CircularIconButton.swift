@@ -27,7 +27,20 @@ public struct CircularIconButton: View {
 
     public var body: some View {
         Button(action: action) {
-            ImageViewRepresentable(image: icon.uiImage?.circled)
+            #if canImport(UIKit)
+            ImageViewRepresentable(
+                image: icon.uiImage?.circled,
+                renderingMode: icon.renderingMode
+            )
+            #else
+            icon
+                .foregroundColor(.semantic.muted)
+                .padding(4)
+                .background(
+                    Circle()
+                        .fill(Color.semantic.muted.opacity(0.1))
+                )
+            #endif
         }
         .buttonStyle(IconButtonStyle())
     }
@@ -44,9 +57,9 @@ struct CircularIconButton_Previews: PreviewProvider {
         @State var toggle: Bool = false
 
         var body: some View {
-            NavigationView {
+            PrimaryNavigationView {
                 Text(toggle ? "Bar" : "Foo")
-                    .navigationBarItems(trailing: navigationItems)
+                    .primaryNavigation(title: "") { navigationItems }
             }
         }
 

@@ -6,8 +6,9 @@ import SwiftUI
 import XCTest
 
 final class PrimaryButtonTests: XCTestCase {
+
     func testSnapshot() {
-        let view = VStack(spacing: 5) {
+        let view = VStack(spacing: Spacing.baseline) {
             PrimaryButton_Previews.previews
         }
         .frame(width: 320)

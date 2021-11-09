@@ -107,6 +107,41 @@ extension AccountGroup {
 extension Publisher where Output == [SingleAccount], Failure == Error {
 
     public func flatMapFilter(
+        address: String,
+        onError: ((Failure) -> Void)? = nil
+    ) -> AnyPublisher<SingleAccount, Failure> {
+        flatMap { accounts -> AnyPublisher<SingleAccount, Failure> in
+            accounts
+                .compactMap { account in
+                    account
+                        .receiveAddress
+                        .asPublisher()
+                        .map(\.address)
+                        .map { receiveAddress in
+                            receiveAddress == address ? account : nil
+                        }
+                        .tryCatch { error -> AnyPublisher<SingleAccount?, Failure> in
+                            onError?(error)
+                            return .just(nil)
+                        }
+                        .eraseToAnyPublisher()
+                }
+                .zip()
+                .map { accounts in
+                    accounts.compactMap { $0 }
+                }
+                .tryMap { accounts in
+                    guard let account = accounts.first else {
+                        throw PlatformKitError.default
+                    }
+                    return account
+                }
+                .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
+    }
+
+    public func flatMapFilter(
         action: AssetAction,
         failSequence: Bool = false,
         onError: ((SingleAccount, Failure) -> Void)? = nil

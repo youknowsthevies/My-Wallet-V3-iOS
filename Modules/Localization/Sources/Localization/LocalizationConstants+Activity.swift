@@ -33,6 +33,8 @@ extension LocalizationConstants.Activity.MainScreen {
 
     public enum Item {
         public static let allWallets = NSLocalizedString("All Wallets", comment: "All Wallets")
+        public static let pending = NSLocalizedString("Pending", comment: "Pending")
+        public static let rewardsEarned = NSLocalizedString("Rewards Earned", comment: "Rewards Earned")
         public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
         public static let trade = NSLocalizedString("Trade", comment: "Trade")
         public static let tradeWallet = trade + " " + wallet
@@ -42,6 +44,7 @@ extension LocalizationConstants.Activity.MainScreen {
         public static let send = NSLocalizedString("Sent", comment: "Sent")
         public static let deposit = NSLocalizedString("Deposited", comment: "Deposited")
         public static let withdraw = NSLocalizedString("Withdrawn", comment: "Withdrawn")
+        public static let transferred = NSLocalizedString("Transferred", comment: "Transferred")
         public static let buy = NSLocalizedString("Bought", comment: "Bought")
         public static let swap = NSLocalizedString("Swapped", comment: "Swapped")
         public static let receive = NSLocalizedString("Received", comment: "Received")
@@ -59,12 +62,15 @@ extension LocalizationConstants.Activity.Message {
 
 extension LocalizationConstants.Activity.Details {
 
+    public static let companyName = NSLocalizedString("Blockchain.com", comment: "Blockchain.com")
+    public static let rewardsAccount = NSLocalizedString("Rewards Account", comment: "Rewards Account")
     public static let noDescription = NSLocalizedString("No description", comment: "No description")
     public static let confirmations = NSLocalizedString("Confirmations", comment: "Confirmations")
     public static let of = NSLocalizedString("of", comment: "of")
 
     public static let completed = NSLocalizedString("Completed", comment: "Completed")
     public static let pending = NSLocalizedString("Pending", comment: "Pending")
+    public static let manualReview = NSLocalizedString("Manual Review", comment: "Manual Review")
     public static let failed = NSLocalizedString("Failed", comment: "Failed")
     public static let refunded = NSLocalizedString("Refunded", comment: "Refunded")
     public static let replaced = NSLocalizedString("Replaced", comment: "Replaced")
@@ -80,6 +86,9 @@ extension LocalizationConstants.Activity.Details {
         public static let swap = NSLocalizedString("Swapped", comment: "Swapped")
         public static let deposit = NSLocalizedString("Deposited", comment: "Deposited")
         public static let withdraw = NSLocalizedString("Withdrawn", comment: "Withdrawn")
+        public static let withdrawal = NSLocalizedString("Withdrawal", comment: "Withdrawal")
+        public static let rewardsEarned = NSLocalizedString("Rewards Earned", comment: "Rewards Earned")
+        public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
     }
 
     public enum Button {

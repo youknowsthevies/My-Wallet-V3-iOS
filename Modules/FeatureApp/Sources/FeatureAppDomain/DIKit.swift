@@ -4,6 +4,8 @@ import AnalyticsKit
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
+import FeatureWithdrawalLocksData
+import FeatureWithdrawalLocksDomain
 import PlatformKit
 
 extension DependencyContainer {
@@ -26,6 +28,16 @@ extension DependencyContainer {
                     .eraseError()
                     .eraseToAnyPublisher()
             } as FeatureAuthenticationDomain.NabuUserEmailProvider
+        }
+
+        // MARK: Withdrawal Lock
+
+        factory {
+            MoneyValueFormatterAdapter() as MoneyValueFormatterAPI
+        }
+
+        factory {
+            FiatCurrencyCodeProviderAdapter() as FiatCurrencyCodeProviderAPI
         }
     }
 }

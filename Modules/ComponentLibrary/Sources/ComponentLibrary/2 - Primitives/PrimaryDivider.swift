@@ -15,7 +15,12 @@ public struct PrimaryDivider: View {
 
     public var body: some View {
         Divider()
-            .background(Color.semantic.light)
+            .background(
+                Color(
+                    light: .semantic.light,
+                    dark: .palette.dark700
+                )
+            )
     }
 }
 

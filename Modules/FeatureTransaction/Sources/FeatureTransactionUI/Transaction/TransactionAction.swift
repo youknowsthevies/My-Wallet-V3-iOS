@@ -52,7 +52,6 @@ enum TransactionAction: MviAction {
     case updateFeeLevelAndAmount(FeeLevel, MoneyValue?)
     case sourceDestinationPair(MoneyValuePair)
     case transactionFiatRatePairs(TransactionMoneyValuePairs)
-    case fatalTransactionError(Error)
     case validateTransaction
     case createOrder
     case orderCreated(TransactionOrder?)
@@ -64,6 +63,8 @@ enum TransactionAction: MviAction {
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
     case modifyTransactionConfirmation(TransactionConfirmation)
+    case fatalTransactionError(Error)
+    case showErrorRecoverySuggestion
     case invalidateTransaction
 }
 
@@ -73,7 +74,6 @@ extension TransactionAction {
     // swiftlint:disable function_body_length
     // swiftlint:disable cyclomatic_complexity
     func reduce(oldState: TransactionState) -> TransactionState {
-        Logger.shared.debug("[Transaction Flow] Reducing Action: \(self)")
         switch self {
         case .pendingTransactionStarted(let allowFiatInput):
             var newState = oldState
@@ -356,6 +356,10 @@ extension TransactionAction {
             newState.executionStatus = .error
             return newState.withUpdatedBackstack(oldState: oldState)
 
+        case .showErrorRecoverySuggestion:
+            return oldState
+                .stateForMovingForward(to: .errorRecoveryInfo)
+
         case .validateTransaction:
             return oldState
 
@@ -369,6 +373,7 @@ extension TransactionAction {
 
         case .modifyTransactionConfirmation:
             return oldState
+                .update(keyPath: \.nextEnabled, value: false)
 
         case .invalidateTransaction:
             return oldState
@@ -456,7 +461,9 @@ extension TransactionState {
         return update(keyPath: \.stepsBackStack, value: stepsBackStack)
             .update(keyPath: \.step, value: previousStep)
             .update(keyPath: \.isGoingBack, value: true)
-            .update(keyPath: \.errorState, value: .none)
+            // Not sure why we're resetting this to none, but if we're coming back from an error recovery suggestion
+            // we don't want to remove that error state so the user can still see the error on screen if needed.
+            .update(keyPath: \.errorState, value: step == .errorRecoveryInfo ? errorState : .none)
     }
 
     fileprivate func withUpdatedBackstack(oldState: TransactionState) -> TransactionState {
@@ -472,6 +479,7 @@ extension TransactionState {
 }
 
 extension TransactionValidationState {
+
     var mapToTransactionErrorState: TransactionErrorState {
         switch self {
         case .addressIsContract:

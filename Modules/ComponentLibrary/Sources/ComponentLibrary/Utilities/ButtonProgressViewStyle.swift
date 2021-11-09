@@ -24,8 +24,12 @@ struct ButtonProgressViewStyle: ProgressViewStyle {
                     .stroke(railColor, style: style)
                     .rotationEffect(angle)
                     .onAppear {
-                        withAnimation(.linear(duration: 1.0).repeatForever(autoreverses: false)) {
-                            angle = .degrees(angle.degrees + 360)
+                        // Dispatch in order to fix a bug where being a child of `NavigationView`
+                        // causes the animation to affect things other than the angle.
+                        DispatchQueue.main.async {
+                            withAnimation(.linear(duration: 1.0).repeatForever(autoreverses: false)) {
+                                angle = .degrees(angle.degrees + 360)
+                            }
                         }
                     }
             }

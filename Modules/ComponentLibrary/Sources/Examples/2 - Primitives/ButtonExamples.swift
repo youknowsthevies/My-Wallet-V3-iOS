@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct ButtonExamplesView: View {
@@ -12,12 +12,19 @@ struct ButtonExamplesView: View {
         ],
         "Single Buttons": [
             NavigationLinkProvider(view: PrimaryButtonExamplesView(), title: "PrimaryButton"),
+            NavigationLinkProvider(view: SmallPrimaryButtonExamplesView(), title: "SmallPrimaryButton"),
             NavigationLinkProvider(view: SecondaryButtonExamplesView(), title: "SecondaryButton"),
+            NavigationLinkProvider(view: SmallSecondaryButtonExamplesView(), title: "SmallSecondaryButton"),
             NavigationLinkProvider(view: MinimalButtonExamplesView(), title: "MinimalButton"),
+            NavigationLinkProvider(view: SmallMinimalButtonExamplesView(), title: "SmallMinimalButton"),
             NavigationLinkProvider(view: ExchangeBuyButtonExamplesView(), title: "ExchangeBuyButton"),
-            NavigationLinkProvider(view: ExchangeSellButtonExamplesView(), title: "ExchangeSellButton")
+            NavigationLinkProvider(view: ExchangeSellButtonExamplesView(), title: "ExchangeSellButton"),
+            NavigationLinkProvider(view: AlertButtonExamplesView(), title: "AlertButton")
         ],
-        "Multi Buttons": []
+        "Multi Buttons": [
+            NavigationLinkProvider(view: PrimaryDoubleButtonExamplesView(), title: "PrimaryDoubleButton"),
+            NavigationLinkProvider(view: MinimalDoubleButtonExamplesView(), title: "MinimalDoubleButton")
+        ]
     ]
 
     var body: some View {
@@ -27,7 +34,7 @@ struct ButtonExamplesView: View {
 
 struct ButtonExamplesView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        PrimaryNavigationView {
             ButtonExamplesView()
         }
     }

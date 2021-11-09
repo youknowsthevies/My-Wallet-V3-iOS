@@ -19,7 +19,7 @@ struct TabBarButton: View {
             VStack(spacing: 0) {
                 Group { // Group with fixed height to center-align icons
                     icon
-                        .frame(width: 20)
+                        .frame(width: 24)
                 }
                 .frame(height: 32)
 
@@ -36,7 +36,10 @@ struct TabBarButton: View {
 
 struct TabBarButtonStyle: ToggleStyle {
     let onColor: Color = .semantic.primary
-    let offColor: Color = .semantic.body
+    let offColor = Color(
+        light: .palette.grey400,
+        dark: .palette.grey400
+    )
 
     func makeBody(configuration: Configuration) -> some View {
         Button(

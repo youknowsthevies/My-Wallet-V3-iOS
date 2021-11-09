@@ -25,7 +25,7 @@ class WalletPersistenceTests: XCTestCase {
             language: "en",
             authenticatorType: .standard
         ),
-        encryptedPayload: "payload",
+        encryptedPayload: .init(pbkdf2IterationCount: 0, version: 0, payload: ""),
         userId: "userId",
         lifetimeToken: "lifetimeToken"
     )
@@ -121,7 +121,7 @@ class WalletPersistenceTests: XCTestCase {
         let expectedStateAsData = try walletRepoStateEncoder(expectedState).get()
         mockKeychainAccess.readResult = .success(expectedStateAsData)
 
-        let walletPersistence = WalletPersistence(
+        let walletPersistence = WalletRepoPersistence(
             repo: WalletRepo(initialState: .empty),
             keychainAccess: mockKeychainAccess,
             queue: persistenceQueue,
@@ -162,7 +162,7 @@ class WalletPersistenceTests: XCTestCase {
             return walletRepoStateEncoder(data)
         }
 
-        let walletPersistence = WalletPersistence(
+        let walletPersistence = WalletRepoPersistence(
             repo: walletRepo,
             keychainAccess: mockKeychainAccess,
             queue: persistenceQueue,
@@ -200,7 +200,7 @@ class WalletPersistenceTests: XCTestCase {
 
         let walletRepo = WalletRepo(initialState: .empty)
 
-        let walletPersistence = WalletPersistence(
+        let walletPersistence = WalletRepoPersistence(
             repo: walletRepo,
             keychainAccess: mockKeychainAccess,
             queue: persistenceQueue,
@@ -240,7 +240,7 @@ class WalletPersistenceTests: XCTestCase {
 
         let walletRepo = WalletRepo(initialState: .empty)
 
-        let walletPersistence = WalletPersistence(
+        let walletPersistence = WalletRepoPersistence(
             repo: walletRepo,
             keychainAccess: mockKeychainAccess,
             queue: persistenceQueue,

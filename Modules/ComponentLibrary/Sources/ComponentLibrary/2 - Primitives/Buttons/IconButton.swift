@@ -8,7 +8,11 @@ import SwiftUI
 ///
 /// # Usage
 ///
-///   .navigationBarItems(trailing: IconButton(icon: .qRCode) { openQRCode() })
+///     .primaryNavigation(title: "Title") {
+///       IconButton(icon: .qRCode) {
+///         openQRCode()
+///       }
+///     }
 ///
 /// # Figma
 ///
@@ -53,9 +57,9 @@ struct IconButton_Previews: PreviewProvider {
         @State var toggle: Bool = false
 
         var body: some View {
-            NavigationView {
+            PrimaryNavigationView {
                 Text(toggle ? "Bar" : "Foo")
-                    .navigationBarItems(trailing: navigationItems)
+                    .primaryNavigation(title: "") { navigationItems }
             }
         }
 

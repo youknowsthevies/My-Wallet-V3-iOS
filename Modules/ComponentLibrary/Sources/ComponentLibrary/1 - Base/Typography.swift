@@ -16,11 +16,11 @@ import SwiftUI
 ///
 ///  [Typography](https://www.figma.com/file/dvXlzvYoDEulsmwkE8iO0i/02---Assets-%7C-Typography?node-id=0%3A1)
 public struct Typography: Hashable, Codable {
-    let name: String
-    var size: Length
+    public let name: String
+    public var size: Length
     var style: TextStyle
     var design: Design = .default
-    var weight: Weight = .bold
+    public var weight: Weight = .bold
 }
 
 extension Typography {
@@ -136,15 +136,17 @@ extension Typography {
     /// Note: The custom kerning on this style only works if the typography is applied directly
     /// to a `Text` view, and does not work in the typical cascading modifier way.
     ///
-    /// # GOOD
+    /// Note: You must apply `.textCase(.uppercase)` yourself for uppercased text.
+    ///
+    /// # GOOD, kerning works
     ///     Text("Foo")
     ///       .typography(.overline)
-    ///       .padding()
+    ///       .textCase(.uppercase)
     ///
-    ///  # BAD
+    ///  # BAD, kerning breaks
     ///     Text("Foo")
-    ///       .padding()
-    ///       .typography(.overline)`
+    ///       .textCase(.uppercase)
+    ///       .typography(.overline)
     public static let overline: Typography = .init(
         name: "Overline",
         size: 12.pt,
@@ -166,7 +168,7 @@ extension View {
 
     @ViewBuilder public func typography(_ typography: Typography) -> some View {
         if case .overlineKerning = typography.design {
-            modifier(typography).textCase(.uppercase)
+            modifier(typography)
         } else {
             modifier(typography)
         }
@@ -183,19 +185,19 @@ extension View {
 
 extension Text {
 
-    @ViewBuilder public func typography(_ typography: Typography) -> some View {
+    public func typography(_ typography: Typography) -> Text {
         if case .overlineKerning = typography.design {
-            kerning(1).modifier(typography).textCase(.uppercase)
+            return font(typography.font).kerning(1)
         } else {
-            modifier(typography)
+            return font(typography.font)
         }
     }
 
-    @ViewBuilder public func typography(_ typography: Typography?) -> some View {
+    public func typography(_ typography: Typography?) -> Text {
         if let typography = typography {
-            self.typography(typography)
+            return self.typography(typography)
         } else {
-            self
+            return self
         }
     }
 }
@@ -228,7 +230,6 @@ extension Typography {
 // swiftlint:disable switch_case_on_newline
 
 extension Typography: ViewModifier {
-
     var fontName: FontResource {
         switch weight {
         case .regular: return .interRegular
@@ -347,12 +348,16 @@ extension Typography {
             case .overlineKerning: return .default
             }
         }
+
+        var isOverlineKerning: Bool {
+            switch self {
+            case .overlineKerning: return true
+            default: return false
+            }
+        }
     }
-}
 
-struct Typography_Previews: PreviewProvider {
-
-    static let allTypography: [Typography] = [
+    public static let allTypography: [Typography] = [
         .display,
         .title1,
         .title2,
@@ -369,6 +374,9 @@ struct Typography_Previews: PreviewProvider {
         .overline,
         .micro
     ]
+}
+
+struct Typography_Previews: PreviewProvider {
 
     static func previewText(for typography: Typography) -> String {
         switch typography {
@@ -382,10 +390,13 @@ struct Typography_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                ForEach(allTypography, id: \.self) { typography in
+                ForEach(Typography.allTypography, id: \.self) { typography in
 
                     Text(typography.name)
                         .typography(typography)
+                        .if(typography.design.isOverlineKerning) {
+                            $0.textCase(.uppercase)
+                        }
 
                     Text("\(typography.weight.rawValue) \(typography.size.description)")
                         .typography(.caption1.weight(typography.weight))
@@ -395,6 +406,9 @@ struct Typography_Previews: PreviewProvider {
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 15))
+                        .if(typography.design.isOverlineKerning) {
+                            $0.textCase(.uppercase)
+                        }
 
                     Divider()
                 }

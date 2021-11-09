@@ -194,8 +194,6 @@ let verifyDeviceReducer = Reducer.combine(
                     switch state.credentialsContext {
                     case .walletInfo(let walletInfo):
                         state.credentialsState = CredentialsState(
-                            accountRecoveryEnabled:
-                            environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled,
                             walletPairingState: WalletPairingState(
                                 emailAddress: walletInfo.email ?? "",
                                 emailCode: walletInfo.emailCode,
@@ -204,17 +202,12 @@ let verifyDeviceReducer = Reducer.combine(
                         )
                     case .walletIdentifier(let guid):
                         state.credentialsState = CredentialsState(
-                            accountRecoveryEnabled:
-                            environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled,
                             walletPairingState: WalletPairingState(
                                 walletGuid: guid ?? ""
                             )
                         )
                     case .manualPairing, .none:
-                        state.credentialsState = .init(
-                            accountRecoveryEnabled:
-                            environment.appFeatureConfigurator.configuration(for: .accountRecovery).isEnabled
-                        )
+                        state.credentialsState = .init()
                     }
                 case .upgradeAccount:
                     guard case .walletInfo(let info) = state.credentialsContext else {

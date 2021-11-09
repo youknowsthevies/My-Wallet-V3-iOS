@@ -1,12 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct SecondaryButtonExamplesView: View {
 
     var body: some View {
-        SecondaryButton_Previews.previews
+        VStack(spacing: Spacing.padding1) {
+            SecondaryButton(title: "Enabled", action: {})
+
+            SecondaryButton(title: "Disabled", action: {})
+                .disabled(true)
+
+            SecondaryButton(title: "Loading", isLoading: true, action: {})
+        }
+        .padding(Spacing.padding())
     }
 }
 

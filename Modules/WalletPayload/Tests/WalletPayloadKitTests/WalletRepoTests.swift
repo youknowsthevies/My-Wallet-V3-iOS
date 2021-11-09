@@ -20,7 +20,7 @@ class WalletRepoTests: XCTestCase {
             language: "en",
             authenticatorType: .standard
         ),
-        encryptedPayload: "payload",
+        encryptedPayload: .init(pbkdf2IterationCount: 0, version: 0, payload: ""),
         userId: "userId",
         lifetimeToken: "lifetimeToken"
     )
@@ -126,7 +126,7 @@ class WalletRepoTests: XCTestCase {
                 language: "en",
                 authenticatorType: .standard
             ),
-            encryptedPayload: "new-payload",
+            encryptedPayload: .init(pbkdf2IterationCount: 1, version: 4, payload: ""),
             userId: "new-userId",
             lifetimeToken: "new-lifetimeToken"
         )

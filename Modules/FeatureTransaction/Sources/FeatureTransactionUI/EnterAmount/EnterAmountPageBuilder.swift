@@ -124,6 +124,9 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             devicePresenterType: DevicePresenter.type,
             digitPadViewModel: digitPadViewModel,
             continueButtonViewModel: continueButtonViewModel,
+            recoverFromInputError: { [transactionModel] in
+                transactionModel.process(action: .showErrorRecoverySuggestion)
+            },
             amountViewProvider: amountViewable
         )
 

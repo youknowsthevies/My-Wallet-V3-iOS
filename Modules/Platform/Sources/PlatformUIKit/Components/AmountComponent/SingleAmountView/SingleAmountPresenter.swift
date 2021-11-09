@@ -23,6 +23,13 @@ public final class SingleAmountPresenter: AmountViewPresenting {
     private typealias AccessibilityId = Accessibility.Identifier.Amount
 
     let amountPresenter: InputAmountLabelPresenter
+    let auxiliaryButtonEnabledRelay = BehaviorRelay<Bool>(value: true)
+
+    var auxiliaryButtonEnabled: Driver<Bool> {
+        auxiliaryButtonEnabledRelay.asDriver()
+    }
+
+    let disponseBag = DisposeBag()
 
     // MARK: - Injected
 
@@ -45,6 +52,10 @@ public final class SingleAmountPresenter: AmountViewPresenting {
             /// focused (larger font).
             isFocused: true
         )
+
+        interactor.auxiliaryViewEnabledRelay
+            .bindAndCatch(to: auxiliaryButtonEnabledRelay)
+            .disposed(by: disposeBag)
     }
 
     public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
@@ -71,8 +82,9 @@ public final class SingleAmountPresenter: AmountViewPresenting {
                 accessibilityId: AccessibilityId.min
             )
             viewModel.elementOnTap
-                .emit(onNext: { [weak self] amount in
-                    self?.interactor.set(amount: amount)
+                .emit(onNext: { [weak interactor] amount in
+                    interactor?.set(amount: amount)
+                    interactor?.auxiliaryButtonTappedRelay.accept(())
                 })
                 .disposed(by: disposeBag)
             return .showLimitButton(viewModel)
@@ -84,8 +96,9 @@ public final class SingleAmountPresenter: AmountViewPresenting {
                 accessibilityId: AccessibilityId.max
             )
             viewModel.elementOnTap
-                .emit(onNext: { [weak self] amount in
-                    self?.interactor.set(amount: amount)
+                .emit(onNext: { [weak interactor] amount in
+                    interactor?.set(amount: amount)
+                    interactor?.auxiliaryButtonTappedRelay.accept(())
                 })
                 .disposed(by: disposeBag)
             return .showLimitButton(viewModel)

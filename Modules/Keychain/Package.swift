@@ -15,9 +15,15 @@ let package = Package(
             targets: ["KeychainKitMock"]
         )
     ],
+    dependencies: [
+        .package(path: "../Tool")
+    ],
     targets: [
         .target(
-            name: "KeychainKit"
+            name: "KeychainKit",
+            dependencies: [
+                .product(name: "ToolKit", package: "Tool")
+            ]
         ),
         .target(
             name: "KeychainKitMock",

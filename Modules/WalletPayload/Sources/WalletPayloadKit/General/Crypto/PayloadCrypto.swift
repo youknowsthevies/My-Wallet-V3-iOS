@@ -70,6 +70,12 @@ protocol PayloadCryptoAPI {
     ///   - encryptedWalletData: the encrypted wallet payload string
     ///   - password: the wallet payload decryption password
     func decryptWallet(encryptedWalletData: String, password: String) -> Result<String, PayloadCryptoError>
+
+    /// /// Decrypts `V2`, and `V3`, `V4` wallet payloads
+    /// - Parameters:
+    ///   - walletWrapper: A value of `WalletPayloadWrapper` to be decrypted
+    ///   - password: the wallet payload decryption password
+    func decryptWallet(walletWrapper: WalletPayloadWrapper, password: String) -> Result<String, PayloadCryptoError>
 }
 
 extension PayloadCryptoAPI {
@@ -159,6 +165,10 @@ final class PayloadCrypto: PayloadCryptoAPI {
         decryptWalletSync(data: encryptedWalletData, password: password)
     }
 
+    func decryptWallet(walletWrapper: WalletPayloadWrapper, password: String) -> Result<String, PayloadCryptoError> {
+        validateAndDecryptV2V3(wrapper: walletWrapper, password: password)
+    }
+
     // MARK: - Private methods
 
     private func encrypt(data: String, with key: Data, iv: [UInt8]) -> Result<String, PayloadCryptoError> {
@@ -176,7 +186,12 @@ final class PayloadCrypto: PayloadCryptoAPI {
         }
     }
 
-    private func stretchPassword(password: String, salt: [UInt8], iterations: UInt32, keyLengthBytes: UInt) -> Result<Data, PayloadCryptoError> {
+    private func stretchPassword(
+        password: String,
+        salt: [UInt8],
+        iterations: UInt32,
+        keyLengthBytes: UInt
+    ) -> Result<Data, PayloadCryptoError> {
         let keyLenBytes = (keyLengthBytes | 256) / 8
         let saltData = Data(salt)
         return PBKDF2.deriveSHA1Result(
@@ -188,7 +203,12 @@ final class PayloadCrypto: PayloadCryptoAPI {
         .replaceError(with: .keyDerivationFailed)
     }
 
-    private func decrypt(buffer: [UInt8], with key: [UInt8], iv: [UInt8], options: AESOptions = .default) -> Result<String, PayloadCryptoError> {
+    private func decrypt(
+        buffer: [UInt8],
+        with key: [UInt8],
+        iv: [UInt8],
+        options: AESOptions = .default
+    ) -> Result<String, PayloadCryptoError> {
         let data = Data(buffer)
         let keyData = Data(key)
         let ivData = Data(iv)
@@ -217,7 +237,10 @@ final class PayloadCrypto: PayloadCryptoAPI {
             }
     }
 
-    private func validateAndDecryptV2V3(wrapper: WalletPayloadWrapper, password: String) -> Result<String, PayloadCryptoError> {
+    private func validateAndDecryptV2V3(
+        wrapper: WalletPayloadWrapper,
+        password: String
+    ) -> Result<String, PayloadCryptoError> {
         validatePayloadVersion(
             wallet: WalletData(
                 payload: wrapper,

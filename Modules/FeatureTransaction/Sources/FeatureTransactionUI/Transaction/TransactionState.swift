@@ -81,6 +81,7 @@ extension TransactionState: Equatable {
             && lhs.stepsBackStack == rhs.stepsBackStack
             && lhs.availableSources.map(\.identifier) == rhs.availableSources.map(\.identifier)
             && lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
+            && lhs.userKYCTiers == rhs.userKYCTiers
     }
 }
 
@@ -359,6 +360,7 @@ enum TransactionFlowStep: Equatable {
     case confirmDetail
     case inProgress
     case securityConfirmation
+    case errorRecoveryInfo
     case closed
 }
 
@@ -370,6 +372,7 @@ extension TransactionFlowStep {
              .selectTarget,
              .enterAddress,
              .enterAmount,
+             .errorRecoveryInfo,
              .inProgress,
              .linkBankViaWire,
              .confirmDetail:
@@ -402,6 +405,7 @@ extension TransactionFlowStep {
              .enterAddress,
              .enterAmount,
              .enterPassword,
+             .errorRecoveryInfo,
              .inProgress,
              .initial,
              .selectSource,

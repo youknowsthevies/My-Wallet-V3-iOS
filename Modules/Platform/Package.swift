@@ -75,7 +75,9 @@ let package = Package(
         .package(path: "../RxTool"),
         .package(path: "../WalletPayload"),
         .package(path: "../UIComponents"),
-        .package(path: "../ComposableArchitectureExtensions")
+        .package(path: "../ComposableArchitectureExtensions"),
+        .package(path: "../ComponentLibrary"),
+        .package(path: "../FeatureWithdrawalLocks")
     ],
     targets: [
         .target(
@@ -128,7 +130,9 @@ let package = Package(
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "Nuke", package: "Nuke"),
                 .product(name: "PhoneNumberKit", package: "PhoneNumberKit"),
-                .product(name: "Zxcvbn", package: "Zxcvbn")
+                .product(name: "Zxcvbn", package: "Zxcvbn"),
+                .product(name: "ComponentLibrary", package: "ComponentLibrary"),
+                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks")
             ],
             resources: [
                 .copy("PlatformUIKitAssets.xcassets")

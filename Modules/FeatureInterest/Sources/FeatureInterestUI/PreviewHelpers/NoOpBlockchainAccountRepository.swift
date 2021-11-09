@@ -4,6 +4,13 @@ import Combine
 import PlatformKit
 
 final class NoOpBlockchainAccountRepository: BlockchainAccountRepositoryAPI {
+    func fetchAccountWithAddresss(
+        _ address: String,
+        currencyType: CurrencyType
+    ) -> AnyPublisher<BlockchainAccount, BlockchainAccountRepositoryError> {
+        Empty().eraseToAnyPublisher()
+    }
+
     func accountsWithCurrencyType(
         _ currency: CurrencyType
     ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError> {

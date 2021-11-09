@@ -4,7 +4,7 @@
 import SnapshotTesting
 import XCTest
 
-final class PrimaryDividerTexts: XCTestCase {
+final class PrimaryDividerTests: XCTestCase {
     func testPrimaryDivider() {
         let view = PrimaryDivider_Previews.previews
             .fixedSize()

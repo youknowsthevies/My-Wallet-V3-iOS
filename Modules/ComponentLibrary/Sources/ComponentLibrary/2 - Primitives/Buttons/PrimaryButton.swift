@@ -14,40 +14,41 @@ import SwiftUI
 /// # Figma
 ///
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=3%3A367)
+public struct PrimaryButton: View {
 
-public struct PrimaryButton: View, PillButton {
+    private let title: String
+    private let action: () -> Void
+    private let isLoading: Bool
 
-    let title: String
-    let action: () -> Void
-    let isLoading: Bool
+    @Environment(\.pillButtonSize) private var size
 
-    let colorSet = PillButtonColorSet(
-        enabledState: PillButtonStyle.ColorSet(
-            foreground: .semantic.white,
-            background: .semantic.primary,
-            border: .semantic.primary
+    static let colorCombination = PillButtonStyle.ColorCombination(
+        enabled: PillButtonStyle.ColorSet(
+            foreground: .palette.white,
+            background: .palette.blue600,
+            border: .palette.blue600
         ),
-        pressedState: PillButtonStyle.ColorSet(
-            foreground: .semantic.white,
-            background: .semantic.primary,
-            border: .semantic.primary
+        pressed: PillButtonStyle.ColorSet(
+            foreground: .palette.white,
+            background: .palette.blue600,
+            border: .palette.blue600
         ),
-        disabledState: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.white.opacity(0.7),
-                dark: .semantic.white.opacity(0.4)
+        disabled: PillButtonStyle.ColorSet(
+            foreground: Color(
+                light: .palette.white.opacity(0.7),
+                dark: .palette.white.opacity(0.4)
             ),
-            background: Color.dynamicColor(
-                light: .semantic.primaryMuted,
-                dark: .semantic.title
+            background: Color(
+                light: .palette.blue400,
+                dark: .palette.grey900
             ),
-            border: Color.dynamicColor(
-                light: .semantic.primaryMuted,
-                dark: .semantic.title
+            border: Color(
+                light: .palette.blue400,
+                dark: .palette.grey900
             )
         ),
-        progressViewRail: Color.semantic.white.opacity(0.8),
-        progressViewTrack: Color.semantic.white.opacity(0.25)
+        progressViewRail: .palette.white.opacity(0.8),
+        progressViewTrack: .palette.white.opacity(0.25)
     )
 
     public init(
@@ -61,7 +62,16 @@ public struct PrimaryButton: View, PillButton {
     }
 
     public var body: some View {
-        makeBody()
+        Button(title) {
+            action()
+        }
+        .buttonStyle(
+            PillButtonStyle(
+                isLoading: isLoading,
+                size: size,
+                colorCombination: Self.colorCombination
+            )
+        )
     }
 }
 

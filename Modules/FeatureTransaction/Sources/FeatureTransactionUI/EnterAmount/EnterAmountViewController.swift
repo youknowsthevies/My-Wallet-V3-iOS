@@ -43,20 +43,25 @@ final class EnterAmountViewController: BaseScreenViewController,
     private let topAuxiliaryItemSeparatorView = TitledSeparatorView()
     private let bottomAuxiliaryItemSeparatorView = TitledSeparatorView()
 
+    // MARK: - Main CTA
+
+    private let continueButtonView = ButtonView()
+    internal let continueButtonTapped: Signal<Void>
+
+    private var ctaContainerView = UIView()
+    private var ctaTopConstraint: NSLayoutConstraint!
+
+    private var errorRecoveryCTAModel: ErrorRecoveryCTAModel
+    private let errorRecoveryViewController: UIViewController
+
     // MARK: - Other Properties
 
     private let amountViewable: AmountViewable
-    private let continueButtonView = ButtonView()
     private let digitPadView = DigitPadView()
-
     private var digitPadHeightConstraint: NSLayoutConstraint!
-    private var continueButtonTopConstraint: NSLayoutConstraint!
-    private var digitPadSeparatorTopConstraint: NSLayoutConstraint!
 
     private let closeTriggerred = PublishSubject<Void>()
     private let backTriggered = PublishSubject<Void>()
-
-    internal let continueButtonTapped: Signal<Void>
 
     // MARK: - Injected
 
@@ -71,12 +76,23 @@ final class EnterAmountViewController: BaseScreenViewController,
         devicePresenterType: DevicePresenter.DeviceType = DevicePresenter.type,
         digitPadViewModel: DigitPadViewModel,
         continueButtonViewModel: ButtonViewModel,
+        recoverFromInputError: @escaping () -> Void,
         amountViewProvider: AmountViewable
     ) {
         self.displayBundle = displayBundle
         self.devicePresenterType = devicePresenterType
         amountViewable = amountViewProvider
         continueButtonTapped = continueButtonViewModel.tap
+
+        let errorRecoveryCTAModel = ErrorRecoveryCTAModel(
+            buttonTitle: "", // initial state shows no error, and the button is hidden, so this is OK
+            action: recoverFromInputError
+        )
+        self.errorRecoveryCTAModel = errorRecoveryCTAModel
+        let errorRecoveryCTA = ErrorRecoveryCTA(model: errorRecoveryCTAModel)
+        errorRecoveryViewController = UIHostingController(rootView: errorRecoveryCTA)
+        errorRecoveryViewController.view.isHidden = true // initial state shows no error
+
         super.init(nibName: nil, bundle: nil)
 
         digitPadView.viewModel = digitPadViewModel
@@ -93,16 +109,12 @@ final class EnterAmountViewController: BaseScreenViewController,
         view = UIView()
         view.backgroundColor = .white
 
-        let digitPadTopSeparatorView = UIView()
-
         let amountView = amountViewable.view
         view.addSubview(topAuxiliaryViewContainer)
         view.addSubview(topAuxiliaryItemSeparatorView)
         view.addSubview(amountView)
         view.addSubview(bottomAuxiliaryItemSeparatorView)
         view.addSubview(bottomAuxiliaryViewContainer)
-        view.addSubview(continueButtonView)
-        view.addSubview(digitPadTopSeparatorView)
         view.addSubview(digitPadView)
 
         topAuxiliaryViewContainer.layoutToSuperview(axis: .horizontal)
@@ -130,38 +142,28 @@ final class EnterAmountViewController: BaseScreenViewController,
             to: Constant.Standard.topSelectionViewHeight
         )
 
-        bottomAuxiliaryViewContainer.layoutToSuperview(.leading, .trailing)
-        bottomAuxiliaryViewContainer.layout(
+        let stackView = UIStackView(arrangedSubviews: [bottomAuxiliaryViewContainer, ctaContainerView])
+        stackView.axis = .vertical
+        stackView.spacing = 16
+
+        view.addSubview(stackView)
+        stackView.layoutToSuperview(.leading, .trailing)
+        stackView.layout(
             edge: .top,
             to: .bottom,
             of: bottomAuxiliaryItemSeparatorView,
             priority: .defaultLow
         )
+        stackView.layoutToSuperview(axis: .horizontal, offset: 24, priority: .penultimateHigh)
 
-        continueButtonView.layoutToSuperview(axis: .horizontal, offset: 24, priority: .penultimateHigh)
-        continueButtonTopConstraint = continueButtonView.layout(
-            edge: .top,
-            to: .bottom,
-            of: bottomAuxiliaryViewContainer,
-            offset: 16
-        )
-        continueButtonView.layout(dimension: .height, to: 48)
-
-        digitPadTopSeparatorView.layoutToSuperview(.leading, .trailing)
-        digitPadSeparatorTopConstraint = digitPadTopSeparatorView.layout(
-            edge: .top,
-            to: .bottom,
-            of: continueButtonView,
-            offset: 24
-        )
-        digitPadTopSeparatorView.layout(dimension: .height, to: 1)
-
+        ctaContainerView.layout(dimension: .height, to: 48)
+        ctaContainerView.addSubview(continueButtonView)
+        continueButtonView.constraint(edgesTo: ctaContainerView, insets: UIEdgeInsets(horizontal: 24, vertical: .zero))
+        embed(errorRecoveryViewController, in: ctaContainerView, insets: UIEdgeInsets(horizontal: 24, vertical: .zero))
         digitPadView.layoutToSuperview(axis: .horizontal, priority: .penultimateHigh)
-        digitPadView.layout(edge: .top, to: .bottom, of: digitPadTopSeparatorView)
+        digitPadView.layout(edge: .top, to: .bottom, of: stackView, offset: 16)
         digitPadView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
         digitPadHeightConstraint = digitPadView.layout(dimension: .height, to: 260, priority: .penultimateHigh)
-
-        digitPadTopSeparatorView.backgroundColor = .lightBorder
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -176,9 +178,8 @@ final class EnterAmountViewController: BaseScreenViewController,
         // dismissal of the screen.
         if view.bounds.height <= UIDevice.PhoneHeight.eight.rawValue {
             digitPadHeightConstraint.constant = Constant.SuperCompact.digitPadHeight
-            digitPadSeparatorTopConstraint.constant = Constant.SuperCompact.continueButtonViewBottomOffset
             if view.bounds.height <= UIDevice.PhoneHeight.se.rawValue {
-                continueButtonTopConstraint.constant = Constant.SuperCompact.bottomAuxiliaryViewOffset
+                ctaTopConstraint.constant = Constant.SuperCompact.bottomAuxiliaryViewOffset
                 topAuxiliaryViewHeightConstraint.constant = Constant.SuperCompact.topSelectionViewHeight
             }
         }
@@ -233,8 +234,42 @@ final class EnterAmountViewController: BaseScreenViewController,
             .drive()
             .disposed(by: disposeBag)
 
-        state.map(\.canContinue)
+        state
+            .distinctUntilChanged()
+            .map(\.canContinue)
             .drive(continueButtonView.viewModel.isEnabledRelay)
+            .disposed(by: disposeBag)
+
+        state
+            .distinctUntilChanged()
+            .map(\.showContinueAction)
+            .map { !$0 } // flip the flag because we're modifying the hidden state
+            .drive(continueButtonView.viewModel.isHiddenRelay)
+            .disposed(by: disposeBag)
+
+        state
+            .distinctUntilChanged()
+            .map(\.showErrorRecoveryAction)
+            .drive(onNext: { [weak errorRecoveryViewController] showError in
+                errorRecoveryViewController?.view.isHidden = !showError
+            })
+            .disposed(by: disposeBag)
+
+        state
+            .distinctUntilChanged()
+            .map { $0.showContinueAction || $0.showErrorRecoveryAction }
+            .drive(onNext: { [ctaContainerView] canShowAnyCTA in
+                ctaContainerView.isHidden = !canShowAnyCTA
+            })
+            .disposed(by: disposeBag)
+
+        state
+            .distinctUntilChanged()
+            .map(\.errorState)
+            .map(\.shortDescription)
+            .drive(onNext: { [errorRecoveryCTAModel] errorTitle in
+                errorRecoveryCTAModel.buttonTitle = errorTitle
+            })
             .disposed(by: disposeBag)
 
         let backTapped = backTriggered
@@ -261,15 +296,12 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     private func topAuxiliaryViewModelStateDidChange(to presenter: AuxiliaryViewPresenting?) {
         loadViewIfNeeded()
-        topAuxiliaryViewController?.view.removeFromSuperview()
-        topAuxiliaryViewController?.removeFromParent()
+        remove(child: topAuxiliaryViewController)
         topAuxiliaryViewController = presenter?.makeViewController()
 
         if let viewController = topAuxiliaryViewController {
             topAuxiliaryViewHeightConstraint.constant = Constant.Standard.topSelectionViewHeight
-            addChild(viewController)
-            topAuxiliaryViewContainer.addSubview(viewController.view)
-            viewController.view.constraint(edgesTo: topAuxiliaryViewContainer)
+            embed(viewController, in: topAuxiliaryViewContainer)
             topAuxiliaryItemSeparatorView.alpha = 1
         } else {
             topAuxiliaryViewHeightConstraint.constant = .zero
@@ -279,15 +311,12 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     private func bottomAuxiliaryViewModelStateDidChange(to presenter: AuxiliaryViewPresenting?) {
         loadViewIfNeeded()
-        bottomAuxiliaryViewController?.view.removeFromSuperview()
-        bottomAuxiliaryViewController?.removeFromParent()
+        remove(child: bottomAuxiliaryViewController)
         bottomAuxiliaryViewController = presenter?.makeViewController()
 
         if let viewController = bottomAuxiliaryViewController {
             bottomAuxiliaryViewHeightConstraint.constant = Constant.Standard.bottomSelectionViewHeight
-            addChild(viewController)
-            bottomAuxiliaryViewContainer.addSubview(viewController.view)
-            viewController.view.constraint(edgesTo: bottomAuxiliaryViewContainer)
+            embed(viewController, in: bottomAuxiliaryViewContainer)
             // NOTE: ATM this separator is unused as some auxiliary views already have one.
             bottomAuxiliaryItemSeparatorView.alpha = .zero
         } else {
@@ -304,5 +333,22 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     override func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
+    }
+}
+
+extension UIViewController {
+
+    func embed(_ viewController: UIViewController, in subview: UIView, insets: UIEdgeInsets = .zero) {
+        addChild(viewController)
+        subview.addSubview(viewController.view)
+        viewController.view.constraint(edgesTo: subview, insets: insets)
+    }
+
+    func remove(child: UIViewController?) {
+        guard let child = child, child.parent === self else {
+            return
+        }
+        child.view.removeFromSuperview()
+        child.removeFromParent()
     }
 }

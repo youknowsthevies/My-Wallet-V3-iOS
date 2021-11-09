@@ -34,6 +34,11 @@ final class AccountAuxiliaryView: UIView {
                 .drive(button.rx.isEnabled)
                 .disposed(by: disposeBag)
 
+            presenter.buttonEnabled
+                .map(Visibility.init(boolValue:))
+                .drive(disclosureImageView.rx.visibility)
+                .disposed(by: disposeBag)
+
             button.rx
                 .controlEvent(.touchUpInside)
                 .bindAndCatch(to: presenter.tapRelay)

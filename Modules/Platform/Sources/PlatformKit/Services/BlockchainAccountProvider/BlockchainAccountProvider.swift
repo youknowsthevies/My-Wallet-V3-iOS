@@ -11,6 +11,12 @@ public enum BlockchainAccountRepositoryError: Error {
 }
 
 public protocol BlockchainAccountRepositoryAPI: AnyObject {
+
+    func fetchAccountWithAddresss(
+        _ address: String,
+        currencyType: CurrencyType
+    ) -> AnyPublisher<BlockchainAccount, BlockchainAccountRepositoryError>
+
     func accountsAvailableToPerformAction(
         _ assetAction: AssetAction,
         target: BlockchainAccount
@@ -52,6 +58,21 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
     }
 
     // MARK: - BlockchainAccountRepositoryAPI
+
+    func fetchAccountWithAddresss(
+        _ address: String,
+        currencyType: CurrencyType
+    ) -> AnyPublisher<BlockchainAccount, BlockchainAccountRepositoryError> {
+        coincore
+            .allAccounts
+            .map(\.accounts)
+            .map { $0.filter { $0.currencyType == currencyType } }
+            .eraseError()
+            .flatMapFilter(address: address)
+            .map { $0 as BlockchainAccount }
+            .mapError(BlockchainAccountRepositoryError.coinCoreError)
+            .eraseToAnyPublisher()
+    }
 
     func accountsAvailableToPerformAction(
         _ assetAction: AssetAction,

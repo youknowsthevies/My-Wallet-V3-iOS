@@ -32,7 +32,7 @@ public enum UpgradeAccountRoute: NavigationRoute {
                 sendMessage: .constant("Test Message"),
                 callback: { _ in
                     // dismiss the web upgrade screen when received a callback
-                    viewStore.send(.enter(into: nil, fullScreen: true))
+                    viewStore.send(.enter(into: nil, context: .fullScreen))
                 }
             )
         }
@@ -88,7 +88,7 @@ struct UpgradeAccountView: View {
                     PrimaryButton(
                         title: LocalizedString.upgradeAccountButton,
                         action: {
-                            viewStore.send(.enter(into: .webUpgrade, fullScreen: true))
+                            viewStore.send(.enter(into: .webUpgrade, context: .fullScreen))
                         }
                     )
                     .accessibilityIdentifier(AccessibilityIdentifiers.UpgradeAccountScreen.upgradeButton)

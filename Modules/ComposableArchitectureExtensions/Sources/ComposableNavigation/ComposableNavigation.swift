@@ -13,17 +13,27 @@ public struct RouteIntent<R: NavigationRoute>: Hashable {
 
         /// A navigation action that enters a new user journey context, on iOS this will present a modal,
         /// on macOS it will show a new screen and on watchOS it will enter into a new screen entirely.
-        case enterInto(fullScreen: Bool = false)
-
-        /// A navigation action that enters a new user journey context, on iOS this will present a modal,
-        /// on macOS it will show a new screen and on watchOS it will enter into a new screen entirely.
-        /// This will **not** wrap the view in a `NavigationView`. This may not be necessary long term,
-        /// but it is necessary for the TxFlow.
-        case sheet(fullScreen: Bool = false)
+        case enterInto(EnterIntoContext = .default)
     }
 
     public var route: R
     public var action: Action
+}
+
+public struct EnterIntoContext: OptionSet, Hashable {
+
+    public let rawValue: UInt
+
+    public init(rawValue: UInt) {
+        self.rawValue = rawValue
+    }
+
+    public static let fullScreen = EnterIntoContext(rawValue: 1 << 0)
+    public static let destinationEmbeddedIntoNavigationView = EnterIntoContext(rawValue: 1 << 1)
+
+    public static let all: EnterIntoContext = [.fullScreen, .destinationEmbeddedIntoNavigationView]
+    public static let `default`: EnterIntoContext = [.destinationEmbeddedIntoNavigationView]
+    public static let none: EnterIntoContext = []
 }
 
 /// A specfication of a route and how it maps to the destination screen
@@ -63,20 +73,8 @@ extension NavigationAction {
         .route(route.map { RouteIntent(route: $0, action: .navigateTo) })
     }
 
-    public static func enter(into route: RouteType?) -> Self {
-        enter(into: route, fullScreen: false)
-    }
-
-    public static func sheet(into route: RouteType?) -> Self {
-        sheet(into: route, fullScreen: false)
-    }
-
-    public static func sheet(into route: RouteType?, fullScreen: Bool) -> Self {
-        .route(route.map { RouteIntent(route: $0, action: .sheet(fullScreen: fullScreen)) })
-    }
-
-    public static func enter(into route: RouteType?, fullScreen: Bool) -> Self {
-        .route(route.map { RouteIntent(route: $0, action: .enterInto(fullScreen: fullScreen)) })
+    public static func enter(into route: RouteType?, context: EnterIntoContext = .default) -> Self {
+        .route(route.map { RouteIntent(route: $0, action: .enterInto(context)) })
     }
 }
 
@@ -105,13 +103,8 @@ extension Effect where Output: NavigationAction {
     }
 
     /// A navigation effect that enters a new user journey context.
-    public static func enter(into route: Output.RouteType?, fullScreen: Bool = false) -> Self {
-        Effect(value: .enter(into: route, fullScreen: fullScreen))
-    }
-
-    /// A navigation effect that enters a new user journey context.
-    public static func sheet(into route: Output.RouteType?, fullScreen: Bool = false) -> Self {
-        Effect(value: .sheet(into: route))
+    public static func enter(into route: Output.RouteType?, context: EnterIntoContext = .default) -> Self {
+        Effect(value: .enter(into: route, context: context))
     }
 }
 
@@ -160,21 +153,17 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
                 label: EmptyView.init
             )
 
-        case .sheet(fullScreen: false):
-            EmptyView()
-                .sheet(
-                    isPresented: Binding(binding, to: intent, isReady: $isReady),
-                    content: {
-                        intent.value.route.destination(in: store)
-                    }
-                )
-        case .sheet(fullScreen: true):
+        case .enterInto(let context) where context.contains(.fullScreen):
             #if os(macOS)
             EmptyView()
                 .sheet(
                     isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
-                        intent.value.route.destination(in: store)
+                        if options.contains(.destinationEmbeddedIntoNavigationView) {
+                            NavigationView { intent.value.route.destination(in: store) }
+                        } else {
+                            intent.value.route.destination(in: store)
+                        }
                     }
                 )
             #else
@@ -182,38 +171,27 @@ public struct NavigationRouteViewModifier<Route: NavigationRoute>: ViewModifier 
                 .fullScreenCover(
                     isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
-                        intent.value.route.destination(in: store)
+                        if context.contains(.destinationEmbeddedIntoNavigationView) {
+                            NavigationView { intent.value.route.destination(in: store) }
+                        } else {
+                            intent.value.route.destination(in: store)
+                        }
                     }
                 )
             #endif
 
-        case .enterInto(fullScreen: false):
+        case .enterInto(let context):
             EmptyView()
                 .sheet(
                     isPresented: Binding(binding, to: intent, isReady: $isReady),
                     content: {
-                        NavigationView { intent.value.route.destination(in: store) }
+                        if context.contains(.destinationEmbeddedIntoNavigationView) {
+                            NavigationView { intent.value.route.destination(in: store) }
+                        } else {
+                            intent.value.route.destination(in: store)
+                        }
                     }
                 )
-
-        case .enterInto(fullScreen: true):
-            #if os(macOS)
-            EmptyView()
-                .sheet(
-                    isPresented: Binding(binding, to: intent, isReady: $isReady),
-                    content: {
-                        NavigationView { intent.value.route.destination(in: store) }
-                    }
-                )
-            #else
-            EmptyView()
-                .fullScreenCover(
-                    isPresented: Binding(binding, to: intent, isReady: $isReady),
-                    content: {
-                        NavigationView { intent.value.route.destination(in: store) }
-                    }
-                )
-            #endif
         }
     }
 }
@@ -225,7 +203,7 @@ extension View {
         into binding: Binding<E?>
     ) -> some View where E: Hashable {
         onAppear {
-            DispatchQueue.main.async { binding.wrappedValue = element }
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(15)) { binding.wrappedValue = element }
         }
     }
 }

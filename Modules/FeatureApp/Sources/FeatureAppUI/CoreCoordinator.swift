@@ -712,12 +712,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // send `authenticate` action so that we can listen for wallet creation
         return Effect(value: .authenticate)
 
-    case .onboarding(.welcomeScreen(.presentScreenFlow(.legacyRestoreWalletScreen))):
-        // send `authenticate` action so that we can listen for wallet creation or recovery
-        return Effect(value: .authenticate)
-
-    case .onboarding(.createAccountScreenClosed),
-         .onboarding(.legacyRecoverWalletScreenClosed):
+    case .onboarding(.createAccountScreenClosed):
         // cancel any authentication publishers in case the create wallet is closed
         environment.loadingViewPresenter.hide()
         return .merge(
