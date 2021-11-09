@@ -6,6 +6,7 @@ import DIKit
 import ERC20Kit
 import FeatureAuthenticationDomain
 import FeatureDebugUI
+import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import NetworkKit
 import PlatformKit
@@ -39,6 +40,7 @@ public struct AppEnvironment {
     var sharedContainer: SharedContainerUserDefaults
     var analyticsRecorder: AnalyticsEventRecorderAPI
     var crashlyticsRecorder: Recording
+    var openBanking: OpenBanking
 
     var coincore: CoincoreAPI
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
@@ -82,6 +84,7 @@ public struct AppEnvironment {
         sharedContainer: SharedContainerUserDefaults,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         crashlyticsRecorder: Recording,
+        openBanking: OpenBanking,
         coincore: CoincoreAPI,
         erc20CryptoAssetService: ERC20CryptoAssetServiceAPI,
         walletManager: WalletManagerAPI,

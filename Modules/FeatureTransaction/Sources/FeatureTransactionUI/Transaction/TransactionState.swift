@@ -375,8 +375,7 @@ extension TransactionFlowStep {
              .errorRecoveryInfo,
              .inProgress,
              .linkBankViaWire,
-             .confirmDetail,
-             .authorizeOpenBanking:
+             .confirmDetail:
             return true
         case .closed,
              .enterPassword,
@@ -386,7 +385,8 @@ extension TransactionFlowStep {
              .linkPaymentMethod,
              .linkACard,
              .linkABank,
-             .securityConfirmation:
+             .securityConfirmation,
+             .authorizeOpenBanking:
             return false
         }
     }

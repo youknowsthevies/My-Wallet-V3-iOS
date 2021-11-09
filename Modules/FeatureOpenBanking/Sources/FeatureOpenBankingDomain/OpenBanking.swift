@@ -52,9 +52,26 @@ public final class OpenBanking {
     public init(banking: OpenBankingClientProtocol) {
         self.banking = banking
     }
+    
+    public var isAuthorising: Bool {
+        state.result(for: .authorisation.url).isSuccess
+    }
 
     public func createBankAccount() -> AnyPublisher<OpenBanking.BankAccount, Error> {
         banking.createBankAccount()
+    }
+
+    public func reset() {
+        state.transaction { state in
+            state.clear(.id)
+            state.clear(.callback.path)
+            state.clear(.is.authorised)
+            state.clear(.authorisation.url)
+            state.clear(.account)
+            state.clear(.error.code)
+            state.clear(.consent.error)
+            state.clear(.consent.token)
+        }
     }
 
     // swiftlint:disable cyclomatic_complexity

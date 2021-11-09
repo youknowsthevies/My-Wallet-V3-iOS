@@ -338,8 +338,11 @@ final class TransactionModel {
         order: TransactionOrder?,
         secondPassword: String
     ) -> Disposable {
+        // If we are processing an OpenBanking transaction we do not want to execute the transaction
+        // as this is done by the backend once the customer has authorised the payment via open banking
+        // and we have submitted the consent token from the deep link
         if (source as? LinkedBankAccount)?.partner == .yapily {
-            return Single<Any>.never().subscribe()
+            return Single.just(true).subscribe()
         }
         return interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
             .subscribe(onSuccess: { [weak self] result in
