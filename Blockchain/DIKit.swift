@@ -15,6 +15,8 @@ import FeatureDebugUI
 import FeatureKYCDomain
 import FeatureKYCUI
 import FeatureOnboardingUI
+import FeatureOpenBankingData
+import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
@@ -582,6 +584,17 @@ extension DependencyContainer {
                 return FeatureAccountPickerControllableAdapter() as AccountPickerViewControllable
             }
             return AccountPickerViewController() as AccountPickerViewControllable
+        }
+
+        // MARK: Open Banking
+        single { () -> OpenBanking in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = OpenBankingClient(
+                requestBuilder: builder,
+                network: adapter
+            )
+            return OpenBanking(banking: client)
         }
     }
 }
