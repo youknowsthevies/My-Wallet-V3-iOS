@@ -34,7 +34,7 @@ final class PinScreenViewController: BaseScreenViewController {
 
     init(
         using presenter: PinScreenPresenter,
-        recorder: Recording = resolve(),
+        recorder: Recording = CrashlyticsRecorder(),
         alertViewPresenter: AlertViewPresenter = .shared
     ) {
         self.presenter = presenter
