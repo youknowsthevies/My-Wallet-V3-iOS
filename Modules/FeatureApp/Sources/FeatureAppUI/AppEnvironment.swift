@@ -123,6 +123,7 @@ public struct AppEnvironment {
         self.sharedContainer = sharedContainer
         self.analyticsRecorder = analyticsRecorder
         self.crashlyticsRecorder = crashlyticsRecorder
+        self.openBanking = openBanking
         self.coincore = coincore
         self.erc20CryptoAssetService = erc20CryptoAssetService
         self.walletManager = walletManager

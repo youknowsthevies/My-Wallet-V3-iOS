@@ -37,7 +37,8 @@ final class PaymentMethodTypesServiceTests: XCTestCase {
         let filtered = paymentMethods
             .filterValidForBuy(
                 currentWalletCurrency: .GBP,
-                accountForEligibility: false
+                accountForEligibility: false,
+                isOpenBankingEnabled: true
             )
 
         XCTAssertEqual(filtered.count, 0)
@@ -71,7 +72,8 @@ final class PaymentMethodTypesServiceTests: XCTestCase {
         let filtered = paymentMethods
             .filterValidForBuy(
                 currentWalletCurrency: .USD,
-                accountForEligibility: false
+                accountForEligibility: false,
+                isOpenBankingEnabled: true
             )
 
         XCTAssertEqual(filtered.count, 1)

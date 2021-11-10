@@ -11,8 +11,7 @@ extension ApproveState.UI {
         in environment: OpenBankingEnvironment
     ) -> ApproveState.UI {
 
-        let _90days = DateComponents(day: 90)
-        let expiry = Calendar.current.date(byAdding: _90days, to: Date())
+        let expiry = Calendar.current.date(byAdding: DateComponents(day: 90), to: Date())
             .map(DateFormatter.long.string(from:)) ?? Localization.Approve.Payment.in90Days
 
         let bankAccount = data.account
@@ -140,8 +139,12 @@ extension ApproveState.UI {
                 header: Localization.Approve.TermsAndConditions.FCAAuthorisation,
                 expandable: true,
                 tasks: [
-                    .label(Localization.Approve.TermsAndConditions.FCAAuthorisationBody1.interpolating(entity, entity)),
-                    .label(Localization.Approve.TermsAndConditions.FCAAuthorisationBody2.interpolating(bankName, entity))
+                    .label(
+                        Localization.Approve.TermsAndConditions.FCAAuthorisationBody1.interpolating(entity, entity)
+                    ),
+                    .label(
+                        Localization.Approve.TermsAndConditions.FCAAuthorisationBody2.interpolating(bankName, entity)
+                    )
                 ]
             ),
             .section(

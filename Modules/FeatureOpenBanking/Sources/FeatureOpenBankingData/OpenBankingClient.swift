@@ -61,7 +61,7 @@ public class OpenBankingClient {
             let request = try requestBuilder.post(
                 path: state.get(.callback.path) as String,
                 body: [
-                    "oneTimeToken": consent.get()
+                    "oneTimeToken": consent.get() as String
                 ].json(),
                 authenticated: true
             )!
@@ -117,7 +117,7 @@ public class OpenBankingClient {
         }
     }
 
-    public func allBankAccounts() -> AnyPublisher<[OpenBanking.BankAccount], OpenBanking.Error> {
+    public func fetchAllBankAccounts() -> AnyPublisher<[OpenBanking.BankAccount], OpenBanking.Error> {
 
         let request = requestBuilder.get(
             path: ["payments", "banktransfer"],
@@ -357,7 +357,7 @@ extension OpenBanking.Order {
     }
 }
 
-extension OpenBankingClient: OpenBankingClientProtocol {
+extension OpenBankingClient: OpenBankingClientAPI {
 
     public func activate(
         bankAccount: OpenBanking.BankAccount,

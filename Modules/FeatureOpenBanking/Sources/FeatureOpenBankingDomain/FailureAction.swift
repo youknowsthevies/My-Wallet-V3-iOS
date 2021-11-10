@@ -14,8 +14,9 @@ extension FailureAction {
 
 extension Publisher where Output: ResultProtocol {
 
-    public func mapped<T>(
-        to action: @escaping (Output.Success) -> T
+    @_disfavoredOverload
+    public func map<T>(
+        _ action: @escaping (Output.Success) -> T
     ) -> Publishers.Map<Self, T> where T: FailureAction {
         map { it -> T in
             switch it.result {
@@ -27,8 +28,8 @@ extension Publisher where Output: ResultProtocol {
         }
     }
 
-    public func mapped<T>(
-        to action: CasePath<T, Output.Success>
+    public func map<T>(
+        _ action: CasePath<T, Output.Success>
     ) -> Publishers.Map<Self, T> where T: FailureAction {
         map { it -> T in
             switch it.result {

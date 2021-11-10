@@ -89,8 +89,8 @@ final class BankLinkTests: OpenBankingTestCase {
 
     func test_fail() throws {
         store.assert(
-            .send(.failure(.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED)) { state in
-                state.ui = .error(.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED)
+            .send(.failure(.bankTransferAccountAlreadyLinked)) { state in
+                state.ui = .error(.bankTransferAccountAlreadyLinked)
             }
         )
     }

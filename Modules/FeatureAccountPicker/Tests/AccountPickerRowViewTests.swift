@@ -55,15 +55,39 @@ class AccountPickerRowViewTests: XCTestCase {
         description: "Description"
     )
 
-    let linkedBankAccount = LinkedBankAccount(
+    // swiftlint:disable:next force_try
+    let linkedBankData = try! LinkedBankData(
+        response: LinkedBankResponse(
+            json: [
+                "id": "id",
+                "currency": "GBP",
+                "partner": "YAPILY",
+                "bankAccountType": "SAVINGS",
+                "name": "Name",
+                "accountName": "Account Name",
+                "accountNumber": "123456",
+                "routingNumber": "123456",
+                "agentRef": "040004",
+                "isBankAccount": false,
+                "isBankTransferAccount": true,
+                "state": "PENDING",
+                "attributes": [
+                    "entity": "Safeconnect(UK)"
+                ]
+            ]
+        )
+    )!
+
+    lazy var linkedBankAccount = LinkedBankAccount(
         label: "LinkedBankAccount",
         accountNumber: "0",
         accountId: "0",
         accountType: .checking,
         currency: .USD,
         paymentType: .bankAccount,
-        supportsDeposit: true,
-        withdrawServiceAPI: MockWithdrawalServiceAPI()
+        withdrawServiceAPI: MockWithdrawalServiceAPI(),
+        partner: .yapily,
+        data: linkedBankData
     )
 
     let paymentMethodFunds = PaymentMethodAccount(

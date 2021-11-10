@@ -133,6 +133,7 @@ extension Publisher where Output: ResultProtocol {
 
 extension Publisher {
 
+    /// Share the last known value of the stream to new subscribers
     public func shareReplay() -> AnyPublisher<Output, Failure> {
         let subject = CurrentValueSubject<Output?, Failure>(nil)
         return map { $0 }
@@ -145,12 +146,14 @@ extension Publisher {
 
 extension Publisher {
 
+    /// Also provide the last value from another publisher
     public func withLatestFrom<Other: Publisher>(
         _ publisher: Other
     ) -> AnyPublisher<Other.Output, Failure> where Other.Failure == Failure {
         withLatestFrom(publisher, selector: { $1 })
     }
 
+    /// Also provide the last value from another publisher. Allowing you to decide which publisher to select.
     public func withLatestFrom<Other: Publisher, Result>(
         _ other: Other,
         selector: @escaping (Output, Other.Output) -> Result
@@ -182,6 +185,7 @@ extension Publisher {
 
 extension Publisher where Failure == Never {
 
+    /// Assign the result of the stream to an property that wraps an Optional value
     public func assign<Root>(to keyPath: ReferenceWritableKeyPath<Root, Output?>, on root: Root) -> AnyCancellable {
         map(Output?.init).assign(to: keyPath, on: root)
     }
@@ -189,6 +193,7 @@ extension Publisher where Failure == Never {
 
 extension Publisher where Failure == Never {
 
+    /// Assign the result of the stream to an published property that wraps an Optional value
     public func assign(to published: inout Published<Output?>.Publisher) {
         map(Output?.init).assign(to: &published)
     }
@@ -196,6 +201,7 @@ extension Publisher where Failure == Never {
 
 extension Publisher where Output: ResultProtocol {
 
+    /// Ignore the `Result<Success, Failure>` failure case and map the `Success` to the streams output
     public func ignoreResultFailure() -> Publishers.CompactMap<Self, Output.Success> {
         compactMap { output in
             switch output.result {
@@ -207,6 +213,7 @@ extension Publisher where Output: ResultProtocol {
         }
     }
 
+    /// Ignore the stream output when it matches the CasePath `output`
     public func ignore<T>(output casePath: CasePath<Output.Success, T>) -> AnyPublisher<Output, Failure> {
         filter { output in
             switch output.result {
@@ -219,6 +226,7 @@ extension Publisher where Output: ResultProtocol {
         .eraseToAnyPublisher()
     }
 
+    /// Ignore the stream failure when it matches the CasePath `failure`
     public func ignore<T>(failure casePath: CasePath<Output.Failure, T>) -> AnyPublisher<Output, Failure> {
         filter { output in
             switch output.result {
@@ -234,6 +242,7 @@ extension Publisher where Output: ResultProtocol {
 
 extension Publisher where Output: ResultProtocol, Failure == Never {
 
+    /// Converts a publisher which outputs a `Result` into a stream that can fail.
     public func get() -> AnyPublisher<Output.Success, Output.Failure> {
         flatMap { output -> AnyPublisher<Output.Success, Output.Failure> in
             switch output.result {
@@ -249,6 +258,7 @@ extension Publisher where Output: ResultProtocol, Failure == Never {
 
 extension Publisher {
 
+    /// Filter using a KeyPath. Allowing usage of \.self syntax.
     public func filter(_ keyPath: KeyPath<Output, Bool>) -> Publishers.Filter<Self> {
         filter { $0[keyPath: keyPath] }
     }
@@ -256,6 +266,7 @@ extension Publisher {
 
 extension Publisher where Output == Bool, Failure == Never {
 
+    /// Sink the result and make a decision using an if-else syntax
     public func `if`(
         then yes: @escaping () -> Void,
         else no: @escaping () -> Void
@@ -269,6 +280,7 @@ extension Publisher where Output == Bool, Failure == Never {
         }
     }
 
+    /// Sink the result and make a decision using an if-else syntax
     public func `if`<Root>(
         then yes: @escaping (Root) -> () -> Void,
         else no: @escaping (Root) -> () -> Void,
@@ -287,6 +299,8 @@ extension Publisher where Output == Bool, Failure == Never {
 
 extension AnyCancellable {
 
+    /// Store the lifetime of the cancellable against an Object.
+    /// Once the object is deallocated the cancellable will go with it.
     public func store<Object>(
         withLifetimeOf object: Object,
         file: StaticString = #file,
@@ -298,15 +312,14 @@ extension AnyCancellable {
 
 extension Publisher {
 
-    public func mapped<T>(to action: CasePath<T, Output>) -> Publishers.Map<Self, T> {
+    /// synonym for `map` using a CasePath
+    public func map<T>(_ action: CasePath<T, Output>) -> Publishers.Map<Self, T> {
         map { output in action.embed(output) }
     }
 
-    public func mapped<T>(to action: @escaping (Output) -> T) -> Publishers.Map<Self, T> {
-        map(action)
-    }
-
-    public func mapped<T>(to action: @autoclosure @escaping () -> T) -> Publishers.Map<Self, T> {
+    /// synonym for `map`
+    @_disfavoredOverload
+    public func map<T>(_ action: @autoclosure @escaping () -> T) -> Publishers.Map<Self, T> {
         map { _ -> T in action() }
     }
 }

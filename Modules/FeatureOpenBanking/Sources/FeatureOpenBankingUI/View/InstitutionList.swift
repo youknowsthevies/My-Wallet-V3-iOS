@@ -64,7 +64,7 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                 return environment.openBanking
                     .createBankAccount()
                     .receive(on: environment.scheduler.main)
-                    .mapped(to: InstitutionListAction.fetched)
+                    .map(InstitutionListAction.fetched)
                     .catch(InstitutionListAction.failure)
                     .eraseToEffect()
             case .fetched(let account):
@@ -165,7 +165,7 @@ public struct InstitutionList: View {
                 .multilineTextAlignment(.center)
                 .padding([.leading, .trailing], 12.5.vmin)
             Spacer()
-            SecondaryButton(title: Localization.InstitutionList.Error.showTransferDetails) {
+            ComponentLibrary.SecondaryButton(title: Localization.InstitutionList.Error.showTransferDetails) {
                 view.send(.showTransferDetails)
             }
             .padding(10.5.vmin)

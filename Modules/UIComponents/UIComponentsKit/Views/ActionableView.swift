@@ -129,6 +129,7 @@ extension ActionableView where Content == TupleView<(Spacer, InfoView, Spacer)> 
 }
 
 #if DEBUG
+// swiftlint:disable line_length
 struct ActionableView_Previews: PreviewProvider {
     static var previews: some View {
         ActionableView(

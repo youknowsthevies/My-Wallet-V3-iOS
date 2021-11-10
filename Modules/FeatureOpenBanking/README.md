@@ -3,49 +3,6 @@
 A package providing access to the OpenBanking API, the current implementation uses the YAPILY specification available from `nabu-gateway/payments/banktransfer/`
 This module utilises `Session.State` to conduct transactions on the data set as a side-effect of the queries or from an external service such as a deep link.
 
-## Getting Started
-
-To start using Open Banking you can create an instance using it's initaliser:
-```swift
-let banking = OpenBanking(
-    requestBuilder: RequestBuilder(),
-    network: NetworkAdapter(),
-    state: .init([.currency: "GBP"])
-)
-```
-
-## Available API
-
-```swift
-public class OpenBanking {
-    public func createBankAccount() throws -> AnyPublisher<Result<BankAccount, Error>, Never>
-    public func allBankAccounts() -> AnyPublisher<Result<[BankAccount], Error>, Never>
-}
-
-extension OpenBanking.BankAccount {
-
-    public func activateBankAccount(
-        with institution: Identity<OpenBanking.Institution>, 
-        in banking: OpenBanking
-    ) throws -> AnyPublisher<Result<OpenBanking.BankAccount, OpenBanking.Error>, Never>
-    
-    public func get(in banking: OpenBanking) -> AnyPublisher<Result<OpenBanking.BankAccount, OpenBanking.Error>, Never>
-    public func poll(in banking: OpenBanking) throws -> AnyPublisher<Result<OpenBanking.BankAccount, OpenBanking.Error>, Never>
-    public func delete(in banking: OpenBanking) -> AnyPublisher<Result<OpenBanking.BankAccount, OpenBanking.Error>, Never>
-    
-    public func pay(
-        amountMinor: String, 
-        product: String, 
-        in banking: OpenBanking
-    ) throws -> AnyPublisher<Result<OpenBanking.Payment, OpenBanking.Error>, Never>
-}
-
-extension OpenBanking.Payment {
-    public func get(in banking: OpenBanking) -> AnyPublisher<Result<Details, OpenBanking.Error>, Never>
-    public func poll(in banking: OpenBanking) -> AnyPublisher<Result<Details, OpenBanking.Error>, Never>
-}
-```
-
 ## Testing
 
 All the tests are powered by the `ReplayNetworkCommunicator` class which simulates a running network by loading files from disk when required, the tests also take advantage of `TestScheduler` from PointFree to control time.

@@ -5,7 +5,7 @@ import CombineSchedulers
 import Session
 import ToolKit
 
-public protocol OpenBankingClientProtocol {
+public protocol OpenBankingClientAPI {
 
     var scheduler: AnySchedulerOf<DispatchQueue> { get }
     var state: Session.State<OpenBanking.Key> { get }
