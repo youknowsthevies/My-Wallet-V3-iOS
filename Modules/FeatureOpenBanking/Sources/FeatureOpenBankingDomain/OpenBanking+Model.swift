@@ -291,8 +291,6 @@ extension OpenBanking.Payment.Details {
     }
 }
 
-// swiftlint:disable line_length
-
 extension OpenBanking.Error {
     public static let bankTransferAccountAlreadyLinked: Self = .code("BANK_TRANSFER_ACCOUNT_ALREADY_LINKED")
     public static let bankTransferAccountInfoNotFound: Self = .code("BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND")
