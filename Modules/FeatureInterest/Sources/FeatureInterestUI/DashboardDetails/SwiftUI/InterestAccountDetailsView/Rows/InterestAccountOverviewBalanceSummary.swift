@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
+import PlatformUIKit
 import ToolKit
 
 struct InterestAccountOverviewBalanceSummary: Equatable, Identifiable {
@@ -12,4 +13,14 @@ struct InterestAccountOverviewBalanceSummary: Equatable, Identifiable {
     let currency: CurrencyType
     let cryptoBalance: String
     let fiatBalance: String
+
+    var badgeImageViewModel: BadgeImageViewModel {
+        let model: BadgeImageViewModel = .default(
+            image: currency.logoResource,
+            cornerRadius: .round,
+            accessibilityIdSuffix: ""
+        )
+        model.marginOffsetRelay.accept(0)
+        return model
+    }
 }
