@@ -254,31 +254,3 @@ extension State.Error: Equatable {
         }
     }
 }
-
-public protocol FlattenOptional {
-    static var null: FlattenOptional { get }
-    var flattened: Any? { get }
-}
-
-public func flattenOptionality(_ any: Any) -> Any {
-    (any as? FlattenOptional)?.flattened ?? any
-}
-
-public func isNil(_ any: Any?) -> Bool {
-    switch any.flattened {
-    case .none: return true
-    case .some: return false
-    }
-}
-
-extension Optional: FlattenOptional {
-
-    public static var null: FlattenOptional { return Optional.none as FlattenOptional }
-
-    public var flattened: Any? {
-        switch self {
-        case .none: return self as Any
-        case let .some(wrapped): return (wrapped as? FlattenOptional)?.flattened ?? wrapped
-        }
-    }
-}
