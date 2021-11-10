@@ -109,9 +109,13 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Password",
                 comment: "Login screen: password field title"
             )
-            public static let twoFACode = NSLocalizedString(
-                "2FA Code",
-                comment: "Login screen: two factor authentication text field title"
+            public static let smsCode = NSLocalizedString(
+                "SMS Code",
+                comment: "Login screen: sms authentication text field title"
+            )
+            public static let authenticatorCode = NSLocalizedString(
+                "Authenticator Code",
+                comment: "Login screen: authenticator text field title"
             )
             public static let hardwareKeyCode = NSLocalizedString(
                 "Verify with your |HARDWARE KEY|",

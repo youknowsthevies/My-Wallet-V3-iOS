@@ -219,6 +219,10 @@ let credentialsReducer = Reducer.combine(
             if let nabuInfo = info.nabuInfo {
                 state.nabuInfo = nabuInfo
             }
+            if let type = info.twoFAType, type.isTwoFactor {
+                // authenticate with empty password to set GUID and send SMS if needed
+                return Effect(value: .walletPairing(.authenticate("")))
+            }
             return .none
 
         case .didAppear(.walletIdentifier(let guid)):
@@ -396,10 +400,14 @@ private func authenticateDidFail(
                 return Effect(value: .walletPairing(.approveEmailAuthorization))
             }
         case .sms:
-            state.twoFAState = .init()
+            state.twoFAState = .init(
+                twoFAType: .sms
+            )
             return Effect(value: .walletPairing(.handleSMS))
         case .google:
-            state.twoFAState = .init()
+            state.twoFAState = .init(
+                twoFAType: .google
+            )
             return Effect(value: .twoFA(.showTwoFACodeField(true)))
         case .yubiKey, .yubikeyMtGox:
             state.hardwareKeyState = .init()

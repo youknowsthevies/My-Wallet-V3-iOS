@@ -193,12 +193,37 @@ let verifyDeviceReducer = Reducer.combine(
                 case .credentials:
                     switch state.credentialsContext {
                     case .walletInfo(let walletInfo):
+                        var twoFAState: TwoFAState?
+                        var hardwareKeyState: HardwareKeyState?
+                        if let twoFAType = walletInfo.twoFAType {
+                            switch twoFAType {
+                            case .sms:
+                                twoFAState = TwoFAState(
+                                    twoFAType: .sms,
+                                    isTwoFACodeFieldVisible: true,
+                                    isResendSMSButtonVisible: twoFAType == .sms
+                                )
+                            case .google:
+                                twoFAState = TwoFAState(
+                                    twoFAType: .google,
+                                    isTwoFACodeFieldVisible: true
+                                )
+                            case .yubiKey, .yubikeyMtGox:
+                                hardwareKeyState = HardwareKeyState(
+                                    isHardwareKeyCodeFieldVisible: true
+                                )
+                            default:
+                                break
+                            }
+                        }
                         state.credentialsState = CredentialsState(
                             walletPairingState: WalletPairingState(
                                 emailAddress: walletInfo.email ?? "",
                                 emailCode: walletInfo.emailCode,
                                 walletGuid: walletInfo.guid
-                            )
+                            ),
+                            twoFAState: twoFAState,
+                            hardwareKeyState: hardwareKeyState
                         )
                     case .walletIdentifier(let guid):
                         state.credentialsState = CredentialsState(
