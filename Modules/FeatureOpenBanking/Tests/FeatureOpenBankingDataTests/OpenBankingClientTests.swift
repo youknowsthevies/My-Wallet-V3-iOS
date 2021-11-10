@@ -204,14 +204,14 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
         network[get()] = try OpenBanking.BankAccount(
             id: "a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c",
             partner: "YAPILY",
-            error: .BANK_TRANSFER_ACCOUNT_ALREADY_LINKED,
+            error: .bankTransferAccountAlreadyLinked,
             attributes: .init(entity: "SafeConnect(UK)")
         )
         .data()
 
         let account = try bankAccount.poll(in: banking).wait()
 
-        XCTAssertEqual(account.error, .BANK_TRANSFER_ACCOUNT_ALREADY_LINKED)
+        XCTAssertEqual(account.error, .bankTransferAccountAlreadyLinked)
     }
 
     func test_poll_when_pending() throws {
@@ -221,7 +221,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
         network[request] = try OpenBanking.BankAccount(
             id: "a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c",
             partner: "YAPILY",
-            state: .PENDING,
+            state: .pending,
             attributes: .init(entity: "SafeConnect(UK)")
         )
         .data()
@@ -250,7 +250,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
         network[request] = try OpenBanking.BankAccount(
             id: "a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c",
             partner: "YAPILY",
-            state: .PENDING,
+            state: .pending,
             attributes: .init(entity: "SafeConnect(UK)")
         )
         .data()
@@ -273,7 +273,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
         network[request] = try OpenBanking.BankAccount(
             id: "a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c",
             partner: "YAPILY",
-            state: .ACTIVE,
+            state: .active,
             attributes: .init(entity: "SafeConnect(UK)", authorisationUrl: "http://blockchain.com")
         )
         .data()
@@ -282,7 +282,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
         let account = try XCTUnwrap(result).get()
 
-        XCTAssertEqual(account.state, .ACTIVE)
+        XCTAssertEqual(account.state, .active)
 
         subscription.cancel()
     }
@@ -317,7 +317,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
         network[request] = try OpenBanking.BankAccount(
             id: "a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c",
             partner: "YAPILY",
-            state: .ACTIVE,
+            state: .active,
             attributes: .init(entity: "SafeConnect(UK)")
         )
         .data()
@@ -328,7 +328,7 @@ final class OpenBankingBankAccountPollTests: XCTestCase {
 
         let account = try XCTUnwrap(result).get()
 
-        XCTAssertEqual(account.state, .ACTIVE)
+        XCTAssertEqual(account.state, .active)
     }
 }
 
@@ -365,7 +365,7 @@ final class OpenBankingPaymentTests: XCTestCase {
             amountMinor: "1000",
             extraAttributes: .init(error: .code("ERROR_CODE")),
             insertedAt: "DATE",
-            state: .FAILED,
+            state: .failed,
             type: "CHARGE",
             beneficiaryId: "..."
         )
@@ -382,7 +382,7 @@ final class OpenBankingPaymentTests: XCTestCase {
             amount: .init(symbol: "GBP", value: "10.00"),
             amountMinor: "1000",
             insertedAt: "DATE",
-            state: .PENDING,
+            state: .pending,
             type: "CHARGE",
             beneficiaryId: "..."
         )
@@ -418,7 +418,7 @@ final class OpenBankingPaymentTests: XCTestCase {
             amount: .init(symbol: "GBP", value: "10.00"),
             amountMinor: "1000",
             insertedAt: "DATE",
-            state: .PENDING,
+            state: .pending,
             type: "CHARGE",
             beneficiaryId: "..."
         )
@@ -439,7 +439,7 @@ final class OpenBankingPaymentTests: XCTestCase {
             amountMinor: "1000",
             extraAttributes: .init(authorisationUrl: "https://monzo.com"),
             insertedAt: "DATE",
-            state: .COMPLETE,
+            state: .complete,
             type: "CHARGE",
             beneficiaryId: "..."
         )
@@ -449,7 +449,7 @@ final class OpenBankingPaymentTests: XCTestCase {
 
         let account = try XCTUnwrap(result).get()
 
-        XCTAssertEqual(account.state, .COMPLETE)
+        XCTAssertEqual(account.state, .complete)
 
         subscription.cancel()
     }

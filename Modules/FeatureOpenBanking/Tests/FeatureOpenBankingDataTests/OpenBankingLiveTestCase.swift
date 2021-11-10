@@ -39,7 +39,7 @@ final class OpenBankingLiveTestCase: XCTestCase {
         let accounts = try banking.fetchAllBankAccounts()
             .wait(timeout: 5)
 
-        for account in accounts where account.state != .ACTIVE {
+        for account in accounts where account.state != .active {
             print("Deleting \(account.id.value)", terminator: " ")
             switch Result(catching: { try account.delete(in: banking).wait() }) {
             case .failure(let error):

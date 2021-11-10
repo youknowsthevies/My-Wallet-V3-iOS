@@ -209,7 +209,7 @@ public final class OpenBanking {
 extension OpenBanking.BankAccount {
 
     var isNotPending: Bool {
-        state != .PENDING
+        state != .pending
     }
 
     var hasAuthorizationURL: Bool {
