@@ -57,7 +57,6 @@ public final class OpenBanking {
         banking.createBankAccount()
     }
 
-    // swiftlint:disable cyclomatic_complexity
     public func start(_ data: Data) -> AnyPublisher<Action, Never> {
 
         let publisher = actionPublisher(data).share()
