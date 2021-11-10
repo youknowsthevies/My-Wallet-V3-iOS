@@ -58,9 +58,9 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
 
     func handle(effect: Effects) {
         switch effect {
-        case .close, .back:
-            // in both close and back, we need to clean up any prepared state (e.g. cancel created order)
-            // Going back does that. Alternatively, we could delegate to `transactionModel` by creating a new action.
+        case .close:
+            listener?.closeFlow()
+        case .back:
             listener?.checkoutDidTapBack()
         case .updateMemo(let memo, let oldModel):
             let model = TransactionConfirmation.Model.Memo(textMemo: memo, required: oldModel.required)

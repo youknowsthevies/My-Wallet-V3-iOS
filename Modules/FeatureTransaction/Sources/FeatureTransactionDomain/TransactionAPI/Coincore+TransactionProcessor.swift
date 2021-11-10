@@ -84,6 +84,22 @@ extension CoincoreAPI {
                             )
                         }
                 }
+        case (is WalletConnectTarget, .sign):
+            return account
+                .requireSecondPassword
+                .map { requiresSecondPassword -> TransactionProcessor in
+                    let walletConnectEngineFactory: WalletConnectEngineFactoryAPI = resolve()
+                    return .init(
+                        sourceAccount: account,
+                        transactionTarget: target,
+                        engine: walletConnectEngineFactory.build(
+                            target: target,
+                            onChainEngine: factory.build(
+                                requiresSecondPassword: requiresSecondPassword
+                            )
+                        )
+                    )
+                }
         case (is BitPayInvoiceTarget, .send):
             return account
                 .requireSecondPassword
@@ -180,6 +196,7 @@ extension CoincoreAPI {
             return createInterestTransferTradingProcessor(with: account, target: target)
         case .deposit,
              .receive,
+             .sign,
              .viewActivity,
              .withdraw,
              .interestWithdraw:

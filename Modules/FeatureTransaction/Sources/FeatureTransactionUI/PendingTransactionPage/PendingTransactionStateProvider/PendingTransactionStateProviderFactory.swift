@@ -12,6 +12,8 @@ enum PendingTransctionStateProviderFactory {
             return DepositPendingTransactionStateProvider()
         case .send:
             return SendPendingTransactionStateProvider()
+        case .sign:
+            return SignPendingTransactionStateProvider()
         case .swap:
             return SwapPendingTransactionStateProvider()
         case .buy:

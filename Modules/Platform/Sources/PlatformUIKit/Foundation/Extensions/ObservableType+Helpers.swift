@@ -3,7 +3,7 @@
 import RxCocoa
 import RxSwift
 
-extension ObservableType {
+extension ObservableConvertibleType {
     public func asDriverCatchError(
         file: String = #file,
         line: Int = #line,

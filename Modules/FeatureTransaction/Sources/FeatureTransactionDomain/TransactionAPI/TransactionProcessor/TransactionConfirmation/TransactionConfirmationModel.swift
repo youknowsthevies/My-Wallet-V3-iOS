@@ -108,6 +108,58 @@ extension TransactionConfirmation.Model {
         }
     }
 
+    public struct App: TransactionConfirmationModelable {
+
+        public let type: TransactionConfirmation.Kind = .readOnly
+        public var formatted: (title: String, subtitle: String)? {
+            (
+                LocalizedString.app,
+                "\(dAppName) (\(dAppAddress))"
+            )
+        }
+
+        private let dAppAddress: String
+        private let dAppName: String
+
+        public init(dAppAddress: String, dAppName: String) {
+            self.dAppName = dAppName
+            self.dAppAddress = dAppAddress
+        }
+    }
+
+    public struct Network: TransactionConfirmationModelable {
+
+        public let type: TransactionConfirmation.Kind = .readOnly
+        public var formatted: (title: String, subtitle: String)? {
+            (title: LocalizedString.network, subtitle: network)
+        }
+
+        private let network: String
+
+        public init(network: String) {
+            self.network = network
+        }
+    }
+
+    public struct Message: TransactionConfirmationModelable {
+
+        public let type: TransactionConfirmation.Kind = .readOnly
+        public var formatted: (title: String, subtitle: String)? {
+            (
+                title: String(format: LocalizedString.message, dAppName),
+                subtitle: String(data: data, encoding: .utf8) ?? data.hexString.withHex
+            )
+        }
+
+        private let dAppName: String
+        private let data: Data
+
+        public init(dAppName: String, data: Data) {
+            self.dAppName = dAppName
+            self.data = data
+        }
+    }
+
     public struct Destination: TransactionConfirmationModelable {
         public let value: String
         public let type: TransactionConfirmation.Kind = .readOnly
@@ -232,6 +284,19 @@ extension TransactionConfirmation.Model {
         }
     }
 
+    public struct Notice: TransactionConfirmationModelable {
+        public let value: String
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            ("", value)
+        }
+
+        public init(value: String) {
+            self.value = value
+        }
+    }
+
     public struct Description: TransactionConfirmationModelable {
         public let value: String
         public let type: TransactionConfirmation.Kind = .description
@@ -240,7 +305,7 @@ extension TransactionConfirmation.Model {
             (LocalizedString.description, value)
         }
 
-        public init(value: String = "") {
+        public init(value: String) {
             self.value = value
         }
     }

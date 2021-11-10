@@ -3,42 +3,45 @@
 import Foundation
 
 public enum AssetAction: Equatable {
-    case viewActivity
-    case deposit
     case buy
+    case deposit
+    case interestTransfer
+    case interestWithdraw
+    case receive
     case sell
     case send
-    case receive
+    case sign
     case swap
+    case viewActivity
     case withdraw
-    case interestWithdraw
-    case interestTransfer
 }
 
 extension AssetAction: CustomStringConvertible, CustomDebugStringConvertible {
 
     public var description: String {
         switch self {
-        case .viewActivity:
-            return "viewActivity"
-        case .deposit:
-            return "deposit"
         case .buy:
             return "buy"
+        case .deposit:
+            return "deposit"
+        case .interestTransfer:
+            return "interestTransfer"
+        case .interestWithdraw:
+            return "interestWithdraw"
+        case .receive:
+            return "receive"
         case .sell:
             return "sell"
         case .send:
             return "send"
-        case .receive:
-            return "receive"
+        case .sign:
+            return "sign"
         case .swap:
             return "swap"
+        case .viewActivity:
+            return "viewActivity"
         case .withdraw:
             return "withdraw"
-        case .interestWithdraw:
-            return "interestWithdraw"
-        case .interestTransfer:
-            return "interestTransfer"
         }
     }
 

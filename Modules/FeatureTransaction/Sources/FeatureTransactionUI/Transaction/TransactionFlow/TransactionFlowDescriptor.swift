@@ -48,7 +48,8 @@ enum TransactionFlowDescriptor {
                     LocalizedString.Sell.headerTitlePrefix,
                     state.source?.label
                 ].compactMap { $0 }.joined(separator: " ")
-            case .receive,
+            case .sign,
+                 .receive,
                  .viewActivity:
                 unimplemented()
             }
@@ -98,7 +99,8 @@ enum TransactionFlowDescriptor {
                     LocalizedString.Sell.headerSubtitlePrefix,
                     state.destination?.label
                 ].compactMap { $0 }.joined(separator: " ")
-            case .receive,
+            case .sign,
+                 .receive,
                  .viewActivity:
                 unimplemented()
             }
@@ -120,7 +122,8 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Withdraw.withdrawTo
             case .interestTransfer:
                 return LocalizedString.Transfer.transferFrom
-            case .receive,
+            case .sign,
+                 .receive,
                  .send,
                  .viewActivity,
                  .withdraw:
@@ -134,7 +137,8 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Swap.sourceAccountPicketSubtitle
             case .sell:
                 return LocalizedString.Sell.selectSourceSubtitle
-            case .withdraw,
+            case .sign,
+                 .withdraw,
                  .deposit,
                  .receive,
                  .buy,
@@ -159,7 +163,8 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Sell.title
             case .interestTransfer:
                 return LocalizedString.Transfer.transferFrom
-            case .deposit,
+            case .sign,
+                 .deposit,
                  .receive,
                  .send,
                  .viewActivity:
@@ -173,7 +178,8 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Swap.destinationAccountPicketSubtitle
             case .sell:
                 return LocalizedString.Sell.selectDestinationTitle
-            case .deposit,
+            case .sign,
+                 .deposit,
                  .receive,
                  .buy,
                  .send,
@@ -198,7 +204,8 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Withdraw.withdraw
             case .interestTransfer:
                 return LocalizedString.transfer
-            case .deposit,
+            case .sign,
+                 .deposit,
                  .receive,
                  .buy,
                  .sell,
@@ -223,7 +230,8 @@ enum TransactionFlowDescriptor {
              .interestWithdraw,
              .buy:
             return true
-        case .deposit,
+        case .sign,
+             .deposit,
              .receive,
              .sell,
              .send,
@@ -251,7 +259,8 @@ enum TransactionFlowDescriptor {
                 currencyCode,
                 accountLabel
             )
-        case .deposit,
+        case .sign,
+             .deposit,
              .receive,
              .sell,
              .send,

@@ -9,13 +9,13 @@ import XCTest
 
 class EthereumTransactionEncoderTests: XCTestCase {
 
-    var signer: EthereumTransactionSigner!
+    var signer: EthereumSigner!
     var builder: EthereumTransactionBuilder!
     var subject: EthereumTransactionEncoder!
 
     override func setUp() {
         super.setUp()
-        signer = EthereumTransactionSigner()
+        signer = EthereumSigner()
         builder = EthereumTransactionBuilder()
         subject = EthereumTransactionEncoder()
     }

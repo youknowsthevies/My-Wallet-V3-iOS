@@ -2,7 +2,7 @@
 
 import ToolKit
 
-public final class BitPayInvoiceTarget: InvoiceTarget, CryptoReceiveAddress {
+public final class BitPayInvoiceTarget: CryptoReceiveAddress, StaticTransactionTarget {
 
     // MARK: - Public Properties
 

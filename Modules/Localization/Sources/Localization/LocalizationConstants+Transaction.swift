@@ -19,6 +19,14 @@ extension LocalizationConstants {
             public enum KYC {}
         }
 
+        public enum Sign {
+            public enum Completion {
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
+            }
+        }
+
         public enum Send {
             public enum AmountPresenter {
                 public enum LimitView {}
@@ -543,8 +551,8 @@ extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Failure 
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
     )
 }
 
@@ -587,8 +595,8 @@ extension LocalizationConstants.Transaction.Transfer.Completion.Failure {
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
     )
 }
 
@@ -616,8 +624,8 @@ extension LocalizationConstants.Transaction.Withdraw.Completion.Failure {
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
     )
 }
 
@@ -645,8 +653,8 @@ extension LocalizationConstants.Transaction.Deposit.Completion.Failure {
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
     )
 }
 
@@ -684,8 +692,8 @@ extension LocalizationConstants.Transaction.Send.Completion.Failure {
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help."
     )
     public static let action = NSLocalizedString(
         "OK",
@@ -710,6 +718,56 @@ extension LocalizationConstants.Transaction.Send.Completion.Failure {
     public static let overSilverTierLimit = NSLocalizedString(
         "Please upgrade your profile to send this amount.",
         comment: ""
+    )
+}
+
+// MARK: - Sign
+
+extension LocalizationConstants.Transaction.Sign {
+    public static let dappRequestWarning = NSLocalizedString(
+        "This dapp is requesting an action, which could take money from your wallet. Make sure you trust this site.",
+        comment: "Dapp request warning."
+    )
+}
+
+extension LocalizationConstants.Transaction.Sign.Completion.Pending {
+    public static let title = NSLocalizedString(
+        "Signing",
+        comment: "Signing"
+    )
+    public static let description = NSLocalizedString(
+        "We're signing your transaction now.",
+        comment: "We're signing your transaction now."
+    )
+}
+
+extension LocalizationConstants.Transaction.Sign.Completion.Success {
+    public static let title = NSLocalizedString(
+        "Signed",
+        comment: "Signed"
+    )
+    public static let description = NSLocalizedString(
+        "The message has been successfully signed. Go back to the dApp.",
+        comment: "The message has been successfully signed. Go back to the dApp."
+    )
+    public static let action = NSLocalizedString(
+        "OK",
+        comment: "OK"
+    )
+}
+
+extension LocalizationConstants.Transaction.Sign.Completion.Failure {
+    public static let title = NSLocalizedString(
+        "Oops! Something Went Wrong.",
+        comment: "Oops! Something Went Wrong."
+    )
+    public static let description = NSLocalizedString(
+        "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help."
+    )
+    public static let action = NSLocalizedString(
+        "OK",
+        comment: "OK"
     )
 }
 
@@ -747,8 +805,8 @@ extension LocalizationConstants.Transaction.Swap.Completion.Failure {
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help."
     )
     public static let action = NSLocalizedString(
         "OK",
@@ -834,8 +892,8 @@ extension LocalizationConstants.Transaction.Buy.Completion.Failure {
     )
 
     public static let description = NSLocalizedString(
-        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help."
     )
 
     public static let action = NSLocalizedString(
@@ -899,8 +957,8 @@ extension LocalizationConstants.Transaction.Sell.Completion.Failure {
     )
 
     public static let description = NSLocalizedString(
-        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help."
     )
 
     public static let action = NSLocalizedString(
@@ -1032,6 +1090,10 @@ extension LocalizationConstants.Transaction.Confirmation {
         "Confirm",
         comment: "Confirm"
     )
+    public static let signatureRequest = NSLocalizedString(
+        "Signature Request",
+        comment: "Confirm"
+    )
     public static let cancel = NSLocalizedString(
         "Cancel",
         comment: "Cancel"
@@ -1048,6 +1110,19 @@ extension LocalizationConstants.Transaction.Confirmation {
     public static let remainingTime = NSLocalizedString(
         "Remaining Time",
         comment: "Remaining Time"
+    )
+
+    public static let app = NSLocalizedString(
+        "App",
+        comment: "App"
+    )
+    public static let message = NSLocalizedString(
+        "Message from %@",
+        comment: "Message from %@"
+    )
+    public static let network = NSLocalizedString(
+        "Network",
+        comment: "Network"
     )
 }
 

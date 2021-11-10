@@ -123,6 +123,7 @@ final class FiatCustodialAccount: FiatAccount {
              .send,
              .sell,
              .swap,
+             .sign,
              .receive,
              .interestTransfer,
              .interestWithdraw:

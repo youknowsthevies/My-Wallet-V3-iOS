@@ -199,6 +199,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     return state.destination as? BlockchainAccount
                 case .viewActivity,
                      .send,
+                     .sign,
                      .receive,
                      .swap:
                     fatalError("Unsupported action")

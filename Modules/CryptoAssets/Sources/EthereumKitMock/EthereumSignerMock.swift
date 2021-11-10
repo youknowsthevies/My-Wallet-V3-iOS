@@ -5,20 +5,25 @@ import BigInt
 import Foundation
 import PlatformKit
 
-class EthereumTransactionSignerMock: EthereumTransactionSignerAPI {
+class EthereumSignerMock: EthereumSignerAPI {
+
     var lastTransactionForSignature: EthereumTransactionCandidateCosted?
     var lastKeyPair: EthereumKeyPair?
 
-    typealias SignTransactionResult = Result<EthereumTransactionCandidateSigned, EthereumTransactionSignerError>
+    typealias SignTransactionResult = Result<EthereumTransactionCandidateSigned, EthereumSignerError>
 
     var signTransactionResult: SignTransactionResult = .failure(.incorrectChainId)
 
     func sign(
         transaction: EthereumTransactionCandidateCosted,
         keyPair: EthereumKeyPair
-    ) -> Result<EthereumTransactionCandidateSigned, EthereumTransactionSignerError> {
+    ) -> Result<EthereumTransactionCandidateSigned, EthereumSignerError> {
         lastTransactionForSignature = transaction
         lastKeyPair = keyPair
         return signTransactionResult
+    }
+
+    func sign(messageData: Data, keyPair: EthereumKeyPair) -> Result<Data, EthereumSignerError> {
+        .failure(.incorrectChainId)
     }
 }
