@@ -35,7 +35,8 @@ struct InterestAccountDetailsView: View {
                                 if let balance = viewStore.interestAccountBalanceSummary {
                                     VStack {
                                         HStack {
-                                            CurrencyIcon(icon: .image(balance.currency.image))
+                                            badgeImageViewWithViewModel(balance.badgeImageViewModel)
+                                                .frame(width: 32, height: 32)
                                             VStack(spacing: 4.0) {
                                                 HStack {
                                                     Text(LocalizationIds.rewardsAccount)
@@ -133,6 +134,15 @@ struct InterestAccountDetailsView: View {
                 }
             }
         }
+    }
+
+    private func badgeImageViewWithViewModel(_ viewModel: BadgeImageViewModel) -> AnyView {
+        AnyView(
+            BadgeImageViewRepresentable(
+                viewModel: viewModel,
+                size: 32
+            )
+        )
     }
 }
 
