@@ -8,6 +8,8 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
+// swiftlint:disable type_name
+
 public struct BankState: Equatable {
 
     public struct UI: Equatable {
@@ -50,10 +52,11 @@ public enum BankAction: Hashable, FailureAction {
     case failure(OpenBanking.Error)
 }
 
+// swiftlint:disable:next closure_body_length
 public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> { state, action, environment in
 
     enum ID {
-        struct OB: Hashable {}
+        struct Request: Hashable {}
         struct LaunchBank: Hashable {}
         struct ConsentError: Hashable {}
     }
@@ -83,7 +86,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
             }
             .receive(on: environment.scheduler.main)
             .eraseToEffect()
-            .cancellable(id: ID.OB())
+            .cancellable(id: ID.Request())
 
     case .waitingForConsent:
         return environment.openBanking.state.publisher(for: .authorisation.url, as: URL.self)
@@ -118,7 +121,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         return .merge(
             .cancel(id: ID.LaunchBank()),
             .cancel(id: ID.ConsentError()),
-            .cancel(id: ID.OB())
+            .cancel(id: ID.Request())
         )
 
     case .dismiss:
@@ -128,7 +131,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         return .merge(
             .cancel(id: ID.LaunchBank()),
             .cancel(id: ID.ConsentError()),
-            .cancel(id: ID.OB())
+            .cancel(id: ID.Request())
         )
 
     case .failure(let error):

@@ -8,6 +8,7 @@ import UIComponentsKit
 
 public struct ApproveState: Equatable, NavigationState {
 
+    // swiftlint:disable:next type_name
     public struct UI: Codable, Hashable {
         public var title: String
         public var tasks: [Task]

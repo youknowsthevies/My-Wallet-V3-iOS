@@ -140,8 +140,12 @@ extension ApproveState.UI {
                 header: Localization.Approve.TermsAndConditions.FCAAuthorisation,
                 expandable: true,
                 tasks: [
-                    .label(Localization.Approve.TermsAndConditions.FCAAuthorisationBody1.interpolating(entity, entity)),
-                    .label(Localization.Approve.TermsAndConditions.FCAAuthorisationBody2.interpolating(bankName, entity))
+                    .label(
+                        Localization.Approve.TermsAndConditions.FCAAuthorisationBody1.interpolating(entity, entity)
+                    ),
+                    .label(
+                        Localization.Approve.TermsAndConditions.FCAAuthorisationBody2.interpolating(bankName, entity)
+                    )
                 ]
             ),
             .section(
