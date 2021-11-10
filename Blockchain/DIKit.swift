@@ -607,6 +607,6 @@ extension DependencyContainer {
 
         factory { OpenBankingViewController.self as StartOpenBanking.Type }
 
-        factory { PresentAccountLinkingFlowAdapter() as PresentAccountLinkingFlow }
+        factory { AccountLinkingFlowPresenter() as AccountLinkingFlowPresenterAPI }
     }
 }

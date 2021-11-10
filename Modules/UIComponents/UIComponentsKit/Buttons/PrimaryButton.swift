@@ -58,8 +58,6 @@ extension PrimaryButton {
     public init<S>(_ title: S, action: @escaping () -> Void) where S: StringProtocol {
         self.init(title: String(title), action: action)
     }
-
-    //    init(_ titleKey: LocalizedStringKey, action: @escaping () -> Void) // ‼️
 }
 
 #if DEBUG

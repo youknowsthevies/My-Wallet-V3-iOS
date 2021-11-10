@@ -76,14 +76,14 @@ extension FeatureOpenBankingUI.OpenBankingViewController: StartOpenBanking {
     }
 }
 
-struct PresentAccountLinkingFlowAdapter: PresentAccountLinkingFlow {
+struct AccountLinkingFlowPresenter: AccountLinkingFlowPresenterAPI {
 
     let base: PaymentMethodLinkerAPI = resolve()
 
     func presentAccountLinkingFlow(
         from presenter: UIViewController,
         filter: @escaping (PaymentMethodType) -> Bool,
-        completion: @escaping (PresentAccountLinkingFlowCompletion) -> Void
+        completion: @escaping (AccountLinkingFlowPresenterCompletion) -> Void
     ) {
         base.presentAccountLinkingFlow(from: presenter, filter: filter) { result in
             switch result {

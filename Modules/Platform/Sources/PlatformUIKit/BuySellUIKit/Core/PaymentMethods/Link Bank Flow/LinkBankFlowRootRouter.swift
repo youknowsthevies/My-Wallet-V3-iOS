@@ -41,8 +41,16 @@ public protocol LinkBankFlowStarter: AnyObject {
 }
 
 public protocol StartOpenBanking {
-    static func link(account data: BankLinkageData, currency: FiatCurrency, listener: LinkBankListener) -> UIViewController
-    static func pay(amountMinor: String, currency: FiatCurrency) -> UIViewController
+    static func link(
+        account data: BankLinkageData,
+        currency: FiatCurrency,
+        listener: LinkBankListener
+    ) -> UIViewController
+
+    static func pay(
+        amountMinor: String,
+        currency: FiatCurrency
+    ) -> UIViewController
 }
 
 protocol LinkBankFlowRootInteractable: Interactable,
@@ -123,7 +131,11 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
                     case .success(let currency):
                         DispatchQueue.main.async {
                             presentingViewController.present(
-                                self.startOpenBanking.link(account: data, currency: currency, listener: self.interactor),
+                                self.startOpenBanking.link(
+                                    account: data,
+                                    currency: currency,
+                                    listener: self.interactor
+                                ),
                                 animated: true
                             )
                         }

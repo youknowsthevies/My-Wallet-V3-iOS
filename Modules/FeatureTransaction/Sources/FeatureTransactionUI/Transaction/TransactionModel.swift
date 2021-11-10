@@ -342,7 +342,7 @@ final class TransactionModel {
         // as this is done by the backend once the customer has authorised the payment via open banking
         // and we have submitted the consent token from the deep link
         if (source as? LinkedBankAccount)?.partner == .yapily {
-            return Single.just(true).subscribe()
+            return Disposables.create()
         }
         return interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
             .subscribe(onSuccess: { [weak self] result in

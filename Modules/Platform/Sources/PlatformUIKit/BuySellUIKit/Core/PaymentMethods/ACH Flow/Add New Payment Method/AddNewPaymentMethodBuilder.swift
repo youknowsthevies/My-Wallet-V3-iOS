@@ -6,7 +6,10 @@ import RIBs
 // MARK: - Builder
 
 public protocol AddNewPaymentMethodBuildable {
-    func build(listener: AddNewPaymentMethodListener, filter: @escaping (PaymentMethodType) -> Bool) -> AddNewPaymentMethodRouting
+    func build(
+        listener: AddNewPaymentMethodListener,
+        filter: @escaping (PaymentMethodType) -> Bool
+    ) -> AddNewPaymentMethodRouting
 }
 
 extension AddNewPaymentMethodBuildable {

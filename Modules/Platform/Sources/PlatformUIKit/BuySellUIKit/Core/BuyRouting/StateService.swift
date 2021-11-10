@@ -8,6 +8,8 @@ import RxSwift
 import ToolKit
 import UIKit
 
+// swiftlint:disable file_length
+
 public protocol TierUpgradeRouterAPI {
 
     /// Presents a `UIViewController` prompting the user to upgrade to a higher tier. Usually Tier 2 (Gold).

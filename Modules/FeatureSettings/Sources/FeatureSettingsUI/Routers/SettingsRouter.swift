@@ -30,17 +30,17 @@ public protocol ExchangeCoordinating: AnyObject {
     func start(from viewController: UIViewController)
 }
 
-public enum PresentAccountLinkingFlowCompletion {
+public enum AccountLinkingFlowPresenterCompletion {
     case dismiss
     case select(PaymentMethod)
 }
 
-public protocol PresentAccountLinkingFlow {
+public protocol AccountLinkingFlowPresenterAPI {
 
     func presentAccountLinkingFlow(
         from presenter: UIViewController,
         filter: @escaping (PaymentMethodType) -> Bool,
-        completion: @escaping (PresentAccountLinkingFlowCompletion) -> Void
+        completion: @escaping (AccountLinkingFlowPresenterCompletion) -> Void
     )
 }
 
@@ -91,7 +91,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private var linkBankFlowRouter: LinkBankFlowStarter?
 
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
-    private let presentAccountLinkingFlow: PresentAccountLinkingFlow
+    private let presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI
 
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
@@ -117,7 +117,7 @@ final class SettingsRouter: SettingsRouterAPI {
         paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-        presentAccountLinkingFlow: PresentAccountLinkingFlow = resolve()
+        presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI = resolve()
     ) {
         self.wallet = wallet
         self.appCoordinator = appCoordinator

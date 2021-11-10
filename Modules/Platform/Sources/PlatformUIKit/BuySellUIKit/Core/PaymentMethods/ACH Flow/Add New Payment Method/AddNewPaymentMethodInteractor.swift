@@ -147,7 +147,11 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                     title: LocalizedString.Card.title,
                     descriptions: [
                         .init(title: LocalizedString.Card.descriptionLimit, titleColor: .titleText, titleFontSize: 14),
-                        .init(title: LocalizedString.Card.descriptionInfo, titleColor: .descriptionText, titleFontSize: 12)
+                        .init(
+                            title: LocalizedString.Card.descriptionInfo,
+                            titleColor: .descriptionText,
+                            titleFontSize: 12
+                        )
                     ],
                     badgeTitle: LocalizedString.Card.badgeTitle,
                     uniqueAccessibilityIdentifier: AccessibilityId.addCard
@@ -157,8 +161,16 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                     thumbImage: "icon-bank",
                     title: LocalizedString.LinkABank.title,
                     descriptions: [
-                        .init(title: LocalizedString.LinkABank.descriptionLimit, titleColor: .titleText, titleFontSize: 14),
-                        .init(title: LocalizedString.LinkABank.descriptionInfo, titleColor: .descriptionText, titleFontSize: 12)
+                        .init(
+                            title: LocalizedString.LinkABank.descriptionLimit,
+                            titleColor: .titleText,
+                            titleFontSize: 14
+                        ),
+                        .init(
+                            title: LocalizedString.LinkABank.descriptionInfo,
+                            titleColor: .descriptionText,
+                            titleFontSize: 12
+                        )
                     ],
                     badgeTitle: LocalizedString.Card.badgeTitle,
                     uniqueAccessibilityIdentifier: AccessibilityId.linkedBank

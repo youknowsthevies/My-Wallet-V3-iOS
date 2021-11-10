@@ -70,7 +70,9 @@ final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplash
         case .closeFlow(let isInteractive):
             listener?.closeFlow(isInteractive: isInteractive)
         case .continueTapped:
-            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbBankLinkSplashCTA(partner: partnerForAnalytics()))
+            analyticsRecorder.record(
+                event: AnalyticsEvents.SimpleBuy.sbBankLinkSplashCTA(partner: partnerForAnalytics())
+            )
             switch bankLinkageData.partner {
             case .yapily:
                 listener?.route(to: .yapily(data: bankLinkageData))
