@@ -27,6 +27,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockMobileAuthSyncService: MockMobileAuthSyncService!
     var mockResetPasswordService: MockResetPasswordService!
     var mockAccountRecoveryService: MockAccountRecoveryService!
+    var mockDeviceVerificationService: MockDeviceVerificationService!
     var mockWallet: MockWallet! = MockWallet()
     var mockReactiveWallet = MockReactiveWallet()
     var mockSettingsApp: MockBlockchainSettingsApp!
@@ -70,6 +71,7 @@ final class MainAppReducerTests: XCTestCase {
         mockMobileAuthSyncService = MockMobileAuthSyncService()
         mockResetPasswordService = MockResetPasswordService()
         mockAccountRecoveryService = MockAccountRecoveryService()
+        mockDeviceVerificationService = MockDeviceVerificationService()
         mockCredentialsStore = CredentialsStoreAPIMock()
         mockAlertPresenter = MockAlertViewPresenter()
         mockWalletUpgradeService = MockWalletUpgradeService()
@@ -106,6 +108,7 @@ final class MainAppReducerTests: XCTestCase {
                 mobileAuthSyncService: mockMobileAuthSyncService,
                 resetPasswordService: mockResetPasswordService,
                 accountRecoveryService: mockAccountRecoveryService,
+                deviceVerificationService: mockDeviceVerificationService,
                 featureFlagsService: mockFeatureFlagsService,
                 appFeatureConfigurator: mockFeatureConfigurator,
                 internalFeatureService: mockInternalFeatureFlagService,
@@ -135,6 +138,7 @@ final class MainAppReducerTests: XCTestCase {
         mockMobileAuthSyncService = nil
         mockResetPasswordService = nil
         mockAccountRecoveryService = nil
+        mockDeviceVerificationService = nil
         mockCredentialsStore = nil
         mockAlertPresenter = nil
         mockWalletUpgradeService = nil
@@ -1025,6 +1029,31 @@ final class MainAppReducerTests: XCTestCase {
 
         // then
         XCTAssertEqual(CoreAppAction.didDecryptWallet(decryption), action)
+    }
+
+    func test_session_mismatch_deeplink_show_show_authorization() {
+        mockDeviceVerificationService.expectedSessionMismatch = true
+        let requestInfo = LoginRequestInfo(
+            sessionId: "",
+            base64Str: "",
+            details: DeviceVerificationDetails(originLocation: "", originIP: "", originBrowser: ""),
+            timestamp: Date(timeIntervalSince1970: 1000)
+        )
+        testStore.assert(
+            .send(.loginRequestReceived(
+                deeplink: MockDeviceVerificationService.validDeeplink
+            )),
+            .do { self.mockMainQueue.advance() },
+            .receive(
+                .checkIfConfirmationRequired(
+                    sessionId: "",
+                    base64Str: ""
+                )
+            ),
+            .receive(.proceedToDeviceAuthorization(requestInfo)) { state in
+                state.deviceAuthorization = .init(loginRequestInfo: requestInfo)
+            }
+        )
     }
 }
 

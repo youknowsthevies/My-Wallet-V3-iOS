@@ -295,6 +295,100 @@ extension LocalizationConstants.FeatureAuthentication {
         }
     }
 
+    // MARK: - Authorize Device
+
+    public enum AuthorizeDevice {
+        public static let title = NSLocalizedString(
+            "Log In Request",
+            comment: "Verify Device - New device log in request title"
+        )
+        public static let subtitle = NSLocalizedString(
+            "We noticed a login attempt from a new device.",
+            comment: "Verify Device - New device log in request subtitle"
+        )
+        public enum Details {
+            public static let location = NSLocalizedString(
+                "Location",
+                comment: "Verify Device - Location details"
+            )
+            public static let ip = NSLocalizedString(
+                "IP Address",
+                comment: "Verify Device - IP details"
+            )
+            public static let browser = NSLocalizedString(
+                "Browser",
+                comment: "Verify Device - Browser details"
+            )
+            public static let date = NSLocalizedString(
+                "Date",
+                comment: "Verify Device - Date details"
+            )
+        }
+
+        public static let description = NSLocalizedString(
+            "If this was you, approve the device below. If you do not recognize this device, please deny this request.",
+            comment: "Verify Device - Description details"
+        )
+        public enum Buttons {
+            public static let approve = NSLocalizedString(
+                "Approve",
+                comment: "Verify Device - approve"
+            )
+            public static let deny = NSLocalizedString(
+                "Deny",
+                comment: "Verify Device - deny"
+            )
+        }
+    }
+
+    // MARK: - Authorization Result
+
+    public enum AuthorizationResult {
+        public enum Success {
+            public static let title = NSLocalizedString(
+                "Your Device is Verified!",
+                comment: "Authorization result: success title"
+            )
+            public static let message = NSLocalizedString(
+                "Return to your browser to continue logging in.",
+                comment: "Authorization result: success message"
+            )
+        }
+
+        public enum LinkExpired {
+            public static let title = NSLocalizedString(
+                "Verification Link Expired",
+                comment: "Authorization result: link expired title"
+            )
+            public static let message = NSLocalizedString(
+                "The device approval link has expired, please try again.",
+                comment: "Authorization result: link expired message"
+            )
+        }
+
+        public enum DeviceRejected {
+            public static let title = NSLocalizedString(
+                "Log In Rejected",
+                comment: "Authorization result: device rejected title"
+            )
+            public static let message = NSLocalizedString(
+                "If this wasn’t you trying to log in and it happens again, contact support.",
+                comment: "Authorization result: device rejected message"
+            )
+        }
+
+        public enum Unknown {
+            public static let title = NSLocalizedString(
+                "Oops!",
+                comment: "Authorization result: unknown error title"
+            )
+            public static let message = NSLocalizedString(
+                "Looks like something went wrong. Please try again.",
+                comment: "Authorization result: unknown error message"
+            )
+        }
+    }
+
     // MARK: - Import Wallet
 
     public enum ImportWallet {

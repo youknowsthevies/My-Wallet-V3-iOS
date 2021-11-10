@@ -33,10 +33,13 @@ public enum VerifyDeviceAction: Equatable, NavigationAction {
     case didReceiveWalletInfoDeeplink(URL)
     case didExtractWalletInfo(WalletInfo)
     case fallbackToWalletIdentifier
+    case checkIfConfirmationRequired(sessionId: String, base64Str: String)
 
     // MARK: - WalletInfo polling
 
     case pollWalletInfo
+    case didPolledWalletInfo(Result<WalletInfo, WalletInfoPollingError>)
+    case deviceRejected
 
     // MARK: - Device Verification
 
@@ -253,7 +256,7 @@ let verifyDeviceReducer = Reducer.combine(
         case .didReceiveWalletInfoDeeplink(let url):
             return environment
                 .deviceVerificationService
-                .extractWalletInfoFromDeeplink(url: url)
+                .handleLoginRequestDeeplink(url: url)
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .map { result -> VerifyDeviceAction in
@@ -266,6 +269,9 @@ let verifyDeviceReducer = Reducer.combine(
                         case .failToDecodeBase64Component,
                              .failToDecodeToWalletInfo:
                             return .fallbackToWalletIdentifier
+                        case .missingSessionToken(let sessionId, let base64Str),
+                             .sessionTokenMismatch(let sessionId, let base64Str):
+                            return .checkIfConfirmationRequired(sessionId: sessionId, base64Str: base64Str)
                         }
                     }
                 }
@@ -290,6 +296,9 @@ let verifyDeviceReducer = Reducer.combine(
             state.credentialsContext = .walletIdentifier(guid: "")
             return Effect(value: .navigate(to: .credentials))
 
+        case .checkIfConfirmationRequired:
+            return .none
+
         // MARK: - WalletInfo polling
 
         case .pollWalletInfo:
@@ -300,12 +309,27 @@ let verifyDeviceReducer = Reducer.combine(
                 .catchToEffect()
                 .cancellable(id: VerifyDeviceCancellations.WalletInfoPollingId())
                 .map { result -> VerifyDeviceAction in
-                    // extract wallet info once the polling endpoint receives a value
-                    guard case .success(let walletInfo) = result else {
+                    guard case .success(let pollResult) = result else {
                         return .none
                     }
-                    return .didExtractWalletInfo(walletInfo)
+                    return .didPolledWalletInfo(pollResult)
                 }
+
+        case .didPolledWalletInfo(let result):
+            // extract wallet info once the polling endpoint receives a value
+            switch result {
+            case .success(let walletInfo):
+                environment.analyticsRecorder.record(event: .loginRequestApproved(.magicLink))
+                return Effect(value: .didExtractWalletInfo(walletInfo))
+            case .failure(.requestDenied):
+                environment.analyticsRecorder.record(event: .loginRequestDenied(.magicLink))
+                return Effect(value: .deviceRejected)
+            case .failure:
+                return .none
+            }
+
+        case .deviceRejected:
+            return .none
 
         // MARK: - Device Verification
 

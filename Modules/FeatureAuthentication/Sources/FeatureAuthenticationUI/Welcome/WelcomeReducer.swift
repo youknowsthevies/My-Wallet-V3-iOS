@@ -79,7 +79,7 @@ public struct WelcomeEnvironment {
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         sessionTokenService: SessionTokenServiceAPI = resolve(),
-        deviceVerificationService: DeviceVerificationServiceAPI = resolve(),
+        deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlags: InternalFeatureFlagServiceAPI,
         appFeatureConfigurator: FeatureConfiguratorAPI,
         buildVersionProvider: @escaping () -> String,
@@ -188,7 +188,7 @@ public let welcomeReducer = Reducer.combine(
             return .none
 
         case .deeplinkReceived(let url):
-            // we currently only support deeplink if we're on the verify device screen
+            // handle deeplink if we've entered verify device flow
             guard let loginState = state.emailLoginState,
                   loginState.verifyDeviceState != nil
             else {

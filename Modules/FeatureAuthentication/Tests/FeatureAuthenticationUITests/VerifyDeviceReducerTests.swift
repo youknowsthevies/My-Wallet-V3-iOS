@@ -60,6 +60,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
             .send(.onAppear),
             .receive(.pollWalletInfo),
             .do { self.mockMainQueue.advance() },
+            .receive(.didPolledWalletInfo(.success(MockDeviceVerificationService.mockWalletInfo))),
             .receive(.didExtractWalletInfo(MockDeviceVerificationService.mockWalletInfo)) { state in
                 state.credentialsContext = .walletInfo(MockDeviceVerificationService.mockWalletInfo)
             },

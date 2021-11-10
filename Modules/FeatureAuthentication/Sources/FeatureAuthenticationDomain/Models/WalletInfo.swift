@@ -3,6 +3,8 @@
 public enum WalletInfoError: Error {
     case failToDecodeBase64Component
     case failToDecodeToWalletInfo(Error)
+    case sessionTokenMismatch(originSession: String, base64Str: String)
+    case missingSessionToken(originSession: String, base64Str: String)
 }
 
 public struct WalletInfo: Decodable, Equatable {
@@ -13,6 +15,7 @@ public struct WalletInfo: Decodable, Equatable {
         case wallet
         case guid
         case email
+        case sessionId = "session_id"
         case emailCode = "email_code"
         case twoFAType = "two_fa_type"
         case isMobileSetup = "is_mobile_setup"
@@ -50,6 +53,7 @@ public struct WalletInfo: Decodable, Equatable {
         guid: "",
         email: nil,
         emailCode: nil,
+        sessionId: nil,
         twoFAType: nil,
         isMobileSetup: nil,
         hasCloudBackup: nil,
@@ -59,6 +63,7 @@ public struct WalletInfo: Decodable, Equatable {
     public let guid: String
     public let email: String?
     public let emailCode: String?
+    public let sessionId: String?
     public let twoFAType: WalletAuthenticatorType?
     public let isMobileSetup: Bool?
     public let hasCloudBackup: Bool?
@@ -70,6 +75,7 @@ public struct WalletInfo: Decodable, Equatable {
         guid: String,
         email: String? = nil,
         emailCode: String? = nil,
+        sessionId: String? = nil,
         twoFAType: WalletAuthenticatorType? = nil,
         isMobileSetup: Bool? = nil,
         hasCloudBackup: Bool? = nil,
@@ -78,6 +84,7 @@ public struct WalletInfo: Decodable, Equatable {
         self.guid = guid
         self.email = email
         self.emailCode = emailCode
+        self.sessionId = sessionId
         self.twoFAType = twoFAType
         self.isMobileSetup = isMobileSetup
         self.hasCloudBackup = hasCloudBackup
@@ -92,6 +99,7 @@ public struct WalletInfo: Decodable, Equatable {
         guid = try wallet.decode(String.self, forKey: .guid)
         email = try wallet.decode(String.self, forKey: .email)
         emailCode = try wallet.decode(String.self, forKey: .emailCode)
+        sessionId = try wallet.decodeIfPresent(String.self, forKey: .sessionId)
         twoFAType = try wallet.decode(WalletAuthenticatorType.self, forKey: .twoFAType)
         isMobileSetup = try wallet
             .decodeIfPresent(Bool.self, forKey: .isMobileSetup)

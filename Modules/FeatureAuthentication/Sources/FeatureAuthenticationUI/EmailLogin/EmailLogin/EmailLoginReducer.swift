@@ -56,6 +56,10 @@ public struct EmailLoginState: Equatable, NavigationState {
 
     public var route: RouteIntent<EmailLoginRoute>?
 
+    // MARK: - Local States
+
+    public var verifyDeviceState: VerifyDeviceState?
+
     // MARK: - Alert State
 
     var alert: AlertState<EmailLoginAction>?
@@ -68,10 +72,6 @@ public struct EmailLoginState: Equatable, NavigationState {
     // MARK: - Loading State
 
     var isLoading: Bool
-
-    // MARK: - Local States
-
-    var verifyDeviceState: VerifyDeviceState?
 
     init() {
         route = nil
@@ -170,11 +170,14 @@ let emailLoginReducer = Reducer.combine(
         case .route(let route):
             if let routeValue = route?.route {
                 state.verifyDeviceState = .init(emailAddress: state.emailAddress)
+                state.route = route
+                return .none
             } else {
                 state.verifyDeviceState = nil
+                state.route = route
+                // TODO: resolve the ComposableNavigation delay issue to make onAppear work, and not reset token here
+                return Effect(value: .setupSessionToken)
             }
-            state.route = route
-            return .none
 
         // MARK: - Email
 
@@ -224,8 +227,7 @@ let emailLoginReducer = Reducer.combine(
                 case .networkError:
                     // still go to verify device screen if there is network error
                     break
-                case .expiredEmailCode,
-                     .missingWalletInfo:
+                case .expiredEmailCode, .missingWalletInfo:
                     // not errors related to send verification email
                     break
                 }
@@ -252,6 +254,9 @@ let emailLoginReducer = Reducer.combine(
                 }
 
         // MARK: - Local Reducers
+
+        case .verifyDevice(.deviceRejected):
+            return .navigate(to: nil)
 
         case .verifyDevice:
             // handled in verify device reducer

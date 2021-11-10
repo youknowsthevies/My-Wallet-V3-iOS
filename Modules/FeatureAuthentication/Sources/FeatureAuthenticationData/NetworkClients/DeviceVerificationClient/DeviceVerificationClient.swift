@@ -23,6 +23,13 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
             static let comfirmApproval = "confirm_approval"
             static let token = "token"
         }
+
+        enum AuthorizeVerifyDevice {
+            static let method = "method"
+            static let fromSessionId = "fromSessionId"
+            static let payload = "payload"
+            static let confirmDevice = "confirm_device"
+        }
     }
 
     private enum HeaderKey: String {
@@ -65,7 +72,7 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
             email: emailAddress,
             captcha: captcha,
             siteKey: AuthenticationKeys.googleRecaptchaSiteKey,
-            product: "wallet"
+            product: "WALLET"
         )
         let request = defaultRequestBuilder.post(
             path: Path.emailReminder,
@@ -106,14 +113,99 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
 
     func pollForWalletInfo(
         sessionToken: String
-    ) -> AnyPublisher<WalletInfo?, Never> {
+    ) -> AnyPublisher<WalletInfoPollResultResponse, NetworkError> {
+
+        func decodeType(
+            response: RawServerResponse
+        ) -> AnyPublisher<WalletInfoPollResponse.ResponseType, NetworkError> {
+            Just(Result { try Data(response.data.utf8).decode(to: WalletInfoPollResponse.self).responseType })
+                .setFailureType(to: NetworkError.self)
+                .flatMap { result -> AnyPublisher<WalletInfoPollResponse.ResponseType, NetworkError> in
+                    switch result {
+                    case .success(let type):
+                        return .just(type)
+                    case .failure(let error):
+                        return .failure(NetworkError.payloadError(.badData(rawPayload: error.localizedDescription)))
+                    }
+                }
+                .eraseToAnyPublisher()
+        }
+
+        func decodePayload(
+            responseType: WalletInfoPollResponse.ResponseType,
+            response: RawServerResponse
+        ) -> AnyPublisher<WalletInfoPollResultResponse, NetworkError> {
+            switch responseType {
+            case .walletInfo:
+                return Just(Result { try Data(response.data.utf8).decode(to: WalletInfo.self) })
+                    .setFailureType(to: NetworkError.self)
+                    .flatMap { result -> AnyPublisher<WalletInfoPollResultResponse, NetworkError> in
+                        switch result {
+                        case .success(let walletInfo):
+                            return .just(.walletInfo(walletInfo))
+                        case .failure(let error):
+                            return .failure(NetworkError.payloadError(.badData(rawPayload: error.localizedDescription)))
+                        }
+                    }
+                    .eraseToAnyPublisher()
+            case .continuePolling:
+                return .just(.continuePolling)
+            case .requestDenied:
+                return .just(.requestDenied)
+            }
+        }
+
         let headers = [HttpHeaderField.authorization: "Bearer \(sessionToken)"]
         let request = walletRequestBuilder.get(
             path: Path.pollWalletInfo,
             headers: headers
         )!
         return networkAdapter.perform(request: request)
-            .replaceError(with: nil)
+            .flatMap { response -> AnyPublisher<WalletInfoPollResultResponse, NetworkError> in
+                decodeType(response: response)
+                    .flatMap { type -> AnyPublisher<WalletInfoPollResultResponse, NetworkError> in
+                        decodePayload(responseType: type, response: response)
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func authorizeVerifyDevice(
+        from sessionToken: String,
+        payload: String,
+        confirmDevice: Bool?
+    ) -> AnyPublisher<Void, NetworkError> {
+        var parameters = [
+            URLQueryItem(
+                name: Parameters.AuthorizeVerifyDevice.method,
+                value: "authorize-verify-device"
+            ),
+            URLQueryItem(
+                name: Parameters.AuthorizeVerifyDevice.fromSessionId,
+                value: sessionToken
+            ),
+            URLQueryItem(
+                name: Parameters.AuthorizeVerifyDevice.payload,
+                value: payload
+            )
+        ]
+        if let confirm = confirmDevice {
+            parameters.append(
+                URLQueryItem(
+                    name: Parameters.AuthorizeVerifyDevice.confirmDevice,
+                    value: String(confirm)
+                )
+            )
+        }
+        let data = RequestBuilder.body(from: parameters)
+        let request = walletRequestBuilder.post(
+            path: Path.wallet,
+            body: data,
+            contentType: .formUrlEncoded
+        )!
+        return networkAdapter.perform(request: request)
+            .mapToVoid()
             .eraseToAnyPublisher()
     }
 }

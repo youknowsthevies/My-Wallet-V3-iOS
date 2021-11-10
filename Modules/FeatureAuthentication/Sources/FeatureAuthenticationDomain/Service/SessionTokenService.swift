@@ -22,20 +22,8 @@ final class SessionTokenService: SessionTokenServiceAPI {
     }
 
     func setupSessionToken() -> AnyPublisher<Void, SessionTokenServiceError> {
-        walletRepository
-            .hasSessionTokenPublisher
-            .flatMap { [repository, walletRepository] hasSessionToken
-                -> AnyPublisher<String?, SessionTokenServiceError> in
-                guard !hasSessionToken else {
-                    return walletRepository
-                        .sessionToken
-                        .asPublisher()
-                        .ignoreFailure(setFailureType: SessionTokenServiceError.self)
-                }
-                return repository
-                    .token
-                    .eraseToAnyPublisher()
-            }
+        repository
+            .token
             .flatMap { sessionTokenOrNil
                 -> AnyPublisher<String, SessionTokenServiceError> in
                 guard let sessionToken = sessionTokenOrNil else {
@@ -45,7 +33,8 @@ final class SessionTokenService: SessionTokenServiceAPI {
             }
             .flatMap { [walletRepository] sessionToken
                 -> AnyPublisher<Void, SessionTokenServiceError> in
-                walletRepository.setPublisher(sessionToken: sessionToken)
+                walletRepository
+                    .setPublisher(sessionToken: sessionToken)
                     .mapError()
             }
             .eraseToAnyPublisher()

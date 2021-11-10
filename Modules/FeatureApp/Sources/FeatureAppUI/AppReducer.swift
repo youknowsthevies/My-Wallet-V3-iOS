@@ -73,6 +73,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     mobileAuthSyncService: $0.mobileAuthSyncService,
                     resetPasswordService: $0.resetPasswordService,
                     accountRecoveryService: $0.accountRecoveryService,
+                    deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
                     internalFeatureService: $0.internalFeatureService,
