@@ -99,7 +99,7 @@ extension AppFeature {
         case .sellUsingTransactionFlowEnabled:
             return "sell_using_transaction_flow_enabled_ios"
         case .useTransactionsFlowToBuyCrypto:
-            return "use_transaction_flow_buy_ios"
+            return "ios_use_transaction_flow_buy"
         }
     }
 
