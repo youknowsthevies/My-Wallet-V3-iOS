@@ -587,6 +587,7 @@ extension DependencyContainer {
         }
 
         // MARK: Open Banking
+
         single { () -> OpenBanking in
             let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
