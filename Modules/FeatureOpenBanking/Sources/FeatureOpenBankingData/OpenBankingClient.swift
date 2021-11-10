@@ -115,7 +115,7 @@ public class OpenBankingClient {
         }
     }
 
-    public func allBankAccounts() -> AnyPublisher<[OpenBanking.BankAccount], OpenBanking.Error> {
+    public func fetchAllBankAccounts() -> AnyPublisher<[OpenBanking.BankAccount], OpenBanking.Error> {
 
         let request = requestBuilder.get(
             path: ["payments", "banktransfer"],
@@ -355,7 +355,7 @@ extension OpenBanking.Order {
     }
 }
 
-extension OpenBankingClient: OpenBankingClientProtocol {
+extension OpenBankingClient: OpenBankingClientAPI {
 
     public func activate(
         bankAccount: OpenBanking.BankAccount,

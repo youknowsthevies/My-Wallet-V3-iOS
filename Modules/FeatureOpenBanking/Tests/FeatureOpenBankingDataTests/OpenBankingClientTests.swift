@@ -63,7 +63,7 @@ final class OpenBankingTests: XCTestCase {
     }
 
     func test_get_all() throws {
-        _ = try banking.allBankAccounts().wait()
+        _ = try banking.fetchAllBankAccounts().wait()
         let request = try network.requests[.get, "https://api.blockchain.info/nabu-gateway/payments/banktransfer"].unwrap()
         XCTAssertTrue(request.authenticated)
     }
@@ -344,7 +344,7 @@ final class OpenBankingPaymentTests: XCTestCase {
         try super.setUpWithError()
         scheduler = DispatchQueue.test
         (banking, network) = OpenBankingClient.test(using: scheduler)
-        bankAccount = try banking.allBankAccounts().wait().first.unwrap()
+        bankAccount = try banking.fetchAllBankAccounts().wait().first.unwrap()
         payment = try bankAccount.deposit(amountMinor: "1000", product: "SIMPLEBUY", in: banking).wait()
     }
 

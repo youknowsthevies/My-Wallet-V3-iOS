@@ -44,12 +44,12 @@ public final class OpenBanking {
         case failure(OpenBanking.Error)
     }
 
-    public private(set) var banking: OpenBankingClientProtocol
+    public private(set) var banking: OpenBankingClientAPI
 
     public var state: State { banking.state }
     private var scheduler: AnySchedulerOf<DispatchQueue> { banking.scheduler }
 
-    public init(banking: OpenBankingClientProtocol) {
+    public init(banking: OpenBankingClientAPI) {
         self.banking = banking
     }
 
@@ -60,22 +60,12 @@ public final class OpenBanking {
     // swiftlint:disable cyclomatic_complexity
     public func start(_ data: Data) -> AnyPublisher<Action, Never> {
 
-        let publisher = { () -> AnyPublisher<Action, Never> in
-            switch data.action {
-            case .link(let institution):
-                return link(institution, data: data)
-            case .deposit(let amountMinor, let product):
-                return deposit(amountMinor: amountMinor, product: product, data: data)
-            case .confirm(let order):
-                return confirm(order: order, data: data)
-            }
-        }()
-            .share()
+        let publisher = actionPublisher(data).share()
 
         let consentErrorPublisher = banking.state.result(for: .consent.error, as: OpenBanking.Error.self)
             .publisher
             .mapError(OpenBanking.Error.init)
-            .mapped(to: Action.failure)
+            .map(Action.failure)
             .catch(Action.failure)
             .eraseToAnyPublisher()
 
@@ -139,6 +129,17 @@ public final class OpenBanking {
         }
     }
 
+    private func actionPublisher(_ data: Data) -> AnyPublisher<Action, Never> {
+        switch data.action {
+        case .link(let institution):
+            return link(institution, data: data)
+        case .deposit(let amountMinor, let product):
+            return deposit(amountMinor: amountMinor, product: product, data: data)
+        case .confirm(let order):
+            return confirm(order: order, data: data)
+        }
+    }
+
     private func link(_ institution: OpenBanking.Institution, data: Data) -> AnyPublisher<Action, Never> {
         banking.activate(bankAccount: data.account, with: institution.id)
             .flatMap { [banking] output -> AnyPublisher<Action, Never> in
@@ -150,7 +151,7 @@ public final class OpenBanking {
                             return Just(account).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
                         }
                     }
-                    .mapped(to: Action.waitingForConsent(.linked(output, institution: institution)))
+                    .map(Action.waitingForConsent(.linked(output, institution: institution)))
                     .catch(Action.failure)
                     .eraseToAnyPublisher()
             }
@@ -172,7 +173,7 @@ public final class OpenBanking {
                             return Just(payment).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
                         }
                     }
-                    .mapped(to: (/Action.waitingForConsent).appending(path: /Output.deposited))
+                    .map((/Action.waitingForConsent).appending(path: /Output.deposited))
                     .catch(Action.failure)
             }
             .catch(Action.failure)
@@ -183,7 +184,7 @@ public final class OpenBanking {
 
         func poll(_ order: OpenBanking.Order) -> AnyPublisher<Action, Never> {
             banking.poll(order: order)
-                .mapped(to: Action.waitingForConsent(.confirmed(order)))
+                .map(Action.waitingForConsent(.confirmed(order)))
                 .catch(Action.failure)
                 .eraseToAnyPublisher()
         }
