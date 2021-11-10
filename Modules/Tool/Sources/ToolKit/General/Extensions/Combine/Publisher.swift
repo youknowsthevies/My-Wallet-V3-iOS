@@ -318,6 +318,7 @@ extension Publisher {
     }
 
     /// synonym for `map`
+    @_disfavoredOverload
     public func map<T>(_ action: @autoclosure @escaping () -> T) -> Publishers.Map<Self, T> {
         map { _ -> T in action() }
     }
