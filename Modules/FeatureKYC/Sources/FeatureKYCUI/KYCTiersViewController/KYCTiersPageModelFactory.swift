@@ -10,12 +10,12 @@ public protocol KYCTiersPageModelFactoryAPI: AnyObject {
 
 final class KYCTiersPageModelFactory: KYCTiersPageModelFactoryAPI {
 
-    private let limitsAPI: TradeLimitsAPI
+    private let limitsAPI: TradeLimitsMetadataServiceAPI
     private let tiersService: KYCTiersServiceAPI
     private let currencyService: FiatCurrencyServiceAPI
 
     init(
-        limitsAPI: TradeLimitsAPI = resolve(),
+        limitsAPI: TradeLimitsMetadataServiceAPI = resolve(),
         currencyService: FiatCurrencyServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve()
     ) {
@@ -26,7 +26,7 @@ final class KYCTiersPageModelFactory: KYCTiersPageModelFactoryAPI {
 
     func tiersPageModel(suppressCTA: Bool) -> Single<KYCTiersPageModel> {
         currencyService.fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<(TradeLimits?, KYC.UserTiers, FiatCurrency)> in
+            .flatMap(weak: self) { (self, fiatCurrency) -> Single<(TradeLimitsMetadata?, KYC.UserTiers, FiatCurrency)> in
                 let tradeLimits = self.limitsAPI
                     .getTradeLimits(withFiatCurrency: fiatCurrency.code, ignoringCache: true)
                     .optional()

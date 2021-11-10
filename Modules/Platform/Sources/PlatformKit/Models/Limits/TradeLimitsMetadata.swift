@@ -2,7 +2,7 @@
 
 import ToolKit
 
-public struct TradeLimits: Decodable {
+public struct TradeLimitsMetadata: Decodable {
     public let currency: String
     public let minOrder: Decimal
     public let maxOrder: Decimal

@@ -65,14 +65,14 @@ struct TransactionLimitsResponse: Decodable {
     }
 }
 
-extension TransactionLimits {
+extension FeatureTransactionDomain.TradeLimits {
 
     init(response: TransactionLimitsResponse) {
         self.init(
-            currency: response.currency,
-            minOrder: response.minOrder,
-            maxOrder: response.maxOrder,
-            maxPossibleOrder: response.maxPossibleOrder,
+            currency: response.currency.currencyType,
+            minOrder: response.minOrder.moneyValue,
+            maxOrder: response.maxOrder.moneyValue,
+            maxPossibleOrder: response.maxPossibleOrder.moneyValue,
             daily: response.daily,
             weekly: response.weekly,
             annual: response.annual
@@ -87,20 +87,20 @@ extension TransactionLimit {
         limit: TransactionLimitsResponse.Limit
     ) {
         self.init(
-            limit: FiatValue
+            limit: MoneyValue
                 .create(
                     minor: limit.limit,
-                    currency: fiatCurrency
+                    currency: fiatCurrency.currencyType
                 ) ?? .zero(currency: fiatCurrency),
-            available: FiatValue
+            available: MoneyValue
                 .create(
                     minor: limit.available,
-                    currency: fiatCurrency
+                    currency: fiatCurrency.currencyType
                 ) ?? .zero(currency: fiatCurrency),
-            used: FiatValue
+            used: MoneyValue
                 .create(
                     minor: limit.used,
-                    currency: fiatCurrency
+                    currency: fiatCurrency.currencyType
                 ) ?? .zero(currency: fiatCurrency)
         )
     }

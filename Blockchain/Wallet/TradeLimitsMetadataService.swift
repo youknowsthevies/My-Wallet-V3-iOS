@@ -9,11 +9,11 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-final class TradeLimitsService: TradeLimitsAPI {
+final class TradeLimitsMetadataService: TradeLimitsMetadataServiceAPI {
 
     private let disposables = CompositeDisposable()
 
-    private var cachedLimits = BehaviorRelay<TradeLimits?>(value: nil)
+    private var cachedLimits = BehaviorRelay<TradeLimitsMetadata?>(value: nil)
     private var cachedLimitsTimer: Timer?
     private let clearCachedLimitsInterval: TimeInterval = 60
     private let networkAdapter: NetworkAdapterAPI
@@ -45,23 +45,23 @@ final class TradeLimitsService: TradeLimitsAPI {
         case generic
     }
 
-    /// Initializes this TradeLimitsService so that the trade limits for the current
+    /// Initializes this TradeLimitsMetadataService so that the trade limits for the current
     /// user is pre-fetched and cached
     func initialize(withFiatCurrency currency: String) {
         let disposable = getTradeLimits(withFiatCurrency: currency, ignoringCache: false)
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { _ in
-                Logger.shared.debug("Successfully initialized TradeLimitsService.")
+                Logger.shared.debug("Successfully initialized TradeLimitsMetadataService.")
             }, onError: { error in
-                Logger.shared.error("Failed to initialize TradeLimitsService: \(error)")
+                Logger.shared.error("Failed to initialize TradeLimitsMetadataService: \(error)")
             })
         _ = disposables.insert(disposable)
     }
 
     func getTradeLimits(
         withFiatCurrency currency: String,
-        withCompletion: @escaping ((Result<TradeLimits, Error>) -> Void)
+        withCompletion: @escaping ((Result<TradeLimitsMetadata, Error>) -> Void)
     ) {
         let disposable = getTradeLimits(withFiatCurrency: currency, ignoringCache: false)
             .subscribeOn(MainScheduler.asyncInstance)
@@ -74,7 +74,7 @@ final class TradeLimitsService: TradeLimitsAPI {
         _ = disposables.insert(disposable)
     }
 
-    func getTradeLimits(withFiatCurrency currency: String, ignoringCache: Bool) -> Single<TradeLimits> {
+    func getTradeLimits(withFiatCurrency currency: String, ignoringCache: Bool) -> Single<TradeLimitsMetadata> {
         Single.deferred { [unowned self] in
             guard let cachedLimits = self.cachedLimits.value,
                   cachedLimits.currency == currency,
@@ -94,7 +94,7 @@ final class TradeLimitsService: TradeLimitsAPI {
 
     private func getTradeLimitsNetwork(
         withFiatCurrency currency: String
-    ) -> AnyPublisher<TradeLimits, NabuNetworkError> {
+    ) -> AnyPublisher<TradeLimitsMetadata, NabuNetworkError> {
         let path = ["trades", "limits"]
         let parameters = [
             URLQueryItem(name: "currency", value: currency)
@@ -108,6 +108,6 @@ final class TradeLimitsService: TradeLimitsAPI {
     }
 
     private func clearCachedLimits() {
-        cachedLimits = BehaviorRelay<TradeLimits?>(value: nil)
+        cachedLimits = BehaviorRelay<TradeLimitsMetadata?>(value: nil)
     }
 }

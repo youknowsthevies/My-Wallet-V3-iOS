@@ -88,7 +88,7 @@ extension DependencyContainer {
 
         factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
 
-        single { TradeLimitsService() as TradeLimitsAPI }
+        single { TradeLimitsMetadataService() as TradeLimitsMetadataServiceAPI }
 
         factory { SiftService() }
 

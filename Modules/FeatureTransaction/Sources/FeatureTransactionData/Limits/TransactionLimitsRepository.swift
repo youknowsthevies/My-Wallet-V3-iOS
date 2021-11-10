@@ -20,18 +20,27 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
 
     // MARK: - TransactionLimitServiceAPI
 
-    func fetchTransactionLimits(
-        currency: CurrencyType,
-        networkFee: CurrencyType,
+    func fetchTradeLimits(
+        sourceCurrency: CurrencyType,
+        destinationCurrency: CurrencyType,
         product: TransactionLimitsProduct
-    ) -> AnyPublisher<TransactionLimits, NabuNetworkError> {
+    ) -> AnyPublisher<FeatureTransactionDomain.TradeLimits, NabuNetworkError> {
         client
             .fetchTransactionLimits(
-                currency: currency,
-                networkFee: networkFee,
+                currency: sourceCurrency,
+                networkFee: destinationCurrency,
                 product: product
             )
-            .map(TransactionLimits.init)
+            .map(TradeLimits.init)
             .eraseToAnyPublisher()
+    }
+
+    func fetchCrossBorderLimits(
+        source: LimitsAccount,
+        destination: LimitsAccount,
+        limitsCurrency: CurrencyType
+    ) -> AnyPublisher<FeatureTransactionDomain.CrossBorderLimits, NabuNetworkError> {
+        // TODO: implement me
+        .empty()
     }
 }

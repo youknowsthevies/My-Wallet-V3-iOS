@@ -3,7 +3,7 @@
 import RxSwift
 
 /// Protocol definition for a service that returns the current user's trade limits
-public protocol TradeLimitsAPI {
+public protocol TradeLimitsMetadataServiceAPI {
 
     /// Initializes this instance with the provided fiat currency. This should be called
     /// upon starting a new exchange so that trading limits, which is provided in fiat,
@@ -17,10 +17,10 @@ public protocol TradeLimitsAPI {
     /// - Parameters:
     ///   - currency: the currency to return the limits in
     ///   - withCompletion: the completion handler invoked when the trading limits are provided.
-    func getTradeLimits(withFiatCurrency currency: String, withCompletion: @escaping ((Result<TradeLimits, Error>) -> Void))
+    func getTradeLimits(withFiatCurrency currency: String, withCompletion: @escaping ((Result<TradeLimitsMetadata, Error>) -> Void))
 
     // MARK: - Rx
 
     /// Rx version of `getTradeLimits(withFiatCurrency: withCompletion:)`
-    func getTradeLimits(withFiatCurrency currency: String, ignoringCache: Bool) -> Single<TradeLimits>
+    func getTradeLimits(withFiatCurrency currency: String, ignoringCache: Bool) -> Single<TradeLimitsMetadata>
 }

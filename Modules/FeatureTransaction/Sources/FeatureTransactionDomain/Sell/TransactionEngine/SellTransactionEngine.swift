@@ -87,41 +87,43 @@ extension SellTransactionEngine {
         pricedQuote: PricedQuote,
         fiatCurrency: FiatCurrency
     ) -> Single<PendingTransaction> {
-        Single
+        let priceService = priceService
+        let sourceAsset = sourceAsset
+        let sourceCryptoCurrency = sourceCryptoCurrency
+        return Single
             .zip(
                 kycTiersService.tiers.asSingle(),
-                tradeLimitsRepository.fetchTransactionLimits(
-                    currency: fiatCurrency.currencyType,
-                    networkFee: targetAsset.currencyType,
+                tradeLimitsRepository.fetchTradeLimits(
+                    sourceCurrency: fiatCurrency.currencyType,
+                    destinationCurrency: targetAsset.currencyType,
                     product: .sell(orderDirection)
                 )
                 .asObservable()
                 .asSingle()
             )
-            .map { tiers, limits -> (tiers: KYC.UserTiers, min: FiatValue, max: FiatValue) in
+            .map { tiers, limits -> (tiers: KYC.UserTiers, min: MoneyValue, max: MoneyValue) in
                 (tiers, limits.minOrder, limits.maxOrder)
             }
-            .flatMap { [weak self] values -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
-                guard let self = self else { return .never() }
+            .flatMap { values -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
                 let (tiers, min, max) = values
-                return self.priceService
+                return priceService
                     .price(
-                        of: self.sourceAsset,
+                        of: sourceAsset,
                         in: fiatCurrency
                     )
                     .asSingle()
                     .map(\.moneyValue)
                     .map { $0.fiatValue ?? .zero(currency: fiatCurrency) }
                     .map { quote -> (KYC.UserTiers, MoneyValue, MoneyValue) in
-                        let minCrypto = min.convertToCryptoValue(
-                            exchangeRate: quote,
-                            cryptoCurrency: self.sourceCryptoCurrency
+                        let minCrypto = min.convert(
+                            usingInverse: quote.moneyValue,
+                            currencyType: sourceCryptoCurrency.currencyType
                         )
-                        let maxCrypto = max.convertToCryptoValue(
-                            exchangeRate: quote,
-                            cryptoCurrency: self.sourceCryptoCurrency
+                        let maxCrypto = max.convert(
+                            usingInverse: quote.moneyValue,
+                            currencyType: sourceCryptoCurrency.currencyType
                         )
-                        return (tiers, .init(cryptoValue: minCrypto), .init(cryptoValue: maxCrypto))
+                        return (tiers, minCrypto, maxCrypto)
                     }
             }
             .map { (tiers: KYC.UserTiers, min: MoneyValue, max: MoneyValue) -> PendingTransaction in

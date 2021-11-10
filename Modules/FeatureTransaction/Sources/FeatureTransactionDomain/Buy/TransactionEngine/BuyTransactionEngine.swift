@@ -10,13 +10,6 @@ extension OrderDetails: TransactionOrder {}
 
 final class BuyTransactionEngine: TransactionEngine {
 
-    private struct Limits {
-        let minimum: MoneyValue
-        let maximum: MoneyValue
-        let maximumDaily: MoneyValue
-        let maximumAnnual: MoneyValue
-    }
-
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
     let requireSecondPassword: Bool = false
@@ -280,7 +273,7 @@ extension BuyTransactionEngine {
         let amount = amount ?? .zero(currency: paymentMethod.fiatCurrency.currencyType)
         return Publishers.Zip(
             convertSourceBalance(to: amount.currencyType),
-            convertTransactionLimits(for: paymentMethod, to: amount.currencyType)
+            transactionLimits(for: paymentMethod, to: amount.currencyType)
         )
         .tryMap { sourceBalance, limits in
             // NOTE: the fee coming from the API is always 0 at the moment.
@@ -341,18 +334,20 @@ extension BuyTransactionEngine {
             .eraseToAnyPublisher()
     }
 
-    private func convertTransactionLimits(
+    private func transactionLimits(
         for paymentMethod: PaymentMethod,
         to targetCurrency: CurrencyType
-    ) -> AnyPublisher<Limits, PriceServiceError> {
+    ) -> AnyPublisher<TransactionLimits, PriceServiceError> {
+        // TODO: replace with TransactionLimitsServiceAPI
         conversionService
             .conversionRate(from: paymentMethod.min.currencyType, to: targetCurrency)
             .map { conversionRate in
-                Limits(
+                TransactionLimits(
                     minimum: paymentMethod.min.moneyValue.convert(using: conversionRate),
                     maximum: paymentMethod.max.moneyValue.convert(using: conversionRate),
                     maximumDaily: paymentMethod.maxDaily.moneyValue.convert(using: conversionRate),
-                    maximumAnnual: paymentMethod.maxAnnual.moneyValue.convert(using: conversionRate)
+                    maximumAnnual: paymentMethod.maxAnnual.moneyValue.convert(using: conversionRate),
+                    suggestedUpgrade: nil
                 )
             }
             .eraseToAnyPublisher()
