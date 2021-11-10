@@ -62,7 +62,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
     case .retry:
         return .merge(
             .fireAndForget {
-                environment.openBanking.state.clear(.authorisation.url)
+                environment.openBanking.reset()
             },
             .cancel(id: ID.OB()),
             .cancel(id: ID.LaunchBank()),

@@ -80,6 +80,8 @@ public class OpenBankingClient {
     func handle(updateConsent result: Result<Void, Error>) {
 
         state.transaction { state in
+            state.clear(.authorisation.url)
+            state.clear(.consent.token)
             switch result {
             case .success:
                 state.clear(.consent.error)
