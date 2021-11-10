@@ -38,10 +38,48 @@ final class PaymentMethodTypesServiceTests: XCTestCase {
             .filterValidForBuy(
                 currentWalletCurrency: .GBP,
                 accountForEligibility: false,
-                isOpenBankingEnabled: true
+                isOpenBankingEnabled: false
             )
 
         XCTAssertEqual(filtered.count, 0)
+    }
+
+    func test_filter_OpenBanking_buy_payment_methods_YAPILY_enabled() throws {
+
+        let yapily = try LinkedBankData(
+            response: LinkedBankResponse(
+                json: """
+                {
+                    "id": "b2db6185-2614-41e0-8514-00ad3dab57ae",
+                    "name": "",
+                    "isWhitelisted": false,
+                    "partner": "YAPILY",
+                    "state": "ACTIVE",
+                    "currency": "GBP",
+                    "agentRef": "1bfe2c35-1056-4f0b-8bbf-d90e0f1637c8",
+                    "isBankAccount": false,
+                    "isBankTransferAccount": true,
+                    "attributes": {
+                        "entity": "Safeconnect(UK)"
+                    },
+                    "addedAt": "2021-09-17T14:21:36.288Z"
+                }
+                """.data(using: .utf8).json()
+            )
+        )
+
+        let paymentMethods: [PaymentMethodType] = try [
+            .linkedBank(XCTUnwrap(yapily))
+        ]
+
+        let filtered = paymentMethods
+            .filterValidForBuy(
+                currentWalletCurrency: .GBP,
+                accountForEligibility: false,
+                isOpenBankingEnabled: true
+            )
+
+        XCTAssertEqual(filtered.count, 1)
     }
 
     func test_filter_OpenBanking_buy_payment_methods_YODLEE() throws {
@@ -73,7 +111,7 @@ final class PaymentMethodTypesServiceTests: XCTestCase {
             .filterValidForBuy(
                 currentWalletCurrency: .USD,
                 accountForEligibility: false,
-                isOpenBankingEnabled: true
+                isOpenBankingEnabled: false
             )
 
         XCTAssertEqual(filtered.count, 1)
