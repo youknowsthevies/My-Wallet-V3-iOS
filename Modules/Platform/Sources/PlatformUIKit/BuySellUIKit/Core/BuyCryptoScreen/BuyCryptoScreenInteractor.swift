@@ -106,7 +106,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                 fiatCurrencyService.fiatCurrencyObservable,
                 kycTiersService.tiers.map(\.isTier2Approved).asObservable(),
                 featureFlagsService
-                    .isEnabled(.local(.openBanking))
+                    .isEnabled(.remote(.openBanking))
                     .asObservable()
             )
             .map { methods, fiatCurrency, isTier2Approved, isOpenBankingEnabled in

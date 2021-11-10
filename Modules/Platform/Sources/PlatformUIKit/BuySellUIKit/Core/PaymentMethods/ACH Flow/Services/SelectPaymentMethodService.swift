@@ -21,7 +21,7 @@ public final class SelectPaymentMethodService {
                 methodTypes,
                 fiatCurrencyService.fiatCurrency,
                 featureFlagsService
-                    .isEnabled(.local(.openBanking))
+                    .isEnabled(.remote(.openBanking))
                     .asSingle()
             )
             .map { payload in

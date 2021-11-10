@@ -106,7 +106,7 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
             paymentMethodTypes,
             .just(targetAccount.fiatCurrency),
             featureFlagsService
-                .isEnabled(.local(.openBanking))
+                .isEnabled(.remote(.openBanking))
                 .asSingle()
         )
         .observeOn(MainScheduler.asyncInstance)

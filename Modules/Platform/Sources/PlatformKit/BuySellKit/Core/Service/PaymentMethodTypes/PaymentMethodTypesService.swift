@@ -193,7 +193,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 fiatCurrencyService.fiatCurrencyObservable,
                 kycTiersService.tiers.map(\.isTier2Approved).asObservable(),
                 featureFlagsService
-                    .isEnabled(.local(.openBanking))
+                    .isEnabled(.remote(.openBanking))
                     .asObservable()
             )
             .flatMap(weak: self) { (self, payload) in

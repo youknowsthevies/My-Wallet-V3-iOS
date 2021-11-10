@@ -60,6 +60,9 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable Dynamic Assets
     case dynamicAssetsEnabled
+
+    /// Enable Open Banking
+    case openBanking
 }
 
 extension AppFeature {
@@ -98,6 +101,8 @@ extension AppFeature {
             return "sell_using_transaction_flow_enabled_ios"
         case .dynamicAssetsEnabled:
             return "dynamic_assets_ios"
+        case .openBanking:
+            return "ios_open_banking"
         }
     }
 
@@ -134,6 +139,8 @@ extension AppFeature {
             return false
         case .sellUsingTransactionFlowEnabled,
              .dynamicAssetsEnabled:
+            return true
+        case .openBanking:
             return true
         }
     }

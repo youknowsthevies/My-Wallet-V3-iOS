@@ -218,7 +218,7 @@ final class SettingsRouter: SettingsRouterAPI {
                 showLinkBankFlow()
             case .GBP, .EUR:
                 featureFlagsService
-                    .isEnabled(.local(.openBanking))
+                    .isEnabled(.remote(.openBanking))
                     .if(
                         then: { [weak self] in
                             guard let self = self else { return }
