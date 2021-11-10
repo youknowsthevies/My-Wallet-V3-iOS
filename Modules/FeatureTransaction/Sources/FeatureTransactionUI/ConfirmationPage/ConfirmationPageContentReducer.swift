@@ -36,12 +36,18 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
 
-    let termsCheckboxViewModel = CheckboxViewModel()
-    let transferCheckboxViewModel = CheckboxViewModel()
+    let termsCheckboxViewModel: CheckboxViewModel = .termsCheckboxViewModel
+
+    /// A `CheckboxViewModel` that prompts the user to confirm
+    /// that they will be transferring funds to their rewards account.
+    /// This `CheckboxViewModel` needs data from the `TransactionState`
+    /// so we cannot initialize until we receive it.
+    var transferCheckboxViewModel: CheckboxViewModel?
 
     let messageRecorder: MessageRecording
     let transferAgreementUpdated = PublishRelay<Bool>()
     let termsUpdated = PublishRelay<Bool>()
+    let hyperlinkTapped = PublishRelay<TitledLink>()
     let memoUpdated = PublishRelay<(String, TransactionConfirmation.Model.Memo)>()
     private let memoModel: TextFieldViewModel
     private var disposeBag = DisposeBag()
@@ -59,11 +65,6 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             validator: TextValidationFactory.General.alwaysValid,
             messageRecorder: messageRecorder
         )
-
-        termsCheckboxViewModel
-            .apply(
-                text: LocalizedString.Transfer.termsOfServiceDisclaimer
-            )
     }
 
     func setup(for state: TransactionState) {
@@ -74,13 +75,26 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         let value = (try? amount + fee) ?? .zero(currency: amount.currency)
 
         let sourceLabel = state.source?.label ?? ""
-        transferCheckboxViewModel.apply(
-            text: String(
-                format: LocalizedString.Transfer.transferAgreement,
-                value.displayString,
-                sourceLabel
+
+        // NOTE: This is not ideal. We do not know the
+        // amount, fee, and total amount for the transaction
+        // until we receive the `TransactionState`. That means
+        // we cannot initialize a `transferCheckboxViewModel` until
+        // this `setup(for state:)` function is called. So, we check to
+        // see if this is `nil` prior to initializing it.
+        if transferCheckboxViewModel == nil {
+            transferCheckboxViewModel = .init(
+                inputs: [
+                    .text(
+                        string: String(
+                            format: LocalizedString.Transfer.transferAgreement,
+                            value.displayString,
+                            sourceLabel
+                        )
+                    )
+                ]
             )
-        )
+        }
 
         guard let pendingTransaction = state.pendingTransaction else {
             cells = []
@@ -213,7 +227,13 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 .bind(to: termsUpdated)
                 .disposed(by: disposeBag)
 
-            transferCheckboxViewModel
+            termsCheckboxViewModel
+                .tapRelay
+                .asObservable()
+                .bind(to: hyperlinkTapped)
+                .disposed(by: disposeBag)
+
+            transferCheckboxViewModel?
                 .selectedRelay
                 .distinctUntilChanged()
                 .bind(to: transferAgreementUpdated)
@@ -222,7 +242,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             checkboxModels.append(
                 contentsOf: [
                     .checkbox(termsCheckboxViewModel),
-                    .checkbox(transferCheckboxViewModel)
+                    .checkbox(transferCheckboxViewModel!)
                 ]
             )
         }

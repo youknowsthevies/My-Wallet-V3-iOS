@@ -113,7 +113,14 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             .termsUpdated
             .distinctUntilChanged()
             .map { value -> ConfirmationPageInteractor.Effects in
-                ConfirmationPageInteractor.Effects.toggleToSAgreement(value)
+                .toggleTermsOfServiceAgreement(value)
+            }
+            .asDriverCatchError()
+
+        let hyperlinkTapped = contentReducer
+            .hyperlinkTapped
+            .map { value -> ConfirmationPageInteractor.Effects in
+                .tappedHyperlink(value)
             }
             .asDriverCatchError()
 
@@ -121,14 +128,14 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             .transferAgreementUpdated
             .distinctUntilChanged()
             .map { value -> ConfirmationPageInteractor.Effects in
-                ConfirmationPageInteractor.Effects.toggleHoldPeriodAgreement(value)
+                .toggleHoldPeriodAgreement(value)
             }
             .asDriverCatchError()
 
         let memoChanged = contentReducer
             .memoUpdated
-            .map { text, oldModel in
-                ConfirmationPageInteractor.Effects.updateMemo(text, oldModel: oldModel)
+            .map { text, oldModel -> ConfirmationPageInteractor.Effects in
+                .updateMemo(text, oldModel: oldModel)
             }
             .asDriverCatchError()
 
@@ -137,7 +144,8 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             backTapped,
             memoChanged,
             transferAgreementChanged,
-            termsChanged
+            termsChanged,
+            hyperlinkTapped
         )
     }
 

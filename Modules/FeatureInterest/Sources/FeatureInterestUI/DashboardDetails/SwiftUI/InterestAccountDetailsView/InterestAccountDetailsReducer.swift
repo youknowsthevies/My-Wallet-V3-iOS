@@ -128,8 +128,6 @@ let interestAccountDetailsReducer = InterestAccountDetailsReducer { state, actio
         )
         return Effect(value: .dismissInterestDetailsScreen)
     case .loadCryptoInterestAccount,
-         .startInterestTransfer,
-         .startInterestWithdraw,
          .closeButtonTapped,
          .interestAccountDescriptorTapped,
          .dismissInterestDetailsScreen:

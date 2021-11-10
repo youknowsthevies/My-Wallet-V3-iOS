@@ -82,7 +82,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
             .allAccounts
             .map(\.accounts)
             .eraseError()
-            .flatMapFilter(action: assetAction, failSequence: false)
+            .flatMapFilter(action: assetAction)
             .map { $0.map { $0 as BlockchainAccount } }
             .mapError(BlockchainAccountRepositoryError.coinCoreError)
             .eraseToAnyPublisher()

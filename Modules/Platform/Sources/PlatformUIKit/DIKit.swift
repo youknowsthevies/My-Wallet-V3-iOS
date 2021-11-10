@@ -34,6 +34,10 @@ extension DependencyContainer {
 
         factory { WebViewService() as WebViewServiceAPI }
 
+        // MARK: - WebViewRouterAPI
+
+        factory { WebViewRouter() as WebViewRouterAPI }
+
         // MARK: - Pasteboarding
 
         factory { UIPasteboard.general as Pasteboarding }

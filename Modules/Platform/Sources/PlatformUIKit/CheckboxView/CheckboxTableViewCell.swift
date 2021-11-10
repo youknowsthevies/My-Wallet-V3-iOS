@@ -14,8 +14,8 @@ public final class CheckboxTableViewCell: UITableViewCell {
             guard let viewModel = viewModel else { return }
 
             viewModel
-                .labelContent
-                .drive(label.rx.content)
+                .textViewViewModel
+                .drive(interactableTextView.rx.viewModel)
                 .disposed(by: disposeBag)
 
             viewModel
@@ -28,7 +28,7 @@ public final class CheckboxTableViewCell: UITableViewCell {
     // MARK: - Private Properties
 
     private var disposeBag = DisposeBag()
-    private let label = UILabel()
+    private let interactableTextView = InteractableTextView()
     private let checkboxImageView = UIImageView()
     private let button = UIButton()
 
@@ -52,18 +52,18 @@ public final class CheckboxTableViewCell: UITableViewCell {
     private func setup() {
         selectionStyle = .none
         contentView.addSubview(checkboxImageView)
-        contentView.addSubview(label)
+        contentView.addSubview(interactableTextView)
         contentView.addSubview(button)
         checkboxImageView.layout(size: .edge(16.0))
         checkboxImageView.layout(edges: .leading, to: contentView, offset: 24)
         checkboxImageView.layout(edges: .top, to: contentView, offset: 24)
-        label.layout(edges: .top, to: checkboxImageView)
-        label.layout(edge: .leading, to: .trailing, of: checkboxImageView, offset: 8.0)
-        label.layout(edge: .trailing, to: .trailing, of: contentView, offset: -24)
-        label.layout(edge: .bottom, to: .bottom, of: contentView, offset: -16)
-        label.numberOfLines = 0
+        interactableTextView.layout(edges: .top, to: checkboxImageView)
+        interactableTextView.layout(edge: .leading, to: .trailing, of: checkboxImageView, offset: 8.0)
+        interactableTextView.layout(edge: .trailing, to: .trailing, of: contentView, offset: -24)
+        interactableTextView.layout(edge: .bottom, to: .bottom, of: contentView, offset: -16)
 
-        button.fillSuperview()
+        button.layout(size: .edge(24.0))
+        button.layout(edges: .centerX, .centerY, to: checkboxImageView)
         button.addTarget(self, action: #selector(toggled(sender:)), for: .touchUpInside)
     }
 

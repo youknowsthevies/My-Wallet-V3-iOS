@@ -11,8 +11,6 @@ enum InterestAccountDetailsAction: Equatable {
     case interestTransferTapped(CurrencyType)
     case interestWithdrawTapped(CurrencyType)
     case loadCryptoInterestAccount(isTransfer: Bool = false, CurrencyType)
-    case startInterestTransfer(InterestTransactionState)
-    case startInterestWithdraw(InterestTransactionState)
     case closeButtonTapped
     case dismissInterestDetailsScreen
     case interestAccountDescriptorTapped(
