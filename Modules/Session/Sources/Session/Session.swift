@@ -210,16 +210,12 @@ extension State.Data {
             for (key, value) in data {
                 switch value {
                 case is Tombstone.Type:
-                    notify(key, with: Any?.none as Any)
+                    subjects[key]?.send(.failure(.keyDoesNotExist(key)))
                 default:
-                    notify(key, with: value)
+                    subjects[key]?.send(.success(value))
                 }
             }
         }
-    }
-
-    func notify(_ key: Key, with value: Any) {
-        subjects[key]?.send(.success(value))
     }
 
     @discardableResult
@@ -255,6 +251,34 @@ extension State.Error: Equatable {
             return String(describing: e1) == String(describing: e2)
         default:
             return false
+        }
+    }
+}
+
+public protocol FlattenOptional {
+    static var null: FlattenOptional { get }
+    var flattened: Any? { get }
+}
+
+public func flattenOptionality(_ any: Any) -> Any {
+    (any as? FlattenOptional)?.flattened ?? any
+}
+
+public func isNil(_ any: Any?) -> Bool {
+    switch any.flattened {
+    case .none: return true
+    case .some: return false
+    }
+}
+
+extension Optional: FlattenOptional {
+
+    public static var null: FlattenOptional { return Optional.none as FlattenOptional }
+
+    public var flattened: Any? {
+        switch self {
+        case .none: return self as Any
+        case let .some(wrapped): return (wrapped as? FlattenOptional)?.flattened ?? wrapped
         }
     }
 }

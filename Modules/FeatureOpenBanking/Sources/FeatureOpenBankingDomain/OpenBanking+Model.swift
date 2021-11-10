@@ -198,13 +198,13 @@ extension OpenBanking.Order {
 
         public init(_ value: String) { self.value = value }
 
-        public static let PENDING_DEPOSIT: Self = "PENDING_DEPOSIT"
-        public static let PENDING_CONFIRMATION: Self = "PENDING_CONFIRMATION"
-        public static let CANCELED: Self = "CANCELED"
-        public static let DEPOSIT_MATCHED: Self = "DEPOSIT_MATCHED"
-        public static let FAILED: Self = "FAILED"
-        public static let EXPIRED: Self = "EXPIRED"
-        public static let FINISHED: Self = "FINISHED"
+        public static let pendingDeposit: Self = "PENDING_DEPOSIT"
+        public static let pendingConfirmation: Self = "PENDING_CONFIRMATION"
+        public static let canceled: Self = "CANCELED"
+        public static let depositMatched: Self = "DEPOSIT_MATCHED"
+        public static let failed: Self = "FAILED"
+        public static let expired: Self = "EXPIRED"
+        public static let finished: Self = "FINISHED"
     }
 }
 
@@ -258,12 +258,12 @@ extension OpenBanking.BankAccount {
 
         public init(_ value: String) { self.value = value }
 
-        public static let CREATED: Self = "CREATED"
-        public static let ACTIVE: Self = "ACTIVE"
-        public static let PENDING: Self = "PENDING"
-        public static let BLOCKED: Self = "BLOCKED"
-        public static let FRAUD_REVIEW: Self = "FRAUD_REVIEW"
-        public static let MANUAL_REVIEW: Self = "MANUAL_REVIEW"
+        public static let created: Self = "CREATED"
+        public static let active: Self = "ACTIVE"
+        public static let pending: Self = "PENDING"
+        public static let blocked: Self = "BLOCKED"
+        public static let fraudReview: Self = "FRAUD_REVIEW"
+        public static let manualReview: Self = "MANUAL_REVIEW"
     }
 }
 
@@ -275,33 +275,33 @@ extension OpenBanking.Payment.Details {
 
         public init(_ value: String) { self.value = value }
 
-        public static let CREATED: Self = "CREATED"
-        public static let PRE_CHARGE_REVIEW: Self = "PRE_CHARGE_REVIEW"
-        public static let AWAITING_AUTHORIZATION: Self = "AWAITING_AUTHORIZATION"
-        public static let PRE_CHARGE_APPROVED: Self = "PRE_CHARGE_APPROVED"
-        public static let PENDING: Self = "PENDING"
-        public static let AUTHORIZED: Self = "AUTHORIZED"
-        public static let CREDITED: Self = "CREDITED"
-        public static let FAILED: Self = "FAILED"
-        public static let FRAUD_REVIEW: Self = "FRAUD_REVIEW"
-        public static let MANUAL_REVIEW: Self = "MANUAL_REVIEW"
-        public static let REJECTED: Self = "REJECTED"
-        public static let CLEARED: Self = "CLEARED"
-        public static let COMPLETE: Self = "COMPLETE"
+        public static let created: Self = "CREATED"
+        public static let preChargeReview: Self = "PRE_CHARGE_REVIEW"
+        public static let awaitingAuthorization: Self = "AWAITING_AUTHORIZATION"
+        public static let preChargeApproved: Self = "PRE_CHARGE_APPROVED"
+        public static let pending: Self = "PENDING"
+        public static let authorized: Self = "AUTHORIZED"
+        public static let credited: Self = "CREDITED"
+        public static let failed: Self = "FAILED"
+        public static let fraudReview: Self = "FRAUD_REVIEW"
+        public static let manualReview: Self = "MANUAL_REVIEW"
+        public static let rejected: Self = "REJECTED"
+        public static let cleared: Self = "CLEARED"
+        public static let complete: Self = "COMPLETE"
     }
 }
 
 // swiftlint:disable line_length
 
 extension OpenBanking.Error {
-    public static let BANK_TRANSFER_ACCOUNT_ALREADY_LINKED: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_ALREADY_LINKED")
-    public static let BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND")
-    public static let BANK_TRANSFER_ACCOUNT_NAME_MISMATCH: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_NAME_MISMATCH")
-    public static let BANK_TRANSFER_ACCOUNT_EXPIRED: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_EXPIRED")
-    public static let BANK_TRANSFER_ACCOUNT_REJECTED: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_REJECTED")
-    public static let BANK_TRANSFER_ACCOUNT_FAILED: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_FAILED")
-    public static let BANK_TRANSFER_ACCOUNT_INVALID: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_INVALID")
-    public static let BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED")
-    public static let BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL")
-    public static let BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD: OpenBanking.Error = .code("BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD")
+    public static let bankTransferAccountAlreadyLinked: Self = .code("BANK_TRANSFER_ACCOUNT_ALREADY_LINKED")
+    public static let bankTransferAccountInfoNotFound: Self = .code("BANK_TRANSFER_ACCOUNT_INFO_NOT_FOUND")
+    public static let bankTransferAccountNameMismatch: Self = .code("BANK_TRANSFER_ACCOUNT_NAME_MISMATCH")
+    public static let bankTransferAccountExpired: Self = .code("BANK_TRANSFER_ACCOUNT_EXPIRED")
+    public static let bankTransferAccountRejected: Self = .code("BANK_TRANSFER_ACCOUNT_REJECTED")
+    public static let bankTransferAccountFailed: Self = .code("BANK_TRANSFER_ACCOUNT_FAILED")
+    public static let bankTransferAccountInvalid: Self = .code("BANK_TRANSFER_ACCOUNT_INVALID")
+    public static let bankTransferAccountNotSupported: Self = .code("BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED")
+    public static let bankTransferAccountFailedInternal: Self = .code("BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL")
+    public static let bankTransferAccountRejectedFraud: Self = .code("BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD")
 }

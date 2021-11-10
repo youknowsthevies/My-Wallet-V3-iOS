@@ -6,7 +6,7 @@ import CombineSchedulers
 import TestKit
 
 /// Used for testing without any UI
-final class OpenBankingFlow: XCTestCase {
+final class OpenBankingLiveTestCase: XCTestCase {
 
     var banking: OpenBankingClient!
 
@@ -36,10 +36,10 @@ final class OpenBankingFlow: XCTestCase {
 
     func x_test_delete() throws {
 
-        let accounts = try banking.allBankAccounts()
+        let accounts = try banking.fetchAllBankAccounts()
             .wait(timeout: 5)
 
-        for account in accounts where account.state != .ACTIVE {
+        for account in accounts where account.state != .active {
             print("Deleting \(account.id.value)", terminator: " ")
             switch Result(catching: { try account.delete(in: banking).wait() }) {
             case .failure(let error):
@@ -86,7 +86,7 @@ final class OpenBankingFlow: XCTestCase {
 
     func x_test_payment() throws {
 
-        let bankAccount = try banking.allBankAccounts()
+        let bankAccount = try banking.fetchAllBankAccounts()
             .wait(timeout: 5)
             .first(where: { $0.state == "ACTIVE" })
             .unwrap()

@@ -285,7 +285,7 @@ extension Localization {
 
         public enum Error {
 
-            public static let BANK_TRANSFER_ACCOUNT_NAME_MISMATCH = (
+            public static let bankTransferAccountNameMismatch = (
                 title: NSLocalizedString(
                     "Is this your bank?",
                     comment: "Is this your bank?"
@@ -297,7 +297,7 @@ extension Localization {
                 action: Bank.Action.tryADifferentBank
             )
 
-            public static let BANK_TRANSFER_ACCOUNT_EXPIRED = (
+            public static let bankTransferAccountExpired = (
                 title: NSLocalizedString(
                     "Access Request Expired",
                     comment: "Access Request Expired"
@@ -309,7 +309,7 @@ extension Localization {
                 action: Bank.Action.tryAgain
             )
 
-            public static let BANK_TRANSFER_ACCOUNT_FAILED = (
+            public static let bankTransferAccountFailed = (
                 title: NSLocalizedString(
                     "Failed Connection Request",
                     comment: "Failed Connection Request"
@@ -321,7 +321,7 @@ extension Localization {
                 action: Bank.Action.tryAgain
             )
 
-            public static let BANK_TRANSFER_ACCOUNT_REJECTED = (
+            public static let bankTransferAccountRejected = (
                 title: NSLocalizedString(
                     "Connection Rejected",
                     comment: "Connection Rejected"
@@ -333,7 +333,7 @@ extension Localization {
                 action: Bank.Action.tryAgain
             )
 
-            public static let BANK_TRANSFER_ACCOUNT_INVALID = (
+            public static let bankTransferAccountInvalid = (
                 title: NSLocalizedString(
                     "Invalid Account",
                     comment: "Invalid Account"
@@ -345,7 +345,7 @@ extension Localization {
                 action: Bank.Action.tryAgain
             )
 
-            public static let BANK_TRANSFER_ACCOUNT_ALREADY_LINKED = (
+            public static let bankTransferAccountAlreadyLinked = (
                 title: NSLocalizedString(
                     "Account Already Linked",
                     comment: "Account Already Linked"
@@ -357,7 +357,7 @@ extension Localization {
                 action: Bank.Action.tryAgain
             )
 
-            public static let BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED = (
+            public static let bankTransferAccountNotSupported = (
                 title: NSLocalizedString(
                     "Please link a Current Account.",
                     comment: "Please link a Current Account."
@@ -369,7 +369,7 @@ extension Localization {
                 action: Bank.Action.back
             )
 
-            public static let BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL = (
+            public static let bankTransferAccountFailedInternal = (
                 title: NSLocalizedString(
                     "There was a problem linking your checking account ending in %@. Please try again.",
                     comment: "There was a problem linking your checking account ending in |last{4}|. Please try again."
@@ -381,7 +381,7 @@ extension Localization {
                 action: Bank.Action.tryAnotherMethod
             )
 
-            public static let BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD = (
+            public static let bankTransferAccountRejectedFraud = (
                 title: NSLocalizedString(
                     "There was a problem linking your checking account ending in %@. Please try again.",
                     comment: "There was a problem linking your checking account ending in |last{4}|. Please try again."

@@ -15,111 +15,111 @@ extension BankState.UI {
     }
 
     static var errors: [OpenBanking.Error: Self] = [
-        .BANK_TRANSFER_ACCOUNT_NAME_MISMATCH: .init(
+        .bankTransferAccountNameMismatch: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NAME_MISMATCH.title,
-                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NAME_MISMATCH.subtitle
+                title: Localization.Bank.Error.bankTransferAccountNameMismatch.title,
+                subtitle: Localization.Bank.Error.bankTransferAccountNameMismatch.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NAME_MISMATCH.action, action: .request),
+                .retry(label: Localization.Bank.Error.bankTransferAccountNameMismatch.action, action: .request),
                 .cancel
             ]
         ),
-        .BANK_TRANSFER_ACCOUNT_EXPIRED: .init(
+        .bankTransferAccountExpired: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_EXPIRED.title,
-                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_EXPIRED.subtitle
+                title: Localization.Bank.Error.bankTransferAccountExpired.title,
+                subtitle: Localization.Bank.Error.bankTransferAccountExpired.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_EXPIRED.action, action: .request),
+                .retry(label: Localization.Bank.Error.bankTransferAccountExpired.action, action: .request),
                 .cancel
             ]
         ),
-        .BANK_TRANSFER_ACCOUNT_FAILED: .init(
+        .bankTransferAccountFailed: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED.title,
-                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED.subtitle
+                title: Localization.Bank.Error.bankTransferAccountFailed.title,
+                subtitle: Localization.Bank.Error.bankTransferAccountFailed.subtitle
             ),
             action: [
                 .retry(label: Localization.Bank.Action.tryAgain, action: .request),
                 .cancel
             ]
         ),
-        .BANK_TRANSFER_ACCOUNT_REJECTED: .init(
+        .bankTransferAccountRejected: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED.title,
-                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED.subtitle
+                title: Localization.Bank.Error.bankTransferAccountRejected.title,
+                subtitle: Localization.Bank.Error.bankTransferAccountRejected.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED.action, action: .request),
+                .retry(label: Localization.Bank.Error.bankTransferAccountRejected.action, action: .request),
                 .cancel
             ]
         ),
-        .BANK_TRANSFER_ACCOUNT_INVALID: .init(
+        .bankTransferAccountInvalid: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_INVALID.title,
-                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_INVALID.subtitle
+                title: Localization.Bank.Error.bankTransferAccountInvalid.title,
+                subtitle: Localization.Bank.Error.bankTransferAccountInvalid.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_INVALID.action, action: .request),
+                .retry(label: Localization.Bank.Error.bankTransferAccountInvalid.action, action: .request),
                 .cancel
             ]
         ),
-        .BANK_TRANSFER_ACCOUNT_ALREADY_LINKED: .init(
+        .bankTransferAccountAlreadyLinked: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED.title,
-                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED.subtitle
+                title: Localization.Bank.Error.bankTransferAccountAlreadyLinked.title,
+                subtitle: Localization.Bank.Error.bankTransferAccountAlreadyLinked.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_ALREADY_LINKED.action, action: .request),
+                .retry(label: Localization.Bank.Error.bankTransferAccountAlreadyLinked.action, action: .request),
                 .cancel
             ]
         ),
-        .BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED: .init(
+        .bankTransferAccountNotSupported: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED.title,
-                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED.subtitle
+                title: Localization.Bank.Error.bankTransferAccountNotSupported.title,
+                subtitle: Localization.Bank.Error.bankTransferAccountNotSupported.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_NOT_SUPPORTED.action, action: .request),
+                .retry(label: Localization.Bank.Error.bankTransferAccountNotSupported.action, action: .request),
                 .cancel
             ]
         ),
-        .BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL: .init(
+        .bankTransferAccountFailedInternal: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL.title,
-                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL.subtitle
+                title: Localization.Bank.Error.bankTransferAccountFailedInternal.title,
+                subtitle: Localization.Bank.Error.bankTransferAccountFailedInternal.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_FAILED_INTERNAL.action, action: .request),
+                .retry(label: Localization.Bank.Error.bankTransferAccountFailedInternal.action, action: .request),
                 .cancel
             ]
         ),
-        .BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD: .init(
+        .bankTransferAccountRejectedFraud: .init(
             info: .init(
                 media: .bankIcon,
                 overlay: .init(media: .error),
-                title: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD.title,
-                subtitle: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD.subtitle
+                title: Localization.Bank.Error.bankTransferAccountRejectedFraud.title,
+                subtitle: Localization.Bank.Error.bankTransferAccountRejectedFraud.subtitle
             ),
             action: [
-                .retry(label: Localization.Bank.Error.BANK_TRANSFER_ACCOUNT_REJECTED_FRAUD.action, action: .request),
+                .retry(label: Localization.Bank.Error.bankTransferAccountRejectedFraud.action, action: .request),
                 .cancel
             ]
         )

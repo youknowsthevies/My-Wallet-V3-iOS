@@ -44,12 +44,12 @@ public final class OpenBanking {
         case failure(OpenBanking.Error)
     }
 
-    public private(set) var banking: OpenBankingClientProtocol
+    public private(set) var banking: OpenBankingClientAPI
 
     public var state: State { banking.state }
     private var scheduler: AnySchedulerOf<DispatchQueue> { banking.scheduler }
 
-    public init(banking: OpenBankingClientProtocol) {
+    public init(banking: OpenBankingClientAPI) {
         self.banking = banking
     }
 
@@ -74,20 +74,9 @@ public final class OpenBanking {
         }
     }
 
-    // swiftlint:disable cyclomatic_complexity
     public func start(_ data: Data) -> AnyPublisher<Action, Never> {
 
-        let publisher = { () -> AnyPublisher<Action, Never> in
-            switch data.action {
-            case .link(let institution):
-                return link(institution, data: data)
-            case .deposit(let amountMinor, let product):
-                return deposit(amountMinor: amountMinor, product: product, data: data)
-            case .confirm(let order):
-                return confirm(order: order, data: data)
-            }
-        }()
-            .share()
+        let publisher = actionPublisher(data).share()
 
         let consentErrorPublisher = banking.state.result(for: .consent.error, as: OpenBanking.Error.self)
             .publisher
@@ -153,6 +142,17 @@ public final class OpenBanking {
                     }
                 }
                 .eraseToAnyPublisher()
+        }
+    }
+
+    private func actionPublisher(_ data: Data) -> AnyPublisher<Action, Never> {
+        switch data.action {
+        case .link(let institution):
+            return link(institution, data: data)
+        case .deposit(let amountMinor, let product):
+            return deposit(amountMinor: amountMinor, product: product, data: data)
+        case .confirm(let order):
+            return confirm(order: order, data: data)
         }
     }
 
@@ -225,7 +225,7 @@ public final class OpenBanking {
 extension OpenBanking.BankAccount {
 
     var isNotPending: Bool {
-        state != .PENDING
+        state != .pending
     }
 
     var hasAuthorizationURL: Bool {
