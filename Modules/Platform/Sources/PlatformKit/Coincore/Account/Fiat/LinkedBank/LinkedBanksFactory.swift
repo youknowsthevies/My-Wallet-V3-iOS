@@ -86,7 +86,7 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
         paymentMethodService
             .eligiblePaymentMethods(for: currency)
             .map { types in
-               types.filter { type in
+                types.filter { type in
                     type.method == .bankAccount(.fiat(currency)) || type.method == .bankTransfer(.fiat(currency))
                 }
             }

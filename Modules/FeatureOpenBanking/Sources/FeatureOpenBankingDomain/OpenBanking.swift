@@ -52,7 +52,7 @@ public final class OpenBanking {
     public init(banking: OpenBankingClientAPI) {
         self.banking = banking
     }
-    
+
     public var isAuthorising: Bool {
         state.result(for: .authorisation.url).isSuccess
     }
