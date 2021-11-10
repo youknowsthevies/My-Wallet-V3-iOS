@@ -192,8 +192,7 @@ extension TransactionsRouter {
         case .buy(let cryptoAccount):
             let listener = BuyFlowListener(
                 kycRouter: kycRouter,
-                alertViewPresenter: alertViewPresenter,
-                loadingViewPresenter: loadingViewPresenter
+                alertViewPresenter: alertViewPresenter
             )
             let interactor = BuyFlowInteractor()
             let router = buyFlowBuilder.build(with: listener, interactor: interactor)

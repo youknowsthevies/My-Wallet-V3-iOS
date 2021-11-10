@@ -443,6 +443,7 @@ extension DependencyContainer {
             let externalAppOpener: ExternalAppOpener = DIKit.resolve()
             return FeatureKYCUI.Router(
                 analyticsRecorder: DIKit.resolve(),
+                loadingViewPresenter: DIKit.resolve(),
                 legacyRouter: DIKit.resolve(),
                 kycService: DIKit.resolve(),
                 emailVerificationService: emailVerificationService,
