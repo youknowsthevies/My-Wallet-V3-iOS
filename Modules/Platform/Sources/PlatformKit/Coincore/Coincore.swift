@@ -78,7 +78,7 @@ final class Coincore: CoincoreAPI {
     // MARK: - Setup
 
     init(
-        assetLoader: AssetLoader = AssetLoaderSwitcher(),
+        assetLoader: AssetLoader = DynamicAssetLoader(),
         fiatAsset: FiatAsset = FiatAsset(),
         reactiveWallet: ReactiveWalletAPI = resolve()
     ) {
