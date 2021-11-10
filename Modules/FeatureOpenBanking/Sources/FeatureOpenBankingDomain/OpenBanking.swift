@@ -92,7 +92,7 @@ public final class OpenBanking {
         let consentErrorPublisher = banking.state.result(for: .consent.error, as: OpenBanking.Error.self)
             .publisher
             .mapError(OpenBanking.Error.init)
-            .mapped(to: Action.failure)
+            .map(Action.failure)
             .catch(Action.failure)
             .eraseToAnyPublisher()
 
@@ -167,7 +167,7 @@ public final class OpenBanking {
                             return Just(account).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
                         }
                     }
-                    .mapped(to: Action.waitingForConsent(.linked(output, institution: institution)))
+                    .map(Action.waitingForConsent(.linked(output, institution: institution)))
                     .catch(Action.failure)
                     .eraseToAnyPublisher()
             }
@@ -189,7 +189,7 @@ public final class OpenBanking {
                             return Just(payment).setFailureType(to: OpenBanking.Error.self).eraseToAnyPublisher()
                         }
                     }
-                    .mapped(to: (/Action.waitingForConsent).appending(path: /Output.deposited))
+                    .map((/Action.waitingForConsent).appending(path: /Output.deposited))
                     .catch(Action.failure)
             }
             .catch(Action.failure)
@@ -200,7 +200,7 @@ public final class OpenBanking {
 
         func poll(_ order: OpenBanking.Order) -> AnyPublisher<Action, Never> {
             banking.poll(order: order)
-                .mapped(to: Action.waitingForConsent(.confirmed(order)))
+                .map(Action.waitingForConsent(.confirmed(order)))
                 .catch(Action.failure)
                 .eraseToAnyPublisher()
         }

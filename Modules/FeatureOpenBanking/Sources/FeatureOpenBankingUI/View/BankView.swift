@@ -67,7 +67,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
             .fireAndForget {
                 environment.openBanking.reset()
             },
-            .cancel(id: ID.OB()),
+            .cancel(id: ID.Request()),
             .cancel(id: ID.LaunchBank()),
             Effect(value: .request)
         )
@@ -91,7 +91,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
     case .waitingForConsent:
         return environment.openBanking.state.publisher(for: .authorisation.url, as: URL.self)
             .ignoreResultFailure()
-            .mapped(to: BankAction.launchAuthorisation)
+            .map(BankAction.launchAuthorisation)
             .receive(on: environment.scheduler.main)
             .eraseToEffect()
             .cancellable(id: ID.LaunchBank())
@@ -104,7 +104,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
                 .get()
                 .ignoreFailure(setFailureType: Never.self)
                 .receive(on: environment.scheduler.main)
-                .mapped(to: BankAction.failure)
+                .map(BankAction.failure)
                 .eraseToEffect()
                 .cancellable(id: ID.ConsentError())
         )
