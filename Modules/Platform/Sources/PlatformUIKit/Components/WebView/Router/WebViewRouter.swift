@@ -27,7 +27,7 @@ public final class WebViewRouter: WebViewRouterAPI {
     // MARK: - Setup
 
     public init(
-        topMostViewControllerProvider: TopMostViewControllerProviding,
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         webViewServiceAPI: WebViewServiceAPI = resolve()
     ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider

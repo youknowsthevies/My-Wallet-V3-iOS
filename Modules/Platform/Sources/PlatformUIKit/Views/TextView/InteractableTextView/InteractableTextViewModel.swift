@@ -4,7 +4,7 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
-public struct TitledLink {
+public struct TitledLink: Equatable {
     public let title: String
     public let url: URL
 }
@@ -36,6 +36,22 @@ public struct InteractableTextViewModel {
 
         /// A regular string
         case text(string: String)
+
+        var stringValue: String {
+            switch self {
+            case .url(string: let value, url: _):
+                return value
+            case .text(string: let value):
+                return value
+            }
+        }
+    }
+
+    public var identifier: String {
+        inputsRelay
+            .value
+            .map(\.stringValue)
+            .joined(separator: ".")
     }
 
     /// Steams the url upon each tap

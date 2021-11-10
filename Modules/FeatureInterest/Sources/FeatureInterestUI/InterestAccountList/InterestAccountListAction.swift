@@ -14,6 +14,8 @@ enum InterestAccountListAction: Equatable, NavigationAction {
     case interestAccountDetails(InterestAccountDetailsAction)
     case interestAccountIsWithoutEligibleWallets(InterestNoEligibleWalletsState)
     case interestTransactionStateFetched(InterestTransactionState)
+    case startInterestTransfer(InterestTransactionState)
+    case startInterestWithdraw(InterestTransactionState)
     case interestAccountButtonTapped(InterestAccountOverview.ID, InterestAccountListItemAction)
     case interestAccountNoEligibleWallets(InterestNoEligibleWalletsAction)
     case route(RouteIntent<InterestAccountListRoute>?)

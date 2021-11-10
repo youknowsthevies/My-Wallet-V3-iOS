@@ -81,6 +81,7 @@ extension LocalizationConstants {
         }
 
         public enum Transfer {
+            public enum ToS {}
             public enum Completion {
                 public enum Pending {}
                 public enum Success {}
@@ -558,9 +559,16 @@ extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Failure 
 
 // MARK: - Interest Transfer
 
+extension LocalizationConstants.Transaction.Transfer.ToS {
+    public static let prefix = NSLocalizedString("I have read and agree to the", comment: "I have read and agree to the")
+    public static let termsOfService = NSLocalizedString("Terms of Service", comment: "Terms of Service")
+    public static let privacyPolicy = NSLocalizedString("Privacy Policy", comment: "Privacy Policy")
+}
+
 extension LocalizationConstants.Transaction.Transfer {
     public static let termsOfService = NSLocalizedString("Terms of Service", comment: "Terms of Service")
     public static let privacyPolicy = NSLocalizedString("Privacy Policy", comment: "Privacy Policy")
+
     public static let termsOfServiceDisclaimer = NSLocalizedString(
         "I have read and agree to the Terms of Service & Privacy Policy.",
         comment: "I have read and agree to the Terms of Service & Privacy Policy."
