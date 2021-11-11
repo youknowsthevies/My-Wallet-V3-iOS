@@ -35,12 +35,12 @@ struct InterestIdentityVerificationView: View {
                                         accessibility: .none,
                                         renderingMode: .template(.white)
                                     ),
-                                    marginOffset: 0,
-                                    sizingType: .configuredByOwner
+                                    marginOffset: 8,
+                                    sizingType: .constant(.edge(40))
                                 )
                             )
                         )
-                        .frame(width: 32.0, height: 32.0)
+                        .frame(width: 40, height: 40)
                         Text(LocalizationId.title)
                             .textStyle(.title)
                         Text(LocalizationId.description)
@@ -76,7 +76,7 @@ struct InterestIdentityVerificationView: View {
         AnyView(
             BadgeImageViewRepresentable(
                 viewModel: viewModel,
-                size: 32
+                size: 40
             )
         )
     }
