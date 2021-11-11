@@ -13,12 +13,12 @@ import PlatformKit
 public struct CrossBorderLimits {
 
     public let currency: CurrencyType
-    public let currentLimits: TimedLimits? // nil means that there are no limits
+    public let currentLimits: PeriodicLimits? // nil means that there are no limits
     public let suggestedUpgrade: SuggestedLimitsUpgrade?
 
     public init(
         currency: CurrencyType,
-        currentLimits: TimedLimits?,
+        currentLimits: PeriodicLimits?,
         suggestedUpgrade: SuggestedLimitsUpgrade?
     ) {
         self.currency = currency

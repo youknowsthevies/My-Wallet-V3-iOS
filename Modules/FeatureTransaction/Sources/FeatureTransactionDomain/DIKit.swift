@@ -24,7 +24,11 @@ extension DependencyContainer {
 
         factory { PaymentAccountsService() as FeatureTransactionDomain.PaymentAccountsServiceAPI }
         factory { () -> TransactionLimitsServiceAPI in
-            TransactionLimitsService(repository: DIKit.resolve())
+            TransactionLimitsService(
+                repository: DIKit.resolve(),
+                conversionService: DIKit.resolve(),
+                featureFlagService: DIKit.resolve()
+            )
         }
     }
 }

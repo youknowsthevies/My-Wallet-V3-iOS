@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import FeatureTransactionDomain
 import NabuNetworkError
 import PlatformKit
@@ -10,11 +9,11 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
 
     // MARK: - Properties
 
-    private let client: OrderTransactionLimitsClientAPI
+    private let client: TransactionLimitsClientAPI
 
     // MARK: - Setup
 
-    init(client: OrderTransactionLimitsClientAPI = resolve()) {
+    init(client: TransactionLimitsClientAPI) {
         self.client = client
     }
 
@@ -24,9 +23,9 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
         sourceCurrency: CurrencyType,
         destinationCurrency: CurrencyType,
         product: TransactionLimitsProduct
-    ) -> AnyPublisher<FeatureTransactionDomain.TradeLimits, NabuNetworkError> {
+    ) -> AnyPublisher<TradeLimits, NabuNetworkError> {
         client
-            .fetchTransactionLimits(
+            .fetchTradeLimits(
                 currency: sourceCurrency,
                 networkFee: destinationCurrency,
                 product: product
@@ -39,8 +38,14 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
         source: LimitsAccount,
         destination: LimitsAccount,
         limitsCurrency: CurrencyType
-    ) -> AnyPublisher<FeatureTransactionDomain.CrossBorderLimits, NabuNetworkError> {
-        // TODO: implement me
-        .empty()
+    ) -> AnyPublisher<CrossBorderLimits, NabuNetworkError> {
+        client
+            .fetchCrossBorderLimits(
+                source: source,
+                destination: destination,
+                limitsCurrency: limitsCurrency
+            )
+            .map(CrossBorderLimits.init)
+            .eraseToAnyPublisher()
     }
 }

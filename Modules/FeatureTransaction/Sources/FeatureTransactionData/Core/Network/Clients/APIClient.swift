@@ -11,7 +11,7 @@ import ToolKit
 typealias FeatureTransactionDomainClientAPI = CustodialQuoteAPI &
     OrderCreationClientAPI &
     AvailablePairsClientAPI &
-    OrderTransactionLimitsClientAPI &
+    TransactionLimitsClientAPI &
     OrderFetchingClientAPI &
     OrderUpdateClientAPI &
     CustodialTransferClientAPI &
@@ -28,6 +28,10 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         static let minor = "minor"
         static let networkFee = "networkFee"
         static let currency = "currency"
+        static let inputCurrency = "inputCurrency"
+        static let fromAccount = "fromAccount"
+        static let outputCurrency = "outputCurrency"
+        static let toAccount = "toAccount"
         static let product = "product"
         static let paymentMethod = "paymentMethod"
         static let orderDirection = "orderDirection"
@@ -44,6 +48,7 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         static let availablePairs = ["custodial", "trades", "pairs"]
         static let fetchOrder = createOrder
         static let limits = ["trades", "limits"]
+        static let crossBorderLimits = ["limits", "crossborder", "transaction"]
         static let transfer = ["payments", "withdrawals"]
         static let bankTransfer = ["payments", "banktransfer"]
         static let transferFees = ["payments", "withdrawals", "fees"]
@@ -355,13 +360,13 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         return retailNetworkAdapter.perform(request: request)
     }
 
-    // MARK: - OrderTransactionLimitsClientAPI
+    // MARK: - TransactionLimitsClientAPI
 
-    func fetchTransactionLimits(
+    func fetchTradeLimits(
         currency: CurrencyType,
         networkFee: CurrencyType,
         product: TransactionLimitsProduct
-    ) -> AnyPublisher<TransactionLimitsResponse, NabuNetworkError> {
+    ) -> AnyPublisher<TradeLimitsResponse, NabuNetworkError> {
         var parameters: [URLQueryItem] = [
             URLQueryItem(
                 name: Parameter.currency,
@@ -394,6 +399,26 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         }
         let request = retailRequestBuilder.get(
             path: Path.limits,
+            parameters: parameters,
+            authenticated: true
+        )!
+        return retailNetworkAdapter.perform(request: request)
+    }
+
+    func fetchCrossBorderLimits(
+        source: LimitsAccount,
+        destination: LimitsAccount,
+        limitsCurrency: CurrencyType
+    ) -> AnyPublisher<CrossBorderLimitsResponse, NabuNetworkError> {
+        let parameters: [URLQueryItem] = [
+            URLQueryItem(name: Parameter.currency, value: limitsCurrency.code),
+            URLQueryItem(name: Parameter.inputCurrency, value: source.currency.code),
+            URLQueryItem(name: Parameter.fromAccount, value: source.accountType.rawValue),
+            URLQueryItem(name: Parameter.outputCurrency, value: destination.currency.code),
+            URLQueryItem(name: Parameter.toAccount, value: destination.accountType.rawValue)
+        ]
+        let request = retailRequestBuilder.get(
+            path: Path.crossBorderLimits,
             parameters: parameters,
             authenticated: true
         )!

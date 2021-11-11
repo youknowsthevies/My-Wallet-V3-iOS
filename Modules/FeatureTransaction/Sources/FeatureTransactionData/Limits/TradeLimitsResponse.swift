@@ -3,7 +3,7 @@
 import FeatureTransactionDomain
 import PlatformKit
 
-struct TransactionLimitsResponse: Decodable {
+struct TradeLimitsResponse: Decodable {
 
     enum CodingKeys: String, CodingKey {
         case currency
@@ -15,7 +15,7 @@ struct TransactionLimitsResponse: Decodable {
         case annual
     }
 
-    struct Limit: Decodable {
+    struct LimitResponse: Decodable {
         let limit: String
         let available: String
         let used: String
@@ -25,9 +25,9 @@ struct TransactionLimitsResponse: Decodable {
     let minOrder: FiatValue
     let maxOrder: FiatValue
     let maxPossibleOrder: FiatValue
-    let daily: TransactionLimit?
-    let weekly: TransactionLimit?
-    let annual: TransactionLimit?
+    let daily: TradeLimit?
+    let weekly: TradeLimit?
+    let annual: TradeLimit?
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -47,17 +47,17 @@ struct TransactionLimitsResponse: Decodable {
             currency: currency
         ) ?? zero
 
-        if let daily = try values.decodeIfPresent(Limit.self, forKey: .daily) {
+        if let daily = try values.decodeIfPresent(LimitResponse.self, forKey: .daily) {
             self.daily = .init(fiatCurrency: currency, limit: daily)
         } else {
             daily = nil
         }
-        if let weekly = try values.decodeIfPresent(Limit.self, forKey: .weekly) {
+        if let weekly = try values.decodeIfPresent(LimitResponse.self, forKey: .weekly) {
             self.weekly = .init(fiatCurrency: currency, limit: weekly)
         } else {
             weekly = nil
         }
-        if let annual = try values.decodeIfPresent(Limit.self, forKey: .annual) {
+        if let annual = try values.decodeIfPresent(LimitResponse.self, forKey: .annual) {
             self.annual = .init(fiatCurrency: currency, limit: annual)
         } else {
             annual = nil
@@ -67,7 +67,7 @@ struct TransactionLimitsResponse: Decodable {
 
 extension FeatureTransactionDomain.TradeLimits {
 
-    init(response: TransactionLimitsResponse) {
+    init(response: TradeLimitsResponse) {
         self.init(
             currency: response.currency.currencyType,
             minOrder: response.minOrder.moneyValue,
@@ -80,11 +80,11 @@ extension FeatureTransactionDomain.TradeLimits {
     }
 }
 
-extension TransactionLimit {
+extension TradeLimit {
 
     fileprivate init(
         fiatCurrency: FiatCurrency,
-        limit: TransactionLimitsResponse.Limit
+        limit: TradeLimitsResponse.LimitResponse
     ) {
         self.init(
             limit: MoneyValue

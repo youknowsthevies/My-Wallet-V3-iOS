@@ -27,6 +27,8 @@ final class BuyTransactionEngine: TransactionEngine {
     private let orderConfirmationService: OrderConfirmationServiceAPI
     // Used to cancel orders
     private let orderCancellationService: OrderCancellationServiceAPI
+    // Used to fetch limits for the transaction
+    private let transactionLimitsService: TransactionLimitsServiceAPI
 
     // Used as a workaround to show the correct total fee to the user during checkout.
     // This won't be needed anymore once we migrate the quotes API to v2
@@ -38,7 +40,8 @@ final class BuyTransactionEngine: TransactionEngine {
         orderQuoteService: OrderQuoteServiceAPI = resolve(),
         orderCreationService: OrderCreationServiceAPI = resolve(),
         orderConfirmationService: OrderConfirmationServiceAPI = resolve(),
-        orderCancellationService: OrderCancellationServiceAPI = resolve()
+        orderCancellationService: OrderCancellationServiceAPI = resolve(),
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve()
     ) {
         self.conversionService = conversionService
         self.walletCurrencyService = walletCurrencyService
@@ -46,6 +49,7 @@ final class BuyTransactionEngine: TransactionEngine {
         self.orderCreationService = orderCreationService
         self.orderConfirmationService = orderConfirmationService
         self.orderCancellationService = orderCancellationService
+        self.transactionLimitsService = transactionLimitsService
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -265,6 +269,11 @@ final class BuyTransactionEngine: TransactionEngine {
 
 extension BuyTransactionEngine {
 
+    enum MakeTransactionError: Error {
+        case priceError(PriceServiceError)
+        case limitsError(TransactionLimitsServiceError)
+    }
+
     private func makeTransaction(amount: MoneyValue? = nil) -> Single<PendingTransaction> {
         guard let sourceAccount = sourceAccount as? PaymentMethodAccount else {
             return .error(TransactionValidationFailure(state: .optionInvalid))
@@ -273,7 +282,7 @@ extension BuyTransactionEngine {
         let amount = amount ?? .zero(currency: paymentMethod.fiatCurrency.currencyType)
         return Publishers.Zip(
             convertSourceBalance(to: amount.currencyType),
-            transactionLimits(for: paymentMethod, to: amount.currencyType)
+            transactionLimits(for: paymentMethod, inputCurrency: amount.currencyType)
         )
         .tryMap { sourceBalance, limits in
             // NOTE: the fee coming from the API is always 0 at the moment.
@@ -323,7 +332,7 @@ extension BuyTransactionEngine {
             }
     }
 
-    private func convertSourceBalance(to currency: CurrencyType) -> AnyPublisher<MoneyValue, PriceServiceError> {
+    private func convertSourceBalance(to currency: CurrencyType) -> AnyPublisher<MoneyValue, MakeTransactionError> {
         sourceAccount
             .balance
             .asPublisher()
@@ -331,25 +340,21 @@ extension BuyTransactionEngine {
             .flatMap { [conversionService] balance in
                 conversionService.convert(balance, to: currency)
             }
+            .mapError(MakeTransactionError.priceError)
             .eraseToAnyPublisher()
     }
 
     private func transactionLimits(
         for paymentMethod: PaymentMethod,
-        to targetCurrency: CurrencyType
-    ) -> AnyPublisher<TransactionLimits, PriceServiceError> {
-        // TODO: replace with TransactionLimitsServiceAPI
-        conversionService
-            .conversionRate(from: paymentMethod.min.currencyType, to: targetCurrency)
-            .map { conversionRate in
-                TransactionLimits(
-                    minimum: paymentMethod.min.moneyValue.convert(using: conversionRate),
-                    maximum: paymentMethod.max.moneyValue.convert(using: conversionRate),
-                    maximumDaily: paymentMethod.maxDaily.moneyValue.convert(using: conversionRate),
-                    maximumAnnual: paymentMethod.maxAnnual.moneyValue.convert(using: conversionRate),
-                    suggestedUpgrade: nil
-                )
-            }
+        inputCurrency: CurrencyType
+    ) -> AnyPublisher<TransactionLimits, MakeTransactionError> {
+        transactionLimitsService
+            .fetchLimits(
+                for: paymentMethod,
+                targetCurrency: transactionTarget.currencyType,
+                limitsCurrency: inputCurrency
+            )
+            .mapError(MakeTransactionError.limitsError)
             .eraseToAnyPublisher()
     }
 }

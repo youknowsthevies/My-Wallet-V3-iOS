@@ -14,11 +14,11 @@ public protocol TransactionLimitsRepositoryAPI {
         sourceCurrency: CurrencyType,
         destinationCurrency: CurrencyType,
         product: TransactionLimitsProduct
-    ) -> AnyPublisher<FeatureTransactionDomain.TradeLimits, NabuNetworkError>
+    ) -> AnyPublisher<TradeLimits, NabuNetworkError>
 
     func fetchCrossBorderLimits(
         source: LimitsAccount,
         destination: LimitsAccount,
         limitsCurrency: CurrencyType
-    ) -> AnyPublisher<FeatureTransactionDomain.CrossBorderLimits, NabuNetworkError>
+    ) -> AnyPublisher<CrossBorderLimits, NabuNetworkError>
 }

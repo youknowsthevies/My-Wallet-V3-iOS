@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-public struct TransactionLimit {
+public struct TradeLimit {
 
     public let limit: MoneyValue
     public let available: MoneyValue
@@ -19,23 +19,25 @@ public struct TransactionLimit {
     }
 }
 
-// TODO: replace for TransactionLimit when API updates
-public struct TimedLimit {
+public struct PeriodicLimit: Decodable {
+
     let limit: MoneyValue
-    let effective: Bool
+    let effective: Bool?
 }
 
-public struct TimedLimits {
+public struct PeriodicLimits: Decodable {
+
     let available: MoneyValue
-    let daily: TimedLimit?
-    let monthly: TimedLimit?
-    let yearly: TimedLimit?
+    let daily: PeriodicLimit?
+    let monthly: PeriodicLimit?
+    let yearly: PeriodicLimit?
 }
 
-public struct SuggestedLimitsUpgrade {
+public struct SuggestedLimitsUpgrade: Decodable {
+
     let requiredTier: KYC.Tier
     let available: MoneyValue?
-    let daily: TimedLimit?
-    let monthly: TimedLimit?
-    let yearly: TimedLimit?
+    let daily: PeriodicLimit?
+    let monthly: PeriodicLimit?
+    let yearly: PeriodicLimit?
 }

@@ -16,9 +16,9 @@ public struct TradeLimits {
     public let minOrder: MoneyValue
     public let maxOrder: MoneyValue
     public let maxPossibleOrder: MoneyValue
-    public let daily: TransactionLimit?
-    public let weekly: TransactionLimit?
-    public let annual: TransactionLimit?
+    public let daily: TradeLimit?
+    public let weekly: TradeLimit?
+    public let annual: TradeLimit?
 
     public var maxTradableToday: MoneyValue {
         daily?.available ?? maxPossibleOrder
@@ -29,9 +29,9 @@ public struct TradeLimits {
         minOrder: MoneyValue,
         maxOrder: MoneyValue,
         maxPossibleOrder: MoneyValue,
-        daily: TransactionLimit?,
-        weekly: TransactionLimit?,
-        annual: TransactionLimit?
+        daily: TradeLimit?,
+        weekly: TradeLimit?,
+        annual: TradeLimit?
     ) {
         self.currency = currency
         self.minOrder = minOrder
