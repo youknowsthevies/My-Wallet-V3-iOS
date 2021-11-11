@@ -19,6 +19,6 @@ public protocol TransactionLimitsRepositoryAPI {
     func fetchCrossBorderLimits(
         source: LimitsAccount,
         destination: LimitsAccount,
-        limitsCurrency: CurrencyType
+        limitsCurrency: FiatCurrency
     ) -> AnyPublisher<CrossBorderLimits, NabuNetworkError>
 }

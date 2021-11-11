@@ -37,13 +37,13 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
     func fetchCrossBorderLimits(
         source: LimitsAccount,
         destination: LimitsAccount,
-        limitsCurrency: CurrencyType
+        limitsCurrency: FiatCurrency
     ) -> AnyPublisher<CrossBorderLimits, NabuNetworkError> {
         client
             .fetchCrossBorderLimits(
                 source: source,
                 destination: destination,
-                limitsCurrency: limitsCurrency
+                limitsCurrency: limitsCurrency.currencyType
             )
             .map(CrossBorderLimits.init)
             .eraseToAnyPublisher()

@@ -18,6 +18,12 @@ public enum TransactionLimitsServiceError: Error {
 public protocol TransactionLimitsServiceAPI {
 
     func fetchLimits(
+        source: LimitsAccount,
+        destination: LimitsAccount,
+        product: TransactionLimitsProduct
+    ) -> TransactionLimitsServicePublisher
+
+    func fetchLimits(
         for paymentMethod: PaymentMethod,
         targetCurrency: CurrencyType,
         limitsCurrency: CurrencyType
@@ -28,16 +34,61 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
 
     private let repository: TransactionLimitsRepositoryAPI
     private let conversionService: CurrencyConversionServiceAPI
+    private let walletCurrencyService: FiatCurrencyServiceAPI
     private let featureFlagService: FeatureFlagsServiceAPI
 
     init(
         repository: TransactionLimitsRepositoryAPI,
         conversionService: CurrencyConversionServiceAPI,
+        walletCurrencyService: FiatCurrencyServiceAPI,
         featureFlagService: FeatureFlagsServiceAPI
     ) {
         self.repository = repository
         self.conversionService = conversionService
+        self.walletCurrencyService = walletCurrencyService
         self.featureFlagService = featureFlagService
+    }
+
+    func fetchLimits(
+        source: LimitsAccount,
+        destination: LimitsAccount,
+        product: TransactionLimitsProduct
+    ) -> TransactionLimitsServicePublisher {
+        Publishers
+            .Zip(
+                walletCurrencyService.fiatCurrencyPublisher,
+                featureFlagService.isEnabled(.local(.newTxFlowLimitsUIEnabled))
+            )
+            .flatMap { [unowned self] walletCurrency, newLimitsEnabled -> TransactionLimitsServicePublisher in
+                let convertedTradeLimits = self
+                    .fetchTradeLimits(
+                        fiatCurrency: walletCurrency,
+                        destination: destination,
+                        product: product
+                    )
+                    .map(TransactionLimits.init)
+                    .convertAmounts(
+                        from: walletCurrency.currencyType,
+                        to: source.currency,
+                        using: self.conversionService
+                    )
+                    .eraseToAnyPublisher()
+
+                guard newLimitsEnabled else {
+                    return convertedTradeLimits
+                }
+
+                let convertedCrossBorderLimits = self
+                    .fetchCrossBorderLimits(
+                        source: source,
+                        destination: destination,
+                        limitsCurrency: walletCurrency
+                    )
+                return Publishers.Zip(convertedTradeLimits, convertedCrossBorderLimits)
+                    .map { $0.merge(with: $1) }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 
     func fetchLimits(
@@ -48,7 +99,12 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         featureFlagService.isEnabled(.local(.newTxFlowLimitsUIEnabled))
             .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
                 guard newLimitsEnabled else {
-                    return self.deriveLimits(from: paymentMethod, inputCurrency: limitsCurrency)
+                    return .just(TransactionLimits(paymentMethod))
+                        .convertAmounts(
+                            from: paymentMethod.fiatCurrency.currencyType,
+                            to: limitsCurrency,
+                            using: conversionService
+                        )
                 }
                 return self.fetchCrossBorderLimits(
                     for: paymentMethod,
@@ -58,25 +114,40 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
             }
             .eraseToAnyPublisher()
     }
+}
 
-    private func deriveLimits(
-        from paymentMethod: PaymentMethod,
-        inputCurrency: CurrencyType
-    ) -> TransactionLimitsServicePublisher {
-        let paymentMethodLimits = TransactionLimits(
-            minimum: paymentMethod.min.moneyValue,
-            maximum: paymentMethod.max.moneyValue,
-            maximumDaily: paymentMethod.maxDaily.moneyValue,
-            maximumAnnual: paymentMethod.maxAnnual.moneyValue,
-            suggestedUpgrade: nil
-        )
-        return Just(paymentMethodLimits)
-            .setFailureType(to: TransactionLimitsServiceError.self)
-            .convertAmounts(
-                from: paymentMethod.fiatCurrency.currencyType,
-                to: inputCurrency,
-                using: conversionService
+// MARK: - Helpers
+
+extension TransactionLimitsService {
+
+    private func fetchTradeLimits(
+        fiatCurrency: FiatCurrency,
+        destination: LimitsAccount,
+        product: TransactionLimitsProduct
+    ) -> AnyPublisher<TradeLimits, TransactionLimitsServiceError> {
+        repository
+            .fetchTradeLimits(
+                sourceCurrency: fiatCurrency.currencyType,
+                destinationCurrency: destination.currency,
+                product: product
             )
+            .mapError(TransactionLimitsServiceError.network)
+            .eraseToAnyPublisher()
+    }
+
+    private func fetchCrossBorderLimits(
+        source: LimitsAccount,
+        destination: LimitsAccount,
+        limitsCurrency: FiatCurrency
+    ) -> AnyPublisher<CrossBorderLimits, TransactionLimitsServiceError> {
+        repository
+            .fetchCrossBorderLimits(
+                source: source,
+                destination: destination,
+                limitsCurrency: limitsCurrency
+            )
+            .mapError(TransactionLimitsServiceError.network)
+            .eraseToAnyPublisher()
     }
 
     private func fetchCrossBorderLimits(
@@ -84,28 +155,27 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         targetCurrency: CurrencyType,
         limitsCurrency: CurrencyType
     ) -> TransactionLimitsServicePublisher {
-        repository
-            .fetchCrossBorderLimits(
-                source: LimitsAccount(
-                    currency: paymentMethod.fiatCurrency.currencyType,
-                    accountType: paymentMethod.type.isFunds ? .custodial : .nonCustodial
-                ),
-                destination: LimitsAccount(
-                    currency: targetCurrency,
-                    accountType: .custodial
-                ),
-                limitsCurrency: paymentMethod.fiatCurrency.currencyType
-            )
-            .map { crossBorderLimits -> TransactionLimits in
-                TransactionLimits(crossBorderLimits: crossBorderLimits, paymentMethod: paymentMethod)
-            }
-            .mapError(TransactionLimitsServiceError.network)
-            .convertAmounts(
-                from: paymentMethod.fiatCurrency.currencyType,
-                to: limitsCurrency,
-                using: conversionService
-            )
-            .eraseToAnyPublisher()
+        fetchCrossBorderLimits(
+            source: LimitsAccount(
+                currency: paymentMethod.fiatCurrency.currencyType,
+                accountType: paymentMethod.type.isFunds ? .custodial : .nonCustodial
+            ),
+            destination: LimitsAccount(
+                currency: targetCurrency,
+                accountType: .custodial
+            ),
+            limitsCurrency: paymentMethod.fiatCurrency
+        )
+        .map { crossBorderLimits -> TransactionLimits in
+            TransactionLimits(paymentMethod)
+                .merge(with: crossBorderLimits)
+        }
+        .convertAmounts(
+            from: paymentMethod.fiatCurrency.currencyType,
+            to: limitsCurrency,
+            using: conversionService
+        )
+        .eraseToAnyPublisher()
     }
 }
 
@@ -137,15 +207,35 @@ extension Publisher where Output == TransactionLimits, Failure == TransactionLim
 
 extension TransactionLimits {
 
-    init(crossBorderLimits: CrossBorderLimits, paymentMethod: PaymentMethod) {
+    init(_ tradeLimits: TradeLimits) {
+        self.init(
+            minimum: tradeLimits.minOrder,
+            maximum: tradeLimits.maxPossibleOrder,
+            maximumDaily: tradeLimits.daily?.limit ?? tradeLimits.maxPossibleOrder,
+            maximumAnnual: tradeLimits.annual?.limit ?? tradeLimits.maxPossibleOrder,
+            suggestedUpgrade: nil
+        )
+    }
+
+    init(_ paymentMethod: PaymentMethod) {
+        self.init(
+            minimum: paymentMethod.min.moneyValue,
+            maximum: paymentMethod.max.moneyValue,
+            maximumDaily: paymentMethod.maxDaily.moneyValue,
+            maximumAnnual: paymentMethod.maxAnnual.moneyValue,
+            suggestedUpgrade: nil
+        )
+    }
+
+    func merge(with crossBorderLimits: CrossBorderLimits) -> TransactionLimits {
         let infinity = MoneyValue(amount: BigInt(Int.max), currency: crossBorderLimits.currency)
         let maxCrossBorderCurrentLimit = crossBorderLimits.currentLimits?.available ?? infinity
         let maxCrossBorderDailyLimit = crossBorderLimits.currentLimits?.daily?.limit ?? infinity
         let maxCrossBorderAnnualLimit = crossBorderLimits.currentLimits?.yearly?.limit ?? infinity
-        let maxCombinedLimit = try? MoneyValue.min(paymentMethod.max.moneyValue, maxCrossBorderCurrentLimit)
-        self.init(
-            minimum: paymentMethod.min.moneyValue,
-            maximum: maxCombinedLimit ?? paymentMethod.max.moneyValue,
+        let maxCombinedLimit = try? MoneyValue.min(maximum, maxCrossBorderCurrentLimit)
+        return TransactionLimits(
+            minimum: minimum,
+            maximum: maxCombinedLimit ?? maximum,
             maximumDaily: maxCrossBorderDailyLimit,
             maximumAnnual: maxCrossBorderAnnualLimit,
             suggestedUpgrade: crossBorderLimits.suggestedUpgrade

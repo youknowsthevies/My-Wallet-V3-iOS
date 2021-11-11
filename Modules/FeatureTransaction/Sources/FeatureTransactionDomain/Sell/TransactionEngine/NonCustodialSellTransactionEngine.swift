@@ -6,6 +6,7 @@ import RxSwift
 import ToolKit
 
 final class NonCustodialSellTransactionEngine: SellTransactionEngine {
+
     let receiveAddressFactory: ExternalAssetAddressServiceAPI
     let fiatCurrencyService: FiatCurrencyServiceAPI
     let kycTiersService: KYCTiersServiceAPI
@@ -14,10 +15,9 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
     let orderDirection: OrderDirection = .fromUserKey
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderUpdateRepository: OrderUpdateRepositoryAPI
-    let priceService: PriceServiceAPI
     let quotesEngine: SwapQuotesEngine
     let requireSecondPassword: Bool
-    let tradeLimitsRepository: TransactionLimitsRepositoryAPI
+    let transactionLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
@@ -29,10 +29,9 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         orderUpdateRepository: OrderUpdateRepositoryAPI = resolve(),
-        tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
         receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
@@ -40,10 +39,9 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         self.orderQuoteRepository = orderQuoteRepository
         self.orderCreationRepository = orderCreationRepository
         self.orderUpdateRepository = orderUpdateRepository
-        self.tradeLimitsRepository = tradeLimitsRepository
+        self.transactionLimitsService = transactionLimitsService
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiersService = kycTiersService
-        self.priceService = priceService
         self.onChainEngine = onChainEngine
         self.receiveAddressFactory = receiveAddressFactory
     }
@@ -159,8 +157,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                         )
                         return self.updateLimits(
                             pendingTransaction: pendingTransaction,
-                            pricedQuote: pricedQuote,
-                            fiatCurrency: fiatCurrency
+                            pricedQuote: pricedQuote
                         )
                         .map(weak: self) { (self, pendingTx) -> PendingTransaction in
                             pendingTx
@@ -312,6 +309,7 @@ extension PendingTransaction {
 }
 
 extension PendingTransaction {
+
     fileprivate var userTiers: KYC.UserTiers? {
         engineState[.userTiers] as? KYC.UserTiers
     }
