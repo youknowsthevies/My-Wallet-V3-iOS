@@ -34,7 +34,7 @@ public struct FuzzyAlgorithm: StringDistanceAlgorithm {
             (a, b) = (a.lowercased(), b.lowercased())
         }
 
-        if b.starts(with: a[...a.index(a.startIndex, offsetBy: floor(a.count.d / 1.5).i)]) {
+        if !a.isEmpty, b.starts(with: a[...a.index(a.startIndex, offsetBy: floor(a.count.d / 1.5).i)]) {
             return 0
         }
 
