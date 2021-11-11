@@ -41,6 +41,8 @@ public enum AppFeature: Int, CaseIterable {
 
     case unifiedSignIn
 
+    case pollingForEmailLogin
+
     // MARK: - SDD
 
     /// Enables SDD checks. If `false`, all checks immediately fail
@@ -92,6 +94,8 @@ extension AppFeature {
             return "show_email_verification_in_buy_flow_ios"
         case .unifiedSignIn:
             return "sso_unified_sign_in_enabled_ios"
+        case .pollingForEmailLogin:
+            return "ios_ff_sso_polling"
         case .sddEnabled:
             return "sdd_enabled_ios"
         case .customerSupportChat:
@@ -130,6 +134,8 @@ extension AppFeature {
             return false
         case .unifiedSignIn:
             return false
+        case .pollingForEmailLogin:
+            return true
         case .sddEnabled:
             return false
         case .customerSupportChat:

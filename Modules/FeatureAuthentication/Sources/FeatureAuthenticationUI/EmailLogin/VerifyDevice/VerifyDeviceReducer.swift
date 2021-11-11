@@ -96,8 +96,7 @@ public struct VerifyDeviceState: Equatable, NavigationState {
 struct VerifyDeviceEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let deviceVerificationService: DeviceVerificationServiceAPI
-    let featureFlags: InternalFeatureFlagServiceAPI
-    let appFeatureConfigurator: FeatureConfiguratorAPI
+    let featureFlagsService: FeatureFlagsServiceAPI
     let errorRecorder: ErrorRecording
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -105,16 +104,14 @@ struct VerifyDeviceEnvironment {
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         deviceVerificationService: DeviceVerificationServiceAPI,
-        featureFlags: InternalFeatureFlagServiceAPI,
-        appFeatureConfigurator: FeatureConfiguratorAPI,
+        featureFlagsService: FeatureFlagsServiceAPI,
         errorRecorder: ErrorRecording,
         externalAppOpener: ExternalAppOpener = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI
     ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
-        self.featureFlags = featureFlags
-        self.appFeatureConfigurator = appFeatureConfigurator
+        self.featureFlagsService = featureFlagsService
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
@@ -133,7 +130,7 @@ let verifyDeviceReducer = Reducer.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder,
                     externalAppOpener: $0.externalAppOpener,
-                    appFeatureConfigurator: $0.appFeatureConfigurator,
+                    featureFlagsService: $0.featureFlagsService,
                     analyticsRecorder: $0.analyticsRecorder
                 )
             }
@@ -148,7 +145,7 @@ let verifyDeviceReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder,
-                    appFeatureConfigurator: $0.appFeatureConfigurator,
+                    featureFlagsService: $0.featureFlagsService,
                     analyticsRecorder: $0.analyticsRecorder
                 )
             }
@@ -181,11 +178,20 @@ let verifyDeviceReducer = Reducer.combine(
         // MARK: - Navigations
 
         case .onAppear:
-            if environment.featureFlags.isEnabled(.pollingForEmailLogin) {
-                return Effect(value: .pollWalletInfo)
-            } else {
-                return .none
+            return Publishers.Zip(
+                environment.featureFlagsService.isEnabled(.local(.pollingForEmailLogin)),
+                environment.featureFlagsService.isEnabled(.remote(.pollingForEmailLogin))
+            )
+            .map { isLocalEnabled, isRemoteEnabled in
+                isLocalEnabled && isRemoteEnabled
             }
+            .flatMap { isEnabled -> Effect<VerifyDeviceAction, Never> in
+                guard isEnabled else {
+                    return .none
+                }
+                return Effect(value: .pollWalletInfo)
+            }
+            .eraseToEffect()
 
         case .onWillDisappear:
             return .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId())

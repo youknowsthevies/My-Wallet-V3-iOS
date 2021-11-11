@@ -369,7 +369,7 @@ struct PasswordLoginView_Previews: PreviewProvider {
                     mainQueue: .main,
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     errorRecorder: NoOpErrorRecorder(),
-                    appFeatureConfigurator: NoOpFeatureConfigurator(),
+                    featureFlagsService: NoOpFeatureFlagsService(),
                     analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )

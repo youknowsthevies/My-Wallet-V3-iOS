@@ -75,8 +75,7 @@ public enum Onboarding {
         var alertPresenter: AlertViewPresenterAPI
         var mainQueue: AnySchedulerOf<DispatchQueue>
         let deviceVerificationService: DeviceVerificationServiceAPI
-        let featureFlags: InternalFeatureFlagServiceAPI
-        var appFeatureConfigurator: FeatureConfiguratorAPI
+        let featureFlagsService: FeatureFlagsServiceAPI
         var buildVersionProvider: () -> String
     }
 }
@@ -92,8 +91,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 WelcomeEnvironment(
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
-                    featureFlags: $0.featureFlags,
-                    appFeatureConfigurator: $0.appFeatureConfigurator,
+                    featureFlagsService: $0.featureFlagsService,
                     buildVersionProvider: $0.buildVersionProvider
                 )
             }

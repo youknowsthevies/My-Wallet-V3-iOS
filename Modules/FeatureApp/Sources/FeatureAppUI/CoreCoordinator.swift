@@ -117,8 +117,7 @@ struct CoreAppEnvironment {
     var accountRecoveryService: AccountRecoveryServiceAPI
     var deviceVerificationService: DeviceVerificationServiceAPI
     var featureFlagsService: FeatureFlagsServiceAPI
-    var appFeatureConfigurator: FeatureConfiguratorAPI // TODO: deprecated, use featureFlagsService instead
-    var internalFeatureService: InternalFeatureFlagServiceAPI // TODO: deprecated, use featureFlagsService instead
+    var appFeatureConfigurator: FeatureConfiguratorAPI
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     var blockchainSettings: BlockchainSettingsAppAPI
     var credentialsStore: CredentialsStoreAPI
@@ -149,8 +148,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     alertPresenter: environment.alertPresenter,
                     mainQueue: environment.mainQueue,
                     deviceVerificationService: environment.deviceVerificationService,
-                    featureFlags: environment.internalFeatureService,
-                    appFeatureConfigurator: environment.appFeatureConfigurator,
+                    featureFlagsService: environment.featureFlagsService,
                     buildVersionProvider: environment.buildVersionProvider
                 )
             }
@@ -528,29 +526,46 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
 
     case .loginRequestReceived(let deeplink):
-        return environment
-            .deviceVerificationService
-            .handleLoginRequestDeeplink(url: deeplink)
-            .receive(on: environment.mainQueue)
-            .catchToEffect()
-            .map { result -> CoreAppAction in
-                guard case .failure(let error) = result else {
-                    // if success, just ignore the effect
-                    return .none
-                }
-                switch error {
-                // when catched a deeplink with a different session token,
-                // or when there is no session token from the app,
-                // it means a login magic link generated from a different device is catched
-                // proceed to login request authorization in this case
-                case .missingSessionToken(let sessionId, let base64Str),
-                     .sessionTokenMismatch(let sessionId, let base64Str):
-                    return .checkIfConfirmationRequired(sessionId: sessionId, base64Str: base64Str)
-                case .failToDecodeBase64Component,
-                     .failToDecodeToWalletInfo:
-                    return .none
-                }
+        return Publishers.Zip(
+            environment
+                .featureFlagsService
+                .isEnabled(.local(.pollingForEmailLogin)),
+            environment
+                .featureFlagsService
+                .isEnabled(.remote(.pollingForEmailLogin))
+        )
+        .map { isLocalEnabled, isRemoteEnabled in
+            isLocalEnabled && isRemoteEnabled
+        }
+        .flatMap { isEnabled -> Effect<CoreAppAction, Never> in
+            guard isEnabled else {
+                return .none
             }
+            return environment
+                .deviceVerificationService
+                .handleLoginRequestDeeplink(url: deeplink)
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map { result -> CoreAppAction in
+                    guard case .failure(let error) = result else {
+                        // if success, just ignore the effect
+                        return .none
+                    }
+                    switch error {
+                    // when catched a deeplink with a different session token,
+                    // or when there is no session token from the app,
+                    // it means a login magic link generated from a different device is catched
+                    // proceed to login request authorization in this case
+                    case .missingSessionToken(let sessionId, let base64Str),
+                         .sessionTokenMismatch(let sessionId, let base64Str):
+                        return .checkIfConfirmationRequired(sessionId: sessionId, base64Str: base64Str)
+                    case .failToDecodeBase64Component,
+                         .failToDecodeToWalletInfo:
+                        return .none
+                    }
+                }
+        }
+        .eraseToEffect()
 
     case .onboarding(.welcomeScreen(.emailLogin(.verifyDevice(.checkIfConfirmationRequired(let sessionId, let base64Str))))),
          .checkIfConfirmationRequired(let sessionId, let base64Str):

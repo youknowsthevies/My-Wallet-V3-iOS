@@ -76,7 +76,6 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
-                    internalFeatureService: $0.internalFeatureService,
                     fiatCurrencySettingsService: $0.fiatCurrencySettingsService,
                     blockchainSettings: $0.blockchainSettings,
                     credentialsStore: $0.credentialsStore,

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureAuthenticationDomain
@@ -17,6 +18,7 @@ public enum WelcomeAction: Equatable {
     case requestedToDecryptWallet(String)
     case requestedToRestoreWallet(WalletRecovery)
     /// should only be used on internal builds
+    case setManualPairingEnabled
     case manualPairing(CredentialsAction)
     case secondPasswordNotice(SecondPasswordNotice.Action)
     case informSecondPasswordDetected
@@ -70,8 +72,7 @@ public struct WelcomeEnvironment {
     let sessionTokenService: SessionTokenServiceAPI
     let deviceVerificationService: DeviceVerificationServiceAPI
     let buildVersionProvider: () -> String
-    let featureFlags: InternalFeatureFlagServiceAPI
-    let appFeatureConfigurator: FeatureConfiguratorAPI
+    let featureFlagsService: FeatureFlagsServiceAPI
     let errorRecorder: ErrorRecording
     let externalAppOpener: ExternalAppOpener
     let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -80,8 +81,7 @@ public struct WelcomeEnvironment {
         mainQueue: AnySchedulerOf<DispatchQueue>,
         sessionTokenService: SessionTokenServiceAPI = resolve(),
         deviceVerificationService: DeviceVerificationServiceAPI,
-        featureFlags: InternalFeatureFlagServiceAPI,
-        appFeatureConfigurator: FeatureConfiguratorAPI,
+        featureFlagsService: FeatureFlagsServiceAPI,
         buildVersionProvider: @escaping () -> String,
         errorRecorder: ErrorRecording = resolve(),
         externalAppOpener: ExternalAppOpener = resolve(),
@@ -91,8 +91,7 @@ public struct WelcomeEnvironment {
         self.sessionTokenService = sessionTokenService
         self.deviceVerificationService = deviceVerificationService
         self.buildVersionProvider = buildVersionProvider
-        self.featureFlags = featureFlags
-        self.appFeatureConfigurator = appFeatureConfigurator
+        self.featureFlagsService = featureFlagsService
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
@@ -110,8 +109,7 @@ public let welcomeReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     sessionTokenService: $0.sessionTokenService,
                     deviceVerificationService: $0.deviceVerificationService,
-                    featureFlags: $0.featureFlags,
-                    appFeatureConfigurator: $0.appFeatureConfigurator,
+                    featureFlagsService: $0.featureFlagsService,
                     errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder
                 )
@@ -140,7 +138,7 @@ public let welcomeReducer = Reducer.combine(
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
                     errorRecorder: $0.errorRecorder,
-                    appFeatureConfigurator: $0.appFeatureConfigurator,
+                    featureFlagsService: $0.featureFlagsService,
                     analyticsRecorder: $0.analyticsRecorder
                 )
             }
@@ -167,8 +165,21 @@ public let welcomeReducer = Reducer.combine(
         case .start:
             state.buildVersion = environment.buildVersionProvider()
             if BuildFlag.isInternal {
-                state.manualPairingEnabled = !environment.featureFlags.isEnabled(.disableGUIDLogin)
+                return environment
+                    .featureFlagsService
+                    .isEnabled(.local(.disableGUIDLogin))
+                    .flatMap { isEnabled -> Effect<WelcomeAction, Never> in
+                        guard !isEnabled else {
+                            return .none
+                        }
+                        return Effect(value: .setManualPairingEnabled)
+                    }
+                    .eraseToEffect()
             }
+            return .none
+
+        case .setManualPairingEnabled:
+            state.manualPairingEnabled = true
             return .none
 
         case .presentScreenFlow(let screenFlow):

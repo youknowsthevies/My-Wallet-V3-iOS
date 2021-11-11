@@ -85,9 +85,8 @@ public struct EmailLoginState: Equatable, NavigationState {
 struct EmailLoginEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let sessionTokenService: SessionTokenServiceAPI
-    let featureFlags: InternalFeatureFlagServiceAPI
     let deviceVerificationService: DeviceVerificationServiceAPI
-    let appFeatureConfigurator: FeatureConfiguratorAPI
+    let featureFlagsService: FeatureFlagsServiceAPI
     let errorRecorder: ErrorRecording
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let validateEmail: (String) -> Bool
@@ -96,8 +95,7 @@ struct EmailLoginEnvironment {
         mainQueue: AnySchedulerOf<DispatchQueue>,
         sessionTokenService: SessionTokenServiceAPI,
         deviceVerificationService: DeviceVerificationServiceAPI,
-        featureFlags: InternalFeatureFlagServiceAPI,
-        appFeatureConfigurator: FeatureConfiguratorAPI,
+        featureFlagsService: FeatureFlagsServiceAPI,
         errorRecorder: ErrorRecording,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         validateEmail: @escaping (String) -> Bool = { $0.isEmail }
@@ -105,8 +103,7 @@ struct EmailLoginEnvironment {
         self.mainQueue = mainQueue
         self.sessionTokenService = sessionTokenService
         self.deviceVerificationService = deviceVerificationService
-        self.featureFlags = featureFlags
-        self.appFeatureConfigurator = appFeatureConfigurator
+        self.featureFlagsService = featureFlagsService
         self.errorRecorder = errorRecorder
         self.analyticsRecorder = analyticsRecorder
         self.validateEmail = validateEmail
@@ -123,8 +120,7 @@ let emailLoginReducer = Reducer.combine(
                 VerifyDeviceEnvironment(
                     mainQueue: $0.mainQueue,
                     deviceVerificationService: $0.deviceVerificationService,
-                    featureFlags: $0.featureFlags,
-                    appFeatureConfigurator: $0.appFeatureConfigurator,
+                    featureFlagsService: $0.featureFlagsService,
                     errorRecorder: $0.errorRecorder,
                     analyticsRecorder: $0.analyticsRecorder
                 )

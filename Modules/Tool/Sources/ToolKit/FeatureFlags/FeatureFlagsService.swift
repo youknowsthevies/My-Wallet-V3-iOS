@@ -66,13 +66,16 @@ class FeatureFlagsService: FeatureFlagsServiceAPI {
 
     private let localFeatureFlagsService: InternalFeatureFlagServiceAPI
     private let remoteFeatureFlagsService: FeatureFetching
+    private let appFeatureConfigurator: FeatureConfiguratorAPI
 
     init(
         localFeatureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
-        remoteFeatureFlagsService: FeatureFetching = resolve()
+        remoteFeatureFlagsService: FeatureFetching = resolve(),
+        appFeatureConfigurator: FeatureConfiguratorAPI = resolve()
     ) {
         self.localFeatureFlagsService = localFeatureFlagsService
         self.remoteFeatureFlagsService = remoteFeatureFlagsService
+        self.appFeatureConfigurator = appFeatureConfigurator
     }
 
     func enable(_ feature: FeatureFlag) -> AnyPublisher<Void, Never> {
