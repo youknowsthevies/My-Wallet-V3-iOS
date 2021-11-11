@@ -43,7 +43,7 @@ public struct LinkedBankData {
     let state: LinkedBankResponse.State
     public let error: LinkageError?
     public let errorCode: String?
-    public let entity: String
+    public let entity: String?
     public let paymentMethodType: PaymentMethodPayloadType
     public let partner: Partner
 
@@ -66,7 +66,7 @@ public struct LinkedBankData {
         state = response.state
         error = LinkageError(from: response.error)
         errorCode = response.errorCode
-        entity = response.attributes.entity
+        entity = response.attributes?.entity
         paymentMethodType = response.isBankTransferAccount ? .bankTransfer : .bankAccount
         guard let partner = Partner(rawValue: response.partner) else {
             return nil
@@ -119,7 +119,7 @@ extension OpenBanking.BankAccount {
                 sortCode: linkedBankData.account?.sortCode
             ),
             error: linkedBankData.errorCode.map(OpenBanking.Error.code),
-            attributes: .init(entity: linkedBankData.entity)
+            attributes: .init(entity: linkedBankData.entity ?? "Safeconnect")
         )
     }
 }
