@@ -13,8 +13,7 @@ struct WebUpgradeAccountView: View {
         static let credentials = "credentialsHandler"
     }
 
-    // TODO: change to dynamic config
-    private static let url = "https://wallet-frontend-pre-release.dev.blockchain.info/#/login?product=wallet&platform=ios"
+    private static let url = "\(Constants.HostURL.loginOnWeb)?product=wallet&platform=ios"
 
     private let connectionStatusCallback: (String) -> Void
     private let credentialsCallback: (String) -> Void
