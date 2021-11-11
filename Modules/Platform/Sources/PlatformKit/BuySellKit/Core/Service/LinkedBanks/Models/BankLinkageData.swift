@@ -20,8 +20,10 @@ public struct BankLinkageData {
     public let id: String
     public let entity: String
     public let institutions: [OpenBanking.Institution]?
+    public let currency: FiatCurrency
 
-    init?(from response: CreateBankLinkageResponse) {
+    init?(from response: CreateBankLinkageResponse, currency: FiatCurrency) {
+        self.currency = currency
         guard let attributes = response.attributes else {
             return nil
         }

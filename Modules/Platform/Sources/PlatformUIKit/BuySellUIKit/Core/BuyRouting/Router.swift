@@ -234,7 +234,7 @@ public final class Router: RouterAPI {
         case .paymentMethods, .bankTransferDetails, .fundsTransferDetails:
             navigationRouter.topMostViewControllerProvider
                 .topMostViewController?
-                .dismiss(animated: true, completion: nil)
+                .dismiss(animated: true)
         default:
             navigationRouter.dismiss()
         }

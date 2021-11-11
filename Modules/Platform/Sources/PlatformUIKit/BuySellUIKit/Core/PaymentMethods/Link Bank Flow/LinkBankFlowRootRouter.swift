@@ -74,9 +74,6 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     private let yodleeScreenBuilder: YodleeScreenBuildable
     private let failureScreenBuilder: LinkBankFailureScreenBuildable
     private let startOpenBanking: StartOpenBanking.Type
-    private let fiatCurrencyService: FiatCurrencyServiceAPI
-
-    private var bag: Set<AnyCancellable> = []
 
     private var navigationController: UINavigationController?
 
@@ -86,15 +83,13 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
         splashScreenBuilder: LinkBankSplashScreenBuildable,
         yodleeScreenBuilder: YodleeScreenBuildable,
         failureScreenBuilder: LinkBankFailureScreenBuildable,
-        startOpenBanking: StartOpenBanking.Type = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+        startOpenBanking: StartOpenBanking.Type = resolve()
     ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.splashScreenBuilder = splashScreenBuilder
         self.yodleeScreenBuilder = yodleeScreenBuilder
         self.failureScreenBuilder = failureScreenBuilder
         self.startOpenBanking = startOpenBanking
-        self.fiatCurrencyService = fiatCurrencyService
         super.init(interactor: interactor)
         interactor.router = self
     }
@@ -115,31 +110,17 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
             attachChild(router)
             navigationController?.pushViewController(router.viewControllable.uiviewController, animated: true)
         case .yapily(let data):
-            fiatCurrencyService.fiatCurrency
-                .publisher
-                .result()
-                .sink { [weak self] result in
-                    guard let self = self else { return }
-                    guard let presentingViewController = self.presentingController else {
-                        fatalError("No presentingViewController, unable to present Open Banking")
-                    }
-                    switch result {
-                    case .success(let currency):
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            presentingViewController.present(
-                                self.startOpenBanking.link(
-                                    account: data,
-                                    currency: currency,
-                                    listener: self.interactor
-                                ),
-                                animated: true
-                            )
-                        }
-                    case .failure:
-                        self.route(to: .failure(.generic))
-                    }
-                }
-                .store(in: &bag)
+            detachCurrentChild()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
+                presentingController?.present(
+                    startOpenBanking.link(
+                        account: data,
+                        currency: data.currency,
+                        listener: interactor
+                    ),
+                    animated: true
+                )
+            }
         case .failure:
             let router = failureScreenBuilder.build(withListener: interactor)
             attachChild(router)
