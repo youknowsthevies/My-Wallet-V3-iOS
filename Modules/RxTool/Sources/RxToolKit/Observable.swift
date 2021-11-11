@@ -1,7 +1,89 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import Foundation
 import RxSwift
 import ToolKit
+
+// swiftformat:disable indent
+
+extension ObservableConvertibleType {
+
+    public var publisher: Observable<Element>.Publisher<Self> {
+        Observable.Publisher(upstream: self)
+    }
+
+    public func asPublisher() -> Observable<Element>.Publisher<Self> {
+        publisher
+    }
+}
+
+extension Observable {
+
+    public struct Publisher<Upstream: ObservableConvertibleType>: Combine.Publisher {
+
+        public typealias Output = Upstream.Element
+        public typealias Failure = Swift.Error
+
+        private let upstream: Upstream
+
+        init(upstream: Upstream) {
+            self.upstream = upstream
+        }
+
+        public func receive<S: Subscriber>(
+            subscriber: S
+        ) where Failure == S.Failure, Output == S.Input {
+            subscriber.receive(
+                subscription: Subscription(
+                    upstream: upstream,
+                    downstream: subscriber
+                )
+            )
+        }
+    }
+
+    final class Subscription<
+        Upstream: ObservableConvertibleType,
+        Downstream: Subscriber
+    >: Combine.Subscription where
+        Downstream.Input == Upstream.Element,
+        Downstream.Failure == Swift.Error
+    {
+
+        private var lock: NSRecursiveLock = .init()
+        private var observable: Observable<Upstream.Element>
+        private var downstream: Downstream
+        private var disposable: Disposable?
+
+        init(upstream: Upstream, downstream: Downstream) {
+            observable = upstream.asObservable()
+            self.downstream = downstream
+        }
+
+        func request(_ demand: Subscribers.Demand) {
+            guard disposable == nil else { return }
+            disposable = observable.subscribe { [weak self] event in
+                guard let self = self else { return }
+                self.lock.lock()
+                defer { self.lock.unlock() }
+                switch event {
+                case .next(let element):
+                    _ = self.downstream.receive(element)
+                case .error(let error):
+                    self.downstream.receive(completion: .failure(error))
+                case .completed:
+                    self.downstream.receive(completion: .finished)
+                }
+            }
+        }
+
+        func cancel() {
+            disposable?.dispose()
+            disposable = nil
+        }
+    }
+}
 
 extension ObservableType {
 
@@ -27,7 +109,11 @@ extension ObservableType where Element: OptionalProtocol {
 }
 
 extension ObservableType {
-    public func map<A: AnyObject, R>(weak object: A, _ selector: @escaping (A, Element) throws -> R) -> Observable<R> {
+
+    public func map<A: AnyObject, R>(
+        weak object: A,
+        _ selector: @escaping (A, Element) throws -> R
+    ) -> Observable<R> {
         map { [weak object] element -> R in
             guard let object = object else {
                 throw ToolKitError.nullReference(A.self)
@@ -38,7 +124,11 @@ extension ObservableType {
 }
 
 extension ObservableType {
-    public func flatMap<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
+
+    public func flatMap<A: AnyObject, R>(
+        weak object: A,
+        selector: @escaping (A, Self.Element) throws -> Observable<R>
+    ) -> Observable<R> {
         flatMap { [weak object] value -> Observable<R> in
             guard let object = object else {
                 throw ToolKitError.nullReference(A.self)
@@ -47,7 +137,10 @@ extension ObservableType {
         }
     }
 
-    public func flatMapLatest<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
+    public func flatMapLatest<A: AnyObject, R>(
+        weak object: A,
+        selector: @escaping (A, Self.Element) throws -> Observable<R>
+    ) -> Observable<R> {
         flatMapLatest { [weak object] value -> Observable<R> in
             guard let object = object else {
                 throw ToolKitError.nullReference(A.self)
@@ -56,7 +149,10 @@ extension ObservableType {
         }
     }
 
-    public func flatMapFirst<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
+    public func flatMapFirst<A: AnyObject, R>(
+        weak object: A,
+        selector: @escaping (A, Self.Element) throws -> Observable<R>
+    ) -> Observable<R> {
         flatMapFirst { [weak object] value -> Observable<R> in
             guard let object = object else {
                 throw ToolKitError.nullReference(A.self)
@@ -69,7 +165,10 @@ extension ObservableType {
 // MARK: - Creation (weak: self)
 
 extension ObservableType {
-    public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, AnyObserver<Element>) -> Disposable) -> Observable<Element> {
+    public static func create<A: AnyObject>(
+        weak object: A,
+        subscribe: @escaping (A, AnyObserver<Element>) -> Disposable
+    ) -> Observable<Element> {
         Observable<Element>.create { [weak object] observer -> Disposable in
             guard let object = object else {
                 observer.on(.error(ToolKitError.nullReference(A.self)))
@@ -102,7 +201,7 @@ extension ObservableType {
 
     /// Directly maps to `Result<Element, Error>` type.
     public func mapToResult() -> Observable<Result<Element, Error>> {
-        map { .success($0) }
+        map(Result.success)
             .catchError { .just(.failure($0)) }
     }
 
@@ -118,8 +217,8 @@ extension ObservableType {
 
     /// Map with success mapper only.
     public func mapToResult<ResultElement>(
-        successMap: @escaping (Element) -> ResultElement) -> Observable<Result<ResultElement, Error>>
-    {
+        successMap: @escaping (Element) -> ResultElement
+    ) -> Observable<Result<ResultElement, Error>> {
         map { .success(successMap($0)) }
             .catchError { .just(.failure($0)) }
     }
@@ -144,8 +243,13 @@ extension ObservableType {
         line: Int = #line,
         function: String = #function
     ) -> Disposable {
-        self.do(onError: { error in
-            fatalError("Binding error to publish relay. file: \(file), line: \(line), function: \(function), error: \(error).")
+        `do`(onError: { error in
+            fatalError(
+                """
+                Binding error to publish relay.
+                file: \(file), line: \(line), function: \(function), error: \(error).
+                """
+            )
         })
         .subscribe { event in
             switch event {
@@ -176,8 +280,13 @@ extension ObservableType {
         line: Int = #line,
         function: String = #function
     ) -> Disposable {
-        self.do(onError: { error in
-            fatalError("Binding error to behavior relay. file: \(file), line: \(line), function: \(function), error: \(error).")
+        `do`(onError: { error in
+            fatalError(
+                """
+                Binding error to behaviour relay.
+                file: \(file), line: \(line), function: \(function), error: \(error).
+                """
+            )
         })
         .subscribe { event in
             switch event {
@@ -199,7 +308,8 @@ extension ObservableType {
         function: String = #function,
         line: Int = #line
     ) -> Disposable {
-        map { $0 as Element? }._bind(to: relays, file: file, line: line, function: function)
+        map { $0 as Element? }
+            ._bind(to: relays, file: file, line: line, function: function)
     }
 
     public func bindAndCatch<Observer: ObserverType>(
@@ -217,7 +327,8 @@ extension ObservableType {
         line: Int = #line,
         function: String = #function
     ) -> Disposable where Observer.Element == Element? {
-        map { $0 as Element? }._bind(to: observers, file: file, line: line, function: function)
+        map { $0 as Element? }
+            ._bind(to: observers, file: file, line: line, function: function)
     }
 
     private func _bind<Observer: ObserverType>(
@@ -227,7 +338,12 @@ extension ObservableType {
         function: String = #function
     ) -> Disposable where Observer.Element == Element {
         self.do(onError: { error in
-            fatalError("Binding error to observers. file: \(file), line: \(line), function: \(function), error: \(error).")
+            fatalError(
+                """
+                Binding error to observers.
+                file: \(file), line: \(line), function: \(function), error: \(error).
+                """
+            )
         })
         .subscribe { event in
             observers.forEach { $0.on(event) }
@@ -241,12 +357,26 @@ extension ObservableType {
 
 extension ObservableType {
 
-    public func _debug(file: String = #file, line: UInt = #line, function: String = #function) -> Observable<Element> {
-        debug("\(file).\(function)", trimOutput: false, file: file, line: line, function: function)
+    public func _debug(
+        file: String = #file,
+        line: UInt = #line,
+        function: String = #function
+    ) -> Observable<Element> {
+        debug(
+            "\(file).\(function)",
+            trimOutput: false,
+            file: file,
+            line: line,
+            function: function
+        )
     }
 
-    public func crashOnError(file: String = #file, line: UInt = #line, function: String = #function) -> Observable<Element> {
-        self.do(onError: { error in
+    public func crashOnError(
+        file: String = #file,
+        line: UInt = #line,
+        function: String = #function
+    ) -> Observable<Element> {
+        `do`(onError: { error in
             fatalError(String(describing: error))
         })
     }

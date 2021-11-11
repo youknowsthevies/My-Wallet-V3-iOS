@@ -34,11 +34,6 @@ let package = Package(
             from: "0.10.2"
         ),
         .package(
-            name: "RxCombine",
-            url: "https://github.com/paulo-bc/RxCombine.git",
-            from: "1.6.2"
-        ),
-        .package(
             name: "RxDataSources",
             url: "https://github.com/RxSwiftCommunity/RxDataSources.git",
             from: "4.0.1"
@@ -91,7 +86,6 @@ let package = Package(
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "RxCocoa", package: "RxSwift"),
-                .product(name: "RxCombine", package: "RxCombine"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 // TODO: refactor this to use `FeatureAuthenticationDomain` as this shouldn't depend on DataKit

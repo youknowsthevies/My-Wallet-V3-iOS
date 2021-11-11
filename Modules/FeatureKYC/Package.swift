@@ -38,11 +38,6 @@ let package = Package(
             url: "https://github.com/Veriff/veriff-ios-spm.git",
             .exact("4.3.1")
         ),
-        .package(
-            name: "RxCombine",
-            url: "https://github.com/paulo-bc/RxCombine.git",
-            from: "1.6.2"
-        ),
         .package(path: "../Analytics"),
         .package(path: "../FeatureAuthentication"),
         .package(path: "../Localization"),
@@ -76,7 +71,6 @@ let package = Package(
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "PlatformUIKit", package: "Platform"),
-                .product(name: "RxCombine", package: "RxCombine"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "UIComponents", package: "UIComponents"),

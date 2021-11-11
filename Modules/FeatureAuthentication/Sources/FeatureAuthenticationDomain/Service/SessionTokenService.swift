@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import RxCombine
+import RxToolKit
 
 final class SessionTokenService: SessionTokenServiceAPI {
 
