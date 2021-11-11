@@ -70,10 +70,6 @@ extension FeatureOpenBankingUI.OpenBankingViewController: StartOpenBanking {
 
         return navigationController
     }
-
-    public static func pay(amountMinor: String, currency: FiatCurrency) -> UIViewController {
-        fatalError("not yet implemented")
-    }
 }
 
 struct AccountLinkingFlowPresenter: AccountLinkingFlowPresenterAPI {

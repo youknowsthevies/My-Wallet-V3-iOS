@@ -23,7 +23,6 @@ import UIKit
 /// # Figma
 ///
 ///  [Assets - Icons](https://www.figma.com/file/3jESURhHQ4VBTQcu0aZkoX/01---Assets-%7C-Icons)
-
 public struct Icon: View, Equatable {
 
     public let name: String
