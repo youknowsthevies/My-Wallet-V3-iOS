@@ -16,28 +16,26 @@ struct InterestAccountListErrorView: View {
 
     var body: some View {
         NavigationView {
-            ActionableView(
-                content: {
-                    VStack(alignment: .center, spacing: 8.0) {
-                        Text(LocalizationId.title)
-                            .textStyle(.title)
-                        VStack(alignment: .center, spacing: 4.0) {
-                            Text(LocalizationId.description)
-                                .textStyle(.subheading)
-                            Text(LocalizationId.body)
-                                .textStyle(.subheading)
-                        }
-                        Image("sb-intro-bg-theme", bundle: .platformUIKit)
-                        Spacer()
-                    }
-                },
-                buttons: [
-                    .init(
-                        title: LocalizationId.action,
-                        action: buttonTapped
-                    )
-                ]
-            )
+            VStack(alignment: .center, spacing: 8.0) {
+                Text(LocalizationId.title)
+                    .textStyle(.title)
+                VStack(alignment: .center, spacing: 4.0) {
+                    Text(LocalizationId.description)
+                        .textStyle(.subheading)
+                        .multilineTextAlignment(.center)
+                    Text(LocalizationId.body)
+                        .textStyle(.subheading)
+                        .multilineTextAlignment(.center)
+                }
+                .padding([.leading, .trailing], 16.0)
+                Image("sb-intro-bg-theme", bundle: .platformUIKit)
+                Spacer()
+                PrimaryButton(
+                    title: LocalizationId.action,
+                    action: buttonTapped
+                )
+                .padding([.leading, .trailing], 24.0)
+            }
             .whiteNavigationBarStyle()
             .navigationTitle(LocalizationId.navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
