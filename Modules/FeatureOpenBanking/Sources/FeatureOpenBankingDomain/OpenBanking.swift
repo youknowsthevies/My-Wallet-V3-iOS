@@ -163,7 +163,6 @@ public final class OpenBanking {
             .eraseToAnyPublisher()
     }
 
-
     private lazy var consentErrorPublisher = banking.state.result(for: .consent.error, as: OpenBanking.Error.self)
         .publisher
         .mapError(OpenBanking.Error.init)
@@ -171,8 +170,12 @@ public final class OpenBanking {
         .catch(Action.failure)
         .eraseToAnyPublisher()
 
-    private func waitForAccountLinking(account: OpenBanking.BankAccount, instiution: OpenBanking.Institution, action: Action) -> AnyPublisher<Action, Never> {
-        return banking.state.publisher(for: .is.authorised, as: Bool.self)
+    private func waitForAccountLinking(
+        account: OpenBanking.BankAccount,
+        instiution: OpenBanking.Institution,
+        action: Action
+    ) -> AnyPublisher<Action, Never> {
+        banking.state.publisher(for: .is.authorised, as: Bool.self)
             .ignoreResultFailure()
             .flatMap { [banking] authorised -> AnyPublisher<(Bool, OpenBanking.BankAccount), OpenBanking.Error> in
                 banking.poll(account: account, until: \.isNotPending)
@@ -198,7 +201,7 @@ public final class OpenBanking {
     }
 
     private func waitForConsent(output consent: Output, action: Action) -> AnyPublisher<Action, Never> {
-        return banking.state.publisher(for: .is.authorised, as: Bool.self)
+        banking.state.publisher(for: .is.authorised, as: Bool.self)
             .ignoreResultFailure()
             .flatMap { [consentErrorPublisher] authorised -> AnyPublisher<Action, Never> in
                 if authorised {
