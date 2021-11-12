@@ -52,7 +52,6 @@ public enum BankAction: Hashable, FailureAction {
     case failure(OpenBanking.Error)
 }
 
-// swiftlint:disable:next closure_body_length
 public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> { state, action, environment in
 
     enum ID {
