@@ -42,8 +42,8 @@ public final class LoginService: LoginServiceAPI {
     // MARK: - API
 
     public func login(walletIdentifier: String) -> AnyPublisher<Void, LoginServiceError> {
-        let repository = self.repository
-        let walletRepo = self.walletRepo
+        let repository = repository
+        let walletRepo = walletRepo
 
         let setWalletIdentifierMethod: (String) -> AnyPublisher<Void, Never> = { [weak self] identifier in
             guard let self = self else {

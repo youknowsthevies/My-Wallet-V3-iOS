@@ -96,7 +96,6 @@ public let openBankingReducer = Reducer<OpenBankingState, OpenBankingAction, Ope
             }
         }
     )
-    .debug()
 
 public struct OpenBankingView: View {
 

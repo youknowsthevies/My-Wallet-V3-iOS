@@ -13,7 +13,7 @@ public struct OpenBankingEnvironment {
     public var environment: Self { self }
     public private(set) var eventPublisher = PassthroughSubject<Result<Void, OpenBanking.Error>, Never>()
 
-    public var scheduler: Scheduler
+    public var scheduler: AnySchedulerOf<DispatchQueue>
     public var openBanking: OpenBanking
     public var showTransferDetails: () -> Void
     public var dismiss: () -> Void
@@ -22,7 +22,7 @@ public struct OpenBankingEnvironment {
     public var fiatCurrencyFormatter: FiatCurrencyFormatter
 
     public init(
-        scheduler: Scheduler = .init(),
+        scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.eraseToAnyScheduler(),
         openBanking: OpenBanking = resolve(),
         showTransferDetails: @escaping () -> Void = {},
         dismiss: @escaping () -> Void = {},
@@ -40,17 +40,5 @@ public struct OpenBankingEnvironment {
         self.fiatCurrencyFormatter = fiatCurrencyFormatter
 
         openBanking.state.set(.currency, to: currency)
-    }
-}
-
-extension OpenBankingEnvironment {
-
-    public struct Scheduler {
-
-        public var main: AnySchedulerOf<DispatchQueue>
-
-        public init(main: AnySchedulerOf<DispatchQueue> = .main) {
-            self.main = main
-        }
     }
 }

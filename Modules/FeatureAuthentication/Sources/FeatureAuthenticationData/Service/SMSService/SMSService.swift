@@ -31,8 +31,8 @@ public final class SMSService: SMSServiceAPI {
     // MARK: - API
 
     public func request() -> AnyPublisher<Void, SMSServiceError> {
-        let walletRepo = self.walletRepo
-        let repository = self.repository
+        let walletRepo = walletRepo
+        let repository = repository
 
         let credentials = nativeWalletFlagEnabled()
             .flatMap { isEnabled -> AnyPublisher<(guid: String?, sessionToken: String?), SMSServiceError> in

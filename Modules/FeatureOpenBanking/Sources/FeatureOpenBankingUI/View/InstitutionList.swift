@@ -63,7 +63,7 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
             case .fetch:
                 return environment.openBanking
                     .createBankAccount()
-                    .receive(on: environment.scheduler.main)
+                    .receive(on: environment.scheduler)
                     .map(InstitutionListAction.fetched)
                     .catch(InstitutionListAction.failure)
                     .eraseToEffect()
