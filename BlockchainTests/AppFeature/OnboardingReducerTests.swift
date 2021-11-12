@@ -16,29 +16,30 @@ class OnboardingReducerTests: XCTestCase {
 
     var settingsApp: MockBlockchainSettingsApp!
     var mockAlertPresenter: MockAlertViewPresenter!
-    var mockInternalFeatureFlags: InternalFeatureFlagServiceMock!
-    var mockAppFeatureConfigurator: MockFeatureConfigurator!
+    var mockDeviceVerificationService: MockDeviceVerificationService!
+    var mockFeatureFlagsService: MockFeatureFlagsService!
     var mockQueue: TestSchedulerOf<DispatchQueue>!
+    var cancellables = Set<AnyCancellable>()
 
     override func setUp() {
         super.setUp()
 
         settingsApp = MockBlockchainSettingsApp()
 
-        mockInternalFeatureFlags = InternalFeatureFlagServiceMock()
-        mockAppFeatureConfigurator = MockFeatureConfigurator()
+        mockDeviceVerificationService = MockDeviceVerificationService()
+        mockFeatureFlagsService = MockFeatureFlagsService()
         mockAlertPresenter = MockAlertViewPresenter()
         mockQueue = DispatchQueue.test
 
         // disable the manual login
-        mockInternalFeatureFlags.enable(.disableGUIDLogin)
+        mockFeatureFlagsService.enable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
     }
 
     override func tearDownWithError() throws {
         settingsApp = nil
         mockAlertPresenter = nil
-        mockInternalFeatureFlags = nil
-        mockAppFeatureConfigurator = nil
+        mockDeviceVerificationService = nil
+        mockFeatureFlagsService = nil
         mockQueue = nil
 
         try super.tearDownWithError()
@@ -58,8 +59,8 @@ class OnboardingReducerTests: XCTestCase {
                 appSettings: settingsApp,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
-                featureFlags: mockInternalFeatureFlags,
-                appFeatureConfigurator: mockAppFeatureConfigurator,
+                deviceVerificationService: mockDeviceVerificationService,
+                featureFlagsService: mockFeatureFlagsService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -86,8 +87,8 @@ class OnboardingReducerTests: XCTestCase {
                 appSettings: settingsApp,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
-                featureFlags: mockInternalFeatureFlags,
-                appFeatureConfigurator: mockAppFeatureConfigurator,
+                deviceVerificationService: mockDeviceVerificationService,
+                featureFlagsService: mockFeatureFlagsService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -116,8 +117,8 @@ class OnboardingReducerTests: XCTestCase {
                 appSettings: settingsApp,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
-                featureFlags: mockInternalFeatureFlags,
-                appFeatureConfigurator: mockAppFeatureConfigurator,
+                deviceVerificationService: mockDeviceVerificationService,
+                featureFlagsService: mockFeatureFlagsService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -144,8 +145,8 @@ class OnboardingReducerTests: XCTestCase {
                 appSettings: settingsApp,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
-                featureFlags: mockInternalFeatureFlags,
-                appFeatureConfigurator: mockAppFeatureConfigurator,
+                deviceVerificationService: mockDeviceVerificationService,
+                featureFlagsService: mockFeatureFlagsService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -174,8 +175,8 @@ class OnboardingReducerTests: XCTestCase {
                 appSettings: settingsApp,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
-                featureFlags: mockInternalFeatureFlags,
-                appFeatureConfigurator: mockAppFeatureConfigurator,
+                deviceVerificationService: mockDeviceVerificationService,
+                featureFlagsService: mockFeatureFlagsService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -206,8 +207,8 @@ class OnboardingReducerTests: XCTestCase {
                 appSettings: settingsApp,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
-                featureFlags: mockInternalFeatureFlags,
-                appFeatureConfigurator: mockAppFeatureConfigurator,
+                deviceVerificationService: mockDeviceVerificationService,
+                featureFlagsService: mockFeatureFlagsService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -245,8 +246,8 @@ class OnboardingReducerTests: XCTestCase {
                 appSettings: settingsApp,
                 alertPresenter: mockAlertPresenter,
                 mainQueue: mockQueue.eraseToAnyScheduler(),
-                featureFlags: mockInternalFeatureFlags,
-                appFeatureConfigurator: mockAppFeatureConfigurator,
+                deviceVerificationService: mockDeviceVerificationService,
+                featureFlagsService: mockFeatureFlagsService,
                 buildVersionProvider: { "v1.0.0" }
             )
         )

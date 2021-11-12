@@ -41,7 +41,7 @@ final class CredentialsReducerTests: XCTestCase {
                 loginService: MockLoginService(),
                 errorRecorder: NoOpErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),
-                appFeatureConfigurator: NoOpFeatureConfigurator(),
+                featureFlagsService: MockFeatureFlagsService(),
                 analyticsRecorder: MockAnalyticsRecorder()
             )
         )
@@ -228,7 +228,9 @@ final class CredentialsReducerTests: XCTestCase {
 
             // authentication with sms requied
             .receive(.walletPairing(.authenticateDidFail(.twoFactorOTPRequired(.sms)))) { state in
-                state.twoFAState = .init()
+                state.twoFAState = .init(
+                    twoFAType: .sms
+                )
             },
             .receive(.walletPairing(.handleSMS)),
             .receive(.twoFA(.showResendSMSButton(true))) { state in
@@ -289,7 +291,9 @@ final class CredentialsReducerTests: XCTestCase {
 
             // authentication with google auth required
             .receive(.walletPairing(.authenticateDidFail(.twoFactorOTPRequired(.google)))) { state in
-                state.twoFAState = .init()
+                state.twoFAState = .init(
+                    twoFAType: .google
+                )
             },
             .receive(.twoFA(.showTwoFACodeField(true))) { state in
                 state.twoFAState?.isTwoFACodeFieldVisible = true
@@ -353,7 +357,9 @@ final class CredentialsReducerTests: XCTestCase {
         testStore.assert(
             // authentication using 2FA
             .send(.walletPairing(.authenticateDidFail(.twoFactorOTPRequired(.google)))) { state in
-                state.twoFAState = .init()
+                state.twoFAState = .init(
+                    twoFAType: .google
+                )
             },
             .receive(.twoFA(.showTwoFACodeField(true))) { state in
                 state.twoFAState?.isTwoFACodeFieldVisible = true
@@ -397,7 +403,9 @@ final class CredentialsReducerTests: XCTestCase {
         testStore.assert(
             // authentication using 2FA
             .send(.walletPairing(.authenticateDidFail(.twoFactorOTPRequired(.google)))) { state in
-                state.twoFAState = .init()
+                state.twoFAState = .init(
+                    twoFAType: .google
+                )
             },
             .receive(.twoFA(.showTwoFACodeField(true))) { state in
                 state.twoFAState?.isTwoFACodeFieldVisible = true

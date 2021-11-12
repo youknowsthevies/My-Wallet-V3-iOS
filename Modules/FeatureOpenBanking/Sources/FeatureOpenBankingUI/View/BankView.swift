@@ -52,7 +52,6 @@ public enum BankAction: Hashable, FailureAction {
     case failure(OpenBanking.Error)
 }
 
-// swiftlint:disable:next closure_body_length
 public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> { state, action, environment in
 
     enum ID {
@@ -84,30 +83,20 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
                     return BankAction.failure(error)
                 }
             }
-            .receive(on: environment.scheduler.main)
+            .receive(on: environment.scheduler)
             .eraseToEffect()
             .cancellable(id: ID.Request())
 
     case .waitingForConsent:
-        return environment.openBanking.state.publisher(for: .authorisation.url, as: URL.self)
-            .ignoreResultFailure()
+        return environment.openBanking.authorisationURLPublisher
             .map(BankAction.launchAuthorisation)
-            .receive(on: environment.scheduler.main)
+            .receive(on: environment.scheduler)
             .eraseToEffect()
             .cancellable(id: ID.LaunchBank())
 
     case .launchAuthorisation(let url):
         state.ui = .waiting(for: state.bankName)
-        return .merge(
-            .fireAndForget { environment.openURL.open(url) },
-            environment.openBanking.state.publisher(for: .consent.error, as: OpenBanking.Error.self)
-                .get()
-                .ignoreFailure(setFailureType: Never.self)
-                .receive(on: environment.scheduler.main)
-                .map(BankAction.failure)
-                .eraseToEffect()
-                .cancellable(id: ID.ConsentError())
-        )
+        return .fireAndForget { environment.openURL.open(url) }
 
     case .finalise(let output):
         switch output {

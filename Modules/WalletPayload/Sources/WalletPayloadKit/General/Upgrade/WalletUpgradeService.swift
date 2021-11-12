@@ -2,7 +2,6 @@
 
 import Combine
 import DIKit
-import RxCombine
 import RxSwift
 import RxToolKit
 import ToolKit
@@ -73,6 +72,7 @@ final class WalletUpgradeService: WalletUpgradeServicing {
             .map(\.isEmpty)
             .map(!)
             .asPublisher()
+            .eraseToAnyPublisher()
     }
 
     func upgradeWallet() -> Observable<String> {

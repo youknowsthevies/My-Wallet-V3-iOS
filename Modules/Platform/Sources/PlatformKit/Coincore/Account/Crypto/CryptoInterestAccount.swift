@@ -87,10 +87,19 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .asSingle()
     }
 
-    let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
+    private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
+        featureFlagsService
+            .isEnabled(
+                .remote(.interestWithdrawAndDeposit)
+            )
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
+    private let featureFlagsService: FeatureFlagsServiceAPI
+    private let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
-    private let featureFlagService: FeatureFlagsServiceAPI
     private let interestEligibilityRepository: InterestAccountEligibilityRepositoryAPI
     private let receiveAddressRepository: InterestAccountReceiveAddressRepositoryAPI
     private let interestActivityEventRepository: InterestActivityItemEventRepositoryAPI
@@ -120,7 +129,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         self.balanceService = balanceService
         self.priceService = priceService
         self.interestEligibilityRepository = interestEligibilityRepository
-        self.featureFlagService = featureFlagService
+        featureFlagsService = featureFlagService
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
@@ -131,14 +140,15 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             return activity
                 .map(\.count)
                 .map { $0 > 0 }
-        case .send,
-             .swap,
+        case .buy,
              .deposit,
-             .buy,
-             .withdraw,
-             .sell,
+             .interestTransfer,
              .receive,
-             .interestTransfer:
+             .sell,
+             .send,
+             .sign,
+             .swap,
+             .withdraw:
             return .just(false)
         }
     }
@@ -160,8 +170,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
     private func canPerformInterestWithdraw() -> Single<Bool> {
         Single
             .zip(
-                featureFlagService
-                    .isEnabled(.remote(.interestWithdrawAndDeposit))
+                isInterestWithdrawAndDepositEnabled
                     .asSingle(),
                 balance.map(\.isPositive)
             )

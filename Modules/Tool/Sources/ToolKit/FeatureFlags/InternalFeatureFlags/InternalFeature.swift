@@ -11,12 +11,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enabled console logging of network requests for debug builds
     case requestConsoleLogging
 
-    /// Uses the Transactions Flow implementation of Buy when enabled
-    case useTransactionsFlowToBuyCrypto
-
-    /// Enable interest withdraw and deposit
-    case interestWithdrawAndDeposit
-
     /// Disable the guid login at welcome screen, useful for demo purposes
     /// - Note: Old manual guid login screen is used only for internal builds
     case disableGUIDLogin
@@ -45,8 +39,7 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .useTransactionsFlowToBuyCrypto,
-             .newAccountPicker,
+        case .newAccountPicker,
              .newOnboardingTour,
              .openBanking,
              .interestWithdrawAndDeposit,
@@ -72,14 +65,10 @@ extension InternalFeature {
     /// The title displayed at the Debug menu.
     public var displayTitle: String {
         switch self {
-        case .interestWithdrawAndDeposit:
-            return "Rewards - Deposit and Withdraw"
         case .secureChannel:
             return "Secure Channel"
         case .requestConsoleLogging:
             return "Enable Network Request Console Logs"
-        case .useTransactionsFlowToBuyCrypto:
-            return "Buy: Uses Transactions Flow to Buy Crypto"
         case .disableGUIDLogin:
             return "Disable manual (guid) login option"
         case .newAccountPicker:

@@ -13,18 +13,18 @@ private class InterestTransferAnalyticsEvent: AnalyticsEvent {
 extension DisplayBundle {
 
     static func interestTransfer(sourceAccount: SingleAccount) -> DisplayBundle {
-        typealias LocalizedString = LocalizationConstants.Transaction
-
+        typealias LocalizedString = LocalizationConstants.Interest.Screen.EnterAmount.Transfer
+        let code = sourceAccount.currencyType.displayCode
         return DisplayBundle(
-            title: LocalizedString.Transfer.transfer + " \(sourceAccount.currencyType.displayCode)",
+            title: LocalizedString.title + " \(code)",
             amountDisplayBundle: .init(
                 events: .init(
                     min: InterestTransferAnalyticsEvent(),
                     max: InterestTransferAnalyticsEvent()
                 ),
                 strings: .init(
-                    useMin: LocalizedString.Swap.AmountPresenter.LimitView.useMin,
-                    useMax: LocalizedString.Swap.AmountPresenter.LimitView.useMax
+                    useMin: LocalizedString.useMin,
+                    useMax: LocalizedString.useMax
                 ),
                 accessibilityIdentifiers: .init()
             )

@@ -1,23 +1,23 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Foundation
 import PlatformKit
 import RxSwift
 
 protocol SellTransactionEngine: TransactionEngine {
+
     var orderDirection: OrderDirection { get }
-
     var quotesEngine: SwapQuotesEngine { get }
-
     var kycTiersService: KYCTiersServiceAPI { get }
     var fiatCurrencyService: FiatCurrencyServiceAPI { get }
-    var tradeLimitsRepository: TransactionLimitsRepositoryAPI { get }
+    var transactionLimitsService: TransactionLimitsServiceAPI { get }
     var orderQuoteRepository: OrderQuoteRepositoryAPI { get }
-    var priceService: PriceServiceAPI { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
 }
 
 extension SellTransactionEngine {
+
     var target: FiatAccount {
         transactionTarget as! FiatAccount
     }
@@ -84,45 +84,27 @@ extension SellTransactionEngine {
 
     func updateLimits(
         pendingTransaction: PendingTransaction,
-        pricedQuote: PricedQuote,
-        fiatCurrency: FiatCurrency
+        pricedQuote: PricedQuote
     ) -> Single<PendingTransaction> {
-        Single
-            .zip(
-                kycTiersService.tiers.asSingle(),
-                tradeLimitsRepository.fetchTransactionLimits(
-                    currency: fiatCurrency.currencyType,
-                    networkFee: targetAsset.currencyType,
-                    product: .sell(orderDirection)
-                )
-                .asObservable()
-                .asSingle()
-            )
-            .map { tiers, limits -> (tiers: KYC.UserTiers, min: FiatValue, max: FiatValue) in
-                (tiers, limits.minOrder, limits.maxOrder)
-            }
-            .flatMap { [weak self] values -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
-                guard let self = self else { return .never() }
-                let (tiers, min, max) = values
-                return self.priceService
-                    .price(
-                        of: self.sourceAsset,
-                        in: fiatCurrency
-                    )
-                    .asSingle()
-                    .map(\.moneyValue)
-                    .map { $0.fiatValue ?? .zero(currency: fiatCurrency) }
-                    .map { quote -> (KYC.UserTiers, MoneyValue, MoneyValue) in
-                        let minCrypto = min.convertToCryptoValue(
-                            exchangeRate: quote,
-                            cryptoCurrency: self.sourceCryptoCurrency
-                        )
-                        let maxCrypto = max.convertToCryptoValue(
-                            exchangeRate: quote,
-                            cryptoCurrency: self.sourceCryptoCurrency
-                        )
-                        return (tiers, .init(cryptoValue: minCrypto), .init(cryptoValue: maxCrypto))
-                    }
+        let kycTiersPublisher = kycTiersService
+            .tiers
+            .mapError(TransactionLimitsServiceError.other)
+        let limitsPublisher = transactionLimitsService.fetchLimits(
+            source: LimitsAccount(
+                currency: sourceAsset.currencyType,
+                accountType: orderDirection == .fromUserKey ? .nonCustodial : .custodial
+            ),
+            destination: LimitsAccount(
+                currency: targetAsset.currencyType,
+                accountType: .custodial
+            ),
+            product: .sell(orderDirection)
+        )
+        return kycTiersPublisher
+            .zip(limitsPublisher)
+            .asSingle()
+            .map { tiers, limits -> (tiers: KYC.UserTiers, min: MoneyValue, max: MoneyValue) in
+                (tiers, limits.minimum, limits.maximum)
             }
             .map { (tiers: KYC.UserTiers, min: MoneyValue, max: MoneyValue) -> PendingTransaction in
                 var pendingTransaction = pendingTransaction

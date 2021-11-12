@@ -62,26 +62,24 @@ public final class AssetPriceViewDailyInteractor: AssetPriceViewInteracting {
         fiatCurrency: FiatCurrency
     ) -> AnyPublisher<DashboardAsset.Value.Interaction.AssetPrice, Error> {
         priceService.price(of: cryptoCurrency, in: fiatCurrency)
-            .combineLatest(priceService.price(of: cryptoCurrency, in: fiatCurrency, at: .oneDay))
-            .tryMap { currentBalance, previousBalance -> DashboardAsset.Value.Interaction.AssetPrice in
-                let percentage: Decimal // in range [0...1]
-                let change = try currentBalance.moneyValue - previousBalance.moneyValue
-                if currentBalance.moneyValue.isZero {
-                    percentage = 0
-                } else {
-                    // Zero or negative previousBalance shouldn't be possible but
-                    // it is handled in any case, in a way that does not throw.
-                    if previousBalance.moneyValue.isPositive {
-                        percentage = try change.percentage(in: previousBalance.moneyValue)
-                    } else {
-                        percentage = 0
+            .combineLatest(
+                priceService.price(of: cryptoCurrency, in: fiatCurrency, at: .oneDay)
+                    .optional()
+                    .replaceError(with: nil)
+                    .mapError(to: PriceServiceError.self)
+            )
+            .tryMap { currentPrice, previousPrice -> DashboardAsset.Value.Interaction.AssetPrice in
+                let historicalPrice = previousPrice
+                    .flatMap { previousPrice in
+                        DashboardAsset.Value.Interaction.AssetPrice.HistoricalPrice(
+                            time: .days(1),
+                            currentPrice: currentPrice.moneyValue,
+                            previousPrice: previousPrice.moneyValue
+                        )
                     }
-                }
                 return DashboardAsset.Value.Interaction.AssetPrice(
-                    time: .days(1),
-                    fiatValue: currentBalance.moneyValue,
-                    changePercentage: percentage.doubleValue,
-                    fiatChange: change
+                    currentPrice: currentPrice.moneyValue,
+                    historicalPrice: historicalPrice
                 )
             }
             .eraseToAnyPublisher()

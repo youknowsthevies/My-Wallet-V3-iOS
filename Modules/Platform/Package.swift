@@ -34,11 +34,6 @@ let package = Package(
             from: "0.10.2"
         ),
         .package(
-            name: "RxCombine",
-            url: "https://github.com/paulo-bc/RxCombine.git",
-            from: "1.6.2"
-        ),
-        .package(
             name: "RxDataSources",
             url: "https://github.com/RxSwiftCommunity/RxDataSources.git",
             from: "4.0.1"
@@ -62,6 +57,11 @@ let package = Package(
             name: "Zxcvbn",
             url: "https://github.com/oliveratkinson-bc/zxcvbn-ios.git",
             .branch("swift-package-manager")
+        ),
+        .package(
+            name: "swift-algorithms",
+            url: "https://github.com/apple/swift-algorithms.git",
+            from: "0.2.1"
         ),
         .package(path: "../Analytics"),
         .package(path: "../RxAnalytics"),
@@ -87,7 +87,6 @@ let package = Package(
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "RxCocoa", package: "RxSwift"),
-                .product(name: "RxCombine", package: "RxCombine"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 // TODO: refactor this to use `FeatureAuthenticationDomain` as this shouldn't depend on DataKit
@@ -102,7 +101,8 @@ let package = Package(
                 .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions"),
                 .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
-                .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking")
+                .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
+                .product(name: "Algorithms", package: "swift-algorithms")
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json"),

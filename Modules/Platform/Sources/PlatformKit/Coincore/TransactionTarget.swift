@@ -3,6 +3,7 @@
 import RxSwift
 
 public enum TransactionResult {
+    case signed(rawTx: String)
     case hashed(txHash: String, amount: MoneyValue, order: OrderDetails? = nil)
     case unHashed(amount: MoneyValue)
 }

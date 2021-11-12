@@ -52,7 +52,7 @@ final class InstitutionListTests: OpenBankingTestCase {
 
         store.assert(
             .send(.fetch),
-            .do { [self] in scheduler.main.run() },
+            .do { [self] in scheduler.run() },
             .receive(.fetched(createAccount)) { [self] state in
                 state.result = .success(createAccount)
             }
@@ -101,13 +101,13 @@ final class InstitutionListTests: OpenBankingTestCase {
     func test_approve_bank_cancel() throws {
         store.assert(
             approve,
-            .do { [self] in scheduler.main.advance() },
+            .do { [self] in scheduler.advance() },
             .send(.approve(.bank(.cancel))) { state in
                 state.route = nil
                 state.result = nil
             },
             .receive(.fetch),
-            .do { [self] in scheduler.main.advance() },
+            .do { [self] in scheduler.advance() },
             .receive(.fetched(createAccount)) { [self] state in
                 state.result = .success(createAccount)
             }

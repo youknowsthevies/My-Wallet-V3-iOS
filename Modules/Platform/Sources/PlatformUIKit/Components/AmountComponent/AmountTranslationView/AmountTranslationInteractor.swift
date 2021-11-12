@@ -54,6 +54,8 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
     /// A relay responsible for accepting taps from the amount view's auxiliary button
     public let auxiliaryButtonTappedRelay = PublishRelay<Void>()
 
+    public let auxiliaryViewEnabledRelay = PublishRelay<Bool>()
+
     /// The active input - streams distinct elements of `AmountInteractorActiveInput`
     public var activeInput: Observable<ActiveAmountInput> {
         activeInputRelay
@@ -377,6 +379,10 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
     public func set(maxAmount: MoneyValue) {
         maxAmountSelectedRelay.accept(())
         set(amount: maxAmount)
+    }
+
+    public func set(auxiliaryViewEnabled: Bool) {
+        auxiliaryViewEnabledRelay.accept(auxiliaryViewEnabled)
     }
 
     private func invertInputIfNeeded(for amount: MoneyValue) -> Completable {

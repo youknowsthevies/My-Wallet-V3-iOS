@@ -432,17 +432,19 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     transactionModel: transactionModel,
                     action: action
                 )
-            case .viewActivity,
-                 .deposit,
+            case .deposit,
                  .interestTransfer,
                  .sell,
-                 .receive,
                  .swap:
                 router?.routeToDestinationAccountPicker(
                     transitionType: newState.stepsBackStack.contains(.selectSource) ? .push : .replaceRoot,
                     transactionModel: transactionModel,
                     action: action
                 )
+            case .receive,
+                 .sign,
+                 .viewActivity:
+                unimplemented("Action \(action) does not support 'selectTarget'")
             }
 
         case .kycChecks:
@@ -499,6 +501,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     action: action,
                     canAddMoreSources: canAddMoreSources
                 )
+            case .sign:
+                unimplemented("Sign action does not support selectSource.")
             }
 
         case .enterAddress:

@@ -5,10 +5,17 @@ import Foundation
 import NetworkError
 
 public enum DeviceVerificationServiceError: Error, Equatable {
-    case expiredEmailCode
-    case missingSessionToken
-    case missingWalletInfo
+    // email request error
     case recaptchaError(GoogleRecaptchaError)
+
+    // authorize approve error
+    case expiredEmailCode
+
+    // wallet info polling error
+    case missingWalletInfo
+    case missingSessionToken
+
+    // other network errors
     case networkError(NetworkError)
 
     public static func == (lhs: DeviceVerificationServiceError, rhs: DeviceVerificationServiceError) -> Bool {
@@ -30,12 +37,24 @@ public protocol DeviceVerificationServiceAPI {
     /// - Returns: A combine `Publisher` that emits an EmptyNetworkResponse on success or NetworkError on failure
     func authorizeLogin(emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError>
 
-    /// Decodes the base64 string component from the deeplink
+    /// Decodes the base64 string component from the deeplink, and returns the wallet info
     /// - Parameters: deeplink: The url link received
     /// - Returns: A combine `Publisher` that emits an WalletInfo struct on success or WalletInfoError on failure
-    func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError>
+    func handleLoginRequestDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError>
 
     /// An alternative way to retrieve wallet info through polling
-    /// - Returns: A combine `Publisher` that emits an WalletInfo struct on success or DeviceVerificationServiceError on failure
-    func pollForWalletInfo() -> AnyPublisher<WalletInfo, DeviceVerificationServiceError>
+    /// - Returns: A combine `Publisher` that emits an `Result<WalletInfo, WalletInfoPollingError>` or DeviceVerificationServiceError on failure
+    func pollForWalletInfo() -> AnyPublisher<Result<WalletInfo, WalletInfoPollingError>, DeviceVerificationServiceError>
+
+    /// Authorize the login request from another device
+    /// - Parameters:
+    ///  - sessionToken: the session token from another device
+    ///  - payload: the base64 email link payload from a magic link generated from another device
+    ///  - confirmDevice: to authorize the device or not
+    /// - Returns: A combine `Publisher` that returns void on success or `AuthorizeVerifyDeviceError` on failure
+    func authorizeVerifyDevice(
+        from sessionToken: String,
+        payload: String,
+        confirmDevice: Bool?
+    ) -> AnyPublisher<Void, AuthorizeVerifyDeviceError>
 }

@@ -498,6 +498,7 @@ extension AssetAction {
              .withdraw,
              .receive,
              .send,
+             .sign,
              .swap,
              .viewActivity,
              .interestWithdraw,

@@ -17,11 +17,14 @@ public struct RootView: View {
         "2 - Primitives": [
             NavigationLinkProvider(view: TabBarExamplesView(), title: "🎼 TabBar"),
             NavigationLinkProvider(view: ButtonExamplesView(), title: "🕹 Buttons"),
-            NavigationLinkProvider(view: PrimaryDividerExamples(), title: "🗂 Dividers")
+            NavigationLinkProvider(view: PrimaryDividerExamples(), title: "🗂 Dividers"),
+            NavigationLinkProvider(view: PrimarySwitchExamples(), title: "🔘 PrimarySwitch"),
+            NavigationLinkProvider(view: TagExamples(), title: "🏷 Tag")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
-            NavigationLinkProvider(view: CalloutCardExamples(), title: "💬 CalloutCard")
+            NavigationLinkProvider(view: CalloutCardExamples(), title: "💬 CalloutCard"),
+            NavigationLinkProvider(view: SectionHeaderExamplesView(), title: "🪖 SectionHeaders")
         ]
     ]
 

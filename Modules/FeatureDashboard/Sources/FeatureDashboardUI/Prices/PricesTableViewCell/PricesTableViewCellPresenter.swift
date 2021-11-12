@@ -42,21 +42,24 @@ final class PricesTableViewCellPresenter {
                 case .loaded(next: let value):
                     let fiatPrice = NSAttributedString(
                         LabelContent(
-                            text: value.fiatValue.toDisplayString(includeSymbol: true) + " ",
+                            text: value.currentPrice.toDisplayString(includeSymbol: true) + " ",
                             font: .main(.medium, 14),
                             color: .darkTitleText
                         )
                     )
+                    guard let historicalPrice = value.historicalPrice else {
+                        return fiatPrice
+                    }
 
                     var deltaTintColor: UIColor = .mutedText
-                    if value.changePercentage > 0 {
+                    if historicalPrice.changePercentage > 0 {
                         deltaTintColor = .positivePrice
-                    } else if value.changePercentage < 0 {
+                    } else if historicalPrice.changePercentage < 0 {
                         deltaTintColor = .negativePrice
                     }
 
                     let percentageChange: NSAttributedString
-                    let percentage = value.changePercentage * 100
+                    let percentage = historicalPrice.changePercentage * 100
                     let percentageString = percentage.string(with: 2)
                     percentageChange = NSAttributedString(
                         LabelContent(

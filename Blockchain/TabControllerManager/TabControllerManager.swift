@@ -187,7 +187,7 @@ final class TabControllerManager: NSObject {
         let asset = coincore[.coin(.bitcoin)]
         let transactionPair = Single.zip(
             BitPayInvoiceTarget.make(from: data, asset: .coin(.bitcoin)),
-            asset.defaultAccount.asObservable().asSingle()
+            asset.defaultAccount.asSingle()
         )
         BitPayInvoiceTarget
             .isBitPay(data)

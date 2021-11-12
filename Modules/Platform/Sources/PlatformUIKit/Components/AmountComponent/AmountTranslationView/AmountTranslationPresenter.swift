@@ -73,6 +73,7 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
     // MARK: - Public Properties
 
     public let swapButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    public let auxiliaryButtonEnabledRelay = BehaviorRelay<Bool>(value: true)
 
     // MARK: - Internal Properties
 
@@ -90,6 +91,10 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
 
     let swapButtonTapRelay = PublishRelay<Void>()
     let auxiliaryButtonTappedRelay = PublishRelay<Void>()
+
+    var auxiliaryButtonEnabled: Driver<Bool> {
+        auxiliaryButtonEnabledRelay.asDriver()
+    }
 
     // MARK: - Injected
 
@@ -139,6 +144,10 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
                 self.setupButton(by: payload.0, activeInput: payload.1)
             }
             .bindAndCatch(to: stateRelay)
+            .disposed(by: disposeBag)
+
+        interactor.auxiliaryViewEnabledRelay
+            .bindAndCatch(to: auxiliaryButtonEnabledRelay)
             .disposed(by: disposeBag)
     }
 

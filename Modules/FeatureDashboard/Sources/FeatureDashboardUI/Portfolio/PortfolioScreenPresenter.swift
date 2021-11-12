@@ -53,8 +53,8 @@ final class PortfolioScreenPresenter {
             interactor: (CryptoCurrency) -> HistoricalBalanceCellInteractor?
         ) -> [PortfolioCellType] {
             var items: [PortfolioCellType] = [
-                .totalBalance(totalBalancePresenter)
-                // .withdrawalLock
+                .totalBalance(totalBalancePresenter),
+                .withdrawalLock
             ]
             if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
@@ -126,11 +126,6 @@ final class PortfolioScreenPresenter {
     private let coincore: CoincoreAPI
 
     private var cryptoCurrencies: Observable<CurrencyBalance> {
-        guard StaticFeatureFlags.isDynamicAssetsEnabled else {
-            return Observable<CryptoCurrency>
-                .from(interactor.enabledCryptoCurrencies, scheduler: MainScheduler.asyncInstance)
-                .map { (currency: $0, hasBalance: true) }
-        }
         let cryptoStreams: [Observable<CurrencyBalance>] = coincore.cryptoAssets
             .map { asset -> Observable<CurrencyBalance> in
                 let currency = asset.asset

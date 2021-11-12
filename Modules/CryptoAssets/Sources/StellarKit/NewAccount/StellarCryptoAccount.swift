@@ -71,14 +71,22 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
         Single.zip(
             canPerformInterestTransfer(),
-            featureFlagsService
-                .isEnabled(.remote(.interestWithdrawAndDeposit))
+            isInterestWithdrawAndDepositEnabled
                 .asSingle()
         )
         .map { $0.0 && $0.1 }
         .asPublisher()
         .replaceError(with: false)
         .eraseToAnyPublisher()
+    }
+
+    private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
+        featureFlagsService
+            .isEnabled(
+                .remote(.interestWithdrawAndDeposit)
+            )
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
@@ -97,6 +105,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
             .catchErrorJustReturn([])
     }
 
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let publicKey: String
     private let hdAccountIndex: Int
     private let bridge: StellarWalletBridgeAPI
@@ -105,7 +114,6 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     private let accountCache: CachedValue<StellarAccountDetails>
     private let operationsService: StellarHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
-    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         publicKey: String,
@@ -154,6 +162,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
                     isEnabled ? isFunded : .just(false)
                 }
         case .deposit,
+             .sign,
              .withdraw,
              .interestWithdraw:
             return .just(false)

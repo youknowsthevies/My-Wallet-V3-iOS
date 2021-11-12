@@ -10,35 +10,39 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-struct WithdrawalLocksState: Hashable, NavigationState {
-    var route: RouteIntent<WithdrawalLocksRoute>?
+public struct WithdrawalLocksState: Hashable, NavigationState {
+    public var route: RouteIntent<WithdrawalLocksRoute>?
     var withdrawalLocks: WithdrawalLocks?
-    var amountEventObserverIdToken = "WithdrawalLockState.amountEventObserverIdToken"
+
+    public init(route: RouteIntent<WithdrawalLocksRoute>? = nil, withdrawalLocks: WithdrawalLocks? = nil) {
+        self.route = route
+        self.withdrawalLocks = withdrawalLocks
+    }
 }
 
-enum WithdrawalLocksAction: Hashable, NavigationAction {
+public enum WithdrawalLocksAction: Hashable, NavigationAction {
     case loadWithdrawalLocks
     case present(withdrawalLocks: WithdrawalLocks?)
     case route(RouteIntent<WithdrawalLocksRoute>?)
 }
 
-enum WithdrawalLocksRoute: NavigationRoute {
+public enum WithdrawalLocksRoute: NavigationRoute {
     case details(withdrawalLocks: WithdrawalLocks)
 
-    func destination(in store: Store<WithdrawalLocksState, WithdrawalLocksAction>) -> some View {
+    public func destination(in store: Store<WithdrawalLocksState, WithdrawalLocksAction>) -> some View {
         switch self {
         case .details(let withdrawalLocks):
-            return WithdrawalLockDetailsView(withdrawalLocks: withdrawalLocks)
+            return WithdrawalLocksDetailsView(withdrawalLocks: withdrawalLocks)
         }
     }
 }
 
-struct WithdrawalLocksEnvironment {
+public struct WithdrawalLocksEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
 
     let withdrawalLockService: WithdrawalLocksServiceAPI
 
-    init(
+    public init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
         withdrawalLockService: WithdrawalLocksServiceAPI = resolve()
     ) {
@@ -47,7 +51,7 @@ struct WithdrawalLocksEnvironment {
     }
 }
 
-let withdrawalLocksReducer = Reducer<
+public let withdrawalLocksReducer = Reducer<
     WithdrawalLocksState,
     WithdrawalLocksAction,
     WithdrawalLocksEnvironment
@@ -77,19 +81,11 @@ public struct WithdrawalLocksView: View {
 
     let store: Store<WithdrawalLocksState, WithdrawalLocksAction>
 
-    public init() {
-        store = .init(
-            initialState: .init(withdrawalLocks: nil),
-            reducer: withdrawalLocksReducer,
-            environment: WithdrawalLocksEnvironment()
-        )
-    }
-
-    init(store: Store<WithdrawalLocksState, WithdrawalLocksAction>) {
+    public init(store: Store<WithdrawalLocksState, WithdrawalLocksAction>) {
         self.store = store
     }
 
-    private typealias LocalizationIds = LocalizationConstants.WithdrawalLock
+    private typealias LocalizationIds = LocalizationConstants.WithdrawalLocks
 
     public var body: some View {
         WithViewStore(store) { viewStore in

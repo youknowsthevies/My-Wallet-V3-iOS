@@ -25,6 +25,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     var didDecryptWallet: AnyPublisher<WalletDecryption, Error> {
         rx.didDecryptWallet
             .asPublisher()
+            .eraseToAnyPublisher()
     }
 
     /// Reactive wrapper for authentication delegate methods
@@ -83,6 +84,7 @@ extension WalletManager: WalletManagerReactiveAPI {
     var walletFailedToGetHistory: AnyPublisher<String?, Error> {
         rx.didFailGetHistory
             .asPublisher()
+            .eraseToAnyPublisher()
     }
 
     // MARK: WalletAccountInfoAndExchangeRatesDelegate
@@ -120,10 +122,12 @@ extension WalletManager: WalletManagerReactiveAPI {
     var getSecondPassword: AnyPublisher<(success: WalletSuccessCallback, dismiss: WalletDismissCallback?), Error> {
         rx.getSecondPassword
             .asPublisher()
+            .eraseToAnyPublisher()
     }
 
     var getPrivateKeyPassword: AnyPublisher<WalletSuccessCallback, Error> {
         rx.getPrivateKeyPassword
             .asPublisher()
+            .eraseToAnyPublisher()
     }
 }

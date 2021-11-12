@@ -222,6 +222,9 @@ extension UIColor {
     public static let negativePrice = red400
     public static let positivePrice = green500
 
+    public static let validInput = grey900
+    public static let invalidInput = red400
+
     // MARK: Buttons
 
     public static let airdropCTAButton = green600

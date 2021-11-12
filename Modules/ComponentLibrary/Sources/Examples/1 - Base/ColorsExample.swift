@@ -12,22 +12,22 @@ struct ColorsExamplesView: View {
     }
 
     let allColors: [ColorMap] = [
-        ColorMap(color: .semantic.white, name: "white"),
-        ColorMap(color: .semantic.black, name: "black"),
-        ColorMap(color: .semantic.primary, name: "primary"),
-        ColorMap(color: .semantic.primaryMuted, name: "primaryMuted"),
-        ColorMap(color: .semantic.success, name: "success"),
-        ColorMap(color: .semantic.successMuted, name: "successMuted"),
-        ColorMap(color: .semantic.warning, name: "warning"),
-        ColorMap(color: .semantic.warningMuted, name: "warningMuted"),
-        ColorMap(color: .semantic.error, name: "error"),
-        ColorMap(color: .semantic.errorMuted, name: "errorMuted"),
         ColorMap(color: .semantic.title, name: "title"),
         ColorMap(color: .semantic.body, name: "body"),
+        ColorMap(color: .semantic.overlay, name: "overlay"),
         ColorMap(color: .semantic.muted, name: "muted"),
         ColorMap(color: .semantic.dark, name: "dark"),
         ColorMap(color: .semantic.medium, name: "medium"),
-        ColorMap(color: .semantic.light, name: "light")
+        ColorMap(color: .semantic.light, name: "light"),
+        ColorMap(color: .semantic.background, name: "background"),
+        ColorMap(color: .semantic.primary, name: "primary"),
+        ColorMap(color: .semantic.success, name: "success"),
+        ColorMap(color: .semantic.warning, name: "warning"),
+        ColorMap(color: .semantic.error, name: "error"),
+        ColorMap(color: .semantic.blueBG, name: "blueBG"),
+        ColorMap(color: .semantic.greenBG, name: "greenBG"),
+        ColorMap(color: .semantic.orangeBG, name: "orangeBG"),
+        ColorMap(color: .semantic.redBG, name: "redBG")
     ]
 
     var body: some View {
@@ -55,7 +55,7 @@ struct ColorsExamplesView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.semantic.black, lineWidth: 0.5)
+                .stroke(Color.semantic.dark, lineWidth: 0.5)
         )
     }
 }

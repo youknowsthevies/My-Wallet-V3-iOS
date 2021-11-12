@@ -33,6 +33,7 @@ private enum WalletCancelations {
 public struct CoreAppState: Equatable {
     public var onboarding: Onboarding.State? = .init()
     public var loggedIn: LoggedIn.State?
+    public var deviceAuthorization: AuthorizeDeviceState?
     public var alertContent: AlertViewContent?
 
     var isLoggedIn: Bool {
@@ -41,10 +42,12 @@ public struct CoreAppState: Equatable {
 
     public init(
         onboarding: Onboarding.State? = .init(),
-        loggedIn: LoggedIn.State? = nil
+        loggedIn: LoggedIn.State? = nil,
+        deviceAuthorization: AuthorizeDeviceState? = nil
     ) {
         self.onboarding = onboarding
         self.loggedIn = loggedIn
+        self.deviceAuthorization = deviceAuthorization
     }
 }
 
@@ -74,6 +77,13 @@ public enum CoreAppAction: Equatable {
     case initializeWallet
     case walletInitialized
     case walletNeedsUpgrade(Bool)
+
+    // Device Authorization
+    case authorizeDevice(AuthorizeDeviceAction)
+    case loginRequestReceived(deeplink: URL)
+    case checkIfConfirmationRequired(sessionId: String, base64Str: String)
+    case proceedToDeviceAuthorization(LoginRequestInfo)
+    case deviceAuthorizationFinished
 
     // Wallet Creation
     case createWallet(email: String, newPassword: String)
@@ -105,9 +115,9 @@ struct CoreAppEnvironment {
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
     var resetPasswordService: ResetPasswordServiceAPI
     var accountRecoveryService: AccountRecoveryServiceAPI
+    var deviceVerificationService: DeviceVerificationServiceAPI
     var featureFlagsService: FeatureFlagsServiceAPI
-    var appFeatureConfigurator: FeatureConfiguratorAPI // TODO: deprecated, use featureFlagsService instead
-    var internalFeatureService: InternalFeatureFlagServiceAPI // TODO: deprecated, use featureFlagsService instead
+    var appFeatureConfigurator: FeatureConfiguratorAPI
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     var blockchainSettings: BlockchainSettingsAppAPI
     var credentialsStore: CredentialsStoreAPI
@@ -137,8 +147,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     appSettings: environment.blockchainSettings,
                     alertPresenter: environment.alertPresenter,
                     mainQueue: environment.mainQueue,
-                    featureFlags: environment.internalFeatureService,
-                    appFeatureConfigurator: environment.appFeatureConfigurator,
+                    deviceVerificationService: environment.deviceVerificationService,
+                    featureFlagsService: environment.featureFlagsService,
                     buildVersionProvider: environment.buildVersionProvider
                 )
             }
@@ -161,6 +171,18 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     deeplinkRouter: environment.deeplinkRouter,
                     featureFlagsService: environment.featureFlagsService,
                     fiatCurrencySettingsService: environment.fiatCurrencySettingsService
+                )
+            }
+        ),
+    authorizeDeviceReducer
+        .optional()
+        .pullback(
+            state: \.deviceAuthorization,
+            action: /CoreAppAction.authorizeDevice,
+            environment: {
+                AuthorizeDeviceEnvironment(
+                    mainQueue: $0.mainQueue,
+                    deviceVerificationService: $0.deviceVerificationService
                 )
             }
         ),
@@ -208,18 +230,21 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return .none
 
     case .deeplink(.handleLink(let content)) where content.context.usableOnlyDuringAuthentication:
-        guard let onboarding = state.onboarding else {
-            return .none
-        }
-        // check if we're on the authentication state and the deeplink
         // currently we only support only one deeplink for login, so being naive here
-        guard let authState = onboarding.welcomeState,
-              content.context == .blockchainLinks(.login)
-        else {
+        guard content.context == .blockchainLinks(.login) else {
             return .none
         }
-        // Pass content to welcomeScreen to be handled
-        return Effect(value: .onboarding(.welcomeScreen(.deeplinkReceived(content.url))))
+        // handle deeplink if we've entered verify device flow
+        if let onboarding = state.onboarding,
+           let authState = onboarding.welcomeState,
+           let loginState = authState.emailLoginState,
+           loginState.verifyDeviceState != nil
+        {
+            // Pass content to welcomeScreen to be handled
+            return Effect(value: .onboarding(.welcomeScreen(.deeplinkReceived(content.url))))
+        } else {
+            return Effect(value: .loginRequestReceived(deeplink: content.url))
+        }
 
     case .deeplink(.handleLink(let content)):
         // we first check if we're logged in, if not we need to defer the deeplink routing
@@ -499,6 +524,84 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .cancel(id: WalletCancelations.UpgradeId()),
             Effect(value: CoreAppAction.onboarding(.walletUpgrade(.begin)))
         )
+
+    case .loginRequestReceived(let deeplink):
+        return Publishers.Zip(
+            environment
+                .featureFlagsService
+                .isEnabled(.local(.pollingForEmailLogin)),
+            environment
+                .featureFlagsService
+                .isEnabled(.remote(.pollingForEmailLogin))
+        )
+        .map { isLocalEnabled, isRemoteEnabled in
+            isLocalEnabled && isRemoteEnabled
+        }
+        .flatMap { isEnabled -> Effect<CoreAppAction, Never> in
+            guard isEnabled else {
+                return .none
+            }
+            return environment
+                .deviceVerificationService
+                .handleLoginRequestDeeplink(url: deeplink)
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map { result -> CoreAppAction in
+                    guard case .failure(let error) = result else {
+                        // if success, just ignore the effect
+                        return .none
+                    }
+                    switch error {
+                    // when catched a deeplink with a different session token,
+                    // or when there is no session token from the app,
+                    // it means a login magic link generated from a different device is catched
+                    // proceed to login request authorization in this case
+                    case .missingSessionToken(let sessionId, let base64Str),
+                         .sessionTokenMismatch(let sessionId, let base64Str):
+                        return .checkIfConfirmationRequired(sessionId: sessionId, base64Str: base64Str)
+                    case .failToDecodeBase64Component,
+                         .failToDecodeToWalletInfo:
+                        return .none
+                    }
+                }
+        }
+        .eraseToEffect()
+
+    case .onboarding(.welcomeScreen(.emailLogin(.verifyDevice(.checkIfConfirmationRequired(let sessionId, let base64Str))))),
+         .checkIfConfirmationRequired(let sessionId, let base64Str):
+        return environment
+            .deviceVerificationService
+            // trigger confirmation required error
+            .authorizeVerifyDevice(from: sessionId, payload: base64Str, confirmDevice: nil)
+            .receive(on: environment.mainQueue)
+            .catchToEffect()
+            .map { result -> CoreAppAction in
+                guard case .failure(let error) = result else {
+                    return .none
+                }
+                switch error {
+                case .confirmationRequired(let timestamp, let details):
+                    let info = LoginRequestInfo(
+                        sessionId: sessionId,
+                        base64Str: base64Str,
+                        details: details,
+                        timestamp: timestamp
+                    )
+                    return .proceedToDeviceAuthorization(info)
+                default:
+                    return .none
+                }
+            }
+
+    case .proceedToDeviceAuthorization(let loginRequestInfo):
+        state.deviceAuthorization = .init(
+            loginRequestInfo: loginRequestInfo
+        )
+        return .none
+
+    case .deviceAuthorizationFinished:
+        state.deviceAuthorization = nil
+        return .none
 
     case .createWallet(let email, let password):
         environment.loadingViewPresenter.showCircular()
@@ -897,6 +1000,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 
     case .onboarding,
          .loggedIn,
+         .authorizeDevice,
          .none:
         return .none
     }

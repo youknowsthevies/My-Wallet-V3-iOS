@@ -36,6 +36,13 @@ public protocol AmountViewInteracting {
     /// - Parameter amount: `String`
     func set(amount: String)
 
+    /// Toggles the auxiliary view on or off.
+    /// When disabled, the auxiliary view doesn't show up on error states.
+    /// Instead, the amount view displays the amount in a different style (e.g - red text).
+    func set(auxiliaryViewEnabled: Bool)
+
+    var auxiliaryViewEnabledRelay: PublishRelay<Bool> { get }
+
     var minAmountSelected: Observable<Void> { get }
 
     var maxAmountSelected: Observable<Void> { get }

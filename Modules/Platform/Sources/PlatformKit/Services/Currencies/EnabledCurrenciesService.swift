@@ -42,10 +42,7 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     }
 
     private var erc20Currencies: [CryptoCurrency] {
-        guard StaticFeatureFlags.isDynamicAssetsEnabled else {
-            return []
-        }
-        return repository.erc20Assets
+        repository.erc20Assets
             .currencies
             .filter { !NonCustodialCoinCode.allCases.map(\.rawValue).contains($0.code) }
             .filter(\.kind.isERC20)

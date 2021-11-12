@@ -160,10 +160,15 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
     ) -> Single<PendingTransaction> {
         onChainEngine
             .validateAmount(pendingTransaction: pendingTransaction)
-            .flatMapCompletable(weak: self) { (self, pendingTransaction) in
-                self.checkIfAmountIsBelowMinimumLimit(pendingTransaction)
+            .map { pendingTransaction in
+                guard let minimum = pendingTransaction.minimumLimit else {
+                    return pendingTransaction.update(validationState: .uninitialized)
+                }
+                guard try pendingTransaction.amount >= minimum else {
+                    return pendingTransaction.update(validationState: .belowMinimumLimit)
+                }
+                return pendingTransaction
             }
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
     public func doValidateAll(

@@ -23,6 +23,13 @@ public final class SingleAmountPresenter: AmountViewPresenting {
     private typealias AccessibilityId = Accessibility.Identifier.Amount
 
     let amountPresenter: InputAmountLabelPresenter
+    let auxiliaryButtonEnabledRelay = BehaviorRelay<Bool>(value: true)
+
+    var auxiliaryButtonEnabled: Driver<Bool> {
+        auxiliaryButtonEnabledRelay.asDriver()
+    }
+
+    let disponseBag = DisposeBag()
 
     // MARK: - Injected
 
@@ -45,6 +52,10 @@ public final class SingleAmountPresenter: AmountViewPresenting {
             /// focused (larger font).
             isFocused: true
         )
+
+        interactor.auxiliaryViewEnabledRelay
+            .bindAndCatch(to: auxiliaryButtonEnabledRelay)
+            .disposed(by: disposeBag)
     }
 
     public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
