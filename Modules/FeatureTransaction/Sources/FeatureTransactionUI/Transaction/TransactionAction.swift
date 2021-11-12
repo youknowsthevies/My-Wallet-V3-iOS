@@ -70,11 +70,9 @@ enum TransactionAction: MviAction {
 
 extension TransactionAction {
 
-    // TODO: Clean up this function
     // swiftlint:disable function_body_length
     // swiftlint:disable cyclomatic_complexity
     func reduce(oldState: TransactionState) -> TransactionState {
-        Logger.shared.debug("[Transaction Flow] Reducing Action: \(self)")
         switch self {
         case .pendingTransactionStarted(let allowFiatInput):
             var newState = oldState
@@ -137,9 +135,10 @@ extension TransactionAction {
             return oldState.stateForMovingForward(to: .linkBankViaWire)
 
         case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, let passwordRequired):
-            // If the user scans a BitPay QR code, the account will be a BitPayInvoiceTarget.
-            // This means we do not proceed to the enter amount screen but rather the confirmation detail screen.
-            let next: TransactionFlowStep = target is BitPayInvoiceTarget ? .confirmDetail : .enterAmount
+            // Some targets (eg a BitPay invoice, or a WalletConnect payload) do not allow the
+            // amount to be modified, thus when the target is 'StaticTransactionTarget' we should
+            // go directly to the confirmation detail screen.
+            let next: TransactionFlowStep = target is StaticTransactionTarget ? .confirmDetail : .enterAmount
             let step = passwordRequired ? .enterPassword : next
             return TransactionState(
                 action: action,
@@ -227,10 +226,10 @@ extension TransactionAction {
                 .withUpdatedBackstack(oldState: oldState)
 
         case .targetAccountSelected(let destinationAccount):
-            // If the user scans a BitPay QR code, the account will be a
-            // BitPayInvoiceTarget. This means we do not proceed to the enter amount
-            // screen but rather the confirmation detail screen.
-            let step: TransactionFlowStep = destinationAccount is BitPayInvoiceTarget ? .confirmDetail : .enterAmount
+            // Some targets (eg a BitPay invoice, or a WalletConnect payload) do not allow the
+            // amount to be modified, thus when the target is 'StaticTransactionTarget' we should
+            // go directly to the confirmation detail screen.
+            let step: TransactionFlowStep = destinationAccount is StaticTransactionTarget ? .confirmDetail : .enterAmount
             var newState = oldState
             newState.errorState = .none
             newState.destination = destinationAccount
@@ -374,6 +373,7 @@ extension TransactionAction {
 
         case .modifyTransactionConfirmation:
             return oldState
+                .update(keyPath: \.nextEnabled, value: false)
 
         case .invalidateTransaction:
             return oldState
@@ -461,7 +461,9 @@ extension TransactionState {
         return update(keyPath: \.stepsBackStack, value: stepsBackStack)
             .update(keyPath: \.step, value: previousStep)
             .update(keyPath: \.isGoingBack, value: true)
-            .update(keyPath: \.errorState, value: .none)
+            // Not sure why we're resetting this to none, but if we're coming back from an error recovery suggestion
+            // we don't want to remove that error state so the user can still see the error on screen if needed.
+            .update(keyPath: \.errorState, value: step == .errorRecoveryInfo ? errorState : .none)
     }
 
     fileprivate func withUpdatedBackstack(oldState: TransactionState) -> TransactionState {

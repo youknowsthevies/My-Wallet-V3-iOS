@@ -6,6 +6,7 @@ import PlatformKit
 import RxRelay
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 // TODO: Remove `NSObject` when `Wallet` is killed
 /// A bridge to `Wallet` since it is an ObjC object.

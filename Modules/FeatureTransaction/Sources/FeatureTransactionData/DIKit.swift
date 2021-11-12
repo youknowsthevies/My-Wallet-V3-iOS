@@ -23,7 +23,11 @@ extension DependencyContainer {
 
         factory { OrderFetchingRepository() as OrderFetchingRepositoryAPI }
 
-        factory { TransactionLimitsRepository() as TransactionLimitsRepositoryAPI }
+        factory { () -> TransactionLimitsRepositoryAPI in
+            TransactionLimitsRepository(
+                client: DIKit.resolve()
+            )
+        }
 
         factory { BitPayRepository() as BitPayRepositoryAPI }
 
@@ -52,9 +56,9 @@ extension DependencyContainer {
             return client as CustodialQuoteAPI
         }
 
-        factory { () -> OrderTransactionLimitsClientAPI in
+        factory { () -> TransactionLimitsClientAPI in
             let client: FeatureTransactionDomainClientAPI = DIKit.resolve()
-            return client as OrderTransactionLimitsClientAPI
+            return client as TransactionLimitsClientAPI
         }
 
         factory { () -> AvailablePairsClientAPI in

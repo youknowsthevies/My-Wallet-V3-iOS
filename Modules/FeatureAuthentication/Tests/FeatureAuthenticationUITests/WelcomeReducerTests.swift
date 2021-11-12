@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import ComposableArchitecture
 @testable import FeatureAuthenticationUI
 @testable import ToolKit
@@ -13,7 +14,7 @@ import XCTest
 final class WelcomeReducerTests: XCTestCase {
 
     private var dummyUserDefaults: UserDefaults!
-    private var mockInternalFeatureFlagService: InternalFeatureFlagServiceAPI!
+    private var mockFeatureFlagsService: MockFeatureFlagsService!
     private var mockMainQueue: TestSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         WelcomeState,
@@ -22,13 +23,14 @@ final class WelcomeReducerTests: XCTestCase {
         WelcomeAction,
         WelcomeEnvironment
     >!
+    private var cancellables = Set<AnyCancellable>()
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockMainQueue = DispatchQueue.test
         dummyUserDefaults = UserDefaults(suiteName: "welcome.reducer.tests.defaults")!
-        mockInternalFeatureFlagService = InternalFeatureFlagService(defaultsProvider: { dummyUserDefaults })
-        mockInternalFeatureFlagService.enable(.disableGUIDLogin)
+        mockFeatureFlagsService = MockFeatureFlagsService()
+        mockFeatureFlagsService.enable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
         testStore = TestStore(
             initialState: .init(),
             reducer: welcomeReducer,
@@ -36,8 +38,7 @@ final class WelcomeReducerTests: XCTestCase {
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
-                featureFlags: mockInternalFeatureFlagService,
-                appFeatureConfigurator: NoOpFeatureConfigurator(),
+                featureFlagsService: mockFeatureFlagsService,
                 buildVersionProvider: { "Test Version" },
                 errorRecorder: MockErrorRecorder(),
                 externalAppOpener: MockExternalAppOpener(),
@@ -50,7 +51,7 @@ final class WelcomeReducerTests: XCTestCase {
         BuildFlag.isInternal = false
         mockMainQueue = nil
         testStore = nil
-        mockInternalFeatureFlagService = nil
+        mockFeatureFlagsService = nil
         dummyUserDefaults.removeSuite(named: "welcome.reducer.tests.defaults")
         try super.tearDownWithError()
     }
@@ -68,16 +69,18 @@ final class WelcomeReducerTests: XCTestCase {
 
     func test_start_shows_manual_pairing_when_feature_flag_is_not_enabled_and_build_is_internal() {
         BuildFlag.isInternal = true
-        mockInternalFeatureFlagService.disable(.disableGUIDLogin)
+        mockFeatureFlagsService.disable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
         testStore.send(.start) { state in
             state.buildVersion = "Test Version"
+        }
+        testStore.receive(.setManualPairingEnabled) { state in
             state.manualPairingEnabled = true
         }
     }
 
     func test_start_does_not_shows_manual_pairing_when_feature_flag_is_not_enabled_and_build_is_not_internal() {
         BuildFlag.isInternal = false
-        mockInternalFeatureFlagService.disable(.disableGUIDLogin)
+        mockFeatureFlagsService.disable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
         testStore.send(.start) { state in
             state.buildVersion = "Test Version"
             state.manualPairingEnabled = false

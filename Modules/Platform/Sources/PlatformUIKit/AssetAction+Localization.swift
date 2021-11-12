@@ -21,6 +21,8 @@ extension AssetAction {
             return LocalizationIds.sell
         case .send:
             return LocalizationIds.send
+        case .sign:
+            fatalError("Impossible.")
         case .receive:
             return LocalizationIds.receive
         case .swap:

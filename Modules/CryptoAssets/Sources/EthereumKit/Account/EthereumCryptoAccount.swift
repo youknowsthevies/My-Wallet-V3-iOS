@@ -67,8 +67,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
         Single.zip(
             canPerformInterestTransfer(),
-            featureFlagsService
-                .isEnabled(.remote(.interestWithdrawAndDeposit))
+            isInterestWithdrawAndDepositEnabled
                 .asSingle()
         )
         .map { $0.0 && $0.1 }
@@ -93,6 +92,16 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
             .catchErrorJustReturn([])
     }
 
+    private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
+        featureFlagsService
+            .isEnabled(
+                .remote(.interestWithdrawAndDeposit)
+            )
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let publicKey: String
     private let hdAccountIndex: Int
     private let accountDetailsService: EthereumAccountDetailsServiceAPI
@@ -100,7 +109,6 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     private let bridge: EthereumWalletBridgeAPI
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
-    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         publicKey: String,
@@ -141,6 +149,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
                     isEnabled ? isFunded : .just(false)
                 }
         case .deposit,
+             .sign,
              .withdraw,
              .interestWithdraw:
             return .just(false)

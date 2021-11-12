@@ -92,6 +92,7 @@ public class Router: Routing {
 
     private let legacyRouter: PlatformUIKit.KYCRouterAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let loadingViewPresenter: PlatformUIKit.LoadingViewPresenting
     private let emailVerificationService: FeatureKYCDomain.EmailVerificationServiceAPI
     private let kycService: PlatformKit.KYCTiersServiceAPI
     private let openMailApp: (@escaping (Bool) -> Void) -> Void
@@ -101,12 +102,14 @@ public class Router: Routing {
 
     public init(
         analyticsRecorder: AnalyticsEventRecorderAPI,
+        loadingViewPresenter: PlatformUIKit.LoadingViewPresenting,
         legacyRouter: PlatformUIKit.KYCRouterAPI,
         kycService: PlatformKit.KYCTiersServiceAPI,
         emailVerificationService: FeatureKYCDomain.EmailVerificationServiceAPI,
         openMailApp: @escaping (@escaping (Bool) -> Void) -> Void
     ) {
         self.analyticsRecorder = analyticsRecorder
+        self.loadingViewPresenter = loadingViewPresenter
         self.legacyRouter = legacyRouter
         self.kycService = kycService
         self.emailVerificationService = emailVerificationService
@@ -140,9 +143,7 @@ public class Router: Routing {
         // NOTE: you must retain the router to get the flow completion
         presentKYC(from: presenter, requiredTier: requiredTier)
             .receive(on: DispatchQueue.main)
-            .sink { result in
-                flowCompletion(result)
-            }
+            .sink(receiveValue: flowCompletion)
             .store(in: &cancellables)
     }
 
@@ -186,6 +187,7 @@ public class Router: Routing {
                 RouterError.emailVerificationFailed
             }
             .receive(on: DispatchQueue.main)
+            .handleLoaderForLifecycle(loader: loadingViewPresenter)
             // step 2: present email verification screen, if needed.
             .flatMap { response -> AnyPublisher<FlowResult, RouterError> in
                 switch response.status {
@@ -227,6 +229,7 @@ public class Router: Routing {
             .fetchTiers()
             .receive(on: DispatchQueue.main)
             .mapError { _ in RouterError.kycStepFailed }
+            .handleLoaderForLifecycle(loader: loadingViewPresenter)
             .flatMap { [routeToKYC] userTiers -> AnyPublisher<FlowResult, RouterError> in
                 // step 2a: Route to KYC if the current user's tier is less than Tier 2.
                 // NOTE: By guarding against Tier 1 we ensure SDD checks are performed for Tier 1 users to determine whether they are Tier 3.

@@ -31,7 +31,7 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
             client: client,
             feeService: feeService,
             transactionBuilder: EthereumTransactionBuilder(),
-            transactionSigner: EthereumTransactionSigner(),
+            transactionSigner: EthereumSigner(),
             transactionEncoder: EthereumTransactionEncoder()
         )
     }
@@ -52,10 +52,7 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
             rawTransaction: "0xf8640985028fa6ae00825208943535353535353535353535353535353535353535018026a059cd94b103938e5a072957427a72536a255bb48f5a5d2928631793e616d13823a024538cf2a58f0e3b54436a59b001e87a54f98a9dbfc2483a311762fc6bc4ea9d"
         )
 
-        let expectedPublished = EthereumTransactionPublished(
-            finalisedTransaction: finalised,
-            transactionHash: finalised.transactionHash
-        )
+        let expectedPublished = EthereumTransactionPublished(transactionHash: finalised.transactionHash)
 
         client.pushTransactionValue = .just(
             EthereumPushTxResponse(txHash: expectedPublished.transactionHash)
@@ -64,7 +61,7 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
         let keyPair = MockEthereumWalletTestData.keyPair
 
         let sendObservable: Observable<EthereumTransactionPublished> = subject
-            .send(transaction: .defaultMock, keyPair: keyPair)
+            .signAndSend(transaction: .defaultMock, keyPair: keyPair)
             .asObservable()
 
         // Act

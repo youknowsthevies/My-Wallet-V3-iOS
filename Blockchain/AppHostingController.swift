@@ -4,20 +4,23 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureAppUI
+import FeatureAuthenticationDomain
+import FeatureAuthenticationUI
 import PlatformUIKit
+import SwiftUI
 import UIKit
 
 /// Acts as the main controller for onboarding and logged in states
 final class AppHostingController: UIViewController {
     let store: Store<CoreAppState, CoreAppAction>
     let viewStore: ViewStore<CoreAppState, CoreAppAction>
-    private var cancellables: Set<AnyCancellable> = []
 
     @LazyInject var alertViewPresenter: AlertViewPresenterAPI
 
     private var onboardingController: OnboardingHostingController?
     private var loggedInController: LoggedInHostingController?
     private var loggedInDependencyBridge: LoggedInDependencyBridgeAPI
+    private var cancellables: Set<AnyCancellable> = []
 
     init(
         store: Store<CoreAppState, CoreAppAction>,
@@ -38,7 +41,8 @@ final class AppHostingController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.1019607843, blue: 0.2784313725, alpha: 1)
 
-        viewStore.publisher
+        viewStore
+            .publisher
             .alertContent
             .compactMap { $0 }
             .removeDuplicates()
@@ -88,6 +92,20 @@ final class AppHostingController: UIViewController {
                 }
                 self.loggedInController = loggedInController
                 self.onboardingController = nil
+            })
+            .store(in: &cancellables)
+
+        store
+            .scope(state: \.deviceAuthorization, action: CoreAppAction.authorizeDevice)
+            .ifLet(then: { [weak self] authorizeDeviceScope in
+                guard let self = self else { return }
+                let nav = AuthorizeDeviceViewController(
+                    store: authorizeDeviceScope,
+                    viewDismissed: { [weak self] in
+                        self?.viewStore.send(.deviceAuthorizationFinished)
+                    }
+                )
+                self.topMostViewController?.present(nav, animated: true, completion: nil)
             })
             .store(in: &cancellables)
     }

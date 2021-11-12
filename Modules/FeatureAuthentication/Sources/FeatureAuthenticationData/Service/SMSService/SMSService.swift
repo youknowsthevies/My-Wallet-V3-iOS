@@ -3,6 +3,7 @@
 import Combine
 import FeatureAuthenticationDomain
 import ToolKit
+import WalletPayloadKit
 
 public final class SMSService: SMSServiceAPI {
 
@@ -12,22 +13,46 @@ public final class SMSService: SMSServiceAPI {
 
     private let client: SMSClientAPI
     private let repository: WalletRepositoryAPI
+    private let walletRepo: WalletRepo
+    private let nativeWalletFlagEnabled: () -> AnyPublisher<Bool, Never>
 
-    public init(client: SMSClientAPI, repository: WalletRepositoryAPI) {
+    public init(
+        client: SMSClientAPI,
+        repository: WalletRepositoryAPI,
+        walletRepo: WalletRepo,
+        nativeWalletFlagEnabled: @escaping () -> AnyPublisher<Bool, Never>
+    ) {
         self.repository = repository
         self.client = client
+        self.walletRepo = walletRepo
+        self.nativeWalletFlagEnabled = nativeWalletFlagEnabled
     }
 
     // MARK: - API
 
     public func request() -> AnyPublisher<Void, SMSServiceError> {
-        repository.guidPublisher
-            .zip(repository.sessionTokenPublisher)
+        let walletRepo = self.walletRepo
+        let repository = self.repository
+
+        let credentials = nativeWalletFlagEnabled()
+            .flatMap { isEnabled -> AnyPublisher<(guid: String?, sessionToken: String?), SMSServiceError> in
+                guard isEnabled else {
+                    return repository.guidPublisher
+                        .zip(repository.sessionTokenPublisher) { ($0, $1) }
+                        .mapError()
+                }
+                return walletRepo.credentials
+                    .map { ($0.guid, $0.sessionToken) }
+                    .mapError()
+            }
+            .eraseToAnyPublisher()
+
+        return credentials
             .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), SMSServiceError> in
-                guard let guid = credentials.0 else {
+                guard let guid = credentials.guid else {
                     return .failure(.missingCredentials(.guid))
                 }
-                guard let sessionToken = credentials.1 else {
+                guard let sessionToken = credentials.sessionToken else {
                     return .failure(.missingCredentials(.sessionToken))
                 }
                 return .just((guid, sessionToken))

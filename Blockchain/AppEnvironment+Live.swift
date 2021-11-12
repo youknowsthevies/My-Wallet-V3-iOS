@@ -27,6 +27,7 @@ extension AppEnvironment {
             mobileAuthSyncService: resolve(),
             resetPasswordService: resolve(),
             accountRecoveryService: resolve(),
+            deviceVerificationService: resolve(),
             featureFlagsService: resolve(),
             internalFeatureService: resolve(),
             fiatCurrencySettingsService: resolve(),

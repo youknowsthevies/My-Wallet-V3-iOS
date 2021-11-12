@@ -33,16 +33,16 @@ public final class AssetPriceViewHistoricalInteractor: AssetPriceViewInteracting
                     let currency = result.historicalPrices.currency
                     let window = result.priceWindow
                     let currentPrice = result.currentFiatValue
-                    let fiatChange: FiatValue = .create(
+                    let priceChange: FiatValue = .create(
                         major: result.historicalPrices.fiatChange,
                         currency: result.currentFiatValue.currency
                     )
                     return .loaded(
                         next: .init(
+                            currentPrice: currentPrice.moneyValue,
                             time: window.time(for: currency),
-                            fiatValue: currentPrice,
                             changePercentage: delta,
-                            fiatChange: fiatChange
+                            priceChange: priceChange.moneyValue
                         )
                     )
                 }

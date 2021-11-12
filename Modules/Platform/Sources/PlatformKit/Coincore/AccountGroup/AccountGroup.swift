@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Algorithms
 import Combine
 import RxSwift
 import ToolKit
@@ -58,11 +59,16 @@ extension AccountGroup {
 
     public func fiatBalance(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValue, Error> {
         accounts
-            .map { account in
-                account.fiatBalance(fiatCurrency: fiatCurrency, at: time)
-                    .replaceError(with: MoneyValue.zero(currency: fiatCurrency))
+            .chunks(ofCount: 100)
+            .map { accounts in
+                accounts
+                    .map { account in
+                        account.fiatBalance(fiatCurrency: fiatCurrency, at: time)
+                            .replaceError(with: MoneyValue.zero(currency: fiatCurrency))
+                    }
+                    .zip()
             }
-            .zip()
+            .merge()
             .tryMap { balances -> MoneyValue in
                 try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
             }
@@ -71,13 +77,29 @@ extension AccountGroup {
 
     public func balancePair(fiatCurrency: FiatCurrency, at time: PriceTime) -> AnyPublisher<MoneyValuePair, Error> {
         accounts
-            .map { account in
-                account.balancePair(fiatCurrency: fiatCurrency, at: time)
-                    .replaceError(with: .zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currencyType))
+            .chunks(ofCount: 100)
+            .map { accounts in
+                accounts
+                    .map { account in
+                        account.balancePair(fiatCurrency: fiatCurrency, at: time)
+                            .replaceError(
+                                with: .zero(
+                                    baseCurrency: account.currencyType,
+                                    quoteCurrency: fiatCurrency.currencyType
+                                )
+                            )
+                    }
+                    .zip()
             }
-            .zip()
-            .tryMap { [currencyType] balancePairs in
-                try balancePairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currencyType), +)
+            .merge()
+            .tryMap { balancePairs in
+                try balancePairs.reduce(
+                    .zero(
+                        baseCurrency: currencyType,
+                        quoteCurrency: fiatCurrency.currencyType
+                    ),
+                    +
+                )
             }
             .eraseToAnyPublisher()
     }

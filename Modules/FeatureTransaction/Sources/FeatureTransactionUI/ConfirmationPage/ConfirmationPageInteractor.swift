@@ -3,6 +3,7 @@
 import DIKit
 import FeatureTransactionDomain
 import PlatformKit
+import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
@@ -21,14 +22,17 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
 
     private let transactionModel: TransactionModel
     private let analyticsHook: TransactionAnalyticsHook
+    private let webViewRouter: WebViewRouterAPI
 
     init(
         presenter: ConfirmationPagePresentable,
         transactionModel: TransactionModel,
-        analyticsHook: TransactionAnalyticsHook = resolve()
+        analyticsHook: TransactionAnalyticsHook = resolve(),
+        webViewRouter: WebViewRouterAPI = resolve()
     ) {
         self.transactionModel = transactionModel
         self.analyticsHook = analyticsHook
+        self.webViewRouter = webViewRouter
         super.init(presenter: presenter)
     }
 
@@ -58,14 +62,14 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
 
     func handle(effect: Effects) {
         switch effect {
-        case .close, .back:
-            // in both close and back, we need to clean up any prepared state (e.g. cancel created order)
-            // Going back does that. Alternatively, we could delegate to `transactionModel` by creating a new action.
+        case .close:
+            listener?.closeFlow()
+        case .back:
             listener?.checkoutDidTapBack()
         case .updateMemo(let memo, let oldModel):
             let model = TransactionConfirmation.Model.Memo(textMemo: memo, required: oldModel.required)
             transactionModel.process(action: .modifyTransactionConfirmation(.memo(model)))
-        case .toggleToSAgreement(let value):
+        case .toggleTermsOfServiceAgreement(let value):
             let model = TransactionConfirmation.Model.AnyBoolOption<Bool>(
                 value: value,
                 type: .agreementInterestTandC
@@ -77,6 +81,8 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
                 type: .agreementInterestTransfer
             )
             transactionModel.process(action: .modifyTransactionConfirmation(.transferAgreement(model)))
+        case .tappedHyperlink(let titledLink):
+            router?.showWebViewWithTitledLink(titledLink)
         }
     }
 }
@@ -91,7 +97,8 @@ extension ConfirmationPageInteractor {
         case close
         case back
         case updateMemo(String?, oldModel: TransactionConfirmation.Model.Memo)
-        case toggleToSAgreement(Bool)
+        case tappedHyperlink(TitledLink)
+        case toggleTermsOfServiceAgreement(Bool)
         case toggleHoldPeriodAgreement(Bool)
     }
 }

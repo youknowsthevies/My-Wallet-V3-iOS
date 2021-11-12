@@ -72,7 +72,7 @@ struct TabBarBar: View {
                 EmptyView()
             }
         }
-        .background(Color.semantic.white)
+        .background(Color.semantic.background)
     }
 
     /// Center the highlight bar within the given rect

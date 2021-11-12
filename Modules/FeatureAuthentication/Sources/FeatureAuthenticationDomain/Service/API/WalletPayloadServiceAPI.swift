@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import WalletPayloadKit
 
 public enum WalletPayloadServiceError: Error, Equatable {
 
@@ -41,4 +42,13 @@ public protocol WalletPayloadServiceAPI: AnyObject {
     /// - Parameters: sharedkey shared key retrieved from the wallet repository
     /// - Returns: A combine `Publisher` that emits nothing or ServiceError if failure occurs
     func request(guid: String, sharedKey: String) -> AnyPublisher<Void, WalletPayloadServiceError>
+
+    /// Handles the authentication request to be sent to the wallet payload client using GUID and session token in the wallet repository
+    /// - Parameters guid: guid retrieved from the wallet repository
+    /// - Parameters: sessionToken shared token retrieved from the wallet repository
+    /// - Returns: A combine `Publisher` that emits nothing or ServiceError if failure occurs
+    func request(
+        guid: String,
+        sessionToken: String
+    ) -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError>
 }

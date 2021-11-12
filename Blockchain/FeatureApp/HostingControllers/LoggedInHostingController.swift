@@ -386,6 +386,26 @@ extension LoggedInHostingController {
         tabControllerManager?.send(from: account)
     }
 
+    func send(from account: BlockchainAccount, target: TransactionTarget) {
+        tabControllerManager?.send(from: account, target: target)
+    }
+
+    func sign(from account: BlockchainAccount, target: TransactionTarget) {
+        guard let account = account as? CryptoAccount else {
+            fatalError("Expected a CryptoAccount")
+        }
+        guard let viewController = topMostViewController else {
+            fatalError("Expected a UIViewController")
+        }
+        transactionsAdapter
+            .presentTransactionFlow(
+                to: .sign(sourceAccount: account, destination: target),
+                from: viewController
+            ) { result in
+                Logger.shared.info("Sign Transaction Flow completed with result '\(result)'")
+            }
+    }
+
     func switchToSend() {
         tabControllerManager?.showSend()
     }

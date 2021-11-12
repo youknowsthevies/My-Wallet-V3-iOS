@@ -5,6 +5,7 @@ import ComposableArchitecture
 import DIKit
 import ERC20Kit
 import FeatureAuthenticationDomain
+import FeatureAuthenticationUI
 import FeatureDebugUI
 import FeatureSettingsDomain
 import NetworkKit
@@ -31,6 +32,7 @@ public struct AppEnvironment {
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
     var resetPasswordService: ResetPasswordServiceAPI
     var accountRecoveryService: AccountRecoveryServiceAPI
+    var deviceVerificationService: DeviceVerificationServiceAPI
     var featureFlagsService: FeatureFlagsServiceAPI
     var internalFeatureService: InternalFeatureFlagServiceAPI // TODO: deprecated, use featureFlagsService instead
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
@@ -74,6 +76,7 @@ public struct AppEnvironment {
         mobileAuthSyncService: MobileAuthSyncServiceAPI,
         resetPasswordService: ResetPasswordServiceAPI,
         accountRecoveryService: AccountRecoveryServiceAPI,
+        deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
         internalFeatureService: InternalFeatureFlagServiceAPI,
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI,
@@ -112,6 +115,7 @@ public struct AppEnvironment {
         self.mobileAuthSyncService = mobileAuthSyncService
         self.resetPasswordService = resetPasswordService
         self.accountRecoveryService = accountRecoveryService
+        self.deviceVerificationService = deviceVerificationService
         self.featureFlagsService = featureFlagsService
         self.internalFeatureService = internalFeatureService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService

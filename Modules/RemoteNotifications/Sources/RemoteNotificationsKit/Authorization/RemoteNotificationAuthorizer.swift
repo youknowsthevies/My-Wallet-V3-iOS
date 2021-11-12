@@ -149,5 +149,6 @@ extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequestin
         requestAuthorizationIfNeeded()
             .asCompletable()
             .asPublisher()
+            .eraseToAnyPublisher()
     }
 }

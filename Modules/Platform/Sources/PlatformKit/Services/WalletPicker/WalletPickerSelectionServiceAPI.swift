@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import RxCombine
 import RxRelay
 import RxSwift
+import RxToolKit
 
 public protocol WalletPickerSelectionServiceAPI: AnyObject {
     var selectedData: Observable<BlockchainAccount> { get }

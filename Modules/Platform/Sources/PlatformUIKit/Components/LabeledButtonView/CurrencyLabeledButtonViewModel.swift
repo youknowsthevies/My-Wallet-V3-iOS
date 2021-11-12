@@ -14,6 +14,9 @@ public final class CurrencyLabeledButtonViewModel: LabeledButtonViewModelAPI {
 
     // MARK: - Exposed Properties
 
+    /// Accepts visibility toggle
+    public let hiddenRelay = PublishRelay<Bool>()
+
     /// Accepts taps
     public let tapRelay = PublishRelay<Void>()
 

@@ -26,11 +26,7 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
     let navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction
 
     var navigationBarAppearance: DetailsScreen.NavigationBarAppearance {
-        .custom(
-            leading: .back,
-            trailing: .none,
-            barStyle: .darkContent(ignoresStatusBar: false, background: .white)
-        )
+        contentReducer.navigationBarAppearance
     }
 
     // MARK: - Actions
@@ -98,11 +94,15 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             }
             .disposed(by: disposeBag)
 
-        let closeTapped = contentReducer
+        let cancelTapped = contentReducer
             .cancelButtonViewModel
             .tap
-            .asObservable()
-            .map { ConfirmationPageInteractor.Effects.close }
+            .withLatestFrom(details)
+            .map { details -> ConfirmationPageInteractor.Effects in
+                details.stepsBackStack.isEmpty ?
+                    .close
+                    : .back
+            }
             .asDriverCatchError()
 
         let backTapped = backButtonPressed
@@ -111,31 +111,41 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
 
         let termsChanged = contentReducer
             .termsUpdated
-            .map { value in
-                ConfirmationPageInteractor.Effects.toggleToSAgreement(value)
+            .distinctUntilChanged()
+            .map { value -> ConfirmationPageInteractor.Effects in
+                .toggleTermsOfServiceAgreement(value)
+            }
+            .asDriverCatchError()
+
+        let hyperlinkTapped = contentReducer
+            .hyperlinkTapped
+            .map { value -> ConfirmationPageInteractor.Effects in
+                .tappedHyperlink(value)
             }
             .asDriverCatchError()
 
         let transferAgreementChanged = contentReducer
             .transferAgreementUpdated
-            .map { value in
-                ConfirmationPageInteractor.Effects.toggleHoldPeriodAgreement(value)
+            .distinctUntilChanged()
+            .map { value -> ConfirmationPageInteractor.Effects in
+                .toggleHoldPeriodAgreement(value)
             }
             .asDriverCatchError()
 
         let memoChanged = contentReducer
             .memoUpdated
-            .map { text, oldModel in
-                ConfirmationPageInteractor.Effects.updateMemo(text, oldModel: oldModel)
+            .map { text, oldModel -> ConfirmationPageInteractor.Effects in
+                .updateMemo(text, oldModel: oldModel)
             }
             .asDriverCatchError()
 
         return .merge(
-            closeTapped,
+            cancelTapped,
             backTapped,
             memoChanged,
             transferAgreementChanged,
-            termsChanged
+            termsChanged,
+            hyperlinkTapped
         )
     }
 

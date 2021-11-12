@@ -235,7 +235,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        // TODO: Is validating the address necessary?
         validateAmounts(pendingTransaction: pendingTransaction)
             .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
             .andThen(validateOptions(pendingTransaction: pendingTransaction))

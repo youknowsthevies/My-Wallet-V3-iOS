@@ -81,6 +81,7 @@ extension TransactionState: Equatable {
             && lhs.stepsBackStack == rhs.stepsBackStack
             && lhs.availableSources.map(\.identifier) == rhs.availableSources.map(\.identifier)
             && lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
+            && lhs.userKYCTiers == rhs.userKYCTiers
     }
 }
 
@@ -123,7 +124,13 @@ extension TransactionState {
     /// The maximum amount the user can spend. We compare the amount entered to the
     /// `maxLimit` as `CryptoValues` and return whichever is smaller.
     var maxSpendable: MoneyValue {
-        pendingTransaction?.maxSpendable ?? .zero(currency: asset)
+        if let maxSpendable = pendingTransaction?.maxSpendable,
+           (try? maxSpendable > .zero(currency: asset)) == true
+        {
+            return maxSpendable
+        } else {
+            return .zero(currency: asset)
+        }
     }
 
     /// The balance in `MoneyValue` based on the `PendingTransaction`

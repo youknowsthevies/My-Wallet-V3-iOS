@@ -212,7 +212,8 @@ final class TransactionInteractor {
                 }
                 .asObservable()
                 .asSingle()
-        case .receive,
+        case .sign,
+             .receive,
              .viewActivity:
             unimplemented()
         }

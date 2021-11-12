@@ -3,6 +3,12 @@
 import AnalyticsKit
 import FeatureAuthenticationDomain
 
+// TODO: refactor this when secure channel is moved to feature authentication
+enum LoginSource {
+    case secureChannel
+    case magicLink
+}
+
 extension AnalyticsEvents.New {
     enum LoginFlow: AnalyticsEvent, Equatable {
         case loginClicked(
@@ -13,8 +19,8 @@ extension AnalyticsEvents.New {
             identifierType: IdentifierType
         )
         case loginPasswordEntered
-        case loginRequestApproved
-        case loginRequestDenied
+        case loginRequestApproved(LoginSource)
+        case loginRequestDenied(LoginSource)
         case loginTwoStepVerificationEntered
         case loginTwoStepVerificationDenied
         case deviceVerified(
@@ -34,12 +40,16 @@ extension AnalyticsEvents.New {
                 ]
                 return ["wallet": walletInfoDecoded]
             case .loginPasswordEntered,
-                 .loginRequestApproved,
-                 .loginRequestDenied,
                  .loginTwoStepVerificationEntered,
                  .loginViewed,
                  .loginTwoStepVerificationDenied:
                 return [:]
+
+            case .loginRequestApproved(let source),
+                 .loginRequestDenied(let source):
+                return [
+                    "login_source": String(describing: source)
+                ]
 
             case .loginClicked(let origin):
                 return [

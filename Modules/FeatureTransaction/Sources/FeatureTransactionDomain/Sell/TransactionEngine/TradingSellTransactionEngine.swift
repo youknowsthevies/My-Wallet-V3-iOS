@@ -10,33 +10,27 @@ import ToolKit
 final class TradingSellTransactionEngine: SellTransactionEngine {
 
     var requireSecondPassword: Bool = false
-
     let quotesEngine: SwapQuotesEngine
-
     let fiatCurrencyService: FiatCurrencyServiceAPI
     let kycTiersService: KYCTiersServiceAPI
-    let tradeLimitsRepository: TransactionLimitsRepositoryAPI
+    let transactionLimitsService: TransactionLimitsServiceAPI
     let orderQuoteRepository: OrderQuoteRepositoryAPI
-    let priceService: PriceServiceAPI
     let orderCreationRepository: OrderCreationRepositoryAPI
-
     let orderDirection: OrderDirection = .internal
 
     init(
         quotesEngine: SwapQuotesEngine,
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
-        tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiersService = kycTiersService
-        self.tradeLimitsRepository = tradeLimitsRepository
+        self.transactionLimitsService = transactionLimitsService
         self.orderQuoteRepository = orderQuoteRepository
-        self.priceService = priceService
         self.orderCreationRepository = orderCreationRepository
     }
 
@@ -78,8 +72,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
                 )
                 return self.updateLimits(
                     pendingTransaction: pendingTransaction,
-                    pricedQuote: pricedQuote,
-                    fiatCurrency: fiatCurrency
+                    pricedQuote: pricedQuote
                 )
                 .handlePendingOrdersError(initialValue: pendingTransaction)
             }
@@ -121,7 +114,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
         quotesEngine.getRate(direction: orderDirection, pair: pair)
             .take(1)
             .asSingle()
-            .map { [sourceAsset, targetAsset] pricedQuote -> PendingTransaction in
+            .map { [targetAsset] pricedQuote -> PendingTransaction in
                 let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let baseValue = MoneyValue.one(currency: pendingTransaction.amount.currency)
                 let sellDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)

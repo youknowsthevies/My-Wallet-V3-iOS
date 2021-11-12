@@ -124,6 +124,7 @@ private func provideSectionHeader(action: AssetAction, title: TargetDestinationT
          .interestWithdraw,
          .receive,
          .buy,
+         .sign,
          .sell,
          .viewActivity:
         unimplemented()

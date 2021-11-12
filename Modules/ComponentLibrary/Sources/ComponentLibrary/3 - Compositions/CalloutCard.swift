@@ -49,9 +49,9 @@ public struct CalloutCard<Leading: View>: View {
         .background(
             RoundedRectangle(cornerRadius: Spacing.containerBorderRadius)
                 .fill(
-                    Color.dynamicColor(
-                        light: .semantic.white,
-                        dark: Color.Semantic.background2
+                    Color(
+                        light: .palette.white,
+                        dark: .palette.dark800
                     )
                 )
         )
