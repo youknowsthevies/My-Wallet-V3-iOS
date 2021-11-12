@@ -2,6 +2,7 @@
 
 import ComposableArchitecture
 import FeatureAuthenticationDomain
+import WalletPayloadKit
 
 // MARK: - Type
 

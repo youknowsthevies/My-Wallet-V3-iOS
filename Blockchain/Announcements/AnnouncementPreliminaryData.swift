@@ -3,6 +3,7 @@
 import DIKit
 import FeatureAuthenticationDomain
 import PlatformKit
+import WalletPayloadKit
 
 /// Contains any needed remotely fetched data before displaying announcements.
 struct AnnouncementPreliminaryData {

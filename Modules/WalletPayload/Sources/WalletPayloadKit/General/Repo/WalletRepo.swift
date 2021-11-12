@@ -52,18 +52,22 @@ public struct WalletRepo: Publisher {
     /// - Parameters:
     ///   - keyPath: A `WritableKeyPath` for the underlying variable
     ///   - value: A value to be to written for the selected keyPath
+    @discardableResult
     public func set<Value>(
         keyPath: WritableKeyPath<WalletRepoState, Value>,
         value: Value
-    ) {
+    ) -> Self {
         state.value[keyPath: keyPath] = value
+        return self
     }
 
     /// Sets an new `WalletStorageState` value
     /// - Parameter value: A `WalletStorageState` to be set.
+    @discardableResult
     public func set(
         value: WalletRepoState
-    ) {
+    ) -> Self {
         state.send(value)
+        return self
     }
 }

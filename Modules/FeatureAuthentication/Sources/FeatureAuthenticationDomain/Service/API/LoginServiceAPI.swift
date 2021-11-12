@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import WalletPayloadKit
 
 /// A potential login service error
 public enum LoginServiceError: LocalizedError, Equatable {

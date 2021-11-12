@@ -501,7 +501,12 @@ extension DependencyContainer {
 
         factory { () -> GuidServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return GuidService(sessionTokenRepository: manager.repository, client: DIKit.resolve())
+            return GuidService(
+                sessionTokenRepository: manager.repository,
+                client: DIKit.resolve(),
+                walletRepo: DIKit.resolve(),
+                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+            )
         }
 
         factory { () -> SessionTokenServiceAPI in
@@ -511,17 +516,32 @@ extension DependencyContainer {
 
         factory { () -> SMSServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return SMSService(client: DIKit.resolve(), repository: manager.repository)
+            return SMSService(
+                client: DIKit.resolve(),
+                repository: manager.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+            )
         }
 
         factory { () -> TwoFAWalletServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return TwoFAWalletService(client: DIKit.resolve(), repository: manager.repository)
+            return TwoFAWalletService(
+                client: DIKit.resolve(),
+                repository: manager.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+            )
         }
 
         factory { () -> WalletPayloadServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return WalletPayloadService(client: DIKit.resolve(), repository: manager.repository)
+            return WalletPayloadService(
+                client: DIKit.resolve(),
+                repository: manager.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletEnabledUse: nativeWalletEnabledUseImpl
+            )
         }
 
         factory { () -> LoginServiceAPI in
@@ -529,7 +549,9 @@ extension DependencyContainer {
             return LoginService(
                 payloadService: DIKit.resolve(),
                 twoFAPayloadService: DIKit.resolve(),
-                repository: manager.repository
+                repository: manager.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
             )
         }
 
