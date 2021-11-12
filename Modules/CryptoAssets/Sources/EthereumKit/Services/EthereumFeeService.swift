@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import PlatformKit
+import MoneyKit
 import RxSwift
 
 public protocol EthereumFeeServiceAPI {

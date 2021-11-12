@@ -3,6 +3,7 @@
 import AnalyticsKit
 import DIKit
 import Foundation
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift

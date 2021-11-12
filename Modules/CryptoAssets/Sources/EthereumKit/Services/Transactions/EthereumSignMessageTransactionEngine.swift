@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import FeatureTransactionDomain
 import Localization
+import MoneyKit
 import PlatformKit
 import RxSwift
 import RxToolKit

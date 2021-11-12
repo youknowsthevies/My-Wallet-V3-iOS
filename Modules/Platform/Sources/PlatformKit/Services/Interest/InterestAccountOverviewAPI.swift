@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import MoneyKit
 import RxSwift
 
 public protocol InterestAccountOverviewAPI {

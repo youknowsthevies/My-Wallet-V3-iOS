@@ -3,6 +3,7 @@
 import BigInt
 import Combine
 import Foundation
+import MoneyKit
 import PlatformKit
 import ToolKit
 

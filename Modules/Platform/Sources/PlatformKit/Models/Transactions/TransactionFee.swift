@@ -2,6 +2,7 @@
 
 import BigInt
 import Foundation
+import MoneyKit
 
 public struct TransactionFeeLimits: Decodable {
     public let min: Int

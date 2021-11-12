@@ -2,6 +2,7 @@
 
 import BigInt
 import FeatureTransactionDomain
+import MoneyKit
 import PlatformKit
 import RxSwift
 

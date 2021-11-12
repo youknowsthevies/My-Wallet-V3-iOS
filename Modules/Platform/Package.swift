@@ -70,6 +70,7 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../NetworkErrors"),
         .package(path: "../Network"),
+        .package(path: "../Money"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../RxTool"),
@@ -96,6 +97,7 @@ let package = Package(
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network"),
+                .product(name: "MoneyKit", package: "Money"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions"),
@@ -103,10 +105,6 @@ let package = Package(
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
                 .product(name: "Algorithms", package: "swift-algorithms")
-            ],
-            resources: [
-                .copy("Services/Currencies/local-currencies-custodial.json"),
-                .copy("Services/Currencies/local-currencies-erc20.json")
             ]
         ),
         .target(
@@ -161,6 +159,7 @@ let package = Package(
             dependencies: [
                 .target(name: "PlatformKit"),
                 .target(name: "PlatformKitMock"),
+                .product(name: "MoneyKitMock", package: "Money"),
                 .product(name: "FeatureAuthenticationMock", package: "FeatureAuthentication"),
                 .product(name: "NabuNetworkErrorMock", package: "NetworkErrors"),
                 .product(name: "NetworkKitMock", package: "Network"),

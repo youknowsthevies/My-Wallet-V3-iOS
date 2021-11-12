@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import ERC20Kit
 import FeatureAuthenticationDomain
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift

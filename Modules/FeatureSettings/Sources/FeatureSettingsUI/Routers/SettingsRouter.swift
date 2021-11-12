@@ -6,6 +6,7 @@ import DIKit
 import FeatureAuthenticationDomain
 import FeatureSettingsDomain
 import Localization
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa

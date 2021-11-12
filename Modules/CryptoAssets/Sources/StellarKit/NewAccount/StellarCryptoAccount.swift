@@ -3,6 +3,7 @@
 
 import Combine
 import DIKit
+import MoneyKit
 import PlatformKit
 import RxSwift
 import RxToolKit

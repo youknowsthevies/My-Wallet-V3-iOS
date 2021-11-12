@@ -2,6 +2,7 @@
 
 import BigInt
 import DIKit
+import MoneyKit
 import NabuNetworkError
 import PlatformKit
 import RxSwift

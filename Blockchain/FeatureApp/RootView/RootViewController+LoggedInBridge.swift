@@ -2,6 +2,7 @@
 
 import Combine
 import FeatureInterestUI
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit

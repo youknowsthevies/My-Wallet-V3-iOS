@@ -4,6 +4,7 @@ import BigInt
 import DIKit
 import FeatureTransactionDomain
 import Foundation
+import MoneyKit
 import PlatformKit
 import RxSwift
 

@@ -2,6 +2,7 @@
 
 import Combine
 @testable import EthereumKit
+import MoneyKit
 import NetworkError
 import PlatformKit
 

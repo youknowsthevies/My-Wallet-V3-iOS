@@ -89,6 +89,7 @@ func defineDependencies() {
         DependencyContainer.toolKit
         DependencyContainer.networkKit
         DependencyContainer.walletPayloadKit
+        DependencyContainer.moneyKit
         DependencyContainer.platformKit
         DependencyContainer.platformDataKit
         DependencyContainer.interestKit

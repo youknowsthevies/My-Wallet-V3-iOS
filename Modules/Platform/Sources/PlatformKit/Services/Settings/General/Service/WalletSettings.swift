@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import WalletPayloadKit
+import MoneyKit
 
 public struct WalletSettings: Equatable {
 

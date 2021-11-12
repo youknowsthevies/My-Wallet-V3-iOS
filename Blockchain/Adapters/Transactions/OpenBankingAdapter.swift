@@ -6,6 +6,7 @@ import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
 import FeatureSettingsUI
 import FeatureTransactionUI
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 

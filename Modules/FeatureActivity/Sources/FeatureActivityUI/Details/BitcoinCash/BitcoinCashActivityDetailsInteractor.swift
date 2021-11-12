@@ -2,6 +2,7 @@
 
 import BitcoinCashKit
 import DIKit
+import MoneyKit
 import PlatformKit
 import RxSwift
 

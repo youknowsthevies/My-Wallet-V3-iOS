@@ -3,6 +3,7 @@
 import BigInt
 @testable import EthereumKit
 @testable import EthereumKitMock
+import MoneyKit
 @testable import PlatformKit
 import XCTest
 

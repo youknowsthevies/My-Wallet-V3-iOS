@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import MoneyKit
 import PlatformKit
 
 /// This enum aggregates possible action types that can be done in the dashboard
