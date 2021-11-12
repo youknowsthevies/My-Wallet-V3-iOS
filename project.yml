@@ -265,6 +265,8 @@ packages:
     path: Modules/FeatureInterest
   FeatureKYC:
     path: Modules/FeatureKYC
+  FeatureOpenBanking:
+    path: Modules/FeatureOpenBanking
   FeatureOnboarding:
     path: Modules/FeatureOnboarding
   FeatureSettings:
@@ -356,15 +358,16 @@ targets:
       - embed: false
         framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
 
-      - package: FeatureApp
       - package: FeatureAccountPicker
       - package: FeatureActivity
+      - package: FeatureApp
       - package: FeatureAuthentication
       - package: FeatureDashboard
       - package: FeatureDebug
       - package: FeatureInterest
       - package: FeatureKYC
       - package: FeatureOnboarding
+      - package: FeatureOpenBanking
       - package: FeatureSettings
       - package: FeatureTour
       - package: FeatureTransaction

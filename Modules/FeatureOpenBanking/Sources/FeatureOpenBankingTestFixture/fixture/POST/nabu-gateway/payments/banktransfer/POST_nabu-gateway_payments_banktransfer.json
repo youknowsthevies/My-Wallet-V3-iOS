@@ -1,0 +1,1264 @@
+{
+  "partner": "YAPILY",
+  "attributes": {
+    "institutions": [
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT_STATEMENT",
+          "ACCOUNT_STATEMENTS",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT_STATEMENT_FILE",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "TSB Bank plc",
+        "id": "tsb",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/5fd1c193-2a15-43eb-b8fd-7dc4b6f046df?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/626cd8d9-5b54-4b0b-b3d1-a621890e7446?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "TSB Bank"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "IDENTITY",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Monzo",
+        "id": "monzo_ob",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/332bb781-3cc2-4f3e-ae79-1aba09fac991?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/f70dc041-c7a5-47d3-9c6b-846778eac01a?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Monzo"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "READ_DOMESTIC_SINGLE_REFUND",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "EXISTING_PAYMENTS_DETAILS",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "OPEN_DATA_PERSONAL_CURRENT_ACCOUNTS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "READ_DOMESTIC_PERIODIC_PAYMENT_REFUND",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "READ_DOMESTIC_SCHEDULED_REFUND",
+          "ACCOUNT",
+          "INITIATE_BULK_PAYMENT",
+          "ACCOUNT_BENEFICIARIES",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_BULK_PAYMENT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Royal Bank of Scotland",
+        "id": "rbs",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/7a689514-dda3-4550-917b-c0243a9eabd3?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/694b1b08-bb78-40d8-bf58-aae12a40de99?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Royal Bank of Scotland"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "READ_DOMESTIC_SINGLE_REFUND",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "IDENTITY",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "OPEN_DATA_ATMS",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "INITIATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "OPEN_DATA_PERSONAL_CURRENT_ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "INITIATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "READ_DOMESTIC_PERIODIC_PAYMENT_REFUND",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "READ_DOMESTIC_SCHEDULED_REFUND",
+          "ACCOUNT",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Danske Bank",
+        "id": "danskebank_uk",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/9d3f51fb-86a2-42b9-8add-eb69f3fe02b2?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/f387a249-720d-4bf5-95d0-5f96768dd09c?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Danske Bank"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_MANUAL",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "READ_DOMESTIC_SINGLE_REFUND",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_STATEMENTS",
+          "IDENTITY",
+          "EXISTING_PAYMENTS_DETAILS",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "OPEN_DATA_PERSONAL_CURRENT_ACCOUNTS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "READ_DOMESTIC_PERIODIC_PAYMENT_REFUND",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "READ_DOMESTIC_SCHEDULED_REFUND",
+          "ACCOUNT",
+          "ACCOUNT_STATEMENT_FILE",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Lloyds (Personal)",
+        "id": "lloyds",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/0b0567cd-1fe6-4ff2-a82e-da53361b6fef?size\u003d0",
+            "type": "icon"
+          },
+          {
+            "source": "https://images.yapily.com/image/da8f3859-978a-4027-863f-5d01d794d4c4?size\u003d0",
+            "type": "logo"
+          }
+        ],
+        "name": "Lloyds (Personal)"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "INITIATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_ACCOUNT_REQUEST",
+          "ACCOUNT_TRANSACTIONS",
+          "INITIATE_INTERNATIONAL_PERIODIC_PAYMENT",
+          "CREATE_INTERNATIONAL_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_BENEFICIARIES",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "INITIATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Coutts \u0026 Company",
+        "id": "coutts",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/be8a27ef-4508-4d7a-8e8b-f7b841a7b8e4?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/5f049447-3805-46fa-8e16-f3e89f6036c3?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Coutts \u0026 Company"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "IDENTITY",
+          "INITIATE_INTERNATIONAL_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "OPEN_DATA_ATMS",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "INITIATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "OPEN_DATA_PERSONAL_CURRENT_ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "INITIATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "CREATE_INTERNATIONAL_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "First Direct",
+        "id": "firstdirect",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/bfa8938c-75f4-4304-9056-377e8b79923d?size\u003d0",
+            "type": "icon"
+          },
+          {
+            "source": "https://images.yapily.com/image/f8d7f1a0-c4da-4768-b5c2-a9835624f905?size\u003d0",
+            "type": "logo"
+          }
+        ],
+        "name": "First Direct"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "INITIATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "INITIATE_INTERNATIONAL_PERIODIC_PAYMENT",
+          "CREATE_INTERNATIONAL_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "INITIATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Revolut",
+        "id": "revolut",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/c3fbd5c1-37f6-41ab-a289-b8cd642f6367?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/fe9124de-3dd2-4b6f-a519-ad5f9e2b594e?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Revolut"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT_STATEMENTS",
+          "INITIATE_ACCOUNT_REQUEST",
+          "IDENTITY",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "B Bank",
+        "id": "bbank",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/678ceb0c-5dd6-4380-92b4-8b538f2e0fa0?size\u003d0",
+            "type": "icon"
+          },
+          {
+            "source": "https://images.yapily.com/image/74b1d14b-b5db-4abd-9c68-aef13de284f3?size\u003d0",
+            "type": "logo"
+          }
+        ],
+        "name": "B Bank"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "IDENTITY",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Cumberland Building Society",
+        "id": "cumberlandbuildingsociety",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/a9787902-659c-4447-941a-645db9d1b8c3?size\u003d0",
+            "type": "icon"
+          },
+          {
+            "source": "https://images.yapily.com/image/02d90639-5fd7-4b49-b09b-58b61a442758?size\u003d0",
+            "type": "logo"
+          }
+        ],
+        "name": "Cumberland Building Society"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "IDENTITY",
+          "ACCOUNT_TRANSACTIONS",
+          "ACCOUNTS",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "ACCOUNT_STATEMENT",
+          "ACCOUNT_STATEMENTS",
+          "ACCOUNT_STATEMENT_FILE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Vanquis Bank",
+        "id": "vanquis-bank",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/1013ec08-84d2-4c0c-b4ef-f1101167c59e?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/eeb4929a-5c4d-4671-b884-1c6d78594ac9?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Vanquis Bank"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "IDENTITY",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Yorkshire Building Society",
+        "id": "yorkshirebuildingsociety",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/6d393f2f-996c-459f-b4b8-c681716877e8?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/eeb082df-042f-4ec8-bbc4-7e6cd9f9d124?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Yorkshire Building Society"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "READ_DOMESTIC_SINGLE_REFUND",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "EXISTING_PAYMENTS_DETAILS",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "OPEN_DATA_ATMS",
+          "ACCOUNT_REQUEST_DETAILS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "READ_DOMESTIC_PERIODIC_PAYMENT_REFUND",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "READ_DOMESTIC_SCHEDULED_REFUND",
+          "ACCOUNT",
+          "INITIATE_BULK_PAYMENT",
+          "ACCOUNT_BENEFICIARIES",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_BULK_PAYMENT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "National Westminister Bank",
+        "id": "natwest",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/0f2c716c-f9f4-4954-9d82-1d36150b3006?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/06a3822f-2890-4055-b1a1-d352532b6340?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Natwest"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_MANUAL",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "INITIATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "AIB / Allied Irish Bank (GB) - Personal",
+        "id": "aibgb",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/c77626bd-97e2-44e4-a560-c16ee5ce0abe?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/0857b7d0-e38f-4c8c-9fdd-5efaac66e546?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "AIB GB Personal"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT_STATEMENTS",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "IDENTITY",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Yorkshire Bank",
+        "id": "yorkshirebank",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/4dd385f3-90aa-4e53-add8-a8e31ec5cda4?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/b68e8a74-7ec1-4c23-9c7d-ef6508039959?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Yorkshire Bank"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_MANUAL",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "READ_DOMESTIC_SINGLE_REFUND",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_STATEMENTS",
+          "IDENTITY",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "INITIATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "OPEN_DATA_PERSONAL_CURRENT_ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "INITIATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "ACCOUNT_STATEMENT",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "ACCOUNT",
+          "ACCOUNT_STATEMENT_FILE",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Barclays Bank Personal",
+        "id": "barclays",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/0a89027e-8185-4521-aeba-8adcd70823f8?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/ab2359df-58e3-4446-91b8-55cbaf807d1a?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Barclays Personal"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_MANUAL",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNT_TRANSACTIONS",
+          "ACCOUNTS",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "ACCOUNT_STATEMENTS",
+          "ACCOUNT_STATEMENT_FILE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Cater Allen",
+        "id": "caterallen",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/9daa5360-d662-418e-9edf-7771002876f3?size\u003d0",
+            "type": "icon"
+          },
+          {
+            "source": "https://images.yapily.com/image/1e58b1cf-1d19-4379-a323-5962f5a2413b?size\u003d0",
+            "type": "logo"
+          }
+        ],
+        "name": "Cater Allen"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Bank of Ireland (UK) plc",
+        "id": "bankofireland_uk",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/f0fbffaf-7716-402a-a924-cebefe894306?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/45e3b36d-a177-4323-b662-a58082fe407b?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Bank of Ireland UK"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "TOKEN_IO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNT_TRANSACTIONS",
+          "ACCOUNTS",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "INITIATE_ACCOUNT_REQUEST",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "thinkmoney",
+        "id": "thinkmoney",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/4c261929-64bf-4d21-852d-000166fea12b?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/0d41e6b6-c0cc-49e0-98a3-5ea10acddf42?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "thinkmoney"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_MANUAL",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_STATEMENTS",
+          "IDENTITY",
+          "EXISTING_PAYMENTS_DETAILS",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "OPEN_DATA_ATMS",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "OPEN_DATA_PERSONAL_CURRENT_ACCOUNTS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "ACCOUNT_STATEMENT",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "ACCOUNT",
+          "INITIATE_BULK_PAYMENT",
+          "ACCOUNT_BENEFICIARIES",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_BULK_PAYMENT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Santander UK Plc",
+        "id": "santander_uk",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/a32a626b-92e4-449f-843a-007ca9bb0240?size\u003d0",
+            "type": "icon"
+          },
+          {
+            "source": "https://images.yapily.com/image/c450311c-be8d-491b-a758-2e89cdaf33da?size\u003d0",
+            "type": "logo"
+          }
+        ],
+        "name": "Santander"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_MANUAL",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "OPEN_DATA_PERSONAL_CURRENT_ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "OPEN_DATA_ATMS",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "INITIATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "AIB / Allied Irish Bank (NI) / First Trust - Personal",
+        "id": "firsttrustbank",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/3fe918ac-e50f-4beb-8bf8-8ed8c29d00e7?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/19822174-cffa-4dcd-a31a-75278fb5a276?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "AIB NI (First Trust) Personal"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_MANUAL",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "READ_DOMESTIC_SINGLE_REFUND",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT_STATEMENT",
+          "ACCOUNT_STATEMENTS",
+          "READ_DOMESTIC_PERIODIC_PAYMENT_REFUND",
+          "INITIATE_ACCOUNT_REQUEST",
+          "IDENTITY",
+          "ACCOUNT_TRANSACTIONS",
+          "READ_DOMESTIC_SCHEDULED_REFUND",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT_STATEMENT_FILE",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Bank of Scotland (Personal)",
+        "id": "bankofscotland",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/1ad73af4-b9b0-4368-a10a-fcc7806de478?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/a9bcb0bb-229c-4de6-ab96-df6314fd37b9?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Bank of Scotland (Personal)"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_ACCOUNT_REQUEST",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Cash Plus",
+        "id": "cashplus",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/782306b0-edf9-4c30-b881-90e7f8cccf3b?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/c6a645e3-3094-4099-b14f-28bf5b611e49?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Cash Plus"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OAUTH2_SIGNATURE",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "CREATE_DOMESTIC_VARIABLE_RECURRING_PAYMENT",
+          "INITIATE_DOMESTIC_VARIABLE_RECURRING_PAYMENT",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "IDENTITY",
+          "ACCOUNT_TRANSACTIONS",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Starling Bank",
+        "id": "starling",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/17c5ba24-fff2-4ffd-b84d-b7697cb40232?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/398dcc4d-b350-4b8d-8d3d-cbd105eb9c63?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Starling Bank"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "IDENTITY",
+          "INITIATE_INTERNATIONAL_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "OPEN_DATA_ATMS",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "INITIATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "OPEN_DATA_PERSONAL_CURRENT_ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "INITIATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "CREATE_INTERNATIONAL_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "M\u0026S Bank",
+        "id": "msbank",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/9932ddb9-0457-4c86-8f87-ccf1a1420ff1?size\u003d0",
+            "type": "icon"
+          },
+          {
+            "source": "https://images.yapily.com/image/9b006d04-b799-44d5-82de-fe3ce49118e6?size\u003d0",
+            "type": "logo"
+          }
+        ],
+        "name": "M\u0026S Bank"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_MANUAL",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "READ_DOMESTIC_SINGLE_REFUND",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_STATEMENTS",
+          "IDENTITY",
+          "EXISTING_PAYMENTS_DETAILS",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "OPEN_DATA_PERSONAL_CURRENT_ACCOUNTS",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "READ_DOMESTIC_PERIODIC_PAYMENT_REFUND",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "READ_DOMESTIC_SCHEDULED_REFUND",
+          "ACCOUNT",
+          "ACCOUNT_STATEMENT_FILE",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "Halifax Personal",
+        "id": "halifax",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/399a0b28-a171-4691-8ca7-79b3d5057e4c?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/9c5470ca-cb71-4dab-ba4a-c15603d3bcf7?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "Halifax Personal"
+      },
+      {
+        "countries": [
+          {
+            "countryCode2": "GB",
+            "displayName": "United Kingdom"
+          }
+        ],
+        "credentialsType": "OPEN_BANKING_UK_AUTO",
+        "environmentType": "LIVE",
+        "features": [
+          "ACCOUNTS",
+          "ACCOUNT_DIRECT_DEBITS",
+          "READ_DOMESTIC_SINGLE_REFUND",
+          "INITIATE_DOMESTIC_SINGLE_PAYMENT",
+          "INITIATE_SINGLE_PAYMENT_SORTCODE",
+          "IDENTITY",
+          "INITIATE_INTERNATIONAL_PERIODIC_PAYMENT",
+          "EXISTING_PAYMENTS_DETAILS",
+          "CREATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_PERIODIC_PAYMENT",
+          "CREATE_DOMESTIC_SINGLE_PAYMENT",
+          "OPEN_DATA_ATMS",
+          "ACCOUNT_REQUEST_DETAILS",
+          "ACCOUNT_SCHEDULED_PAYMENTS",
+          "CREATE_DOMESTIC_PERIODIC_PAYMENT",
+          "INITIATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "EXISTING_PAYMENT_INITIATION_DETAILS",
+          "ACCOUNT_PERIODIC_PAYMENTS",
+          "OPEN_DATA_PERSONAL_CURRENT_ACCOUNTS",
+          "PERIODIC_PAYMENT_FREQUENCY_EXTENDED",
+          "INITIATE_INTERNATIONAL_SCHEDULED_PAYMENT",
+          "INITIATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "READ_DOMESTIC_PERIODIC_PAYMENT_REFUND",
+          "INITIATE_ACCOUNT_REQUEST",
+          "CREATE_SINGLE_PAYMENT_SORTCODE",
+          "ACCOUNT_TRANSACTIONS",
+          "READ_DOMESTIC_SCHEDULED_REFUND",
+          "CREATE_INTERNATIONAL_PERIODIC_PAYMENT",
+          "ACCOUNT",
+          "CREATE_DOMESTIC_SCHEDULED_PAYMENT",
+          "CREATE_INTERNATIONAL_SINGLE_PAYMENT",
+          "ACCOUNT_TRANSACTIONS_WITH_MERCHANT"
+        ],
+        "fullName": "HSBC Personal",
+        "id": "hsbc_uk",
+        "media": [
+          {
+            "source": "https://images.yapily.com/image/ccd56ed6-c274-4c8e-a988-6cb8dda2fb1c?size\u003d0",
+            "type": "logo"
+          },
+          {
+            "source": "https://images.yapily.com/image/fc734d3c-4480-471e-94ee-500f83ae3bae?size\u003d0",
+            "type": "icon"
+          }
+        ],
+        "name": "HSBC Personal"
+      }
+    ],
+    "entity": "Safeconnect(UK)"
+  },
+  "id": "a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c"
+}

@@ -129,32 +129,83 @@ public class ReplayNetworkCommunicator: NetworkCommunicatorAPI {
         public let url: URL
         public let method: String
 
-        init(_ request: URLRequest) {
+        var filePath: String
+
+        init(_ request: URLRequest, in directory: String) {
+            self.init(
+                request,
+                __filePath(
+                    for: request,
+                    method: request.httpMethod.or(default: "GET"),
+                    in: directory
+                ).path
+            )
+        }
+
+        init(_ request: URLRequest, in bundle: Bundle) {
+            self.init(
+                request,
+                __filePath(
+                    for: request,
+                    method: request.httpMethod.or(default: "GET"),
+                    in: bundle.resourcePath!
+                ).lastPathComponent
+            )
+        }
+
+        init(_ request: URLRequest, _ __: String) {
             url = request.url!
             method = request.httpMethod.or(default: "GET")
+            filePath = __
         }
     }
 
     public var data: LazyDictionary<Key, Data?>
 
-    public private(set) var requests: [Key] = []
+    public private(set) var requests: [NetworkRequest] = []
 
-    public init(_ data: [URLRequest: Data], in directory: String = NSTemporaryDirectory()) {
+    private var errors: [Key: URLError.Code] = [:]
+    private let makeKey: (URLRequest) -> Key
+
+    public init(_ data: [URLRequest: Data], in bundle: Bundle) {
+        let makeKey = { Key($0, in: bundle) }
         let sanitized = data.reduce(into: [:]) { result, x in
-            result[Key(x.key)] = x.value
+            result[makeKey(x.key)] = x.value
         }
         self.data = .init(sanitized) { request in
-            try? Data(
-                contentsOf: __filePath(for: request.url, method: request.method, in: directory)
-            )
+            try? Data(contentsOf: bundle.resourceURL!.appendingPathComponent(request.filePath))
         }
+        self.makeKey = makeKey
+    }
+
+    public init(_ data: [URLRequest: Data], in directory: String = NSTemporaryDirectory()) {
+        let makeKey = { Key($0, in: directory) }
+        let sanitized = data.reduce(into: [:]) { result, x in
+            result[makeKey(x.key)] = x.value
+        }
+        self.data = .init(sanitized) { request in
+            try? Data(contentsOf: URL(fileURLWithPath: request.filePath))
+        }
+        self.makeKey = makeKey
+    }
+
+    public subscript(request: URLRequest) -> Data? {
+        get { data[makeKey(request)] }
+        set { data[makeKey(request)] = newValue }
+    }
+
+    public func error(_ request: URLRequest) {
+        errors[makeKey(request)] = .badServerResponse
     }
 
     public func dataTaskPublisher(
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
-        let key = Key(request.urlRequest)
-        requests.append(key)
+        let key = makeKey(request.urlRequest)
+        if let code = errors[makeKey(request.urlRequest)] {
+            return Fail(error: .urlError(URLError(code))).eraseToAnyPublisher()
+        }
+        requests.append(request)
         guard
             let url = request.urlRequest.url,
             let value = data[key]
@@ -196,14 +247,14 @@ public class EphemeralNetworkCommunicator: NetworkCommunicatorAPI {
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
         session.erasedDataTaskPublisher(
-            for: request.peek("🌎", \.urlRequest.cURLCommand, if: \.isDebugging.request).urlRequest
+            for: request.peek("🌎", \.urlRequest.cURLCommand).urlRequest
         )
         .handleEvents(receiveOutput: { [weak self] data, _ in
             guard let self = self else { return }
             if self.isRecording {
                 let request = request.urlRequest
                 do {
-                    let filePath = __filePath(for: request.url!, method: request.httpMethod, in: self.directory)
+                    let filePath = __filePath(for: request, method: request.httpMethod, in: self.directory)
                     try FileManager.default.createDirectory(
                         at: filePath.deletingLastPathComponent(),
                         withIntermediateDirectories: true,
@@ -226,15 +277,32 @@ public class EphemeralNetworkCommunicator: NetworkCommunicatorAPI {
     }
 }
 
+private func __filePath(for request: URLRequest, method: String?, in directory: String) -> URL {
+    var filePath = __filePath(for: request.url!, method: method, in: directory)
+    if request.value(forHTTPHeaderField: "Accept") == "application/json" {
+        filePath.appendPathExtension("json")
+    }
+    return filePath
+}
+
 private func __filePath(for url: URL, method: String?, in directory: String) -> URL {
-    URL(fileURLWithPath: directory)
-        .appendingPathComponent(#fileID.replacingOccurrences(of: ".swift", with: ""))
+    let filePath = URL(fileURLWithPath: directory)
         .appendingPathComponent(method.or(default: "GET"))
+        .appendingPathComponent(url.path)
         .appendingPathComponent(
-            url.absoluteString
-                .replacingOccurrences(of: "://", with: "__")
-                .replacingOccurrences(of: ".", with: "_")
-                .replacingOccurrences(of: "/", with: "-")
+            url.queryArgs
+                .reduce(into: "") { string, next in
+                    string.append("/\(next.key)/\(next.value)")
+                }
+        )
+
+    return filePath
+        .appendingPathComponent(
+            filePath.path
+                .dropPrefix(directory)
+                .dropPrefix("/")
+                .dropSuffix("/")
+                .replacingOccurrences(of: "/", with: "_")
         )
 }
 

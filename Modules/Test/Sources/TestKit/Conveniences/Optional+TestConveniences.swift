@@ -14,3 +14,14 @@ extension Optional where Wrapped: AdditiveArithmetic {
         (lhs ?? zero) - (rhs ?? zero)
     }
 }
+
+extension Optional {
+
+    public func unwrap(
+        _ message: @autoclosure () -> String = "",
+        _ file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws -> Wrapped {
+        try XCTUnwrap(self, message(), file: file, line: line)
+    }
+}
