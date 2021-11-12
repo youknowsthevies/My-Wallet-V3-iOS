@@ -53,6 +53,12 @@ public final class OpenBanking {
         self.banking = banking
     }
 
+    public var authorisationURLPublisher: AnyPublisher<URL, Never> {
+        state.publisher(for: .authorisation.url, as: URL.self)
+            .ignoreResultFailure()
+            .eraseToAnyPublisher()
+    }
+
     public var isAuthorising: Bool {
         state.result(for: .authorisation.url).isSuccess
     }

@@ -89,8 +89,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
             .cancellable(id: ID.Request())
 
     case .waitingForConsent:
-        return environment.openBanking.state.publisher(for: .authorisation.url, as: URL.self)
-            .ignoreResultFailure()
+        return environment.openBanking.authorisationURLPublisher
             .map(BankAction.launchAuthorisation)
             .receive(on: environment.scheduler)
             .eraseToEffect()
