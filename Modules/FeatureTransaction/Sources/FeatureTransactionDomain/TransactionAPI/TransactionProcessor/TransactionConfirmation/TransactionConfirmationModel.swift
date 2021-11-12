@@ -145,18 +145,18 @@ extension TransactionConfirmation.Model {
 
         public let type: TransactionConfirmation.Kind = .readOnly
         public var formatted: (title: String, subtitle: String)? {
-            (
-                title: String(format: LocalizedString.message, dAppName),
-                subtitle: String(data: data, encoding: .utf8) ?? data.hexString.withHex
-            )
+            (title: title, subtitle: message)
         }
 
         private let dAppName: String
-        private let data: Data
+        private let message: String
+        private var title: String {
+            String(format: LocalizedString.message, dAppName)
+        }
 
-        public init(dAppName: String, data: Data) {
+        public init(dAppName: String, message: String) {
             self.dAppName = dAppName
-            self.data = data
+            self.message = message
         }
     }
 

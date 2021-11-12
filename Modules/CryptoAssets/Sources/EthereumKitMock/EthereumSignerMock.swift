@@ -23,7 +23,17 @@ class EthereumSignerMock: EthereumSignerAPI {
         return signTransactionResult
     }
 
-    func sign(messageData: Data, keyPair: EthereumKeyPair) -> Result<Data, EthereumSignerError> {
-        .failure(.incorrectChainId)
+    func sign(
+        messageData: Data,
+        keyPair: EthereumKeyPair
+    ) -> Result<Data, EthereumSignerError> {
+        .failure(.failedPersonalMessageSign)
+    }
+
+    func signTypedData(
+        messageJson: String,
+        keyPair: EthereumKeyPair
+    ) -> Result<Data, EthereumSignerError> {
+        .failure(.failedSignTypedData)
     }
 }

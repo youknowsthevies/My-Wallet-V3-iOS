@@ -6,6 +6,7 @@ import WalletCore
 
 enum EthereumSignerError: Error {
     case failedPersonalMessageSign
+    case failedSignTypedData
     case incorrectChainId
 }
 
@@ -20,6 +21,11 @@ protocol EthereumSignerAPI {
     /// Used for `eth_sign` and `personal_sign` WalletConnect methods.
     func sign(
         messageData: Data,
+        keyPair: EthereumKeyPair
+    ) -> Result<Data, EthereumSignerError>
+
+    func signTypedData(
+        messageJson: String,
         keyPair: EthereumKeyPair
     ) -> Result<Data, EthereumSignerError>
 }
@@ -56,6 +62,22 @@ final class EthereumSigner: EthereumSignerAPI {
             }
     }
 
+    func signTypedData(
+        messageJson: String,
+        keyPair: EthereumKeyPair
+    ) -> Result<Data, EthereumSignerError> {
+        encodeTypedData(messageJson: messageJson)
+            .flatMap { data -> Result<Data, EthereumSignerError> in
+                guard let pk = WalletCore.PrivateKey(data: keyPair.privateKey.data) else {
+                    return .failure(.failedSignTypedData)
+                }
+                guard let signed = pk.sign(digest: data, curve: .secp256k1) else {
+                    return .failure(.failedSignTypedData)
+                }
+                return .success(signed)
+            }
+    }
+
     private func personalSignData(messageData: Data) -> Result<Data, EthereumSignerError> {
         let prefix = "\u{19}Ethereum Signed Message:\n"
         let countString = String(messageData.count)
@@ -63,5 +85,12 @@ final class EthereumSigner: EthereumSignerAPI {
             return .failure(.failedPersonalMessageSign)
         }
         return .success(prefixData + messageData)
+    }
+
+    private func encodeTypedData(messageJson: String) -> Result<Data, EthereumSignerError> {
+        let data = EthereumAbi.encodeTyped(messageJson: messageJson)
+        return data.isEmpty ?
+            .failure(.failedSignTypedData)
+            : .success(data)
     }
 }

@@ -85,7 +85,7 @@ final class EthereumSignMessageTransactionEngine: TransactionEngine {
         )
         let message = TransactionConfirmation.Model.Message(
             dAppName: ethereumSignTarget.dAppName,
-            data: ethereumSignTarget.message
+            message: ethereumSignTarget.readableMessage
         )
         return .just(
             pendingTransaction.update(
@@ -147,9 +147,16 @@ final class EthereumSignMessageTransactionEngine: TransactionEngine {
         keyPairProvider
             .keyPair(with: secondPassword)
             .flatMap { [ethereumSigner, ethereumSignTarget] ethereumKeyPair -> Single<Data> in
-                ethereumSigner
-                    .sign(messageData: ethereumSignTarget.message, keyPair: ethereumKeyPair)
-                    .single
+                switch ethereumSignTarget.message {
+                case .data(let data):
+                    return ethereumSigner
+                        .sign(messageData: data, keyPair: ethereumKeyPair)
+                        .single
+                case .typedData(let typedData):
+                    return ethereumSigner
+                        .signTypedData(messageJson: typedData, keyPair: ethereumKeyPair)
+                        .single
+                }
             }
             .map { personalSigned -> TransactionResult in
                 .signed(rawTx: personalSigned.hexString.withHex)

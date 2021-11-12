@@ -5,6 +5,15 @@ import PlatformKit
 
 public struct EthereumSignMessageTarget: WalletConnectTarget {
 
+    public enum Message {
+        /// The Data message to be signed.
+        /// Used for `eth_sign` and `personal_sign` WalletConnect methods.
+        case data(Data)
+        /// The String typed data message to be signed.
+        /// Used for `eth_signTypedData` WalletConnect method.
+        case typedData(String)
+    }
+
     // MARK: - Public Properties
 
     public let onTxCompleted: TxCompleted
@@ -12,16 +21,36 @@ public struct EthereumSignMessageTarget: WalletConnectTarget {
     public let dAppName: String
     public let currencyType: CurrencyType = .crypto(.coin(.ethereum))
     public let account: String
-    public let message: Data
+    public let message: Message
     public var label: String {
         dAppName
+    }
+
+    var readableMessage: String {
+        switch message {
+        case .typedData(let typedDataJson):
+            let data = Data(typedDataJson.utf8)
+            let decoded = try? JSONDecoder().decode(
+                TypedDataPayload.self,
+                from: data
+            )
+            return decoded
+                .flatMap { typedDataPayload in
+                    typedDataPayload.message.description
+                }
+                ?? typedDataJson
+
+        case .data(let data):
+            return String(data: data, encoding: .utf8)
+                ?? data.hexString.withHex
+        }
     }
 
     public init(
         dAppAddress: String,
         dAppName: String,
         account: String,
-        message: Data,
+        message: Message,
         onTxCompleted: @escaping TxCompleted
     ) {
         self.onTxCompleted = onTxCompleted
