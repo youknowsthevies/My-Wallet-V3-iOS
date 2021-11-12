@@ -62,6 +62,7 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable Open Banking
     case openBanking
+
     // MARK: - Transactions Flow
 
     /// Uses the Transactions Flow implementation of Buy when enabled
