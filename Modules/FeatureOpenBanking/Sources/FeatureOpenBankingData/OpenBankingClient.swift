@@ -54,14 +54,25 @@ public class OpenBankingClient {
     }
 
     func handle(consent: Result<String, State.Error>) {
-        do {
-            if case .failure(.keyDoesNotExist) = consent {
-                return
-            }
-            let request = try requestBuilder.post(
-                path: state.get(.callback.path) as String,
+
+        if case .failure(.keyDoesNotExist) = consent {
+            return
+        }
+        
+        let callbackPath: String
+        switch state.result(for: .callback.path, as: String.self) {
+        case .success(let output):
+            callbackPath = output
+        case .failure(let error):
+            return state.set(.consent.error, to: OpenBanking.Error.state(error))
+        }
+
+        switch consent {
+        case .success(let oneTimeToken):
+            let request = try! requestBuilder.post(
+                path: callbackPath,
                 body: [
-                    "oneTimeToken": consent.get() as String
+                    "oneTimeToken": oneTimeToken
                 ].json(),
                 authenticated: true
             )!
@@ -70,10 +81,8 @@ public class OpenBankingClient {
                 .result()
                 .sink(to: OpenBankingClient.handle(updateConsent:), on: self)
                 .store(in: &bag)
-        } catch let error as OpenBanking.State.Error {
+        case .failure(let error):
             state.set(.consent.error, to: OpenBanking.Error.state(error))
-        } catch {
-            state.set(.consent.error, to: OpenBanking.Error.other(error))
         }
     }
 
@@ -94,11 +103,13 @@ public class OpenBankingClient {
     }
 
     public func createBankAccount() -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error> {
-        do {
-            let request = try requestBuilder.post(
+
+        switch state.result(for: .currency) {
+        case .success(let currency):
+            let request = try! requestBuilder.post(
                 path: ["payments", "banktransfer"],
                 body: [
-                    "currency": state.get(.currency) as String
+                    "currency": currency
                 ].json(),
                 authenticated: true
             )!
@@ -112,7 +123,7 @@ public class OpenBankingClient {
                 })
                 .mapError(OpenBanking.Error.init)
                 .eraseToAnyPublisher()
-        } catch {
+        case .failure(let error):
             return Fail(error: .init(error)).eraseToAnyPublisher()
         }
     }
@@ -133,25 +144,21 @@ public class OpenBankingClient {
         order: Identity<OpenBanking.Order>,
         using paymentMethod: String
     ) -> AnyPublisher<OpenBanking.Order, OpenBanking.Error> {
-        do {
-            let request = try requestBuilder.post(
-                path: ["simple-buy", "trades", order.value],
-                body: [
-                    "action": "confirm",
-                    "paymentMethodId": paymentMethod,
-                    "attributes": [
-                        "callback": "https://blockchainwallet.page.link/obapproval"
-                    ]
-                ].json(options: .sortedKeys),
-                authenticated: true
-            )!
+        let request = try! requestBuilder.post(
+            path: ["simple-buy", "trades", order.value],
+            body: [
+                "action": "confirm",
+                "paymentMethodId": paymentMethod,
+                "attributes": [
+                    "callback": "https://blockchainwallet.page.link/obapproval"
+                ]
+            ].json(options: .sortedKeys),
+            authenticated: true
+        )!
 
-            return network.perform(request: request, responseType: OpenBanking.Order.self)
-                .mapError(OpenBanking.Error.init)
-                .eraseToAnyPublisher()
-        } catch {
-            return Fail(error: .init(error)).eraseToAnyPublisher()
-        }
+        return network.perform(request: request, responseType: OpenBanking.Order.self)
+            .mapError(OpenBanking.Error.init)
+            .eraseToAnyPublisher()
     }
 }
 
@@ -161,34 +168,30 @@ extension OpenBanking.BankAccount {
         with institution: Identity<OpenBanking.Institution>,
         in banking: OpenBankingClient
     ) -> AnyPublisher<OpenBanking.BankAccount, OpenBanking.Error> {
-        do {
-            banking.state.transaction { state in
-                state.clear(.authorisation.url)
-                state.clear(.callback.path)
-            }
-
-            let request = try banking.requestBuilder.post(
-                path: ["payments", "banktransfer", id.value, "update"],
-                body: [
-                    "attributes": [
-                        "institutionId": institution.value,
-                        "callback": "https://blockchainwallet.page.link/oblinking"
-                    ]
-                ].json(),
-                authenticated: true
-            )!
-
-            return banking.network.perform(request: request, responseType: OpenBanking.BankAccount.self)
-                .handleEvents(receiveOutput: { [banking] account in
-                    banking.state.transaction { state in
-                        state.set(.account, to: account)
-                    }
-                })
-                .mapError(OpenBanking.Error.init)
-                .eraseToAnyPublisher()
-        } catch {
-            return Fail(error: .init(error)).eraseToAnyPublisher()
+        banking.state.transaction { state in
+            state.clear(.authorisation.url)
+            state.clear(.callback.path)
         }
+
+        let request = try! banking.requestBuilder.post(
+            path: ["payments", "banktransfer", id.value, "update"],
+            body: [
+                "attributes": [
+                    "institutionId": institution.value,
+                    "callback": "https://blockchainwallet.page.link/oblinking"
+                ]
+            ].json(),
+            authenticated: true
+        )!
+
+        return banking.network.perform(request: request, responseType: OpenBanking.BankAccount.self)
+            .handleEvents(receiveOutput: { [banking] account in
+                banking.state.transaction { state in
+                    state.set(.account, to: account)
+                }
+            })
+            .mapError(OpenBanking.Error.init)
+            .eraseToAnyPublisher()
     }
 
     public func get(
@@ -255,11 +258,12 @@ extension OpenBanking.BankAccount {
         product: String,
         in banking: OpenBankingClient
     ) -> AnyPublisher<OpenBanking.Payment, OpenBanking.Error> {
-        do {
-            let request = try banking.requestBuilder.post(
+        switch banking.state.result(for: .currency) {
+        case .success(let currency):
+            let request = try! banking.requestBuilder.post(
                 path: ["payments", "banktransfer", id.value, "payment"],
                 body: [
-                    "currency": banking.state.get(.currency) as String,
+                    "currency": currency,
                     "amountMinor": amountMinor,
                     "product": product,
                     "attributes": [
@@ -276,7 +280,7 @@ extension OpenBanking.BankAccount {
                 })
                 .mapError(OpenBanking.Error.init)
                 .eraseToAnyPublisher()
-        } catch {
+        case .failure(let error):
             return Fail(error: .init(error)).eraseToAnyPublisher()
         }
     }

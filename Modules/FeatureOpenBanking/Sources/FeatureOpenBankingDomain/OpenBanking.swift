@@ -78,42 +78,13 @@ public final class OpenBanking {
 
         let publisher = actionPublisher(data).share()
 
-        let consentErrorPublisher = banking.state.result(for: .consent.error, as: OpenBanking.Error.self)
-            .publisher
-            .mapError(OpenBanking.Error.init)
-            .map(Action.failure)
-            .catch(Action.failure)
-            .eraseToAnyPublisher()
-
         switch data.action {
         case .link(let institution):
             return publisher
-                .flatMap { [banking] action -> AnyPublisher<Action, Never> in
+                .flatMap { [waitForAccountLinking] action -> AnyPublisher<Action, Never> in
                     switch action {
                     case .waitingForConsent:
-                        return banking.state.publisher(for: .is.authorised, as: Bool.self)
-                            .ignoreResultFailure()
-                            .flatMap { authorised -> AnyPublisher<(Bool, OpenBanking.BankAccount), OpenBanking.Error> in
-                                banking.poll(account: data.account, until: \.isNotPending)
-                                    .map { (authorised, $0) }
-                                    .eraseToAnyPublisher()
-                            }
-                            .flatMap { authorised, account -> AnyPublisher<Action, Never> in
-                                if authorised {
-                                    if let error = account.error {
-                                        return Just(Action.failure(error))
-                                            .eraseToAnyPublisher()
-                                    } else {
-                                        return Just(Action.success(.linked(account, institution: institution)))
-                                            .eraseToAnyPublisher()
-                                    }
-                                } else {
-                                    return consentErrorPublisher
-                                }
-                            }
-                            .catch(Action.failure)
-                            .merge(with: Just(action))
-                            .eraseToAnyPublisher()
+                        return waitForAccountLinking(data.account, institution, action)
                     default:
                         return Just(action).eraseToAnyPublisher()
                     }
@@ -121,22 +92,10 @@ public final class OpenBanking {
                 .eraseToAnyPublisher()
         default:
             return publisher
-                .flatMap { [banking] action -> AnyPublisher<Action, Never> in
+                .flatMap { [waitForConsent] action -> AnyPublisher<Action, Never> in
                     switch action {
                     case .waitingForConsent(let consent):
-                        return banking.state.publisher(for: .is.authorised, as: Bool.self)
-                            .ignoreResultFailure()
-                            .flatMap { authorised -> AnyPublisher<Action, Never> in
-                                if authorised {
-                                    return Just(Action.success(consent))
-                                        .eraseToAnyPublisher()
-                                } else {
-                                    return consentErrorPublisher
-                                }
-                            }
-                            .catch(Action.failure)
-                            .merge(with: Just(action))
-                            .eraseToAnyPublisher()
+                        return waitForConsent(consent, action)
                     default:
                         return Just(action).eraseToAnyPublisher()
                     }
@@ -218,6 +177,56 @@ public final class OpenBanking {
                 }
             }
             .catch(Action.failure)
+            .eraseToAnyPublisher()
+    }
+
+
+    private lazy var consentErrorPublisher = banking.state.result(for: .consent.error, as: OpenBanking.Error.self)
+        .publisher
+        .mapError(OpenBanking.Error.init)
+        .map(Action.failure)
+        .catch(Action.failure)
+        .eraseToAnyPublisher()
+
+    private func waitForAccountLinking(account: OpenBanking.BankAccount, instiution: OpenBanking.Institution, action: Action) -> AnyPublisher<Action, Never> {
+        return banking.state.publisher(for: .is.authorised, as: Bool.self)
+            .ignoreResultFailure()
+            .flatMap { [banking] authorised -> AnyPublisher<(Bool, OpenBanking.BankAccount), OpenBanking.Error> in
+                banking.poll(account: account, until: \.isNotPending)
+                    .map { (authorised, $0) }
+                    .eraseToAnyPublisher()
+            }
+            .flatMap { [consentErrorPublisher] authorised, account -> AnyPublisher<Action, Never> in
+                if authorised {
+                    if let error = account.error {
+                        return Just(Action.failure(error))
+                            .eraseToAnyPublisher()
+                    } else {
+                        return Just(Action.success(.linked(account, institution: instiution)))
+                            .eraseToAnyPublisher()
+                    }
+                } else {
+                    return consentErrorPublisher
+                }
+            }
+            .catch(Action.failure)
+            .merge(with: Just(action))
+            .eraseToAnyPublisher()
+    }
+
+    private func waitForConsent(output consent: Output, action: Action) -> AnyPublisher<Action, Never> {
+        return banking.state.publisher(for: .is.authorised, as: Bool.self)
+            .ignoreResultFailure()
+            .flatMap { [consentErrorPublisher] authorised -> AnyPublisher<Action, Never> in
+                if authorised {
+                    return Just(Action.success(consent))
+                        .eraseToAnyPublisher()
+                } else {
+                    return consentErrorPublisher
+                }
+            }
+            .catch(Action.failure)
+            .merge(with: Just(action))
             .eraseToAnyPublisher()
     }
 }
