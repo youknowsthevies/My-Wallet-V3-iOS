@@ -34,39 +34,3 @@ public func nativeWalletEnabledUseImpl<Old, New>(
 }
 
 public typealias NativeWalletEnabledUseImpl<Old, New> = (Old, New) -> AnyPublisher<Either<Old, New>, Never>
-
-/// Temporary helper `Either` type
-public enum Either<Left, Right> {
-    case left(Left)
-    case right(Right)
-
-    var left: Left? {
-        switch self {
-        case .left(let left):
-            return left
-        case .right:
-            return nil
-        }
-    }
-
-    var right: Right? {
-        switch self {
-        case .left:
-            return nil
-        case .right(let right):
-            return right
-        }
-    }
-
-    public func `if`<Other>(
-        left applyLeft: (Left) -> Other,
-        right applyRight: (Right) -> Other
-    ) -> Other {
-        switch self {
-        case .left(let value):
-            return applyLeft(value)
-        case .right(let value):
-            return applyRight(value)
-        }
-    }
-}

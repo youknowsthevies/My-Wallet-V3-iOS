@@ -62,7 +62,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
             newImpl
         )
         .flatMap { either -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
-            either.if(
+            either.fold(
                 left: { old in old.requestUsingSessionToken() },
                 right: { new in new.requestUsingSessionToken() }
             )
@@ -76,7 +76,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
             newImpl
         )
         .flatMap { either -> AnyPublisher<Void, WalletPayloadServiceError> in
-            either.if(
+            either.fold(
                 left: { old in old.requestUsingSharedKey() },
                 right: { new in new.requestUsingSharedKey() }
             )
@@ -93,7 +93,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
             newImpl
         )
         .flatMap { either -> AnyPublisher<Void, WalletPayloadServiceError> in
-            either.if(
+            either.fold(
                 left: { old in old.request(guid: guid, sharedKey: sharedKey) },
                 right: { new in new.request(guid: guid, sharedKey: sharedKey) }
             )
@@ -110,7 +110,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
             newImpl
         )
         .flatMap { either -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
-            either.if(
+            either.fold(
                 left: { old in old.request(guid: guid, sessionToken: sessionToken) },
                 right: { new in new.request(guid: guid, sessionToken: sessionToken) }
             )
