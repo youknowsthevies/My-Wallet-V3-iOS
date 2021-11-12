@@ -22,7 +22,24 @@ struct PillButtonStyle: ButtonStyle {
 
     let isLoading: Bool
     let size: PillButtonSize
+    let isRounded: Bool
     let colorCombination: ColorCombination
+
+    private var cornerRadius: CGFloat {
+        isRounded ? size.borderRadius : 0
+    }
+
+    init(
+        isLoading: Bool,
+        size: PillButtonSize = .standard,
+        isRounded: Bool = true,
+        colorCombination: ColorCombination
+    ) {
+        self.isLoading = isLoading
+        self.size = size
+        self.isRounded = isRounded
+        self.colorCombination = colorCombination
+    }
 
     func makeBody(configuration: Configuration) -> some View {
         VStack {
@@ -45,11 +62,11 @@ struct PillButtonStyle: ButtonStyle {
         .frame(maxWidth: size.maxWidth, minHeight: size.minHeight)
         .padding(size.padding)
         .background(
-            RoundedRectangle(cornerRadius: size.borderRadius)
+            RoundedRectangle(cornerRadius: cornerRadius)
                 .fill(colorSet(for: configuration).background)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: size.borderRadius)
+            RoundedRectangle(cornerRadius: cornerRadius)
                 .stroke(colorSet(for: configuration).border)
         )
     }

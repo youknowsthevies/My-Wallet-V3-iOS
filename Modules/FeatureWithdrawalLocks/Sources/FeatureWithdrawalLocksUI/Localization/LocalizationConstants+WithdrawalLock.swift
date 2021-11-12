@@ -3,7 +3,7 @@
 import Localization
 
 extension LocalizationConstants {
-    enum WithdrawalLock {
+    enum WithdrawalLocks {
         static let onHoldTitle = NSLocalizedString(
             "On Hold",
             comment: "Withdrawal Locks: On Hold Title"
@@ -18,6 +18,16 @@ extension LocalizationConstants {
         static let holdingPeriodDescription = NSLocalizedString(
             "Newly added funds are subject to a holding period. You can transfer between your Trading, Rewards, and Exchange accounts in the meantime.",
             comment: "Withdrawal Locks: Holding period description"
+        )
+
+        static let doesNotLookRightDescription = NSLocalizedString(
+            "See that something doesn't look right?",
+            comment: "Withdrawal Locks: Something doesn't look right question"
+        )
+
+        static let contactSupportTitle = NSLocalizedString(
+            "Contact support",
+            comment: "Withdrawal Locks: Contact support title"
         )
 
         static let noLocks = NSLocalizedString(

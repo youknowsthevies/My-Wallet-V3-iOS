@@ -5,6 +5,8 @@ import RxCocoa
 import RxRelay
 import RxSwift
 import ToolKit
+import UIComponentsKit
+import UIKit
 
 public final class AmountTranslationView: UIView, AmountViewable {
 
@@ -212,29 +214,41 @@ public final class AmountTranslationView: UIView, AmountViewable {
     // MARK: - Public Methods
 
     public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
-        Driver.combineLatest(presenter.connect(input: input), presenter.activeAmountInput)
-            .map { (state: $0.0, activeAmountInput: $0.1) }
-            .map { [weak self] value in
-                guard let self = self else { return .empty }
-                return self.performEffect(state: value.state, activeAmountInput: value.activeAmountInput)
-            }
+        Driver.combineLatest(
+            presenter.connect(input: input),
+            presenter.activeAmountInput,
+            presenter.auxiliaryButtonEnabled
+        )
+        .map { (state: $0.0, activeAmountInput: $0.1, auxiliaryEnabled: $0.2) }
+        .map { [weak self] value in
+            guard let self = self else { return .empty }
+            return self.performEffect(
+                state: value.state,
+                activeAmountInput: value.activeAmountInput,
+                auxiliaryButtonEnabled: value.auxiliaryEnabled
+            )
+        }
     }
 
     // MARK: - Private Methods
 
     private func performEffect(
         state: AmountPresenterState,
-        activeAmountInput: ActiveAmountInput
+        activeAmountInput: ActiveAmountInput,
+        auxiliaryButtonEnabled: Bool
     ) -> AmountPresenterState {
         let limitButtonVisibility: Visibility
+        let textColor: UIColor
         switch state {
         case .warning(let viewModel):
             auxiliaryButton.viewModel = viewModel
             limitButtonVisibility = .visible
+            textColor = auxiliaryButtonEnabled ? .validInput : .invalidInput
         case .showSecondaryAmountLabel,
              .empty:
             auxiliaryButton.viewModel = nil
             limitButtonVisibility = .hidden
+            textColor = .validInput
         case .showLimitButton:
             unimplemented()
         }
@@ -244,20 +258,22 @@ public final class AmountTranslationView: UIView, AmountViewable {
         switch activeAmountInput {
         case .fiat:
             fiatVisibility = .visible
-            cryptoVisibility = limitButtonVisibility.inverted
+            cryptoVisibility = auxiliaryButtonEnabled ? limitButtonVisibility.inverted : .visible
         case .crypto:
             cryptoVisibility = .visible
-            fiatVisibility = limitButtonVisibility.inverted
+            fiatVisibility = auxiliaryButtonEnabled ? limitButtonVisibility.inverted : .visible
         }
         UIView.animate(
             withDuration: 0.15,
             delay: 0,
             options: [.beginFromCurrentState, .curveEaseInOut],
             animations: {
-                self.auxiliaryButton.alpha = limitButtonVisibility.defaultAlpha
-                self.auxiliaryButton.isHidden = limitButtonVisibility.isHidden
+                self.auxiliaryButton.alpha = auxiliaryButtonEnabled ? limitButtonVisibility.defaultAlpha : 0
+                self.auxiliaryButton.isHidden = !auxiliaryButtonEnabled || limitButtonVisibility.isHidden
                 self.fiatAmountLabelView.alpha = fiatVisibility.defaultAlpha
                 self.cryptoAmountLabelView.alpha = cryptoVisibility.defaultAlpha
+                self.fiatAmountLabelView.textColor = textColor
+                self.cryptoAmountLabelView.textColor = textColor
             },
             completion: nil
         )

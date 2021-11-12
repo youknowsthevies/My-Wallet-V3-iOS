@@ -20,16 +20,13 @@ final class BuyFlowListener: BuyFlowListening {
 
     private let kycRouter: PlatformUIKit.KYCRouting
     private let alertViewPresenter: PlatformUIKit.AlertViewPresenterAPI
-    private let loadingViewPresenter: PlatformUIKit.LoadingViewPresenting
 
     init(
         kycRouter: PlatformUIKit.KYCRouting,
-        alertViewPresenter: PlatformUIKit.AlertViewPresenterAPI,
-        loadingViewPresenter: PlatformUIKit.LoadingViewPresenting
+        alertViewPresenter: PlatformUIKit.AlertViewPresenterAPI
     ) {
         self.kycRouter = kycRouter
         self.alertViewPresenter = alertViewPresenter
-        self.loadingViewPresenter = loadingViewPresenter
     }
 
     deinit {
@@ -41,14 +38,10 @@ final class BuyFlowListener: BuyFlowListening {
     }
 
     func presentKYCFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
-        loadingViewPresenter.showCircular()
         // Buy requires Tier 1 for SDD users, Tier 2 for everyone else. Requiring Tier 1 will ensure the SDD check is done.
         kycRouter.presentEmailVerificationAndKYCIfNeeded(from: viewController, requiredTier: .tier1)
             .receive(on: DispatchQueue.main)
-            .sink { [alertViewPresenter, loadingViewPresenter] completionResult in
-                if loadingViewPresenter.isVisible {
-                    loadingViewPresenter.hide()
-                }
+            .sink { [alertViewPresenter] completionResult in
                 guard case .failure(let error) = completionResult else {
                     return
                 }
@@ -57,8 +50,7 @@ final class BuyFlowListener: BuyFlowListening {
                     message: String(describing: error),
                     action: nil
                 )
-            } receiveValue: { [loadingViewPresenter] result in
-                loadingViewPresenter.hide()
+            } receiveValue: { result in
                 completion(result == .completed)
             }
             .store(in: &cancellables)

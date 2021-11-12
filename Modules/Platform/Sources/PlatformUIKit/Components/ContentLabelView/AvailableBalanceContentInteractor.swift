@@ -3,8 +3,8 @@
 import DIKit
 import PlatformKit
 import RxCocoa
-import RxCombine
 import RxSwift
+import RxToolKit
 import ToolKit
 
 public protocol ContentLabelViewInteractorAPI {

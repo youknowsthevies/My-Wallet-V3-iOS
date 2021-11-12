@@ -92,15 +92,6 @@
         }
       },
       {
-        "package": "RxCombine",
-        "repositoryURL": "https://github.com/paulo-bc/RxCombine.git",
-        "state": {
-          "branch": null,
-          "revision": "0762454fba26dcf315aaa7ac5ed5fbdecd50fef2",
-          "version": "1.6.2"
-        }
-      },
-      {
         "package": "RxDataSources",
         "repositoryURL": "https://github.com/RxSwiftCommunity/RxDataSources.git",
         "state": {

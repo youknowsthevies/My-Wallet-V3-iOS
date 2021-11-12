@@ -36,7 +36,10 @@ struct TabBarButton: View {
 
 struct TabBarButtonStyle: ToggleStyle {
     let onColor: Color = .semantic.primary
-    let offColor: Color = .semantic.body
+    let offColor = Color(
+        light: .palette.grey400,
+        dark: .palette.grey400
+    )
 
     func makeBody(configuration: Configuration) -> some View {
         Button(

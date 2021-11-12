@@ -78,7 +78,7 @@ final class Coincore: CoincoreAPI {
     // MARK: - Setup
 
     init(
-        assetLoader: AssetLoader = AssetLoaderSwitcher(),
+        assetLoader: AssetLoader = DynamicAssetLoader(),
         fiatAsset: FiatAsset = FiatAsset(),
         reactiveWallet: ReactiveWalletAPI = resolve()
     ) {
@@ -158,6 +158,7 @@ final class Coincore: CoincoreAPI {
         case .deposit,
              .receive,
              .sell,
+             .sign,
              .viewActivity,
              .withdraw:
             unimplemented("\(action) is not supported.")
@@ -200,6 +201,7 @@ final class Coincore: CoincoreAPI {
             )
         case .deposit,
              .receive,
+             .sign,
              .viewActivity,
              .withdraw:
             return false

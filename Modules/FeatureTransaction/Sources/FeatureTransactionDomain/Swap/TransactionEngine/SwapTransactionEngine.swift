@@ -105,36 +105,42 @@ extension SwapTransactionEngine {
         pricedQuote: PricedQuote,
         fiatCurrency: FiatCurrency
     ) -> Single<PendingTransaction> {
-        Single
+        let priceService = priceService
+        let sourceAsset = sourceAsset
+        let sourceCryptoCurrency = sourceCryptoCurrency
+        return Single
             .zip(
                 kycTiersService.tiers.asSingle(),
-                tradeLimitsRepository.fetchTransactionLimits(
-                    currency: fiatCurrency.currencyType,
-                    networkFee: targetAsset.currencyType,
+                tradeLimitsRepository.fetchTradeLimits(
+                    sourceCurrency: fiatCurrency.currencyType,
+                    destinationCurrency: targetAsset.currencyType,
                     product: .swap(orderDirection)
                 )
-                .asObservable()
                 .asSingle()
             )
-            .map { tiers, limits -> (tiers: KYC.UserTiers, min: FiatValue, max: FiatValue) in
-                // TODO: Convert to `MoneyValuePair` so that
-                // we can show crypto or fiat min/max values.
+            .map { tiers, limits -> (tiers: KYC.UserTiers, min: MoneyValue, max: MoneyValue) in
                 (tiers, limits.minOrder, limits.maxOrder)
             }
-            .flatMap(weak: self) { (self, values) -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
+            .flatMap { values -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
                 let (tiers, min, max) = values
-                return self.priceService
+                return priceService
                     .price(
-                        of: self.sourceAsset,
+                        of: sourceAsset,
                         in: fiatCurrency
                     )
                     .asSingle()
                     .map(\.moneyValue)
                     .map { $0.fiatValue ?? .zero(currency: fiatCurrency) }
                     .map { quote -> (KYC.UserTiers, MoneyValue, MoneyValue) in
-                        let minCrypto = min.convertToCryptoValue(exchangeRate: quote, cryptoCurrency: self.sourceCryptoCurrency)
-                        let maxCrypto = max.convertToCryptoValue(exchangeRate: quote, cryptoCurrency: self.sourceCryptoCurrency)
-                        return (tiers, .init(cryptoValue: minCrypto), .init(cryptoValue: maxCrypto))
+                        let minCrypto = min.convert(
+                            usingInverse: quote.moneyValue,
+                            currencyType: sourceCryptoCurrency.currencyType
+                        )
+                        let maxCrypto = max.convert(
+                            usingInverse: quote.moneyValue,
+                            currencyType: sourceCryptoCurrency.currencyType
+                        )
+                        return (tiers, minCrypto, maxCrypto)
                     }
             }
             .map { (tiers: KYC.UserTiers, min: MoneyValue, max: MoneyValue) -> PendingTransaction in
@@ -204,7 +210,9 @@ extension SwapTransactionEngine {
         startQuotesFetchingIfNotStarted(pendingTransaction: pendingTransaction)
     }
 
-    private func startQuotesFetchingIfNotStarted(pendingTransaction oldValue: PendingTransaction) -> Single<PendingTransaction> {
+    private func startQuotesFetchingIfNotStarted(
+        pendingTransaction oldValue: PendingTransaction
+    ) -> Single<PendingTransaction> {
         guard oldValue.quoteSubscription == nil else {
             return .just(oldValue)
         }

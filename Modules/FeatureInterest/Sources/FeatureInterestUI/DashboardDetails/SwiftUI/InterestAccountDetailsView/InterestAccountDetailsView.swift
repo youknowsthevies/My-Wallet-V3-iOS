@@ -35,7 +35,8 @@ struct InterestAccountDetailsView: View {
                                 if let balance = viewStore.interestAccountBalanceSummary {
                                     VStack {
                                         HStack {
-                                            CurrencyIcon(icon: .image(balance.currency.image))
+                                            badgeImageViewWithViewModel(balance.badgeImageViewModel)
+                                                .frame(width: 32, height: 32)
                                             VStack(spacing: 4.0) {
                                                 HStack {
                                                     Text(LocalizationIds.rewardsAccount)
@@ -134,6 +135,15 @@ struct InterestAccountDetailsView: View {
             }
         }
     }
+
+    private func badgeImageViewWithViewModel(_ viewModel: BadgeImageViewModel) -> AnyView {
+        AnyView(
+            BadgeImageViewRepresentable(
+                viewModel: viewModel,
+                size: 32
+            )
+        )
+    }
 }
 
 struct InterestAccountDetailsView_Previews: PreviewProvider {
@@ -146,6 +156,13 @@ struct InterestAccountDetailsView_Previews: PreviewProvider {
                 ineligibilityReason: .eligible
             ),
             interestAccountRate: .init(currencyCode: "BTC", rate: 4.9),
+            interestAccountLimits: .init(
+                interestLockupDuration: 4.0,
+                cryptoCurrency: .coin(.bitcoin),
+                nextInterestPayment: Date(),
+                minDepositAmount: .zero(currency: .USD),
+                maxWithdrawalAmount: .zero(currency: .USD)
+            ),
             balanceDetails: .init(
                 balance: "10000000000",
                 pendingInterest: "1000",

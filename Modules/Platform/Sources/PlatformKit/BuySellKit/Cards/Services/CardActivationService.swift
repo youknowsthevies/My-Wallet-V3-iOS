@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import RxCombine
 import RxRelay
 import RxSwift
 import RxToolKit

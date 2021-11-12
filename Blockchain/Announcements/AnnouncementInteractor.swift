@@ -6,7 +6,6 @@ import ERC20Kit
 import FeatureAuthenticationDomain
 import PlatformKit
 import PlatformUIKit
-import RxCombine
 import RxSwift
 import RxToolKit
 import ToolKit

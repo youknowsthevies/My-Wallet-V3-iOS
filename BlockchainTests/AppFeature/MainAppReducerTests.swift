@@ -27,6 +27,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockMobileAuthSyncService: MockMobileAuthSyncService!
     var mockResetPasswordService: MockResetPasswordService!
     var mockAccountRecoveryService: MockAccountRecoveryService!
+    var mockDeviceVerificationService: MockDeviceVerificationService!
     var mockWallet: MockWallet! = MockWallet()
     var mockReactiveWallet = MockReactiveWallet()
     var mockSettingsApp: MockBlockchainSettingsApp!
@@ -45,7 +46,6 @@ final class MainAppReducerTests: XCTestCase {
     var mockDeepLinkHandler: MockDeepLinkHandler!
     var mockDeepLinkRouter: MockDeepLinkRouter!
     var mockFeatureFlagsService: MockFeatureFlagsService!
-    var mockInternalFeatureFlagService: InternalFeatureFlagServiceMock!
     var mockFiatCurrencySettingsService: FiatCurrencySettingsServiceMock!
     var mockAppStoreOpener: MockAppStoreOpener!
     var mockERC20CryptoAssetService: ERC20CryptoAssetServiceMock!
@@ -57,6 +57,7 @@ final class MainAppReducerTests: XCTestCase {
         CoreAppAction,
         CoreAppEnvironment
     >!
+    var cancellables = Set<AnyCancellable>()
 
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -70,6 +71,7 @@ final class MainAppReducerTests: XCTestCase {
         mockMobileAuthSyncService = MockMobileAuthSyncService()
         mockResetPasswordService = MockResetPasswordService()
         mockAccountRecoveryService = MockAccountRecoveryService()
+        mockDeviceVerificationService = MockDeviceVerificationService()
         mockCredentialsStore = CredentialsStoreAPIMock()
         mockAlertPresenter = MockAlertViewPresenter()
         mockWalletUpgradeService = MockWalletUpgradeService()
@@ -90,7 +92,6 @@ final class MainAppReducerTests: XCTestCase {
         mockDeepLinkHandler = MockDeepLinkHandler()
         mockDeepLinkRouter = MockDeepLinkRouter()
         mockFeatureFlagsService = MockFeatureFlagsService()
-        mockInternalFeatureFlagService = InternalFeatureFlagServiceMock()
         mockFiatCurrencySettingsService = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
         mockAppStoreOpener = MockAppStoreOpener()
         mockERC20CryptoAssetService = ERC20CryptoAssetServiceMock()
@@ -106,9 +107,9 @@ final class MainAppReducerTests: XCTestCase {
                 mobileAuthSyncService: mockMobileAuthSyncService,
                 resetPasswordService: mockResetPasswordService,
                 accountRecoveryService: mockAccountRecoveryService,
+                deviceVerificationService: mockDeviceVerificationService,
                 featureFlagsService: mockFeatureFlagsService,
                 appFeatureConfigurator: mockFeatureConfigurator,
-                internalFeatureService: mockInternalFeatureFlagService,
                 fiatCurrencySettingsService: mockFiatCurrencySettingsService,
                 blockchainSettings: mockSettingsApp,
                 credentialsStore: mockCredentialsStore,
@@ -135,6 +136,7 @@ final class MainAppReducerTests: XCTestCase {
         mockMobileAuthSyncService = nil
         mockResetPasswordService = nil
         mockAccountRecoveryService = nil
+        mockDeviceVerificationService = nil
         mockCredentialsStore = nil
         mockAlertPresenter = nil
         mockWalletUpgradeService = nil
@@ -150,7 +152,6 @@ final class MainAppReducerTests: XCTestCase {
         mockDeepLinkHandler = nil
         mockDeepLinkRouter = nil
         mockFeatureFlagsService = nil
-        mockInternalFeatureFlagService = nil
         mockFiatCurrencySettingsService = nil
 
         testStore = nil
@@ -251,7 +252,8 @@ final class MainAppReducerTests: XCTestCase {
             state.onboarding?.welcomeState = .init()
         }
 
-        testStore.receive(.onboarding(.welcomeScreen(.start))) { state in
+        testStore.receive(.onboarding(.welcomeScreen(.start)))
+        testStore.receive(.onboarding(.welcomeScreen(.setManualPairingEnabled))) { state in
             state.onboarding?.welcomeState?.manualPairingEnabled = true
         }
         testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.manualLoginScreen)))) { state in
@@ -425,7 +427,7 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.guid = nil
         mockSettingsApp.sharedKey = nil
         mockSettingsApp.isPinSet = false
-        mockInternalFeatureFlagService.enable(.disableGUIDLogin)
+        mockFeatureFlagsService.enable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
 
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()
@@ -484,7 +486,7 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.guid = nil
         mockSettingsApp.sharedKey = nil
         mockSettingsApp.isPinSet = false
-        mockInternalFeatureFlagService.enable(.disableGUIDLogin)
+        mockFeatureFlagsService.enable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
 
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()
@@ -563,7 +565,7 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.guid = nil
         mockSettingsApp.sharedKey = nil
         mockSettingsApp.isPinSet = false
-        mockInternalFeatureFlagService.enable(.disableGUIDLogin)
+        mockFeatureFlagsService.enable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
 
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()
@@ -713,7 +715,7 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.guid = nil
         mockSettingsApp.sharedKey = nil
         mockSettingsApp.isPinSet = false
-        mockInternalFeatureFlagService.enable(.disableGUIDLogin)
+        mockFeatureFlagsService.enable(.local(.disableGUIDLogin)).subscribe().store(in: &cancellables)
 
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()
@@ -1025,6 +1027,34 @@ final class MainAppReducerTests: XCTestCase {
 
         // then
         XCTAssertEqual(CoreAppAction.didDecryptWallet(decryption), action)
+    }
+
+    func test_session_mismatch_deeplink_show_show_authorization() {
+        mockFeatureFlagsService.enable(.local(.pollingForEmailLogin)).subscribe().store(in: &cancellables)
+        mockFeatureFlagsService.enable(.remote(.pollingForEmailLogin))
+            .subscribe().store(in: &cancellables)
+        mockDeviceVerificationService.expectedSessionMismatch = true
+        let requestInfo = LoginRequestInfo(
+            sessionId: "",
+            base64Str: "",
+            details: DeviceVerificationDetails(originLocation: "", originIP: "", originBrowser: ""),
+            timestamp: Date(timeIntervalSince1970: 1000)
+        )
+        testStore.assert(
+            .send(.loginRequestReceived(
+                deeplink: MockDeviceVerificationService.validDeeplink
+            )),
+            .do { self.mockMainQueue.advance() },
+            .receive(
+                .checkIfConfirmationRequired(
+                    sessionId: "",
+                    base64Str: ""
+                )
+            ),
+            .receive(.proceedToDeviceAuthorization(requestInfo)) { state in
+                state.deviceAuthorization = .init(loginRequestInfo: requestInfo)
+            }
+        )
     }
 }
 

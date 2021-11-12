@@ -18,5 +18,11 @@ protocol DeviceVerificationClientAPI {
 
     func pollForWalletInfo(
         sessionToken: String
-    ) -> AnyPublisher<WalletInfo?, Never>
+    ) -> AnyPublisher<WalletInfoPollResultResponse, NetworkError>
+
+    func authorizeVerifyDevice(
+        from sessionToken: String,
+        payload: String,
+        confirmDevice: Bool?
+    ) -> AnyPublisher<Void, NetworkError>
 }

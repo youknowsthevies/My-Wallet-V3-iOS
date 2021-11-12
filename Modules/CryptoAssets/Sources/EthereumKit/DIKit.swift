@@ -43,7 +43,7 @@ extension DependencyContainer {
 
         factory { EthereumTransactionBuilder() as EthereumTransactionBuilderAPI }
 
-        factory { EthereumTransactionSigner() as EthereumTransactionSignerAPI }
+        factory { EthereumSigner() as EthereumSignerAPI }
 
         factory { EthereumTransactionEncoder() as EthereumTransactionEncoderAPI }
 
@@ -52,6 +52,8 @@ extension DependencyContainer {
         single(tag: Tags.EthereumAccountService.isContractAddressCache) {
             Atomic<[String: Bool]>([:])
         }
+
+        factory { WalletConnectEngineFactory() as WalletConnectEngineFactoryAPI }
     }
 }
 

@@ -80,7 +80,97 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
             .eraseToAnyPublisher()
     }
 
-    public func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError> {
+    public func handleLoginRequestDeeplink(
+        url deeplink: URL
+    ) -> AnyPublisher<WalletInfo, WalletInfoError> {
+        extractWalletInfoFromDeeplink(url: deeplink)
+            .flatMap { [sessionTokenRepository] walletInfo -> AnyPublisher<WalletInfo, WalletInfoError> in
+                sessionTokenRepository
+                    .sessionTokenPublisher
+                    .flatMap { tokenOrNil -> AnyPublisher<WalletInfo, WalletInfoError> in
+                        // if wallet info does not have session id, it is not a magic link,
+                        // just return wallet info in this case
+                        guard let originSession = walletInfo.sessionId else {
+                            return .just(walletInfo)
+                        }
+                        // gracefully handle decode error
+                        guard let base64Str = deeplink.absoluteString.components(separatedBy: "/").last else {
+                            return .just(walletInfo)
+                        }
+                        // if current device does not have session token saved,
+                        // that means the login request is sent from another device
+                        guard let token = tokenOrNil else {
+                            return .failure(
+                                .missingSessionToken(
+                                    originSession: originSession,
+                                    base64Str: base64Str.paddedBase64
+                                )
+                            )
+                        }
+                        // if current device's session token is not equal to origin device's session,
+                        // that means the received login request is sent from another device
+                        if originSession != token {
+                            return .failure(
+                                .sessionTokenMismatch(
+                                    originSession: originSession,
+                                    base64Str: base64Str.paddedBase64
+                                )
+                            )
+                        }
+                        // in other cases, just return wallet info
+                        return .just(walletInfo)
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    public func pollForWalletInfo()
+        -> AnyPublisher<Result<WalletInfo, WalletInfoPollingError>, DeviceVerificationServiceError>
+    {
+        sessionTokenRepository
+            .sessionTokenPublisher
+            .flatMap { token -> AnyPublisher<String, DeviceVerificationServiceError> in
+                guard let sessionToken = token else {
+                    return .failure(.missingSessionToken)
+                }
+                return .just(sessionToken)
+            }
+            .flatMap { [deviceVerificationRepository] sessionToken
+                -> AnyPublisher<Result<WalletInfo, WalletInfoPollingError>, DeviceVerificationServiceError> in
+                deviceVerificationRepository
+                    .pollForWalletInfo(sessionToken: sessionToken)
+            }
+            .flatMap { result
+                -> AnyPublisher<Result<WalletInfo, WalletInfoPollingError>, DeviceVerificationServiceError> in
+                switch result {
+                // if polled walletinfo, or request denied, stop the retry
+                case .success,
+                     .failure(.requestDenied):
+                    return .just(result)
+                // otherwise continue the retry
+                case .failure(.continuePolling):
+                    return .failure(.missingWalletInfo)
+                }
+            }
+            .retry(100, delay: .seconds(2), scheduler: pollingQueue)
+            .eraseToAnyPublisher()
+    }
+
+    public func authorizeVerifyDevice(
+        from sessionToken: String,
+        payload: String,
+        confirmDevice: Bool?
+    ) -> AnyPublisher<Void, AuthorizeVerifyDeviceError> {
+        deviceVerificationRepository
+            .authorizeVerifyDevice(
+                from: sessionToken,
+                payload: payload,
+                confirmDevice: confirmDevice
+            )
+    }
+
+    private func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError> {
         let walletIdentifierValidator = walletIdentifierValidator
         return Deferred {
             Future { promise in
@@ -107,23 +197,5 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
             }
         }
         .eraseToAnyPublisher()
-    }
-
-    public func pollForWalletInfo() -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> {
-        sessionTokenRepository
-            .sessionTokenPublisher
-            .flatMap { token -> AnyPublisher<String, DeviceVerificationServiceError> in
-                guard let sessionToken = token else {
-                    return .failure(.missingSessionToken)
-                }
-                return .just(sessionToken)
-            }
-            .flatMap { [deviceVerificationRepository] sessionToken
-                -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> in
-                deviceVerificationRepository
-                    .pollForWalletInfo(sessionToken: sessionToken)
-            }
-            .retry(120, delay: .seconds(2), scheduler: pollingQueue)
-            .eraseToAnyPublisher()
     }
 }

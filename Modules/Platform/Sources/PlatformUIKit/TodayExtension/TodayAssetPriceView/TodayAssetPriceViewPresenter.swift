@@ -23,7 +23,7 @@ public final class TodayAssetPriceViewPresenter {
         // MARK: - Setup
 
         init(with value: DashboardAsset.Value.Interaction.AssetPrice) {
-            let fiatPrice = value.fiatValue.toDisplayString(includeSymbol: true)
+            let fiatPrice = value.currentPrice.toDisplayString(includeSymbol: true)
             price = LabelContent(
                 text: fiatPrice,
                 font: .systemFont(ofSize: 16.0, weight: .semibold),
@@ -31,18 +31,26 @@ public final class TodayAssetPriceViewPresenter {
                 accessibility: .none
             )
 
+            change = value.historicalPrice
+                .flatMap(Self.changeAttributeString(with:))
+                ?? NSAttributedString()
+        }
+
+        private static func changeAttributeString(
+            with historicalPrice: DashboardAsset.Value.Interaction.AssetPrice.HistoricalPrice
+        ) -> NSAttributedString {
             let color: UIColor
 
-            if value.fiatChange.isPositive {
+            if historicalPrice.priceChange.isPositive {
                 color = .positivePrice
-            } else if value.fiatChange.isNegative {
+            } else if historicalPrice.priceChange.isNegative {
                 color = .negativePrice
-            } else { // Zero {
+            } else { // Zero
                 color = .mutedText
             }
 
             let fiatChange: NSAttributedString
-            let fiat = value.fiatChange.toDisplayString(includeSymbol: true)
+            let fiat = historicalPrice.priceChange.toDisplayString(includeSymbol: true)
             fiatChange = NSAttributedString(
                 LabelContent(
                     text: "\(fiat) ",
@@ -54,7 +62,7 @@ public final class TodayAssetPriceViewPresenter {
             let percentageChange: NSAttributedString
             let prefix = "("
             let suffix = ")"
-            let percentage = value.changePercentage * 100
+            let percentage = historicalPrice.changePercentage * 100
             let percentageString = percentage.string(with: 2)
             percentageChange = NSAttributedString(
                 LabelContent(
@@ -64,7 +72,7 @@ public final class TodayAssetPriceViewPresenter {
                 )
             )
 
-            change = fiatChange + percentageChange
+            return fiatChange + percentageChange
         }
     }
 

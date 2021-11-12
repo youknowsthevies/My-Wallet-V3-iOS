@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import DIKit
 import Foundation
 import PlatformKit
 import RxSwift
+import ToolKit
 
 /// A CryptoAccount, NonCustodialAccount object used by Receive screen to display currencies that are not yet currently loaded.
 final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount {
@@ -57,7 +59,9 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
         asset.defaultWalletName
     }
 
-    init(asset: CryptoCurrency) {
+    init(
+        asset: CryptoCurrency
+    ) {
         self.asset = asset
     }
 }

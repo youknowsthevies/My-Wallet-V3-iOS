@@ -42,7 +42,6 @@ final class TransactionModel {
 
     // swiftlint:disable:next cyclomatic_complexity
     func perform(previousState: TransactionState, action: TransactionAction) -> Disposable? {
-        Logger.shared.debug("[Transaction Flow] Perform action: \(action) on state:")
         switch action {
         case .pendingTransactionStarted:
             return nil
@@ -183,15 +182,23 @@ final class TransactionModel {
             return nil
         case .returnToPreviousStep:
             let isAmountScreen = previousState.step == .enterAmount
-            let isBitPay = previousState.step == .confirmDetail && previousState.destination is BitPayInvoiceTarget
-            let shouldInvalidateTransaction = isAmountScreen || isBitPay
-            guard !shouldInvalidateTransaction else {
+            let isConfirmDetail = previousState.step == .confirmDetail
+            let isStaticTarget = previousState.destination is StaticTransactionTarget
+            // We should invalidate the transaction if
+            // - we are on the amount screen; or
+            // - we are on the Confirmation screen and the target is StaticTransactionTarget (a target that can't be modified).
+            let shouldInvalidateTransaction = isAmountScreen || (isConfirmDetail && isStaticTarget)
+            if shouldInvalidateTransaction {
                 return processTransactionInvalidation(state: previousState)
             }
-            let shouldCancelOrder = previousState.step == .confirmDetail
-            guard !shouldCancelOrder else {
+
+            // We should cancel the order if we are on the Confirmation screen.
+            let shouldCancelOrder = isConfirmDetail
+            if shouldCancelOrder {
                 return processCancelOrder(state: previousState)
             }
+
+            // If no check passed, we stop here (no further actions required).
             return nil
         case .sourceAccountSelected(let sourceAccount):
             if let target = previousState.destination, !previousState.availableTargets.isEmpty {

@@ -8,6 +8,8 @@ import NetworkKit
 import Session
 import ToolKit
 
+// swiftlint:disable force_try
+
 // swiftlint:disable:next duplicate_imports
 @_exported import struct ToolKit.Identity
 // swiftlint:disable:next duplicate_imports
@@ -58,7 +60,7 @@ public class OpenBankingClient {
         if case .failure(.keyDoesNotExist) = consent {
             return
         }
-        
+
         let callbackPath: String
         switch state.result(for: .callback.path, as: String.self) {
         case .success(let output):

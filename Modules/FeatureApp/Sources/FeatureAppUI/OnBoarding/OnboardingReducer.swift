@@ -74,8 +74,8 @@ public enum Onboarding {
         var appSettings: BlockchainSettingsAppAPI
         var alertPresenter: AlertViewPresenterAPI
         var mainQueue: AnySchedulerOf<DispatchQueue>
-        let featureFlags: InternalFeatureFlagServiceAPI
-        var appFeatureConfigurator: FeatureConfiguratorAPI
+        let deviceVerificationService: DeviceVerificationServiceAPI
+        let featureFlagsService: FeatureFlagsServiceAPI
         var buildVersionProvider: () -> String
     }
 }
@@ -90,8 +90,8 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             environment: {
                 WelcomeEnvironment(
                     mainQueue: $0.mainQueue,
-                    featureFlags: $0.featureFlags,
-                    appFeatureConfigurator: $0.appFeatureConfigurator,
+                    deviceVerificationService: $0.deviceVerificationService,
+                    featureFlagsService: $0.featureFlagsService,
                     buildVersionProvider: $0.buildVersionProvider
                 )
             }

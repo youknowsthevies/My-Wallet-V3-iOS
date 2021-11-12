@@ -59,15 +59,33 @@ final class DeviceVerificationRepository: DeviceVerificationRepositoryAPI {
 
     func pollForWalletInfo(
         sessionToken: String
-    ) -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> {
+    ) -> AnyPublisher<Result<WalletInfo, WalletInfoPollingError>, DeviceVerificationServiceError> {
         apiClient
             .pollForWalletInfo(sessionToken: sessionToken)
-            .flatMap { walletInfoOrNil -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> in
-                guard let walletInfo = walletInfoOrNil else {
-                    return .failure(.missingWalletInfo)
+            .mapError(DeviceVerificationServiceError.networkError)
+            .flatMap { response
+                -> AnyPublisher<Result<WalletInfo, WalletInfoPollingError>, DeviceVerificationServiceError> in
+                switch response {
+                case .walletInfo(let walletInfo):
+                    return .just(.success(walletInfo))
+                case .continuePolling:
+                    return .just(.failure(.continuePolling))
+                case .requestDenied:
+                    return .just(.failure(.requestDenied))
                 }
-                return .just(walletInfo)
             }
+            .eraseToAnyPublisher()
+    }
+
+    func authorizeVerifyDevice(
+        from sessionToken: String,
+        payload: String,
+        confirmDevice: Bool?
+    ) -> AnyPublisher<Void, AuthorizeVerifyDeviceError> {
+        apiClient
+            .authorizeVerifyDevice(from: sessionToken, payload: payload, confirmDevice: confirmDevice)
+            .mapError { AuthorizeVerifyDeviceError(error: $0) ?? .network($0) }
+            .mapToVoid()
             .eraseToAnyPublisher()
     }
 }

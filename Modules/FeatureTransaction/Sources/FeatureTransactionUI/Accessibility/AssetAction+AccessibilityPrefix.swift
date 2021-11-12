@@ -4,7 +4,7 @@ import PlatformKit
 
 extension AssetAction {
 
-    /// A `String` used as a prefic for accessibility identifiers.
+    /// A `String` used as a prefix for accessibility identifiers.
     /// - Note: This is includes a `.` (dot) at the end of the prefix
     var accessibilityPrefix: String {
         switch self {
@@ -20,6 +20,8 @@ extension AssetAction {
             return "Buy."
         case .sell:
             return "Sell."
+        case .sign:
+            return "Sign."
         case .send:
             return "Send."
         case .swap:

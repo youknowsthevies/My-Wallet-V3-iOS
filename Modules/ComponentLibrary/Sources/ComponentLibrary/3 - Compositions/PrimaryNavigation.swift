@@ -275,8 +275,13 @@ private struct NavigationConfigurator: UIViewControllerRepresentable {
         // Customize the styling of the navigation bar
         private func styleNavigationBar() {
             if let navigationBar = navigationController?.navigationBar {
-                navigationBar.tintColor = UIColor(.semantic.muted)
-                navigationBar.barTintColor = UIColor(.semantic.white)
+                navigationBar.tintColor = UIColor(
+                    Color(
+                        light: .palette.grey400,
+                        dark: .palette.grey400
+                    )
+                )
+                navigationBar.barTintColor = UIColor(.semantic.background)
                 navigationBar.shadowImage = UIImage()
 
                 let image: UIImage?

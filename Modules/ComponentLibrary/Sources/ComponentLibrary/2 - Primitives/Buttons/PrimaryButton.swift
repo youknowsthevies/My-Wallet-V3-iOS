@@ -22,33 +22,33 @@ public struct PrimaryButton: View {
 
     @Environment(\.pillButtonSize) private var size
 
-    private let colorCombination = PillButtonStyle.ColorCombination(
+    static let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
-            foreground: .semantic.white,
-            background: .semantic.primary,
-            border: .semantic.primary
+            foreground: .palette.white,
+            background: .palette.blue600,
+            border: .palette.blue600
         ),
         pressed: PillButtonStyle.ColorSet(
-            foreground: .semantic.white,
-            background: .semantic.primary,
-            border: .semantic.primary
+            foreground: .palette.white,
+            background: .palette.blue600,
+            border: .palette.blue600
         ),
         disabled: PillButtonStyle.ColorSet(
-            foreground: Color.dynamicColor(
-                light: .semantic.white.opacity(0.7),
-                dark: .semantic.white.opacity(0.4)
+            foreground: Color(
+                light: .palette.white.opacity(0.7),
+                dark: .palette.white.opacity(0.4)
             ),
-            background: Color.dynamicColor(
-                light: .semantic.primaryMuted,
-                dark: .semantic.title
+            background: Color(
+                light: .palette.blue400,
+                dark: .palette.grey900
             ),
-            border: Color.dynamicColor(
-                light: .semantic.primaryMuted,
-                dark: .semantic.title
+            border: Color(
+                light: .palette.blue400,
+                dark: .palette.grey900
             )
         ),
-        progressViewRail: Color.semantic.white.opacity(0.8),
-        progressViewTrack: Color.semantic.white.opacity(0.25)
+        progressViewRail: .palette.white.opacity(0.8),
+        progressViewTrack: .palette.white.opacity(0.25)
     )
 
     public init(
@@ -69,7 +69,7 @@ public struct PrimaryButton: View {
             PillButtonStyle(
                 isLoading: isLoading,
                 size: size,
-                colorCombination: colorCombination
+                colorCombination: Self.colorCombination
             )
         )
     }

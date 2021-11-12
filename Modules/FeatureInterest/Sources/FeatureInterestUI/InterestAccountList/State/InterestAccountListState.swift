@@ -16,6 +16,10 @@ struct InterestAccountListState: Equatable, NavigationState {
         loadingStatus.title
     }
 
+    var interestAccountFetchFailed: Bool {
+        isLoading == false && interestAccountDetails.isEmpty
+    }
+
     var route: RouteIntent<InterestAccountListRoute>?
     var interestTransactionState: InterestTransactionState?
     var interestAccountOverviews: [InterestAccountOverview] = []

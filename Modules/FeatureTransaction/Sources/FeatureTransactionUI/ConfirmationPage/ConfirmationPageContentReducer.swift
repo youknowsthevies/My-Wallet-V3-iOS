@@ -31,17 +31,25 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
     // MARK: - CheckoutScreenContentReducing
 
-    let title: String
-    var cells: [DetailsScreen.CellType]
+    var title: String = ""
+    var cells: [DetailsScreen.CellType] = []
+    var navigationBarAppearance: DetailsScreen.NavigationBarAppearance = .hidden
+
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
 
-    let termsCheckboxViewModel = CheckboxViewModel()
-    let transferCheckboxViewModel = CheckboxViewModel()
+    let termsCheckboxViewModel: CheckboxViewModel = .termsCheckboxViewModel
+
+    /// A `CheckboxViewModel` that prompts the user to confirm
+    /// that they will be transferring funds to their rewards account.
+    /// This `CheckboxViewModel` needs data from the `TransactionState`
+    /// so we cannot initialize until we receive it.
+    var transferCheckboxViewModel: CheckboxViewModel?
 
     let messageRecorder: MessageRecording
     let transferAgreementUpdated = PublishRelay<Bool>()
     let termsUpdated = PublishRelay<Bool>()
+    let hyperlinkTapped = PublishRelay<TitledLink>()
     let memoUpdated = PublishRelay<(String, TransactionConfirmation.Model.Memo)>()
     private let memoModel: TextFieldViewModel
     private var disposeBag = DisposeBag()
@@ -50,41 +58,56 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
     init(messageRecorder: MessageRecording = resolve()) {
         self.messageRecorder = messageRecorder
-        title = LocalizedString.Confirmation.confirm
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
         continueButtonViewModel = .primary(with: "")
-        cells = []
         memoModel = TextFieldViewModel(
             with: .memo,
             validator: TextValidationFactory.General.alwaysValid,
             messageRecorder: messageRecorder
         )
-
-        termsCheckboxViewModel
-            .apply(
-                text: LocalizedString.Transfer.termsOfServiceDisclaimer
-            )
     }
 
     func setup(for state: TransactionState) {
         disposeBag = DisposeBag()
+        title = Self.screenTitle(state: state)
         continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
+        navigationBarAppearance = .custom(
+            leading: state.stepsBackStack.isEmpty ? .none : .back,
+            trailing: .none,
+            barStyle: .darkContent(ignoresStatusBar: false, background: .white)
+        )
+        cells = createCells(state: state)
+    }
+
+    private func createCells(state: TransactionState) -> [DetailsScreen.CellType] {
         let amount = state.amount
         let fee = state.pendingTransaction?.feeAmount ?? .zero(currency: amount.currency)
         let value = (try? amount + fee) ?? .zero(currency: amount.currency)
 
         let sourceLabel = state.source?.label ?? ""
-        transferCheckboxViewModel.apply(
-            text: String(
-                format: LocalizedString.Transfer.transferAgreement,
-                value.displayString,
-                sourceLabel
+
+        // NOTE: This is not ideal. We do not know the
+        // amount, fee, and total amount for the transaction
+        // until we receive the `TransactionState`. That means
+        // we cannot initialize a `transferCheckboxViewModel` until
+        // this `setup(for state:)` function is called. So, we check to
+        // see if this is `nil` prior to initializing it.
+        if transferCheckboxViewModel == nil {
+            transferCheckboxViewModel = .init(
+                inputs: [
+                    .text(
+                        string: String(
+                            format: LocalizedString.Transfer.transferAgreement,
+                            value.displayString,
+                            sourceLabel
+                        )
+                    )
+                ]
             )
-        )
+        }
 
         guard let pendingTransaction = state.pendingTransaction else {
-            cells = []
-            return
+            return []
         }
 
         let interactors: [DefaultLineItemCellPresenter] = pendingTransaction
@@ -137,13 +160,33 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         let errorModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
             .filter(\.isErrorNotice)
             .compactMap(\.formatted)
-            .map { (_: String, subtitle: String) -> DefaultLabelContentPresenter in
+            .map(\.subtitle)
+            .map { subtitle -> DefaultLabelContentPresenter in
                 DefaultLabelContentPresenter(
                     knownValue: subtitle,
                     descriptors: .init(
                         fontWeight: .semibold,
                         contentColor: .destructive,
                         fontSize: 14.0,
+                        accessibility: .none
+                    )
+                )
+            }
+            .map { presenter -> DetailsScreen.CellType in
+                .label(presenter)
+            }
+
+        let noticeModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
+            .filter(\.isNotice)
+            .compactMap(\.formatted)
+            .map(\.subtitle)
+            .map { subtitle -> DefaultLabelContentPresenter in
+                DefaultLabelContentPresenter(
+                    knownValue: subtitle,
+                    descriptors: .init(
+                        fontWeight: .medium,
+                        contentColor: .darkTitleText,
+                        fontSize: 14,
                         accessibility: .none
                     )
                 )
@@ -204,16 +247,21 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         }
 
         var checkboxModels: [DetailsScreen.CellType] = []
-        if let _ = terms,
-           let _ = transferAgreement
-        {
+        if terms != nil, transferAgreement != nil {
+
             termsCheckboxViewModel
                 .selectedRelay
                 .distinctUntilChanged()
                 .bind(to: termsUpdated)
                 .disposed(by: disposeBag)
 
-            transferCheckboxViewModel
+            termsCheckboxViewModel
+                .tapRelay
+                .asObservable()
+                .bind(to: hyperlinkTapped)
+                .disposed(by: disposeBag)
+
+            transferCheckboxViewModel?
                 .selectedRelay
                 .distinctUntilChanged()
                 .bind(to: transferAgreementUpdated)
@@ -222,7 +270,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             checkboxModels.append(
                 contentsOf: [
                     .checkbox(termsCheckboxViewModel),
-                    .checkbox(transferCheckboxViewModel)
+                    .checkbox(transferCheckboxViewModel!)
                 ]
             )
         }
@@ -230,7 +278,12 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         var disclaimer: [DetailsScreen.CellType] = []
         if TransactionFlowDescriptor.confirmDisclaimerVisibility(action: state.action) {
             let content = LabelContent(
-                text: TransactionFlowDescriptor.confirmDisclaimerText(action: state.action),
+                text: TransactionFlowDescriptor
+                    .confirmDisclaimerText(
+                        action: state.action,
+                        currencyCode: state.asset.code,
+                        accountLabel: state.destination?.label ?? ""
+                    ),
                 font: .main(.medium, 12),
                 color: .descriptionText,
                 alignment: .left,
@@ -241,10 +294,20 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
         let restItems: [DetailsScreen.CellType] = memoModels +
             errorModels + disclaimer + checkboxModels
-        cells = [.separator] +
+        return noticeModels +
+            [.separator] +
             bitpayItemIfNeeded +
             confirmationLineItems +
             restItems
+    }
+
+    static func screenTitle(state: TransactionState) -> String {
+        switch state.action {
+        case .sign:
+            return LocalizedString.Confirmation.signatureRequest
+        default:
+            return LocalizedString.Confirmation.confirm
+        }
     }
 
     static func confirmCtaText(state: TransactionState) -> String {
@@ -257,6 +320,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             return LocalizedString.Swap.buyNow
         case .sell:
             return LocalizedString.Swap.sellNow
+        case .sign:
+            return LocalizedString.Confirmation.confirm
         case .deposit:
             return LocalizedString.Deposit.depositNow
         case .interestTransfer:
@@ -282,7 +347,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
 extension TransactionConfirmation {
     var isCustom: Bool {
-        isErrorNotice || isMemo || isBitPay || isCheckbox
+        isErrorNotice || isNotice || isMemo || isBitPay || isCheckbox
     }
 
     var isCheckbox: Bool {
@@ -298,6 +363,15 @@ extension TransactionConfirmation {
     var isBitPay: Bool {
         switch self {
         case .bitpayCountdown:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isNotice: Bool {
+        switch self {
+        case .notice:
             return true
         default:
             return false

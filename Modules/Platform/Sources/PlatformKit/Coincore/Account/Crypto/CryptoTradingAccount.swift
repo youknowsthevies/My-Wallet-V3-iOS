@@ -170,6 +170,16 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             }
     }
 
+    private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
+        featureFlagsService
+            .isEnabled(
+                .remote(.interestWithdrawAndDeposit)
+            )
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let balanceService: TradingBalanceServiceAPI
     private let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     private let custodialAddressService: CustodialAddressServiceAPI
@@ -222,6 +232,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.kycTiersService = kycTiersService
         self.errorRecorder = errorRecorder
         self.supportedPairsInteractorService = supportedPairsInteractorService
+        featureFlagsService = featureFlagService
     }
 
     private var isPairToFiatAvailable: Single<Bool> {
@@ -254,8 +265,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         case .interestTransfer:
             return canPerformInterestTransfer()
         case .deposit,
-             .withdraw,
-             .interestWithdraw:
+             .interestWithdraw,
+             .sign,
+             .withdraw:
             return .just(false)
         }
     }
@@ -303,8 +315,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .asSingle()
         let balanceAvailable = balance
             .map(\.isPositive)
-        let isFeatureFlagEnabled = featureFlagService
-            .isEnabled(.remote(.interestWithdrawAndDeposit))
+        let isFeatureFlagEnabled = isInterestWithdrawAndDepositEnabled
             .asSingle()
         return Single
             .zip(isEligible, balanceAvailable, isFeatureFlagEnabled)

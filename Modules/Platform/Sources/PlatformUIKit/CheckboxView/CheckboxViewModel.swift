@@ -3,30 +3,23 @@
 import RxCocoa
 import RxDataSources
 import RxSwift
+import ToolKit
 
 public final class CheckboxViewModel: IdentifiableType {
 
-    struct Content {
-        let title: String
-
-        static let empty: Content = .init(title: "")
-    }
-
     // MARK: - Public Properties
+
+    public typealias Inputs = [InteractableTextViewModel.Input]
 
     public let image: Driver<UIImage?>
 
-    public var labelContent: Driver<LabelContent> {
-        contentRelay
-            .map(\.title)
-            .map {
-                .init(
-                    text: $0,
-                    font: .main(.medium, 12.0),
-                    color: .textFieldText
-                )
-            }
-            .asDriver(onErrorJustReturn: .empty)
+    public var textViewViewModel: Driver<InteractableTextViewModel> {
+        .just(interactableTextViewModel)
+    }
+
+    public var tapRelay: Signal<TitledLink> {
+        titledLinkRelay
+            .asSignal()
     }
 
     public let selectedRelay = BehaviorRelay<Bool>(value: false)
@@ -34,16 +27,31 @@ public final class CheckboxViewModel: IdentifiableType {
     // MARK: - RxDataSources
 
     public var identity: AnyHashable {
-        contentRelay.value.title
+        interactableTextViewModel
+            .identifier
     }
 
     // MARK: - Private Properties
 
-    private let contentRelay = BehaviorRelay<Content>(value: .empty)
+    private let interactableTextViewModel: InteractableTextViewModel
+    private let disposeBag = DisposeBag()
+    private let titledLinkRelay = PublishRelay<TitledLink>()
 
     // MARK: - Init
 
-    public init() {
+    public init(inputs: Inputs = []) {
+        interactableTextViewModel = .init(
+            inputs: inputs,
+            textStyle: .init(
+                color: .textFieldText,
+                font: .main(.medium, 12.0)
+            ),
+            linkStyle: .init(
+                color: .linkableText,
+                font: .main(.medium, 12.0)
+            )
+        )
+
         image = selectedRelay
             .asObservable()
             .map { $0 ? "checkbox-on" : "checkbox-off" }
@@ -54,10 +62,11 @@ public final class CheckboxViewModel: IdentifiableType {
                 }
                 return nil
             }
-    }
 
-    public func apply(text: String) {
-        contentRelay.accept(.init(title: text))
+        interactableTextViewModel
+            .tap
+            .bindAndCatch(to: titledLinkRelay)
+            .disposed(by: disposeBag)
     }
 }
 

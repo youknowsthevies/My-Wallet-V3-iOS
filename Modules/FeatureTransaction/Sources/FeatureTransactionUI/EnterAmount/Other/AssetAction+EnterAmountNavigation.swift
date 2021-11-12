@@ -17,6 +17,8 @@ extension AssetAction {
              .interestWithdraw,
              .interestTransfer:
             return true
+        case .sign:
+            return false
         }
     }
 }

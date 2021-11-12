@@ -4,6 +4,7 @@
 @testable import FeatureAuthenticationDomain
 import Foundation
 import RxSwift
+import WalletPayloadKit
 
 extension WalletPayloadClient.Response {
     static func fake(

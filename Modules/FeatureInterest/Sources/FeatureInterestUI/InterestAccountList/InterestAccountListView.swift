@@ -25,39 +25,46 @@ struct InterestAccountListView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            if viewStore.isLoading {
-                LoadingStateView(title: viewStore.loadingTitle)
-                    .onAppear {
-                        if let cryptoCurrency = viewStore.buyCryptoCurrency {
-                            delegate?.didTapBuyCrypto(cryptoCurrency)
-                        } else {
-                            viewStore.send(.setupInterestAccountListScreen)
-                        }
-                    }
-            } else {
-                NavigationView {
-                    List {
-                        if !viewStore.isKYCVerified {
-                            InterestIdentityVerificationView {
-                                delegate?.didTapVerifyMyIdentity()
+            VStack {
+                if viewStore.isLoading {
+                    LoadingStateView(title: viewStore.loadingTitle)
+                        .onAppear {
+                            if let cryptoCurrency = viewStore.buyCryptoCurrency {
+                                delegate?.didTapBuyCrypto(cryptoCurrency)
                             }
-                            .listRowInsets(EdgeInsets())
                         }
-                        ForEachStore(
-                            store.scope(
-                                state: \.interestAccountDetails,
-                                action: InterestAccountListAction.interestAccountButtonTapped
-                            )
-                        ) { cellStore in
-                            InterestAccountListItem(store: cellStore)
+                } else if viewStore.interestAccountFetchFailed {
+                    InterestAccountListErrorView(action: {
+                        viewStore.send(.setupInterestAccountListScreen)
+                    })
+                } else {
+                    NavigationView {
+                        List {
+                            if !viewStore.isKYCVerified {
+                                InterestIdentityVerificationView {
+                                    delegate?.didTapVerifyMyIdentity()
+                                }
+                                .listRowInsets(EdgeInsets())
+                            }
+                            ForEachStore(
+                                store.scope(
+                                    state: \.interestAccountDetails,
+                                    action: InterestAccountListAction.interestAccountButtonTapped
+                                )
+                            ) { cellStore in
+                                InterestAccountListItem(store: cellStore)
+                            }
                         }
+                        .whiteNavigationBarStyle()
+                        .listStyle(PlainListStyle())
+                        .navigationTitle(LocalizationId.title)
+                        .navigationBarTitleDisplayMode(.inline)
+                        .navigationRoute(in: store)
                     }
-                    .whiteNavigationBarStyle()
-                    .listStyle(PlainListStyle())
-                    .navigationTitle(LocalizationId.title)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .navigationRoute(in: store)
                 }
+            }
+            .onAppear {
+                viewStore.send(.setupInterestAccountListScreen)
             }
         }
     }

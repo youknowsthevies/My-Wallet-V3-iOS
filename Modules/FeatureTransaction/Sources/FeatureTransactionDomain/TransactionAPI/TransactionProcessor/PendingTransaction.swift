@@ -30,7 +30,7 @@ public struct PendingTransaction: Equatable {
             return false
         }
         guard case .termsOfService(let option) = confirmation else { return false }
-        return option.value ?? false
+        return option.value
     }
 
     public var agreementOptionValue: Bool {

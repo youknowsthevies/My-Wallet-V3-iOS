@@ -37,11 +37,11 @@ public struct AlertButton: View {
             HStack(spacing: Spacing.baseline) {
                 Icon
                     .alert
-                    .accentColor(.semantic.warning)
+                    .accentColor(.palette.orange600)
                     .frame(width: 16)
                     .background(
                         Circle()
-                            .foregroundColor(.semantic.white)
+                            .foregroundColor(.palette.white)
                             .frame(width: 10)
                     )
                 Text(title)
@@ -75,18 +75,18 @@ struct AlertButtonStyle: ButtonStyle {
 
     private let colorCombination = ColorCombination(
         enabled: ColorSet(
-            foreground: .semantic.white,
-            background: Color.dynamicColor(
-                light: .semantic.title,
-                dark: .semantic.black
+            foreground: .palette.white,
+            background: Color(
+                light: .palette.grey900,
+                dark: .palette.dark800
             )
         ),
         pressed: ColorSet(
-            foreground: .semantic.white,
-            background: .semantic.black
+            foreground: .palette.white,
+            background: .palette.black
         ),
-        progressViewRail: Color.semantic.white.opacity(0.8),
-        progressViewTrack: Color.semantic.white.opacity(0.25)
+        progressViewRail: .palette.white.opacity(0.8),
+        progressViewTrack: .palette.white.opacity(0.25)
     )
 
     func makeBody(configuration: Configuration) -> some View {
