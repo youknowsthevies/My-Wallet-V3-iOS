@@ -32,19 +32,26 @@ public protocol TimeoutFailure: Error {
 
 extension Publisher where Failure: TimeoutFailure {
 
-    /// Attempts to recreate a failed subscription with the upstream publisher up to the number of times you specify with
-    /// each retry delayed by ƒ(x) defined by `delay` IntervalDuration
+    /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
+    public func poll(
+        max attempts: Int = Int.max,
+        until: @escaping (Output) -> Bool,
+        delay: DispatchTimeInterval = .seconds(30)
+    ) -> AnyPublisher<Output, Failure> {
+        poll(max: attempts, until: until, delay: .constant(delay), scheduler: DispatchQueue.main)
+    }
+
+    /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
     public func poll<S: Scheduler>(
         max attempts: Int = Int.max,
         until: @escaping (Output) -> Bool,
-        delay: DispatchTimeInterval,
+        delay: DispatchTimeInterval = .seconds(30),
         scheduler: S
     ) -> AnyPublisher<Output, Failure> {
         poll(max: attempts, until: until, delay: .constant(delay), scheduler: scheduler)
     }
 
-    /// Attempts to recreate a failed subscription with the upstream publisher up to the number of times you specify with
-    /// each retry delayed by ƒ(x) defined by `delay` IntervalDuration
+    /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
     public func poll<S: Scheduler>(
         max attempts: Int = Int.max,
         until: @escaping (Output) -> Bool,

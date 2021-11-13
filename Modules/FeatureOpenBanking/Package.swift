@@ -9,7 +9,7 @@ let package = Package(
     products: [
         .library(
             name: "FeatureOpenBanking",
-            targets: ["FeatureOpenBankingData", "FeatureOpenBankingDomain"]
+            targets: ["FeatureOpenBankingData", "FeatureOpenBankingDomain", "FeatureOpenBankingUI"]
         ),
         .library(
             name: "FeatureOpenBankingData",
@@ -18,6 +18,10 @@ let package = Package(
         .library(
             name: "FeatureOpenBankingDomain",
             targets: ["FeatureOpenBankingDomain"]
+        ),
+        .library(
+            name: "FeatureOpenBankingUI",
+            targets: ["FeatureOpenBankingUI"]
         )
     ],
     dependencies: [
@@ -27,15 +31,23 @@ let package = Package(
             from: "0.5.0"
         ),
         .package(
+            name: "swift-composable-architecture",
+            url: "https://github.com/pointfreeco/swift-composable-architecture",
+            from: "0.28.1"
+        ),
+        .package(
             name: "swift-case-paths",
             url: "https://github.com/pointfreeco/swift-case-paths",
             from: "0.7.0"
         ),
+        .package(path: "../ComposableArchitectureExtensions"),
+        .package(path: "../ComponentLibrary"),
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
         .package(path: "../Session"),
         .package(path: "../Test"),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../UIComponents")
     ],
     targets: [
         .target(
@@ -56,6 +68,17 @@ let package = Package(
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "Session", package: "Session"),
                 .product(name: "ToolKit", package: "Tool")
+            ]
+        ),
+        .target(
+            name: "FeatureOpenBankingUI",
+            dependencies: [
+                .target(name: "FeatureOpenBankingDomain"),
+                .target(name: "FeatureOpenBankingData"),
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
+                .product(name: "ComponentLibrary", package: "ComponentLibrary"),
+                .product(name: "UIComponents", package: "UIComponents")
             ]
         ),
         .target(
@@ -96,6 +119,15 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureOpenBankingData"),
                 .target(name: "FeatureOpenBankingDomain"),
+                .target(name: "FeatureOpenBankingTestFixture"),
+                .product(name: "CombineSchedulers", package: "combine-schedulers"),
+                .product(name: "TestKit", package: "Test")
+            ]
+        ),
+        .testTarget(
+            name: "FeatureOpenBankingUITests",
+            dependencies: [
+                .target(name: "FeatureOpenBankingUI"),
                 .target(name: "FeatureOpenBankingTestFixture"),
                 .product(name: "CombineSchedulers", package: "combine-schedulers"),
                 .product(name: "TestKit", package: "Test")

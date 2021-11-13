@@ -53,8 +53,31 @@ public final class OpenBanking {
         self.banking = banking
     }
 
+    public var authorisationURLPublisher: AnyPublisher<URL, Never> {
+        state.publisher(for: .authorisation.url, as: URL.self)
+            .ignoreResultFailure()
+            .eraseToAnyPublisher()
+    }
+
+    public var isAuthorising: Bool {
+        state.result(for: .authorisation.url).isSuccess
+    }
+
     public func createBankAccount() -> AnyPublisher<OpenBanking.BankAccount, Error> {
         banking.createBankAccount()
+    }
+
+    public func reset() {
+        state.transaction { state in
+            state.clear(.id)
+            state.clear(.callback.path)
+            state.clear(.is.authorised)
+            state.clear(.authorisation.url)
+            state.clear(.account)
+            state.clear(.error.code)
+            state.clear(.consent.error)
+            state.clear(.consent.token)
+        }
     }
 
     public func start(_ data: Data) -> AnyPublisher<Action, Never> {

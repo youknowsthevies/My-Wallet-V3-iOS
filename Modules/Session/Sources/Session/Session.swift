@@ -210,16 +210,12 @@ extension State.Data {
             for (key, value) in data {
                 switch value {
                 case is Tombstone.Type:
-                    notify(key, with: Any?.none as Any)
+                    subjects[key]?.send(.failure(.keyDoesNotExist(key)))
                 default:
-                    notify(key, with: value)
+                    subjects[key]?.send(.success(value))
                 }
             }
         }
-    }
-
-    func notify(_ key: Key, with value: Any) {
-        subjects[key]?.send(.success(value))
     }
 
     @discardableResult

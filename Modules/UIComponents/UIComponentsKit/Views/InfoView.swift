@@ -10,12 +10,24 @@ public struct InfoView: View {
         public struct Overlay: Equatable, Codable {
             public var media: Media?
             public var progress: Bool?
+
+            public init(media: Media? = nil, progress: Bool? = nil) {
+                self.media = media
+                self.progress = progress
+            }
         }
 
         public var media: Media
         public var overlay: Overlay?
         public var title: String
         public var subtitle: String
+
+        public init(media: Media, overlay: InfoView.Model.Overlay? = nil, title: String, subtitle: String) {
+            self.media = media
+            self.overlay = overlay
+            self.title = title
+            self.subtitle = subtitle
+        }
     }
 
     public struct Layout: Equatable, Codable {
@@ -46,7 +58,7 @@ public struct InfoView: View {
         _ model: Model,
         layout: Layout = .init(
             media: Size(length: 20.vmin),
-            overlay: Size(length: 8.vmin),
+            overlay: Size(length: 7.5.vmin),
             margin: 6.vmin,
             spacing: LayoutConstants.VerticalSpacing.betweenContentGroups.pt
         ),
@@ -98,10 +110,17 @@ public struct InfoView: View {
                 )
             )
             .overlay(
-                overlayView.frame(
+                ZStack {
+                    Circle()
+                        .foregroundColor(.white)
+                        .scaleEffect(1.3)
+                    overlayView
+                }
+                .frame(
                     width: computed.overlay.width,
                     height: computed.overlay.height
-                ),
+                )
+                .offset(x: -7.5, y: 7.5),
                 alignment: .topTrailing
             )
             VStack {
@@ -128,7 +147,7 @@ public struct InfoView: View {
 
     @ViewBuilder var overlayView: some View {
         if let icon = model.overlay?.media {
-            MediaView(icon, in: bundle, failure: EmptyView.init)
+            MediaView(icon, in: bundle, failure: Color.clear)
         } else if model.overlay?.progress == true {
             ProgressView(value: 0.25)
                 .progressViewStyle(IndeterminateProgressStyle())
@@ -147,7 +166,7 @@ struct InfoView_Previews: PreviewProvider {
             InfoView(
                 .init(
                     media: .image(systemName: "building.columns.fill"),
-                    overlay: .init(media: .image(systemName: "building.columns.fill")),
+                    overlay: .init(progress: true),
                     title: "Taking you to Monzo",
                     subtitle: "This could take up to 30 seconds. Please do not go back or close the app"
                 )

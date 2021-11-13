@@ -6,9 +6,14 @@ import SwiftUI
 public struct SecondaryButtonStyle: ButtonStyle {
 
     let isEnabled: Bool
+    let foregroundColor: Color
 
-    public init(isEnabled: Bool = true) {
+    public init(
+        isEnabled: Bool = true,
+        foregroundColor: Color = Color.buttonSecondaryText
+    ) {
         self.isEnabled = isEnabled
+        self.foregroundColor = foregroundColor
     }
 
     public func makeBody(configuration: Configuration) -> some View {
@@ -16,7 +21,7 @@ public struct SecondaryButtonStyle: ButtonStyle {
             .font(Font(weight: .semibold, size: 16))
             .frame(maxWidth: .infinity, minHeight: LayoutConstants.buttonMinHeight)
             .padding(.horizontal)
-            .foregroundColor(Color.buttonSecondaryText)
+            .foregroundColor(foregroundColor)
             .background(
                 RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
                     .fill(Color.buttonSecondaryBackground)
@@ -36,7 +41,7 @@ public struct SecondaryButtonStyle: ButtonStyle {
  This is equivalent to writing:
  ```
  LoadingButton(...)
-    .buttonStyle(SecondaryButtonStyle())
+ .buttonStyle(SecondaryButtonStyle())
  ```
  */
 public struct SecondaryButton: View {
@@ -56,6 +61,13 @@ public struct SecondaryButton: View {
         LoadingButton(title: title, action: action, loading: $loading)
             .buttonStyle(SecondaryButtonStyle(isEnabled: isEnabled))
             .progressViewStyle(CircularProgressViewStyle(tint: .buttonSecondaryText))
+    }
+}
+
+extension SecondaryButton {
+
+    public init<S>(_ title: S, action: @escaping () -> Void) where S: StringProtocol {
+        self.init(title: String(title), action: action)
     }
 }
 
