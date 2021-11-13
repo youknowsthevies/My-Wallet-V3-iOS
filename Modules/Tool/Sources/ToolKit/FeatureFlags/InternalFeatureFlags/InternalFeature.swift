@@ -42,7 +42,6 @@ public enum InternalFeature: String, CaseIterable {
         case .newAccountPicker,
              .newOnboardingTour,
              .openBanking,
-             .interestWithdrawAndDeposit,
              .pollingForEmailLogin:
             return true
         case .disableGUIDLogin,
