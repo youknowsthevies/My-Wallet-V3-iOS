@@ -19,6 +19,17 @@ public protocol TransactionLimitsServiceAPI {
 
     func fetchLimits(
         source: LimitsAccount,
+        destination: LimitsAccount
+    ) -> TransactionLimitsServicePublisher
+
+    func fetchLimits(
+        source: LimitsAccount,
+        destination: LimitsAccount,
+        limitsCurrency: FiatCurrency
+    ) -> TransactionLimitsServicePublisher
+
+    func fetchLimits(
+        source: LimitsAccount,
         destination: LimitsAccount,
         product: TransactionLimitsProduct
     ) -> TransactionLimitsServicePublisher
@@ -51,14 +62,58 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
 
     func fetchLimits(
         source: LimitsAccount,
+        destination: LimitsAccount
+    ) -> TransactionLimitsServicePublisher {
+        walletCurrencyService.fiatCurrencyPublisher
+            .setFailureType(to: TransactionLimitsServiceError.self)
+            .flatMap { [unowned self] walletCurrency -> TransactionLimitsServicePublisher in
+                self.fetchLimits(source: source, destination: destination, limitsCurrency: walletCurrency)
+                    .convertAmounts(
+                        from: walletCurrency.currencyType,
+                        to: source.currency,
+                        using: self.conversionService
+                    )
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func fetchLimits(
+        source: LimitsAccount,
+        destination: LimitsAccount,
+        limitsCurrency: FiatCurrency
+    ) -> TransactionLimitsServicePublisher {
+        featureFlagService.isEnabled(.local(.newTxFlowLimitsUIEnabled))
+            .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
+                guard newLimitsEnabled else {
+                    let infinity = MoneyValue(amount: BigInt(Int.max), currency: limitsCurrency.currencyType)
+                    return .just(
+                        TransactionLimits(
+                            minimum: infinity,
+                            maximum: infinity,
+                            maximumDaily: infinity,
+                            maximumAnnual: infinity,
+                            suggestedUpgrade: nil
+                        )
+                    )
+                }
+                return self.fetchCrossBorderLimits(
+                    source: source,
+                    destination: destination,
+                    limitsCurrency: limitsCurrency
+                )
+                .map(TransactionLimits.init)
+                .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func fetchLimits(
+        source: LimitsAccount,
         destination: LimitsAccount,
         product: TransactionLimitsProduct
     ) -> TransactionLimitsServicePublisher {
-        Publishers
-            .Zip(
-                walletCurrencyService.fiatCurrencyPublisher,
-                featureFlagService.isEnabled(.local(.newTxFlowLimitsUIEnabled))
-            )
+        walletCurrencyService.fiatCurrencyPublisher
+            .zip(featureFlagService.isEnabled(.local(.newTxFlowLimitsUIEnabled)))
             .flatMap { [unowned self] walletCurrency, newLimitsEnabled -> TransactionLimitsServicePublisher in
                 let convertedTradeLimits = self
                     .fetchTradeLimits(
@@ -224,6 +279,17 @@ extension TransactionLimits {
             maximumDaily: paymentMethod.maxDaily.moneyValue,
             maximumAnnual: paymentMethod.maxAnnual.moneyValue,
             suggestedUpgrade: nil
+        )
+    }
+
+    init(_ crossBorderLimits: CrossBorderLimits) {
+        let infinity = MoneyValue(amount: BigInt(Int.max), currency: crossBorderLimits.currency)
+        self.init(
+            minimum: .zero(currency: crossBorderLimits.currency),
+            maximum: crossBorderLimits.currentLimits?.available ?? infinity,
+            maximumDaily: crossBorderLimits.currentLimits?.daily?.limit ?? infinity,
+            maximumAnnual: crossBorderLimits.currentLimits?.yearly?.limit ?? infinity,
+            suggestedUpgrade: crossBorderLimits.suggestedUpgrade
         )
     }
 

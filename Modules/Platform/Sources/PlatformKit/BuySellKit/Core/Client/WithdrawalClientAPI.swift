@@ -3,7 +3,7 @@
 import Combine
 import NabuNetworkError
 
-protocol WithdrawalClientAPI: AnyObject {
+public protocol WithdrawalClientAPI: AnyObject {
     /// Requests the withdraw fee for the requested currency
     ///
     /// - parameter currency: A `FiatCurrency` value, for the request

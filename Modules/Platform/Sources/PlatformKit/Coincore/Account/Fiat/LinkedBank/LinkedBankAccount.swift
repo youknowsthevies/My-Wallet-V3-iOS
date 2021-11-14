@@ -1,21 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import RxSwift
 import ToolKit
 
 public class LinkedBankAccount: FiatAccount, BankAccount {
-
-    // MARK: - Public
-
-    public var withdrawFeeAndMinLimit: Single<WithdrawalFeeAndLimit> {
-        withdrawService
-            .withdrawFeeAndLimit(
-                for: fiatCurrency,
-                paymentMethodType: paymentType
-            )
-    }
 
     // MARK: - BlockchainAccount
 
@@ -64,7 +53,10 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     }
 
     public let fiatCurrency: FiatCurrency
-    public private(set) lazy var identifier: AnyHashable = "LinkedBankAccount.\(accountId).\(accountNumber).\(paymentType)"
+    public private(set) lazy var identifier: AnyHashable = {
+        "LinkedBankAccount.\(accountId).\(accountNumber).\(paymentType)"
+    }()
+
     public let label: String
     public let accountId: String
     public let accountNumber: String
@@ -81,10 +73,6 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     /// - returns: `true` in case the linked bank supports deposit, otherwise `false`
     public let supportsDeposit: Bool
 
-    // MARK: - Private Properties
-
-    private let withdrawService: WithdrawalServiceAPI
-
     // MARK: - Init
 
     public init(
@@ -94,8 +82,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         accountType: LinkedBankAccountType,
         currency: FiatCurrency,
         paymentType: PaymentMethodPayloadType,
-        supportsDeposit: Bool,
-        withdrawServiceAPI: WithdrawalServiceAPI = resolve()
+        supportsDeposit: Bool
     ) {
         self.label = label
         self.accountId = accountId
@@ -104,7 +91,6 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         fiatCurrency = currency
         self.paymentType = paymentType
         self.supportsDeposit = supportsDeposit
-        withdrawService = withdrawServiceAPI
     }
 
     // MARK: - BlockchainAccount

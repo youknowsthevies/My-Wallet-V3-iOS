@@ -92,11 +92,11 @@ extension SellTransactionEngine {
         let limitsPublisher = transactionLimitsService.fetchLimits(
             source: LimitsAccount(
                 currency: sourceAsset.currencyType,
-                accountType: orderDirection == .fromUserKey ? .nonCustodial : .custodial
+                accountType: orderDirection.isFromCustodial ? .custodial : .nonCustodial
             ),
             destination: LimitsAccount(
                 currency: targetAsset.currencyType,
-                accountType: .custodial
+                accountType: orderDirection.isToCustodial ? .custodial : .nonCustodial
             ),
             product: .sell(orderDirection)
         )

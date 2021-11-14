@@ -31,5 +31,12 @@ extension DependencyContainer {
                 featureFlagService: DIKit.resolve()
             )
         }
+
+        factory { () -> WithdrawalServiceAPI in
+            WithdrawalService(
+                client: DIKit.resolve(),
+                transactionLimitsService: DIKit.resolve()
+            )
+        }
     }
 }

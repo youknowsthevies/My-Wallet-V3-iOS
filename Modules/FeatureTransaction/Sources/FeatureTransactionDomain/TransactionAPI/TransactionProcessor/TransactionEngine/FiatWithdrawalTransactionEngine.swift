@@ -30,15 +30,18 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     // MARK: - Private Properties
 
     private let fiatWithdrawRepository: FiatWithdrawRepositoryAPI
+    private let withdrawalService: WithdrawalServiceAPI
 
     // MARK: - Init
 
     init(
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        withdrawalService: WithdrawalServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         fiatWithdrawRepository: FiatWithdrawRepositoryAPI = resolve()
     ) {
         self.fiatCurrencyService = fiatCurrencyService
+        self.withdrawalService = withdrawalService
         self.priceService = priceService
         self.fiatWithdrawRepository = fiatWithdrawRepository
     }
@@ -54,13 +57,16 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
         Single.zip(
             sourceAccount.actionableBalance,
             sourceAccount.balance,
-            target.withdrawFeeAndMinLimit,
+            withdrawalService.withdrawFeeAndLimit(
+                for: target.fiatCurrency,
+                paymentMethodType: target.paymentType
+            ),
             fiatCurrencyService
                 .fiatCurrency
         )
-        .map(weak: self) { (self, values) -> PendingTransaction in
+        .map { [sourceAsset] values -> PendingTransaction in
             let (actionableBalance, _, feeAndLimit, fiatCurrency) = values
-            let zero: MoneyValue = .zero(currency: self.sourceAsset)
+            let zero: MoneyValue = .zero(currency: sourceAsset)
             return PendingTransaction(
                 amount: zero,
                 // TODO: Total balance?
@@ -73,7 +79,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 ),
                 selectedFiatCurrency: fiatCurrency,
                 minimumLimit: feeAndLimit.minLimit.moneyValue,
-                maximumLimit: actionableBalance
+                maximumLimit: try MoneyValue.min(actionableBalance, feeAndLimit.maxLimit.moneyValue)
             )
         }
     }
@@ -99,10 +105,9 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         if pendingTransaction.validationState == .uninitialized, pendingTransaction.amount.isZero {
             return .just(pendingTransaction)
-        } else {
-            return validateAmountCompletable(pendingTransaction: pendingTransaction)
-                .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
         }
+        return validateAmountCompletable(pendingTransaction: pendingTransaction)
+            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -114,8 +119,8 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
         target
             .receiveAddress
             .map(\.address)
-            .flatMapCompletable(weak: self) { (self, address) -> Completable in
-                self.fiatWithdrawRepository
+            .flatMapCompletable { [fiatWithdrawRepository] address -> Completable in
+                fiatWithdrawRepository
                     .createWithdrawOrder(id: address, amount: pendingTransaction.amount)
                     .asObservable()
                     .ignoreElements()
@@ -129,7 +134,11 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
         .empty()
     }
 
-    func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+    func doUpdateFeeLevel(
+        pendingTransaction: PendingTransaction,
+        level: FeeLevel,
+        customFeeAmount: MoneyValue
+    ) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         return .just(pendingTransaction)
     }

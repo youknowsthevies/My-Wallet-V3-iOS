@@ -46,6 +46,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
 
     private let feeCache: CachedValue<CustodialTransferFee>
     private let transferRepository: CustodialTransferRepositoryAPI
+    private let transactionLimitsService: TransactionLimitsServiceAPI
 
     // MARK: - Init
 
@@ -53,12 +54,14 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         isNoteSupported: Bool = false,
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
-        transferRepository: CustodialTransferRepositoryAPI = resolve()
+        transferRepository: CustodialTransferRepositoryAPI = resolve(),
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve()
     ) {
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
         self.isNoteSupported = isNoteSupported
         self.transferRepository = transferRepository
+        self.transactionLimitsService = transactionLimitsService
         feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 20,
@@ -98,10 +101,25 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         guard sourceTradingAccount != nil else {
             return .just(pendingTransaction)
         }
+        let transactionLimits = transactionLimitsService.fetchLimits(
+            source: LimitsAccount(
+                currency: sourceAccount.currencyType,
+                accountType: .custodial
+            ),
+            destination: LimitsAccount(
+                currency: targetAsset.currencyType,
+                accountType: .nonCustodial // even exchange accounts are considered non-custodial atm.
+            )
+        )
+        .asSingle()
         return
             Single
-                .zip(feeCache.valueSingle, sourceTradingAccount.withdrawableBalance)
-                .map { fees, withdrawableBalance -> PendingTransaction in
+                .zip(
+                    feeCache.valueSingle,
+                    transactionLimits,
+                    sourceTradingAccount.withdrawableBalance
+                )
+                .map { fees, transactionLimits, withdrawableBalance -> PendingTransaction in
                     let fee = fees[fee: amount.currency]
                     let available = try withdrawableBalance - fee
                     var pendingTransaction = pendingTransaction.update(
@@ -111,6 +129,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                         feeForFullAvailable: fee
                     )
                     pendingTransaction.minimumLimit = fees[minimumAmount: amount.currency]
+                    pendingTransaction.maximumLimit = transactionLimits.maximum
                     return pendingTransaction
                 }
     }

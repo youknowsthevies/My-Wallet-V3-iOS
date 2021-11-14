@@ -21,7 +21,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     let priceService: PriceServiceAPI
     let quotesEngine: SwapQuotesEngine
     let requireSecondPassword: Bool
-    let tradeLimitsRepository: TransactionLimitsRepositoryAPI
+    let transactionLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
@@ -33,7 +33,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         orderUpdateRepository: OrderUpdateRepositoryAPI = resolve(),
-        tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
@@ -44,7 +44,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         self.orderQuoteRepository = orderQuoteRepository
         self.orderCreationRepository = orderCreationRepository
         self.orderUpdateRepository = orderUpdateRepository
-        self.tradeLimitsRepository = tradeLimitsRepository
+        self.transactionLimitsService = transactionLimitsService
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiersService = kycTiersService
         self.priceService = priceService
@@ -130,8 +130,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                         )
                         return self.updateLimits(
                             pendingTransaction: pendingTransaction,
-                            pricedQuote: pricedQuote,
-                            fiatCurrency: fiatCurrency
+                            pricedQuote: pricedQuote
                         )
                         .map(weak: self) { (self, pendingTx) -> PendingTransaction in
                             pendingTx
