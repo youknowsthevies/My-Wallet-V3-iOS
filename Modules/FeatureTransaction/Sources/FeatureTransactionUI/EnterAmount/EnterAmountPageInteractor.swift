@@ -431,6 +431,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .update(\.showErrorRecoveryAction, value: canShowErrorAction(for: updater))
             .update(\.topAuxiliaryViewPresenter, value: topAuxiliaryView(for: updater))
             .update(\.bottomAuxiliaryViewPresenter, value: bottomAuxiliaryView(for: updater))
+            .update(\.showWithdrawalLocks, value: updater.destination is NonCustodialAccount)
     }
 
     private func canShowContinueAction(for state: TransactionState) -> Bool {
@@ -502,6 +503,7 @@ extension EnterAmountPageInteractor {
         var canContinue: Bool
         var showContinueAction: Bool
         var showErrorRecoveryAction: Bool
+        var showWithdrawalLocks: Bool
         var errorState: TransactionErrorState
 
         static func == (lhs: EnterAmountPageInteractor.State, rhs: EnterAmountPageInteractor.State) -> Bool {
@@ -512,6 +514,7 @@ extension EnterAmountPageInteractor {
                 && lhs.errorState == rhs.errorState
                 && lhs.showContinueAction == rhs.showContinueAction
                 && lhs.showErrorRecoveryAction == rhs.showErrorRecoveryAction
+                && lhs.showWithdrawalLocks == rhs.showWithdrawalLocks
         }
     }
 
@@ -523,6 +526,7 @@ extension EnterAmountPageInteractor {
             canContinue: false,
             showContinueAction: false,
             showErrorRecoveryAction: false,
+            showWithdrawalLocks: false,
             errorState: .none
         )
     }

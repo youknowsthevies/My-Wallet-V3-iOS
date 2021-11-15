@@ -39,15 +39,17 @@ public enum WithdrawalLocksRoute: NavigationRoute {
 
 public struct WithdrawalLocksEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
-
     let withdrawalLockService: WithdrawalLocksServiceAPI
+    let updateViewAction: ((_ isVisible: Bool) -> Void)?
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
-        withdrawalLockService: WithdrawalLocksServiceAPI = resolve()
+        withdrawalLockService: WithdrawalLocksServiceAPI = resolve(),
+        updateViewAction: ((_ isVisible: Bool) -> Void)?
     ) {
         self.mainQueue = mainQueue
         self.withdrawalLockService = withdrawalLockService
+        self.updateViewAction = updateViewAction
     }
 }
 
@@ -70,7 +72,9 @@ public let withdrawalLocksReducer = Reducer<
         )
     case .present(withdrawalLocks: let withdrawalLocks):
         state.withdrawalLocks = withdrawalLocks
-        return .none
+        return .fireAndForget {
+            environment.updateViewAction?(withdrawalLocks?.items.isEmpty == false)
+        }
     case .route(let routeItent):
         state.route = routeItent
         return .none
@@ -90,31 +94,30 @@ public struct WithdrawalLocksView: View {
     public var body: some View {
         WithViewStore(store) { viewStore in
             VStack(spacing: 0) {
-                Button {
-                    if let withdrawalLocks = viewStore.state.withdrawalLocks {
+                if let withdrawalLocks = viewStore.state.withdrawalLocks, !withdrawalLocks.items.isEmpty {
+                    Button {
                         viewStore.send(.enter(into: .details(withdrawalLocks: withdrawalLocks)))
-                    }
-                } label: {
-                    HStack {
-                        Text(LocalizationIds.onHoldTitle)
-                        Icon.questionCircle
-                            .accentColor(.semantic.muted)
-                            .frame(height: 14)
-                        Spacer()
+                    } label: {
+                        HStack {
+                            Text(LocalizationIds.onHoldTitle)
+                            if viewStore.state.withdrawalLocks?.items.isEmpty == false {
+                                Icon.questionCircle
+                                    .accentColor(.semantic.muted)
+                                    .frame(height: 14)
+                            }
+                            Spacer()
 
-                        let amount = viewStore.withdrawalLocks?.amount
-                        Text(amount ?? " ")
-                            .shimmer(enabled: amount == nil, width: 50)
+                            let amount = viewStore.withdrawalLocks?.amount
+                            Text(amount ?? " ")
+                                .shimmer(enabled: amount == nil, width: 50)
+                        }
+                        .foregroundColor(.semantic.body)
+                        .typography(.paragraph2)
+                        .padding()
                     }
-                    .foregroundColor(.semantic.body)
-                    .typography(.paragraph2)
-                    .padding()
+                    .navigationRoute(in: store)
                 }
-                .navigationRoute(in: store)
-
-                PrimaryDivider()
-            }
-            .onAppear {
+            }.onAppear {
                 viewStore.send(.loadWithdrawalLocks)
             }
         }
@@ -130,7 +133,8 @@ struct WithdrawalLocksView_PreviewProvider: PreviewProvider {
                     initialState: .init(withdrawalLocks: nil),
                     reducer: withdrawalLocksReducer,
                     environment: WithdrawalLocksEnvironment(
-                        withdrawalLockService: NoOpWithdrawalLocksService()
+                        withdrawalLockService: NoOpWithdrawalLocksService(),
+                        updateViewAction: nil
                     )
                 )
             )
