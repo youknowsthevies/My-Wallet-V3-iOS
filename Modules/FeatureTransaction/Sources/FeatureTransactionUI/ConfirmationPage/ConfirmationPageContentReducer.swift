@@ -44,9 +44,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     /// we will have to introspect the `TransactionState` to determine
     /// what buttons to show. This is the only time the `Cancel` button
     /// should be visible.
-    var buttons: [ButtonViewModel] {
-        [continueButtonViewModel]
-    }
+    var buttons: [ButtonViewModel] = []
 
     let termsCheckboxViewModel: CheckboxViewModel = .termsCheckboxViewModel
 
@@ -70,6 +68,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         self.messageRecorder = messageRecorder
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
         continueButtonViewModel = .primary(with: "")
+        buttons.append(continueButtonViewModel)
         memoModel = TextFieldViewModel(
             with: .memo,
             validator: TextValidationFactory.General.alwaysValid,
@@ -90,6 +89,10 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     }
 
     private func createCells(state: TransactionState) -> [DetailsScreen.CellType] {
+        if state.action == .sign {
+            buttons.insert(cancelButtonViewModel, at: 0)
+        }
+
         let amount = state.amount
         let fee = state.pendingTransaction?.feeAmount ?? .zero(currency: amount.currency)
         let value = (try? amount + fee) ?? .zero(currency: amount.currency)
