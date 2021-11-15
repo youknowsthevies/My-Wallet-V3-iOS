@@ -17,21 +17,21 @@ struct WebUpgradeAccountView: View {
 
     private let connectionStatusCallback: (String) -> Void
     private let credentialsCallback: (String) -> Void
-    @Binding private var sendMessage: String
+    @Binding private var currentMessage: String
 
     init(
-        sendMessage: Binding<String>,
+        currentMessage: Binding<String>,
         connectionStatusCallback: @escaping (String) -> Void,
         credentialsCallback: @escaping (String) -> Void
     ) {
-        _sendMessage = sendMessage
+        _currentMessage = currentMessage
         self.connectionStatusCallback = connectionStatusCallback
         self.credentialsCallback = credentialsCallback
     }
 
     var body: some View {
         WebView(
-            sendMessage: $sendMessage,
+            currentMessage: $currentMessage,
             url: URL(string: WebUpgradeAccountView.url)!,
             messageHandlers: [
                 MessageHandlers.connectionStatus: connectionStatusCallback,
@@ -46,7 +46,7 @@ struct WebUpgradeAccountView: View {
 struct WebUpgradeAccountView_Previews: PreviewProvider {
     static var previews: some View {
         WebUpgradeAccountView(
-            sendMessage: .constant("Test Message"),
+            currentMessage: .constant("Test Message"),
             connectionStatusCallback: { print($0) },
             credentialsCallback: { print($0) }
         )

@@ -154,7 +154,7 @@ let verifyDeviceReducer = Reducer.combine(
         VerifyDeviceState,
         VerifyDeviceAction,
         VerifyDeviceEnvironment
-            // swiftlint:disable closure_body_length
+        // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
 
@@ -248,7 +248,10 @@ let verifyDeviceReducer = Reducer.combine(
                         state.route = nil
                         return .none
                     }
-                    state.upgradeAccountState = .init(walletInfo: info)
+                    state.upgradeAccountState = .init(
+                        walletInfo: info,
+                        base64Str: ""
+                    )
                 }
             } else {
                 state.credentialsState = nil
@@ -283,7 +286,8 @@ let verifyDeviceReducer = Reducer.combine(
                 }
 
         case .didExtractWalletInfo(let walletInfo):
-            guard walletInfo.email != nil, walletInfo.emailCode != nil else {
+            guard walletInfo.email != nil, walletInfo.emailCode != nil
+            else {
                 state.credentialsContext = .walletIdentifier(guid: walletInfo.guid)
                 // cancel the polling once wallet info is extracted
                 // it could be from the deeplink or from the polling
@@ -293,21 +297,28 @@ let verifyDeviceReducer = Reducer.combine(
                 )
             }
             state.credentialsContext = .walletInfo(walletInfo)
-            if upgradeAccountIfNeeded(walletInfo),
-               let userType = walletInfo.userType,
-               environment.featureFlags.isEnabled(.unifiedSignIn) {
-                return .merge(
-                    .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),
-                    .navigate(to:
-                        .upgradeAccount(exchangeOnly: userType == "EXCHANGE")
+            return Publishers.Zip(
+                environment.featureFlagsService.isEnabled(.local(.unifiedSignIn)),
+                environment.featureFlagsService.isEnabled(.remote(.unifiedSignIn))
+            )
+            .map { isLocalEnabled, isRemoteEnabled in
+                isLocalEnabled && isRemoteEnabled
+            }
+            .flatMap { featureEnabled -> Effect<VerifyDeviceAction, Never> in
+                guard featureEnabled,
+                      upgradeAccountIfNeeded(walletInfo),
+                      let userType = walletInfo.userType else {
+                    return .merge(
+                        .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),
+                        .navigate(to: .upgradeAccount(exchangeOnly: false))
                     )
-                )
-            } else {
+                }
                 return .merge(
                     .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),
-                    .navigate(to: .credentials)
+                    .navigate(to: .upgradeAccount(exchangeOnly: userType == "EXCHANGE"))
                 )
             }
+            .eraseToEffect()
 
         case .fallbackToWalletIdentifier:
             state.credentialsContext = .walletIdentifier(guid: "")

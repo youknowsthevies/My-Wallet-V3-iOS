@@ -29,12 +29,15 @@ public enum UpgradeAccountRoute: NavigationRoute {
             )
         case .webUpgrade:
             WebUpgradeAccountView(
-                sendMessage: .constant("Test Message"),
-                connectionStatusCallback: { status in
-                    print(status)
+                currentMessage: viewStore.binding(
+                    get: { $0.currentMessage },
+                    send: .noop
+                ),
+                connectionStatusCallback: { _ in
+                    viewStore.send(.setCurrentMessage(viewStore.base64Str))
                 },
                 credentialsCallback: { credentails in
-                    print(credentails)
+                    print("TTT \(credentails)")
                     // dismiss the web upgrade screen when received a callback
                     viewStore.send(.enter(into: nil, context: .fullScreen))
                 }
@@ -199,7 +202,8 @@ struct UpgradeAccountView_Previews: PreviewProvider {
         UpgradeAccountView(
             store: .init(
                 initialState: .init(
-                    walletInfo: .empty
+                    walletInfo: .empty,
+                    base64Str: ""
                 ),
                 reducer: upgradeAccountReducer,
                 environment: UpgradeAccountEnvironment(
