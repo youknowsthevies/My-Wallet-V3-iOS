@@ -104,12 +104,16 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .combineLatest(
                 paymentMethodTypesService.methodTypes,
                 fiatCurrencyService.fiatCurrencyObservable,
-                kycTiersService.tiers.map(\.isTier2Approved).asObservable()
+                kycTiersService.tiers.map(\.isTier2Approved).asObservable(),
+                featureFlagsService
+                    .isEnabled(.remote(.openBanking))
+                    .asObservable()
             )
-            .map { methods, fiatCurrency, isTier2Approved in
+            .map { methods, fiatCurrency, isTier2Approved, isOpenBankingEnabled in
                 methods.filterValidForBuy(
                     currentWalletCurrency: fiatCurrency,
-                    accountForEligibility: isTier2Approved
+                    accountForEligibility: isTier2Approved,
+                    isOpenBankingEnabled: isOpenBankingEnabled
                 )
             }
             .catchErrorJustReturn([])
@@ -133,6 +137,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     private let eligibilityService: EligibilityServiceAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     // MARK: - Accessors
 
@@ -162,7 +167,8 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
         pairsService: SupportedPairsInteractorServiceAPI = resolve(),
         eligibilityService: EligibilityServiceAPI = resolve(),
         orderCreationService: OrderCreationServiceAPI = resolve(),
-        suggestedAmountsService: SuggestedAmountsServiceAPI = resolve()
+        suggestedAmountsService: SuggestedAmountsServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.kycTiersService = kycTiersService
         self.pairsService = pairsService
@@ -170,6 +176,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
         self.eligibilityService = eligibilityService
         self.paymentMethodTypesService = paymentMethodTypesService
         self.orderCreationService = orderCreationService
+        self.featureFlagsService = featureFlagsService
         super.init(
             priceService: priceService,
             fiatCurrencyService: fiatCurrencyService,

@@ -2,6 +2,7 @@
 
 import ComponentLibrary
 import DIKit
+import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization
 import PlatformKit
@@ -296,6 +297,45 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                 transactionModel.process(action: .returnToPreviousStep)
             }
         }
+    }
+
+    func presentOpenBanking(
+        transactionModel: TransactionModel,
+        account: LinkedBankAccount,
+        order: PendingTransaction
+    ) {
+        let presenter = viewController.uiviewController.topMostViewController ?? viewController.uiviewController
+        let viewController = OpenBankingViewController(
+            deposit: order.amount.minorString,
+            product: "SIMPLEBUY",
+            from: .init(account.data),
+            environment: .init(
+                dismiss: { [weak presenter] in
+                    presenter?.dismiss(animated: true)
+                },
+                currency: order.amount.currency.code
+            )
+        )
+        viewController.eventPublisher.sink { [weak presenter] result in
+            switch result {
+            case .success:
+                transactionModel.process(action: .updateTransactionComplete)
+                presenter?.dismiss(animated: true)
+            case .failure:
+                break
+            }
+        }
+        .store(withLifetimeOf: viewController)
+
+        guard let presenter = presenter as? TransactionFlowViewControllable else {
+            fatalError(
+                """
+                Unable to present OpenBanking
+                expected TransactionFlowViewControllable but got \(type(of: presenter))
+                """
+            )
+        }
+        presenter.push(viewController: viewController)
     }
 
     func routeToPriceInput(

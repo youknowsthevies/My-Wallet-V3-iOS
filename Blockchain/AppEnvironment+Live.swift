@@ -36,6 +36,7 @@ extension AppEnvironment {
             sharedContainer: .default,
             analyticsRecorder: resolve(),
             crashlyticsRecorder: resolve(tag: "CrashlyticsRecorder"),
+            openBanking: resolve(),
             coincore: resolve(),
             erc20CryptoAssetService: resolve(),
             walletManager: resolve(),

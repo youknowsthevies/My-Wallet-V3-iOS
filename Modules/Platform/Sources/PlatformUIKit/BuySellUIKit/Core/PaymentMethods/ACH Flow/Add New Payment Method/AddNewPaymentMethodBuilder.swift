@@ -1,11 +1,22 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformKit
 import RIBs
 
 // MARK: - Builder
 
 public protocol AddNewPaymentMethodBuildable {
-    func build(listener: AddNewPaymentMethodListener) -> AddNewPaymentMethodRouting
+    func build(
+        listener: AddNewPaymentMethodListener,
+        filter: @escaping (PaymentMethodType) -> Bool
+    ) -> AddNewPaymentMethodRouting
+}
+
+extension AddNewPaymentMethodBuildable {
+
+    func build(listener: AddNewPaymentMethodListener) -> AddNewPaymentMethodRouting {
+        build(listener: listener, filter: { _ in true })
+    }
 }
 
 public final class AddNewPaymentMethodBuilder: AddNewPaymentMethodBuildable {
@@ -16,12 +27,16 @@ public final class AddNewPaymentMethodBuilder: AddNewPaymentMethodBuildable {
         self.paymentMethodService = paymentMethodService
     }
 
-    public func build(listener: AddNewPaymentMethodListener) -> AddNewPaymentMethodRouting {
+    public func build(
+        listener: AddNewPaymentMethodListener,
+        filter: @escaping (PaymentMethodType) -> Bool
+    ) -> AddNewPaymentMethodRouting {
         let viewController = AddNewPaymentMethodViewController()
         viewController.isModalInPresentation = true
         let interactor = AddNewPaymentMethodInteractor(
             presenter: viewController,
-            paymentMethodService: paymentMethodService
+            paymentMethodService: paymentMethodService,
+            filter: filter
         )
         interactor.listener = listener
         return AddNewPaymentMethodRouter(interactor: interactor, viewController: viewController)

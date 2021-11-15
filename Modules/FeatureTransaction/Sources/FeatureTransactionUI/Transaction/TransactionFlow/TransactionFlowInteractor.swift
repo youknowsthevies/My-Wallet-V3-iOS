@@ -77,6 +77,9 @@ protocol TransactionFlowRouting: Routing {
     /// Present wiring instructions so users can deposit funds into their wallet
     func presentBankWiringInstructions(transactionModel: TransactionModel)
 
+    /// Present open banking authorisation so users can deposit funds into their wallet
+    func presentOpenBanking(transactionModel: TransactionModel, account: LinkedBankAccount, order: PendingTransaction)
+
     /// Route to the in progress screen. This pushes onto the navigation stack.
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
 
@@ -375,6 +378,14 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .initial:
             break
 
+        case .authorizeOpenBanking:
+            guard let bankAccount = previousState?.source as? LinkedBankAccount else { return }
+            guard let order = previousState?.pendingTransaction else { return }
+            router?.presentOpenBanking(
+                transactionModel: transactionModel,
+                account: bankAccount,
+                order: order
+            )
         case .enterAmount:
             router?.routeToPriceInput(
                 source: newState.source!,

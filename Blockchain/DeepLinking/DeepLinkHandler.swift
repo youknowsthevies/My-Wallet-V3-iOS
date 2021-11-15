@@ -91,7 +91,7 @@ final class DeepLinkHandler: DeepLinkHandling {
                 state.set(.consent.token, to: token)
             }
             if let error = params["error"] {
-                state.set(.consent.error, to: error)
+                state.set(.consent.error, to: OpenBanking.Error.code(error))
             }
         }
     }

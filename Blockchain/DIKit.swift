@@ -18,6 +18,7 @@ import FeatureKYCUI
 import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
+import FeatureOpenBankingUI
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
@@ -441,6 +442,7 @@ extension DependencyContainer {
         // MARK: Helpers
 
         factory { UIApplication.shared as ExternalAppOpener }
+        factory { UIApplication.shared as URLOpener }
 
         // MARK: KYC Module
 
@@ -621,5 +623,13 @@ extension DependencyContainer {
             )
             return OpenBanking(banking: client)
         }
+
+        factory { () -> FeatureOpenBankingUI.FiatCurrencyFormatter in
+            FiatCurrencyFormatter()
+        }
+
+        factory { OpenBankingViewController.self as StartOpenBanking.Type }
+
+        factory { AccountLinkingFlowPresenter() as AccountLinkingFlowPresenterAPI }
     }
 }

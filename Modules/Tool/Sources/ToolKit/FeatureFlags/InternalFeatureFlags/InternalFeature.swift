@@ -30,6 +30,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
+    /// OpenBanking
+    case openBanking
+
     /// Enables the new Limits UI in Transaction Flow
     case newTxFlowLimitsUIEnabled
 
@@ -38,6 +41,7 @@ public enum InternalFeature: String, CaseIterable {
         switch self {
         case .newAccountPicker,
              .newOnboardingTour,
+             .openBanking,
              .pollingForEmailLogin:
             return true
         case .disableGUIDLogin,
@@ -76,6 +80,8 @@ extension InternalFeature {
             return "Polling (Email Login)"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
+        case .openBanking:
+            return "Open Banking"
         case .newTxFlowLimitsUIEnabled:
             return "New Limits UI"
         }

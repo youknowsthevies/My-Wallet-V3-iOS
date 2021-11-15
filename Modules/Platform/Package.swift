@@ -75,6 +75,7 @@ let package = Package(
         .package(path: "../RxTool"),
         .package(path: "../WalletPayload"),
         .package(path: "../UIComponents"),
+        .package(path: "../FeatureOpenBanking"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../ComponentLibrary"),
         .package(path: "../FeatureWithdrawalLocks")
@@ -100,6 +101,7 @@ let package = Package(
                 .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions"),
                 .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
                 .product(name: "Algorithms", package: "swift-algorithms")
             ],
             resources: [
@@ -131,6 +133,7 @@ let package = Package(
                 .product(name: "Nuke", package: "Nuke"),
                 .product(name: "PhoneNumberKit", package: "PhoneNumberKit"),
                 .product(name: "Zxcvbn", package: "Zxcvbn"),
+                .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "ComponentLibrary", package: "ComponentLibrary"),
                 .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks")
             ],

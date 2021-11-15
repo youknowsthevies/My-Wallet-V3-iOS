@@ -60,6 +60,9 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable new Sell Transaction flow
     case sellUsingTransactionFlowEnabled
 
+    /// Enable Open Banking
+    case openBanking
+
     // MARK: - Transactions Flow
 
     /// Uses the Transactions Flow implementation of Buy when enabled
@@ -102,6 +105,8 @@ extension AppFeature {
             return "customer_support_chat_ios"
         case .sellUsingTransactionFlowEnabled:
             return "sell_using_transaction_flow_enabled_ios"
+        case .openBanking:
+            return "ios_open_banking"
         case .useTransactionsFlowToBuyCrypto:
             return "ios_use_transaction_flow_buy"
         }
@@ -142,6 +147,8 @@ extension AppFeature {
             return false
         case .sellUsingTransactionFlowEnabled,
              .useTransactionsFlowToBuyCrypto:
+            return true
+        case .openBanking:
             return true
         }
     }

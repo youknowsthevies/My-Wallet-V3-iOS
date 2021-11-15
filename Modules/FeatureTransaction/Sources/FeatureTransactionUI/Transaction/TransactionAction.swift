@@ -320,7 +320,11 @@ extension TransactionAction {
         case .executeTransaction:
             var newState = oldState
             newState.nextEnabled = false
-            newState.step = .inProgress
+            if (oldState.source as? LinkedBankAccount)?.partner == .yapily {
+                newState.step = .authorizeOpenBanking
+            } else {
+                newState.step = .inProgress
+            }
             newState.executionStatus = .inProgress
             return newState.withUpdatedBackstack(oldState: oldState)
 

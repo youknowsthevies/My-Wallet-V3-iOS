@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureOpenBankingDomain
+
 public struct LinkedBankResponse: Decodable {
     enum AccountType: String, Decodable {
         case savings = "SAVINGS"
@@ -15,11 +17,13 @@ public struct LinkedBankResponse: Decodable {
     let accountName: String?
     let accountNumber: String?
     let routingNumber: String?
+    let agentRef: String?
     let isBankAccount: Bool
     let isBankTransferAccount: Bool
     let state: State
     let attributes: Attributes?
     let error: Error?
+    let errorCode: String?
 
     enum CodingKeys: CodingKey {
         case id
@@ -36,6 +40,7 @@ public struct LinkedBankResponse: Decodable {
         case accountName
         case accountNumber
         case routingNumber
+        case agentRef
     }
 
     public init(from decoder: Decoder) throws {
@@ -51,22 +56,24 @@ public struct LinkedBankResponse: Decodable {
         isBankAccount = (try container.decodeIfPresent(Bool.self, forKey: .isBankAccount) ?? false)
         isBankTransferAccount = (try container.decodeIfPresent(Bool.self, forKey: .isBankTransferAccount) ?? false)
         name = try (container.decodeIfPresent(String.self, forKey: .name) ?? "")
-        attributes = try? container.decodeIfPresent(Attributes.self, forKey: .attributes)
-        error = try container.decodeIfPresent(Error.self, forKey: .error)
+        attributes = try container.decodeIfPresent(Attributes.self, forKey: .attributes)
+        error = try? container.decodeIfPresent(Error.self, forKey: .error) ?? .unknown
+        errorCode = try container.decodeIfPresent(String.self, forKey: .error)
         let accountType = try container.decodeIfPresent(AccountType.self, forKey: .bankAccountType)
         bankAccountType = accountType ?? .none
         accountName = try container.decodeIfPresent(String.self, forKey: .accountName)
         accountNumber = try container.decodeIfPresent(String.self, forKey: .accountNumber)
         routingNumber = try container.decodeIfPresent(String.self, forKey: .routingNumber)
+        agentRef = try container.decodeIfPresent(String.self, forKey: .agentRef)
     }
 }
 
 extension LinkedBankResponse {
     struct Attributes: Decodable {
         let entity: String
-        let media: [Media]
-        let status: String
-        let authorisationUrl: URL
+        let media: [Media]?
+        let status: String?
+        let authorisationUrl: URL?
 
         struct Media: Decodable {
             let source: String
@@ -97,9 +104,11 @@ enum BankLinkagePartner: String, Decodable {
 
 struct CreateBankLinkageResponse: Decodable {
     struct LinkBankAttrsResponse: Decodable {
+        let entity: String
         let token: String?
         let fastlinkUrl: String?
         let fastlinkParams: FastlinkParameters?
+        let institutions: [OpenBanking.Institution]?
     }
 
     let id: String

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RIBs
@@ -39,9 +40,18 @@ public protocol LinkBankFlowStarter: AnyObject {
     func startFlow() -> Observable<LinkBankFlowEffect>
 }
 
+public protocol StartOpenBanking {
+
+    static func link(
+        account data: BankLinkageData,
+        currency: FiatCurrency,
+        listener: LinkBankListener
+    ) -> UIViewController
+}
+
 protocol LinkBankFlowRootInteractable: Interactable,
     LinkBankSplashScreenListener,
-    YodleeScreenListener,
+    LinkBankListener,
     LinkBankFailureScreenListener
 {
     var linkBankFlowEffect: Observable<LinkBankFlowEffect> { get }
@@ -63,6 +73,7 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     private let splashScreenBuilder: LinkBankSplashScreenBuildable
     private let yodleeScreenBuilder: YodleeScreenBuildable
     private let failureScreenBuilder: LinkBankFailureScreenBuildable
+    private let startOpenBanking: StartOpenBanking.Type
 
     private var navigationController: UINavigationController?
 
@@ -71,12 +82,14 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         splashScreenBuilder: LinkBankSplashScreenBuildable,
         yodleeScreenBuilder: YodleeScreenBuildable,
-        failureScreenBuilder: LinkBankFailureScreenBuildable
+        failureScreenBuilder: LinkBankFailureScreenBuildable,
+        startOpenBanking: StartOpenBanking.Type = resolve()
     ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.splashScreenBuilder = splashScreenBuilder
         self.yodleeScreenBuilder = yodleeScreenBuilder
         self.failureScreenBuilder = failureScreenBuilder
+        self.startOpenBanking = startOpenBanking
         super.init(interactor: interactor)
         interactor.router = self
     }
@@ -87,13 +100,27 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
             detachCurrentChild() // in case of a failure we need to detatch the current child
             let router = splashScreenBuilder.build(withListener: interactor, data: data)
             attachChild(router)
-            let navigationController = UINavigationController(rootViewController: router.viewControllable.uiviewController)
+            let navigationController = UINavigationController(
+                rootViewController: router.viewControllable.uiviewController
+            )
             presentingController?.present(navigationController, animated: true, completion: nil)
             self.navigationController = navigationController
         case .yodlee(let data):
             let router = yodleeScreenBuilder.build(withListener: interactor, data: data)
             attachChild(router)
             navigationController?.pushViewController(router.viewControllable.uiviewController, animated: true)
+        case .yapily(let data):
+            detachCurrentChild()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
+                presentingController?.present(
+                    startOpenBanking.link(
+                        account: data,
+                        currency: data.currency,
+                        listener: interactor
+                    ),
+                    animated: true
+                )
+            }
         case .failure:
             let router = failureScreenBuilder.build(withListener: interactor)
             attachChild(router)
