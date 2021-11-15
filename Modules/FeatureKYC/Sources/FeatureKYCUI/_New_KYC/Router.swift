@@ -158,6 +158,9 @@ public class Router: Routing {
             legacyRouter.kycFinished
                 .map { _ in FlowResult.completed }
         )
+        // Taking one as Single ensures the Publisher completes. This fixes a bug where receiveValue on sink was called multiple times.
+        .take(1)
+        .asSingle()
         .asPublisher()
         .replaceError(with: FlowResult.abandoned) // should not fail, but just in case
         .eraseToAnyPublisher()

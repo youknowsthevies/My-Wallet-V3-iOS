@@ -184,10 +184,6 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
         unimplemented()
     }
 
-    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
-        unimplemented()
-    }
-
     func dismissAddNewBankAccount() {
         router?.dismissWireInstructionFlow()
     }
