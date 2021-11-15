@@ -6,12 +6,15 @@ protocol BuyButtonViewRenderer {
 }
 
 extension SegmentedTabViewController: BuyButtonViewRenderer {
+    private static let tagIdForBuyButton: Int = "\(BuyButtonView.self)".hash
+
     func render(buyButton: BuyButtonView, isVisible: Bool) {
         isVisible ? display(buyButton: buyButton) : remove(buyButton: UIHostingController(rootView: buyButton).view)
     }
 
     private func display(buyButton: BuyButtonView) {
         let wrappedView: UIView = UIHostingController(rootView: buyButton).view
+        wrappedView.tag = SegmentedTabViewController.tagIdForBuyButton
         wrappedView.backgroundColor = .clear
         remove(buyButton: wrappedView)
 
@@ -24,8 +27,6 @@ extension SegmentedTabViewController: BuyButtonViewRenderer {
 
     private func remove(buyButton: UIView) {
         segmentedViewControllers.forEach { $0.adjustInsetForBottomButton(withHeight: 0.0) }
-        view.subviews
-            .filter { $0 == buyButton }
-            .forEach { $0.removeFromSuperview() }
+        view.viewWithTag(SegmentedTabViewController.tagIdForBuyButton)?.removeFromSuperview()
     }
 }
