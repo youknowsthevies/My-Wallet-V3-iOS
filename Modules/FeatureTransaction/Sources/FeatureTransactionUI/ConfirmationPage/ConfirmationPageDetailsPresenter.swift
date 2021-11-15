@@ -40,10 +40,7 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
     // MARK: - Screen Properties
 
     var buttons: [ButtonViewModel] {
-        [
-            contentReducer.cancelButtonViewModel,
-            contentReducer.continueButtonViewModel
-        ]
+        contentReducer.buttons
     }
 
     var cells: [DetailsScreen.CellType] {

@@ -15,6 +15,7 @@ protocol ConfirmationPageContentReducing {
     var title: String { get }
     /// The `Cells` on the `ConfirmationPage`
     var cells: [DetailsScreen.CellType] { get }
+    var buttons: [ButtonViewModel] { get }
     var continueButtonViewModel: ButtonViewModel { get }
     var cancelButtonViewModel: ButtonViewModel { get }
 }
@@ -37,6 +38,15 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
+
+    /// Buttons that should be displayed on the confirmation screen.
+    /// Wallet connect transactions will require a `Cancel` button so
+    /// we will have to introspect the `TransactionState` to determine
+    /// what buttons to show. This is the only time the `Cancel` button
+    /// should be visible.
+    var buttons: [ButtonViewModel] {
+        [continueButtonViewModel]
+    }
 
     let termsCheckboxViewModel: CheckboxViewModel = .termsCheckboxViewModel
 
