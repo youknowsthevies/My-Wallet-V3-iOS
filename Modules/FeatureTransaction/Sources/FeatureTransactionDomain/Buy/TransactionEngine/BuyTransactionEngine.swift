@@ -104,19 +104,53 @@ final class BuyTransactionEngine: TransactionEngine {
     }
 
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        var transaction = pendingTransaction
-        do {
-            if try transaction.amount > transaction.maxSpendable {
-                transaction.validationState = .overMaximumLimit
-            } else if try transaction.amount < transaction.minimumLimit ?? .zero(currency: sourceAccount.currencyType) {
-                transaction.validationState = .belowMinimumLimit
-            } else {
-                transaction.validationState = .canExecute
+        assertInputsValid()
+        let sourceCurrency = sourceAccount.currencyType
+        let amountCurrency = pendingTransaction.amount.currencyType
+        let conversionRates = walletCurrencyService
+            .fiatCurrencyPublisher
+            .flatMap { [conversionService] walletCurrency in
+                conversionService.conversionRate(
+                    from: amountCurrency,
+                    to: walletCurrency.currencyType
+                )
             }
-            return .just(transaction)
-        } catch {
-            return .error(error)
-        }
+            .zip(
+                conversionService.conversionRate(from: sourceCurrency, to: amountCurrency)
+            )
+        return conversionRates
+            .asSingle()
+            .map { [sourceAccount, transactionTarget] toWalletRate, toAmountRate -> PendingTransaction in
+                var transaction = pendingTransaction
+                let paymentMethodAccount = sourceAccount as! PaymentMethodAccount
+                let paymentMethodMaxLimit = paymentMethodAccount.paymentMethod.max.moneyValue
+                let convertetSourceMaxLimit = paymentMethodMaxLimit.convert(using: toAmountRate)
+                let limits: TransactionLimits = transaction.limits.value ?? .zero(for: amountCurrency)
+                if try transaction.amount < limits.minimum {
+                    transaction.validationState = .belowMinimumLimit(limits.minimum)
+                } else if try transaction.amount > convertetSourceMaxLimit, try transaction.amount <= limits.maximum {
+                    transaction.validationState = .overMaximumSourceLimit(
+                        paymentMethodMaxLimit,
+                        sourceAccount!.label,
+                        pendingTransaction.amount
+                    )
+                } else if try transaction.amount > limits.maximum {
+                    transaction.validationState = .overMaximumPersonalLimit(
+                        limits.effectiveLimit,
+                        limits.maximum.convert(using: toWalletRate),
+                        limits.suggestedUpgrade
+                    )
+                } else if try transaction.amount > transaction.available {
+                    transaction.validationState = .insufficientFunds(
+                        transaction.available,
+                        sourceCurrency,
+                        transactionTarget!.currencyType
+                    )
+                } else {
+                    transaction.validationState = .canExecute
+                }
+                return transaction
+            }
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -297,10 +331,7 @@ extension BuyTransactionEngine {
                 feeForFullAvailable: zeroFee,
                 feeSelection: .empty(asset: amount.currencyType),
                 selectedFiatCurrency: sourceAccount.fiatCurrency,
-                minimumLimit: limits.minimum,
-                maximumLimit: try MoneyValue.min(sourceBalance, limits.maximum),
-                maximumDailyLimit: limits.maximumDaily,
-                maximumAnnualLimit: limits.maximumAnnual
+                limits: limits
             )
         }
         .asSingle()

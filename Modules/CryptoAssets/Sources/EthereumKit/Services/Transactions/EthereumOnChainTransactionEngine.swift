@@ -48,7 +48,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         case is CryptoAccount:
             return (transactionTarget as! CryptoAccount).receiveAddress
         default:
-            fatalError("Impossible State for Ethereum On Chain Engine: transactionTarget is \(type(of: transactionTarget))")
+            fatalError(
+                "Impossible State for Ethereum On Chain Engine: transactionTarget is \(type(of: transactionTarget))"
+            )
         }
     }
 
@@ -117,7 +119,10 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.askForRefreshConfirmation = askForRefreshConfirmation
     }
 
-    func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    func restart(
+        transactionTarget: TransactionTarget,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
         defaultRestart(
             transactionTarget: transactionTarget,
             pendingTransaction: pendingTransaction
@@ -131,7 +136,11 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 makeFeeSelectionOption(pendingTransaction: pendingTransaction)
             )
             .map { fiatAmountAndFees, feeSelectionOption ->
-                (amountInFiat: MoneyValue, feesInFiat: MoneyValue, feeSelectionOption: TransactionConfirmation.Model.FeeSelection) in
+                (
+                    amountInFiat: MoneyValue,
+                    feesInFiat: MoneyValue,
+                    feeSelectionOption: TransactionConfirmation.Model.FeeSelection
+                ) in
                 let (amountInFiat, feesInFiat) = fiatAmountAndFees
                 return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
             }
@@ -179,7 +188,10 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         }
     }
 
-    func doOptionUpdateRequest(pendingTransaction: PendingTransaction, newConfirmation: TransactionConfirmation) -> Single<PendingTransaction> {
+    func doOptionUpdateRequest(
+        pendingTransaction: PendingTransaction,
+        newConfirmation: TransactionConfirmation
+    ) -> Single<PendingTransaction> {
         switch newConfirmation {
         case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
             return updateFeeSelection(
@@ -199,7 +211,12 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         sourceAccount.actionableBalance
             .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
                 self.validateAmounts(pendingTransaction: pendingTransaction)
-                    .andThen(self.validateSufficientFunds(pendingTransaction: pendingTransaction, actionableBalance: actionableBalance))
+                    .andThen(
+                        self.validateSufficientFunds(
+                            pendingTransaction: pendingTransaction,
+                            actionableBalance: actionableBalance
+                        )
+                    )
                     .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
             }
     }
@@ -208,7 +225,12 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         sourceAccount.actionableBalance
             .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
                 self.validateAmounts(pendingTransaction: pendingTransaction)
-                    .andThen(self.validateSufficientFunds(pendingTransaction: pendingTransaction, actionableBalance: actionableBalance))
+                    .andThen(
+                        self.validateSufficientFunds(
+                            pendingTransaction: pendingTransaction,
+                            actionableBalance: actionableBalance
+                        )
+                    )
                     .andThen(self.validateNoPendingTransaction())
                     .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
             }
@@ -246,8 +268,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         unimplemented()
     }
+}
 
-    // MARK: - Private Functions
+extension EthereumOnChainTransactionEngine {
 
     private func validateNoPendingTransaction() -> Completable {
         transactionsService
@@ -268,17 +291,28 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         }
     }
 
-    private func validateSufficientFunds(pendingTransaction: PendingTransaction, actionableBalance: MoneyValue) -> Completable {
+    private func validateSufficientFunds(
+        pendingTransaction: PendingTransaction,
+        actionableBalance: MoneyValue
+    ) -> Completable {
         absoluteFee(with: pendingTransaction.feeLevel)
-            .map { fee -> Void in
+            .map { [sourceAccount, transactionTarget] fee -> Void in
                 if try (try fee.moneyValue + pendingTransaction.amount) > actionableBalance {
-                    throw TransactionValidationFailure(state: .insufficientFunds)
+                    throw TransactionValidationFailure(
+                        state: .insufficientFunds(
+                            pendingTransaction.available,
+                            sourceAccount!.currencyType,
+                            transactionTarget!.currencyType
+                        )
+                    )
                 }
             }
             .asCompletable()
     }
 
-    private func makeFeeSelectionOption(pendingTransaction: PendingTransaction) -> Single<TransactionConfirmation.Model.FeeSelection> {
+    private func makeFeeSelectionOption(
+        pendingTransaction: PendingTransaction
+    ) -> Single<TransactionConfirmation.Model.FeeSelection> {
         Single
             .just(pendingTransaction)
             .map(weak: self) { (self, pendingTransaction) -> FeeState in
@@ -319,7 +353,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
+    private func fiatAmountAndFees(
+        from pendingTransaction: PendingTransaction
+    ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
             .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .coin(.ethereum))),

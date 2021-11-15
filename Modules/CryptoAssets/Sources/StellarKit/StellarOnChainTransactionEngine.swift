@@ -85,8 +85,18 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
         precondition(sourceCryptoCurrency == .coin(.stellar))
     }
 
-    func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        Single.zip(defaultRestart(transactionTarget: transactionTarget, pendingTransaction: pendingTransaction), isMemoRequired)
+    func restart(
+        transactionTarget: TransactionTarget,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
+        Single
+            .zip(
+                defaultRestart(
+                    transactionTarget: transactionTarget,
+                    pendingTransaction: pendingTransaction
+                ),
+                isMemoRequired
+            )
             .map { [receiveAddress] pendingTransaction, isMemoRequired -> PendingTransaction in
                 guard let stellarReceive = receiveAddress as? StellarReceiveAddress else {
                     return pendingTransaction
@@ -186,7 +196,10 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    func doOptionUpdateRequest(pendingTransaction: PendingTransaction, newConfirmation: TransactionConfirmation) -> Single<PendingTransaction> {
+    func doOptionUpdateRequest(
+        pendingTransaction: PendingTransaction,
+        newConfirmation: TransactionConfirmation
+    ) -> Single<PendingTransaction> {
         defaultDoOptionUpdateRequest(pendingTransaction: pendingTransaction, newConfirmation: newConfirmation)
             .map { pendingTransaction -> PendingTransaction in
                 var pendingTransaction = pendingTransaction
@@ -224,8 +237,9 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                 TransactionResult.hashed(txHash: result.transactionHash, amount: pendingTransaction.amount)
             }
     }
+}
 
-    // MARK: - Private methods
+extension StellarOnChainTransactionEngine {
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
@@ -237,9 +251,15 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
         Single.zip(sourceAccount.actionableBalance, absoluteFee)
-            .map { balance, fee -> Void in
+            .map { [sourceAccount, transactionTarget] balance, fee -> Void in
                 if try (try fee.moneyValue + pendingTransaction.amount) > balance {
-                    throw TransactionValidationFailure(state: .insufficientFunds)
+                    throw TransactionValidationFailure(
+                        state: .insufficientFunds(
+                            balance,
+                            sourceAccount!.currencyType,
+                            transactionTarget!.currencyType
+                        )
+                    )
                 }
             }
             .asCompletable()
@@ -356,12 +376,18 @@ extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
             switch error {
             case SendFailureReason.unknown:
                 throw TransactionValidationFailure(state: .unknownError)
-            case SendFailureReason.belowMinimumSend:
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
-            case SendFailureReason.belowMinimumSendNewAccount:
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
-            case SendFailureReason.insufficientFunds:
-                throw TransactionValidationFailure(state: .insufficientFunds)
+            case SendFailureReason.belowMinimumSend(let minimum):
+                throw TransactionValidationFailure(state: .belowMinimumLimit(minimum))
+            case SendFailureReason.belowMinimumSendNewAccount(let minimum):
+                throw TransactionValidationFailure(state: .belowMinimumLimit(minimum))
+            case SendFailureReason.insufficientFunds(let balance):
+                throw TransactionValidationFailure(
+                    state: .insufficientFunds(
+                        balance,
+                        balance.currencyType,
+                        balance.currencyType
+                    )
+                )
             case SendFailureReason.badDestinationAccountID:
                 throw TransactionValidationFailure(state: .invalidAddress)
             default:

@@ -85,16 +85,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         featureFlagService.isEnabled(.local(.newTxFlowLimitsUIEnabled))
             .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
                 guard newLimitsEnabled else {
-                    let infinity = MoneyValue(amount: BigInt(Int.max), currency: limitsCurrency.currencyType)
-                    return .just(
-                        TransactionLimits(
-                            minimum: infinity,
-                            maximum: infinity,
-                            maximumDaily: infinity,
-                            maximumAnnual: infinity,
-                            suggestedUpgrade: nil
-                        )
-                    )
+                    return .just(.infinity(for: limitsCurrency.currencyType))
                 }
                 return self.fetchCrossBorderLimits(
                     source: source,
@@ -138,6 +129,11 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
                         source: source,
                         destination: destination,
                         limitsCurrency: walletCurrency
+                    )
+                    .convertAmounts(
+                        from: walletCurrency.currencyType,
+                        to: source.currency,
+                        using: self.conversionService
                     )
                 return Publishers.Zip(convertedTradeLimits, convertedCrossBorderLimits)
                     .map { $0.merge(with: $1) }
@@ -234,6 +230,25 @@ extension TransactionLimitsService {
     }
 }
 
+extension Publisher where Output == CrossBorderLimits, Failure == TransactionLimitsServiceError {
+
+    func convertAmounts(
+        from fromCurrency: CurrencyType,
+        to toCurrency: CurrencyType,
+        using conversionService: CurrencyConversionServiceAPI
+    ) -> AnyPublisher<CrossBorderLimits, TransactionLimitsServiceError> {
+        zip(
+            conversionService
+                .conversionRate(from: fromCurrency, to: toCurrency)
+                .mapError(TransactionLimitsServiceError.other)
+        )
+        .map { originalLimits, conversionRate in
+            originalLimits.convert(using: conversionRate)
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
 extension Publisher where Output == TransactionLimits, Failure == TransactionLimitsServiceError {
 
     func convertAmounts(
@@ -241,20 +256,13 @@ extension Publisher where Output == TransactionLimits, Failure == TransactionLim
         to toCurrency: CurrencyType,
         using conversionService: CurrencyConversionServiceAPI
     ) -> TransactionLimitsServicePublisher {
-        flatMap { originalLimits -> TransactionLimitsServicePublisher in
+        zip(
             conversionService
                 .conversionRate(from: fromCurrency, to: toCurrency)
-                .map { conversionRate in
-                    TransactionLimits(
-                        minimum: originalLimits.minimum.convert(using: conversionRate),
-                        maximum: originalLimits.maximum.convert(using: conversionRate),
-                        maximumDaily: originalLimits.maximumDaily.convert(using: conversionRate),
-                        maximumAnnual: originalLimits.maximumAnnual.convert(using: conversionRate),
-                        suggestedUpgrade: originalLimits.suggestedUpgrade
-                    )
-                }
                 .mapError(TransactionLimitsServiceError.other)
-                .eraseToAnyPublisher()
+        )
+        .map { originalLimits, exchangeRate -> TransactionLimits in
+            originalLimits.convert(using: exchangeRate)
         }
         .eraseToAnyPublisher()
     }
@@ -268,6 +276,7 @@ extension TransactionLimits {
             maximum: tradeLimits.maxPossibleOrder,
             maximumDaily: tradeLimits.daily?.limit ?? tradeLimits.maxPossibleOrder,
             maximumAnnual: tradeLimits.annual?.limit ?? tradeLimits.maxPossibleOrder,
+            effectiveLimit: .init(timeframe: .single, value: tradeLimits.maxPossibleOrder),
             suggestedUpgrade: nil
         )
     }
@@ -278,6 +287,7 @@ extension TransactionLimits {
             maximum: paymentMethod.max.moneyValue,
             maximumDaily: paymentMethod.maxDaily.moneyValue,
             maximumAnnual: paymentMethod.maxAnnual.moneyValue,
+            effectiveLimit: .init(timeframe: .single, value: paymentMethod.max.moneyValue),
             suggestedUpgrade: nil
         )
     }
@@ -289,6 +299,7 @@ extension TransactionLimits {
             maximum: crossBorderLimits.currentLimits?.available ?? infinity,
             maximumDaily: crossBorderLimits.currentLimits?.daily?.limit ?? infinity,
             maximumAnnual: crossBorderLimits.currentLimits?.yearly?.limit ?? infinity,
+            effectiveLimit: .init(crossBorderLimits: crossBorderLimits, maxLimitFallbak: infinity),
             suggestedUpgrade: crossBorderLimits.suggestedUpgrade
         )
     }
@@ -296,15 +307,32 @@ extension TransactionLimits {
     func merge(with crossBorderLimits: CrossBorderLimits) -> TransactionLimits {
         let infinity = MoneyValue(amount: BigInt(Int.max), currency: crossBorderLimits.currency)
         let maxCrossBorderCurrentLimit = crossBorderLimits.currentLimits?.available ?? infinity
-        let maxCrossBorderDailyLimit = crossBorderLimits.currentLimits?.daily?.limit ?? infinity
-        let maxCrossBorderAnnualLimit = crossBorderLimits.currentLimits?.yearly?.limit ?? infinity
-        let maxCombinedLimit = try? MoneyValue.min(maximum, maxCrossBorderCurrentLimit)
+        let maxCombinedLimit = (try? MoneyValue.min(maximum, maxCrossBorderCurrentLimit)) ?? maximum
+        let maxCrossBorderDailyLimit = crossBorderLimits.currentLimits?.daily?.limit ?? maxCombinedLimit
+        let maxCrossBorderAnnualLimit = crossBorderLimits.currentLimits?.yearly?.limit ?? maxCombinedLimit
         return TransactionLimits(
             minimum: minimum,
-            maximum: maxCombinedLimit ?? maximum,
+            maximum: maxCombinedLimit,
             maximumDaily: maxCrossBorderDailyLimit,
             maximumAnnual: maxCrossBorderAnnualLimit,
+            effectiveLimit: .init(crossBorderLimits: crossBorderLimits, maxLimitFallbak: maxCombinedLimit),
             suggestedUpgrade: crossBorderLimits.suggestedUpgrade
+        )
+    }
+}
+
+extension EffectiveLimit {
+
+    init(crossBorderLimits: CrossBorderLimits, maxLimitFallbak: MoneyValue) {
+        let periodicLimits: [(limit: PeriodicLimit?, timeFrame: EffectiveLimit.TimeFrame)] = [
+            (crossBorderLimits.currentLimits?.daily, .daily),
+            (crossBorderLimits.currentLimits?.monthly, .monthly),
+            (crossBorderLimits.currentLimits?.yearly, .yearly)
+        ]
+        let effectiveLimit = periodicLimits.first(where: { $0.limit?.effective == true })
+        self.init(
+            timeframe: effectiveLimit?.timeFrame ?? .single,
+            value: effectiveLimit?.limit?.limit ?? maxLimitFallbak
         )
     }
 }

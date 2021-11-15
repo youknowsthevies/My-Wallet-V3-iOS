@@ -7,9 +7,10 @@ import ToolKit
 
 final class OnChainSwapTransactionEngine: SwapTransactionEngine {
 
+    let walletCurrencyService: FiatCurrencyServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
+
     let receiveAddressFactory: ExternalAssetAddressServiceAPI
-    let fiatCurrencyService: FiatCurrencyServiceAPI
-    let kycTiersService: KYCTiersServiceAPI
     let onChainEngine: OnChainTransactionEngine
     let orderCreationRepository: OrderCreationRepositoryAPI
     var orderDirection: OrderDirection {
@@ -18,7 +19,6 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
 
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderUpdateRepository: OrderUpdateRepositoryAPI
-    let priceService: PriceServiceAPI
     let quotesEngine: SwapQuotesEngine
     let requireSecondPassword: Bool
     let transactionLimitsService: TransactionLimitsServiceAPI
@@ -34,9 +34,8 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         orderUpdateRepository: OrderUpdateRepositoryAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
@@ -45,9 +44,8 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         self.orderCreationRepository = orderCreationRepository
         self.orderUpdateRepository = orderUpdateRepository
         self.transactionLimitsService = transactionLimitsService
-        self.fiatCurrencyService = fiatCurrencyService
-        self.kycTiersService = kycTiersService
-        self.priceService = priceService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
         self.onChainEngine = onChainEngine
         self.receiveAddressFactory = receiveAddressFactory
     }
@@ -113,7 +111,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                 self.startOnChainEngine(pricedQuote: pricedQuote)
                     .andThen(
                         Single.zip(
-                            self.fiatCurrencyService.fiatCurrency,
+                            self.walletCurrencyService.fiatCurrency,
                             self.onChainEngine.initializeTransaction()
                         )
                     )

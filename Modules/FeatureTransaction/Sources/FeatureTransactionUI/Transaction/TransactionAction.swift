@@ -482,16 +482,29 @@ extension TransactionValidationState {
 
     var mapToTransactionErrorState: TransactionErrorState {
         switch self {
+        case .uninitialized, .canExecute:
+            return .none
+        case .unknownError:
+            return .unknownError
+        case .nabuError(let error):
+            return .nabuError(error)
+        case .insufficientFunds(let balance, let sourceCurrency, let targetCurrency):
+            return .insufficientFunds(balance, sourceCurrency, targetCurrency)
+        case .belowMinimumLimit(let minimumLimit):
+            return .belowMinimumLimit(minimumLimit)
+        case .overMaximumSourceLimit(let maxLimit, let label, let desiredAmount):
+            return .overMaximumSourceLimit(maxLimit, label, desiredAmount)
+        case .overMaximumPersonalLimit(let effectiveLimit, let available, let suggestedUpgrade):
+            return .overMaximumPersonalLimit(effectiveLimit, available, suggestedUpgrade)
+
+        // MARK: Unchecked
+
+        case .overMaximumLimit:
+            return .overMaximumLimit
         case .addressIsContract:
             return .addressIsContract
-        case .belowMinimumLimit:
-            return .belowMinimumLimit
-        case .canExecute:
-            return .none
         case .insufficientFundsForFees:
             return .insufficientFundsForFees
-        case .insufficientFunds:
-            return .insufficientFunds
         case .insufficientGas:
             return .insufficientGas
         case .invalidAddress:
@@ -502,22 +515,10 @@ extension TransactionValidationState {
             return .unknownError
         case .optionInvalid:
             return .optionInvalid
-        case .overMaximumLimit:
-            return .overMaximumLimit
         case .transactionInFlight:
             return .transactionInFlight
-        case .uninitialized:
-            return .none
-        case .unknownError:
-            return .unknownError
-        case .overGoldTierLimit:
-            return .overGoldTierLimit
-        case .overSilverTierLimit:
-            return .overSilverTierLimit
         case .pendingOrdersLimitReached:
             return .pendingOrdersLimitReached
-        case .nabuError(let error):
-            return .nabuError(error)
         case .noSourcesAvailable:
             return .unknownError
         }

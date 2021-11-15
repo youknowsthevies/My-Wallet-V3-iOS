@@ -117,7 +117,10 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         self.askForRefreshConfirmation = askForRefreshConfirmation
     }
 
-    func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    func restart(
+        transactionTarget: TransactionTarget,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
         defaultRestart(
             transactionTarget: transactionTarget,
             pendingTransaction: pendingTransaction
@@ -131,7 +134,11 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 makeFeeSelectionOption(pendingTransaction: pendingTransaction)
             )
             .map { fiatAmountAndFees, feeSelectionOption ->
-                (amountInFiat: MoneyValue, feesInFiat: MoneyValue, feeSelectionOption: TransactionConfirmation.Model.FeeSelection) in
+                (
+                    amountInFiat: MoneyValue,
+                    feesInFiat: MoneyValue,
+                    feeSelectionOption: TransactionConfirmation.Model.FeeSelection
+                ) in
                 let (amountInFiat, feesInFiat) = fiatAmountAndFees
                 return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
             }
@@ -179,7 +186,10 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         }
     }
 
-    func doOptionUpdateRequest(pendingTransaction: PendingTransaction, newConfirmation: TransactionConfirmation) -> Single<PendingTransaction> {
+    func doOptionUpdateRequest(
+        pendingTransaction: PendingTransaction,
+        newConfirmation: TransactionConfirmation
+    ) -> Single<PendingTransaction> {
         switch newConfirmation {
         case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
             return updateFeeSelection(
@@ -233,8 +243,9 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 .hashed(txHash: transactionHash, amount: pendingTransaction.amount)
             }
     }
+}
 
-    // MARK: - Private Functions
+extension ERC20OnChainTransactionEngine {
 
     private func validateNoPendingTransaction() -> Completable {
         transactionsService
@@ -261,9 +272,15 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         }
         return sourceAccount
             .actionableBalance
-            .map { actionableBalance -> Void in
+            .map { [sourceAccount, transactionTarget] actionableBalance -> Void in
                 guard try pendingTransaction.amount <= actionableBalance else {
-                    throw TransactionValidationFailure(state: .insufficientFunds)
+                    throw TransactionValidationFailure(
+                        state: .insufficientFunds(
+                            actionableBalance,
+                            sourceAccount!.currencyType,
+                            transactionTarget!.currencyType
+                        )
+                    )
                 }
             }
             .asCompletable()
@@ -283,7 +300,9 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .asCompletable()
     }
 
-    private func makeFeeSelectionOption(pendingTransaction: PendingTransaction) -> Single<TransactionConfirmation.Model.FeeSelection> {
+    private func makeFeeSelectionOption(
+        pendingTransaction: PendingTransaction
+    ) -> Single<TransactionConfirmation.Model.FeeSelection> {
         Single
             .just(pendingTransaction)
             .map(weak: self) { (self, pendingTransaction) -> FeeState in
@@ -298,7 +317,9 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
+    private func fiatAmountAndFees(
+        from pendingTransaction: PendingTransaction
+    ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
             ethereumExchangeRatePair,

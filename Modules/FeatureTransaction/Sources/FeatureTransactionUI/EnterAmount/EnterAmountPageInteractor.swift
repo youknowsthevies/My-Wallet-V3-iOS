@@ -578,16 +578,9 @@ extension TransactionErrorState {
                 message: LocalizedString.Confirmation.Error.insufficientGas
             )
 
-        case .overSilverTierLimit:
-            return .warning(
-                message: LocalizedString.Swap.KYC.overSilverLimitWarning,
-                action: { [weak listener] in
-                    listener?.continueToKYCTiersScreen()
-                }
-            )
-
-        case .overGoldTierLimit,
-             .overMaximumLimit,
+        case .overMaximumLimit,
+             .overMaximumSourceLimit,
+             .overMaximumPersonalLimit,
              .insufficientFundsForFees,
              .insufficientFunds:
             let result = convertToInputCurrency(max, exchangeRate: exchangeRate, input: activeInput)

@@ -40,7 +40,11 @@ protocol TransactionFlowRouting: Routing {
     func showFailure(error: Error)
 
     /// Presents a modal with information  about the transaction error state and, if needed, a call to action for the user to resolve that error state.
-    func showErrorRecoverySuggestion(errorState: TransactionErrorState, transactionModel: TransactionModel)
+    func showErrorRecoverySuggestion(
+        action: AssetAction,
+        errorState: TransactionErrorState,
+        transactionModel: TransactionModel
+    )
 
     /// Show the `source` selection screen. This replaces the root.
     func routeToSourceAccountPicker(
@@ -508,6 +512,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
         case .errorRecoveryInfo:
             router?.showErrorRecoverySuggestion(
+                action: newState.action,
                 errorState: newState.errorState,
                 transactionModel: transactionModel
             )

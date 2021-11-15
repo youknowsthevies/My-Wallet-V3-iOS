@@ -56,7 +56,6 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     func initializeTransaction() -> Single<PendingTransaction> {
         Single.zip(
             sourceAccount.actionableBalance,
-            sourceAccount.balance,
             withdrawalService.withdrawFeeAndLimit(
                 for: target.fiatCurrency,
                 paymentMethodType: target.paymentType
@@ -65,11 +64,10 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 .fiatCurrency
         )
         .map { [sourceAsset] values -> PendingTransaction in
-            let (actionableBalance, _, feeAndLimit, fiatCurrency) = values
+            let (actionableBalance, feeAndLimit, fiatCurrency) = values
             let zero: MoneyValue = .zero(currency: sourceAsset)
             return PendingTransaction(
                 amount: zero,
-                // TODO: Total balance?
                 available: actionableBalance,
                 feeAmount: feeAndLimit.fee.moneyValue,
                 feeForFullAvailable: zero,
@@ -79,7 +77,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 ),
                 selectedFiatCurrency: fiatCurrency,
                 minimumLimit: feeAndLimit.minLimit.moneyValue,
-                maximumLimit: try MoneyValue.min(actionableBalance, feeAndLimit.maxLimit.moneyValue)
+                maximumLimit: feeAndLimit.maxLimit.moneyValue
             )
         }
     }
@@ -146,19 +144,33 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     // MARK: - Private Functions
 
     private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.fromCallable {
-            guard let minLimit = pendingTransaction.minimumLimit
+        Completable.fromCallable { [sourceAccount, transactionTarget] in
+            guard
+                let minLimit = pendingTransaction.minimumLimit,
+                let maxLimit = pendingTransaction.maximumLimit
             else {
                 throw TransactionValidationFailure(state: .unknownError)
             }
             guard try pendingTransaction.amount >= minLimit else {
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
+                throw TransactionValidationFailure(state: .belowMinimumLimit(minLimit))
             }
-            guard try pendingTransaction.amount <= pendingTransaction.maxSpendable else {
-                throw TransactionValidationFailure(state: .overMaximumLimit)
+            guard try pendingTransaction.amount <= maxLimit else {
+                throw TransactionValidationFailure(
+                    state: .overMaximumPersonalLimit(
+                        EffectiveLimit(timeframe: .daily, value: pendingTransaction.maxSpendable),
+                        maxLimit,
+                        nil
+                    )
+                )
             }
             guard try pendingTransaction.available >= pendingTransaction.amount else {
-                throw TransactionValidationFailure(state: .insufficientFunds)
+                throw TransactionValidationFailure(
+                    state: .insufficientFunds(
+                        pendingTransaction.available,
+                        sourceAccount!.currencyType,
+                        transactionTarget!.currencyType
+                    )
+                )
             }
         }
     }

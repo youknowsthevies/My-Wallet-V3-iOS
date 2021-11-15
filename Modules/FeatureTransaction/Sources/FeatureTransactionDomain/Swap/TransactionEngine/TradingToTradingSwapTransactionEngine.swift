@@ -7,12 +7,12 @@ import ToolKit
 
 final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
 
-    let fiatCurrencyService: FiatCurrencyServiceAPI
-    let kycTiersService: KYCTiersServiceAPI
+    let canTransactFiat: Bool = true
+    let walletCurrencyService: FiatCurrencyServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
     let orderQuoteRepository: OrderQuoteRepositoryAPI
-    let priceService: PriceServiceAPI
     let quotesEngine: SwapQuotesEngine
     let requireSecondPassword: Bool = false
     let transactionLimitsService: TransactionLimitsServiceAPI
@@ -25,17 +25,15 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve()
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
         self.orderQuoteRepository = orderQuoteRepository
         self.orderCreationRepository = orderCreationRepository
         self.transactionLimitsService = transactionLimitsService
-        self.fiatCurrencyService = fiatCurrencyService
-        self.kycTiersService = kycTiersService
-        self.priceService = priceService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
     }
 
     func assertInputsValid() {
@@ -48,7 +46,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         Single
             .zip(
                 quotesEngine.getRate(direction: orderDirection, pair: pair).take(1).asSingle(),
-                fiatCurrencyService.fiatCurrency,
+                walletCurrencyService.fiatCurrency,
                 sourceAccount.actionableBalance
             )
             .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in

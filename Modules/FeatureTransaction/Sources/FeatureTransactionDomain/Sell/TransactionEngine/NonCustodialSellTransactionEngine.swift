@@ -7,9 +7,10 @@ import ToolKit
 
 final class NonCustodialSellTransactionEngine: SellTransactionEngine {
 
+    let canTransactFiat: Bool = false
     let receiveAddressFactory: ExternalAssetAddressServiceAPI
-    let fiatCurrencyService: FiatCurrencyServiceAPI
-    let kycTiersService: KYCTiersServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
     let onChainEngine: OnChainTransactionEngine
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .fromUserKey
@@ -30,8 +31,8 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         orderUpdateRepository: OrderUpdateRepositoryAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
@@ -40,8 +41,8 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         self.orderCreationRepository = orderCreationRepository
         self.orderUpdateRepository = orderUpdateRepository
         self.transactionLimitsService = transactionLimitsService
-        self.fiatCurrencyService = fiatCurrencyService
-        self.kycTiersService = kycTiersService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
         self.onChainEngine = onChainEngine
         self.receiveAddressFactory = receiveAddressFactory
     }
@@ -78,59 +79,6 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         return pendingTransaction.feeSelection.selectedLevel
     }
 
-    private func doValidateAmount(pendingTransaction: PendingTransaction) -> Completable {
-        sourceAccount
-            .actionableBalance
-            .map(weak: self) { (self, balance) -> Void in
-                guard try pendingTransaction.amount <= balance else {
-                    throw TransactionValidationFailure(state: .insufficientFunds)
-                }
-                guard let minimumLimit = pendingTransaction.minimumLimit else {
-                    Logger.shared.error("Minimum Limit is nil: \(pendingTransaction)")
-                    throw TransactionValidationFailure(state: .unknownError)
-                }
-                guard let maximumLimit = pendingTransaction.maximumLimit else {
-                    Logger.shared.error("Maximum Limit is nil: \(pendingTransaction)")
-                    throw TransactionValidationFailure(state: .unknownError)
-                }
-                guard try pendingTransaction.amount >= minimumLimit else {
-                    throw TransactionValidationFailure(state: .belowMinimumLimit)
-                }
-                guard try pendingTransaction.amount <= maximumLimit else {
-                    throw self.validationFailureForTier(pendingTransaction: pendingTransaction)
-                }
-            }
-            .asCompletable()
-    }
-
-    private func validationFailureForTier(pendingTransaction: PendingTransaction) -> TransactionValidationFailure {
-        guard let userTiers = pendingTransaction.userTiers else {
-            return TransactionValidationFailure(state: .unknownError)
-        }
-        if userTiers.isTier2Approved {
-            return TransactionValidationFailure(state: .overGoldTierLimit)
-        }
-        return TransactionValidationFailure(state: .overSilverTierLimit)
-    }
-
-    func defaultValidateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        doValidateAmount(pendingTransaction: pendingTransaction)
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-    }
-
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        onChainEngine.validateAmount(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
-                switch pendingTransaction.validationState {
-                case .canExecute, .invalidAmount:
-                    return self.defaultValidateAmount(pendingTransaction: pendingTransaction)
-                default:
-                    return .just(pendingTransaction)
-                }
-            }
-            .updateTxValiditySingle(pendingTransaction: pendingTransaction)
-    }
-
     func initializeTransaction() -> Single<PendingTransaction> {
         quotesEngine
             .getRate(direction: orderDirection, pair: pair)
@@ -140,7 +88,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                 self.startOnChainEngine(pricedQuote: pricedQuote)
                     .andThen(
                         Single.zip(
-                            self.fiatCurrencyService.fiatCurrency,
+                            self.walletCurrencyService.fiatCurrency,
                             self.onChainEngine.initializeTransaction()
                         )
                     )
@@ -166,24 +114,6 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                         .handlePendingOrdersError(initialValue: fallback)
                     }
             }
-    }
-
-    func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        onChainEngine
-            .doValidateAll(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
-                switch pendingTransaction.validationState {
-                case .canExecute, .invalidAmount:
-                    return self.defaultDoValidateAll(pendingTransaction: pendingTransaction)
-                default:
-                    return .just(pendingTransaction)
-                }
-            }
-            .updateTxValiditySingle(pendingTransaction: pendingTransaction)
-    }
-
-    func defaultDoValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAmount(pendingTransaction: pendingTransaction)
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
@@ -257,7 +187,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
         quotesEngine.getRate(direction: orderDirection, pair: pair)
             .take(1)
             .asSingle()
-            .map { [targetAsset] pricedQuote -> PendingTransaction in
+            .map { [targetAsset] pricedQuote -> (PendingTransaction, PricedQuote) in
                 let resultValue = FiatValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let baseValue = MoneyValue.one(currency: pendingTransaction.amount.currency)
                 let sellDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
@@ -282,35 +212,16 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                     ))
                 ]
 
-                var pendingTransaction = pendingTransaction.update(confirmations: confirmations)
-                pendingTransaction.minimumLimit = try pendingTransaction.calculateMinimumLimit(for: pricedQuote)
-                return pendingTransaction
+                let updatedTransaction = pendingTransaction.update(confirmations: confirmations)
+                return (updatedTransaction, pricedQuote)
+            }
+            .flatMap(weak: self) { (self, tuple) in
+                let (pendingTransaction, pricedQuote) = tuple
+                return self.updateLimits(pendingTransaction: pendingTransaction, pricedQuote: pricedQuote)
             }
     }
 
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
         target.onTxCompleted(transactionResult)
-    }
-}
-
-extension PendingTransaction {
-
-    fileprivate func calculateMinimumLimit(for quote: PricedQuote) throws -> MoneyValue {
-        guard let minimumApiLimit = minimumApiLimit else {
-            return MoneyValue.zero(currency: quote.networkFee.currencyType)
-        }
-        let destination = quote.networkFee.currencyType
-        let source = amount.currencyType
-        let price = MoneyValue(amount: quote.price, currency: destination)
-        let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destination)
-        let convertedFees = totalFees.convert(usingInverse: price, currencyType: source)
-        return (try? minimumApiLimit + convertedFees) ?? MoneyValue.zero(currency: destination)
-    }
-}
-
-extension PendingTransaction {
-
-    fileprivate var userTiers: KYC.UserTiers? {
-        engineState[.userTiers] as? KYC.UserTiers
     }
 }

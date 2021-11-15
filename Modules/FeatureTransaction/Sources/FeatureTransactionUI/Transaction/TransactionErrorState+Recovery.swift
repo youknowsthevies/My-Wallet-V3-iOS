@@ -1,20 +1,44 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureTransactionDomain
 import Localization
+import PlatformKit
+import ToolKit
+import UIComponentsKit
 
 extension TransactionErrorState {
 
     private typealias Localization = LocalizationConstants.Transaction.Error
 
-    var shortDescription: String {
+    var recoveryWarningHint: String {
         let text: String
         switch self {
         case .none:
             text = "" // no error
+        case .insufficientFunds(_, let sourceCurrency, _):
+            text = String(
+                format: Localization.insufficientFundsRecoveryHint,
+                sourceCurrency.code
+            )
+        case .belowMinimumLimit(let minimum):
+            text = String(
+                format: Localization.belowMinimumLimitRecoveryHint,
+                minimum.shortDisplayString
+            )
+        case .overMaximumSourceLimit(let maximum, _, _):
+            text = String(
+                format: Localization.overMaximumSourceLimitRecoveryHint,
+                maximum.shortDisplayString
+            )
+        case .overMaximumPersonalLimit:
+            text = Localization.overMaximumPersonalLimitRecoveryHint
+
+        // MARK: Unchecked
+
+        case .overMaximumLimit:
+            text = Localization.overMaximumPersonalLimitRecoveryHint
         case .addressIsContract:
             text = Localization.addressIsContractShort
-        case .insufficientFunds:
-            text = Localization.insufficientFundsShort
         case .insufficientGas:
             text = Localization.insufficientGasShort
         case .insufficientFundsForFees:
@@ -27,12 +51,6 @@ extension TransactionErrorState {
             text = Localization.invalidPasswordShort
         case .optionInvalid:
             text = Localization.optionInvalidShort
-        case .belowMinimumLimit:
-            text = Localization.belowMinimumLimitShort
-        case .overGoldTierLimit,
-             .overSilverTierLimit,
-             .overMaximumLimit:
-            text = Localization.overMaximumLimitShort
         case .pendingOrdersLimitReached:
             text = Localization.pendingOrdersLimitReachedShort
         case .transactionInFlight:
@@ -46,4 +64,414 @@ extension TransactionErrorState {
         }
         return text
     }
+
+    func recoveryWarningTitle(for action: AssetAction) -> String {
+        let text: String
+        switch self {
+        case .insufficientFunds(let maximum, _, _) where action == .swap:
+            text = String(
+                format: Localization.insufficientFundsRecoveryTitle_swap,
+                maximum.displayString
+            )
+        case .insufficientFunds(_, let sourceCurrency, _):
+            text = String(
+                format: Localization.insufficientFundsRecoveryTitle,
+                sourceCurrency.code
+            )
+        case .belowMinimumLimit(let minimum):
+            text = String(
+                format: Localization.belowMinimumLimitRecoveryTitle,
+                minimum.shortDisplayString
+            )
+        case .overMaximumSourceLimit(let availableAmount, _, _) where action == .send:
+            text = String(
+                format: Localization.insufficientFundsRecoveryTitle,
+                availableAmount.currencyType.displayCode
+            )
+        case .overMaximumSourceLimit(let maximum, _, _):
+            text = String(
+                format: Localization.overMaximumSourceLimitRecoveryTitle,
+                maximum.shortDisplayString
+            )
+        case .overMaximumPersonalLimit:
+            text = Localization.overMaximumPersonalLimitRecoveryTitle
+        default:
+            if BuildFlag.isInternal {
+                unimplemented()
+            }
+            text = ""
+        }
+        return text
+    }
+
+    func recoveryWarningMessage(for action: AssetAction) -> String {
+        let text: String
+        switch self {
+        case .insufficientFunds:
+            text = localizedInsufficientFundsMessage(action: action)
+        case .belowMinimumLimit:
+            text = localizedBelowMinimumLimitMessage(action: action)
+        case .overMaximumSourceLimit:
+            text = localizedOverMaxSourceLimitMessage(action: action)
+        case .overMaximumPersonalLimit:
+            text = localizedOverMaxPersonalLimitMessage(action: action)
+        default:
+            if BuildFlag.isInternal {
+                unimplemented()
+            }
+            text = ""
+        }
+        return text
+    }
+
+    func recoveryWarningCallouts(for action: AssetAction) -> [ErrorRecoveryState.Callout] {
+        let callouts: [ErrorRecoveryState.Callout]
+        switch self {
+        case .overMaximumSourceLimit(let availableAmount, _, let desiredAmount) where action == .send:
+            callouts = [
+                ErrorRecoveryState.Callout(
+                    id: ErrorRecoveryCalloutIdentifier.buy.rawValue,
+                    image: availableAmount.currency.image,
+                    title: String(
+                        format: Localization.overMaximumSourceLimitRecoveryCalloutTitle_send,
+                        availableAmount.displayCode
+                    ),
+                    message: String(
+                        format: Localization.overMaximumSourceLimitRecoveryCalloutMessage_send,
+                        desiredAmount.displayString
+                    ),
+                    callToAction: Localization.overMaximumSourceLimitRecoveryCalloutCTA_send
+                )
+            ]
+        case .overMaximumPersonalLimit(_, _, let suggestedUpgrade):
+            let calloutTitle: String
+            switch action {
+            case .buy:
+                calloutTitle = Localization.overMaximumPersonalLimitRecoveryCalloutTitle_buy
+            case .swap:
+                calloutTitle = Localization.overMaximumPersonalLimitRecoveryCalloutTitle_swap
+            case .send:
+                calloutTitle = Localization.overMaximumPersonalLimitRecoveryCalloutTitle_send
+            default:
+                calloutTitle = Localization.overMaximumPersonalLimitRecoveryCalloutTitle_other
+            }
+            callouts = suggestedUpgrade == nil ? [] : [
+                ErrorRecoveryState.Callout(
+                    id: ErrorRecoveryCalloutIdentifier.upgradeKYCTier.rawValue,
+                    image: ImageResource.local(
+                        name: "kyc-gold",
+                        bundle: .main
+                    ).image!,
+                    title: calloutTitle,
+                    message: Localization.overMaximumPersonalLimitRecoveryCalloutMessage,
+                    callToAction: Localization.overMaximumPersonalLimitRecoveryCalloutCTA
+                )
+            ]
+        default:
+            callouts = []
+        }
+        return callouts
+    }
+}
+
+// MARK: - Helpers
+
+extension TransactionErrorState {
+
+    private func localizedInsufficientFundsMessage(action: AssetAction) -> String {
+        guard case .insufficientFunds(let balance, let sourceCurrency, let targetCurrency) = self else {
+            impossible("Developer error")
+        }
+        let text: String
+        switch action {
+        case .buy:
+            text = String(
+                format: Localization.insufficientFundsRecoveryMessage_buy,
+                targetCurrency.code,
+                sourceCurrency.code,
+                balance.displayString
+            )
+        case .sell:
+            text = String(
+                format: Localization.insufficientFundsRecoveryMessage_sell,
+                sourceCurrency.code,
+                balance.displayString
+            )
+        case .swap:
+            text = String(
+                format: Localization.insufficientFundsRecoveryMessage_swap,
+                sourceCurrency.code,
+                targetCurrency.code,
+                balance.displayString
+            )
+        case .withdraw:
+            text = String(
+                format: Localization.insufficientFundsRecoveryMessage_withdraw,
+                sourceCurrency.code,
+                balance.displayString
+            )
+        case .receive,
+             .deposit,
+             .interestTransfer,
+             .interestWithdraw,
+             .send,
+             .sign,
+             .viewActivity:
+            impossible("This message should not be needed for \(action)")
+        }
+        return text
+    }
+
+    private func localizedBelowMinimumLimitMessage(action: AssetAction) -> String {
+        guard case .belowMinimumLimit(let minimum) = self else {
+            impossible("Developer error")
+        }
+        let text: String
+        switch action {
+        case .buy:
+            text = String(
+                format: Localization.belowMinimumLimitRecoveryMessage_buy,
+                minimum.displayString
+            )
+        case .sell:
+            text = String(
+                format: Localization.belowMinimumLimitRecoveryMessage_sell,
+                minimum.displayString
+            )
+        case .swap:
+            text = String(
+                format: Localization.belowMinimumLimitRecoveryMessage_swap,
+                minimum.displayString
+            )
+        case .send:
+            text = String(
+                format: Localization.belowMinimumLimitRecoveryMessage_send,
+                minimum.displayString
+            )
+        case .deposit:
+            text = String(
+                format: Localization.belowMinimumLimitRecoveryMessage_deposit,
+                minimum.displayString
+            )
+        case .withdraw:
+            text = String(
+                format: Localization.belowMinimumLimitRecoveryMessage_withdraw,
+                minimum.displayString
+            )
+        case .receive,
+             .interestTransfer,
+             .interestWithdraw,
+             .sign,
+             .viewActivity:
+            impossible("This message should not be needed for \(action)")
+        }
+        return text
+    }
+
+    private func localizedOverMaxSourceLimitMessage(action: AssetAction) -> String {
+        guard case .overMaximumSourceLimit(let availableAmount, let accountLabel, let desiredAmount) = self else {
+            impossible("Developer error")
+        }
+        let text: String
+        switch action {
+        case .buy:
+            text = String(
+                format: Localization.overMaximumSourceLimitRecoveryMessage_buy,
+                accountLabel,
+                availableAmount.shortDisplayString,
+                desiredAmount.shortDisplayString
+            )
+        case .send:
+            text = String(
+                format: Localization.overMaximumSourceLimitRecoveryMessage_send,
+                availableAmount.shortDisplayString,
+                desiredAmount.shortDisplayString
+            )
+        case .deposit:
+            text = String(
+                format: Localization.overMaximumSourceLimitRecoveryMessage_deposit,
+                accountLabel,
+                availableAmount.shortDisplayString,
+                desiredAmount.shortDisplayString
+            )
+        case .receive,
+             .sell,
+             .swap,
+             .withdraw,
+             .interestTransfer,
+             .interestWithdraw,
+             .sign,
+             .viewActivity:
+            impossible("This message should not be needed for \(action)")
+        }
+        return text
+    }
+
+    private func localizedOverMaxPersonalLimitMessage(action: AssetAction) -> String {
+        guard case .overMaximumPersonalLimit(let limit, let available, let suggestedUpgrade) = self else {
+            impossible("Developer error")
+        }
+        let text: String
+        switch action {
+        case .buy:
+            text = localizedOverMaxPersonalLimitMessageForBuy(
+                effectiveLimit: limit,
+                availableAmount: available,
+                suggestedUpgrade: suggestedUpgrade
+            )
+        case .sell:
+            text = localizedOverMaxPersonalLimitMessageForSell(
+                effectiveLimit: limit,
+                availableAmount: available,
+                suggestedUpgrade: suggestedUpgrade
+            )
+        case .swap:
+            text = localizedOverMaxPersonalLimitMessageForSwap(
+                effectiveLimit: limit,
+                availableAmount: available,
+                suggestedUpgrade: suggestedUpgrade
+            )
+        case .send:
+            text = localizedOverMaxPersonalLimitMessageForSend(
+                effectiveLimit: limit,
+                availableAmount: available,
+                suggestedUpgrade: suggestedUpgrade
+            )
+        case .withdraw:
+            text = localizedOverMaxPersonalLimitMessageForWithdraw(
+                effectiveLimit: limit,
+                availableAmount: available,
+                suggestedUpgrade: suggestedUpgrade
+            )
+        case .receive,
+             .deposit,
+             .interestTransfer,
+             .interestWithdraw,
+             .sign,
+             .viewActivity:
+            impossible("This message should not be needed for \(action)")
+        }
+        return text
+    }
+
+    private func localizedOverMaxPersonalLimitMessageForBuy(
+        effectiveLimit: EffectiveLimit,
+        availableAmount: MoneyValue,
+        suggestedUpgrade: SuggestedLimitsUpgrade?
+    ) -> String {
+        let format: String
+        if effectiveLimit.timeframe == .single {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_buy_single
+        } else if suggestedUpgrade?.requiredTier == .tier2 {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_buy_gold
+        } else {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_buy_other
+        }
+        return String(
+            format: format,
+            localized(effectiveLimit, availableAmount: availableAmount),
+            availableAmount.displayString
+        )
+    }
+
+    private func localizedOverMaxPersonalLimitMessageForSell(
+        effectiveLimit: EffectiveLimit,
+        availableAmount: MoneyValue,
+        suggestedUpgrade: SuggestedLimitsUpgrade?
+    ) -> String {
+        let format: String
+        if effectiveLimit.timeframe == .single {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_sell_single
+        } else if suggestedUpgrade?.requiredTier == .tier2 {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_sell_gold
+        } else {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_sell_other
+        }
+        return String(
+            format: format,
+            localized(effectiveLimit, availableAmount: availableAmount),
+            availableAmount.displayString
+        )
+    }
+
+    private func localizedOverMaxPersonalLimitMessageForSwap(
+        effectiveLimit: EffectiveLimit,
+        availableAmount: MoneyValue,
+        suggestedUpgrade: SuggestedLimitsUpgrade?
+    ) -> String {
+        let format: String
+        if effectiveLimit.timeframe == .single {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_swap_single
+        } else if suggestedUpgrade?.requiredTier == .tier2 {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_swap_gold
+        } else {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_swap_other
+        }
+        return String(
+            format: format,
+            localized(effectiveLimit, availableAmount: availableAmount),
+            availableAmount.displayString
+        )
+    }
+
+    private func localizedOverMaxPersonalLimitMessageForSend(
+        effectiveLimit: EffectiveLimit,
+        availableAmount: MoneyValue,
+        suggestedUpgrade: SuggestedLimitsUpgrade?
+    ) -> String {
+        let format: String
+        if effectiveLimit.timeframe == .single {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_send_single
+        } else if suggestedUpgrade?.requiredTier == .tier2 {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_send_gold
+        } else {
+            format = Localization.overMaximumPersonalLimitRecoveryMessage_send_other
+        }
+        return String(
+            format: format,
+            localized(effectiveLimit, availableAmount: availableAmount),
+            availableAmount.displayString
+        )
+    }
+
+    private func localizedOverMaxPersonalLimitMessageForWithdraw(
+        effectiveLimit: EffectiveLimit,
+        availableAmount: MoneyValue,
+        suggestedUpgrade: SuggestedLimitsUpgrade?
+    ) -> String {
+        String(
+            format: Localization.overMaximumPersonalLimitRecoveryMessage_withdraw,
+            localized(effectiveLimit, availableAmount: availableAmount),
+            availableAmount.displayString
+        )
+    }
+
+    private func localized(_ effectiveLimit: EffectiveLimit, availableAmount: MoneyValue) -> String {
+        let localizedEffectiveLimit: String
+        switch effectiveLimit.timeframe {
+        case .daily:
+            localizedEffectiveLimit = String(
+                format: Localization.overMaximumSourceLimitRecoveryValueTimeFrameDay,
+                effectiveLimit.value.shortDisplayString
+            )
+        case .monthly:
+            localizedEffectiveLimit = String(
+                format: Localization.overMaximumSourceLimitRecoveryValueTimeFrameMonth,
+                effectiveLimit.value.shortDisplayString
+            )
+        case .yearly:
+            localizedEffectiveLimit = String(
+                format: Localization.overMaximumSourceLimitRecoveryValueTimeFrameYear,
+                effectiveLimit.value.shortDisplayString
+            )
+        case .single:
+            localizedEffectiveLimit = availableAmount.shortDisplayString
+        }
+        return localizedEffectiveLimit
+    }
+}
+
+enum ErrorRecoveryCalloutIdentifier: String {
+    case buy
+    case upgradeKYCTier
 }

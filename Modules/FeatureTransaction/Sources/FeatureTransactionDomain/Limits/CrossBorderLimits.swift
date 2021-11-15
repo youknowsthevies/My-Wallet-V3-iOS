@@ -26,3 +26,16 @@ public struct CrossBorderLimits {
         self.suggestedUpgrade = suggestedUpgrade
     }
 }
+
+// MARK: - Currency Conversion
+
+extension CrossBorderLimits {
+
+    func convert(using exchangeRate: MoneyValue) -> CrossBorderLimits {
+        CrossBorderLimits(
+            currency: exchangeRate.currencyType,
+            currentLimits: currentLimits?.convert(using: exchangeRate),
+            suggestedUpgrade: suggestedUpgrade?.convert(using: exchangeRate)
+        )
+    }
+}

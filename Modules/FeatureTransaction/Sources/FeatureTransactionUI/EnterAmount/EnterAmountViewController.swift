@@ -269,7 +269,7 @@ final class EnterAmountViewController: BaseScreenViewController,
         state
             .distinctUntilChanged()
             .map(\.errorState)
-            .map(\.shortDescription)
+            .map(\.recoveryWarningHint)
             .drive(onNext: { [errorRecoveryCTAModel] errorTitle in
                 errorRecoveryCTAModel.buttonTitle = errorTitle
             })
