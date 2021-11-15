@@ -162,3 +162,9 @@ final class PricesViewController: BaseScreenViewController {
         presenter.navigationBarLeadingButtonPressed()
     }
 }
+
+extension PricesViewController: SegmentedViewScreenViewController {
+    public func adjustInsetForBottomButton(withHeight height: CGFloat) {
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: height, right: 0)
+    }
+}

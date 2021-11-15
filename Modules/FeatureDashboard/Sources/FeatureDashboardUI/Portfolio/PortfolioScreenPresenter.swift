@@ -113,6 +113,23 @@ final class PortfolioScreenPresenter {
         sectionsRelay.asObservable()
     }
 
+    var isEmptyState: Observable<Bool> {
+        sections
+            .compactMap { portfolioViewModels in portfolioViewModels.first }
+            .map(\.items)
+            .map { items in
+                let hasCrypto = items.filter { cellType in
+                    switch cellType {
+                    case .crypto:
+                        return true
+                    default:
+                        return false
+                    }
+                }
+                return hasCrypto.isEmpty
+            }
+    }
+
     // MARK: - Private Properties
 
     private let accountFetcher: BlockchainAccountFetching

@@ -15,6 +15,10 @@ public final class SegmentedTabViewController: UITabBarController {
 
     let itemIndexSelectedRelay = PublishRelay<Int?>()
 
+    public var segmentedViewControllers: [SegmentedViewScreenViewController] {
+        items.map(\.viewController)
+    }
+
     // MARK: - Private Properties
 
     private let items: [SegmentedViewScreenItem]
@@ -36,6 +40,7 @@ public final class SegmentedTabViewController: UITabBarController {
             items.map(\.viewController),
             animated: false
         )
+
         tabBar.isHidden = true
         itemIndexSelectedRelay
             .compactMap { $0 }
