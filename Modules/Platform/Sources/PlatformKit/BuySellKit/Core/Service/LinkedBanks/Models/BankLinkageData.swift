@@ -18,7 +18,7 @@ public struct BankLinkageData {
     public let fastlinkParams: FastlinkConfiguration
     public let partner: Partner
     public let id: String
-    public let entity: String
+    public let entity: String?
     public let institutions: [OpenBanking.Institution]?
     public let currency: FiatCurrency
 
@@ -64,7 +64,7 @@ extension OpenBanking.BankAccount {
             id: .init(data.id),
             partner: data.partner.rawValue,
             attributes: .init(
-                entity: data.entity,
+                entity: data.entity ?? "Safeconnect(UK)",
                 institutions: data.institutions
             )
         )

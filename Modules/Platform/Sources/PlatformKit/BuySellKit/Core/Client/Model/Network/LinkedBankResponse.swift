@@ -70,7 +70,7 @@ public struct LinkedBankResponse: Decodable {
 
 extension LinkedBankResponse {
     struct Attributes: Decodable {
-        let entity: String
+        let entity: String?
         let media: [Media]?
         let status: String?
         let authorisationUrl: URL?
@@ -104,7 +104,7 @@ enum BankLinkagePartner: String, Decodable {
 
 struct CreateBankLinkageResponse: Decodable {
     struct LinkBankAttrsResponse: Decodable {
-        let entity: String
+        let entity: String?
         let token: String?
         let fastlinkUrl: String?
         let fastlinkParams: FastlinkParameters?
