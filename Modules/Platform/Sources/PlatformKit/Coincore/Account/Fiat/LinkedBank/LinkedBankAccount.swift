@@ -1,21 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import RxSwift
 import ToolKit
 
 public class LinkedBankAccount: FiatAccount, BankAccount {
-
-    // MARK: - Public
-
-    public var withdrawFeeAndMinLimit: Single<WithdrawalFeeAndLimit> {
-        withdrawService
-            .withdrawFeeAndLimit(
-                for: fiatCurrency,
-                paymentMethodType: paymentType
-            )
-    }
 
     // MARK: - BlockchainAccount
 
@@ -64,7 +53,10 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     }
 
     public let fiatCurrency: FiatCurrency
-    public private(set) lazy var identifier: AnyHashable = "LinkedBankAccount.\(accountId).\(accountNumber).\(paymentType)"
+    public private(set) lazy var identifier: AnyHashable = {
+        "LinkedBankAccount.\(accountId).\(accountNumber).\(paymentType)"
+    }()
+
     public let label: String
     public let accountId: String
     public let accountNumber: String
@@ -72,10 +64,6 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     public let paymentType: PaymentMethodPayloadType
     public let partner: LinkedBankData.Partner
     public let data: LinkedBankData
-
-    // MARK: - Private Properties
-
-    private let withdrawService: WithdrawalServiceAPI
 
     // MARK: - Init
 
@@ -86,7 +74,6 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         accountType: LinkedBankAccountType,
         currency: FiatCurrency,
         paymentType: PaymentMethodPayloadType,
-        withdrawServiceAPI: WithdrawalServiceAPI = resolve(),
         partner: LinkedBankData.Partner,
         data: LinkedBankData
     ) {
@@ -96,7 +83,6 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         self.accountNumber = accountNumber
         fiatCurrency = currency
         self.paymentType = paymentType
-        withdrawService = withdrawServiceAPI
         self.partner = partner
         self.data = data
     }

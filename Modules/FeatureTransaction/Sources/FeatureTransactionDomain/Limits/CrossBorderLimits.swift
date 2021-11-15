@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-/// Represents transaction limits specific to a user.
+/// Represents transaction limits specific to a user for how much they can move in and out of Blockchain.com's custodial services.
 /// It does not include limits specific to a trade.
 ///
 /// This is meant to be used by the `TransactionLimitsRepositoryAPI` ONLY!

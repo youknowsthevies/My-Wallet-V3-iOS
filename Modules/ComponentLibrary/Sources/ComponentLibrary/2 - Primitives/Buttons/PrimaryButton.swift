@@ -30,8 +30,8 @@ public struct PrimaryButton: View {
         ),
         pressed: PillButtonStyle.ColorSet(
             foreground: .palette.white,
-            background: .palette.blue600,
-            border: .palette.blue600
+            background: .palette.blue700,
+            border: .palette.blue700
         ),
         disabled: PillButtonStyle.ColorSet(
             foreground: Color(

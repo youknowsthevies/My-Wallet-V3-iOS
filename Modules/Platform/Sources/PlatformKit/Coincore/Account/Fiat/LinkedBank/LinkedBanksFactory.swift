@@ -5,11 +5,11 @@ import RxSwift
 import ToolKit
 
 public protocol LinkedBanksFactoryAPI {
+
     var linkedBanks: Single<[LinkedBankAccount]> { get }
     var nonWireTransferBanks: Single<[LinkedBankAccount]> { get }
 
     func bankPaymentMethods(for currency: FiatCurrency) -> Single<[PaymentMethodType]>
-    func bankTransferLimits(for currency: FiatCurrency) -> Single<PaymentLimits>
 }
 
 final class LinkedBanksFactory: LinkedBanksFactoryAPI {
@@ -77,34 +77,9 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
             .eligiblePaymentMethods(for: currency)
             .map { paymentMethodTyps in
                 paymentMethodTyps.filter { paymentType in
-                    paymentType.method == .bankAccount(.fiat(currency)) || paymentType.method == .bankTransfer(.fiat(currency))
+                    paymentType.method == .bankAccount(.fiat(currency))
+                        || paymentType.method == .bankTransfer(.fiat(currency))
                 }
-            }
-    }
-
-    func bankTransferLimits(for currency: FiatCurrency) -> Single<PaymentLimits> {
-        paymentMethodService
-            .eligiblePaymentMethods(for: currency)
-            .map { types in
-                types.filter { type in
-                    type.method == .bankAccount(.fiat(currency)) || type.method == .bankTransfer(.fiat(currency))
-                }
-            }
-            .map { paymentMetodTypes in
-                guard let item = paymentMetodTypes.first else {
-                    fatalError("Expected a suggested payment method type")
-                }
-                guard case .suggested(let suggested) = item else {
-                    fatalError("Expected a sugggested payment method type")
-                }
-                return .init(
-                    min: suggested.min,
-                    max: .init(
-                        transactional: suggested.max,
-                        daily: suggested.maxDaily,
-                        annual: suggested.maxAnnual
-                    )
-                )
             }
     }
 }

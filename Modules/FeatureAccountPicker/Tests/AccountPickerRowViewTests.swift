@@ -85,7 +85,6 @@ class AccountPickerRowViewTests: XCTestCase {
         accountType: .checking,
         currency: .USD,
         paymentType: .bankAccount,
-        withdrawServiceAPI: MockWithdrawalServiceAPI(),
         partner: .yapily,
         data: linkedBankData
     )
@@ -197,7 +196,7 @@ class AccountPickerRowViewTests: XCTestCase {
 
                 switch identity {
                 case self.linkedBankAccount.identifier:
-                    let badges = SingleAccountBadgeFactory()
+                    let badges = SingleAccountBadgeFactory(withdrawalService: MockWithdrawalServiceAPI())
                         .badge(account: self.linkedBankAccount, action: .withdraw)
                         .map {
                             MultiBadgeViewModel(
@@ -317,13 +316,15 @@ class AccountPickerRowViewTests: XCTestCase {
 }
 
 struct MockWithdrawalServiceAPI: WithdrawalServiceAPI {
+
     func withdrawFeeAndLimit(
         for currency: FiatCurrency,
         paymentMethodType: PaymentMethodPayloadType
     ) -> Single<WithdrawalFeeAndLimit> {
         .just(.init(
-            minLimit: FiatValue.zero(currency: currency),
-            fee: FiatValue.zero(currency: currency)
+            maxLimit: .zero(currency: currency),
+            minLimit: .zero(currency: currency),
+            fee: .zero(currency: currency)
         ))
     }
 

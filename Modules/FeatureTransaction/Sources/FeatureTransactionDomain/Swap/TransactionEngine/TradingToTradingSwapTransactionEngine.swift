@@ -15,7 +15,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     let priceService: PriceServiceAPI
     let quotesEngine: SwapQuotesEngine
     let requireSecondPassword: Bool = false
-    let tradeLimitsRepository: TransactionLimitsRepositoryAPI
+    let transactionLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
@@ -24,7 +24,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         quotesEngine: SwapQuotesEngine,
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
-        tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve()
@@ -32,7 +32,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         self.quotesEngine = quotesEngine
         self.orderQuoteRepository = orderQuoteRepository
         self.orderCreationRepository = orderCreationRepository
-        self.tradeLimitsRepository = tradeLimitsRepository
+        self.transactionLimitsService = transactionLimitsService
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiersService = kycTiersService
         self.priceService = priceService
@@ -63,8 +63,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
                 )
                 return self.updateLimits(
                     pendingTransaction: pendingTransaction,
-                    pricedQuote: pricedQuote,
-                    fiatCurrency: fiatCurrency
+                    pricedQuote: pricedQuote
                 )
                 .handlePendingOrdersError(initialValue: pendingTransaction)
             }

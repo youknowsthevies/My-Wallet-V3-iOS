@@ -5,11 +5,15 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+public protocol SegmentedViewScreenViewController where Self: UIViewController {
+    func adjustInsetForBottomButton(withHeight height: CGFloat)
+}
+
 public struct SegmentedViewScreenItem {
     let title: String
-    let viewController: UIViewController
+    let viewController: SegmentedViewScreenViewController
 
-    public init(title: String, viewController: UIViewController) {
+    public init(title: String, viewController: SegmentedViewScreenViewController) {
         self.title = title
         self.viewController = viewController
     }
