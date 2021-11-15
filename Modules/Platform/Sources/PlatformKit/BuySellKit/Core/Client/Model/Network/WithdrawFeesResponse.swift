@@ -1,11 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-struct CurrencyFeeResponse: Decodable {
-    let symbol: String
-    let minorValue: String
+public struct CurrencyFeeResponse: Decodable {
+    public let symbol: String
+    public let minorValue: String
 }
 
-struct WithdrawFeesResponse: Decodable {
-    let fees: [CurrencyFeeResponse]
-    let minAmounts: [CurrencyFeeResponse]
+public struct WithdrawFeesResponse: Decodable {
+    public let fees: [CurrencyFeeResponse]
+    public let minAmounts: [CurrencyFeeResponse]
 }

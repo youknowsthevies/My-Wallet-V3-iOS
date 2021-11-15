@@ -127,7 +127,8 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                     )
                 )
             )
-        case .deposit,
+        case .sign,
+             .deposit,
              .interestTransfer,
              .receive,
              .buy,

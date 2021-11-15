@@ -165,7 +165,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
                     return pendingTransaction.update(validationState: .uninitialized)
                 }
                 guard try pendingTransaction.amount >= minimum else {
-                    return pendingTransaction.update(validationState: .belowMinimumLimit)
+                    return pendingTransaction.update(validationState: .belowMinimumLimit(minimum))
                 }
                 return pendingTransaction
             }

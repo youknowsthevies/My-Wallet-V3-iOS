@@ -28,13 +28,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     /// The main model passed to the view store that powers the app
     private let store: Store<AppState, AppAction>
 
-    // Temporary solution for remote dynamicAssetsEnabled
-    private lazy var featureFlagsService: FeatureFlagsServiceAPI = {
-        resolve()
-    }()
-
-    private var cancellables = Set<AnyCancellable>()
-
     /// Responsible view store to send actions to the store
     lazy var viewStore = ViewStore(
         self.store.scope(state: { $0 }),
@@ -49,7 +42,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             environment: .live
         )
         super.init()
-        updateStaticFeatureFlags()
     }
 
     // MARK: - App entry point
@@ -84,14 +76,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         )
         viewStore.send(.appDelegate(.didFinishLaunching(window: window, context: context)))
         return true
-    }
-
-    private func updateStaticFeatureFlags() {
-        featureFlagsService.isEnabled(.remote(.dynamicAssetsEnabled))
-            .sink { isEnabled in
-                StaticFeatureFlags.isDynamicAssetsEnabled = isEnabled
-            }
-            .store(in: &cancellables)
     }
 }
 

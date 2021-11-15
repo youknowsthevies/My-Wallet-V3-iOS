@@ -4,6 +4,8 @@ import PlatformKit
 
 public protocol TabSwapping: AnyObject {
     func send(from account: BlockchainAccount)
+    func send(from account: BlockchainAccount, target: TransactionTarget)
+    func sign(from account: BlockchainAccount, target: TransactionTarget)
     func receive(into account: BlockchainAccount)
     func withdraw(from account: BlockchainAccount)
     func deposit(into account: BlockchainAccount)

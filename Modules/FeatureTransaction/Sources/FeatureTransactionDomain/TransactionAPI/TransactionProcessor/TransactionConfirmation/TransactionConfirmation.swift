@@ -4,7 +4,12 @@ import PlatformKit
 
 public enum TransactionConfirmation: TransactionConfirmationModelable {
 
+    case app(TransactionConfirmation.Model.App)
+    case arrivalDate(TransactionConfirmation.Model.FundsArrivalDate)
     case bitpayCountdown(TransactionConfirmation.Model.BitPayCountdown)
+    case buyCryptoValue(TransactionConfirmation.Model.BuyCryptoValue)
+    case buyExchangeRateValue(TransactionConfirmation.Model.BuyExchangeRateValue)
+    case buyPaymentMethod(TransactionConfirmation.Model.BuyPaymentMethodValue)
     case description(TransactionConfirmation.Model.Description)
     case destination(TransactionConfirmation.Model.Destination)
     case errorNotice(TransactionConfirmation.Model.ErrorNotice)
@@ -12,152 +17,168 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case feedTotal(TransactionConfirmation.Model.FeedTotal)
     case feeSelection(TransactionConfirmation.Model.FeeSelection)
     case largeTransactionWarning(TransactionConfirmation.Model.AnyBoolOption<MoneyValue>)
-    case termsOfService(TransactionConfirmation.Model.AnyBoolOption<Bool>)
-    case transferAgreement(TransactionConfirmation.Model.AnyBoolOption<Bool>)
     case memo(TransactionConfirmation.Model.Memo)
-    case transactionFee(TransactionConfirmation.Model.FiatTransactionFee)
-    case arrivalDate(TransactionConfirmation.Model.FundsArrivalDate)
+    case message(TransactionConfirmation.Model.Message)
+    case network(TransactionConfirmation.Model.Network)
     case networkFee(TransactionConfirmation.Model.NetworkFee)
+    case notice(TransactionConfirmation.Model.Notice)
+    case sellDestinationValue(TransactionConfirmation.Model.SellDestinationValue)
+    case sellExchangeRateValue(TransactionConfirmation.Model.SellExchangeRateValue)
+    case sellSourceValue(TransactionConfirmation.Model.SellSourceValue)
     case sendDestinationValue(TransactionConfirmation.Model.SendDestinationValue)
     case source(TransactionConfirmation.Model.Source)
-
     case swapDestinationValue(TransactionConfirmation.Model.SwapDestinationValue)
     case swapExchangeRate(TransactionConfirmation.Model.SwapExchangeRate)
     case swapSourceValue(TransactionConfirmation.Model.SwapSourceValue)
-
-    case sellSourceValue(TransactionConfirmation.Model.SellSourceValue)
-    case sellDestinationValue(TransactionConfirmation.Model.SellDestinationValue)
-    case sellExchangeRateValue(TransactionConfirmation.Model.SellExchangeRateValue)
-
-    case buyCryptoValue(TransactionConfirmation.Model.BuyCryptoValue)
-    case buyExchangeRateValue(TransactionConfirmation.Model.BuyExchangeRateValue)
-    case buyPaymentMethod(TransactionConfirmation.Model.BuyPaymentMethodValue)
-
+    case termsOfService(TransactionConfirmation.Model.AnyBoolOption<Bool>)
     case total(TransactionConfirmation.Model.Total)
     case totalCost(TransactionConfirmation.Model.TotalCost)
+    case transactionFee(TransactionConfirmation.Model.FiatTransactionFee)
+    case transferAgreement(TransactionConfirmation.Model.AnyBoolOption<Bool>)
 
     public var type: TransactionConfirmation.Kind {
         switch self {
-        case .transferAgreement(let value):
-            return value.type
-        case .termsOfService(let value):
-            return value.type
-        case .arrivalDate(let value):
-            return value.type
-        case .transactionFee(let value):
-            return value.type
-        case .bitpayCountdown(let value):
-            return value.type
-        case .description(let value):
-            return value.type
-        case .destination(let value):
-            return value.type
-        case .errorNotice(let value):
-            return value.type
-        case .exchangePrice(let value):
-            return value.type
-        case .feedTotal(let value):
-            return value.type
-        case .feeSelection(let value):
-            return value.type
-        case .largeTransactionWarning(let value):
-            return value.type
-        case .memo(let value):
-            return value.type
-        case .networkFee(let value):
-            return value.type
-        case .sendDestinationValue(let value):
-            return value.type
-        case .source(let value):
-            return value.type
-        case .swapDestinationValue(let value):
-            return value.type
-        case .swapExchangeRate(let value):
-            return value.type
-        case .swapSourceValue(let value):
-            return value.type
-        case .total(let value):
-            return value.type
-        case .sellSourceValue(let value):
-            return value.type
-        case .sellDestinationValue(let value):
-            return value.type
-        case .sellExchangeRateValue(let value):
-            return value.type
-        case .buyExchangeRateValue(let value):
-            return value.type
-        case .buyCryptoValue(let value):
-            return value.type
-        case .buyPaymentMethod(let value):
-            return value.type
-        case .totalCost(let value):
-            return value.type
+        case .app(let model):
+            return model.type
+        case .arrivalDate(let model):
+            return model.type
+        case .bitpayCountdown(let model):
+            return model.type
+        case .buyCryptoValue(let model):
+            return model.type
+        case .buyExchangeRateValue(let model):
+            return model.type
+        case .buyPaymentMethod(let model):
+            return model.type
+        case .description(let model):
+            return model.type
+        case .destination(let model):
+            return model.type
+        case .errorNotice(let model):
+            return model.type
+        case .exchangePrice(let model):
+            return model.type
+        case .feedTotal(let model):
+            return model.type
+        case .feeSelection(let model):
+            return model.type
+        case .largeTransactionWarning(let model):
+            return model.type
+        case .memo(let model):
+            return model.type
+        case .message(let model):
+            return model.type
+        case .network(let model):
+            return model.type
+        case .networkFee(let model):
+            return model.type
+        case .notice(let model):
+            return model.type
+        case .sellDestinationValue(let model):
+            return model.type
+        case .sellExchangeRateValue(let model):
+            return model.type
+        case .sellSourceValue(let model):
+            return model.type
+        case .sendDestinationValue(let model):
+            return model.type
+        case .source(let model):
+            return model.type
+        case .swapDestinationValue(let model):
+            return model.type
+        case .swapExchangeRate(let model):
+            return model.type
+        case .swapSourceValue(let model):
+            return model.type
+        case .termsOfService(let model):
+            return model.type
+        case .total(let model):
+            return model.type
+        case .totalCost(let model):
+            return model.type
+        case .transactionFee(let model):
+            return model.type
+        case .transferAgreement(let model):
+            return model.type
         }
     }
 
     public var formatted: (title: String, subtitle: String)? {
         switch self {
-        case .transferAgreement(let value):
-            return value.formatted
-        case .termsOfService(let value):
-            return value.formatted
-        case .arrivalDate(let value):
-            return value.formatted
-        case .transactionFee(let value):
-            return value.formatted
-        case .bitpayCountdown(let value):
-            return value.formatted
-        case .description(let value):
-            return value.formatted
-        case .destination(let value):
-            return value.formatted
-        case .errorNotice(let value):
-            return value.formatted
-        case .exchangePrice(let value):
-            return value.formatted
-        case .feedTotal(let value):
-            return value.formatted
-        case .feeSelection(let value):
-            return value.formatted
-        case .largeTransactionWarning(let value):
-            return value.formatted
-        case .memo(let value):
-            return value.formatted
-        case .networkFee(let value):
-            return value.formatted
-        case .sendDestinationValue(let value):
-            return value.formatted
-        case .source(let value):
-            return value.formatted
-        case .swapDestinationValue(let value):
-            return value.formatted
-        case .swapExchangeRate(let value):
-            return value.formatted
-        case .swapSourceValue(let value):
-            return value.formatted
-        case .total(let value):
-            return value.formatted
-        case .sellSourceValue(let value):
-            return value.formatted
-        case .sellDestinationValue(let value):
-            return value.formatted
-        case .sellExchangeRateValue(let value):
-            return value.formatted
-        case .buyExchangeRateValue(let value):
-            return value.formatted
-        case .buyCryptoValue(let value):
-            return value.formatted
-        case .buyPaymentMethod(let value):
-            return value.formatted
-        case .totalCost(let value):
-            return value.formatted
+        case .app(let model):
+            return model.formatted
+        case .arrivalDate(let model):
+            return model.formatted
+        case .bitpayCountdown(let model):
+            return model.formatted
+        case .buyCryptoValue(let model):
+            return model.formatted
+        case .buyExchangeRateValue(let model):
+            return model.formatted
+        case .buyPaymentMethod(let model):
+            return model.formatted
+        case .description(let model):
+            return model.formatted
+        case .destination(let model):
+            return model.formatted
+        case .errorNotice(let model):
+            return model.formatted
+        case .exchangePrice(let model):
+            return model.formatted
+        case .feedTotal(let model):
+            return model.formatted
+        case .feeSelection(let model):
+            return model.formatted
+        case .largeTransactionWarning(let model):
+            return model.formatted
+        case .memo(let model):
+            return model.formatted
+        case .message(let model):
+            return model.formatted
+        case .network(let model):
+            return model.formatted
+        case .networkFee(let model):
+            return model.formatted
+        case .notice(let model):
+            return model.formatted
+        case .sellDestinationValue(let model):
+            return model.formatted
+        case .sellExchangeRateValue(let model):
+            return model.formatted
+        case .sellSourceValue(let model):
+            return model.formatted
+        case .sendDestinationValue(let model):
+            return model.formatted
+        case .source(let model):
+            return model.formatted
+        case .swapDestinationValue(let model):
+            return model.formatted
+        case .swapExchangeRate(let model):
+            return model.formatted
+        case .swapSourceValue(let model):
+            return model.formatted
+        case .termsOfService(let model):
+            return model.formatted
+        case .total(let model):
+            return model.formatted
+        case .totalCost(let model):
+            return model.formatted
+        case .transactionFee(let model):
+            return model.formatted
+        case .transferAgreement(let model):
+            return model.formatted
         }
     }
 
     /// Is equal ignoring associated value.
     public func bareCompare(to rhs: Self) -> Bool {
         switch (self, rhs) {
-        case (.bitpayCountdown, .bitpayCountdown),
+        case (.app, .app),
+             (.arrivalDate, .arrivalDate),
+             (.bitpayCountdown, .bitpayCountdown),
+             (.buyCryptoValue, .buyCryptoValue),
+             (.buyExchangeRateValue, .buyExchangeRateValue),
+             (.buyPaymentMethod, .buyPaymentMethod),
              (.description, .description),
              (.destination, .destination),
              (.errorNotice, .errorNotice),
@@ -166,17 +187,22 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
              (.feeSelection, .feeSelection),
              (.largeTransactionWarning, .largeTransactionWarning),
              (.memo, .memo),
+             (.message, .message),
+             (.network, .network),
              (.networkFee, .networkFee),
+             (.notice, .notice),
+             (.sellDestinationValue, .sellDestinationValue),
+             (.sellExchangeRateValue, .sellExchangeRateValue),
+             (.sellSourceValue, .sellSourceValue),
              (.sendDestinationValue, .sendDestinationValue),
              (.source, .source),
              (.swapDestinationValue, .swapDestinationValue),
              (.swapExchangeRate, .swapExchangeRate),
              (.swapSourceValue, .swapSourceValue),
+             (.termsOfService, .termsOfService),
              (.total, .total),
              (.totalCost, .totalCost),
              (.transactionFee, .transactionFee),
-             (.arrivalDate, .arrivalDate),
-             (.termsOfService, .termsOfService),
              (.transferAgreement, .transferAgreement):
             return true
         default:

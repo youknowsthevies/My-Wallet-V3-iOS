@@ -13,6 +13,7 @@ class MockWalletUpgradeService: WalletUpgradeServicing {
 
     var needsWalletUpgradePublisher: AnyPublisher<Bool, Error> {
         needsWalletUpgradeRelay.asPublisher()
+            .eraseToAnyPublisher()
     }
 
     init() {}

@@ -88,6 +88,8 @@ final class AssetDetailsScreenPresenter {
         scrollingEnabledRelay.asDriver()
     }
 
+    var tradingAccount = BehaviorRelay<CryptoCurrency?>(value: nil)
+
     var presentationAction: Signal<PresentationAction> {
         presentationActionRelay.asSignal()
     }
@@ -255,6 +257,12 @@ final class AssetDetailsScreenPresenter {
             .compactMap { $0.visible?.account }
             .map { .show($0) }
             .bindAndCatch(to: presentationActionRelay)
+            .disposed(by: disposeBag)
+
+        tradingBalanceStateRelay
+            .compactMap { $0.visible?.account }
+            .map { [weak self] _ in self?.currency }
+            .bindAndCatch(to: tradingAccount)
             .disposed(by: disposeBag)
     }
 

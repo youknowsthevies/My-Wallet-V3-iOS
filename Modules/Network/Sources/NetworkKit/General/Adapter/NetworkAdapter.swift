@@ -9,14 +9,11 @@ import ToolKit
 public final class NetworkAdapter: NetworkAdapterAPI {
 
     private let communicator: NetworkCommunicatorAPI
-    private let queue: DispatchQueue
 
     public init(
-        communicator: NetworkCommunicatorAPI = resolve(),
-        queue: DispatchQueue = DispatchQueue.global(qos: .default)
+        communicator: NetworkCommunicatorAPI = resolve()
     ) {
         self.communicator = communicator
-        self.queue = queue
     }
 
     public func performOptional<ResponseType: Decodable>(
@@ -25,7 +22,6 @@ public final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType?, NetworkError> {
         communicator.dataTaskPublisher(for: request)
             .decodeOptional(responseType: responseType, for: request, using: request.decoder)
-            .subscribe(on: queue)
             .eraseToAnyPublisher()
     }
 
@@ -35,7 +31,6 @@ public final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType?, ErrorResponseType> {
         communicator.dataTaskPublisher(for: request)
             .decodeOptional(responseType: responseType, for: request, using: request.decoder)
-            .subscribe(on: queue)
             .eraseToAnyPublisher()
     }
 
@@ -44,7 +39,6 @@ public final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType, ErrorResponseType> {
         communicator.dataTaskPublisher(for: request)
             .decode(for: request, using: request.decoder)
-            .subscribe(on: queue)
             .eraseToAnyPublisher()
     }
 
@@ -53,7 +47,6 @@ public final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType, NetworkError> {
         communicator.dataTaskPublisher(for: request)
             .decode(for: request, using: request.decoder)
-            .subscribe(on: queue)
             .eraseToAnyPublisher()
     }
 }

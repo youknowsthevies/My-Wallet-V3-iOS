@@ -113,6 +113,23 @@ final class PortfolioScreenPresenter {
         sectionsRelay.asObservable()
     }
 
+    var isEmptyState: Observable<Bool> {
+        sections
+            .compactMap { portfolioViewModels in portfolioViewModels.first }
+            .map(\.items)
+            .map { items in
+                let hasCrypto = items.filter { cellType in
+                    switch cellType {
+                    case .crypto:
+                        return true
+                    default:
+                        return false
+                    }
+                }
+                return hasCrypto.isEmpty
+            }
+    }
+
     // MARK: - Private Properties
 
     private let accountFetcher: BlockchainAccountFetching
@@ -126,11 +143,6 @@ final class PortfolioScreenPresenter {
     private let coincore: CoincoreAPI
 
     private var cryptoCurrencies: Observable<CurrencyBalance> {
-        guard StaticFeatureFlags.isDynamicAssetsEnabled else {
-            return Observable<CryptoCurrency>
-                .from(interactor.enabledCryptoCurrencies, scheduler: MainScheduler.asyncInstance)
-                .map { (currency: $0, hasBalance: true) }
-        }
         let cryptoStreams: [Observable<CurrencyBalance>] = coincore.cryptoAssets
             .map { asset -> Observable<CurrencyBalance> in
                 let currency = asset.asset

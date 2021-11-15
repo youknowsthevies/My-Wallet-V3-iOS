@@ -1,10 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import DIKit
 @testable import FeatureAuthenticationData
 @testable import FeatureAuthenticationDomain
 @testable import FeatureAuthenticationMock
 import RxBlocking
+import ToolKit
+@testable import WalletPayloadKit
 import XCTest
 
 class WalletPayloadServiceTests: XCTestCase {
@@ -29,9 +32,20 @@ class WalletPayloadServiceTests: XCTestCase {
         _ = try repository.set(sessionToken: "1234-abcd-5678-efgh").toBlocking().first()
         _ = try repository.set(guid: "fake-guid").toBlocking().first()
         let client = MockWalletPayloadClient(result: .success(serverResponse))
+        let walletRepo = WalletRepo(initialState: .empty)
+        let nativeWalletEnabled = false
+        let nativeWalletEnabledUseImpl: NativeWalletEnabledUseImpl<WalletPayloadServiceAPI, WalletPayloadServiceAPI> =
+            { old, new -> AnyPublisher<Either<WalletPayloadServiceAPI, WalletPayloadServiceAPI>, Never> in
+                guard nativeWalletEnabled else {
+                    return .just(Either.left(old))
+                }
+                return .just(Either.right(new))
+            }
         let service = WalletPayloadService(
             client: client,
-            repository: repository
+            repository: repository,
+            walletRepo: walletRepo,
+            nativeWalletEnabledUse: nativeWalletEnabledUseImpl
         )
         do {
             // TODO: delete these once IOS-4610 is ready
@@ -77,9 +91,20 @@ class WalletPayloadServiceTests: XCTestCase {
         _ = try repository.set(sessionToken: "1234-abcd-5678-efgh").toBlocking().first()
         _ = try repository.set(guid: "fake-guid").toBlocking().first()
         let client = MockWalletPayloadClient(result: .success(serverResponse))
+        let walletRepo = WalletRepo(initialState: .empty)
+        let nativeWalletEnabled = false
+        let nativeWalletEnabledUseImpl: NativeWalletEnabledUseImpl<WalletPayloadServiceAPI, WalletPayloadServiceAPI> =
+            { old, new -> AnyPublisher<Either<WalletPayloadServiceAPI, WalletPayloadServiceAPI>, Never> in
+                guard nativeWalletEnabled else {
+                    return .just(Either.left(old))
+                }
+                return .just(Either.right(new))
+            }
         let service = WalletPayloadService(
             client: client,
-            repository: repository
+            repository: repository,
+            walletRepo: walletRepo,
+            nativeWalletEnabledUse: nativeWalletEnabledUseImpl
         )
         do {
             // TODO: delete these once IOS-4610 is ready

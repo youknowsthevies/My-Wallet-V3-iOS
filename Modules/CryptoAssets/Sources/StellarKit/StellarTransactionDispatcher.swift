@@ -115,7 +115,7 @@ final class StellarTransactionDispatcher {
                 let total = try sendDetails.value + sendDetails.fee
                 let minBalance = self.horizonProxy.minimumBalance(subentryCount: response.subentryCount)
                 if try response.totalBalance < (total + minBalance) {
-                    throw SendFailureReason.insufficientFunds
+                    throw SendFailureReason.insufficientFunds(response.totalBalance.moneyValue)
                 }
                 return response
             }
@@ -125,7 +125,7 @@ final class StellarTransactionDispatcher {
     private func checkMinimumSend(sendDetails: SendDetails) -> Completable {
         do {
             if try sendDetails.value < minSend {
-                return .error(SendFailureReason.belowMinimumSend)
+                return .error(SendFailureReason.belowMinimumSend(minSend.moneyValue))
             }
         } catch {
             return .error(SendFailureReason.unknown)
@@ -141,7 +141,7 @@ final class StellarTransactionDispatcher {
                 switch error {
                 case StellarAccountError.noDefaultAccount:
                     if try sendDetails.value < minBalance {
-                        return .error(SendFailureReason.belowMinimumSendNewAccount)
+                        return .error(SendFailureReason.belowMinimumSendNewAccount(minBalance.moneyValue))
                     }
                     return .empty()
                 default:
@@ -180,7 +180,10 @@ final class StellarTransactionDispatcher {
             }
     }
 
-    private func createTransaction(sendDetails: SendDetails, sourceAccount: AccountResponse) -> Single<StellarTransaction> {
+    private func createTransaction(
+        sendDetails: SendDetails,
+        sourceAccount: AccountResponse
+    ) -> Single<StellarTransaction> {
         Single
             .zip(operation(sendDetails: sendDetails), sendTimeOutSeconds)
             .map { operation, sendTimeOutSeconds -> StellarTransaction in

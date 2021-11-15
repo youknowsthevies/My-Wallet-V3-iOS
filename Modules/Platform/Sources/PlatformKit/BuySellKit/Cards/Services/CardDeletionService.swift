@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import RxCombine
 import RxSwift
+import RxToolKit
 import ToolKit
 
 public protocol PaymentMethodDeletionServiceAPI: AnyObject {

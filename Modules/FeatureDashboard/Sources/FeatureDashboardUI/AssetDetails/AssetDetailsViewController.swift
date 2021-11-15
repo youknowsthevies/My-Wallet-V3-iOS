@@ -1,10 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableArchitecture
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import SwiftUI
 import ToolKit
+import UIKit
 
 final class AssetDetailsViewController: BaseScreenViewController {
 
@@ -46,6 +50,12 @@ final class AssetDetailsViewController: BaseScreenViewController {
                 self?.execute(action: action)
             })
             .disposed(by: disposeBag)
+
+        presenter.tradingAccount.bind { [weak self] cryptoCurrency in
+            guard let cryptoCurrency = cryptoCurrency else { return }
+            self?.addBuyButton(forCryptoCurrency: cryptoCurrency)
+        }
+        .disposed(by: disposeBag)
 
         presenter.setup()
     }
@@ -100,6 +110,24 @@ final class AssetDetailsViewController: BaseScreenViewController {
             trailingButtonStyle: presenter.trailingButton
         )
         titleViewStyle = presenter.titleView
+    }
+
+    private func addBuyButton(forCryptoCurrency cryptoCurrency: CryptoCurrency) {
+        let buyButtonAsUIView: UIView = UIHostingController(rootView: BuyButtonView(store: Store<BuyButtonState, BuyButtonAction>(
+            initialState: .init(cryptoCurrency: cryptoCurrency),
+            reducer: buyButtonReducer,
+            environment: .init()
+        ))).view
+
+        view.addSubview(buyButtonAsUIView)
+        buyButtonAsUIView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -16)
+        buyButtonAsUIView.layoutToSuperview(axis: .horizontal)
+        tableView.contentInset = UIEdgeInsets(
+            top: 0,
+            left: 0,
+            bottom: BuyButtonView.height,
+            right: 0
+        )
     }
 
     // MARK: - Actions

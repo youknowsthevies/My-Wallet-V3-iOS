@@ -2,6 +2,7 @@
 
 import Combine
 import RxSwift
+import WalletPayloadKit
 
 public protocol AuthenticatorRepositoryCombineAPI: AnyObject {
 

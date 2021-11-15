@@ -17,12 +17,8 @@ let package = Package(
             url: "https://github.com/ReactiveX/RxSwift.git",
             from: "5.1.3"
         ),
-        .package(
-            name: "RxCombine",
-            url: "https://github.com/paulo-bc/RxCombine.git",
-            from: "1.6.2"
-        ),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../Test")
     ],
     targets: [
         .target(
@@ -31,7 +27,6 @@ let package = Package(
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxRelay", package: "RxSwift"),
-                .product(name: "RxCombine", package: "RxCombine"),
                 .product(name: "ToolKit", package: "Tool")
             ]
         ),
@@ -40,7 +35,8 @@ let package = Package(
             dependencies: [
                 .target(name: "RxToolKit"),
                 .product(name: "RxBlocking", package: "RxSwift"),
-                .product(name: "RxTest", package: "RxSwift")
+                .product(name: "RxTest", package: "RxSwift"),
+                .product(name: "TestKit", package: "Test")
             ]
         )
     ]

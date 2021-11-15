@@ -52,7 +52,7 @@ extension InterestTransactionEngine {
                 throw TransactionValidationFailure(state: .uninitialized)
             }
             guard try pendingTransaction.amount >= minimum else {
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
+                throw TransactionValidationFailure(state: .belowMinimumLimit(minimum))
             }
         }
     }
@@ -61,9 +61,15 @@ extension InterestTransactionEngine {
         _ pendingTransaction: PendingTransaction,
         balance: MoneyValue
     ) -> Completable {
-        Completable.fromCallable {
+        Completable.fromCallable { [sourceAccount, transactionTarget] in
             guard try pendingTransaction.amount <= balance else {
-                throw TransactionValidationFailure(state: .insufficientFunds)
+                throw TransactionValidationFailure(
+                    state: .insufficientFunds(
+                        balance,
+                        sourceAccount!.currencyType,
+                        transactionTarget!.currencyType
+                    )
+                )
             }
         }
     }
@@ -114,7 +120,7 @@ extension InterestTransactionEngine {
     }
 }
 
-extension InterestTransactionEngine where Self: TransactionEngine {
+extension InterestTransactionEngine {
 
     public var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         sourceExchangeRatePair

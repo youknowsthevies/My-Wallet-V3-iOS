@@ -243,8 +243,7 @@ struct WelcomeView_Previews: PreviewProvider {
                     mainQueue: .main,
                     sessionTokenService: NoOpSessionTokenService(),
                     deviceVerificationService: NoOpDeviceVerificationService(),
-                    featureFlags: NoOpInternalFeatureFlagService(),
-                    appFeatureConfigurator: NoOpFeatureConfigurator(),
+                    featureFlagsService: NoOpFeatureFlagsService(),
                     buildVersionProvider: { "Test version" }
                 )
             )

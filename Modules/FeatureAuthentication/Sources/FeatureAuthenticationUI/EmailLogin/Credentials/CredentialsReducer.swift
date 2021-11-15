@@ -99,7 +99,7 @@ struct CredentialsEnvironment {
     let loginService: LoginServiceAPI
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let externalAppOpener: ExternalAppOpener
-    let appFeatureConfigurator: FeatureConfiguratorAPI
+    let featureFlagsService: FeatureFlagsServiceAPI
     let errorRecorder: ErrorRecording
     let walletIdentifierValidator: (String) -> Bool
 
@@ -116,7 +116,7 @@ struct CredentialsEnvironment {
         loginService: LoginServiceAPI = resolve(),
         errorRecorder: ErrorRecording,
         externalAppOpener: ExternalAppOpener = resolve(),
-        appFeatureConfigurator: FeatureConfiguratorAPI,
+        featureFlagsService: FeatureFlagsServiceAPI,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         walletIdentifierValidator: @escaping (String) -> Bool = TextValidation.walletIdentifierValidator
     ) {
@@ -129,7 +129,7 @@ struct CredentialsEnvironment {
         self.loginService = loginService
         self.errorRecorder = errorRecorder
         self.externalAppOpener = externalAppOpener
-        self.appFeatureConfigurator = appFeatureConfigurator
+        self.featureFlagsService = featureFlagsService
         self.analyticsRecorder = analyticsRecorder
         self.walletIdentifierValidator = walletIdentifierValidator
     }
@@ -218,6 +218,10 @@ let credentialsReducer = Reducer.combine(
             state.walletPairingState.emailCode = info.emailCode
             if let nabuInfo = info.nabuInfo {
                 state.nabuInfo = nabuInfo
+            }
+            if let type = info.twoFAType, type.isTwoFactor {
+                // authenticate with empty password to set GUID and send SMS if needed
+                return Effect(value: .walletPairing(.authenticate("")))
             }
             return .none
 
@@ -396,10 +400,14 @@ private func authenticateDidFail(
                 return Effect(value: .walletPairing(.approveEmailAuthorization))
             }
         case .sms:
-            state.twoFAState = .init()
+            state.twoFAState = .init(
+                twoFAType: .sms
+            )
             return Effect(value: .walletPairing(.handleSMS))
         case .google:
-            state.twoFAState = .init()
+            state.twoFAState = .init(
+                twoFAType: .google
+            )
             return Effect(value: .twoFA(.showTwoFACodeField(true)))
         case .yubiKey, .yubikeyMtGox:
             state.hardwareKeyState = .init()

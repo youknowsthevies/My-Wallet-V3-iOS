@@ -64,7 +64,8 @@ let package = Package(
                 .product(name: "NetworkError", package: "NetworkErrors"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "RxToolKit", package: "RxTool"),
-                .product(name: "Zxcvbn", package: "Zxcvbn")
+                .product(name: "Zxcvbn", package: "Zxcvbn"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),
         .target(

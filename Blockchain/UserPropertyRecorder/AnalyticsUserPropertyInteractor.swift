@@ -6,6 +6,7 @@ import FeatureAuthenticationDomain
 import PlatformKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 /// This class connect the analytics service with the application layer
 final class AnalyticsUserPropertyInteractor {

@@ -41,6 +41,8 @@ public enum AppFeature: Int, CaseIterable {
 
     case unifiedSignIn
 
+    case pollingForEmailLogin
+
     // MARK: - SDD
 
     /// Enables SDD checks. If `false`, all checks immediately fail
@@ -57,9 +59,6 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable new Sell Transaction flow
     case sellUsingTransactionFlowEnabled
-
-    /// Enable Dynamic Assets
-    case dynamicAssetsEnabled
 
     // MARK: - Transactions Flow
 
@@ -95,16 +94,16 @@ extension AppFeature {
             return "show_email_verification_in_buy_flow_ios"
         case .unifiedSignIn:
             return "sso_unified_sign_in_enabled_ios"
+        case .pollingForEmailLogin:
+            return "ios_ff_sso_polling"
         case .sddEnabled:
             return "sdd_enabled_ios"
         case .customerSupportChat:
             return "customer_support_chat_ios"
         case .sellUsingTransactionFlowEnabled:
             return "sell_using_transaction_flow_enabled_ios"
-        case .dynamicAssetsEnabled:
-            return "dynamic_assets_ios"
         case .useTransactionsFlowToBuyCrypto:
-            return "use_transaction_flow_buy_ios"
+            return "ios_use_transaction_flow_buy"
         }
     }
 
@@ -135,13 +134,14 @@ extension AppFeature {
             return false
         case .unifiedSignIn:
             return false
+        case .pollingForEmailLogin:
+            return true
         case .sddEnabled:
             return false
         case .customerSupportChat:
             return false
         case .sellUsingTransactionFlowEnabled,
-             .useTransactionsFlowToBuyCrypto,
-             .dynamicAssetsEnabled:
+             .useTransactionsFlowToBuyCrypto:
             return true
         }
     }

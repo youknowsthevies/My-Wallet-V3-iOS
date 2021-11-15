@@ -25,3 +25,30 @@ extension NetworkError: Equatable {
         String(describing: lhs) == String(describing: rhs)
     }
 }
+
+extension NetworkError: CustomStringConvertible {
+
+    public var description: String {
+        switch self {
+        case .authentication(let error), .urlError(let error as Error):
+            return error.localizedDescription
+        case .payloadError(let error as Error), .serverError(let error as Error):
+            return String(describing: error)
+        case .rawServerError(let error):
+            do {
+                guard let payload = error.payload else { throw error }
+                guard let string = String(data: payload, encoding: .utf8) else { throw error }
+                return
+                    """
+                    HTTP \(error.response.statusCode)
+                    \(string)
+                    """
+            } catch _ {
+                return
+                    """
+                    HTTP \(error.response.statusCode)
+                    """
+            }
+        }
+    }
+}

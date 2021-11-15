@@ -104,34 +104,25 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         }
     }
 
-    func showErrorRecoverySuggestion(errorState: TransactionErrorState, transactionModel: TransactionModel) {
+    func showErrorRecoverySuggestion(
+        action: AssetAction,
+        errorState: TransactionErrorState,
+        transactionModel: TransactionModel
+    ) {
         // NOTE: this will be fixed in IOS-5576
         let view = ErrorRecoveryView(
             store: .init(
                 initialState: ErrorRecoveryState(
-                    title: "Not Enough ETH",
-                    // swiftlint:disable:next line_length
-                    message: "The max you can send from this wallet is **0.14391831 ETH**. Buy **0.14381931 ETH** now to send this amount.",
-                    callouts: [
-                        ErrorRecoveryState.Callout(
-                            image: ImageResource.local(
-                                name: "crypto-eth",
-                                bundle: .platformUIKit
-                            ).image!,
-                            title: "Get More ETH",
-                            message: "Buy 0.14381931 ETH",
-                            callToAction: "BUY"
-                        )
-                    ]
+                    title: errorState.recoveryWarningTitle(for: action),
+                    message: errorState.recoveryWarningMessage(for: action),
+                    callouts: errorState.recoveryWarningCallouts(for: action)
                 ),
                 reducer: errorRecoveryReducer,
                 environment: ErrorRecoveryEnvironment(
                     close: {
                         transactionModel.process(action: .returnToPreviousStep)
                     },
-                    calloutTapped: { _ in
-                        print("Callout Tapped")
-                    }
+                    calloutTapped: handleCalloutTapped(callout:)
                 )
             )
         )
@@ -140,6 +131,10 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         viewController.modalPresentationStyle = .custom
         let presenter = topMostViewControllerProvider.topMostViewController
         presenter?.present(viewController, animated: true, completion: nil)
+    }
+
+    private func handleCalloutTapped(callout: ErrorRecoveryState.Callout) {
+        unimplemented()
     }
 
     func pop() {
@@ -458,6 +453,7 @@ extension AssetAction {
              .withdraw,
              .receive,
              .send,
+             .sign,
              .swap,
              .viewActivity,
              .interestWithdraw,

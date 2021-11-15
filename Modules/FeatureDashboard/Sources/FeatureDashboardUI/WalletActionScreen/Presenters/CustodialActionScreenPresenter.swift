@@ -144,7 +144,8 @@ extension AssetAction {
     fileprivate var walletAction: WalletAction? {
         switch self {
         case .interestTransfer,
-             .interestWithdraw:
+             .interestWithdraw,
+             .sign:
             return nil
         case .viewActivity:
             return .activity

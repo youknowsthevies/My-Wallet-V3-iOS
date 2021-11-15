@@ -29,10 +29,7 @@ enum TransactionFlowDescriptor {
                 }
                 return prefix + source.label
             case .withdraw:
-                guard let source = state.source as? FiatAccount else {
-                    fatalError("Expected a FiatAccount")
-                }
-                return "\(source.fiatCurrency.displayCode) " + LocalizedString.Withdraw.account
+                return LocalizedString.Withdraw.availableToWithdrawTitle
             case .interestTransfer,
                  .interestWithdraw:
                 guard let account = state.source else {
@@ -51,7 +48,8 @@ enum TransactionFlowDescriptor {
                     LocalizedString.Sell.headerTitlePrefix,
                     state.source?.label
                 ].compactMap { $0 }.joined(separator: " ")
-            case .receive,
+            case .sign,
+                 .receive,
                  .viewActivity:
                 unimplemented()
             }
@@ -78,7 +76,7 @@ enum TransactionFlowDescriptor {
                 }
                 return prefix + account.label
             case .withdraw:
-                return formatForHeader(moneyValue: state.availableBalance)
+                return formatForHeader(moneyValue: state.maxSpendable)
             case .interestTransfer,
                  .interestWithdraw:
                 guard let destination = state.destination else {
@@ -101,7 +99,8 @@ enum TransactionFlowDescriptor {
                     LocalizedString.Sell.headerSubtitlePrefix,
                     state.destination?.label
                 ].compactMap { $0 }.joined(separator: " ")
-            case .receive,
+            case .sign,
+                 .receive,
                  .viewActivity:
                 unimplemented()
             }
@@ -123,7 +122,8 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Withdraw.withdrawTo
             case .interestTransfer:
                 return LocalizedString.Transfer.transferFrom
-            case .receive,
+            case .sign,
+                 .receive,
                  .send,
                  .viewActivity,
                  .withdraw:
@@ -137,7 +137,8 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Swap.sourceAccountPicketSubtitle
             case .sell:
                 return LocalizedString.Sell.selectSourceSubtitle
-            case .withdraw,
+            case .sign,
+                 .withdraw,
                  .deposit,
                  .receive,
                  .buy,
@@ -162,7 +163,8 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Sell.title
             case .interestTransfer:
                 return LocalizedString.Transfer.transferFrom
-            case .deposit,
+            case .sign,
+                 .deposit,
                  .receive,
                  .send,
                  .viewActivity:
@@ -176,7 +178,8 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Swap.destinationAccountPicketSubtitle
             case .sell:
                 return LocalizedString.Sell.selectDestinationTitle
-            case .deposit,
+            case .sign,
+                 .deposit,
                  .receive,
                  .buy,
                  .send,
@@ -201,7 +204,8 @@ enum TransactionFlowDescriptor {
                 return LocalizedString.Withdraw.withdraw
             case .interestTransfer:
                 return LocalizedString.transfer
-            case .deposit,
+            case .sign,
+                 .deposit,
                  .receive,
                  .buy,
                  .sell,
@@ -223,20 +227,25 @@ enum TransactionFlowDescriptor {
         switch action {
         case .swap,
              .withdraw,
+             .interestWithdraw,
              .buy:
             return true
-        case .deposit,
+        case .sign,
+             .deposit,
              .receive,
              .sell,
              .send,
              .viewActivity,
-             .interestWithdraw,
              .interestTransfer:
             return false
         }
     }
 
-    static func confirmDisclaimerText(action: AssetAction) -> String {
+    static func confirmDisclaimerText(
+        action: AssetAction,
+        currencyCode: String = "",
+        accountLabel: String = ""
+    ) -> String {
         switch action {
         case .swap:
             return LocalizedString.Swap.confirmationDisclaimer
@@ -244,7 +253,14 @@ enum TransactionFlowDescriptor {
             return LocalizedString.Withdraw.confirmationDisclaimer
         case .buy:
             return LocalizedString.Buy.confirmationDisclaimer
-        case .deposit,
+        case .interestWithdraw:
+            return String(
+                format: LocalizedString.InterestWithdraw.confirmationDisclaimer,
+                currencyCode,
+                accountLabel
+            )
+        case .sign,
+             .deposit,
              .receive,
              .sell,
              .send,

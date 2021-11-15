@@ -10,3 +10,14 @@ public enum OrderDirection: String, Codable {
     /// From custodial to custodial
     case `internal` = "INTERNAL"
 }
+
+extension OrderDirection {
+
+    public var isFromCustodial: Bool {
+        self == .toUserKey || self == .internal
+    }
+
+    public var isToCustodial: Bool {
+        self == .fromUserKey || self == .internal
+    }
+}

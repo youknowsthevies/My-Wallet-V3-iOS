@@ -1,0 +1,30 @@
+{
+  "id": "a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c",
+  "partner": "YAPILY",
+  "state": "ACTIVE",
+  "currency": "GBP",
+  "details": {
+    "accountNumber": "6804",
+    "accountName": "Oliver Kenneth Atkinson",
+    "bankName": "Monzo",
+    "sortCode": "040004"
+  },
+  "attributes": {
+    "entity": "Safeconnect(UK)",
+    "media": [
+      {
+        "type": "logo",
+        "source": "https://images.yapily.com/image/332bb781-3cc2-4f3e-ae79-1aba09fac991?size\u003d0"
+      },
+      {
+        "type": "icon",
+        "source": "https://images.yapily.com/image/f70dc041-c7a5-47d3-9c6b-846778eac01a?size\u003d0"
+      }
+    ],
+    "status": "AUTHORIZED",
+    "qrcodeUrl": "https://images.yapily.com/image/d153aa19-66ce-4b0f-af04-47f919af166f/1634212589?size\u003d0",
+    "authorisationUrl": "https://verify.monzo.com/open-banking/authorize?client_id\u003doauth2client_00009pp1CRt4KarIZM7Pr1\u0026response_type\u003dcode+id_token\u0026state\u003d6bd4265f58df4ebe83580902fe5bd3fe\u0026nonce\u003d6bd4265f58df4ebe83580902fe5bd3fe\u0026scope\u003dopenid+accounts\u0026redirect_uri\u003dhttps%3A%2F%2Fauth.yapily.com%2F\u0026request\u003deyJraWQiOiIxMTJVM2I1MXk3Zm9BMjBNcTIybE5PUEFLVDgiLCJhbGciOiJQUzI1NiJ9.eyJhdWQiOiJodHRwczovL2FwaS5tb256by5jb20vb3Blbi1iYW5raW5nLyIsInNjb3BlIjoib3BlbmlkIGFjY291bnRzIiwiaXNzIjoib2F1dGgyY2xpZW50XzAwMDA5cHAxQ1J0NEthcklaTTdQcjEiLCJjbGllbnRfaWQiOiJvYXV0aDJjbGllbnRfMDAwMDlwcDFDUnQ0S2FySVpNN1ByMSIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIGlkX3Rva2VuIiwicmVkaXJlY3RfdXJpIjoiaHR0cHM6Ly9hdXRoLnlhcGlseS5jb20vIiwic3RhdGUiOiI2YmQ0MjY1ZjU4ZGY0ZWJlODM1ODA5MDJmZTViZDNmZSIsImNsYWltcyI6eyJpZF90b2tlbiI6eyJhY3IiOnsidmFsdWVzIjpbInVybjpvcGVuYmFua2luZzpwc2QyOnNjYSJdLCJlc3NlbnRpYWwiOnRydWV9LCJvcGVuYmFua2luZ19pbnRlbnRfaWQiOnsidmFsdWUiOiJvYmFpc3BhY2NvdW50aW5mb3JtYXRpb25jb25zZW50XzAwMDBBQ00yRFBPS2NxY3ZJMk9JNVoiLCJlc3NlbnRpYWwiOnRydWV9fSwidXNlcmluZm8iOnsib3BlbmJhbmtpbmdfaW50ZW50X2lkIjp7InZhbHVlIjoib2JhaXNwYWNjb3VudGluZm9ybWF0aW9uY29uc2VudF8wMDAwQUNNMkRQT0tjcWN2STJPSTVaIiwiZXNzZW50aWFsIjp0cnVlfX19LCJub25jZSI6IjZiZDQyNjVmNThkZjRlYmU4MzU4MDkwMmZlNWJkM2ZlIiwianRpIjoiMDhjOGY2MTUtMTAxMC00ZTY5LWFhNzctNDU1ZDdmZDU0Mzc1IiwiaWF0IjoxNjM0MjEyNTg5LCJleHAiOjE2MzQyMTQzODl9.iKc_J7EbrdZ1ZfUNvhVA9sE-FdryiO7NdGVj3SNhis2d8jWIhdbKomWEiWNqqAwAMFT3plvyBc2ZbQYim26TwGsuX2oRRLqj0xnRggY1LPGYB4GdwWIf_UG8QXUy51ilG5zRzifuf03xOqF64ZnTttv8osoaYioTljTG2hm9iEk7L-GkZC-8hE-LBm7lamW7UMlSK8jFK-2PwbG4figzX0-nWODwJliQqol81b3tG-pTxynJEm3TfgpWid6h5sYGkX_YyN96cCxnRczKomnk4jI0vazlLPp7tC48b8gv50Avco_PJ_XCNZZv7MN2a-a-BfsWhclMar_0w07yl9J2yw",
+    "callbackPath": "nabu-gateway/payments/banktransfer/one-time-token"
+  },
+  "addedAt": "2021-10-14T11:56:10.152Z"
+}
