@@ -313,7 +313,7 @@ let verifyDeviceReducer = Reducer.combine(
                 else {
                     return .merge(
                         .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),
-                        .navigate(to: .upgradeAccount(exchangeOnly: false))
+                        .navigate(to: .credentials)
                     )
                 }
                 return .merge(
