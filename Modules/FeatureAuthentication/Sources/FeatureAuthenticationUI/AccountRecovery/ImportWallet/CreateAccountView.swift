@@ -72,8 +72,8 @@ struct CreateAccountView: View {
                 viewStore.send(.createButtonTapped)
             }
             .disabled(viewStore.password.isEmpty ||
-                        viewStore.password != viewStore.confirmPassword ||
-                        viewStore.passwordStrength == .weak)
+                viewStore.password != viewStore.confirmPassword ||
+                viewStore.passwordStrength == .weak)
             .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.createAccountButton)
         }
         .onDisappear {
