@@ -416,7 +416,7 @@ extension LocalizationConstants.FeatureAuthentication {
 
     public enum CreateAccount {
         public static let navigationTitle = NSLocalizedString(
-            "Create Account",
+            "Buy Crypto Now",
             comment: "Create Account screen: navigation title"
         )
         public enum TextFieldTitle {

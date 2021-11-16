@@ -12,6 +12,7 @@ import ToolKit
 public enum WelcomeAction: Equatable {
     case start
     case presentScreenFlow(WelcomeState.ScreenFlow)
+    case createWallet(CreateAccountAction)
     case emailLogin(EmailLoginAction)
     case restoreWallet(SeedPhraseAction)
     case deeplinkReceived(URL)
@@ -23,6 +24,7 @@ public enum WelcomeAction: Equatable {
     case secondPasswordNotice(SecondPasswordNotice.Action)
     case informSecondPasswordDetected
     case modalDismissed(WelcomeState.Modals)
+    case none
 }
 
 // MARK: - Properties
@@ -31,7 +33,9 @@ public enum WelcomeAction: Equatable {
 public struct WelcomeState: Equatable {
     public enum ScreenFlow {
         case welcomeScreen
+        case createScreen
         case createWalletScreen
+        case newCreateWalletScreen
         case emailLoginScreen
         case restoreWalletScreen
         /// this should only be used for internal builds
@@ -46,6 +50,7 @@ public struct WelcomeState: Equatable {
     public var screenFlow: ScreenFlow
     public var modals: Modals
     public var buildVersion: String
+    public var createWalletState: CreateAccountState?
     public var emailLoginState: EmailLoginState?
     public var restoreWalletState: SeedPhraseState?
 
@@ -56,6 +61,7 @@ public struct WelcomeState: Equatable {
     var manualPairingEnabled: Bool
 
     public init() {
+        createWalletState = nil
         restoreWalletState = nil
         emailLoginState = nil
         manualCredentialsState = nil
@@ -99,6 +105,19 @@ public struct WelcomeEnvironment {
 }
 
 public let welcomeReducer = Reducer.combine(
+    createAccountReducer
+        .optional()
+        .pullback(
+            state: \.createWalletState,
+            action: /WelcomeAction.createWallet,
+            environment: {
+                CreateAccountEnvironment(
+                    mainQueue: $0.mainQueue,
+                    externalAppOpener: $0.externalAppOpener,
+                    analyticsRecorder: $0.analyticsRecorder
+                )
+            }
+        ),
     emailLoginReducer
         .optional()
         .pullback(
@@ -185,6 +204,25 @@ public let welcomeReducer = Reducer.combine(
         case .presentScreenFlow(let screenFlow):
             state.screenFlow = screenFlow
             switch screenFlow {
+            case .createScreen:
+                return environment
+                    .featureFlagsService
+                    .isEnabled(.local(.newCreateWalletScreen))
+                    .receive(on: environment.mainQueue)
+                    .catchToEffect()
+                    .map { result -> WelcomeAction in
+                        guard case .success(let isEnabled) = result else {
+                            return .none
+                        }
+                        switch isEnabled {
+                        case true:
+                            return .presentScreenFlow(.newCreateWalletScreen)
+                        case false:
+                            return .presentScreenFlow(.createWalletScreen)
+                        }
+                    }
+            case .newCreateWalletScreen:
+                state.createWalletState = .init()
             case .emailLoginScreen:
                 state.emailLoginState = .init()
             case .restoreWalletScreen:
@@ -210,6 +248,14 @@ public let welcomeReducer = Reducer.combine(
         case .requestedToDecryptWallet,
              .requestedToRestoreWallet:
             // handled in core coordinator
+            return .none
+
+        case .createWallet(.closeButtonTapped):
+            state.screenFlow = .welcomeScreen
+            state.createWalletState = nil
+            return .none
+
+        case .createWallet:
             return .none
 
         case .emailLogin(.closeButtonTapped):
@@ -276,6 +322,9 @@ public let welcomeReducer = Reducer.combine(
             return .none
 
         case .modalDismissed:
+            return .none
+
+        case .none:
             return .none
         }
     }

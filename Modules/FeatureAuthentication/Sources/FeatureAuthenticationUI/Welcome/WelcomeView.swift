@@ -57,20 +57,42 @@ public struct WelcomeView: View {
         .sheet(
             isPresented: .constant(
                 viewStore.screenFlow == .emailLoginScreen
+                    || viewStore.screenFlow == .newCreateWalletScreen
                     || viewStore.screenFlow == .restoreWalletScreen
                     || viewStore.screenFlow == .manualLoginScreen
                     || viewStore.modals == .secondPasswordNoticeScreen
             ),
             onDismiss: {
                 // TODO: This is ugly, refactor by navigation routes extension by Oliver (PR #2791)
-                if viewStore.screenFlow == .emailLoginScreen || viewStore.screenFlow == .restoreWalletScreen {
+                if viewStore.screenFlow == .emailLoginScreen ||
+                    viewStore.screenFlow == .newCreateWalletScreen ||
+                    viewStore.screenFlow == .restoreWalletScreen {
                     viewStore.send(.presentScreenFlow(.welcomeScreen))
                 } else if viewStore.modals == .secondPasswordNoticeScreen {
                     viewStore.send(.modalDismissed(.secondPasswordNoticeScreen))
                 }
             },
             content: {
-                if viewStore.screenFlow == .emailLoginScreen {
+                if viewStore.screenFlow == .newCreateWalletScreen {
+                    IfLetStore(
+                        store.scope(
+                            state: \.createWalletState,
+                            action: WelcomeAction.createWallet
+                        ),
+                        then: { store in
+                            NavigationView {
+                                CreateAccountView(store: store)
+                                    .trailingNavigationButton(.close) {
+                                        viewStore.send(.createWallet(.closeButtonTapped))
+                                    }
+                                    .whiteNavigationBarStyle()
+                                    .navigationTitle(
+                                        LocalizedString.Button.buyCryptoNow
+                                    )
+                            }
+                        }
+                    )
+                } else if viewStore.screenFlow == .emailLoginScreen {
                     IfLetStore(
                         store.scope(
                             state: \.emailLoginState,
@@ -179,7 +201,7 @@ public struct WelcomeView: View {
     private var buttonSection: some View {
         VStack(spacing: Layout.buttonSpacing) {
             PrimaryButton(title: LocalizedString.Button.buyCryptoNow) {
-                viewStore.send(.presentScreenFlow(.createWalletScreen))
+                viewStore.send(.presentScreenFlow(.createScreen))
             }
             .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.createWalletButton)
             SecondaryButton(title: LocalizedString.Button.login) {

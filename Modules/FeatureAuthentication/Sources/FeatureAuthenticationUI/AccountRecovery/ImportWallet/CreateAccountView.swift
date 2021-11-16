@@ -74,8 +74,8 @@ struct CreateAccountView: View {
             .disabled(viewStore.password.isEmpty || viewStore.password != viewStore.confirmPassword)
             .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.createAccountButton)
         }
-        .onDisappear {
-            viewStore.send(.onDisappear)
+        .onWillDisappear {
+            viewStore.send(.onWillDisappear)
         }
         .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
         .padding(

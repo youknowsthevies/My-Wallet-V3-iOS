@@ -9,7 +9,8 @@ import ToolKit
 // MARK: - Type
 
 public enum CreateAccountAction: Equatable {
-    case onDisappear
+    case onWillDisappear
+    case closeButtonTapped
     case didChangeEmailAddress(String)
     case didChangePassword(String)
     case didChangeConfirmPassword(String)
@@ -22,7 +23,7 @@ public enum CreateAccountAction: Equatable {
 
 // MARK: - Properties
 
-struct CreateAccountState: Equatable {
+public struct CreateAccountState: Equatable {
     var emailAddress: String
     var password: String
     var confirmPassword: String
@@ -61,10 +62,12 @@ let createAccountReducer = Reducer<
     CreateAccountEnvironment
 > { state, action, environment in
     switch action {
-    case .onDisappear:
+    case .onWillDisappear:
         environment.analyticsRecorder.record(
             event: .importWalletCancelled
         )
+        return .none
+    case .closeButtonTapped:
         return .none
     case .didChangeEmailAddress(let emailAddress):
         state.emailAddress = emailAddress

@@ -27,6 +27,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable polling for email login
     case pollingForEmailLogin
 
+    /// New Create Wallet Screen
+    case newCreateWalletScreen
+
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
@@ -43,7 +46,8 @@ public enum InternalFeature: String, CaseIterable {
              .newOnboardingTour,
              .newTxFlowLimitsUIEnabled,
              .openBanking,
-             .pollingForEmailLogin:
+             .pollingForEmailLogin,
+             .newCreateWalletScreen:
             return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
@@ -78,6 +82,8 @@ extension InternalFeature {
             return "Unified Sign In"
         case .pollingForEmailLogin:
             return "Polling (Email Login)"
+        case .newCreateWalletScreen:
+            return "New Create Wallet Screen"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
         case .openBanking:
