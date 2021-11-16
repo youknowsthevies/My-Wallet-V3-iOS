@@ -15,6 +15,7 @@ protocol ConfirmationPageContentReducing {
     var title: String { get }
     /// The `Cells` on the `ConfirmationPage`
     var cells: [DetailsScreen.CellType] { get }
+    var buttons: [ButtonViewModel] { get }
     var continueButtonViewModel: ButtonViewModel { get }
     var cancelButtonViewModel: ButtonViewModel { get }
 }
@@ -38,6 +39,13 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
 
+    /// Buttons that should be displayed on the confirmation screen.
+    /// Wallet connect transactions will require a `Cancel` button so
+    /// we will have to introspect the `TransactionState` to determine
+    /// what buttons to show. This is the only time the `Cancel` button
+    /// should be visible.
+    var buttons: [ButtonViewModel] = []
+
     let termsCheckboxViewModel: CheckboxViewModel = .termsCheckboxViewModel
 
     /// A `CheckboxViewModel` that prompts the user to confirm
@@ -60,6 +68,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         self.messageRecorder = messageRecorder
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
         continueButtonViewModel = .primary(with: "")
+        buttons.append(continueButtonViewModel)
         memoModel = TextFieldViewModel(
             with: .memo,
             validator: TextValidationFactory.General.alwaysValid,
@@ -80,6 +89,10 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     }
 
     private func createCells(state: TransactionState) -> [DetailsScreen.CellType] {
+        if state.action == .sign {
+            buttons.insert(cancelButtonViewModel, at: 0)
+        }
+
         let amount = state.amount
         let fee = state.pendingTransaction?.feeAmount ?? .zero(currency: amount.currency)
         let value = (try? amount + fee) ?? .zero(currency: amount.currency)

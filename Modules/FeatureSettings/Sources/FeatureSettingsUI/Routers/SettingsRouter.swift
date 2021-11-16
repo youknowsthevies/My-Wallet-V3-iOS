@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import FeatureKYCDomain
@@ -27,6 +28,20 @@ public protocol AuthenticationCoordinating: AnyObject {
 
 public protocol ExchangeCoordinating: AnyObject {
     func start(from viewController: UIViewController)
+}
+
+public enum AccountLinkingFlowPresenterCompletion {
+    case dismiss
+    case select(PaymentMethod)
+}
+
+public protocol AccountLinkingFlowPresenterAPI {
+
+    func presentAccountLinkingFlow(
+        from presenter: UIViewController,
+        filter: @escaping (PaymentMethodType) -> Bool,
+        completion: @escaping (AccountLinkingFlowPresenterCompletion) -> Void
+    )
 }
 
 public protocol PaymentMethodsLinkerAPI {
@@ -70,14 +85,17 @@ final class SettingsRouter: SettingsRouterAPI {
     private let pitConnectionAPI: PITConnectionStatusProviding
     private let builder: SettingsBuilding
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     /// The router for linking a new bank
     private var linkBankFlowRouter: LinkBankFlowStarter?
 
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
+    private let presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI
 
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
+    private var bag: Set<AnyCancellable> = []
 
     init(
         appCoordinator: AppCoordinating = resolve(),
@@ -97,7 +115,9 @@ final class SettingsRouter: SettingsRouterAPI {
         passwordRepository: PasswordRepositoryAPI = resolve(),
         repository: DataRepositoryAPI = resolve(),
         paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
+        presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI = resolve()
     ) {
         self.wallet = wallet
         self.appCoordinator = appCoordinator
@@ -116,6 +136,8 @@ final class SettingsRouter: SettingsRouterAPI {
         self.repository = repository
         self.paymentMethodLinker = paymentMethodLinker
         self.analyticsRecorder = analyticsRecorder
+        self.featureFlagsService = featureFlagsService
+        self.presentAccountLinkingFlow = presentAccountLinkingFlow
 
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -191,11 +213,26 @@ final class SettingsRouter: SettingsRouterAPI {
                 }
             }
         case .showAddBankScreen(let fiatCurrency):
-            if fiatCurrency == .USD {
+            switch fiatCurrency {
+            case .USD:
                 showLinkBankFlow()
-                return
+            case .GBP, .EUR:
+                featureFlagsService
+                    .isEnabled(.remote(.openBanking))
+                    .if(
+                        then: { [weak self] in
+                            guard let self = self else { return }
+                            self.showLinkOpenBankingFlow(currency: fiatCurrency)
+                        },
+                        else: { [weak self] in
+                            guard let self = self else { return }
+                            self.showFundTransferDetails(currency: fiatCurrency)
+                        }
+                    )
+                    .store(in: &bag)
+            default:
+                showFundTransferDetails(currency: fiatCurrency)
             }
-            appCoordinator.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: false)
         case .showAppStore:
             appStoreOpener.openAppStore()
         case .showBackupScreen:
@@ -300,6 +337,43 @@ final class SettingsRouter: SettingsRouterAPI {
         case .none:
             break
         }
+    }
+
+    private func showFundTransferDetails(currency: FiatCurrency) {
+        appCoordinator.showFundTrasferDetails(fiatCurrency: currency, isOriginDeposit: false)
+    }
+
+    private func showLinkOpenBankingFlow(currency: FiatCurrency) {
+
+        guard let viewController = navigationRouter.topMostViewControllerProvider.topMostViewController else {
+            fatalError("Failed to present open banking flow, no view controller available for presentation")
+        }
+
+        presentAccountLinkingFlow
+            .presentAccountLinkingFlow(
+                from: viewController,
+                filter: { type in
+                    type.method.isFunds || type.method.isBankTransfer
+                },
+                completion: { [weak self] result in
+                    guard let self = self else { return }
+                    viewController.dismiss(animated: true) {
+                        switch result {
+                        case .dismiss:
+                            break
+                        case .select(let method):
+                            switch method.type {
+                            case .funds:
+                                self.showFundTransferDetails(currency: currency)
+                            case .bankTransfer:
+                                self.showLinkBankFlow()
+                            default:
+                                assertionFailure("Unsupported payment method: \(method)")
+                            }
+                        }
+                    }
+                }
+            )
     }
 
     private func showLinkBankFlow() {

@@ -62,16 +62,8 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     public let accountNumber: String
     public let accountType: LinkedBankAccountType
     public let paymentType: PaymentMethodPayloadType
-
-    /// We currently don't support deposit on all linked bank accounts
-    ///
-    /// - Note: This is because we haven't yet implemented Open Banking (OB) support
-    /// but we can still get those types of account since Web & Android supports OB.
-    ///
-    /// - important: Once we add support for Open Banking this should be removed
-    ///
-    /// - returns: `true` in case the linked bank supports deposit, otherwise `false`
-    public let supportsDeposit: Bool
+    public let partner: LinkedBankData.Partner
+    public let data: LinkedBankData
 
     // MARK: - Init
 
@@ -82,7 +74,8 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         accountType: LinkedBankAccountType,
         currency: FiatCurrency,
         paymentType: PaymentMethodPayloadType,
-        supportsDeposit: Bool
+        partner: LinkedBankData.Partner,
+        data: LinkedBankData
     ) {
         self.label = label
         self.accountId = accountId
@@ -90,7 +83,8 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         self.accountNumber = accountNumber
         fiatCurrency = currency
         self.paymentType = paymentType
-        self.supportsDeposit = supportsDeposit
+        self.partner = partner
+        self.data = data
     }
 
     // MARK: - BlockchainAccount

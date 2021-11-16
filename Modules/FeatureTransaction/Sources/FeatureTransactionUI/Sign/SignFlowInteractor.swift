@@ -16,10 +16,6 @@ extension SignFlowInteractor: TransactionFlowListener {
         listener?.presentKYCFlow(from: viewController, completion: completion)
     }
 
-    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
-        listener?.presentKYCUpgradeFlow(from: viewController, completion: completion)
-    }
-
     func dismissTransactionFlow() {
         listener?.signFlowDidComplete(with: .abandoned)
     }

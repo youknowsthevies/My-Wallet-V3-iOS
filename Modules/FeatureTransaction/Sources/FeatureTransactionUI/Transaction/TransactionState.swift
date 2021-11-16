@@ -389,6 +389,7 @@ enum TransactionFlowStep: Equatable {
     case linkACard
     case linkABank
     case linkBankViaWire
+    case authorizeOpenBanking
     case enterAddress
     case selectTarget
     case enterAmount
@@ -422,7 +423,8 @@ extension TransactionFlowStep {
              .linkPaymentMethod,
              .linkACard,
              .linkABank,
-             .securityConfirmation:
+             .securityConfirmation,
+             .authorizeOpenBanking:
             return false
         }
     }
@@ -435,7 +437,8 @@ extension TransactionFlowStep {
              .linkACard,
              .linkABank,
              .linkBankViaWire,
-             .securityConfirmation:
+             .securityConfirmation,
+             .authorizeOpenBanking:
             return true
         case .closed,
              .confirmDetail,

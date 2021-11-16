@@ -144,7 +144,11 @@ public struct CheckoutData {
         order.isPendingConfirmation && order.paymentMethod.isFunds
     }
 
-    public init(order: OrderDetails, paymentAccount: PaymentAccountDescribing? = nil, linkedBankData: LinkedBankData? = nil) {
+    public init(
+        order: OrderDetails,
+        paymentAccount: PaymentAccountDescribing? = nil,
+        linkedBankData: LinkedBankData? = nil
+    ) {
         self.order = order
         self.paymentAccount = paymentAccount
         self.linkedBankData = linkedBankData

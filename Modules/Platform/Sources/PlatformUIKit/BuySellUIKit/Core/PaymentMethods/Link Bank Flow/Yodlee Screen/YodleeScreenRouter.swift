@@ -11,7 +11,7 @@ struct YodleeRoute {
 
 protocol YodleeScreenInteractable: Interactable {
     var router: YodleeScreenRouting? { get set }
-    var listener: YodleeScreenListener? { get set }
+    var listener: LinkBankListener? { get set }
 }
 
 protocol YodleeScreenViewControllable: ViewControllable {}

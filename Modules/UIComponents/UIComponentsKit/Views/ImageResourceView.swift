@@ -35,9 +35,7 @@ public struct ImageResourceView<Loading: View, Placeholder: View>: View {
         if loader.isLoading {
             loading()
         } else if let image = loader.image {
-            configurations.reduce(image) { previous, configuration in
-                configuration(previous)
-            }
+            image.resizable()
         } else {
             placeholder()
         }
@@ -96,7 +94,7 @@ extension ImageResourceView {
 
 extension ImageResourceView {
 
-    public init?(
+    public init(
         systemName: String,
         @ViewBuilder loading: @escaping () -> Loading,
         @ViewBuilder placeholder: @escaping () -> Placeholder
@@ -104,7 +102,7 @@ extension ImageResourceView {
         self.init(resource: .systemName(systemName), loading: loading, placeholder: placeholder)
     }
 
-    public init?(
+    public init(
         named name: String,
         in bundle: Bundle,
         @ViewBuilder loading: @escaping () -> Loading,
@@ -132,14 +130,14 @@ extension ImageResourceView {
 
 extension ImageResourceView where Loading == ProgressView<EmptyView, EmptyView> {
 
-    public init?(
+    public init(
         systemName: String,
         @ViewBuilder placeholder: @escaping () -> Placeholder
     ) {
         self.init(.systemName(systemName), placeholder: placeholder)
     }
 
-    public init?(
+    public init(
         named name: String,
         in bundle: Bundle,
         @ViewBuilder placeholder: @escaping () -> Placeholder

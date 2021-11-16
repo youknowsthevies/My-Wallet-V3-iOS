@@ -57,7 +57,9 @@ final class CheckoutScreenInteractor {
     /// - returns: Observable<(CheckoutData, Bool)> that emits pairs composed of a  CheckoutData
     ///  and a `Bool` flag informing if the order needed confirmation.
     func `continue`() -> Observable<(CheckoutData, Bool)> {
-        if checkoutData.order.isPendingConfirmation {
+        if checkoutData.linkedBankData?.partner == .yapily {
+            return .just((checkoutData, false))
+        } else if checkoutData.order.isPendingConfirmation {
             return confirmationService
                 .confirm(checkoutData: checkoutData)
                 .flatMap(weak: self) { (self, data) -> Single<CheckoutData> in

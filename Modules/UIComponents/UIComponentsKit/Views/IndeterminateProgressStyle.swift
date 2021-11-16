@@ -15,7 +15,7 @@ public struct IndeterminateProgressStyle: ProgressViewStyle {
     public init(
         stroke: Color = Color.blue,
         background: Color = Color.blue.opacity(0.3),
-        lineWidth: Length = 12.5.vmin,
+        lineWidth: Length = 12.5.pmin,
         duration: TimeInterval = 1,
         indeterminate: Bool = true
     ) {

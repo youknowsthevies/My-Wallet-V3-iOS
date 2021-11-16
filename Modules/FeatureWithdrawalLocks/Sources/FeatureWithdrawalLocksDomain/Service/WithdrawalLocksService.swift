@@ -15,6 +15,7 @@ final class WithdrawalLocksService: WithdrawalLocksServiceAPI {
             .flatMap { [repository] currencyCode in
                 repository.withdrawLocks(currencyCode: currencyCode)
             }
+            .removeDuplicates()
             .share()
             .eraseToAnyPublisher()
     }()

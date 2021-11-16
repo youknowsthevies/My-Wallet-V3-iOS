@@ -26,7 +26,7 @@ public struct SearchableList<Data, Content: View, Empty: View>: View where
         tolerance: Double = 0.3,
         placeholder: String = "Search",
         accessory: Image = Image(systemName: "magnifyingglass"),
-        clear: Image = Image(systemName: "xmark.circle.fill"),
+        clear: Image = Image(systemName: "xmark"),
         layout: Layout = Layout(),
         algorithm: StringDistanceAlgorithm = FuzzyAlgorithm(caseInsensitive: false),
         @ViewBuilder content: @escaping (Data.Element) -> Content,
@@ -43,15 +43,20 @@ public struct SearchableList<Data, Content: View, Empty: View>: View where
 
     public var body: some View {
         VStack {
-            Divider()
-            TextField(placeholder, text: $search.term)
-                .overlay(
-                    accessoryOverlay,
-                    alignment: .trailing
-                )
-                .frame(height: layout.searchBarHeight, alignment: .center)
-                .padding([.leading, .trailing], layout.searchBarLeadingTrailingPadding)
-            Divider()
+            Group {
+                Divider()
+                TextField(placeholder, text: $search.term)
+                    .typography(.body2)
+                    .foregroundColor(.textDetail)
+                    .overlay(
+                        accessoryOverlay,
+                        alignment: .trailing
+                    )
+                    .frame(height: layout.searchBarHeight, alignment: .center)
+                    .padding([.leading, .trailing], layout.searchBarLeadingTrailingPadding)
+                Divider()
+            }
+            .frame(width: .infinity)
             if search.data.isEmpty {
                 empty()
             } else {
@@ -66,10 +71,11 @@ public struct SearchableList<Data, Content: View, Empty: View>: View where
         if search.isSearching {
             Button(
                 action: { search.term = "" },
-                label: { clear }
+                label: { clear.foregroundColor(.textDetail) }
             )
         } else {
             accessory
+                .foregroundColor(.textDetail)
         }
     }
 }
@@ -136,6 +142,10 @@ public class SearchObservableObject<Data>: ObservableObject where
         }
         data = source
             .filter { $0.description.distance(between: searchTerm, using: algorithm) < tolerance }
+            .sorted { l, r in
+                l.description.distance(between: searchTerm, using: algorithm)
+                    < r.description.distance(between: searchTerm, using: algorithm)
+            }
     }
 }
 
@@ -163,6 +173,8 @@ struct SearchableList_Previews: PreviewProvider {
                 "Dog" as SearchableListExample,
                 "Cat",
                 "Sheep",
+                "Big Dog",
+                "Golden Retriever Dog",
                 "Cow",
                 "Pig"
             ],

@@ -36,6 +36,15 @@ schemeTemplates:
       config: ${releaseConfig}
     run:
       config: ${debugConfig}
+      environmentVariables:
+        - variable: BLOCKCHAIN_DEBUG_NETWORK_REQUEST
+          value: TRUE
+          isEnabled: false
+        - variable: OS_ACTIVITY_MODE
+          value: disable
+          isEnabled: true
+      commandLineArguments:
+        "-_UIConstraintBasedLayoutLogUnsatisfiable NO": false
     test:
       config: ${debugConfig}
       gatherCoverageData: true

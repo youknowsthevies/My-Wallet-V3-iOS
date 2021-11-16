@@ -153,10 +153,10 @@ public class ReplayNetworkCommunicator: NetworkCommunicatorAPI {
             )
         }
 
-        init(_ request: URLRequest, _ __: String) {
+        init(_ request: URLRequest, _ path: String) {
             url = request.url!
             method = request.httpMethod.or(default: "GET")
-            filePath = __
+            filePath = path
         }
     }
 
@@ -194,6 +194,11 @@ public class ReplayNetworkCommunicator: NetworkCommunicatorAPI {
         set { data[makeKey(request)] = newValue }
     }
 
+    public subscript(request: NetworkRequest) -> Data? {
+        get { self[request.urlRequest] }
+        set { self[request.urlRequest] = newValue }
+    }
+
     public func error(_ request: URLRequest) {
         errors[makeKey(request)] = .badServerResponse
     }
@@ -223,6 +228,18 @@ public class ReplayNetworkCommunicator: NetworkCommunicatorAPI {
         return Just(ServerResponse(payload: value, response: response))
             .setFailureType(to: NetworkError.self)
             .eraseToAnyPublisher()
+    }
+}
+
+extension ReplayNetworkCommunicator.Key {
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.url == rhs.url && lhs.method == rhs.method
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(url)
+        hasher.combine(method)
     }
 }
 

@@ -51,10 +51,6 @@ final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListe
             .disposeOnDeactivate(interactor: self)
     }
 
-    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
-        unimplemented()
-    }
-
     func dismissTransactionFlow() {
         router?.dismissTransactionFlow()
     }

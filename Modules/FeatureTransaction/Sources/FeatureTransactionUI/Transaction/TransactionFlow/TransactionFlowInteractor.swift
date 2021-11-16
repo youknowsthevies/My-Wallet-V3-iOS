@@ -43,7 +43,8 @@ protocol TransactionFlowRouting: Routing {
     func showErrorRecoverySuggestion(
         action: AssetAction,
         errorState: TransactionErrorState,
-        transactionModel: TransactionModel
+        transactionModel: TransactionModel,
+        handleCalloutTapped: @escaping (ErrorRecoveryState.Callout) -> Void
     )
 
     /// Show the `source` selection screen. This replaces the root.
@@ -77,6 +78,9 @@ protocol TransactionFlowRouting: Routing {
     /// Present wiring instructions so users can deposit funds into their wallet
     func presentBankWiringInstructions(transactionModel: TransactionModel)
 
+    /// Present open banking authorisation so users can deposit funds into their wallet
+    func presentOpenBanking(transactionModel: TransactionModel, account: LinkedBankAccount, order: PendingTransaction)
+
     /// Route to the in progress screen. This pushes onto the navigation stack.
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
 
@@ -102,11 +106,16 @@ protocol TransactionFlowRouting: Routing {
     /// - Parameters:
     ///  - completion: A closure that is called with `true` if the user completed the KYC flow to move to the next tier.
     func presentKYCUpgradeFlow(completion: @escaping (Bool) -> Void)
+
+    /// Presentes a new transaction flow on top of the current one
+    func presentNewTransactionFlow(
+        to action: TransactionFlowAction,
+        completion: @escaping (Bool) -> Void
+    )
 }
 
 public protocol TransactionFlowListener: AnyObject {
     func presentKYCFlowIfNeeded(from viewController: UIViewController, completion: @escaping (Bool) -> Void)
-    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void)
     func dismissTransactionFlow()
 }
 
@@ -375,6 +384,14 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .initial:
             break
 
+        case .authorizeOpenBanking:
+            guard let bankAccount = previousState?.source as? LinkedBankAccount else { return }
+            guard let order = previousState?.pendingTransaction else { return }
+            router?.presentOpenBanking(
+                transactionModel: transactionModel,
+                account: bankAccount,
+                order: order
+            )
         case .enterAmount:
             router?.routeToPriceInput(
                 source: newState.source!,
@@ -514,7 +531,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             router?.showErrorRecoverySuggestion(
                 action: newState.action,
                 errorState: newState.errorState,
-                transactionModel: transactionModel
+                transactionModel: transactionModel,
+                handleCalloutTapped: { [weak self] callout in
+                    self?.handleCalloutTapped(callout: callout, state: newState)
+                }
             )
 
         case .closed:
@@ -553,6 +573,20 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             action: .deposit,
             passwordRequired: passwordRequired
         )
+    }
+
+    private func handleCalloutTapped(callout: ErrorRecoveryState.Callout, state: TransactionState) {
+        switch callout.id {
+        case AnyHashable(ErrorRecoveryCalloutIdentifier.upgradeKYCTier.rawValue):
+            router?.presentKYCUpgradeFlow { _ in }
+        case AnyHashable(ErrorRecoveryCalloutIdentifier.buy.rawValue):
+            guard let account = state.source as? CryptoAccount else {
+                return
+            }
+            router?.presentNewTransactionFlow(to: .buy(account)) { _ in }
+        default:
+            unimplemented()
+        }
     }
 
     private func linkPaymentMethodOrMoveToNextStep(for transactionState: TransactionState) {

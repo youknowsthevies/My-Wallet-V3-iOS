@@ -54,7 +54,7 @@ protocol YodleeScreenPresentable: Presentable {
     func connect(action: Driver<YodleeScreen.Action>) -> Driver<YodleeScreen.Effect>
 }
 
-protocol YodleeScreenListener: AnyObject {
+public protocol LinkBankListener: AnyObject {
     func closeFlow(isInteractive: Bool)
     func returnToSplashScreen()
     func updateBankLinked()
@@ -63,7 +63,7 @@ protocol YodleeScreenListener: AnyObject {
 final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentable>, YodleeScreenInteractable {
 
     weak var router: YodleeScreenRouting?
-    weak var listener: YodleeScreenListener?
+    weak var listener: LinkBankListener?
 
     private let bankLinkageData: BankLinkageData
     private let analyticsRecorder: AnalyticsEventRecorderAPI
