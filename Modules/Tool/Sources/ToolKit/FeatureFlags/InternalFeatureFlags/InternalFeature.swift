@@ -41,12 +41,12 @@ public enum InternalFeature: String, CaseIterable {
         switch self {
         case .newAccountPicker,
              .newOnboardingTour,
+             .newTxFlowLimitsUIEnabled,
              .openBanking,
              .pollingForEmailLogin:
             return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
-             .newTxFlowLimitsUIEnabled,
              .secureChannel,
              .unifiedSignIn,
              .nativeWalletPayload:
