@@ -154,7 +154,7 @@ let verifyDeviceReducer = Reducer.combine(
         VerifyDeviceState,
         VerifyDeviceAction,
         VerifyDeviceEnvironment
-        // swiftlint:disable closure_body_length
+            // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
 
@@ -244,13 +244,15 @@ let verifyDeviceReducer = Reducer.combine(
                         state.credentialsState = .init()
                     }
                 case .upgradeAccount:
-                    guard case .walletInfo(let info) = state.credentialsContext else {
+                    guard case .walletInfo(let info) = state.credentialsContext,
+                          let infoData = try? JSONEncoder().encode(info)
+                    else {
                         state.route = nil
                         return .none
                     }
                     state.upgradeAccountState = .init(
                         walletInfo: info,
-                        base64Str: ""
+                        base64Str: infoData.base64EncodedString()
                     )
                 }
             } else {
@@ -307,7 +309,8 @@ let verifyDeviceReducer = Reducer.combine(
             .flatMap { featureEnabled -> Effect<VerifyDeviceAction, Never> in
                 guard featureEnabled,
                       upgradeAccountIfNeeded(walletInfo),
-                      let userType = walletInfo.userType else {
+                      let userType = walletInfo.userType
+                else {
                     return .merge(
                         .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId()),
                         .navigate(to: .upgradeAccount(exchangeOnly: false))
@@ -423,7 +426,8 @@ private func upgradeAccountIfNeeded(_ walletInfo: WalletInfo) -> Bool {
     guard let unified = walletInfo.unified,
           let upgradeable = walletInfo.upgradeable,
           let mergeable = walletInfo.mergeable,
-          walletInfo.userType != nil else {
+          walletInfo.userType != nil
+    else {
         return false
     }
     return !unified && (upgradeable || mergeable)

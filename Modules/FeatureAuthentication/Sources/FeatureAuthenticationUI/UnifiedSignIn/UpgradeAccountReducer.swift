@@ -24,6 +24,7 @@ public enum UpgradeAccountAction: Equatable, NavigationAction {
     case setCurrentMessage(String)
 
     // MARK: - Utils
+
     case noop
 }
 
@@ -48,8 +49,10 @@ public struct UpgradeAccountState: NavigationState {
 
     var currentMessage: String
 
-    init(walletInfo: WalletInfo,
-         base64Str: String) {
+    init(
+        walletInfo: WalletInfo,
+        base64Str: String
+    ) {
         self.walletInfo = walletInfo
         self.base64Str = base64Str
         currentMessage = ""

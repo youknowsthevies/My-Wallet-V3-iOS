@@ -36,8 +36,7 @@ public enum UpgradeAccountRoute: NavigationRoute {
                 connectionStatusCallback: { _ in
                     viewStore.send(.setCurrentMessage(viewStore.base64Str))
                 },
-                credentialsCallback: { credentails in
-                    print("TTT \(credentails)")
+                credentialsCallback: { _ in
                     // dismiss the web upgrade screen when received a callback
                     viewStore.send(.enter(into: nil, context: .fullScreen))
                 }

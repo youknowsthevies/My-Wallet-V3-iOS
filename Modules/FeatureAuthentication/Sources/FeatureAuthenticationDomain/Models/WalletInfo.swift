@@ -9,7 +9,7 @@ public enum WalletInfoError: Error {
     case missingSessionToken(originSession: String, base64Str: String)
 }
 
-public struct WalletInfo: Decodable, Equatable {
+public struct WalletInfo: Codable, Equatable {
 
     // MARK: - Type
 
@@ -29,7 +29,7 @@ public struct WalletInfo: Decodable, Equatable {
         case userType = "user_type"
     }
 
-    public struct NabuInfo: Decodable, Equatable {
+    public struct NabuInfo: Codable, Equatable {
         public let userId: String
         public let recoveryToken: String
 
@@ -50,6 +50,12 @@ public struct WalletInfo: Decodable, Equatable {
             let container = try decoder.container(keyedBy: NabuInfoCodingKeys.self)
             userId = try container.decode(String.self, forKey: .userId)
             recoveryToken = try container.decode(String.self, forKey: .recoveryToken)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = try encoder.container(keyedBy: NabuInfoCodingKeys.self)
+            try container.encode(userId, forKey: .userId)
+            try container.encode(recoveryToken, forKey: .recoveryToken)
         }
     }
 
@@ -133,5 +139,22 @@ public struct WalletInfo: Decodable, Equatable {
         upgradeable = try container.decodeIfPresent(Bool.self, forKey: .upgradeable)
         mergeable = try container.decodeIfPresent(Bool.self, forKey: .mergeable)
         userType = try container.decodeIfPresent(String.self, forKey: .userType)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        var wallet = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .wallet)
+        try wallet.encode(guid, forKey: .guid)
+        try wallet.encode(email, forKey: .email)
+        try wallet.encode(emailCode, forKey: .emailCode)
+        try wallet.encode(twoFAType, forKey: .twoFAType)
+        try wallet.encodeIfPresent(sessionId, forKey: .sessionId)
+        try wallet.encodeIfPresent(isMobileSetup, forKey: .isMobileSetup)
+        try wallet.encodeIfPresent(hasCloudBackup, forKey: .hasCloudBackup)
+        try wallet.encodeIfPresent(nabuInfo, forKey: .nabu)
+        try wallet.encodeIfPresent(unified, forKey: .unified)
+        try wallet.encodeIfPresent(upgradeable, forKey: .upgradeable)
+        try wallet.encodeIfPresent(mergeable, forKey: .mergeable)
+        try wallet.encodeIfPresent(userType, forKey: .userType)
     }
 }
