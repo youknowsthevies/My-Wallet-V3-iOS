@@ -17,7 +17,7 @@ public enum CreateAccountAction: Equatable {
     case didChangePasswordStrength(PasswordValidationScore)
     case validatePasswordStrength
     case openExternalLink(URL)
-    case createButtonTapped
+    case createButtonTapped(String, String)
     case noop
 }
 

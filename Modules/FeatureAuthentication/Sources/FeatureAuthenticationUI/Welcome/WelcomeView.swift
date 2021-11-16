@@ -28,6 +28,9 @@ public struct WelcomeView: View {
         static let buttonFontSize: CGFloat = 16
         static let buttonBottomPadding: CGFloat = 20
         static let supplmentaryTextFontSize: CGFloat = 12
+
+        static let navigationTitleFontSize: CGFloat = 20
+        static let navigationTitleTopPadding: CGFloat = 15
     }
 
     private let store: Store<WelcomeState, WelcomeAction>
@@ -80,16 +83,7 @@ public struct WelcomeView: View {
                             action: WelcomeAction.createWallet
                         ),
                         then: { store in
-                            NavigationView {
-                                CreateAccountView(store: store)
-                                    .trailingNavigationButton(.close) {
-                                        viewStore.send(.createWallet(.closeButtonTapped))
-                                    }
-                                    .whiteNavigationBarStyle()
-                                    .navigationTitle(
-                                        LocalizedString.Button.buyCryptoNow
-                                    )
-                            }
+                            createAccountView(store: store)
                         }
                     )
                 } else if viewStore.screenFlow == .emailLoginScreen {
@@ -251,6 +245,23 @@ public struct WelcomeView: View {
             RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
                 .stroke(Color.borderPrimary)
         )
+    }
+
+    private func createAccountView(store: Store<CreateAccountState, CreateAccountAction>) -> some View {
+        NavigationView {
+            CreateAccountView(context: .createWallet, store: store)
+                .trailingNavigationButton(.close) {
+                    viewStore.send(.createWallet(.closeButtonTapped))
+                }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Text(LocalizedString.Button.buyCryptoNow)
+                            .font(Font(weight: .semibold, size: Layout.navigationTitleFontSize))
+                            .padding(.top, Layout.navigationTitleTopPadding)
+                    }
+                }
+                .whiteNavigationBarStyle()
+        }
     }
 }
 

@@ -8,6 +8,11 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
+enum CreateAccountContext {
+    case importWallet
+    case createWallet
+}
+
 struct CreateAccountView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureAuthentication.CreateAccount
@@ -24,6 +29,7 @@ struct CreateAccountView: View {
         static let lineSpacing: CGFloat = 4
     }
 
+    private let context: CreateAccountContext
     private let store: Store<CreateAccountState, CreateAccountAction>
     @ObservedObject private var viewStore: ViewStore<CreateAccountState, CreateAccountAction>
 
@@ -33,7 +39,11 @@ struct CreateAccountView: View {
     @State private var isConfirmPasswordFieldFirstResponder: Bool = false
     @State private var isConfirmPasswordVisible: Bool = false
 
-    init(store: Store<CreateAccountState, CreateAccountAction>) {
+    init(
+        context: CreateAccountContext,
+        store: Store<CreateAccountState, CreateAccountAction>
+    ) {
+        self.context = context
         self.store = store
         viewStore = ViewStore(store)
     }
@@ -69,7 +79,7 @@ struct CreateAccountView: View {
             Spacer()
 
             PrimaryButton(title: LocalizedString.createAccountButton) {
-                viewStore.send(.createButtonTapped)
+                viewStore.send(.createButtonTapped(viewStore.emailAddress, viewStore.password))
             }
             .disabled(viewStore.password.isEmpty || viewStore.password != viewStore.confirmPassword)
             .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.createAccountButton)
@@ -77,7 +87,10 @@ struct CreateAccountView: View {
         .onWillDisappear {
             viewStore.send(.onWillDisappear)
         }
-        .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
+        .navigationBarTitle(
+            context == .createWallet ? "" : LocalizedString.navigationTitle,
+            displayMode: .inline
+        )
         .padding(
             EdgeInsets(
                 top: Layout.topPadding,
@@ -228,6 +241,7 @@ struct CreateAccountView: View {
 struct CreateAccountView_Previews: PreviewProvider {
     static var previews: some View {
         CreateAccountView(
+            context: .createWallet,
             store: .init(
                 initialState: .init(),
                 reducer: createAccountReducer,

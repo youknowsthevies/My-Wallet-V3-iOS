@@ -16,6 +16,7 @@ public enum WelcomeAction: Equatable {
     case emailLogin(EmailLoginAction)
     case restoreWallet(SeedPhraseAction)
     case deeplinkReceived(URL)
+    case requestedToCreateWallet(String, String)
     case requestedToDecryptWallet(String)
     case requestedToRestoreWallet(WalletRecovery)
     /// should only be used on internal builds
@@ -245,7 +246,8 @@ public let welcomeReducer = Reducer.combine(
             }
             return Effect(value: .emailLogin(.verifyDevice(.didReceiveWalletInfoDeeplink(url))))
 
-        case .requestedToDecryptWallet,
+        case .requestedToCreateWallet,
+             .requestedToDecryptWallet,
              .requestedToRestoreWallet:
             // handled in core coordinator
             return .none
@@ -254,6 +256,9 @@ public let welcomeReducer = Reducer.combine(
             state.screenFlow = .welcomeScreen
             state.createWalletState = nil
             return .none
+
+        case .createWallet(.createButtonTapped(let email, let password)):
+            return Effect(value: .requestedToCreateWallet(email, password))
 
         case .createWallet:
             return .none

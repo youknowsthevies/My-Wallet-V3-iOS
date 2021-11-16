@@ -67,7 +67,7 @@ struct ImportWalletView: View {
                         action: ImportWalletAction.createAccount
                     ),
                     then: { store in
-                        CreateAccountView(store: store)
+                        CreateAccountView(context: .importWallet, store: store)
                     }
                 ),
                 isActive: viewStore.binding(

@@ -843,6 +843,11 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             value: .initializeWallet
         )
 
+    case .onboarding(.welcomeScreen(.requestedToCreateWallet(let email, let password))):
+        return Effect(
+            value: .createWallet(email: email, newPassword: password)
+        )
+
     case .onboarding(.welcomeScreen(.requestedToDecryptWallet(let password))):
         return Effect(
             value: .fetchWallet(password: password)
