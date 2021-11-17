@@ -57,7 +57,7 @@ final class SimpleBuyFinishSignupAnnouncement: PeriodicAnnouncement, ActionableA
         hasIncompleteBuyFlow && canCompleteTier2
     }
 
-    let type = AnnouncementType.simpleBuyPendingTransaction
+    let type = AnnouncementType.simpleBuyKYCIncomplete
     let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction

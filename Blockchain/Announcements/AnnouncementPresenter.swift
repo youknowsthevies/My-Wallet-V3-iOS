@@ -197,11 +197,6 @@ final class AnnouncementPresenter {
                 announcement = bitpay
             case .resubmitDocuments:
                 announcement = resubmitDocuments(user: preliminaryData.user)
-            case .simpleBuyPendingTransaction:
-                announcement = simpleBuyPendingTransaction(
-                    for: preliminaryData.simpleBuy.pendingOrderDetails,
-                    reappearanceTimeInterval: metadata.interval
-                )
             case .simpleBuyKYCIncomplete:
                 announcement = simpleBuyFinishSignup(
                     tiers: preliminaryData.tiers,
@@ -258,24 +253,6 @@ extension AnnouncementPresenter {
             isEmailVerified: user.email.verified,
             reappearanceTimeInterval: reappearanceTimeInterval,
             action: UIApplication.shared.openMailApplication,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            }
-        )
-    }
-
-    /// Computes Simple Buy Pending Transaction Announcement
-    private func simpleBuyPendingTransaction(
-        for order: OrderDetails?,
-        reappearanceTimeInterval: TimeInterval
-    ) -> Announcement {
-        SimpleBuyPendingTransactionAnnouncement(
-            orderDetails: order,
-            reappearanceTimeInterval: reappearanceTimeInterval,
-            action: { [weak self] in
-                self?.hideAnnouncement()
-                self?.handleBuyCrypto()
-            },
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             }
