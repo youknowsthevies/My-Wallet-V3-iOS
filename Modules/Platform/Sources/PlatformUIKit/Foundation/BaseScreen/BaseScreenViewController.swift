@@ -101,6 +101,8 @@ open class BaseScreenViewController: UIViewController {
         }
     }
 
+    public var automaticallyApplyNavigationBarStyle: Bool = true
+
     override open var preferredStatusBarStyle: UIStatusBarStyle {
         loadViewIfNeeded()
         return determineStatusBarStyle()
@@ -155,11 +157,13 @@ open class BaseScreenViewController: UIViewController {
 
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        setBackground(by: barStyle)
-        if !barStyle.ignoresStatusBar {
-            UIApplication.shared.statusBarStyle = determineStatusBarStyle()
+        if automaticallyApplyNavigationBarStyle {
+            setBackground(by: barStyle)
+            if !barStyle.ignoresStatusBar {
+                UIApplication.shared.statusBarStyle = determineStatusBarStyle()
+            }
+            currentNavigationItem?.setHidesBackButton(true, animated: false)
         }
-        currentNavigationItem?.setHidesBackButton(true, animated: false)
     }
 
     override open func viewWillLayoutSubviews() {
@@ -255,6 +259,7 @@ open class BaseScreenViewController: UIViewController {
         leadingButtonStyle: Screen.Style.LeadingButton = .none,
         trailingButtonStyle: Screen.Style.TrailingButton = .none
     ) {
+        guard automaticallyApplyNavigationBarStyle else { return }
         self.barStyle = barStyle
         self.leadingButtonStyle = leadingButtonStyle
         self.trailingButtonStyle = trailingButtonStyle
