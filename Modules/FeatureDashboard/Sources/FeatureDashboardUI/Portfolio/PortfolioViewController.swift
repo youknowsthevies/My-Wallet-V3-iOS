@@ -3,7 +3,6 @@
 import ComposableArchitecture
 import DIKit
 import FeatureWithdrawalLocksUI
-import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -69,12 +68,13 @@ final class PortfolioViewController: BaseScreenViewController {
     // MARK: - Setup
 
     private func setupNavigationBar() {
+        let model = presenter.screenNavigationModel
         set(
-            barStyle: .lightContent(),
-            leadingButtonStyle: .drawer,
-            trailingButtonStyle: .none
+            barStyle: model.barStyle,
+            leadingButtonStyle: model.leadingButton,
+            trailingButtonStyle: model.trailingButton
         )
-        titleViewStyle = .text(value: LocalizationConstants.DashboardScreen.title)
+        titleViewStyle = model.titleViewStyle
     }
 
     private func setupTableView() {

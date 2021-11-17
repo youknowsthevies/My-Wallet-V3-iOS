@@ -9,17 +9,6 @@ extension LocalizationConstants {
 }
 
 extension LocalizationConstants.SecureChannel {
-    public enum QRCode {
-        public static let header = NSLocalizedString(
-            "Scan Your QR Code",
-            comment: "Secure Channel - QR Code Scanner - header"
-        )
-        public static let subtitle = NSLocalizedString(
-            "To use your Blockchain.com Wallet on the web, go to login.blockchain.com on your computer.",
-            comment: "Secure Channel - QR Code Scanner - subtitle"
-        )
-    }
-
     public enum ConfirmationSheet {
         public enum Authorized {
             public static let title = NSLocalizedString(

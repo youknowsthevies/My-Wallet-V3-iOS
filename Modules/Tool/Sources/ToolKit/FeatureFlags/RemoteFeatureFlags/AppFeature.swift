@@ -23,9 +23,6 @@ public enum AppFeature: Int, CaseIterable {
     /// Sift Science SDK is enabled
     case siftScienceEnabled
 
-    /// Enable Secure Channel
-    case secureChannel
-
     // MARK: Onboarding (After Login)
 
     /// Shows Email Verification insted of Simple Buy at Login
@@ -83,8 +80,6 @@ extension AppFeature {
             return "rename_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
-        case .secureChannel:
-            return "secure_channel_ios"
         case .withdrawAndDepositACH:
             return "ach_withdraw_deposit_enabled"
         case .biometry:
@@ -124,8 +119,6 @@ extension AppFeature {
         case .announcements:
             return false
         case .siftScienceEnabled:
-            return false
-        case .secureChannel:
             return false
         case .withdrawAndDepositACH:
             return false

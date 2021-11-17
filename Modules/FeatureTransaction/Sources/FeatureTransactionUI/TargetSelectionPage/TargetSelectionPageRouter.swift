@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import FeatureTransactionDomain
 import PlatformKit
 import PlatformUIKit
@@ -10,51 +11,45 @@ protocol TargetSelectionPageInteractable: Interactable {
     var listener: TargetSelectionPageListener? { get set }
 }
 
+public protocol QRCodeScannerLinkerAPI {
+    func presentQRCodeScanner(
+        account: CryptoAccount,
+        completion: @escaping ((Result<CryptoTargetQRCodeParserTarget, Error>) -> Void)
+    )
+}
+
 final class TargetSelectionPageRouter: ViewableRouter<TargetSelectionPageInteractable, TargetSelectionPageViewControllable>,
     TargetSelectionPageRouting
 {
+    let qrCodeScannerLinker: QRCodeScannerLinkerAPI
 
-    override init(interactor: TargetSelectionPageInteractable, viewController: TargetSelectionPageViewControllable) {
+    init(
+        interactor: TargetSelectionPageInteractable,
+        viewController: TargetSelectionPageViewControllable,
+        qrCodeScannerLinker: QRCodeScannerLinkerAPI = resolve()
+    ) {
+        self.qrCodeScannerLinker = qrCodeScannerLinker
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
 
     func presentQRScanner(
-        for currency: CryptoCurrency,
         sourceAccount: CryptoAccount,
         model: TargetSelectionPageModel
     ) {
-        let parser = CryptoTargetQRCodeParser(assetType: currency)
-        let textViewModel = TargetSelectionQRScanningViewModel()
-        let builder = QRCodeScannerViewControllerBuilder(
-            parser: parser,
-            textViewModel: textViewModel,
-            completed: { result in
+        qrCodeScannerLinker
+            .presentQRCodeScanner(account: sourceAccount) { result in
                 model.process(action: .returnToPreviousStep)
-                if case .success(let value) = result {
-                    switch value {
-                    case .address(let cryptoReceiveAddress):
-                        // We need to validate the address as if it were a
-                        // value provided by user entry in the text field.
-                        model.process(action: .validateQRScanner(cryptoReceiveAddress))
-                    case .bitpay(let value):
-                        model.process(action: .validateBitPayPayload(value, currency))
-                    }
+                switch result {
+                case .success(.address(let cryptoReceiveAddress)):
+                    // We need to validate the address as if it were a
+                    // value provided by user entry in the text field.
+                    model.process(action: .validateQRScanner(cryptoReceiveAddress))
+                case .success(.bitpay(let value)):
+                    model.process(action: .validateBitPayPayload(value, sourceAccount.asset))
+                case .failure:
+                    break
                 }
-            },
-            closeHandler: {
-                model.process(action: .returnToPreviousStep)
             }
-        )
-        .with(supportForCameraRoll: true)
-
-        guard let viewController = builder.build() else {
-            // No camera access, an alert will be displayed automatically.
-            return
-        }
-
-        DispatchQueue.main.async { [weak self] in
-            self?.viewController.uiviewController.present(viewController, animated: true, completion: nil)
-        }
     }
 }
