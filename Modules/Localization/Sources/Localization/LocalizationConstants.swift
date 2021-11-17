@@ -489,6 +489,85 @@ public enum LocalizationConstants {
         )
     }
 
+    public enum FrequentActionItem {
+
+        public static let swap = (
+            name: NSLocalizedString(
+                "Swap",
+                comment: "fequent action item: Swap"
+            ),
+            description: NSLocalizedString(
+                "Exchange for Another Crypto",
+                comment: "fequent action description: Swap"
+            )
+        )
+
+        public static let send = (
+            name: NSLocalizedString(
+                "Send",
+                comment: "fequent action item: Send"
+            ),
+            description: NSLocalizedString(
+                "Send to Any Wallet",
+                comment: "fequent action description: Send"
+            )
+        )
+
+        public static let receive = (
+            name: NSLocalizedString(
+                "Receive",
+                comment: "fequent action item: Receive"
+            ),
+            description: NSLocalizedString(
+                "Copy Your Addresses & QR Codes",
+                comment: "fequent action description: Receive"
+            )
+        )
+
+        public static let rewards = (
+            name: NSLocalizedString(
+                "Rewards",
+                comment: "fequent action item: Rewards"
+            ),
+            description: NSLocalizedString(
+                "Earn Rewards on Your Crypto",
+                comment: "fequent action description: Rewards"
+            )
+        )
+
+        public static let deposit = (
+            name: NSLocalizedString(
+                "Add Cash",
+                comment: "fequent action item: Add Cash"
+            ),
+            description: NSLocalizedString(
+                "Add Cash from Your Bank",
+                comment: "fequent action description: Add Cash"
+            )
+        )
+
+        public static let withdraw = (
+            name: NSLocalizedString(
+                "Cash Out",
+                comment: "fequent action item: Cash Out"
+            ),
+            description: NSLocalizedString(
+                "Cash Out from Your Bank",
+                comment: "fequent action description: Cash Out"
+            )
+        )
+
+        public static let buy = NSLocalizedString(
+            "Buy",
+            comment: "fequent action description: Buy"
+        )
+
+        public static let sell = NSLocalizedString(
+            "Sell",
+            comment: "fequent action description: Sell"
+        )
+    }
+
     public enum ErrorScreen {
         public static let title = NSLocalizedString(
             "Oops! Something Went Wrong.",

@@ -14,7 +14,8 @@ struct LoggedInRootState: Equatable, NavigationState {
 
 enum LoggedInRootAction: Equatable, NavigationAction, BindableAction {
     case route(RouteIntent<LoggedInRootRoute>?)
-    case select(Tab)
+    case tab(Tab)
+    case frequentAction(FrequentAction)
     case binding(BindingAction<LoggedInRootState>)
 }
 
@@ -33,17 +34,24 @@ enum LoggedInRootRoute: NavigationRoute {
     }
 }
 
-struct LoggedInRootEnvironment {}
+struct LoggedInRootEnvironment {
+    var frequentAction: (FrequentAction) -> Void
+}
 
 let loggedInRootReducer = Reducer<
     LoggedInRootState,
     LoggedInRootAction,
     LoggedInRootEnvironment
-> { state, action, _ in
+> { state, action, environment in
     switch action {
-    case .select(let tab):
+    case .tab(let tab):
         state.tab = tab
         return .none
+    case .frequentAction(let frequentAction):
+        state.fab = false
+        return .fireAndForget {
+            environment.frequentAction(frequentAction)
+        }
     case .route, .binding:
         return .none
     }

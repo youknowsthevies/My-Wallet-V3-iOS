@@ -73,6 +73,11 @@ struct LoggedInRootView: View {
                     .offset(y: Spacing.padding3),
                 alignment: .bottom
             )
+            .bottomSheet(isPresented: viewStore.binding(\.$fab)) {
+                FrequentActionView { action in
+                    viewStore.send(.frequentAction(action))
+                }
+            }
         }
         .navigationRoute(in: store)
     }
