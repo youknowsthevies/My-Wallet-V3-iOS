@@ -81,7 +81,9 @@ struct CreateAccountView: View {
             PrimaryButton(title: LocalizedString.createAccountButton) {
                 viewStore.send(.createButtonTapped(viewStore.emailAddress, viewStore.password))
             }
-            .disabled(viewStore.password.isEmpty || viewStore.password != viewStore.confirmPassword)
+            .disabled(viewStore.password.isEmpty ||
+                viewStore.password != viewStore.confirmPassword ||
+                viewStore.passwordStrength == .weak)
             .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.createAccountButton)
         }
         .onWillDisappear {

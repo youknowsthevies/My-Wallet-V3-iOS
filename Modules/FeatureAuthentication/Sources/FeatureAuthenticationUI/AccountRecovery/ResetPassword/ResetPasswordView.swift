@@ -69,7 +69,7 @@ struct ResetPasswordView: View {
                 loading: viewStore.binding(get: \.isLoading, send: .none)
             )
             .disabled(viewStore.newPassword.isEmpty || viewStore.newPassword != viewStore.confirmNewPassword ||
-                viewStore.passwordStrength != .strong)
+                viewStore.passwordStrength == .weak)
             .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.resetPasswordButton)
 
             NavigationLink(
