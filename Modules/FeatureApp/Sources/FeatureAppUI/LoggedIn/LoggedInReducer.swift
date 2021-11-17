@@ -115,7 +115,7 @@ let loggedInReducer = Reducer<
                     return LoggedIn.Action.wallet(.handleFailToLoadHistory(error))
                 },
             environment.exchangeRepository
-                .syncDepositAddressesIfLinkedPublisher()
+                .syncDepositAddressesIfLinked()
                 .catchToEffect()
                 .fireAndForget(),
             environment.remoteNotificationTokenSender

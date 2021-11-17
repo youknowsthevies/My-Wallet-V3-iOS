@@ -7,6 +7,7 @@ import RxDataSources
 
 enum PortfolioCellType: Hashable {
     case announcement(AnnouncementCardViewModel)
+    case withdrawalLock
     case fiatCustodialBalances(CurrencyViewPresenter)
     case totalBalance(TotalBalanceViewPresenter)
     case crypto(HistoricalBalanceCellPresenter)
@@ -29,6 +30,8 @@ extension PortfolioCellType: IdentifiableType {
             let type = model.type
                 .flatMap { "\($0)" } ?? ""
             return "announcement-\(type)"
+        case .withdrawalLock:
+            return "withdrawalLock"
         case .cryptoSkeleton(let id):
             return "cryptoSkeleton-\(id)"
         case .crypto(let presenter):

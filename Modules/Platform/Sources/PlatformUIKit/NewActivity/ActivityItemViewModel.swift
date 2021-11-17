@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import Localization
 import PlatformKit
 import RxDataSources
@@ -46,6 +47,17 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             } else {
                 text = "\(LocalizationStrings.sell) "
                     + "\(orderDetails.inputValue.currency.displayCode) -> \(orderDetails.outputValue.currency.displayCode)"
+            }
+        case .interest(let event):
+            switch event.type {
+            case .withdraw:
+                text = LocalizationStrings.withdraw + " \(event.cryptoCurrency.code)"
+            case .interestEarned:
+                text = event.cryptoCurrency.code + " \(LocalizationStrings.rewardsEarned)"
+            case .transfer:
+                text = LocalizationStrings.transferred + " \(event.cryptoCurrency.code)"
+            case .unknown:
+                unimplemented()
             }
         case .swap(let event):
             let pair = event.pair
@@ -124,6 +136,33 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 case .completed, .pending:
                     break
                 }
+            case .interest(let state):
+                switch state {
+                case .processing,
+                     .pending,
+                     .manualReview:
+                    return .init(
+                        text: LocalizationStrings.pending,
+                        font: descriptors.secondaryFont,
+                        color: descriptors.secondaryTextColor,
+                        alignment: .left,
+                        accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
+                    )
+                case .failed,
+                     .rejected,
+                     .refunded:
+                    return failedLabelContent
+                case .cleared,
+                     .complete,
+                     .unknown:
+                    return .init(
+                        text: DateFormatter.medium.string(from: event.creationDate),
+                        font: descriptors.secondaryFont,
+                        color: descriptors.secondaryTextColor,
+                        alignment: .left,
+                        accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
+                    )
+                }
             case .buySell(let status):
                 if status == .failed {
                     return failedLabelContent
@@ -161,6 +200,22 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 return .destructive
             }
             return event.pair.inputCurrencyType.brandUIColor
+        case .interest(let interest):
+            switch interest.state {
+            case .pending,
+                 .processing,
+                 .manualReview:
+                return .mutedText
+            case .failed,
+                 .rejected:
+                return .destructive
+            case .complete:
+                return interest.cryptoCurrency.brandUIColor
+            case .refunded,
+                 .cleared,
+                 .unknown:
+                unimplemented()
+            }
         case .fiat(let event):
             switch event.state {
             case .failed:
@@ -194,56 +249,81 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
         eventColor.withAlphaComponent(0.15)
     }
 
-    /// The `imageName` for the `BadgeImageViewModel`
-    public var imageName: String {
+    /// The `imageResource` for the `BadgeImageViewModel`
+    public var imageResource: ImageResource {
         switch event {
+        case .interest(let interest):
+            switch interest.state {
+            case .pending,
+                 .processing,
+                 .manualReview:
+                return .local(name: "clock-icon", bundle: .platformUIKit)
+            case .failed,
+                 .rejected:
+                return .local(name: "activity-failed-icon", bundle: .platformUIKit)
+            case .complete:
+                switch interest.type {
+                case .transfer:
+                    return .local(name: "plus-icon", bundle: .platformUIKit)
+                case .withdraw:
+                    return .local(name: "minus-icon", bundle: .platformUIKit)
+                case .interestEarned:
+                    return .local(name: Icon.interest.name, bundle: .componentLibrary)
+                case .unknown:
+                    unimplemented()
+                }
+            case .refunded,
+                 .cleared,
+                 .unknown:
+                unimplemented()
+            }
         case .buySell(let value):
             if value.status == .failed {
-                return "activity-failed-icon"
+                return .local(name: "activity-failed-icon", bundle: .platformUIKit)
             }
-
-            return value.isBuy ? "plus-icon" : "minus-icon"
+            let imageName = value.isBuy ? "plus-icon" : "minus-icon"
+            return .local(name: imageName, bundle: .platformUIKit)
         case .fiat(let event):
             switch event.state {
             case .failed:
-                return "activity-failed-icon"
+                return .local(name: "activity-failed-icon", bundle: .platformUIKit)
             case .pending:
-                return "clock-icon"
+                return .local(name: "clock-icon", bundle: .platformUIKit)
             case .completed:
                 switch event.type {
                 case .deposit:
-                    return "deposit-icon"
+                    return .local(name: "deposit-icon", bundle: .platformUIKit)
                 case .withdrawal:
-                    return "withdraw-icon"
+                    return .local(name: "withdraw-icon", bundle: .platformUIKit)
                 }
             }
         case .crypto(let event):
             switch event.state {
             case .failed:
-                return "activity-failed-icon"
+                return .local(name: "activity-failed-icon", bundle: .platformUIKit)
             case .pending:
-                return "clock-icon"
+                return .local(name: "clock-icon", bundle: .platformUIKit)
             case .completed:
                 switch event.type {
                 case .deposit:
-                    return "receive-icon"
+                    return .local(name: "receive-icon", bundle: .platformUIKit)
                 case .withdrawal:
-                    return "send-icon"
+                    return .local(name: "send-icon", bundle: .platformUIKit)
                 }
             }
         case .swap(let event):
             if event.status == .failed {
-                return "activity-failed-icon"
+                return .local(name: "activity-failed-icon", bundle: .platformUIKit)
             }
-            return "swap-icon"
+            return .local(name: "swap-icon", bundle: .platformUIKit)
         case .transactional(let event):
             switch (event.status, event.type) {
             case (.pending, _):
-                return "clock-icon"
+                return .local(name: "clock-icon", bundle: .platformUIKit)
             case (_, .send):
-                return "send-icon"
+                return .local(name: "send-icon", bundle: .platformUIKit)
             case (_, .receive):
-                return "receive-icon"
+                return .local(name: "receive-icon", bundle: .platformUIKit)
             }
         }
     }

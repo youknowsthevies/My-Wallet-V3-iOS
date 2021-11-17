@@ -73,6 +73,7 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
     // MARK: - Public Properties
 
     public let swapButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    public let auxiliaryButtonEnabledRelay = BehaviorRelay<Bool>(value: true)
 
     // MARK: - Internal Properties
 
@@ -89,6 +90,11 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
     }
 
     let swapButtonTapRelay = PublishRelay<Void>()
+    let auxiliaryButtonTappedRelay = PublishRelay<Void>()
+
+    var auxiliaryButtonEnabled: Driver<Bool> {
+        auxiliaryButtonEnabledRelay.asDriver()
+    }
 
     // MARK: - Injected
 
@@ -125,6 +131,10 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
             .bindAndCatch(to: interactor.activeInputRelay)
             .disposed(by: disposeBag)
 
+        auxiliaryButtonTappedRelay
+            .bindAndCatch(to: interactor.auxiliaryButtonTappedRelay)
+            .disposed(by: disposeBag)
+
         Observable
             .combineLatest(
                 interactor.state,
@@ -135,13 +145,16 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
+
+        interactor.auxiliaryViewEnabledRelay
+            .bindAndCatch(to: auxiliaryButtonEnabledRelay)
+            .disposed(by: disposeBag)
     }
 
     public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
         interactor.connect(input: input.map(\.toInteractorInput))
             .map { [weak self] state -> AmountPresenterState in
                 guard let self = self else { return .empty }
-
                 return self.setupButton(by: state, activeInput: self.interactor.activeInputRelay.value)
             }
     }
@@ -158,6 +171,9 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
                 with: message,
                 accessibilityId: AccessibilityId.error
             )
+            viewModel.tapRelay
+                .bindAndCatch(to: auxiliaryButtonTappedRelay)
+                .disposed(by: disposeBag)
             return .warning(viewModel)
         case .warning(let message, let action):
             let viewModel = ButtonViewModel.warning(
@@ -169,6 +185,9 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
                 .emit(onNext: { _ in
                     action()
                 })
+                .disposed(by: disposeBag)
+            viewModel.tapRelay
+                .bindAndCatch(to: auxiliaryButtonTappedRelay)
                 .disposed(by: disposeBag)
             return .warning(viewModel)
         case .maxLimitExceeded(let maxValue):
@@ -194,6 +213,9 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
                     self.interactor.set(maxAmount: maxValue)
                 })
                 .disposed(by: disposeBag)
+            viewModel.tapRelay
+                .bindAndCatch(to: auxiliaryButtonTappedRelay)
+                .disposed(by: disposeBag)
             return .warning(viewModel)
         case .underMinLimit(let minValue):
             /// The min/max string value can include one parameter. If it does not
@@ -217,6 +239,9 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
                     }
                     self.interactor.set(minAmount: minValue)
                 })
+                .disposed(by: disposeBag)
+            viewModel.tapRelay
+                .bindAndCatch(to: auxiliaryButtonTappedRelay)
                 .disposed(by: disposeBag)
             return .warning(viewModel)
         }

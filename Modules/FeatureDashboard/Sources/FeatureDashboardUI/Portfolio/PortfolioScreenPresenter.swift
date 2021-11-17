@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import ComposableNavigation
+import ComposableArchitectureExtensions
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -54,6 +54,7 @@ final class PortfolioScreenPresenter {
         ) -> [PortfolioCellType] {
             var items: [PortfolioCellType] = [
                 .totalBalance(totalBalancePresenter)
+                // .withdrawalLock
             ]
             if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
@@ -125,11 +126,6 @@ final class PortfolioScreenPresenter {
     private let coincore: CoincoreAPI
 
     private var cryptoCurrencies: Observable<CurrencyBalance> {
-        guard StaticFeatureFlags.isDynamicAssetsEnabled else {
-            return Observable<CryptoCurrency>
-                .from(interactor.enabledCryptoCurrencies, scheduler: MainScheduler.asyncInstance)
-                .map { (currency: $0, hasBalance: true) }
-        }
         let cryptoStreams: [Observable<CurrencyBalance>] = coincore.cryptoAssets
             .map { asset -> Observable<CurrencyBalance> in
                 let currency = asset.asset

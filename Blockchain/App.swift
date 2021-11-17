@@ -5,12 +5,16 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import ERC20DataKit
+import FeatureActivityData
+import FeatureAppDomain
 import FeatureAppUI
 import FeatureDebugUI
 import FeatureInterestData
 import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData
+import FeatureWithdrawalLocksData
+import FeatureWithdrawalLocksDomain
 import Firebase
 import PlatformDataKit
 import ToolKit
@@ -23,13 +27,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     var window: UIWindow?
     /// The main model passed to the view store that powers the app
     private let store: Store<AppState, AppAction>
-
-    // Temporary solution for remote dynamicAssetsEnabled
-    private lazy var featureFlagsService: FeatureFlagsServiceAPI = {
-        resolve()
-    }()
-
-    private var cancellables = Set<AnyCancellable>()
 
     /// Responsible view store to send actions to the store
     lazy var viewStore = ViewStore(
@@ -45,7 +42,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             environment: .live
         )
         super.init()
-        updateStaticFeatureFlags()
     }
 
     // MARK: - App entry point
@@ -81,14 +77,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         viewStore.send(.appDelegate(.didFinishLaunching(window: window, context: context)))
         return true
     }
-
-    private func updateStaticFeatureFlags() {
-        featureFlagsService.isEnabled(.remote(.dynamicAssetsEnabled))
-            .sink { isEnabled in
-                StaticFeatureFlags.isDynamicAssetsEnabled = isEnabled
-            }
-            .store(in: &cancellables)
-    }
 }
 
 // MARK: - Functions
@@ -113,6 +101,7 @@ func defineDependencies() {
         DependencyContainer.stellarKit
         DependencyContainer.featureTransactionData
         DependencyContainer.featureTransactionDomain
+        DependencyContainer.featureActivityDataKit
         DependencyContainer.featureTransactionUI
         DependencyContainer.buySellKit
         DependencyContainer.featureActivityDomain
@@ -127,6 +116,9 @@ func defineDependencies() {
         DependencyContainer.featureAuthenticationData
         DependencyContainer.featureAuthenticationDomain
         DependencyContainer.featureAppUI
+        DependencyContainer.featureAppDomain
+        DependencyContainer.withdrawalLocksData
+        DependencyContainer.withdrawalLocksDomain
         #if INTERNAL_BUILD
         DependencyContainer.featureDebugUI
         #endif

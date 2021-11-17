@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Charts
-import ComposableNavigation
+import ComposableArchitectureExtensions
 import PlatformKit
 
 extension LoadingState where Content == PieChartData {

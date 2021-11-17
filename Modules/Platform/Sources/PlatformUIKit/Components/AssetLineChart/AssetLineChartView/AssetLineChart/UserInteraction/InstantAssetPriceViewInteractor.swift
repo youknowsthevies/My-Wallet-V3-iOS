@@ -43,16 +43,16 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     let currency = result.historicalPrices.currency
                     let window = result.priceWindow
                     let currentPrice = result.currentFiatValue
-                    let fiatChange = FiatValue.create(
+                    let priceChange = FiatValue.create(
                         major: result.historicalPrices.fiatChange,
                         currency: result.currentFiatValue.currency
                     )
                     return .loaded(
                         next: .init(
+                            currentPrice: currentPrice.moneyValue,
                             time: window.time(for: currency),
-                            fiatValue: currentPrice,
                             changePercentage: delta,
-                            fiatChange: fiatChange
+                            priceChange: priceChange.moneyValue
                         )
                     )
                 case (.value(let result), .selected(let index)):
@@ -66,17 +66,17 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                         prices: prices
                     )
 
-                    let fiatChange = FiatValue.create(
+                    let priceChange = FiatValue.create(
                         major: adjusted.fiatChange,
                         currency: fiatCurrency
                     )
 
                     return .loaded(
                         next: .init(
+                            currentPrice: selected.moneyValue,
                             time: .timestamp(selected.timestamp),
-                            fiatValue: selected.moneyValue.fiatValue!,
                             changePercentage: adjusted.delta,
-                            fiatChange: fiatChange
+                            priceChange: priceChange.moneyValue
                         )
                     )
                 }

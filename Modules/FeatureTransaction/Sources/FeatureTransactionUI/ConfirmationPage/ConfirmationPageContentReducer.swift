@@ -35,15 +35,19 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     var cells: [DetailsScreen.CellType]
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
-    let termsCheckboxViewModel: CheckboxViewModel = .init(
-        text: LocalizedString.Transfer.termsOfServiceDisclaimer
-    )
-    let transferCheckboxViewModel: CheckboxViewModel = .init(
-        text: LocalizedString.Transfer.transferAgreement
-    )
+
+    let termsCheckboxViewModel: CheckboxViewModel = .termsCheckboxViewModel
+
+    /// A `CheckboxViewModel` that prompts the user to confirm
+    /// that they will be transferring funds to their rewards account.
+    /// This `CheckboxViewModel` needs data from the `TransactionState`
+    /// so we cannot initialize until we receive it.
+    var transferCheckboxViewModel: CheckboxViewModel?
+
     let messageRecorder: MessageRecording
     let transferAgreementUpdated = PublishRelay<Bool>()
     let termsUpdated = PublishRelay<Bool>()
+    let hyperlinkTapped = PublishRelay<TitledLink>()
     let memoUpdated = PublishRelay<(String, TransactionConfirmation.Model.Memo)>()
     private let memoModel: TextFieldViewModel
     private var disposeBag = DisposeBag()
@@ -66,6 +70,31 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     func setup(for state: TransactionState) {
         disposeBag = DisposeBag()
         continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
+        let amount = state.amount
+        let fee = state.pendingTransaction?.feeAmount ?? .zero(currency: amount.currency)
+        let value = (try? amount + fee) ?? .zero(currency: amount.currency)
+
+        let sourceLabel = state.source?.label ?? ""
+
+        // NOTE: This is not ideal. We do not know the
+        // amount, fee, and total amount for the transaction
+        // until we receive the `TransactionState`. That means
+        // we cannot initialize a `transferCheckboxViewModel` until
+        // this `setup(for state:)` function is called. So, we check to
+        // see if this is `nil` prior to initializing it.
+        if transferCheckboxViewModel == nil {
+            transferCheckboxViewModel = .init(
+                inputs: [
+                    .text(
+                        string: String(
+                            format: LocalizedString.Transfer.transferAgreement,
+                            value.displayString,
+                            sourceLabel
+                        )
+                    )
+                ]
+            )
+        }
 
         guard let pendingTransaction = state.pendingTransaction else {
             cells = []
@@ -189,8 +218,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         }
 
         var checkboxModels: [DetailsScreen.CellType] = []
-        if let terms = terms,
-           let transferAgreement = transferAgreement
+        if let _ = terms,
+           let _ = transferAgreement
         {
             termsCheckboxViewModel
                 .selectedRelay
@@ -198,7 +227,13 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 .bind(to: termsUpdated)
                 .disposed(by: disposeBag)
 
-            transferCheckboxViewModel
+            termsCheckboxViewModel
+                .tapRelay
+                .asObservable()
+                .bind(to: hyperlinkTapped)
+                .disposed(by: disposeBag)
+
+            transferCheckboxViewModel?
                 .selectedRelay
                 .distinctUntilChanged()
                 .bind(to: transferAgreementUpdated)
@@ -207,7 +242,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             checkboxModels.append(
                 contentsOf: [
                     .checkbox(termsCheckboxViewModel),
-                    .checkbox(transferCheckboxViewModel)
+                    .checkbox(transferCheckboxViewModel!)
                 ]
             )
         }
@@ -215,7 +250,12 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         var disclaimer: [DetailsScreen.CellType] = []
         if TransactionFlowDescriptor.confirmDisclaimerVisibility(action: state.action) {
             let content = LabelContent(
-                text: TransactionFlowDescriptor.confirmDisclaimerText(action: state.action),
+                text: TransactionFlowDescriptor
+                    .confirmDisclaimerText(
+                        action: state.action,
+                        currencyCode: state.asset.code,
+                        accountLabel: state.destination?.label ?? ""
+                    ),
                 font: .main(.medium, 12),
                 color: .descriptionText,
                 alignment: .left,

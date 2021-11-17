@@ -89,8 +89,7 @@ final class WelcomeReducerTests: XCTestCase {
             .welcomeScreen,
             .createWalletScreen,
             .emailLoginScreen,
-            .restoreWalletScreen,
-            .legacyRestoreWalletScreen
+            .restoreWalletScreen
         ]
         screenFlows.forEach { screenFlow in
             testStore.send(.presentScreenFlow(screenFlow)) { state in
@@ -99,9 +98,9 @@ final class WelcomeReducerTests: XCTestCase {
                     state.emailLoginState = .init()
                 case .restoreWalletScreen:
                     state.restoreWalletState = .init()
-                case .createWalletScreen, .manualLoginScreen, .restoreScreen:
+                case .createWalletScreen, .manualLoginScreen:
                     break
-                case .welcomeScreen, .legacyRestoreWalletScreen:
+                case .welcomeScreen:
                     state.emailLoginState = nil
                     state.restoreWalletState = nil
                 }
@@ -126,7 +125,7 @@ final class WelcomeReducerTests: XCTestCase {
         BuildFlag.isInternal = true
         testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
             state.screenFlow = .manualLoginScreen
-            state.manualCredentialsState = .init(accountRecoveryEnabled: false)
+            state.manualCredentialsState = .init()
         }
 
         // when
@@ -142,7 +141,7 @@ final class WelcomeReducerTests: XCTestCase {
         BuildFlag.isInternal = true
         testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
             state.screenFlow = .manualLoginScreen
-            state.manualCredentialsState = .init(accountRecoveryEnabled: false)
+            state.manualCredentialsState = .init()
         }
 
         // when
@@ -167,7 +166,7 @@ final class WelcomeReducerTests: XCTestCase {
         BuildFlag.isInternal = true
         testStore.send(.presentScreenFlow(.manualLoginScreen)) { state in
             state.screenFlow = .manualLoginScreen
-            state.manualCredentialsState = .init(accountRecoveryEnabled: false)
+            state.manualCredentialsState = .init()
         }
 
         // when

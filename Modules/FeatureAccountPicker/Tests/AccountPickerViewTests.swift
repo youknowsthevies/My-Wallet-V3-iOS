@@ -10,14 +10,40 @@ import XCTest
 
 class AccountPickerViewTests: XCTestCase {
 
-    let accountPickerRowList: IdentifiedArrayOf<AccountPickerRow> = [
+    let allIdentifier = UUID()
+    let btcWalletIdentifier = UUID()
+    let btcTradingWalletIdentifier = UUID()
+    let ethWalletIdentifier = UUID()
+    let bchWalletIdentifier = UUID()
+    let bchTradingWalletIdentifier = UUID()
+
+    lazy var fiatBalances: [AnyHashable: String] = [
+        allIdentifier: "$2,302.39",
+        btcWalletIdentifier: "$2,302.39",
+        btcTradingWalletIdentifier: "$10,093.13",
+        ethWalletIdentifier: "$807.21",
+        bchWalletIdentifier: "$807.21",
+        bchTradingWalletIdentifier: "$40.30"
+    ]
+
+    lazy var currencyCodes: [AnyHashable: String] = [
+        allIdentifier: "USD"
+    ]
+
+    lazy var cryptoBalances: [AnyHashable: String] = [
+        btcWalletIdentifier: "0.21204887 BTC",
+        btcTradingWalletIdentifier: "1.38294910 BTC",
+        ethWalletIdentifier: "0.17039384 ETH",
+        bchWalletIdentifier: "0.00388845 BCH",
+        bchTradingWalletIdentifier: "0.00004829 BCH"
+    ]
+
+    lazy var accountPickerRowList: IdentifiedArrayOf<AccountPickerRow> = [
         .accountGroup(
             AccountPickerRow.AccountGroup(
-                id: UUID(),
+                id: allIdentifier,
                 title: "All Wallets",
-                description: "Total Balance",
-                fiatBalance: .loaded(next: "$2,302.39"),
-                currencyCode: .loaded(next: "USD")
+                description: "Total Balance"
             )
         ),
         .button(
@@ -28,47 +54,37 @@ class AccountPickerViewTests: XCTestCase {
         ),
         .singleAccount(
             AccountPickerRow.SingleAccount(
-                id: UUID(),
+                id: btcWalletIdentifier,
                 title: "BTC Wallet",
-                description: "Bitcoin",
-                fiatBalance: .loaded(next: "$2,302.39"),
-                cryptoBalance: .loaded(next: "0.21204887 BTC")
+                description: "Bitcoin"
             )
         ),
         .singleAccount(
             AccountPickerRow.SingleAccount(
-                id: UUID(),
+                id: btcTradingWalletIdentifier,
                 title: "BTC Trading Wallet",
-                description: "Bitcoin",
-                fiatBalance: .loaded(next: "$10,093.13"),
-                cryptoBalance: .loaded(next: "1.38294910 BTC")
+                description: "Bitcoin"
             )
         ),
         .singleAccount(
             AccountPickerRow.SingleAccount(
-                id: UUID(),
+                id: ethWalletIdentifier,
                 title: "ETH Wallet",
-                description: "Ethereum",
-                fiatBalance: .loaded(next: "$807.21"),
-                cryptoBalance: .loaded(next: "0.17039384 ETH")
+                description: "Ethereum"
             )
         ),
         .singleAccount(
             AccountPickerRow.SingleAccount(
-                id: UUID(),
+                id: bchWalletIdentifier,
                 title: "BCH Wallet",
-                description: "Bitcoin Cash",
-                fiatBalance: .loaded(next: "$807.21"),
-                cryptoBalance: .loaded(next: "0.00388845 BCH")
+                description: "Bitcoin Cash"
             )
         ),
         .singleAccount(
             AccountPickerRow.SingleAccount(
-                id: UUID(),
+                id: bchTradingWalletIdentifier,
                 title: "BCH Trading Wallet",
-                description: "Bitcoin Cash",
-                fiatBalance: .loaded(next: "$40.30"),
-                cryptoBalance: .loaded(next: "0.00004829 BCH")
+                description: "Bitcoin Cash"
             )
         )
     ]
@@ -77,7 +93,8 @@ class AccountPickerViewTests: XCTestCase {
         title: "Send Crypto Now",
         subtitle: "Choose a Wallet to send cypto from.",
         image: ImageAsset.iconSend.image,
-        tableTitle: "Select a Wallet"
+        tableTitle: "Select a Wallet",
+        searchable: false
     )
 
     func testView() {
@@ -85,13 +102,17 @@ class AccountPickerViewTests: XCTestCase {
             store: Store(
                 initialState: AccountPickerState(
                     rows: .loaded(next: .success(accountPickerRowList)),
-                    header: header
+                    header: header,
+                    fiatBalances: fiatBalances,
+                    cryptoBalances: cryptoBalances,
+                    currencyCodes: currencyCodes
                 ),
                 reducer: accountPickerReducer,
                 environment: AccountPickerEnvironment(
                     rowSelected: { _ in },
                     backButtonTapped: {},
                     closeButtonTapped: {},
+                    search: { _ in },
                     sections: { .just([]).eraseToAnyPublisher() },
                     updateSingleAccount: { _ in nil },
                     updateAccountGroup: { _ in nil },

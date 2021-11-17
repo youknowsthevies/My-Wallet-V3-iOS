@@ -11,6 +11,8 @@ struct InterestAccountDetailsState: Equatable {
         let action: AssetAction
     }
 
+    var isLoading: Bool = true
+    var supportedActions: [AssetAction] = []
     var interestAccountActionSelection: InterestAccountActionSelection?
     var interestAccountBalanceSummary: InterestAccountOverviewBalanceSummary?
     var interestAccountRowItems: IdentifiedArrayOf<InterestAccountOverviewRowItem> {

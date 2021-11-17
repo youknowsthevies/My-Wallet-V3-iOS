@@ -10,19 +10,9 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-struct InterestAccountListState: Equatable, NavigationState {
-    var route: RouteIntent<InterestAccountListRoute>?
-    var interestTransactionState: InterestTransactionState?
-    var interestAccountOverviews: [InterestAccountOverview] = []
-    var interestAccountDetails: IdentifiedArrayOf<InterestAccountDetails> = []
-    var interestAccountDetailsState: InterestAccountDetailsState?
-    var isKYCVerified: Bool = false
-    var loadingInterestAccountList: Bool = false
-    var loadingErrorAlert: AlertState<InterestAccountListAction>?
-}
-
 protocol InterestAccountListViewDelegate: AnyObject {
     func didTapVerifyMyIdentity()
+    func didTapBuyCrypto(_ cryptoCurrency: CryptoCurrency)
 }
 
 struct InterestAccountListView: View {
@@ -35,31 +25,46 @@ struct InterestAccountListView: View {
 
     var body: some View {
         WithViewStore(store) { viewStore in
-            NavigationView {
-                List {
-                    if !viewStore.isKYCVerified {
-                        InterestIdentityVerificationView {
-                            delegate?.didTapVerifyMyIdentity()
+            VStack {
+                if viewStore.isLoading {
+                    LoadingStateView(title: viewStore.loadingTitle)
+                        .onAppear {
+                            if let cryptoCurrency = viewStore.buyCryptoCurrency {
+                                delegate?.didTapBuyCrypto(cryptoCurrency)
+                            }
                         }
-                        .listRowInsets(EdgeInsets())
-                    }
-                    ForEachStore(
-                        store.scope(
-                            state: \.interestAccountDetails,
-                            action: InterestAccountListAction.interestAccountButtonTapped
-                        )
-                    ) { cellStore in
-                        InterestAccountListItem(store: cellStore)
+                } else if viewStore.interestAccountFetchFailed {
+                    InterestAccountListErrorView(action: {
+                        viewStore.send(.setupInterestAccountListScreen)
+                    })
+                } else {
+                    NavigationView {
+                        List {
+                            if !viewStore.isKYCVerified {
+                                InterestIdentityVerificationView {
+                                    delegate?.didTapVerifyMyIdentity()
+                                }
+                                .listRowInsets(EdgeInsets())
+                            }
+                            ForEachStore(
+                                store.scope(
+                                    state: \.interestAccountDetails,
+                                    action: InterestAccountListAction.interestAccountButtonTapped
+                                )
+                            ) { cellStore in
+                                InterestAccountListItem(store: cellStore)
+                            }
+                        }
+                        .whiteNavigationBarStyle()
+                        .listStyle(PlainListStyle())
+                        .navigationTitle(LocalizationId.title)
+                        .navigationBarTitleDisplayMode(.inline)
+                        .navigationRoute(in: store)
                     }
                 }
-                .whiteNavigationBarStyle()
-                .listStyle(PlainListStyle())
-                .navigationTitle(LocalizationId.title)
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationRoute(in: store)
             }
             .onAppear {
-                viewStore.send(.loadInterestAccounts)
+                viewStore.send(.setupInterestAccountListScreen)
             }
         }
     }
@@ -82,7 +87,7 @@ struct InterestAccountListView_Previews: PreviewProvider {
             store: .init(
                 initialState: InterestAccountListState(
                     interestAccountDetails: .init(uniqueElements: testCurrencyPairs),
-                    loadingInterestAccountList: false
+                    loadingStatus: .loaded
                 ),
                 reducer: interestAccountListReducer,
                 environment: .init(
@@ -93,6 +98,7 @@ struct InterestAccountListView_Previews: PreviewProvider {
                     priceService: NoOpPriceService(),
                     blockchainAccountRepository: NoOpBlockchainAccountRepository(),
                     kycVerificationService: NoOpKYCVerificationService(),
+                    transactionRouterAPI: NoOpTransactionsRouter(),
                     mainQueue: .main
                 )
             )

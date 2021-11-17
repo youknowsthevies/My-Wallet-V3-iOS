@@ -79,11 +79,14 @@ public class UserAgentProvider {
         else {
             return nil
         }
+        let format = BuildFlag.isAlpha ?
+            "Blockchain-iOS-alpha/%@ (iOS/%@; %@)" :
+            "Blockchain-iOS/%@ (iOS/%@; %@)"
         let systemVersion = deviceInfo.systemVersion
         let modelName = deviceInfo.model
         let versionAndBuild = String(format: "%@ b%@", version, build)
         return String(
-            format: "Blockchain-iOS/%@ (iOS/%@; %@)",
+            format: format,
             versionAndBuild,
             systemVersion,
             modelName

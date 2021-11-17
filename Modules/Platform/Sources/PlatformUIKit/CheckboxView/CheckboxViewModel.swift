@@ -3,34 +3,55 @@
 import RxCocoa
 import RxDataSources
 import RxSwift
+import ToolKit
 
 public final class CheckboxViewModel: IdentifiableType {
 
     // MARK: - Public Properties
 
+    public typealias Inputs = [InteractableTextViewModel.Input]
+
     public let image: Driver<UIImage?>
 
-    public let labelContent: Driver<LabelContent>
+    public var textViewViewModel: Driver<InteractableTextViewModel> {
+        .just(interactableTextViewModel)
+    }
+
+    public var tapRelay: Signal<TitledLink> {
+        titledLinkRelay
+            .asSignal()
+    }
 
     public let selectedRelay = BehaviorRelay<Bool>(value: false)
 
     // MARK: - RxDataSources
 
-    public let identity: AnyHashable
+    public var identity: AnyHashable {
+        interactableTextViewModel
+            .identifier
+    }
+
+    // MARK: - Private Properties
+
+    private let interactableTextViewModel: InteractableTextViewModel
+    private let disposeBag = DisposeBag()
+    private let titledLinkRelay = PublishRelay<TitledLink>()
 
     // MARK: - Init
 
-    public init(
-        text: String
-    ) {
-        identity = text
-        labelContent = .just(
-            .init(
-                text: text,
-                font: .main(.medium, 12.0),
-                color: .textFieldText
+    public init(inputs: Inputs = []) {
+        interactableTextViewModel = .init(
+            inputs: inputs,
+            textStyle: .init(
+                color: .textFieldText,
+                font: .main(.medium, 12.0)
+            ),
+            linkStyle: .init(
+                color: .linkableText,
+                font: .main(.medium, 12.0)
             )
         )
+
         image = selectedRelay
             .asObservable()
             .map { $0 ? "checkbox-on" : "checkbox-off" }
@@ -41,6 +62,11 @@ public final class CheckboxViewModel: IdentifiableType {
                 }
                 return nil
             }
+
+        interactableTextViewModel
+            .tap
+            .bindAndCatch(to: titledLinkRelay)
+            .disposed(by: disposeBag)
     }
 }
 

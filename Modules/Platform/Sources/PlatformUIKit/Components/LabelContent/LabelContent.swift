@@ -5,6 +5,11 @@ import RxSwift
 
 public struct LabelContent: Equatable {
 
+    public enum FontSizeAdjustment {
+        case `false`
+        case `true`(factor: CGFloat)
+    }
+
     public static let empty: LabelContent = .init()
 
     public var isEmpty: Bool {
@@ -17,6 +22,8 @@ public struct LabelContent: Equatable {
     let color: Color
     let alignment: NSTextAlignment
     let lineSpacing: CGFloat
+    let lineBreakMode: NSLineBreakMode
+    let adjustsFontSizeToFitWidth: FontSizeAdjustment
     let accessibility: Accessibility
 
     public init(
@@ -25,6 +32,8 @@ public struct LabelContent: Equatable {
         color: UIColor = .clear,
         alignment: NSTextAlignment = .natural,
         lineSpacing: CGFloat = 1,
+        lineBreakMode: NSLineBreakMode = .byTruncatingTail,
+        adjustsFontSizeToFitWidth: FontSizeAdjustment = .false,
         accessibility: Accessibility = .none
     ) {
         self.text = text
@@ -32,6 +41,8 @@ public struct LabelContent: Equatable {
         self.color = color
         self.alignment = alignment
         self.lineSpacing = lineSpacing
+        self.lineBreakMode = lineBreakMode
+        self.adjustsFontSizeToFitWidth = adjustsFontSizeToFitWidth
         self.accessibility = accessibility
     }
 

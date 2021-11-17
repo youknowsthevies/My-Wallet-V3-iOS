@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import ToolKit
 
 final class PinScreenViewController: BaseScreenViewController {
 
@@ -20,6 +22,8 @@ final class PinScreenViewController: BaseScreenViewController {
     private let presenter: PinScreenPresenter
     private let alertViewPresenter: AlertViewPresenter
 
+    private let recorder: Recording
+
     private var serverStatusContainerView: UIStackView!
     private let serverStatusTitleLabel = UILabel()
     private let serverStatusSubtitleLabel = InteractableTextView()
@@ -30,9 +34,11 @@ final class PinScreenViewController: BaseScreenViewController {
 
     init(
         using presenter: PinScreenPresenter,
+        recorder: Recording = CrashlyticsRecorder(),
         alertViewPresenter: AlertViewPresenter = .shared
     ) {
         self.presenter = presenter
+        self.recorder = recorder
         self.alertViewPresenter = alertViewPresenter
         super.init(nibName: String(describing: PinScreenViewController.self), bundle: nil)
     }
@@ -243,6 +249,7 @@ extension PinScreenViewController {
         var optionalRecovery: (() -> Void)?
 
         let error = PinError.map(from: error)
+        recorder.record("handle(error:) occurred with error: \(error)")
         switch error {
         case .pinMismatch(recovery: let recovery):
             showInlineError(with: LocalizationConstants.Pin.pinsDoNotMatch)
@@ -287,14 +294,16 @@ extension PinScreenViewController {
 
         UINotificationFeedbackGenerator().notificationOccurred(.error)
         let animator = securePinView.joltAnimator
-        animator.addCompletion { _ in
+        animator.addCompletion { [weak self] _ in
             guard let optionalRecovery = optionalRecovery else {
                 deferred()
+                self?.recorder.record("handle(error:), only deferred block called")
                 return
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 deferred()
                 optionalRecovery()
+                self?.recorder.record("handle(error:), deferred & optionalRecovery blocks called")
             }
         }
         animator.startAnimation()

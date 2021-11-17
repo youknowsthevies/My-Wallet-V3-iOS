@@ -4,6 +4,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureInterestDomain
+import FeatureTransactionUI
 import PlatformKit
 
 struct InterestAccountSelectionEnvironment {
@@ -14,6 +15,7 @@ struct InterestAccountSelectionEnvironment {
     let priceService: PriceServiceAPI
     let blockchainAccountRepository: BlockchainAccountRepositoryAPI
     let kycVerificationService: KYCVerificationServiceAPI
+    let transactionRouterAPI: TransactionsRouterAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
@@ -26,6 +28,7 @@ extension InterestAccountSelectionEnvironment {
         priceService: resolve(),
         blockchainAccountRepository: resolve(),
         kycVerificationService: resolve(),
+        transactionRouterAPI: resolve(),
         mainQueue: .main
     )
 }

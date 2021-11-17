@@ -170,6 +170,16 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             }
     }
 
+    private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
+        featureFlagsService
+            .isEnabled(
+                .remote(.interestWithdrawAndDeposit)
+            )
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let balanceService: TradingBalanceServiceAPI
     private let cryptoReceiveAddressFactory: ExternalAssetAddressFactory
     private let custodialAddressService: CustodialAddressServiceAPI
@@ -177,7 +187,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let eligibilityService: EligibilityServiceAPI
     private let errorRecorder: ErrorRecording
     private let priceService: PriceServiceAPI
-    private let featureFetcher: FeatureFetching
+    private let featureFlagService: FeatureFlagsServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let ordersActivity: OrdersActivityServiceAPI
     private let swapActivity: SwapActivityServiceAPI
@@ -195,7 +205,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         ordersActivity: OrdersActivityServiceAPI = resolve(),
         buySellActivity: BuySellActivityItemEventServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
-        featureFetcher: FeatureFetching = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: ExternalAssetAddressFactory,
@@ -218,10 +228,11 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.custodialAddressService = custodialAddressService
         self.custodialPendingDepositService = custodialPendingDepositService
         self.eligibilityService = eligibilityService
-        self.featureFetcher = featureFetcher
+        self.featureFlagService = featureFlagService
         self.kycTiersService = kycTiersService
         self.errorRecorder = errorRecorder
         self.supportedPairsInteractorService = supportedPairsInteractorService
+        featureFlagsService = featureFlagService
     }
 
     private var isPairToFiatAvailable: Single<Bool> {
@@ -298,9 +309,16 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     private func canPerformInterestTransfer() -> Single<Bool> {
-        disabledReason
+        let isEligible = disabledReason
             .map(\.isEligible)
             .asSingle()
+        let balanceAvailable = balance
+            .map(\.isPositive)
+        let isFeatureFlagEnabled = isInterestWithdrawAndDepositEnabled
+            .asSingle()
+        return Single
+            .zip(isEligible, balanceAvailable, isFeatureFlagEnabled)
+            .map { $0 && $1 && $2 }
             .catchError { [label, asset] error in
                 throw Error.loadingFailed(
                     asset: asset.code,

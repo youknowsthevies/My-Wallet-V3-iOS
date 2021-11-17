@@ -63,6 +63,11 @@ let package = Package(
             url: "https://github.com/oliveratkinson-bc/zxcvbn-ios.git",
             .branch("swift-package-manager")
         ),
+        .package(
+            name: "swift-algorithms",
+            url: "https://github.com/apple/swift-algorithms.git",
+            from: "0.2.1"
+        ),
         .package(path: "../Analytics"),
         .package(path: "../RxAnalytics"),
         .package(path: "../FeatureAuthentication"),
@@ -75,7 +80,9 @@ let package = Package(
         .package(path: "../RxTool"),
         .package(path: "../WalletPayload"),
         .package(path: "../UIComponents"),
-        .package(path: "../ComposableNavigation")
+        .package(path: "../ComposableArchitectureExtensions"),
+        .package(path: "../ComponentLibrary"),
+        .package(path: "../FeatureWithdrawalLocks")
     ],
     targets: [
         .target(
@@ -95,9 +102,11 @@ let package = Package(
                 .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkKit", package: "Network"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "ComposableNavigation", package: "ComposableNavigation"),
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
+                .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions"),
                 .product(name: "RxToolKit", package: "RxTool"),
-                .product(name: "WalletPayloadKit", package: "WalletPayload")
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "Algorithms", package: "swift-algorithms")
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json"),
@@ -127,7 +136,9 @@ let package = Package(
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "Nuke", package: "Nuke"),
                 .product(name: "PhoneNumberKit", package: "PhoneNumberKit"),
-                .product(name: "Zxcvbn", package: "Zxcvbn")
+                .product(name: "Zxcvbn", package: "Zxcvbn"),
+                .product(name: "ComponentLibrary", package: "ComponentLibrary"),
+                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks")
             ],
             resources: [
                 .copy("PlatformUIKitAssets.xcassets")

@@ -4,7 +4,12 @@ import Foundation
 
 extension DateFormatter {
     public static let iso8601Format: ISO8601DateFormatter = {
-        ISO8601DateFormatter()
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [
+            .withInternetDateTime,
+            .withFractionalSeconds
+        ]
+        return formatter
     }()
 
     public static let long: DateFormatter = {

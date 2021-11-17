@@ -3,28 +3,40 @@
 import Combine
 import DIKit
 import RxSwift
+import ToolKit
 
-public enum BlockchainAccounRepositoryError: Error {
+public enum BlockchainAccountRepositoryError: Error {
     case coinCoreError(Error)
     case noAccount
 }
 
 public protocol BlockchainAccountRepositoryAPI: AnyObject {
+
+    func fetchAccountWithAddresss(
+        _ address: String,
+        currencyType: CurrencyType
+    ) -> AnyPublisher<BlockchainAccount, BlockchainAccountRepositoryError>
+
+    func accountsAvailableToPerformAction(
+        _ assetAction: AssetAction,
+        target: BlockchainAccount
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError>
+
     func accountsWithCurrencyType(
         _ currency: CurrencyType
-    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError>
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError>
 
     func accountsWithSingleAccountType(
         _ accountType: SingleAccountType
-    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError>
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError>
 
     func accountsWithCurrencyType(
         _ currency: CurrencyType, accountType: SingleAccountType
-    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError>
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError>
 
     func accountWithCurrencyType(
         _ currency: CurrencyType, accountType: SingleAccountType
-    ) -> AnyPublisher<BlockchainAccount, BlockchainAccounRepositoryError>
+    ) -> AnyPublisher<BlockchainAccount, BlockchainAccountRepositoryError>
 }
 
 public protocol BlockchainAccountProviding: AnyObject {
@@ -47,19 +59,48 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
 
     // MARK: - BlockchainAccountRepositoryAPI
 
+    func fetchAccountWithAddresss(
+        _ address: String,
+        currencyType: CurrencyType
+    ) -> AnyPublisher<BlockchainAccount, BlockchainAccountRepositoryError> {
+        coincore
+            .allAccounts
+            .map(\.accounts)
+            .map { $0.filter { $0.currencyType == currencyType } }
+            .eraseError()
+            .flatMapFilter(address: address)
+            .map { $0 as BlockchainAccount }
+            .mapError(BlockchainAccountRepositoryError.coinCoreError)
+            .eraseToAnyPublisher()
+    }
+
+    func accountsAvailableToPerformAction(
+        _ assetAction: AssetAction,
+        target: BlockchainAccount
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError> {
+        coincore
+            .allAccounts
+            .map(\.accounts)
+            .eraseError()
+            .flatMapFilter(action: assetAction)
+            .map { $0.map { $0 as BlockchainAccount } }
+            .mapError(BlockchainAccountRepositoryError.coinCoreError)
+            .eraseToAnyPublisher()
+    }
+
     func accountsWithCurrencyType(
         _ currency: CurrencyType
-    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError> {
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError> {
         coincore
             .allAccounts
             .map { $0.accounts.filter { $0.currencyType == currency } }
-            .mapError(BlockchainAccounRepositoryError.coinCoreError)
+            .mapError(BlockchainAccountRepositoryError.coinCoreError)
             .eraseToAnyPublisher()
     }
 
     func accountsWithSingleAccountType(
         _ accountType: SingleAccountType
-    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError> {
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError> {
         coincore
             .allAccounts
             .map(\.accounts)
@@ -78,13 +119,13 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
                     }
                 }
             }
-            .mapError(BlockchainAccounRepositoryError.coinCoreError)
+            .mapError(BlockchainAccountRepositoryError.coinCoreError)
             .eraseToAnyPublisher()
     }
 
     func accountsWithCurrencyType(
         _ currency: CurrencyType, accountType: SingleAccountType
-    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccounRepositoryError> {
+    ) -> AnyPublisher<[BlockchainAccount], BlockchainAccountRepositoryError> {
         switch currency {
         case .fiat:
             return coincore.fiatAsset
@@ -96,7 +137,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
                 .map { accounts in
                     accounts as [BlockchainAccount]
                 }
-                .mapError(BlockchainAccounRepositoryError.coinCoreError)
+                .mapError(BlockchainAccountRepositoryError.coinCoreError)
                 .eraseToAnyPublisher()
         case .crypto(let cryptoCurrency):
             guard let cryptoAsset = coincore.cryptoAssets.first(where: { $0.asset == cryptoCurrency }) else {
@@ -124,18 +165,18 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
                 .map { accounts in
                     accounts as [BlockchainAccount]
                 }
-                .mapError(BlockchainAccounRepositoryError.coinCoreError)
+                .mapError(BlockchainAccountRepositoryError.coinCoreError)
                 .eraseToAnyPublisher()
         }
     }
 
     func accountWithCurrencyType(
         _ currency: CurrencyType, accountType: SingleAccountType
-    ) -> AnyPublisher<BlockchainAccount, BlockchainAccounRepositoryError> {
+    ) -> AnyPublisher<BlockchainAccount, BlockchainAccountRepositoryError> {
         accountsWithCurrencyType(currency, accountType: accountType)
-            .flatMap { accounts -> AnyPublisher<BlockchainAccount, BlockchainAccounRepositoryError> in
+            .flatMap { accounts -> AnyPublisher<BlockchainAccount, BlockchainAccountRepositoryError> in
                 guard let value = accounts.first else {
-                    return .failure(BlockchainAccounRepositoryError.noAccount)
+                    return .failure(BlockchainAccountRepositoryError.noAccount)
                 }
                 return .just(value)
             }

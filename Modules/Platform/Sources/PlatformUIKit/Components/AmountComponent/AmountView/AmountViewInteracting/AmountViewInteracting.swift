@@ -21,6 +21,9 @@ public protocol AmountViewInteracting {
     /// The state of the interactor
     var stateRelay: BehaviorRelay<AmountInteractorState> { get }
 
+    /// A relay responsible for accepting taps from the amount view's auxiliary button
+    var auxiliaryButtonTappedRelay: PublishRelay<Void> { get }
+
     /// API for connecting user inputs and deriving a state of the interactor
     /// - Parameter input: Can be inserting or removing a character
     func connect(input: Driver<AmountInteractorInput>) -> Driver<AmountInteractorState>
@@ -32,6 +35,13 @@ public protocol AmountViewInteracting {
     /// Setting the amount entered. Used for sending the `Max`
     /// - Parameter amount: `String`
     func set(amount: String)
+
+    /// Toggles the auxiliary view on or off.
+    /// When disabled, the auxiliary view doesn't show up on error states.
+    /// Instead, the amount view displays the amount in a different style (e.g - red text).
+    func set(auxiliaryViewEnabled: Bool)
+
+    var auxiliaryViewEnabledRelay: PublishRelay<Bool> { get }
 
     var minAmountSelected: Observable<Void> { get }
 

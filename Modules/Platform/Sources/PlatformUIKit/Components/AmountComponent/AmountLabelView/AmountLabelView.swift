@@ -3,6 +3,7 @@
 import PlatformKit
 import RxRelay
 import RxSwift
+import UIKit
 
 public final class AmountLabelView: UIView {
 
@@ -31,6 +32,15 @@ public final class AmountLabelView: UIView {
     }
 
     // MARK: - UI Properties
+
+    public var textColor: UIColor {
+        get {
+            amountLabel.textColor
+        }
+        set {
+            amountLabel.textColor = newValue
+        }
+    }
 
     private let amountLabel = UILabel()
 

@@ -38,7 +38,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     var actions: Single<AvailableActions> {
         Single.zip(
             isFunded,
-            canPerformInterestTransfer(),
+            isInterestTransferAvailable.asSingle(),
             featureFlagsService
                 .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
         )
@@ -68,6 +68,27 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
             }
     }
 
+    private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
+        Single.zip(
+            canPerformInterestTransfer(),
+            isInterestWithdrawAndDepositEnabled
+                .asSingle()
+        )
+        .map { $0.0 && $0.1 }
+        .asPublisher()
+        .replaceError(with: false)
+        .eraseToAnyPublisher()
+    }
+
+    private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
+        featureFlagsService
+            .isEnabled(
+                .remote(.interestWithdrawAndDeposit)
+            )
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
     private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
         operationsService
             .transactions(accountID: publicKey, size: 50)
@@ -84,6 +105,7 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
             .catchErrorJustReturn([])
     }
 
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let publicKey: String
     private let hdAccountIndex: Int
     private let bridge: StellarWalletBridgeAPI
@@ -92,7 +114,6 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
     private let accountCache: CachedValue<StellarAccountDetails>
     private let operationsService: StellarHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
-    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         publicKey: String,
@@ -135,7 +156,8 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
              .buy:
             return .just(true)
         case .interestTransfer:
-            return canPerformInterestTransfer()
+            return isInterestTransferAvailable
+                .asSingle()
                 .flatMap { [isFunded] isEnabled in
                     isEnabled ? isFunded : .just(false)
                 }

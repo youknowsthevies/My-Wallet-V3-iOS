@@ -39,8 +39,6 @@ public enum AppFeature: Int, CaseIterable {
 
     // MARK: - SSO
 
-    case accountRecovery
-
     case unifiedSignIn
 
     // MARK: - SDD
@@ -60,8 +58,10 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable new Sell Transaction flow
     case sellUsingTransactionFlowEnabled
 
-    /// Enable Dynamic Assets
-    case dynamicAssetsEnabled
+    // MARK: - Transactions Flow
+
+    /// Uses the Transactions Flow implementation of Buy when enabled
+    case useTransactionsFlowToBuyCrypto
 }
 
 extension AppFeature {
@@ -90,8 +90,6 @@ extension AppFeature {
             return "show_email_verification_in_onboarding_ios"
         case .showEmailVerificationInBuyFlow:
             return "show_email_verification_in_buy_flow_ios"
-        case .accountRecovery:
-            return "sso_account_recovery_enabled_ios"
         case .unifiedSignIn:
             return "sso_unified_sign_in_enabled_ios"
         case .sddEnabled:
@@ -100,8 +98,8 @@ extension AppFeature {
             return "customer_support_chat_ios"
         case .sellUsingTransactionFlowEnabled:
             return "sell_using_transaction_flow_enabled_ios"
-        case .dynamicAssetsEnabled:
-            return "dynamic_assets_ios"
+        case .useTransactionsFlowToBuyCrypto:
+            return "ios_use_transaction_flow_buy"
         }
     }
 
@@ -130,8 +128,6 @@ extension AppFeature {
             return false
         case .showEmailVerificationInBuyFlow:
             return false
-        case .accountRecovery:
-            return false
         case .unifiedSignIn:
             return false
         case .sddEnabled:
@@ -139,7 +135,7 @@ extension AppFeature {
         case .customerSupportChat:
             return false
         case .sellUsingTransactionFlowEnabled,
-             .dynamicAssetsEnabled:
+             .useTransactionsFlowToBuyCrypto:
             return true
         }
     }

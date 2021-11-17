@@ -37,7 +37,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     var actions: Single<AvailableActions> {
         Single.zip(
             isFunded,
-            canPerformInterestTransfer(),
+            isInterestTransferAvailable.asSingle(),
             featureFlagsService
                 .isEnabled(.remote(.sellUsingTransactionFlowEnabled)).asSingle()
         )
@@ -88,6 +88,18 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
             }
     }
 
+    private var isInterestTransferAvailable: AnyPublisher<Bool, Never> {
+        Single.zip(
+            canPerformInterestTransfer(),
+            isInterestWithdrawAndDepositEnabled
+                .asSingle()
+        )
+        .map { $0.0 && $0.1 }
+        .asPublisher()
+        .replaceError(with: false)
+        .eraseToAnyPublisher()
+    }
+
     private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
         transactionsService
             .transactions(publicKeys: [xPub])
@@ -104,6 +116,16 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
             .catchErrorJustReturn([])
     }
 
+    private var isInterestWithdrawAndDepositEnabled: AnyPublisher<Bool, Never> {
+        featureFlagsService
+            .isEnabled(
+                .remote(.interestWithdrawAndDeposit)
+            )
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let xPub: XPub
     private let hdAccountIndex: Int
     private let balanceService: BalanceServiceAPI
@@ -111,7 +133,6 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     private let bridge: BitcoinCashWalletBridgeAPI
     private let transactionsService: BitcoinCashHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
-    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         xPub: XPub,
@@ -145,7 +166,8 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
              .viewActivity:
             return .just(true)
         case .interestTransfer:
-            return canPerformInterestTransfer()
+            return isInterestTransferAvailable
+                .asSingle()
                 .flatMap { [isFunded] isEnabled in
                     isEnabled ? isFunded : .just(false)
                 }

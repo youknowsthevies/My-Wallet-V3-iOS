@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct SpacingExamplesView: View {
@@ -20,6 +20,9 @@ struct SpacingExamplesView: View {
 
 struct SpacingExamplesView_Previews: PreviewProvider {
     static var previews: some View {
-        SpacingExamplesView()
+        PrimaryNavigationView {
+            SpacingExamplesView()
+                .primaryNavigation(title: "Spacing")
+        }
     }
 }

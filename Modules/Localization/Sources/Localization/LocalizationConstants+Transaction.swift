@@ -73,6 +73,7 @@ extension LocalizationConstants {
         }
 
         public enum Transfer {
+            public enum ToS {}
             public enum Completion {
                 public enum Pending {}
                 public enum Success {}
@@ -319,14 +320,15 @@ extension LocalizationConstants.Transaction.Withdraw {
 }
 
 extension LocalizationConstants.Transaction.Transfer {
-    public static let transferTo = NSLocalizedString(
-        "Transfer to...",
-        comment: "Transfer to..."
+    public static let transferFrom = NSLocalizedString(
+        "Transfer from...",
+        comment: "Transfer from..."
     )
     public static let transferNow = NSLocalizedString(
         "Transfer Now",
         comment: "Transfer Now"
     )
+    public static let transfer = NSLocalizedString("Transfer", comment: "Transfer")
 }
 
 extension LocalizationConstants.Transaction.Deposit {
@@ -508,6 +510,13 @@ extension LocalizationConstants.Transaction.Swap {
 
 // MARK: - Interest Withdraw
 
+extension LocalizationConstants.Transaction.InterestWithdraw {
+    public static let confirmationDisclaimer = NSLocalizedString(
+        "After confirming this withdrawal, you will not continue to earn rewards on the amount withdrawn. Your %@ will be available in your %@ within 2 days.",
+        comment: "After confirming this withdrawal, you will not continue to earn rewards on the amount withdrawn. Your %@ will be available within 2 days."
+    )
+}
+
 extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Pending {
     public static let title = NSLocalizedString("Withdrawing %@", comment: "Withdrawing %@")
     public static let description = NSLocalizedString(
@@ -538,9 +547,16 @@ extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Failure 
 
 // MARK: - Interest Transfer
 
+extension LocalizationConstants.Transaction.Transfer.ToS {
+    public static let prefix = NSLocalizedString("I have read and agree to the", comment: "I have read and agree to the")
+    public static let termsOfService = NSLocalizedString("Terms of Service", comment: "Terms of Service")
+    public static let privacyPolicy = NSLocalizedString("Privacy Policy", comment: "Privacy Policy")
+}
+
 extension LocalizationConstants.Transaction.Transfer {
     public static let termsOfService = NSLocalizedString("Terms of Service", comment: "Terms of Service")
     public static let privacyPolicy = NSLocalizedString("Privacy Policy", comment: "Privacy Policy")
+
     public static let termsOfServiceDisclaimer = NSLocalizedString(
         "I have read and agree to the Terms of Service & Privacy Policy.",
         comment: "I have read and agree to the Terms of Service & Privacy Policy."
@@ -1078,8 +1094,8 @@ extension LocalizationConstants.Transaction.Error {
         comment: ""
     )
     public static let pendingOrderLimitReached = NSLocalizedString(
-        "You have 1 Swap in-progress. Once that completes, create a New Swap.",
-        comment: ""
+        "You have too many pending orders in-progress. Once those complete, try again. You can check your order status in 'Activity'.",
+        comment: "User has reached the maximum limit of unfullfilled pending orders and cannot create new orders at this time."
     )
     public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",
@@ -1103,6 +1119,75 @@ extension LocalizationConstants.Transaction.Error {
     )
     public static let insufficientFundsForFees = NSLocalizedString(
         "Not enough %@ in your wallet to send with current network fees.",
+        comment: ""
+    )
+
+    public static let insufficientFundsShort = NSLocalizedString(
+        "Insufficient funds",
+        comment: ""
+    )
+    public static let insufficientGasShort = NSLocalizedString(
+        "Insufficient gas",
+        comment: ""
+    )
+    public static let addressIsContractShort = NSLocalizedString(
+        "Invalid address",
+        comment: ""
+    )
+    public static let optionInvalidShort = NSLocalizedString(
+        "Review T&Cs",
+        comment: ""
+    )
+    public static let invoiceExpiredShort = NSLocalizedString(
+        "Invoice expired",
+        comment: ""
+    )
+    public static let belowMinimumLimitShort = NSLocalizedString(
+        "Below minimum",
+        comment: ""
+    )
+    public static let overMaximumLimitShort = NSLocalizedString(
+        "Over your limit",
+        comment: ""
+    )
+    public static let underMinBitcoinFeeShort = NSLocalizedString(
+        "Fee too low",
+        comment: ""
+    )
+    public static let invalidAmountShort = NSLocalizedString(
+        "Invalid fee",
+        comment: ""
+    )
+    public static let transactionInFlightShort = NSLocalizedString(
+        "Transaction in progress",
+        comment: ""
+    )
+    public static let pendingOrdersLimitReachedShort = NSLocalizedString(
+        "Too many active orders",
+        comment: ""
+    )
+    public static let unknownErrorShort = NSLocalizedString(
+        "Unexpected error",
+        comment: ""
+    )
+    public static let fatalErrorShort = NSLocalizedString(
+        "Fatal error",
+        comment: ""
+    )
+    public static let nextworkErrorShort = NSLocalizedString(
+        "Network error",
+        comment: ""
+    )
+    public static let invalidPasswordShort = NSLocalizedString(
+        "Incorrect password",
+        comment: ""
+    )
+    public static let invalidAddressShort = NSLocalizedString(
+        "Invalid address",
+        comment: ""
+    )
+    public static let insufficientFundsForFeesShort = NSLocalizedString(
+        "Not enough funds",
         comment: ""
     )
 

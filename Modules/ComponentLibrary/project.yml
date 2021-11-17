@@ -9,6 +9,9 @@ options:
 packages: 
   ComponentLibrary:
     path: ../ComponentLibrary
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    version: 1.9.0
 
 targets:
 
@@ -16,8 +19,12 @@ targets:
   
     platform: iOS
     type: application
+    info:
+      path: Example/Info.plist
+      properties:
+            UILaunchScreen:
     sources:
-      - path: Example/
+      - path: ./Example/ExampleApp.swift
     dependencies: 
       - package: ComponentLibrary
         product: Examples
@@ -27,9 +34,46 @@ targets:
         TARGETED_DEVICE_FAMILY: 1
         PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.componentLibrary
 
+  ComponentLibraryTests:
+
+    platform: iOS
+    type: bundle.unit-test
+    sources:
+      - path: ./Tests
+        excludes: ["**/__Snapshots__/*"]
+    dependencies:
+      - package: ComponentLibrary
+        product: ComponentLibrary
+      - package: SnapshotTesting
+
+  ComponentLibraryExampleMac:
+
+    platform: macOS
+    type: application
+    info:
+      path: Example/Info-macOS.plist
+    sources:
+      - path: ./Example/ExampleApp.swift
+    dependencies:
+      - package: ComponentLibrary
+        product: Examples
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.componentLibrary
+
+
 schemes:
         
   ComponentLibraryExample:
     build:
       targets:
         ComponentLibraryExample: all
+    test:
+      targets:
+        - ComponentLibraryTests
+
+  ComponentLibraryExampleMac:
+    build:
+      targets:
+        ComponentLibraryExampleMac: all

@@ -21,7 +21,7 @@ public struct AppEnvironment {
     var cacheSuite: CacheSuite
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
     var certificatePinner: CertificatePinnerAPI
-    var siftService: SiftServiceAPI
+    var siftService: FeatureAuthenticationDomain.SiftServiceAPI
     var alertViewPresenter: AlertViewPresenterAPI
     var deeplinkAppHandler: AppDeeplinkHandlerAPI
     var deeplinkHandler: DeepLinkHandling
@@ -38,12 +38,14 @@ public struct AppEnvironment {
     var customerSupportChatService: CustomerSupportChatServiceAPI
     var sharedContainer: SharedContainerUserDefaults
     var analyticsRecorder: AnalyticsEventRecorderAPI
+    var crashlyticsRecorder: Recording
 
     var coincore: CoincoreAPI
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
 
     var walletManager: WalletManagerAPI
     var walletUpgradeService: WalletUpgradeServicing
+    var walletRepoPersistence: WalletRepoPersistenceAPI
     var exchangeRepository: ExchangeAccountRepositoryAPI
 
     var appFeatureConfigurator: FeatureConfiguratorAPI // TODO: deprecated, use featureFlagsService instead
@@ -62,7 +64,7 @@ public struct AppEnvironment {
         cacheSuite: CacheSuite,
         remoteNotificationServiceContainer: RemoteNotificationServiceContaining,
         certificatePinner: CertificatePinnerAPI,
-        siftService: SiftServiceAPI,
+        siftService: FeatureAuthenticationDomain.SiftServiceAPI,
         alertViewPresenter: AlertViewPresenterAPI,
         deeplinkAppHandler: AppDeeplinkHandlerAPI,
         deeplinkHandler: DeepLinkHandling,
@@ -79,10 +81,12 @@ public struct AppEnvironment {
         customerSupportChatService: CustomerSupportChatServiceAPI,
         sharedContainer: SharedContainerUserDefaults,
         analyticsRecorder: AnalyticsEventRecorderAPI,
+        crashlyticsRecorder: Recording,
         coincore: CoincoreAPI,
         erc20CryptoAssetService: ERC20CryptoAssetServiceAPI,
         walletManager: WalletManagerAPI,
         walletUpgradeService: WalletUpgradeServicing,
+        walletRepoPersistence: WalletRepoPersistenceAPI,
         exchangeRepository: ExchangeAccountRepositoryAPI,
         appFeatureConfigurator: FeatureConfiguratorAPI,
         blockchainSettings: BlockchainSettings.App,
@@ -115,6 +119,7 @@ public struct AppEnvironment {
         self.customerSupportChatService = customerSupportChatService
         self.sharedContainer = sharedContainer
         self.analyticsRecorder = analyticsRecorder
+        self.crashlyticsRecorder = crashlyticsRecorder
         self.coincore = coincore
         self.erc20CryptoAssetService = erc20CryptoAssetService
         self.walletManager = walletManager
@@ -127,5 +132,6 @@ public struct AppEnvironment {
         self.mainQueue = mainQueue
         self.appStoreOpener = appStoreOpener
         self.buildVersionProvider = buildVersionProvider
+        self.walletRepoPersistence = walletRepoPersistence
     }
 }

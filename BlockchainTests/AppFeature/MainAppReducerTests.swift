@@ -256,7 +256,7 @@ final class MainAppReducerTests: XCTestCase {
         }
         testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.manualLoginScreen)))) { state in
             state.onboarding?.welcomeState?.screenFlow = .manualLoginScreen
-            state.onboarding?.welcomeState?.manualCredentialsState = .init(accountRecoveryEnabled: false)
+            state.onboarding?.welcomeState?.manualCredentialsState = .init()
         }
         testStore.send(
             .onboarding(
@@ -589,7 +589,7 @@ final class MainAppReducerTests: XCTestCase {
             )
         ) { state in
             state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?
-                .credentialsState = .init(accountRecoveryEnabled: false)
+                .credentialsState = .init()
             state.onboarding?.welcomeState?.emailLoginState?.verifyDeviceState?
                 .route = RouteIntent(route: .credentials, action: .navigateTo)
         }

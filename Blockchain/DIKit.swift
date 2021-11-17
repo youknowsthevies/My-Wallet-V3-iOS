@@ -48,8 +48,6 @@ extension FeatureSettingsUI.BackupFundsRouter: FeatureDashboardUI.BackupRouterAP
 
 extension BlockchainSettings.App: AnalyticsKit.GuidRepositoryAPI {}
 
-extension NabuTokenStore: AnalyticsKit.TokenRepositoryAPI {}
-
 // MARK: - Blockchain Module
 
 extension DependencyContainer {
@@ -92,7 +90,17 @@ extension DependencyContainer {
 
         single { TradeLimitsService() as TradeLimitsAPI }
 
-        factory { SiftService() as SiftServiceAPI }
+        factory { SiftService() }
+
+        factory { () -> FeatureAuthenticationDomain.SiftServiceAPI in
+            let service: SiftService = DIKit.resolve()
+            return service as FeatureAuthenticationDomain.SiftServiceAPI
+        }
+
+        factory { () -> PlatformKit.SiftServiceAPI in
+            let service: SiftService = DIKit.resolve()
+            return service as PlatformKit.SiftServiceAPI
+        }
 
         single { SecondPasswordHelper() }
 
@@ -435,6 +443,7 @@ extension DependencyContainer {
             let externalAppOpener: ExternalAppOpener = DIKit.resolve()
             return FeatureKYCUI.Router(
                 analyticsRecorder: DIKit.resolve(),
+                loadingViewPresenter: DIKit.resolve(),
                 legacyRouter: DIKit.resolve(),
                 kycService: DIKit.resolve(),
                 emailVerificationService: emailVerificationService,
@@ -541,11 +550,6 @@ extension DependencyContainer {
 
         // MARK: Analytics
 
-        single { () -> AnalyticsKit.TokenRepositoryAPI in
-            let tokenRepository: NabuTokenStore = DIKit.resolve()
-            return tokenRepository as AnalyticsKit.TokenRepositoryAPI
-        }
-
         single { () -> AnalyticsKit.GuidRepositoryAPI in
             let guidRepository: BlockchainSettings.App = DIKit.resolve()
             return guidRepository as AnalyticsKit.GuidRepositoryAPI
@@ -558,7 +562,7 @@ extension DependencyContainer {
                 platform: .wallet,
                 basePath: BlockchainAPI.shared.apiUrl,
                 userAgent: userAgent,
-                tokenRepository: DIKit.resolve(),
+                tokenProvider: DIKit.resolve(),
                 guidProvider: DIKit.resolve()
             )
             return AnalyticsEventRecorder(analyticsServiceProviders: [

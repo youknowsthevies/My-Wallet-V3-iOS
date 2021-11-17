@@ -38,9 +38,12 @@ extension CryptoNonCustodialAccount {
     }
 
     public func canPerformInterestTransfer() -> Single<Bool> {
-        disabledReason
+        let isEligible = disabledReason
             .map(\.isEligible)
             .asSingle()
+        return Single
+            .zip(isEligible, isFunded)
+            .map { $0 && $1 }
             .catchErrorJustReturn(false)
     }
 

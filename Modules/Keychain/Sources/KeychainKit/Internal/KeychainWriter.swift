@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import ToolKit
 
 /// Types adopting the `KeychainWriterAPI` should provide write access to the keychain
 protocol KeychainWriterAPI {

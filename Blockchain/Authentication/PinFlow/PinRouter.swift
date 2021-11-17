@@ -195,12 +195,15 @@ extension PinRouter {
     private func create(pin: Pin) {
         let useCase = PinScreenUseCase.create(firstPin: pin)
         let backwardRouting: PinRouting.RoutingType.Backward = { [weak self] in
+            self?.recorder.record("backwardRouting block called")
             self?.navigationController.popViewController(animated: true)
         }
         let forwardRouting: PinRouting.RoutingType.Forward = { [weak self] _ in
+            self?.recorder.record("forwardRouting block called")
             self?.finish()
         }
         let effectHandling: PinRouting.RoutingType.Effect = { [weak self] effect in
+            self?.recorder.record("effectHandling block called with type: \(effect)")
             self?.effectHandling(effect)
         }
         let presenter = PinScreenPresenter(
@@ -212,6 +215,7 @@ extension PinRouter {
         )
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
+        recorder.record("create(pin:) called")
     }
 
     /// Handle the display of a new view controller

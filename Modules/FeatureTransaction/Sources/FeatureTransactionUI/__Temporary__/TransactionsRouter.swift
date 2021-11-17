@@ -17,6 +17,10 @@ public enum TransactionFlowAction: Equatable {
     case sell(CryptoAccount?)
     /// Performs a swap. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
     case swap(CryptoAccount?)
+    /// Performs an interest transfer.
+    case interestTransfer(CryptoInterestAccount)
+    /// Performs an interest withdraw.
+    case interestWithdraw(CryptoInterestAccount)
 
     public static func == (lhs: TransactionFlowAction, rhs: TransactionFlowAction) -> Bool {
         switch (lhs, rhs) {
@@ -24,6 +28,10 @@ public enum TransactionFlowAction: Equatable {
              (.sell(let lhsAccount), .sell(let rhsAccount)),
              (.swap(let lhsAccount), .swap(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
+        case (.interestTransfer(let lhsAccount), .interestTransfer(let rhsAccount)):
+            return lhsAccount.identifier == rhsAccount.identifier
+        case (.interestWithdraw(let lhsAccount), .interestWithdraw(let rhsAccount)):
+            return lhsAccount.identifier == rhsAccount.identifier
         default:
             return false
         }
@@ -40,6 +48,12 @@ public enum TransactionFlowResult: Equatable {
 /// NOTE: Presenting a Transaction Flow can never fail because it's expected for any error to be handled within the flow. Non-recoverable errors should force the user to abandon the flow.
 public protocol TransactionsRouterAPI {
 
+    /// Some APIs may not have UIKit available. In this instance we use
+    /// `TopMostViewControllerProviding`.
+    func presentTransactionFlow(
+        to action: TransactionFlowAction
+    ) -> AnyPublisher<TransactionFlowResult, Never>
+
     func presentTransactionFlow(
         to action: TransactionFlowAction,
         from presenter: UIViewController
@@ -52,11 +66,13 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private let pendingOrdersService: PendingOrderDetailsServiceAPI
     private let kycRouter: PlatformUIKit.KYCRouting
     private let alertViewPresenter: AlertViewPresenterAPI
+    private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let loadingViewPresenter: LoadingViewPresenting
     private let legacyBuyRouter: LegacyBuyFlowRouting
     private var legacySellRouter: LegacySellRouter?
     private let buyFlowBuilder: BuyFlowBuildable
     private let sellFlowBuilder: SellFlowBuilder
+    private let interestFlowBuilder: InterestTransactionBuilder
 
     // Since RIBs need to be attached to something but we're not, the router in use needs to be retained.
     private var currentRIBRouter: RIBs.Routing?
@@ -66,19 +82,32 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         pendingOrdersService: PendingOrderDetailsServiceAPI = resolve(),
         kycRouter: PlatformUIKit.KYCRouting = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter(),
         legacyBuyRouter: LegacyBuyFlowRouting = LegacyBuyFlowRouter(),
         buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(analyticsRecorder: resolve()),
-        sellFlowBuilder: SellFlowBuilder = SellFlowBuilder()
+        sellFlowBuilder: SellFlowBuilder = SellFlowBuilder(),
+        interestFlowBuilder: InterestTransactionBuilder = InterestTransactionBuilder()
     ) {
         self.featureFlagsService = featureFlagsService
         self.kycRouter = kycRouter
+        self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
         self.loadingViewPresenter = loadingViewPresenter
         self.pendingOrdersService = pendingOrdersService
         self.legacyBuyRouter = legacyBuyRouter
         self.buyFlowBuilder = buyFlowBuilder
         self.sellFlowBuilder = sellFlowBuilder
+        self.interestFlowBuilder = interestFlowBuilder
+    }
+
+    func presentTransactionFlow(
+        to action: TransactionFlowAction
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
+        guard let viewController = topMostViewControllerProvider.topMostViewController else {
+            fatalError("Expected a UIViewController")
+        }
+        return presentTransactionFlow(to: action, from: viewController)
     }
 
     func presentTransactionFlow(
@@ -94,7 +123,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
             let checkPendingOrders = pendingOrdersService.pendingOrderDetails
                 .asPublisher()
                 .replaceError(with: nil)
-            return featureFlagsService.isEnabled(.local(.useTransactionsFlowToBuyCrypto))
+            return featureFlagsService.isEnabled(.remote(.useTransactionsFlowToBuyCrypto))
                 .zip(checkPendingOrders)
                 .receive(on: DispatchQueue.main)
                 .flatMap { [weak self, loadingViewPresenter] tuple -> AnyPublisher<TransactionFlowResult, Never> in
@@ -122,7 +151,9 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                 }
                 .eraseToAnyPublisher()
 
-        case .swap:
+        case .swap,
+             .interestTransfer,
+             .interestWithdraw:
             return presentNewTransactionFlow(action, from: presenter)
         }
     }
@@ -146,11 +177,22 @@ extension TransactionsRouter {
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         switch action {
+        case .interestWithdraw(let cryptoAccount):
+            let listener = InterestTransactionInteractor(transactionType: .withdraw(cryptoAccount))
+            let router = interestFlowBuilder.buildWithInteractor(listener)
+            router.start()
+            mimicRIBAttachment(router: router)
+            return listener.publisher
+        case .interestTransfer(let cryptoAccount):
+            let listener = InterestTransactionInteractor(transactionType: .transfer(cryptoAccount))
+            let router = interestFlowBuilder.buildWithInteractor(listener)
+            router.start()
+            mimicRIBAttachment(router: router)
+            return listener.publisher
         case .buy(let cryptoAccount):
             let listener = BuyFlowListener(
                 kycRouter: kycRouter,
-                alertViewPresenter: alertViewPresenter,
-                loadingViewPresenter: loadingViewPresenter
+                alertViewPresenter: alertViewPresenter
             )
             let interactor = BuyFlowInteractor()
             let router = buyFlowBuilder.build(with: listener, interactor: interactor)
@@ -211,7 +253,9 @@ extension TransactionsRouter {
             legacySellRouter?.load()
             return .just(.abandoned)
 
-        case .swap:
+        case .swap,
+             .interestTransfer,
+             .interestWithdraw:
             unimplemented("There is no legacy swap flow.")
         }
     }

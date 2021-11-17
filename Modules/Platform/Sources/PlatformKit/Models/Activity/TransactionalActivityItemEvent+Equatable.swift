@@ -18,7 +18,10 @@ extension TransactionalActivityItemEvent.EventStatus: Equatable {
 }
 
 extension TransactionalActivityItemEvent.EventType: Equatable {
-    public static func == (lhs: TransactionalActivityItemEvent.EventType, rhs: TransactionalActivityItemEvent.EventType) -> Bool {
+    public static func == (
+        lhs: TransactionalActivityItemEvent.EventType,
+        rhs: TransactionalActivityItemEvent.EventType
+    ) -> Bool {
         switch (lhs, rhs) {
         case (.receive, .receive):
             return true

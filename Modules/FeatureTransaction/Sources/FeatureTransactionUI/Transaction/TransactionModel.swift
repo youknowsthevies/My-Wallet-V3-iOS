@@ -42,7 +42,6 @@ final class TransactionModel {
 
     // swiftlint:disable:next cyclomatic_complexity
     func perform(previousState: TransactionState, action: TransactionAction) -> Disposable? {
-        Logger.shared.debug("[Transaction Flow] Perform action: \(action) on state:")
         switch action {
         case .pendingTransactionStarted:
             return nil
@@ -166,6 +165,8 @@ final class TransactionModel {
         case .sourceDestinationPair:
             return nil
         case .fatalTransactionError:
+            return nil
+        case .showErrorRecoverySuggestion:
             return nil
         case .validateTransaction:
             return processValidateTransaction()

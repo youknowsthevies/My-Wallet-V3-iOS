@@ -78,7 +78,7 @@ final class Coincore: CoincoreAPI {
     // MARK: - Setup
 
     init(
-        assetLoader: AssetLoader = AssetLoaderSwitcher(),
+        assetLoader: AssetLoader = DynamicAssetLoader(),
         fiatAsset: FiatAsset = FiatAsset(),
         reactiveWallet: ReactiveWalletAPI = resolve()
     ) {
@@ -173,12 +173,17 @@ final class Coincore: CoincoreAPI {
         case .buy:
             unimplemented("WIP")
         case .interestTransfer:
-            return true
+            return interestTransferFilter(
+                sourceAccount: sourceAccount,
+                destinationAccount: destinationAccount,
+                action: action
+            )
         case .interestWithdraw:
-            guard let cryptoAccount = destinationAccount as? CryptoAccount else {
-                return false
-            }
-            return sourceAccount.asset == cryptoAccount.asset
+            return interestWithdrawFilter(
+                sourceAccount: sourceAccount,
+                destinationAccount: destinationAccount,
+                action: action
+            )
         case .sell:
             return destinationAccount is FiatAccount
         case .swap:
@@ -197,6 +202,40 @@ final class Coincore: CoincoreAPI {
              .receive,
              .viewActivity,
              .withdraw:
+            return false
+        }
+    }
+
+    private static func interestTransferFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
+        guard destinationAccount.currencyType == sourceAccount.currencyType else {
+            return false
+        }
+        switch (sourceAccount, destinationAccount) {
+        case (is CryptoTradingAccount, is CryptoInterestAccount),
+             (is CryptoNonCustodialAccount, is CryptoInterestAccount):
+            return true
+        default:
+            return false
+        }
+    }
+
+    private static func interestWithdrawFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
+        guard destinationAccount.currencyType == sourceAccount.currencyType else {
+            return false
+        }
+        switch (sourceAccount, destinationAccount) {
+        case (is CryptoInterestAccount, is CryptoTradingAccount),
+             (is CryptoInterestAccount, is CryptoNonCustodialAccount):
+            return true
+        default:
             return false
         }
     }

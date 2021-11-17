@@ -45,7 +45,7 @@ let package = Package(
             from: "5.1.3"
         ),
         .package(path: "../Analytics"),
-        .package(path: "../ComposableNavigation"),
+        .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../HDWallet"),
         .package(path: "../Localization"),
         .package(path: "../Network"),
@@ -82,7 +82,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureAuthenticationDomain"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "ComposableNavigation", package: "ComposableNavigation"),
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "RxSwift", package: "RxSwift"),

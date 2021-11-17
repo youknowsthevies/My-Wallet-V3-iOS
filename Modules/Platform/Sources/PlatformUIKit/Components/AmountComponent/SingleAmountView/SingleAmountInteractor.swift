@@ -19,6 +19,9 @@ public final class SingleAmountInteractor: AmountViewInteracting {
             .share(replay: 1, scope: .whileConnected)
     }
 
+    public let auxiliaryButtonTappedRelay = PublishRelay<Void>()
+    public let auxiliaryViewEnabledRelay = PublishRelay<Bool>()
+
     /// Streams the amount of `MoneyValue`
     public let amount: Observable<MoneyValue>
 
@@ -80,6 +83,10 @@ public final class SingleAmountInteractor: AmountViewInteracting {
         currencyInteractor
             .scanner
             .reset(to: amount)
+    }
+
+    public func set(auxiliaryViewEnabled: Bool) {
+        auxiliaryViewEnabledRelay.accept(auxiliaryViewEnabled)
     }
 }
 

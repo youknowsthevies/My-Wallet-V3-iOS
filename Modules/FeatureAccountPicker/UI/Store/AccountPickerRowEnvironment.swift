@@ -10,7 +10,10 @@ struct AccountPickerRowEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
 
     // State / Input
-    let updateSingleAccount: (AccountPickerRow.SingleAccount) -> AnyPublisher<AccountPickerRow.SingleAccount, Error>?
 
-    let updateAccountGroup: (AccountPickerRow.AccountGroup) -> AnyPublisher<AccountPickerRow.AccountGroup, Error>?
+    let updateSingleAccount: (AccountPickerRow.SingleAccount)
+        -> AnyPublisher<AccountPickerRow.SingleAccount.Balances, Error>?
+
+    let updateAccountGroup: (AccountPickerRow.AccountGroup)
+        -> AnyPublisher<AccountPickerRow.AccountGroup.Balances, Error>?
 }

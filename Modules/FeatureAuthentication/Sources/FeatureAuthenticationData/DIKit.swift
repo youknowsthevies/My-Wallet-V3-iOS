@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import FeatureAuthenticationDomain
+import NetworkKit
 
 extension DependencyContainer {
 
@@ -54,5 +56,28 @@ extension DependencyContainer {
         factory { MobileAuthSyncRepository() as MobileAuthSyncRepositoryAPI }
 
         factory { PushNotificationsRepository() as PushNotificationsRepositoryAPI }
+
+        // MARK: - Nabu Authentication
+
+        single { NabuTokenRepository() as NabuTokenRepositoryAPI }
+
+        factory { NabuAuthenticator() as AuthenticatorAPI }
+
+        factory { NabuRepository() as NabuRepositoryAPI }
+
+        factory { () -> CheckAuthenticated in
+            unauthenticated as CheckAuthenticated
+        }
     }
+}
+
+private func unauthenticated(
+    communicatorError: NetworkError
+) -> AnyPublisher<Bool, Never> {
+    guard let authenticationError = NabuAuthenticationError(error: communicatorError),
+          case .tokenExpired = authenticationError
+    else {
+        return .just(false)
+    }
+    return .just(true)
 }

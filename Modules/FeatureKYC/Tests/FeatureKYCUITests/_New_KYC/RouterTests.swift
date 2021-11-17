@@ -31,6 +31,7 @@ final class RouterTests: XCTestCase {
         mockLegacyKYCRouter = MockLegacyKYCRouter()
         router = .init(
             analyticsRecorder: MockAnalyticsRecorder(),
+            loadingViewPresenter: MockLoadingViewPresenter(),
             legacyRouter: mockLegacyKYCRouter,
             kycService: mockKYCTiersService,
             emailVerificationService: mockEmailVerificationService,

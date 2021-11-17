@@ -1,11 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureAuthenticationDomain
 import PlatformKit
 import Sift
 import ToolKit
 
-final class SiftService: SiftServiceAPI {
+final class SiftService: FeatureAuthenticationDomain.SiftServiceAPI,
+    PlatformKit.SiftServiceAPI
+{
 
     private enum Constants {
         static let siftAccountId = "siftAccountId"

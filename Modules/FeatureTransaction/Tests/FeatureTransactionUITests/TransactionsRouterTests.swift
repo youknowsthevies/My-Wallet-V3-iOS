@@ -26,6 +26,7 @@ final class TransactionsRouterTests: XCTestCase {
             pendingOrdersService: MockPendingOrderDetailsService(),
             kycRouter: MockTransactionsKYCRouter(),
             alertViewPresenter: MockAlertViewPresenter(),
+            topMostViewControllerProvider: MockTopMostViewControllerProvider(),
             loadingViewPresenter: MockLoadingViewPresenter(),
             legacyBuyRouter: mockLegacyBuyFlowRouter,
             buyFlowBuilder: mockBuyFlowBuilder
@@ -40,9 +41,11 @@ final class TransactionsRouterTests: XCTestCase {
     }
 
     func test_routesTo_legacyBuyFlow_forCryptoAccount_featueFlagOff() throws {
-        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.local(.useTransactionsFlowToBuyCrypto)))
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.remote(.useTransactionsFlowToBuyCrypto)))
         let mockViewController = MockViewController()
-        let cryptoAccount = ReceivePlaceholderCryptoAccount(asset: .coin(.bitcoin))
+        let cryptoAccount = ReceivePlaceholderCryptoAccount(
+            asset: .coin(.bitcoin)
+        )
         let publisher = router.presentTransactionFlow(to: .buy(cryptoAccount), from: mockViewController)
         XCTAssertPublisherCompletion(publisher)
         let recordedInvocations = mockLegacyBuyFlowRouter.recordedInvocations
@@ -50,7 +53,7 @@ final class TransactionsRouterTests: XCTestCase {
     }
 
     func test_routesTo_legacyBuyFlow_nilAccount_featueFlagOff() throws {
-        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.local(.useTransactionsFlowToBuyCrypto)))
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.disable(.remote(.useTransactionsFlowToBuyCrypto)))
         let mockViewController = MockViewController()
         let publisher = router.presentTransactionFlow(to: .buy(nil), from: mockViewController)
         XCTAssertPublisherCompletion(publisher)
@@ -59,7 +62,7 @@ final class TransactionsRouterTests: XCTestCase {
     }
 
     func test_routesTo_legacyBuyFlow_featueFlagOn_nilAccount() throws {
-        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.local(.useTransactionsFlowToBuyCrypto)))
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.remote(.useTransactionsFlowToBuyCrypto)))
         let mockViewController = MockViewController()
         let publisher = router.presentTransactionFlow(to: .buy(nil), from: mockViewController)
         XCTAssertPublisherCompletion(publisher)
@@ -70,9 +73,11 @@ final class TransactionsRouterTests: XCTestCase {
     }
 
     func test_routesTo_legacyBuyFlow_featueFlagOn_nonNilAccount() throws {
-        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.local(.useTransactionsFlowToBuyCrypto)))
+        XCTAssertPublisherCompletion(mockFeatureFlagsService.enable(.remote(.useTransactionsFlowToBuyCrypto)))
         let mockViewController = MockViewController()
-        let cryptoAccount = ReceivePlaceholderCryptoAccount(asset: .coin(.bitcoin))
+        let cryptoAccount = ReceivePlaceholderCryptoAccount(
+            asset: .coin(.bitcoin)
+        )
         let publisher = router.presentTransactionFlow(to: .buy(cryptoAccount), from: mockViewController)
         XCTAssertPublisherCompletion(publisher)
         let mockRouter = mockBuyFlowBuilder.builtRouters.first

@@ -83,7 +83,7 @@ final class CeloEURAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
         guard let userCountry = userCountry else {
             return false
         }
-        let isInDisallowedCountries = [Country.US, .GB, .IT]
+        let isInDisallowedCountries = [Country.US, .IT]
             .contains(userCountry)
         return !isInDisallowedCountries
     }

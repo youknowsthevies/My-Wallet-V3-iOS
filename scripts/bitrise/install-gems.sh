@@ -11,17 +11,15 @@
 
 set -u
 
-brew update && brew upgrade ruby-build
-rbenv install 2.6.5
-rbenv global 2.6.5
-
-# Install Ruby Gems
+# Export LANG
 export LANG=en_US.UTF-8
+# Export LC_ALL
 export LC_ALL=en_US.UTF-8
+# Log Gem Environment
 gem env
-gem cleanup
+# Update Bundler to Gemfile.lock version
 gem install bundler --no-document
-gem update bundler --no-document
-gem install xcpretty --no-document
-bundle install --path vendor/bundle
-bundle clean
+# Set Bundler path
+bundle config set path 'vendor/bundle'
+# Set Bundler install
+bundle install
