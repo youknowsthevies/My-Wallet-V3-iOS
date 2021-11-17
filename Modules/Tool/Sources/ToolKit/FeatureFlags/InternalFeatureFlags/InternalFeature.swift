@@ -45,11 +45,11 @@ public enum InternalFeature: String, CaseIterable {
         case .newAccountPicker,
              .newOnboardingTour,
              .pollingForEmailLogin:
-             .newTxFlowLimitsUIEnabled,
-             .openBanking,
-             .pollingForEmailLogin,
-             .unifiedQRCodeScanner:
-            return true
+            .newTxFlowLimitsUIEnabled,
+                .openBanking,
+                .pollingForEmailLogin,
+                .unifiedQRCodeScanner:
+                return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
              .secureChannel,
