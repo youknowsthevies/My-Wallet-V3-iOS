@@ -24,6 +24,7 @@ public final class ReceiveRootBuilder {
     var receiveAccountPickerRouter: AccountPickerRouting!
 
     public func receive() -> UIViewController {
+
         let displayQRCodeButton = internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner)
         let header = AccountPickerHeaderModel(
             imageContent: .init(
