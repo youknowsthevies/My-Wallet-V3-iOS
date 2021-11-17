@@ -23,7 +23,7 @@ import UIKit
 /// # Figma
 ///
 ///  [Assets - Icons](https://www.figma.com/file/3jESURhHQ4VBTQcu0aZkoX/01---Assets-%7C-Icons)
-public struct Icon: View, Equatable {
+public struct Icon: View, Hashable {
 
     public let name: String
     let renderingMode: Image.TemplateRenderingMode
@@ -54,6 +54,13 @@ public struct Icon: View, Equatable {
         )
     }
     #endif
+
+    public var image: some View {
+        Image(name, bundle: .componentLibrary)
+            .renderingMode(.template)
+            .resizable()
+            .scaledToFit()
+    }
 }
 
 extension Icon {

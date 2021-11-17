@@ -479,6 +479,14 @@ public enum LocalizationConstants {
             "Request",
             comment: "Tab item: request"
         )
+        public static let prices = NSLocalizedString(
+            "Prices",
+            comment: "Tab item: prices"
+        )
+        public static let buyAndSell = NSLocalizedString(
+            "Buy & Sell",
+            comment: "Tab item: buy and sell"
+        )
     }
 
     public enum ErrorScreen {

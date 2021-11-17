@@ -13,7 +13,15 @@ final class LoggedInRootViewController: UIHostingController<LoggedInRootView> {
 
     init(store: Store<LoggedIn.State, LoggedIn.Action>) {
         self.store = store
-        super.init(rootView: LoggedInRootView())
+        super.init(
+            rootView: LoggedInRootView(
+                store: .init(
+                    initialState: .init(),
+                    reducer: loggedInRootReducer,
+                    environment: .init()
+                )
+            )
+        )
     }
 
     @objc dynamic required init?(coder aDecoder: NSCoder) {
@@ -27,12 +35,5 @@ final class LoggedInRootViewController: UIHostingController<LoggedInRootView> {
     func clear() {
         tabControllerManager = nil
         bag.removeAll()
-    }
-}
-
-struct LoggedInRootView: View {
-
-    var body: some View {
-        EmptyView()
     }
 }
