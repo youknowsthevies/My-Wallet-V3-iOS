@@ -56,7 +56,7 @@ public enum LocalizationConstants {
         "Your local currency to store funds in that currency as funds in your Blockchain Wallet.",
         comment: "Your local currency to store funds in that currency as funds in your Blockchain Wallet."
     )
-    public static let scanQRCode = NSLocalizedString("Scan QR Code", comment: "")
+    public static let scanQRCode = NSLocalizedString("Scan a QR Code", comment: "")
     public static let scanPairingCode = NSLocalizedString("Scan Pairing Code", comment: " ")
     public static let parsingPairingCode = NSLocalizedString("Parsing Pairing Code", comment: " ")
     public static let invalidPairingCode = NSLocalizedString("Invalid Pairing Code", comment: " ")

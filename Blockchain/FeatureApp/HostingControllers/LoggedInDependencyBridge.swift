@@ -44,7 +44,8 @@ protocol LoggedInBridge: DrawerRouting,
     SettingsStarterAPI,
     LoggedInReloadAPI,
     InterestAccountListHostingControllerDelegate,
-    AuthenticationCoordinating {}
+    AuthenticationCoordinating,
+    QRCodeScannerRouting {}
 
 protocol LoggedInDependencyBridgeAPI: AnyObject {
     /// Registers the bridge
@@ -78,6 +79,8 @@ protocol LoggedInDependencyBridgeAPI: AnyObject {
     func resolveWalletOperationsRouting() -> WalletOperationsRouting
     /// Provides `AuthenticationCoordinating` methods
     func resolveAuthenticationCoordinating() -> AuthenticationCoordinating
+    /// Proves `QRCodeScannerRouting` methods
+    func resolveQRCodeScannerRouting() -> QRCodeScannerRouting
 }
 
 final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
@@ -136,6 +139,10 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
 
     func resolveAuthenticationCoordinating() -> AuthenticationCoordinating {
         resolve() as AuthenticationCoordinating
+    }
+
+    func resolveQRCodeScannerRouting() -> QRCodeScannerRouting {
+        resolve() as QRCodeScannerRouting
     }
 
     /// Resolves the underlying bridge with a type

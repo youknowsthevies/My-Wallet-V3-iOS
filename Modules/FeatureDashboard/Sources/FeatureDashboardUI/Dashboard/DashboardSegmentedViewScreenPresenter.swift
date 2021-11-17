@@ -6,6 +6,7 @@ import Localization
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import ToolKit
 
 final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting {
 
@@ -19,7 +20,7 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
 
     let leadingButtonTapRelay: PublishRelay<Void> = .init()
 
-    let trailingButton: Screen.Style.TrailingButton = .none
+    let trailingButton: Screen.Style.TrailingButton
 
     let trailingButtonTapRelay: PublishRelay<Void> = .init()
 
@@ -53,21 +54,32 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
     private let fiatBalanceCellProvider: FiatBalanceCellProviding
     private let drawerRouter: DrawerRouting
     private let disposeBag = DisposeBag()
+    private var qrCodeScannerRouter: QRCodeScannerRouting
 
     // MARK: - Init
 
     init(
         drawerRouter: DrawerRouting,
         fiatBalanceCellProvider: FiatBalanceCellProviding,
-        dashboardScreenPresenter: PortfolioScreenPresenter
+        dashboardScreenPresenter: PortfolioScreenPresenter,
+        qrCodeScannerRouter: QRCodeScannerRouting,
+        internalFeatureFlagService: InternalFeatureFlagServiceAPI
     ) {
         self.drawerRouter = drawerRouter
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.dashboardScreenPresenter = dashboardScreenPresenter
+        self.qrCodeScannerRouter = qrCodeScannerRouter
+        trailingButton = internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none
 
         leadingButtonTapRelay
             .bindAndCatch(weak: self) { (self) in
                 self.drawerRouter.toggleSideMenu()
+            }
+            .disposed(by: disposeBag)
+
+        trailingButtonTapRelay
+            .bindAndCatch(weak: self) { (self) in
+                self.qrCodeScannerRouter.showQRCodeScanner()
             }
             .disposed(by: disposeBag)
     }

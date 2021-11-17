@@ -24,6 +24,7 @@ public final class ReceiveRootBuilder {
     var receiveAccountPickerRouter: AccountPickerRouting!
 
     public func receive() -> UIViewController {
+        let displayQRCodeButton = internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner)
         let header = AccountPickerHeaderModel(
             imageContent: .init(
                 imageResource: ImageAsset.iconReceive.imageResource,
@@ -36,7 +37,7 @@ public final class ReceiveRootBuilder {
         )
         let navigationModel = ScreenNavigationModel(
             leadingButton: .drawer,
-            trailingButton: .none,
+            trailingButton: displayQRCodeButton ? .qrCode : .none,
             titleViewStyle: .text(value: LocalizedReceive.Text.request),
             barStyle: .lightContent()
         )

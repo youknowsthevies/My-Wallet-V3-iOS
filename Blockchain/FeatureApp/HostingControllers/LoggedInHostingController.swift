@@ -272,7 +272,10 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 }
 
 extension LoggedInHostingController: SideMenuViewControllerDelegate {
-    func sideMenuViewController(_ viewController: SideMenuViewController, didTapOn item: SideMenuItem) {
+    func sideMenuViewController(
+        _ viewController: SideMenuViewController,
+        didTapOn item: SideMenuItem
+    ) {
         switch item {
         case .interest:
             handleInterest()
@@ -282,8 +285,6 @@ extension LoggedInHostingController: SideMenuViewControllerDelegate {
             handleAccountsAndAddresses()
         case .settings:
             handleSettings()
-        case .webLogin:
-            handleWebLogin()
         case .support:
             handleSupport()
         case .airdrops:

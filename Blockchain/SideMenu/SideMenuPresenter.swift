@@ -29,16 +29,7 @@ class SideMenuPresenter {
     }
 
     var sideMenuFooterItems: AnyPublisher<(top: SideMenuItem, bottom: SideMenuItem), Never> {
-        featureFlagsService
-            .isEnabled(.local(.secureChannel))
-            .receive(on: DispatchQueue.main)
-            .map { [secureChannelConfiguration] isSecureChannelEnabled -> (top: SideMenuItem, bottom: SideMenuItem) in
-                (
-                    top: (secureChannelConfiguration.isEnabled || isSecureChannelEnabled) ? .secureChannel : .webLogin,
-                    bottom: .logout
-                )
-            }
-            .eraseToAnyPublisher()
+        .just((top: .secureChannel, bottom: .logout))
     }
 
     var itemSelection: Signal<SideMenuItem> {
@@ -91,7 +82,6 @@ class SideMenuPresenter {
     private let wallet: Wallet
     private let walletService: WalletOptionsAPI
     private let reactiveWallet: ReactiveWalletAPI
-    private let secureChannelConfiguration: AppFeatureConfiguration
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
     private var disposable: Disposable?
@@ -102,9 +92,7 @@ class SideMenuPresenter {
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletOptionsAPI = resolve(),
         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
-        appFeatureConfigurator: AppFeatureConfigurator = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
         onboardingSettings: OnboardingSettings = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
@@ -114,7 +102,6 @@ class SideMenuPresenter {
         self.featureFlagsService = featureFlagsService
         introInterator = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)
         self.analyticsRecorder = analyticsRecorder
-        secureChannelConfiguration = appFeatureConfigurator.configuration(for: .secureChannel)
     }
 
     deinit {

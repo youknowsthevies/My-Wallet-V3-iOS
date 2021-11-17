@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitectureExtensions
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -128,6 +129,15 @@ final class PortfolioScreenPresenter {
                 }
                 return hasCrypto.isEmpty
             }
+    }
+
+    var screenNavigationModel: ScreenNavigationModel {
+        ScreenNavigationModel(
+            leadingButton: .drawer,
+            trailingButton: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none,
+            titleViewStyle: .text(value: LocalizationConstants.DashboardScreen.title),
+            barStyle: .lightContent()
+        )
     }
 
     // MARK: - Private Properties

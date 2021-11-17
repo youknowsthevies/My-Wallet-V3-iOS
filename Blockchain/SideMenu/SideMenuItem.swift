@@ -15,8 +15,6 @@ enum SideMenuItem {
     case airdrops
     case settings
     case support
-    /// Legacy QR code connection flow
-    case webLogin
     /// Secure Channel QR code connection flow
     case secureChannel
     case exchange
@@ -51,8 +49,6 @@ extension SideMenuItem {
             return [AnalyticsEvents.SideMenu.sideNavAirdropCenter]
         case .support:
             return [AnalyticsEvents.SideMenu.sideNavSupport]
-        case .webLogin:
-            return [AnalyticsEvents.SideMenu.sideNavWebLogin]
         case .exchange:
             return [AnalyticsEvents.SideMenu.sideNavExchange]
         case .secureChannel:
@@ -80,8 +76,6 @@ extension SideMenuItem {
             return LocalizationConstants.SideMenu.airdrops
         case .support:
             return LocalizationConstants.SideMenu.support
-        case .webLogin:
-            return LocalizationConstants.SideMenu.loginToWebWallet
         case .exchange:
             return LocalizationConstants.SideMenu.exchange
         case .secureChannel:
@@ -109,8 +103,6 @@ extension SideMenuItem {
             return "menu-icon-settings"
         case .support:
             return "menu-icon-chat"
-        case .webLogin:
-            return "menu-icon-pair-web-wallet"
         case .exchange:
             return "menu-icon-exchange"
         case .secureChannel:
@@ -132,7 +124,6 @@ extension SideMenuItem {
              .settings,
              .support,
              .airdrops,
-             .webLogin,
              .interest,
              .secureChannel:
             return false

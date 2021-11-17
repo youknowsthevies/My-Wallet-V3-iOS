@@ -19,6 +19,7 @@ import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
+import FeatureQRCodeScannerDomain
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
@@ -255,6 +256,19 @@ extension DependencyContainer {
 
         factory { () -> ClearOnLogoutAPI in
             EmptyClearOnLogout()
+        }
+
+        factory { () -> QRCodeScannerRouting in
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveQRCodeScannerRouting() as QRCodeScannerRouting
+        }
+
+        factory { () -> QRCodeScannerLinkerAPI in
+            QRCodeScannerAdapter()
+        }
+
+        factory { () -> CryptoTargetQRCodeParserAdapter in
+            QRCodeScannerAdapter()
         }
 
         // MARK: - WalletManager

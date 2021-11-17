@@ -278,6 +278,8 @@ packages:
     path: Modules/FeatureOpenBanking
   FeatureOnboarding:
     path: Modules/FeatureOnboarding
+  FeatureQRCodeScanner:
+    path: Modules/FeatureQRCodeScanner
   FeatureSettings:
     path: Modules/FeatureSettings
   FeatureTour:
@@ -375,6 +377,7 @@ targets:
       - package: FeatureDebug
       - package: FeatureInterest
       - package: FeatureKYC
+      - package: FeatureQRCodeScanner
       - package: FeatureOnboarding
       - package: FeatureOpenBanking
       - package: FeatureSettings
