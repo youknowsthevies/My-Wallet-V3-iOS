@@ -243,7 +243,9 @@ struct CreateAccountView_Previews: PreviewProvider {
         CreateAccountView(
             context: .createWallet,
             store: .init(
-                initialState: .init(),
+                initialState: .init(
+                    isImportWallet: false
+                ),
                 reducer: createAccountReducer,
                 environment: .init(
                     analyticsRecorder: NoOpAnalyticsRecorder()

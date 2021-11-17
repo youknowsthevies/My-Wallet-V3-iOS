@@ -223,7 +223,9 @@ public let welcomeReducer = Reducer.combine(
                         }
                     }
             case .newCreateWalletScreen:
-                state.createWalletState = .init()
+                state.createWalletState = .init(
+                    isImportWallet: false
+                )
             case .emailLoginScreen:
                 state.emailLoginState = .init()
             case .restoreWalletScreen:

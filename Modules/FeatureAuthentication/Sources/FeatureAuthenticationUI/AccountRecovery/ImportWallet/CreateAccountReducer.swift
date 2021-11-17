@@ -24,12 +24,14 @@ public enum CreateAccountAction: Equatable {
 // MARK: - Properties
 
 public struct CreateAccountState: Equatable {
+    var isImportWallet: Bool
     var emailAddress: String
     var password: String
     var confirmPassword: String
     var passwordStrength: PasswordValidationScore
 
-    init() {
+    init(isImportWallet: Bool) {
+        self.isImportWallet = isImportWallet
         emailAddress = ""
         password = ""
         confirmPassword = ""
@@ -63,9 +65,6 @@ let createAccountReducer = Reducer<
 > { state, action, environment in
     switch action {
     case .onWillDisappear:
-        environment.analyticsRecorder.record(
-            event: .importWalletCancelled
-        )
         return .none
     case .closeButtonTapped:
         return .none
@@ -97,11 +96,47 @@ let createAccountReducer = Reducer<
         environment.externalAppOpener.open(url)
         return .none
     case .createButtonTapped:
-        environment.analyticsRecorder.record(
-            event: .importWalletConfirmed
-        )
         return .none
     case .noop:
         return .none
+    }
+}
+.analytics()
+
+// MARK: - Private
+
+extension Reducer where
+    Action == CreateAccountAction,
+    State == CreateAccountState,
+    Environment == CreateAccountEnvironment
+{
+    /// Helper function for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                CreateAccountState,
+                CreateAccountAction,
+                CreateAccountEnvironment
+            > { state, action, environment in
+                switch action {
+                case .onWillDisappear:
+                    if state.isImportWallet {
+                        environment.analyticsRecorder.record(
+                            event: .importWalletCancelled
+                        )
+                    }
+                    return .none
+                case .createButtonTapped:
+                    if state.isImportWallet {
+                        environment.analyticsRecorder.record(
+                            event: .importWalletConfirmed
+                        )
+                    }
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
     }
 }
