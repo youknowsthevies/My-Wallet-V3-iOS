@@ -76,6 +76,7 @@ public struct WelcomeState: Equatable {
 
 public struct WelcomeEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let passwordValidator: PasswordValidatorAPI
     let sessionTokenService: SessionTokenServiceAPI
     let deviceVerificationService: DeviceVerificationServiceAPI
     let buildVersionProvider: () -> String
@@ -86,6 +87,7 @@ public struct WelcomeEnvironment {
 
     public init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
+        passwordValidator: PasswordValidatorAPI = resolve(),
         sessionTokenService: SessionTokenServiceAPI = resolve(),
         deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
@@ -95,6 +97,7 @@ public struct WelcomeEnvironment {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.mainQueue = mainQueue
+        self.passwordValidator = passwordValidator
         self.sessionTokenService = sessionTokenService
         self.deviceVerificationService = deviceVerificationService
         self.buildVersionProvider = buildVersionProvider
@@ -114,6 +117,7 @@ public let welcomeReducer = Reducer.combine(
             environment: {
                 CreateAccountEnvironment(
                     mainQueue: $0.mainQueue,
+                    passwordValidator: $0.passwordValidator,
                     externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder
                 )
@@ -231,6 +235,7 @@ public let welcomeReducer = Reducer.combine(
             case .restoreWalletScreen:
                 state.restoreWalletState = .init()
             case .welcomeScreen, .createWalletScreen, .manualLoginScreen:
+                state.createWalletState = nil
                 state.emailLoginState = nil
                 state.restoreWalletState = nil
             }

@@ -2,6 +2,7 @@
 
 import Combine
 import ComposableArchitecture
+@testable import FeatureAuthenticationDomain
 @testable import FeatureAuthenticationUI
 @testable import ToolKit
 import XCTest
@@ -36,6 +37,7 @@ final class WelcomeReducerTests: XCTestCase {
             reducer: welcomeReducer,
             environment: WelcomeEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                passwordValidator: PasswordValidator(),
                 sessionTokenService: MockSessionTokenService(),
                 deviceVerificationService: MockDeviceVerificationService(),
                 featureFlagsService: mockFeatureFlagsService,
@@ -91,19 +93,23 @@ final class WelcomeReducerTests: XCTestCase {
         let screenFlows: [WelcomeState.ScreenFlow] = [
             .welcomeScreen,
             .createWalletScreen,
+            .newCreateWalletScreen,
             .emailLoginScreen,
             .restoreWalletScreen
         ]
         screenFlows.forEach { screenFlow in
             testStore.send(.presentScreenFlow(screenFlow)) { state in
                 switch screenFlow {
+                case .newCreateWalletScreen:
+                    state.createWalletState = .init(isImportWallet: false)
                 case .emailLoginScreen:
                     state.emailLoginState = .init()
                 case .restoreWalletScreen:
                     state.restoreWalletState = .init()
-                case .createWalletScreen, .manualLoginScreen:
+                case .createWalletScreen, .manualLoginScreen, .createScreen:
                     break
                 case .welcomeScreen:
+                    state.createWalletState = nil
                     state.emailLoginState = nil
                     state.restoreWalletState = nil
                 }
@@ -120,6 +126,17 @@ final class WelcomeReducerTests: XCTestCase {
         testStore.send(.emailLogin(.closeButtonTapped)) { state in
             state.screenFlow = .welcomeScreen
             state.emailLoginState = nil
+        }
+    }
+
+    func test_close_create_wallet_should_reset_state() {
+        testStore.send(.presentScreenFlow(.newCreateWalletScreen)) { state in
+            state.screenFlow = .newCreateWalletScreen
+            state.createWalletState = .init(isImportWallet: false)
+        }
+        testStore.send(.createWallet(.closeButtonTapped)) { state in
+            state.screenFlow = .welcomeScreen
+            state.createWalletState = nil
         }
     }
 
