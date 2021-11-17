@@ -40,7 +40,12 @@ protocol TransactionFlowRouting: Routing {
     func showFailure(error: Error)
 
     /// Presents a modal with information  about the transaction error state and, if needed, a call to action for the user to resolve that error state.
-    func showErrorRecoverySuggestion(errorState: TransactionErrorState, transactionModel: TransactionModel)
+    func showErrorRecoverySuggestion(
+        action: AssetAction,
+        errorState: TransactionErrorState,
+        transactionModel: TransactionModel,
+        handleCalloutTapped: @escaping (ErrorRecoveryState.Callout) -> Void
+    )
 
     /// Show the `source` selection screen. This replaces the root.
     func routeToSourceAccountPicker(
@@ -73,6 +78,9 @@ protocol TransactionFlowRouting: Routing {
     /// Present wiring instructions so users can deposit funds into their wallet
     func presentBankWiringInstructions(transactionModel: TransactionModel)
 
+    /// Present open banking authorisation so users can deposit funds into their wallet
+    func presentOpenBanking(transactionModel: TransactionModel, account: LinkedBankAccount, order: PendingTransaction)
+
     /// Route to the in progress screen. This pushes onto the navigation stack.
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
 
@@ -98,11 +106,16 @@ protocol TransactionFlowRouting: Routing {
     /// - Parameters:
     ///  - completion: A closure that is called with `true` if the user completed the KYC flow to move to the next tier.
     func presentKYCUpgradeFlow(completion: @escaping (Bool) -> Void)
+
+    /// Presentes a new transaction flow on top of the current one
+    func presentNewTransactionFlow(
+        to action: TransactionFlowAction,
+        completion: @escaping (Bool) -> Void
+    )
 }
 
 public protocol TransactionFlowListener: AnyObject {
     func presentKYCFlowIfNeeded(from viewController: UIViewController, completion: @escaping (Bool) -> Void)
-    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void)
     func dismissTransactionFlow()
 }
 
@@ -371,6 +384,14 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .initial:
             break
 
+        case .authorizeOpenBanking:
+            guard let bankAccount = previousState?.source as? LinkedBankAccount else { return }
+            guard let order = previousState?.pendingTransaction else { return }
+            router?.presentOpenBanking(
+                transactionModel: transactionModel,
+                account: bankAccount,
+                order: order
+            )
         case .enterAmount:
             router?.routeToPriceInput(
                 source: newState.source!,
@@ -421,17 +442,19 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     transactionModel: transactionModel,
                     action: action
                 )
-            case .viewActivity,
-                 .deposit,
+            case .deposit,
                  .interestTransfer,
                  .sell,
-                 .receive,
                  .swap:
                 router?.routeToDestinationAccountPicker(
                     transitionType: newState.stepsBackStack.contains(.selectSource) ? .push : .replaceRoot,
                     transactionModel: transactionModel,
                     action: action
                 )
+            case .receive,
+                 .sign,
+                 .viewActivity:
+                unimplemented("Action \(action) does not support 'selectTarget'")
             }
 
         case .kycChecks:
@@ -488,6 +511,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     action: action,
                     canAddMoreSources: canAddMoreSources
                 )
+            case .sign:
+                unimplemented("Sign action does not support selectSource.")
             }
 
         case .enterAddress:
@@ -504,8 +529,12 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
         case .errorRecoveryInfo:
             router?.showErrorRecoverySuggestion(
+                action: newState.action,
                 errorState: newState.errorState,
-                transactionModel: transactionModel
+                transactionModel: transactionModel,
+                handleCalloutTapped: { [weak self] callout in
+                    self?.handleCalloutTapped(callout: callout, state: newState)
+                }
             )
 
         case .closed:
@@ -544,6 +573,20 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             action: .deposit,
             passwordRequired: passwordRequired
         )
+    }
+
+    private func handleCalloutTapped(callout: ErrorRecoveryState.Callout, state: TransactionState) {
+        switch callout.id {
+        case AnyHashable(ErrorRecoveryCalloutIdentifier.upgradeKYCTier.rawValue):
+            router?.presentKYCUpgradeFlow { _ in }
+        case AnyHashable(ErrorRecoveryCalloutIdentifier.buy.rawValue):
+            guard let account = state.source as? CryptoAccount else {
+                return
+            }
+            router?.presentNewTransactionFlow(to: .buy(account)) { _ in }
+        default:
+            unimplemented()
+        }
     }
 
     private func linkPaymentMethodOrMoveToNextStep(for transactionState: TransactionState) {

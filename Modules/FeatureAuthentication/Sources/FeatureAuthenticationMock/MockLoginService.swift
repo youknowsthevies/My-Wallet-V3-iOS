@@ -2,6 +2,7 @@
 
 import Combine
 @testable import FeatureAuthenticationDomain
+import WalletPayloadKit
 
 final class MockLoginService: LoginServiceAPI {
 

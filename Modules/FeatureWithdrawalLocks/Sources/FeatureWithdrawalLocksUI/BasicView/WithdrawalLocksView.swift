@@ -10,44 +10,50 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-struct WithdrawalLocksState: Hashable, NavigationState {
-    var route: RouteIntent<WithdrawalLocksRoute>?
+public struct WithdrawalLocksState: Hashable, NavigationState {
+    public var route: RouteIntent<WithdrawalLocksRoute>?
     var withdrawalLocks: WithdrawalLocks?
-    var amountEventObserverIdToken = "WithdrawalLockState.amountEventObserverIdToken"
+
+    public init(route: RouteIntent<WithdrawalLocksRoute>? = nil, withdrawalLocks: WithdrawalLocks? = nil) {
+        self.route = route
+        self.withdrawalLocks = withdrawalLocks
+    }
 }
 
-enum WithdrawalLocksAction: Hashable, NavigationAction {
+public enum WithdrawalLocksAction: Hashable, NavigationAction {
     case loadWithdrawalLocks
     case present(withdrawalLocks: WithdrawalLocks?)
     case route(RouteIntent<WithdrawalLocksRoute>?)
 }
 
-enum WithdrawalLocksRoute: NavigationRoute {
+public enum WithdrawalLocksRoute: NavigationRoute {
     case details(withdrawalLocks: WithdrawalLocks)
 
-    func destination(in store: Store<WithdrawalLocksState, WithdrawalLocksAction>) -> some View {
+    public func destination(in store: Store<WithdrawalLocksState, WithdrawalLocksAction>) -> some View {
         switch self {
         case .details(let withdrawalLocks):
-            return WithdrawalLockDetailsView(withdrawalLocks: withdrawalLocks)
+            return WithdrawalLocksDetailsView(withdrawalLocks: withdrawalLocks)
         }
     }
 }
 
-struct WithdrawalLocksEnvironment {
+public struct WithdrawalLocksEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
-
     let withdrawalLockService: WithdrawalLocksServiceAPI
+    let updateViewAction: ((_ isVisible: Bool) -> Void)?
 
-    init(
+    public init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
-        withdrawalLockService: WithdrawalLocksServiceAPI = resolve()
+        withdrawalLockService: WithdrawalLocksServiceAPI = resolve(),
+        updateViewAction: ((_ isVisible: Bool) -> Void)?
     ) {
         self.mainQueue = mainQueue
         self.withdrawalLockService = withdrawalLockService
+        self.updateViewAction = updateViewAction
     }
 }
 
-let withdrawalLocksReducer = Reducer<
+public let withdrawalLocksReducer = Reducer<
     WithdrawalLocksState,
     WithdrawalLocksAction,
     WithdrawalLocksEnvironment
@@ -66,7 +72,9 @@ let withdrawalLocksReducer = Reducer<
         )
     case .present(withdrawalLocks: let withdrawalLocks):
         state.withdrawalLocks = withdrawalLocks
-        return .none
+        return .fireAndForget {
+            environment.updateViewAction?(withdrawalLocks?.items.isEmpty == false)
+        }
     case .route(let routeItent):
         state.route = routeItent
         return .none
@@ -77,48 +85,39 @@ public struct WithdrawalLocksView: View {
 
     let store: Store<WithdrawalLocksState, WithdrawalLocksAction>
 
-    public init() {
-        store = .init(
-            initialState: .init(withdrawalLocks: nil),
-            reducer: withdrawalLocksReducer,
-            environment: WithdrawalLocksEnvironment()
-        )
-    }
-
-    init(store: Store<WithdrawalLocksState, WithdrawalLocksAction>) {
+    public init(store: Store<WithdrawalLocksState, WithdrawalLocksAction>) {
         self.store = store
     }
 
-    private typealias LocalizationIds = LocalizationConstants.WithdrawalLock
+    private typealias LocalizationIds = LocalizationConstants.WithdrawalLocks
 
     public var body: some View {
         WithViewStore(store) { viewStore in
             VStack(spacing: 0) {
-                Button {
-                    if let withdrawalLocks = viewStore.state.withdrawalLocks {
+                if let withdrawalLocks = viewStore.state.withdrawalLocks, !withdrawalLocks.items.isEmpty {
+                    Button {
                         viewStore.send(.enter(into: .details(withdrawalLocks: withdrawalLocks)))
-                    }
-                } label: {
-                    HStack {
-                        Text(LocalizationIds.onHoldTitle)
-                        Icon.questionCircle
-                            .accentColor(.semantic.muted)
-                            .frame(height: 14)
-                        Spacer()
+                    } label: {
+                        HStack {
+                            Text(LocalizationIds.onHoldTitle)
+                            if viewStore.state.withdrawalLocks?.items.isEmpty == false {
+                                Icon.questionCircle
+                                    .accentColor(.semantic.muted)
+                                    .frame(height: 14)
+                            }
+                            Spacer()
 
-                        let amount = viewStore.withdrawalLocks?.amount
-                        Text(amount ?? " ")
-                            .shimmer(enabled: amount == nil, width: 50)
+                            let amount = viewStore.withdrawalLocks?.amount
+                            Text(amount ?? " ")
+                                .shimmer(enabled: amount == nil, width: 50)
+                        }
+                        .foregroundColor(.semantic.body)
+                        .typography(.paragraph2)
+                        .padding()
                     }
-                    .foregroundColor(.semantic.body)
-                    .typography(.paragraph2)
-                    .padding()
+                    .navigationRoute(in: store)
                 }
-                .navigationRoute(in: store)
-
-                PrimaryDivider()
-            }
-            .onAppear {
+            }.onAppear {
                 viewStore.send(.loadWithdrawalLocks)
             }
         }
@@ -134,7 +133,8 @@ struct WithdrawalLocksView_PreviewProvider: PreviewProvider {
                     initialState: .init(withdrawalLocks: nil),
                     reducer: withdrawalLocksReducer,
                     environment: WithdrawalLocksEnvironment(
-                        withdrawalLockService: NoOpWithdrawalLocksService()
+                        withdrawalLockService: NoOpWithdrawalLocksService(),
+                        updateViewAction: nil
                     )
                 )
             )

@@ -75,11 +75,13 @@ extension BlockchainAccount {
 
     public var balancePublisher: AnyPublisher<MoneyValue, Error> {
         balance.asPublisher()
+            .eraseToAnyPublisher()
     }
 
     public func can(perform action: AssetAction) -> AnyPublisher<Bool, Error> {
         let single: Single<Bool> = can(perform: action)
         return single.asPublisher()
+            .eraseToAnyPublisher()
     }
 }
 

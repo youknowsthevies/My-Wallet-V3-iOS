@@ -7,15 +7,15 @@ import ToolKit
 
 final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
 
-    let fiatCurrencyService: FiatCurrencyServiceAPI
-    let kycTiersService: KYCTiersServiceAPI
+    let canTransactFiat: Bool = true
+    let walletCurrencyService: FiatCurrencyServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
     let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
     let orderQuoteRepository: OrderQuoteRepositoryAPI
-    let priceService: PriceServiceAPI
     let quotesEngine: SwapQuotesEngine
     let requireSecondPassword: Bool = false
-    let tradeLimitsRepository: TransactionLimitsRepositoryAPI
+    let transactionLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
@@ -24,18 +24,16 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         quotesEngine: SwapQuotesEngine,
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
-        tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve()
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
         self.orderQuoteRepository = orderQuoteRepository
         self.orderCreationRepository = orderCreationRepository
-        self.tradeLimitsRepository = tradeLimitsRepository
-        self.fiatCurrencyService = fiatCurrencyService
-        self.kycTiersService = kycTiersService
-        self.priceService = priceService
+        self.transactionLimitsService = transactionLimitsService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
     }
 
     func assertInputsValid() {
@@ -48,7 +46,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         Single
             .zip(
                 quotesEngine.getRate(direction: orderDirection, pair: pair).take(1).asSingle(),
-                fiatCurrencyService.fiatCurrency,
+                walletCurrencyService.fiatCurrency,
                 sourceAccount.actionableBalance
             )
             .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
@@ -63,8 +61,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
                 )
                 return self.updateLimits(
                     pendingTransaction: pendingTransaction,
-                    pricedQuote: pricedQuote,
-                    fiatCurrency: fiatCurrency
+                    pricedQuote: pricedQuote
                 )
                 .handlePendingOrdersError(initialValue: pendingTransaction)
             }

@@ -8,7 +8,6 @@ import PlatformUIKit
 protocol SellFlowListening: AnyObject {
     func sellFlowDidComplete(with result: TransactionFlowResult)
     func presentKYCFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void)
-    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void)
 }
 
 final class SellFlowListener: SellFlowListening {
@@ -54,14 +53,6 @@ final class SellFlowListener: SellFlowListening {
             } receiveValue: { result in
                 completion(result == .completed)
             }
-            .store(in: &cancellables)
-    }
-
-    func presentKYCUpgradeFlow(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
-        kycRouter.presentKYCUpgradeFlow(from: viewController)
-            .receive(on: DispatchQueue.main)
-            .map { $0 == .completed }
-            .sink(receiveValue: completion)
             .store(in: &cancellables)
     }
 }

@@ -179,4 +179,15 @@ final class AccessibilityIdentifiers: NSObject {
         static let upgradeButton = "\(prefix)upgradeButton"
         static let skipButton = "\(prefix)skipButton"
     }
+
+    // MARK: - Authorization Result
+
+    enum AuthorizationResultScreen {
+        static let prefix = "AuthorizationResultScreen."
+
+        static let image = "\(prefix)image"
+        static let title = "\(prefix)title"
+        static let message = "\(prefix)message"
+        static let button = "\(prefix)button"
+    }
 }

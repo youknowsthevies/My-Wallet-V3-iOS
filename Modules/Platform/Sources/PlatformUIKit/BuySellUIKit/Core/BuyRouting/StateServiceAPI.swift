@@ -75,6 +75,10 @@ public protocol URLSelectionServiceAPI: AnyObject {
     func show(url: URL)
 }
 
+public protocol AuthorizedOpenBankingAPI: RoutingPreviousStateEmitterAPI {
+    func authorizedOpenBanking()
+}
+
 /// A composition of all of Simple-Buy state-services
 public typealias StateServiceAPI = RoutingStateEmitterAPI &
     StateReceiverServiceAPI &
@@ -88,4 +92,5 @@ public typealias StateServiceAPI = RoutingStateEmitterAPI &
     PendingOrderCompletionStateServiceAPI &
     ElibilityRelayAPI &
     URLSelectionServiceAPI &
-    PaymentMethodsStateAPI
+    PaymentMethodsStateAPI &
+    AuthorizedOpenBankingAPI

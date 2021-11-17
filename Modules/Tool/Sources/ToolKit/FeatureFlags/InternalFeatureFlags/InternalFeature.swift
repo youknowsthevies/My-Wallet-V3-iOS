@@ -30,6 +30,12 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
+    /// Enables unified QR code scanner
+    case unifiedQRCodeScanner
+
+    /// OpenBanking
+    case openBanking
+
     /// Enables the new Limits UI in Transaction Flow
     case newTxFlowLimitsUIEnabled
 
@@ -39,10 +45,13 @@ public enum InternalFeature: String, CaseIterable {
         case .newAccountPicker,
              .newOnboardingTour,
              .pollingForEmailLogin:
+             .newTxFlowLimitsUIEnabled,
+             .openBanking,
+             .pollingForEmailLogin,
+             .unifiedQRCodeScanner:
             return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
-             .newTxFlowLimitsUIEnabled,
              .secureChannel,
              .unifiedSignIn,
              .nativeWalletPayload:
@@ -76,8 +85,12 @@ extension InternalFeature {
             return "Polling (Email Login)"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
+        case .openBanking:
+            return "Open Banking"
         case .newTxFlowLimitsUIEnabled:
             return "New Limits UI"
+        case .unifiedQRCodeScanner:
+            return "Unified QR Code Scanner"
         }
     }
 }

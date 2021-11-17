@@ -12,23 +12,18 @@ extension DeepLinkPayload {
     }
 
     private static func extractParams(from url: String) -> [String: String] {
-        guard let lastPathWithProperties = url.components(separatedBy: "/").last else {
-            return [:]
+        guard let url = URL(string: url) else { return [:] }
+
+        let fragment = url.fragment.flatMap(URL.init(string:))
+
+        let parameters: [String: String]
+
+        if let fragment = fragment {
+            parameters = url.queryArgs.merging(fragment.queryArgs, uniquingKeysWith: { $1 })
+        } else {
+            parameters = url.queryArgs
         }
 
-        let pathToParametersComponents = lastPathWithProperties.components(separatedBy: "?")
-
-        var parameters = [String: String]()
-        let parameterPairs = pathToParametersComponents.last?.components(separatedBy: "&")
-        parameterPairs?.forEach { pair in
-            let paramComponents = pair.components(separatedBy: "=")
-            guard let key = paramComponents.first,
-                  let value = paramComponents.last?.removingPercentEncoding
-            else {
-                return
-            }
-            parameters[key] = value
-        }
         return parameters
     }
 }

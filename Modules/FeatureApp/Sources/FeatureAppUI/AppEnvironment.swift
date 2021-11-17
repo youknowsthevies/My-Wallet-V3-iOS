@@ -5,7 +5,9 @@ import ComposableArchitecture
 import DIKit
 import ERC20Kit
 import FeatureAuthenticationDomain
+import FeatureAuthenticationUI
 import FeatureDebugUI
+import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import NetworkKit
 import PlatformKit
@@ -31,6 +33,7 @@ public struct AppEnvironment {
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
     var resetPasswordService: ResetPasswordServiceAPI
     var accountRecoveryService: AccountRecoveryServiceAPI
+    var deviceVerificationService: DeviceVerificationServiceAPI
     var featureFlagsService: FeatureFlagsServiceAPI
     var internalFeatureService: InternalFeatureFlagServiceAPI // TODO: deprecated, use featureFlagsService instead
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
@@ -39,6 +42,7 @@ public struct AppEnvironment {
     var sharedContainer: SharedContainerUserDefaults
     var analyticsRecorder: AnalyticsEventRecorderAPI
     var crashlyticsRecorder: Recording
+    var openBanking: OpenBanking
 
     var coincore: CoincoreAPI
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
@@ -74,6 +78,7 @@ public struct AppEnvironment {
         mobileAuthSyncService: MobileAuthSyncServiceAPI,
         resetPasswordService: ResetPasswordServiceAPI,
         accountRecoveryService: AccountRecoveryServiceAPI,
+        deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
         internalFeatureService: InternalFeatureFlagServiceAPI,
         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI,
@@ -82,6 +87,7 @@ public struct AppEnvironment {
         sharedContainer: SharedContainerUserDefaults,
         analyticsRecorder: AnalyticsEventRecorderAPI,
         crashlyticsRecorder: Recording,
+        openBanking: OpenBanking,
         coincore: CoincoreAPI,
         erc20CryptoAssetService: ERC20CryptoAssetServiceAPI,
         walletManager: WalletManagerAPI,
@@ -112,6 +118,7 @@ public struct AppEnvironment {
         self.mobileAuthSyncService = mobileAuthSyncService
         self.resetPasswordService = resetPasswordService
         self.accountRecoveryService = accountRecoveryService
+        self.deviceVerificationService = deviceVerificationService
         self.featureFlagsService = featureFlagsService
         self.internalFeatureService = internalFeatureService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
@@ -120,6 +127,7 @@ public struct AppEnvironment {
         self.sharedContainer = sharedContainer
         self.analyticsRecorder = analyticsRecorder
         self.crashlyticsRecorder = crashlyticsRecorder
+        self.openBanking = openBanking
         self.coincore = coincore
         self.erc20CryptoAssetService = erc20CryptoAssetService
         self.walletManager = walletManager

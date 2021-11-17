@@ -28,9 +28,9 @@ final class StringDistanceAlgorithmTests: XCTestCase {
         XCTAssertEqual("search".distance(between: "find", using: algorithm), 1)
         XCTAssertEqual("search".distance(between: "search", using: algorithm), 0)
 
-        XCTAssertEqual("MRT".distance(between: "MARHTA", using: algorithm), 0)
+        XCTAssertEqual("MRT".distance(between: "MARHTA", using: algorithm), 0.1)
         XCTAssertEqual("DXAUNE".distance(between: "DWAYNE", using: algorithm), 1)
-        XCTAssertEqual("YBS".distance(between: "Yorkshire Building Society", using: algorithm), 0)
+        XCTAssertEqual("YBS".distance(between: "Yorkshire Building Society", using: algorithm), 0.1)
 
         XCTAssertEqual("君子和而不同".distance(between: "小人同而不和", using: algorithm), 1)
     }

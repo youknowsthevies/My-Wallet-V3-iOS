@@ -4,6 +4,7 @@ import Combine
 @testable import FeatureAuthenticationDomain
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 final class MockWalletRepository: WalletRepositoryAPI {
 

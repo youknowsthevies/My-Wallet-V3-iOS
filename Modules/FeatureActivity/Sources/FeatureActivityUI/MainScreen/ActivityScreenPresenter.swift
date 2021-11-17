@@ -18,9 +18,6 @@ final class ActivityScreenPresenter {
 
     // MARK: - Public Properties
 
-    /// The screen title
-    let title = LocalizedString.title
-
     /// The `SelectionButtonView`
     let selectionButtonViewModel: SelectionButtonViewModel
 
@@ -60,6 +57,15 @@ final class ActivityScreenPresenter {
     /// Activity screen
     var sectionsObservable: Observable<[ActivityItemsSectionViewModel]> {
         activityItemsObservable
+    }
+
+    var screenNavigationModel: ScreenNavigationModel {
+        ScreenNavigationModel(
+            leadingButton: .drawer,
+            trailingButton: interactor.isUnifiedQRCodeScannerEnabled ? .qrCode : .none,
+            titleViewStyle: .text(value: LocalizedString.title),
+            barStyle: .lightContent()
+        )
     }
 
     // MARK: - Private Properties (Rx)

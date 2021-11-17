@@ -22,6 +22,8 @@ public enum TransactionFlowAction: Equatable {
     /// Performs an interest withdraw.
     case interestWithdraw(CryptoInterestAccount)
 
+    case sign(sourceAccount: CryptoAccount, destination: TransactionTarget)
+
     public static func == (lhs: TransactionFlowAction, rhs: TransactionFlowAction) -> Bool {
         switch (lhs, rhs) {
         case (.buy(let lhsAccount), .buy(let rhsAccount)),
@@ -32,6 +34,9 @@ public enum TransactionFlowAction: Equatable {
             return lhsAccount.identifier == rhsAccount.identifier
         case (.interestWithdraw(let lhsAccount), .interestWithdraw(let rhsAccount)):
             return lhsAccount.identifier == rhsAccount.identifier
+        case (.sign(let lhsSourceAccount, let lhsDestination), .sign(let rhsSourceAccount, let rhsDestination)):
+            return lhsSourceAccount.identifier == rhsSourceAccount.identifier
+                && lhsDestination.label == rhsDestination.label
         default:
             return false
         }
@@ -71,7 +76,8 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private let legacyBuyRouter: LegacyBuyFlowRouting
     private var legacySellRouter: LegacySellRouter?
     private let buyFlowBuilder: BuyFlowBuildable
-    private let sellFlowBuilder: SellFlowBuilder
+    private let sellFlowBuilder: SellFlowBuildable
+    private let signFlowBuilder: SignFlowBuildable
     private let interestFlowBuilder: InterestTransactionBuilder
 
     // Since RIBs need to be attached to something but we're not, the router in use needs to be retained.
@@ -86,7 +92,8 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter(),
         legacyBuyRouter: LegacyBuyFlowRouting = LegacyBuyFlowRouter(),
         buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(analyticsRecorder: resolve()),
-        sellFlowBuilder: SellFlowBuilder = SellFlowBuilder(),
+        sellFlowBuilder: SellFlowBuildable = SellFlowBuilder(),
+        signFlowBuilder: SignFlowBuildable = SignFlowBuilder(),
         interestFlowBuilder: InterestTransactionBuilder = InterestTransactionBuilder()
     ) {
         self.featureFlagsService = featureFlagsService
@@ -98,6 +105,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.legacyBuyRouter = legacyBuyRouter
         self.buyFlowBuilder = buyFlowBuilder
         self.sellFlowBuilder = sellFlowBuilder
+        self.signFlowBuilder = signFlowBuilder
         self.interestFlowBuilder = interestFlowBuilder
     }
 
@@ -153,7 +161,8 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
 
         case .swap,
              .interestTransfer,
-             .interestWithdraw:
+             .interestWithdraw,
+             .sign:
             return presentNewTransactionFlow(action, from: presenter)
         }
     }
@@ -220,6 +229,14 @@ extension TransactionsRouter {
             presenter.present(router.viewControllable.uiviewController, animated: true)
             mimicRIBAttachment(router: router)
             return .empty()
+
+        case .sign(let sourceAccount, let destination):
+            let listener = SignFlowListener()
+            let interactor = SignFlowInteractor()
+            let router = signFlowBuilder.build(with: listener, interactor: interactor)
+            router.start(sourceAccount: sourceAccount, destination: destination, presenter: presenter)
+            mimicRIBAttachment(router: router)
+            return listener.publisher
         }
     }
 
@@ -255,7 +272,8 @@ extension TransactionsRouter {
 
         case .swap,
              .interestTransfer,
-             .interestWithdraw:
+             .interestWithdraw,
+             .sign:
             unimplemented("There is no legacy swap flow.")
         }
     }

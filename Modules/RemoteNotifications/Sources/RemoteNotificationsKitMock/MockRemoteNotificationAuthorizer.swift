@@ -52,5 +52,6 @@ extension MockRemoteNotificationAuthorizer: RemoteNotificationAuthorizationReque
         return authorizationRequestExpectedStatus.single
             .asCompletable()
             .asPublisher()
+            .eraseToAnyPublisher()
     }
 }

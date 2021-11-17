@@ -272,7 +272,10 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 }
 
 extension LoggedInHostingController: SideMenuViewControllerDelegate {
-    func sideMenuViewController(_ viewController: SideMenuViewController, didTapOn item: SideMenuItem) {
+    func sideMenuViewController(
+        _ viewController: SideMenuViewController,
+        didTapOn item: SideMenuItem
+    ) {
         switch item {
         case .interest:
             handleInterest()
@@ -282,8 +285,6 @@ extension LoggedInHostingController: SideMenuViewControllerDelegate {
             handleAccountsAndAddresses()
         case .settings:
             handleSettings()
-        case .webLogin:
-            handleWebLogin()
         case .support:
             handleSupport()
         case .airdrops:
@@ -384,6 +385,26 @@ extension LoggedInHostingController {
 
     func send(from account: BlockchainAccount) {
         tabControllerManager?.send(from: account)
+    }
+
+    func send(from account: BlockchainAccount, target: TransactionTarget) {
+        tabControllerManager?.send(from: account, target: target)
+    }
+
+    func sign(from account: BlockchainAccount, target: TransactionTarget) {
+        guard let account = account as? CryptoAccount else {
+            fatalError("Expected a CryptoAccount")
+        }
+        guard let viewController = topMostViewController else {
+            fatalError("Expected a UIViewController")
+        }
+        transactionsAdapter
+            .presentTransactionFlow(
+                to: .sign(sourceAccount: account, destination: target),
+                from: viewController
+            ) { result in
+                Logger.shared.info("Sign Transaction Flow completed with result '\(result)'")
+            }
     }
 
     func switchToSend() {

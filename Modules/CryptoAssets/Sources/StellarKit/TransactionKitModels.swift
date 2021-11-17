@@ -19,12 +19,17 @@ struct SendDetails {
 }
 
 enum SendFailureReason: Error {
-    case unknown
-    case belowMinimumSend
-    case belowMinimumSendNewAccount
-    case insufficientFunds
+    /// Takes the account's balance
+    case insufficientFunds(MoneyValue)
+    /// Takes the minimum limit
+    case belowMinimumSend(MoneyValue)
+    /// Takes the minimum limit
+    case belowMinimumSendNewAccount(MoneyValue)
     case badDestinationAccountID
+    case unknown
 }
+
+extension SendFailureReason: Equatable {}
 
 struct SendConfirmationDetails {
     let sendDetails: SendDetails

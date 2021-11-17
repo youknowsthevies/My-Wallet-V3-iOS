@@ -34,11 +34,6 @@ let package = Package(
             from: "0.10.2"
         ),
         .package(
-            name: "RxCombine",
-            url: "https://github.com/paulo-bc/RxCombine.git",
-            from: "1.6.2"
-        ),
-        .package(
             name: "RxDataSources",
             url: "https://github.com/RxSwiftCommunity/RxDataSources.git",
             from: "4.0.1"
@@ -80,6 +75,7 @@ let package = Package(
         .package(path: "../RxTool"),
         .package(path: "../WalletPayload"),
         .package(path: "../UIComponents"),
+        .package(path: "../FeatureOpenBanking"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../ComponentLibrary"),
         .package(path: "../FeatureWithdrawalLocks")
@@ -91,7 +87,6 @@ let package = Package(
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "RxCocoa", package: "RxSwift"),
-                .product(name: "RxCombine", package: "RxCombine"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 // TODO: refactor this to use `FeatureAuthenticationDomain` as this shouldn't depend on DataKit
@@ -106,6 +101,7 @@ let package = Package(
                 .product(name: "ComposableArchitectureExtensions", package: "ComposableArchitectureExtensions"),
                 .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
                 .product(name: "Algorithms", package: "swift-algorithms")
             ],
             resources: [
@@ -137,6 +133,7 @@ let package = Package(
                 .product(name: "Nuke", package: "Nuke"),
                 .product(name: "PhoneNumberKit", package: "PhoneNumberKit"),
                 .product(name: "Zxcvbn", package: "Zxcvbn"),
+                .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "ComponentLibrary", package: "ComponentLibrary"),
                 .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks")
             ],

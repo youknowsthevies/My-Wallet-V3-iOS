@@ -55,6 +55,8 @@ final class APIClient: SimpleBuyClientAPI {
         static let paymentAccount = ["payments", "accounts", "simplebuy"]
         static let quote = ["simple-buy", "quote"]
         static let eligible = ["simple-buy", "eligible"]
+        static let withdrawalLocks = ["payments", "withdrawals", "locks"]
+        static let withdrawalLocksCheck = ["payments", "withdrawals", "locks", "check"]
         static let withdrawalFees = ["payments", "withdrawals", "fees"]
         static let withdrawal = ["payments", "withdrawals"]
         static let bankTransfer = ["payments", "banktransfer"]
@@ -370,6 +372,41 @@ final class APIClient: SimpleBuyClientAPI {
 
         let request = requestBuilder.get(
             path: Path.eligiblePaymentMethods,
+            parameters: queryParameters,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    // MARK: - WithdrawalClientAPI
+
+    func withdrawLocksCheck(
+        currency: FiatCurrency,
+        paymentMethodType: PaymentMethodPayloadType
+    ) -> AnyPublisher<WithdrawLocksCheckResponse, NabuNetworkError> {
+        struct Payload: Encodable {
+            let paymentMethod: String
+            let currency: String
+        }
+        let request = requestBuilder.post(
+            path: Path.withdrawalLocksCheck,
+            body: try? Payload(paymentMethod: paymentMethodType.rawValue, currency: currency.code).encode(),
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    func withdrawLocks(
+        currency: FiatCurrency
+    ) -> AnyPublisher<WithdrawLocksResponse, NabuNetworkError> {
+        let queryParameters = [
+            URLQueryItem(
+                name: Parameter.currency,
+                value: currency.code
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Path.withdrawalLocks,
             parameters: queryParameters,
             authenticated: true
         )!

@@ -26,9 +26,9 @@ public struct MinimalButton: View {
     private let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
             foreground: .semantic.primary,
-            background: .palette.white.opacity(0),
+            background: .semantic.background.opacity(0),
             border: Color(
-                light: .palette.grey100,
+                light: .semantic.medium,
                 dark: .palette.dark300
             )
         ),
@@ -39,21 +39,18 @@ public struct MinimalButton: View {
         ),
         disabled: PillButtonStyle.ColorSet(
             foreground: Color(
-                light: .palette.blue600.opacity(0.4),
+                light: .semantic.primary.opacity(0.7),
                 dark: .palette.grey600
             ),
-            background: .palette.white.opacity(0),
+            background: .semantic.background.opacity(0),
             border: Color(
-                light: .palette.grey000,
+                light: .semantic.light,
                 dark: .palette.grey700
             )
         ),
-        progressViewRail: Color(
-            light: .palette.blue600,
-            dark: .palette.blue000
-        ),
+        progressViewRail: .semantic.primary,
         progressViewTrack: Color(
-            light: .palette.blue400,
+            light: .semantic.blueBG,
             dark: .palette.white.opacity(0.25)
         )
     )

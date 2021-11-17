@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableArchitecture
 import DIKit
 import FeatureWithdrawalLocksUI
-import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -25,6 +25,7 @@ final class PortfolioViewController: BaseScreenViewController {
     private let fiatBalanceCellProvider: FiatBalanceCellProviding
     private let presenter: PortfolioScreenPresenter
     private let tableView = UITableView()
+    private var buyButton: BuyButtonView
 
     // MARK: - Setup
 
@@ -34,6 +35,11 @@ final class PortfolioViewController: BaseScreenViewController {
     ) {
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.presenter = presenter
+        buyButton = BuyButtonView(store: Store<BuyButtonState, BuyButtonAction>(
+            initialState: .init(),
+            reducer: buyButtonReducer,
+            environment: .init()
+        ))
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -62,12 +68,13 @@ final class PortfolioViewController: BaseScreenViewController {
     // MARK: - Setup
 
     private func setupNavigationBar() {
+        let model = presenter.screenNavigationModel
         set(
-            barStyle: .lightContent(),
-            leadingButtonStyle: .drawer,
-            trailingButtonStyle: .none
+            barStyle: model.barStyle,
+            leadingButtonStyle: model.leadingButton,
+            trailingButtonStyle: model.trailingButton
         )
-        titleViewStyle = .text(value: LocalizationConstants.DashboardScreen.title)
+        titleViewStyle = model.titleViewStyle
     }
 
     private func setupTableView() {
@@ -143,6 +150,14 @@ final class PortfolioViewController: BaseScreenViewController {
             .observeOn(MainScheduler.asyncInstance)
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
+
+        presenter.isEmptyState
+            .observeOn(MainScheduler.asyncInstance)
+            .bind { [weak parent] isEmptyState in
+                guard let buyButtonRenderer = parent as? BuyButtonViewRenderer else { return }
+                buyButtonRenderer.render(buyButton: self.buyButton, isVisible: !isEmptyState)
+            }
+            .disposed(by: disposeBag)
     }
 
     // MARK: - Navigation
@@ -157,7 +172,16 @@ final class PortfolioViewController: BaseScreenViewController {
         for indexPath: IndexPath
     ) -> UITableViewCell {
         let cell = tableView.dequeue(HostingTableViewCell<WithdrawalLocksView>.self, for: indexPath)
-        cell.host(WithdrawalLocksView(), parent: self)
+        let store = Store<WithdrawalLocksState, WithdrawalLocksAction>(
+            initialState: .init(),
+            reducer: withdrawalLocksReducer,
+            environment: WithdrawalLocksEnvironment { [tableView] isVisible in
+                tableView.beginUpdates()
+                cell.updateRootView(height: isVisible ? 44 : 1)
+                tableView.endUpdates()
+            }
+        )
+        cell.host(WithdrawalLocksView(store: store), parent: self, height: 1)
         return cell
     }
 
@@ -192,5 +216,11 @@ final class PortfolioViewController: BaseScreenViewController {
 
     private func emptyStateCell(for indexPath: IndexPath) -> UITableViewCell {
         PortfolioEmptyStateTableViewCell()
+    }
+}
+
+extension PortfolioViewController: SegmentedViewScreenViewController {
+    public func adjustInsetForBottomButton(withHeight height: CGFloat) {
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: height, right: 0)
     }
 }

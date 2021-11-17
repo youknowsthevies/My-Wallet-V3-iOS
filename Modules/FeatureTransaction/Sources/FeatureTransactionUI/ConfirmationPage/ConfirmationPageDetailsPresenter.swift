@@ -26,11 +26,7 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
     let navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction
 
     var navigationBarAppearance: DetailsScreen.NavigationBarAppearance {
-        .custom(
-            leading: .back,
-            trailing: .none,
-            barStyle: .darkContent(ignoresStatusBar: false, background: .white)
-        )
+        contentReducer.navigationBarAppearance
     }
 
     // MARK: - Actions
@@ -44,10 +40,7 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
     // MARK: - Screen Properties
 
     var buttons: [ButtonViewModel] {
-        [
-            contentReducer.cancelButtonViewModel,
-            contentReducer.continueButtonViewModel
-        ]
+        contentReducer.buttons
     }
 
     var cells: [DetailsScreen.CellType] {
@@ -98,11 +91,15 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             }
             .disposed(by: disposeBag)
 
-        let closeTapped = contentReducer
+        let cancelTapped = contentReducer
             .cancelButtonViewModel
             .tap
-            .asObservable()
-            .map { ConfirmationPageInteractor.Effects.close }
+            .withLatestFrom(details)
+            .map { details -> ConfirmationPageInteractor.Effects in
+                details.stepsBackStack.isEmpty ?
+                    .close
+                    : .back
+            }
             .asDriverCatchError()
 
         let backTapped = backButtonPressed
@@ -140,7 +137,7 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             .asDriverCatchError()
 
         return .merge(
-            closeTapped,
+            cancelTapped,
             backTapped,
             memoChanged,
             transferAgreementChanged,

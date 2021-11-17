@@ -2,6 +2,8 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureOpenBankingUI
+import PlatformKit
 import RxRelay
 import RxSwift
 import ToolKit

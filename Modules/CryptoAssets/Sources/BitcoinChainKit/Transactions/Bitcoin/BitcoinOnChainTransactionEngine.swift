@@ -303,12 +303,24 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     }
 
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.fromCallable {
+        Completable.fromCallable { [sourceAccount, transactionTarget] in
             guard (try? pendingTransaction.amount <= pendingTransaction.maxSpendable) == true else {
-                throw TransactionValidationFailure(state: .insufficientFunds)
+                throw TransactionValidationFailure(
+                    state: .insufficientFunds(
+                        pendingTransaction.maxSpendable,
+                        sourceAccount!.currencyType,
+                        transactionTarget!.currencyType
+                    )
+                )
             }
             guard try pendingTransaction.available >= pendingTransaction.amount else {
-                throw TransactionValidationFailure(state: .insufficientFunds)
+                throw TransactionValidationFailure(
+                    state: .insufficientFunds(
+                        pendingTransaction.maxSpendable,
+                        sourceAccount!.currencyType,
+                        transactionTarget!.currencyType
+                    )
+                )
             }
         }
     }

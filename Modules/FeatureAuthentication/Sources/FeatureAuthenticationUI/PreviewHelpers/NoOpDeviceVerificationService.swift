@@ -9,41 +9,32 @@ import ToolKit
 final class NoOpDeviceVerificationService: DeviceVerificationServiceAPI {
 
     func authorizeLogin(emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
-        Deferred {
-            Future { _ in
-                // no-op
-            }
-        }
-        .eraseToAnyPublisher()
+        .empty()
     }
 
     func sendDeviceVerificationEmail(
         to emailAddress: String
     ) -> AnyPublisher<Void, DeviceVerificationServiceError> {
-        Deferred {
-            Future { _ in
-                // no-op
-            }
-        }
-        .eraseToAnyPublisher()
+        .empty()
     }
 
-    func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError> {
-        Deferred {
-            Future { _ in
-                // no-op
-            }
-        }
-        .eraseToAnyPublisher()
+    func handleLoginRequestDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError> {
+        .empty()
     }
 
-    func pollForWalletInfo() -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> {
-        Deferred {
-            Future { _ in
-                // no-op
-            }
-        }
-        .eraseToAnyPublisher()
+    func pollForWalletInfo() -> AnyPublisher<
+        Result<WalletInfo, WalletInfoPollingError>,
+        DeviceVerificationServiceError
+    > {
+        .empty()
+    }
+
+    func authorizeVerifyDevice(
+        from sessionToken: String,
+        payload: String,
+        confirmDevice: Bool?
+    ) -> AnyPublisher<Void, AuthorizeVerifyDeviceError> {
+        .empty()
     }
 }
 

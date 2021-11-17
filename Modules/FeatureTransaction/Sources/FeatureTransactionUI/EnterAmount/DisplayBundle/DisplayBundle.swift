@@ -37,7 +37,8 @@ struct DisplayBundle {
             return .buy(sourceAccount: sourceAccount)
         case .sell:
             return .sell(sourceAccount: sourceAccount)
-        case .receive,
+        case .sign,
+             .receive,
              .viewActivity:
             unimplemented()
         }

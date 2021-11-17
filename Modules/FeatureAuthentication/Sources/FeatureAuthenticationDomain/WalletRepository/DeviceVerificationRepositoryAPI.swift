@@ -27,8 +27,19 @@ public protocol DeviceVerificationRepositoryAPI {
 
     /// Attempting to poll for wallet information until the backend return the desired response
     /// - Parameters: sessionToken: The session token stored in the repository
-    /// - Returns: A combine `Publisher` that emits Void on success or DeviceVerificationServiceError on failure
+    /// - Returns: A combine `Publisher` that emits `Result<WalletInfo, WalletInfoPollingError>` or DeviceVerificationServiceError on failure
     func pollForWalletInfo(
         sessionToken: String
-    ) -> AnyPublisher<WalletInfo, DeviceVerificationServiceError>
+    ) -> AnyPublisher<Result<WalletInfo, WalletInfoPollingError>, DeviceVerificationServiceError>
+
+    /// Authorize device verification from a login request generated from another device
+    /// - Parameters: sessionToken: sessionToken from the another device's request
+    /// - Parameters: payload: the base64 encoded wallet info from the another device's request
+    /// - Parameters: confirmDevice: whether to confirm device or not, if nil, will trigger confirmation required error
+    /// - Returns: A combine `Publisher` that emits `Void` or `AuthorizeVerifyDeviceError` if failed
+    func authorizeVerifyDevice(
+        from sessionToken: String,
+        payload: String,
+        confirmDevice: Bool?
+    ) -> AnyPublisher<Void, AuthorizeVerifyDeviceError>
 }

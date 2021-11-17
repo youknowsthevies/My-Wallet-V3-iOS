@@ -5,6 +5,7 @@ import Localization
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import ToolKit
 import UIComponentsKit
 
 protocol SendRootInteractable: Interactable, TransactionFlowListener {
@@ -38,6 +39,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
     // MARK: - SwapRootRouting
 
     func routeToSendLanding() {
+        let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
         let header = AccountPickerHeaderModel(
             imageContent: .init(
                 imageResource: ImageAsset.iconSend.imageResource,
@@ -49,7 +51,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
         )
         let navigationModel = ScreenNavigationModel(
             leadingButton: .drawer,
-            trailingButton: .none,
+            trailingButton: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none,
             titleViewStyle: .text(value: LocalizedSend.Text.send),
             barStyle: .lightContent()
         )

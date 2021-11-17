@@ -265,8 +265,6 @@ extension DependencyContainer {
             return client as OrdersActivityClientAPI
         }
 
-        factory { WithdrawalService() as WithdrawalServiceAPI }
-
         // MARK: - Clients - Cards
 
         factory { CardClient() as CardClientAPI }

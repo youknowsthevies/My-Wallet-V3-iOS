@@ -25,6 +25,8 @@ final class MockDeviceVerificationService: DeviceVerificationServiceAPI {
         guid: "cd76e920-7a39-4458-829a-1bb752ef628d"
     )
 
+    var expectedSessionMismatch: Bool = false
+
     func sendDeviceVerificationEmail(
         to emailAddress: String
     ) -> AnyPublisher<Void, DeviceVerificationServiceError> {
@@ -37,7 +39,12 @@ final class MockDeviceVerificationService: DeviceVerificationServiceAPI {
         .just(())
     }
 
-    func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError> {
+    func handleLoginRequestDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError> {
+        if expectedSessionMismatch {
+            return .failure(
+                .sessionTokenMismatch(originSession: "", base64Str: "")
+            )
+        }
         if deeplink == MockDeviceVerificationService.validDeeplink {
             return .just(MockDeviceVerificationService.mockWalletInfo)
         } else if deeplink == MockDeviceVerificationService.deeplinkWithValidGuid {
@@ -47,7 +54,23 @@ final class MockDeviceVerificationService: DeviceVerificationServiceAPI {
         }
     }
 
-    func pollForWalletInfo() -> AnyPublisher<WalletInfo, DeviceVerificationServiceError> {
-        .just(MockDeviceVerificationService.mockWalletInfo)
+    func pollForWalletInfo() -> AnyPublisher<Result<WalletInfo, WalletInfoPollingError>, DeviceVerificationServiceError> {
+        .just(.success(MockDeviceVerificationService.mockWalletInfo))
+    }
+
+    func authorizeVerifyDevice(from sessionToken: String, payload: String, confirmDevice: Bool?) -> AnyPublisher<Void, AuthorizeVerifyDeviceError> {
+        guard let confirmDevice = confirmDevice else {
+            return .failure(
+                .confirmationRequired(
+                    requestTime: Date(timeIntervalSince1970: 1000),
+                    details: DeviceVerificationDetails(originLocation: "", originIP: "", originBrowser: "")
+                )
+            )
+        }
+        if confirmDevice {
+            return .just(())
+        } else {
+            return .failure(.requestDenied)
+        }
     }
 }

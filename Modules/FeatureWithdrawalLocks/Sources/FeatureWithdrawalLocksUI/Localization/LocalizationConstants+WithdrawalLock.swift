@@ -3,7 +3,7 @@
 import Localization
 
 extension LocalizationConstants {
-    enum WithdrawalLock {
+    enum WithdrawalLocks {
         static let onHoldTitle = NSLocalizedString(
             "On Hold",
             comment: "Withdrawal Locks: On Hold Title"

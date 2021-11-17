@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
+import ToolKit
 
 public struct PendingTransaction: Equatable {
 
@@ -14,6 +15,9 @@ public struct PendingTransaction: Equatable {
     /// The maximum amount the user can spend. We compare the amount entered to the
     /// `maximumLimit` as `CryptoValues` and return whichever is smaller.
     public var maxSpendable: MoneyValue {
+        if let maximumLimit = limits.value?.maximum {
+            return maximumLimit
+        }
         guard let maximumLimit = maximumLimit else {
             return available
         }
@@ -65,11 +69,12 @@ public struct PendingTransaction: Equatable {
     /// The list of `TransactionConfirmation`.
     /// To update this value, use methods `update(confirmations:)` and `insert(confirmations:)`
     public private(set) var confirmations: [TransactionConfirmation] = []
+    public var limits: Reference<TransactionLimits?> // this struct has become too big for Swift to handle :(
+    // TODO: remove limits below in favour of limits struct above
     public var minimumLimit: MoneyValue?
     public var maximumLimit: MoneyValue?
     public var maximumDailyLimit: MoneyValue?
     public var maximumAnnualLimit: MoneyValue?
-    public var minimumApiLimit: MoneyValue?
     public var validationState: TransactionValidationState = .uninitialized
     public var engineState: [EngineStateKey: Any] = [:]
 
@@ -80,6 +85,7 @@ public struct PendingTransaction: Equatable {
         feeForFullAvailable: MoneyValue,
         feeSelection: FeeSelection,
         selectedFiatCurrency: FiatCurrency,
+        limits: TransactionLimits? = nil,
         minimumLimit: MoneyValue? = nil,
         maximumLimit: MoneyValue? = nil,
         maximumDailyLimit: MoneyValue? = nil,
@@ -91,6 +97,7 @@ public struct PendingTransaction: Equatable {
         self.feeForFullAvailable = feeForFullAvailable
         self.feeSelection = feeSelection
         self.selectedFiatCurrency = selectedFiatCurrency
+        self.limits = Reference(limits)
         self.minimumLimit = minimumLimit
         self.maximumLimit = maximumLimit
         self.maximumDailyLimit = maximumDailyLimit
@@ -196,8 +203,8 @@ public struct PendingTransaction: Equatable {
             && lhs.selectedFiatCurrency == rhs.selectedFiatCurrency
             && lhs.feeLevel == rhs.feeLevel
             && lhs.confirmations == rhs.confirmations
+            && lhs.limits == rhs.limits
             && lhs.minimumLimit == rhs.minimumLimit
-            && lhs.minimumApiLimit == rhs.minimumApiLimit
             && lhs.maximumLimit == rhs.maximumLimit
             && lhs.validationState == rhs.validationState
             && lhs.maximumDailyLimit == rhs.maximumDailyLimit

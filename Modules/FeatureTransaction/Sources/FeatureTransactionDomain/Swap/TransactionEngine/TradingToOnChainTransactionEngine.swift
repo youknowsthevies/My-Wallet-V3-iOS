@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RxSwift
@@ -24,8 +25,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             .asObservable()
     }
 
-    let fiatCurrencyService: FiatCurrencyServiceAPI
-    let priceService: PriceServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
     let requireSecondPassword: Bool = false
     let isNoteSupported: Bool
     var askForRefreshConfirmation: ((Bool) -> Completable)!
@@ -46,19 +47,22 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
 
     private let feeCache: CachedValue<CustodialTransferFee>
     private let transferRepository: CustodialTransferRepositoryAPI
+    private let transactionLimitsService: TransactionLimitsServiceAPI
 
     // MARK: - Init
 
     init(
         isNoteSupported: Bool = false,
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
-        transferRepository: CustodialTransferRepositoryAPI = resolve()
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
+        transferRepository: CustodialTransferRepositoryAPI = resolve(),
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve()
     ) {
-        self.fiatCurrencyService = fiatCurrencyService
-        self.priceService = priceService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
         self.isNoteSupported = isNoteSupported
         self.transferRepository = transferRepository
+        self.transactionLimitsService = transactionLimitsService
         feeCache = CachedValue(
             configuration: .periodic(
                 seconds: 20,
@@ -77,18 +81,36 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        fiatCurrencyService
-            .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<PendingTransaction> in
+        let transactionLimits = transactionLimitsService
+            .fetchLimits(
+                source: LimitsAccount(
+                    currency: sourceAccount.currencyType,
+                    accountType: .custodial
+                ),
+                destination: LimitsAccount(
+                    currency: targetAsset.currencyType,
+                    accountType: .nonCustodial // even exchange accounts are considered non-custodial atm.
+                )
+            )
+            .asSingle()
+        let walletCurrency = walletCurrencyService
+            .fiatCurrencyPublisher
+            .asSingle()
+        return Single
+            .zip(
+                transactionLimits,
+                walletCurrency
+            )
+            .flatMap { [sourceAsset] transactionLimits, walletCurrency -> Single<PendingTransaction> in
                 .just(
                     .init(
-                        amount: .zero(currency: self.sourceAsset),
-                        available: .zero(currency: self.sourceAsset),
-                        feeAmount: .zero(currency: self.sourceAsset),
-                        feeForFullAvailable: .zero(currency: self.sourceAsset),
-                        feeSelection: .empty(asset: self.sourceAsset),
-                        selectedFiatCurrency: fiatCurrency,
-                        minimumLimit: .zero(currency: self.sourceAsset)
+                        amount: .zero(currency: sourceAsset),
+                        available: .zero(currency: sourceAsset),
+                        feeAmount: .zero(currency: sourceAsset),
+                        feeForFullAvailable: .zero(currency: sourceAsset),
+                        feeSelection: .empty(asset: sourceAsset),
+                        selectedFiatCurrency: walletCurrency,
+                        limits: transactionLimits
                     )
                 )
             }
@@ -100,17 +122,28 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         }
         return
             Single
-                .zip(feeCache.valueSingle, sourceTradingAccount.withdrawableBalance)
+                .zip(
+                    feeCache.valueSingle,
+                    sourceTradingAccount.withdrawableBalance
+                )
                 .map { fees, withdrawableBalance -> PendingTransaction in
                     let fee = fees[fee: amount.currency]
                     let available = try withdrawableBalance - fee
-                    var pendingTransaction = pendingTransaction.update(
+                    let pendingTransaction = pendingTransaction.update(
                         amount: amount,
                         available: available.isNegative ? .zero(currency: available.currency) : available,
                         fee: fee,
                         feeForFullAvailable: fee
                     )
-                    pendingTransaction.minimumLimit = fees[minimumAmount: amount.currency]
+                    let transactionLimits = pendingTransaction.limits.value ?? .infinity(for: amount.currency)
+                    pendingTransaction.limits.value = TransactionLimits(
+                        minimum: fees[minimumAmount: amount.currency],
+                        maximum: transactionLimits.maximum,
+                        maximumDaily: transactionLimits.maximumDaily,
+                        maximumAnnual: transactionLimits.maximumAnnual,
+                        effectiveLimit: transactionLimits.effectiveLimit,
+                        suggestedUpgrade: transactionLimits.suggestedUpgrade
+                    )
                     return pendingTransaction
                 }
     }
@@ -138,13 +171,54 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     }
 
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAmounts(pendingTransaction: pendingTransaction)
+        walletCurrencyService
+            .fiatCurrencyPublisher
+            .setFailureType(to: PriceServiceError.self)
+            .flatMap { [currencyConversionService] fiatCurrency -> AnyPublisher<MoneyValue, PriceServiceError> in
+                currencyConversionService.conversionRate(
+                    from: pendingTransaction.amount.currencyType,
+                    to: fiatCurrency.currencyType
+                )
+            }
+            .zip(
+                currencyConversionService.conversionRate(
+                    from: sourceAsset.currencyType,
+                    to: pendingTransaction.amount.currencyType
+                )
+            )
+            .asSingle()
+            .map { [sourceAccount] toWalletRate, toAmountRate -> Void in
+                guard let transactionLimits = pendingTransaction.limits.value?.convert(using: toAmountRate) else {
+                    throw TransactionValidationFailure(state: .unknownError)
+                }
+                guard try pendingTransaction.amount >= transactionLimits.minimum else {
+                    throw TransactionValidationFailure(state: .belowMinimumLimit(transactionLimits.minimum))
+                }
+                guard try pendingTransaction.amount <= transactionLimits.maximum else {
+                    throw TransactionValidationFailure(
+                        state: .overMaximumPersonalLimit(
+                            transactionLimits.effectiveLimit,
+                            transactionLimits.maximum.convert(using: toWalletRate),
+                            transactionLimits.suggestedUpgrade
+                        )
+                    )
+                }
+                guard try pendingTransaction.amount <= pendingTransaction.available else {
+                    throw TransactionValidationFailure(
+                        state: .overMaximumSourceLimit(
+                            pendingTransaction.available,
+                            sourceAccount!.label,
+                            pendingTransaction.amount
+                        )
+                    )
+                }
+            }
+            .asCompletable()
             .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAmounts(pendingTransaction: pendingTransaction)
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
+        validateAmount(pendingTransaction: pendingTransaction)
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
@@ -178,24 +252,6 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
 
     // MARK: - Private Functions
 
-    private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.deferred { () -> Completable in
-            guard pendingTransaction.amount.isPositive else {
-                throw TransactionValidationFailure(state: .invalidAmount)
-            }
-            guard try pendingTransaction.amount <= pendingTransaction.available else {
-                throw TransactionValidationFailure(state: .insufficientFunds)
-            }
-            guard let minimumLimit = pendingTransaction.minimumLimit else {
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
-            }
-            guard try pendingTransaction.amount >= minimumLimit else {
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
-            }
-            return .just(event: .completed)
-        }
-    }
-
     private func fiatAmountAndFees(
         from pendingTransaction: PendingTransaction
     ) -> Single<(amount: FiatValue, fees: FiatValue)> {
@@ -214,14 +270,13 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     }
 
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: self.sourceAsset, in: fiatCurrency)
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
     }
 }

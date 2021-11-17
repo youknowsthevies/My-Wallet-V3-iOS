@@ -25,7 +25,20 @@ struct TransactionState: StateType {
 
     // MARK: Execution Supporting Data
 
-    var pendingTransaction: PendingTransaction?
+    private var _pendingTransaction: Reference<PendingTransaction>? // struct too big for Swift
+    var pendingTransaction: PendingTransaction? {
+        get {
+            _pendingTransaction?.value
+        }
+        set {
+            if let pendingTransaction = newValue {
+                _pendingTransaction = .init(pendingTransaction)
+            } else {
+                _pendingTransaction = nil
+            }
+        }
+    }
+
     var executionStatus: TransactionExecutionStatus = .notStarted
     var errorState: TransactionErrorState = .none // TODO: make it associated data of execution status, if related?
     var order: TransactionOrder?
@@ -58,6 +71,20 @@ struct TransactionState: StateType {
     }
 
     var stepsBackStack: [TransactionFlowStep] = []
+
+    init(
+        action: AssetAction,
+        source: BlockchainAccount? = nil,
+        destination: TransactionTarget? = nil,
+        passwordRequired: Bool = false,
+        step: TransactionFlowStep = .initial
+    ) {
+        self.action = action
+        self.source = source
+        self.destination = destination
+        self.passwordRequired = passwordRequired
+        self.step = step
+    }
 }
 
 extension TransactionState: Equatable {
@@ -81,6 +108,7 @@ extension TransactionState: Equatable {
             && lhs.stepsBackStack == rhs.stepsBackStack
             && lhs.availableSources.map(\.identifier) == rhs.availableSources.map(\.identifier)
             && lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
+            && lhs.userKYCTiers == rhs.userKYCTiers
     }
 }
 
@@ -111,19 +139,29 @@ extension TransactionState {
 
     /// The minimum spending limit
     var minSpendable: MoneyValue {
-        pendingTransaction?.minimumLimit ?? .zero(currency: asset)
+        pendingTransaction?.limits.value?.minimum
+            ?? pendingTransaction?.minimumLimit
+            ?? .zero(currency: asset)
     }
 
     /// The maximum amount the user can use daily for the given transaction.
     /// This is a different value than the spendable amount (and usually higher)
     var maxDaily: MoneyValue {
-        pendingTransaction?.maximumDailyLimit ?? .zero(currency: asset)
+        pendingTransaction?.limits.value?.maximumDaily
+            ?? pendingTransaction?.maximumDailyLimit
+            ?? .zero(currency: asset)
     }
 
     /// The maximum amount the user can spend. We compare the amount entered to the
     /// `maxLimit` as `CryptoValues` and return whichever is smaller.
     var maxSpendable: MoneyValue {
-        pendingTransaction?.maxSpendable ?? .zero(currency: asset)
+        if let maxSpendable = pendingTransaction?.maxSpendable,
+           (try? maxSpendable > .zero(currency: asset)) == true
+        {
+            return maxSpendable
+        } else {
+            return .zero(currency: asset)
+        }
     }
 
     /// The balance in `MoneyValue` based on the `PendingTransaction`
@@ -263,9 +301,9 @@ extension TransactionState {
             return LocalizationIds.invalidPassword
         case .optionInvalid:
             return LocalizationIds.optionInvalid
-        case .overGoldTierLimit,
-             .overMaximumLimit,
-             .overSilverTierLimit:
+        case .overMaximumLimit,
+             .overMaximumSourceLimit,
+             .overMaximumPersonalLimit:
             return LocalizationIds.overMaximumLimit
         case .pendingOrdersLimitReached:
             return LocalizationIds.pendingOrderLimitReached
@@ -351,6 +389,7 @@ enum TransactionFlowStep: Equatable {
     case linkACard
     case linkABank
     case linkBankViaWire
+    case authorizeOpenBanking
     case enterAddress
     case selectTarget
     case enterAmount
@@ -384,7 +423,8 @@ extension TransactionFlowStep {
              .linkPaymentMethod,
              .linkACard,
              .linkABank,
-             .securityConfirmation:
+             .securityConfirmation,
+             .authorizeOpenBanking:
             return false
         }
     }
@@ -397,7 +437,8 @@ extension TransactionFlowStep {
              .linkACard,
              .linkABank,
              .linkBankViaWire,
-             .securityConfirmation:
+             .securityConfirmation,
+             .authorizeOpenBanking:
             return true
         case .closed,
              .confirmDetail,

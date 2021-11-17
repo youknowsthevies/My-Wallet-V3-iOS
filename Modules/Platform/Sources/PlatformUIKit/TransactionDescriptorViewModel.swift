@@ -189,6 +189,8 @@ extension AssetAction {
             return "minus-icon"
         case .send:
             return "send-icon"
+        case .sign:
+            fatalError("Impossible.")
         case .swap:
             return "swap-icon"
         case .withdraw,

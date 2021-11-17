@@ -55,15 +55,38 @@ class AccountPickerRowViewTests: XCTestCase {
         description: "Description"
     )
 
-    let linkedBankAccount = LinkedBankAccount(
+    // swiftlint:disable:next force_try
+    let linkedBankData = try! LinkedBankData(
+        response: LinkedBankResponse(
+            json: [
+                "id": "id",
+                "currency": "GBP",
+                "partner": "YAPILY",
+                "bankAccountType": "SAVINGS",
+                "name": "Name",
+                "accountName": "Account Name",
+                "accountNumber": "123456",
+                "routingNumber": "123456",
+                "agentRef": "040004",
+                "isBankAccount": false,
+                "isBankTransferAccount": true,
+                "state": "PENDING",
+                "attributes": [
+                    "entity": "Safeconnect(UK)"
+                ]
+            ]
+        )
+    )!
+
+    lazy var linkedBankAccount = LinkedBankAccount(
         label: "LinkedBankAccount",
         accountNumber: "0",
         accountId: "0",
         accountType: .checking,
         currency: .USD,
         paymentType: .bankAccount,
-        supportsDeposit: true,
-        withdrawServiceAPI: MockWithdrawalServiceAPI()
+        partner: .yapily,
+        data: linkedBankData
     )
 
     let paymentMethodFunds = PaymentMethodAccount(
@@ -173,7 +196,7 @@ class AccountPickerRowViewTests: XCTestCase {
 
                 switch identity {
                 case self.linkedBankAccount.identifier:
-                    let badges = SingleAccountBadgeFactory()
+                    let badges = SingleAccountBadgeFactory(withdrawalService: MockWithdrawalServiceAPI())
                         .badge(account: self.linkedBankAccount, action: .withdraw)
                         .map {
                             MultiBadgeViewModel(
@@ -293,13 +316,15 @@ class AccountPickerRowViewTests: XCTestCase {
 }
 
 struct MockWithdrawalServiceAPI: WithdrawalServiceAPI {
+
     func withdrawFeeAndLimit(
         for currency: FiatCurrency,
         paymentMethodType: PaymentMethodPayloadType
     ) -> Single<WithdrawalFeeAndLimit> {
         .just(.init(
-            minLimit: FiatValue.zero(currency: currency),
-            fee: FiatValue.zero(currency: currency)
+            maxLimit: .zero(currency: currency),
+            minLimit: .zero(currency: currency),
+            fee: .zero(currency: currency)
         ))
     }
 

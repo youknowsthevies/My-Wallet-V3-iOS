@@ -28,18 +28,15 @@ final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
 
     func send(transaction: EthereumTransactionCandidate, secondPassword: String) -> Single<EthereumTransactionPublished> {
         keyPairProvider.keyPair(with: secondPassword)
-            .flatMap(weak: self) { (self, keyPair) -> Single<EthereumTransactionPublished> in
-                self.transactionSendingService.send(
+            .flatMap { [transactionSendingService] keyPair -> Single<EthereumTransactionPublished> in
+                transactionSendingService.signAndSend(
                     transaction: transaction,
                     keyPair: keyPair
                 )
+                .asSingle()
             }
-            .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
-                self.updateAfterSending(transaction: transaction)
+            .flatMap { [bridge] transaction -> Single<EthereumTransactionPublished> in
+                bridge.recordLast(transaction: transaction)
             }
-    }
-
-    private func updateAfterSending(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
-        bridge.recordLast(transaction: transaction)
     }
 }

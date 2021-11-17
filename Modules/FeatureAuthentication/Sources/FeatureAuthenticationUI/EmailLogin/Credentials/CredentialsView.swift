@@ -292,7 +292,9 @@ public struct CredentialsView: View {
                 get: { $0.twoFAState?.isTwoFACodeIncorrect ?? false || $0.isAccountLocked },
                 send: .none
             ),
-            title: LocalizedString.TextFieldTitle.twoFACode,
+            title: viewStore.twoFAState?.twoFAType == .sms ?
+                LocalizedString.TextFieldTitle.smsCode :
+                LocalizedString.TextFieldTitle.authenticatorCode,
             configuration: {
                 $0.autocorrectionType = .no
                 $0.autocapitalizationType = .none
@@ -367,7 +369,7 @@ struct PasswordLoginView_Previews: PreviewProvider {
                     mainQueue: .main,
                     deviceVerificationService: NoOpDeviceVerificationService(),
                     errorRecorder: NoOpErrorRecorder(),
-                    appFeatureConfigurator: NoOpFeatureConfigurator(),
+                    featureFlagsService: NoOpFeatureFlagsService(),
                     analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )

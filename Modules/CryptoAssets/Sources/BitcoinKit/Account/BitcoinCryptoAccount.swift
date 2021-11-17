@@ -162,6 +162,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
                     isEnabled ? isFunded : .just(false)
                 }
         case .deposit,
+             .sign,
              .withdraw,
              .interestWithdraw:
             return .just(false)

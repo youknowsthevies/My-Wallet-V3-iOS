@@ -11,7 +11,6 @@ import ToolKit
 
 protocol TargetSelectionPageRouting: ViewableRouting {
     func presentQRScanner(
-        for currency: CryptoCurrency,
         sourceAccount: CryptoAccount,
         model: TargetSelectionPageModel
     )
@@ -208,10 +207,9 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         /// triggers routing to a new screen or ending the flow
         transactionState
             .distinctUntilChanged(\.step)
-            .withLatestFrom(sourceAccount) { ($0, $1) }
             .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onNext: { state, source in
-                self.handleStateChange(newState: state, sourceAccount: source)
+            .subscribe(onNext: { [weak self] newState in
+                self?.handleStateChange(newState: newState)
             })
             .disposeOnDeactivate(interactor: self)
 
@@ -323,12 +321,12 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
     private var initialStep: Bool = true
 
-    private func handleStateChange(newState: TargetSelectionPageState, sourceAccount: BlockchainAccount) {
+    private func handleStateChange(newState: TargetSelectionPageState) {
         if !initialStep, newState.step == TargetSelectionPageStep.initial {
             // no-op
         } else {
             initialStep = false
-            showFlowStep(newState: newState, sourceAccount: sourceAccount)
+            showFlowStep(newState: newState)
         }
     }
 
@@ -336,7 +334,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         targetSelectionPageModel.process(action: .resetFlow)
     }
 
-    private func showFlowStep(newState: TargetSelectionPageState, sourceAccount: BlockchainAccount) {
+    private func showFlowStep(newState: TargetSelectionPageState) {
         guard !newState.isGoingBack else {
             listener?.didTapBack()
             return
@@ -354,15 +352,14 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             didSelect?(account as! SingleAccount)
             listener?.didSelect(target: account)
         case .qrScanner:
-            guard let source = newState.sourceAccount else {
+            guard let sourceAccount = newState.sourceAccount else {
                 fatalError("Expected a sourceAccount: \(newState)")
             }
-            guard let crypto = source as? CryptoAccount else {
-                fatalError("Expected a CryptoAccount: \(source)")
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected a CryptoAccount: \(sourceAccount)")
             }
             router?.presentQRScanner(
-                for: crypto.asset,
-                sourceAccount: sourceAccount as! CryptoAccount,
+                sourceAccount: cryptoAccount,
                 model: targetSelectionPageModel
             )
         }

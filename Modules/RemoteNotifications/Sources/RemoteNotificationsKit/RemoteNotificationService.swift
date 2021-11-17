@@ -81,6 +81,7 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
         sendTokenIfNeeded()
             .asCompletable()
             .asPublisher()
+            .eraseToAnyPublisher()
     }
 }
 

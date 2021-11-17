@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import FeatureAuthenticationDomain
+import WalletPayloadKit
 
 // MARK: - Type
 
@@ -30,19 +32,29 @@ private enum Constants {
 
 struct TwoFAState: Equatable {
     var twoFACode: String
+    var twoFAType: WalletAuthenticatorType
     var isTwoFACodeFieldVisible: Bool
     var isResendSMSButtonVisible: Bool
     var isTwoFACodeIncorrect: Bool
     var twoFACodeIncorrectContext: TwoFAAction.IncorrectTwoFAContext
     var twoFACodeAttemptsLeft: Int
 
-    init() {
-        twoFACode = ""
-        isTwoFACodeFieldVisible = false
-        isResendSMSButtonVisible = false
-        isTwoFACodeIncorrect = false
-        twoFACodeAttemptsLeft = Constants.twoFACodeMaxAttemptsLeft
-        twoFACodeIncorrectContext = .none
+    init(
+        twoFACode: String = "",
+        twoFAType: WalletAuthenticatorType = .standard,
+        isTwoFACodeFieldVisible: Bool = false,
+        isResendSMSButtonVisible: Bool = false,
+        isTwoFACodeIncorrect: Bool = false,
+        twoFACodeIncorrectContext: TwoFAAction.IncorrectTwoFAContext = .none,
+        twoFACodeAttemptsLeft: Int = Constants.twoFACodeMaxAttemptsLeft
+    ) {
+        self.twoFACode = twoFACode
+        self.twoFAType = twoFAType
+        self.isTwoFACodeFieldVisible = isTwoFACodeFieldVisible
+        self.isResendSMSButtonVisible = isResendSMSButtonVisible
+        self.isTwoFACodeIncorrect = isTwoFACodeIncorrect
+        self.twoFACodeIncorrectContext = twoFACodeIncorrectContext
+        self.twoFACodeAttemptsLeft = twoFACodeAttemptsLeft
     }
 }
 

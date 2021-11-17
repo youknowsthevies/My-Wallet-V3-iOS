@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableArchitecture
+import FeatureWithdrawalLocksUI
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -8,6 +10,7 @@ import RxSwift
 import SwiftUI
 import UIKit
 
+// swiftlint:disable:next type_body_length
 final class EnterAmountViewController: BaseScreenViewController,
     EnterAmountViewControllable,
     EnterAmountPagePresentable
@@ -43,6 +46,19 @@ final class EnterAmountViewController: BaseScreenViewController,
     private let topAuxiliaryItemSeparatorView = TitledSeparatorView()
     private let bottomAuxiliaryItemSeparatorView = TitledSeparatorView()
 
+    private lazy var withdrawalLocksHostingController: UIHostingController<WithdrawalLocksView> = {
+        let store = Store<WithdrawalLocksState, WithdrawalLocksAction>(
+            initialState: .init(),
+            reducer: withdrawalLocksReducer,
+            environment: WithdrawalLocksEnvironment { [weak self] isVisible in
+                self?.withdrawalLocksSeparatorView.isHidden = !isVisible
+            }
+        )
+        return UIHostingController(rootView: WithdrawalLocksView(store: store))
+    }()
+
+    private let withdrawalLocksSeparatorView = TitledSeparatorView()
+
     // MARK: - Main CTA
 
     private let continueButtonView = ButtonView()
@@ -56,6 +72,7 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     // MARK: - Other Properties
 
+    private let bottomSheetPresenting = BottomSheetPresenting(ignoresBackgroundTouches: true)
     private let amountViewable: AmountViewable
     private let digitPadView = DigitPadView()
     private var digitPadHeightConstraint: NSLayoutConstraint!
@@ -100,6 +117,7 @@ final class EnterAmountViewController: BaseScreenViewController,
 
         topAuxiliaryItemSeparatorView.viewModel = TitledSeparatorViewModel(separatorColor: .lightBorder)
         bottomAuxiliaryItemSeparatorView.viewModel = TitledSeparatorViewModel(separatorColor: .lightBorder)
+        withdrawalLocksSeparatorView.viewModel = TitledSeparatorViewModel(separatorColor: .lightBorder)
     }
 
     @available(*, unavailable)
@@ -112,6 +130,12 @@ final class EnterAmountViewController: BaseScreenViewController,
         let amountView = amountViewable.view
         view.addSubview(topAuxiliaryViewContainer)
         view.addSubview(topAuxiliaryItemSeparatorView)
+        view.addSubview(withdrawalLocksHostingController.view)
+        withdrawalLocksHostingController.view.invalidateIntrinsicContentSize()
+        if withdrawalLocksHostingController.parent != parent {
+            withdrawalLocksHostingController.didMove(toParent: self)
+        }
+        view.addSubview(withdrawalLocksSeparatorView)
         view.addSubview(amountView)
         view.addSubview(bottomAuxiliaryItemSeparatorView)
         view.addSubview(bottomAuxiliaryViewContainer)
@@ -125,12 +149,18 @@ final class EnterAmountViewController: BaseScreenViewController,
         )
 
         topAuxiliaryItemSeparatorView.layout(edge: .top, to: .bottom, of: topAuxiliaryViewContainer)
-        topAuxiliaryItemSeparatorView.layoutToSuperview(.leading)
-        topAuxiliaryItemSeparatorView.layoutToSuperview(.trailing)
+        topAuxiliaryItemSeparatorView.layoutToSuperview(axis: .horizontal)
         topAuxiliaryItemSeparatorView.layout(dimension: .height, to: 1)
 
+        withdrawalLocksHostingController.view.layout(edge: .top, to: .bottom, of: topAuxiliaryItemSeparatorView)
+        withdrawalLocksHostingController.view.layoutToSuperview(axis: .horizontal)
+
+        withdrawalLocksSeparatorView.layout(edge: .top, to: .bottom, of: withdrawalLocksHostingController.view)
+        withdrawalLocksSeparatorView.layoutToSuperview(axis: .horizontal)
+        withdrawalLocksSeparatorView.layout(dimension: .height, to: 1)
+
         amountView.layoutToSuperview(axis: .horizontal)
-        amountView.layout(edge: .top, to: .bottom, of: topAuxiliaryItemSeparatorView)
+        amountView.layout(edge: .top, to: .bottom, of: withdrawalLocksSeparatorView)
 
         bottomAuxiliaryItemSeparatorView.layout(edge: .top, to: .bottom, of: amountView)
         bottomAuxiliaryItemSeparatorView.layoutToSuperview(.leading, priority: .defaultHigh)
@@ -266,9 +296,20 @@ final class EnterAmountViewController: BaseScreenViewController,
         state
             .distinctUntilChanged()
             .map(\.errorState)
-            .map(\.shortDescription)
+            .map(\.recoveryWarningHint)
             .drive(onNext: { [errorRecoveryCTAModel] errorTitle in
                 errorRecoveryCTAModel.buttonTitle = errorTitle
+            })
+            .disposed(by: disposeBag)
+
+        state
+            .distinctUntilChanged()
+            .map(\.showWithdrawalLocks)
+            .drive(onNext: { [weak self] showWithdrawalLocks in
+                let heightAnchor = self?.withdrawalLocksHostingController.view.heightAnchor
+                heightAnchor?.constraint(equalToConstant: 1).isActive = !showWithdrawalLocks
+                self?.withdrawalLocksSeparatorView.isHidden = !showWithdrawalLocks
+                self?.withdrawalLocksHostingController.view.isHidden = !showWithdrawalLocks
             })
             .disposed(by: disposeBag)
 
@@ -333,6 +374,23 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     override func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
+    }
+
+    // MARK: - Withdrawal Locks
+
+    func presentWithdrawalLocks(amountAvailable: String) {
+        let store = Store<WithdrawalLocksInfoState, WithdrawalLocksInfoAction>(
+            initialState: WithdrawalLocksInfoState(amountAvailable: amountAvailable),
+            reducer: withdrawalLockInfoReducer,
+            environment: WithdrawalLocksInfoEnvironment { [weak self] in
+                self?.dismiss(animated: true, completion: nil)
+            }
+        )
+        let rootView = WithdrawalLocksInfoView(store: store)
+        let viewController = UIHostingController(rootView: rootView)
+        viewController.transitioningDelegate = bottomSheetPresenting
+        viewController.modalPresentationStyle = .custom
+        present(viewController, animated: true, completion: nil)
     }
 }
 

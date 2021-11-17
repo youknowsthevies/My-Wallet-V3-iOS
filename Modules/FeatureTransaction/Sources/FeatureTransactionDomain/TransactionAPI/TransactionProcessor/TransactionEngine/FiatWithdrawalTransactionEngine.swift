@@ -30,15 +30,18 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     // MARK: - Private Properties
 
     private let fiatWithdrawRepository: FiatWithdrawRepositoryAPI
+    private let withdrawalService: WithdrawalServiceAPI
 
     // MARK: - Init
 
     init(
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        withdrawalService: WithdrawalServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         fiatWithdrawRepository: FiatWithdrawRepositoryAPI = resolve()
     ) {
         self.fiatCurrencyService = fiatCurrencyService
+        self.withdrawalService = withdrawalService
         self.priceService = priceService
         self.fiatWithdrawRepository = fiatWithdrawRepository
     }
@@ -53,17 +56,18 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     func initializeTransaction() -> Single<PendingTransaction> {
         Single.zip(
             sourceAccount.actionableBalance,
-            sourceAccount.balance,
-            target.withdrawFeeAndMinLimit,
+            withdrawalService.withdrawFeeAndLimit(
+                for: target.fiatCurrency,
+                paymentMethodType: target.paymentType
+            ),
             fiatCurrencyService
                 .fiatCurrency
         )
-        .map(weak: self) { (self, values) -> PendingTransaction in
-            let (actionableBalance, _, feeAndLimit, fiatCurrency) = values
-            let zero: MoneyValue = .zero(currency: self.sourceAsset)
+        .map { [sourceAsset] values -> PendingTransaction in
+            let (actionableBalance, feeAndLimit, fiatCurrency) = values
+            let zero: MoneyValue = .zero(currency: sourceAsset)
             return PendingTransaction(
                 amount: zero,
-                // TODO: Total balance?
                 available: actionableBalance,
                 feeAmount: feeAndLimit.fee.moneyValue,
                 feeForFullAvailable: zero,
@@ -73,7 +77,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 ),
                 selectedFiatCurrency: fiatCurrency,
                 minimumLimit: feeAndLimit.minLimit.moneyValue,
-                maximumLimit: actionableBalance
+                maximumLimit: feeAndLimit.maxLimit.moneyValue
             )
         }
     }
@@ -99,10 +103,9 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         if pendingTransaction.validationState == .uninitialized, pendingTransaction.amount.isZero {
             return .just(pendingTransaction)
-        } else {
-            return validateAmountCompletable(pendingTransaction: pendingTransaction)
-                .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
         }
+        return validateAmountCompletable(pendingTransaction: pendingTransaction)
+            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -114,8 +117,8 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
         target
             .receiveAddress
             .map(\.address)
-            .flatMapCompletable(weak: self) { (self, address) -> Completable in
-                self.fiatWithdrawRepository
+            .flatMapCompletable { [fiatWithdrawRepository] address -> Completable in
+                fiatWithdrawRepository
                     .createWithdrawOrder(id: address, amount: pendingTransaction.amount)
                     .asObservable()
                     .ignoreElements()
@@ -129,7 +132,11 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
         .empty()
     }
 
-    func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+    func doUpdateFeeLevel(
+        pendingTransaction: PendingTransaction,
+        level: FeeLevel,
+        customFeeAmount: MoneyValue
+    ) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         return .just(pendingTransaction)
     }
@@ -137,19 +144,33 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     // MARK: - Private Functions
 
     private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.fromCallable {
-            guard let minLimit = pendingTransaction.minimumLimit
+        Completable.fromCallable { [sourceAccount, transactionTarget] in
+            guard
+                let minLimit = pendingTransaction.minimumLimit,
+                let maxLimit = pendingTransaction.maximumLimit
             else {
                 throw TransactionValidationFailure(state: .unknownError)
             }
             guard try pendingTransaction.amount >= minLimit else {
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
+                throw TransactionValidationFailure(state: .belowMinimumLimit(minLimit))
             }
-            guard try pendingTransaction.amount <= pendingTransaction.maxSpendable else {
-                throw TransactionValidationFailure(state: .overMaximumLimit)
+            guard try pendingTransaction.amount <= maxLimit else {
+                throw TransactionValidationFailure(
+                    state: .overMaximumPersonalLimit(
+                        EffectiveLimit(timeframe: .daily, value: pendingTransaction.maxSpendable),
+                        maxLimit,
+                        nil
+                    )
+                )
             }
             guard try pendingTransaction.available >= pendingTransaction.amount else {
-                throw TransactionValidationFailure(state: .insufficientFunds)
+                throw TransactionValidationFailure(
+                    state: .insufficientFunds(
+                        pendingTransaction.available,
+                        sourceAccount!.currencyType,
+                        transactionTarget!.currencyType
+                    )
+                )
             }
         }
     }

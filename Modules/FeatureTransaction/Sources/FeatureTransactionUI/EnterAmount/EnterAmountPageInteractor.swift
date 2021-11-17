@@ -27,6 +27,8 @@ protocol EnterAmountPagePresentable: Presentable {
 
     var continueButtonTapped: Signal<Void> { get }
 
+    func presentWithdrawalLocks(amountAvailable: String)
+
     func connect(
         state: Driver<EnterAmountPageInteractor.State>
     ) -> Driver<EnterAmountPageInteractor.NavigationEffects>
@@ -94,6 +96,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
     // TODO: Clean up this function
     // swiftlint:disable function_body_length
+    // swiftlint:disable cyclomatic_complexity
     override func didBecomeActive() {
         super.didBecomeActive()
 
@@ -196,6 +199,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     return state.destination as? BlockchainAccount
                 case .viewActivity,
                      .send,
+                     .sign,
                      .receive,
                      .swap:
                     fatalError("Unsupported action")
@@ -212,7 +216,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .map(\.availableTargets)
             .share(scope: .whileConnected)
 
-        let bottomAuxiliaryViewEnabled = Observable
+        let bottomAuxiliaryAccounts = Observable
             .zip(
                 availableSources,
                 availableTargets
@@ -223,8 +227,29 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 }
                 return availableSources
             }
-            .map(\.count)
-            .map { $0 > 1 }
+
+        let userKYCTier = transactionState
+            .map(\.userKYCTiers)
+            .map(\.?.latestApprovedTier)
+            .share(scope: .whileConnected)
+
+        let bottomAuxiliaryViewEnabled = Observable
+            .combineLatest(
+                userKYCTier,
+                bottomAuxiliaryAccounts
+            )
+            .map { [action] userKYCTier, accounts -> Bool in
+                guard let userKYCTier = userKYCTier, action == .buy && userKYCTier < .tier2 else {
+                    return !accounts.isEmpty
+                }
+                // SDD eligible users cannot add more than 1 payment method so they should have no suggested accounts they can link.
+                // Non-SDD eligible users will have a set of suggested accounts they can link, so the button should be enabled.
+                let suggestedPaymentMethods: [Account] = accounts
+                    .compactMap { $0 as? PaymentMethodAccount }
+                    .filter(\.paymentMethodType.isSuggested)
+                // Checking for accounts > 1 just in case we allowed some SDD users to add more than 1 payment methods
+                return accounts.count > 1 || suggestedPaymentMethods.count > 1
+            }
 
         accountAuxiliaryViewInteractor
             .connect(
@@ -366,12 +391,17 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
     }
 
+    // swiftlint:enable function_body_length
+    // swiftlint:enable cyclomatic_complexity
+
     // MARK: - Private methods
 
     private func handleTopAuxiliaryViewTapped(state: TransactionState) {
         switch state.action {
         case .buy:
             transactionModel.process(action: .showTargetSelection)
+        case .withdraw:
+            presenter.presentWithdrawalLocks(amountAvailable: state.maxSpendable.displayString)
         default:
             break
         }
@@ -401,6 +431,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .update(\.showErrorRecoveryAction, value: canShowErrorAction(for: updater))
             .update(\.topAuxiliaryViewPresenter, value: topAuxiliaryView(for: updater))
             .update(\.bottomAuxiliaryViewPresenter, value: bottomAuxiliaryView(for: updater))
+            .update(\.showWithdrawalLocks, value: updater.destination is NonCustodialAccount)
     }
 
     private func canShowContinueAction(for state: TransactionState) -> Bool {
@@ -419,7 +450,10 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 transactionState: transactionState
             )
         } else {
-            presenter = InfoAuxiliaryViewPresenter(transactionState: transactionState)
+            presenter = InfoAuxiliaryViewPresenter(
+                transactionState: transactionState,
+                delegate: self
+            )
         }
         topAuxiliaryViewPresenter = presenter
         return presenter
@@ -469,6 +503,7 @@ extension EnterAmountPageInteractor {
         var canContinue: Bool
         var showContinueAction: Bool
         var showErrorRecoveryAction: Bool
+        var showWithdrawalLocks: Bool
         var errorState: TransactionErrorState
 
         static func == (lhs: EnterAmountPageInteractor.State, rhs: EnterAmountPageInteractor.State) -> Bool {
@@ -479,6 +514,7 @@ extension EnterAmountPageInteractor {
                 && lhs.errorState == rhs.errorState
                 && lhs.showContinueAction == rhs.showContinueAction
                 && lhs.showErrorRecoveryAction == rhs.showErrorRecoveryAction
+                && lhs.showWithdrawalLocks == rhs.showWithdrawalLocks
         }
     }
 
@@ -490,6 +526,7 @@ extension EnterAmountPageInteractor {
             canContinue: false,
             showContinueAction: false,
             showErrorRecoveryAction: false,
+            showWithdrawalLocks: false,
             errorState: .none
         )
     }
@@ -545,16 +582,9 @@ extension TransactionErrorState {
                 message: LocalizedString.Confirmation.Error.insufficientGas
             )
 
-        case .overSilverTierLimit:
-            return .warning(
-                message: LocalizedString.Swap.KYC.overSilverLimitWarning,
-                action: { [weak listener] in
-                    listener?.continueToKYCTiersScreen()
-                }
-            )
-
-        case .overGoldTierLimit,
-             .overMaximumLimit,
+        case .overMaximumLimit,
+             .overMaximumSourceLimit,
+             .overMaximumPersonalLimit,
              .insufficientFundsForFees,
              .insufficientFunds:
             let result = convertToInputCurrency(max, exchangeRate: exchangeRate, input: activeInput)

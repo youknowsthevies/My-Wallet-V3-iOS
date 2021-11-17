@@ -18,6 +18,11 @@ public struct RouteIntent<R: NavigationRoute>: Hashable {
 
     public var route: R
     public var action: Action
+
+    public init(route: R, action: RouteIntent<R>.Action) {
+        self.route = route
+        self.action = action
+    }
 }
 
 public struct EnterIntoContext: OptionSet, Hashable {

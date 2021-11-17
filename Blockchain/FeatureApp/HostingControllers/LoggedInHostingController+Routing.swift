@@ -5,7 +5,10 @@ import DIKit
 import FeatureAuthenticationUI
 import FeatureDashboardUI
 import FeatureInterestUI
+import FeatureQRCodeScannerData
+import FeatureQRCodeScannerUI
 import FeatureSettingsUI
+import FeatureTransactionUI
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
@@ -20,36 +23,7 @@ extension LoggedInHostingController {
     }
 
     func handleSecureChannel() {
-        struct SecureChannelQRCodeTextViewModel: QRCodeScannerTextViewModel {
-            private typealias LocalizedString = LocalizationConstants.SecureChannel.QRCode
-            let headerText: String = LocalizedString.header
-            let subtitleText: String? = LocalizedString.subtitle
-        }
-
-        let parser = SecureChannelQRCodeParser()
-        let textViewModel = SecureChannelQRCodeTextViewModel()
-        let builder = QRCodeScannerViewControllerBuilder(
-            parser: parser,
-            textViewModel: textViewModel,
-            completed: { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                case .success(let string):
-                    self.secureChannelRouter.didScanPairingQRCode(msg: string)
-                case .failure(let error):
-                    Logger.shared.debug(String(describing: error))
-                    AlertViewPresenter.shared.standardError(message: String(describing: error))
-                }
-            }
-        )
-        guard let viewController = builder.build() else {
-            // No camera access, an alert will be displayed automatically.
-            return
-        }
-        topMostViewController?.present(
-            viewController,
-            animated: true
-        )
+        showQRCodeScanner()
     }
 
     func startBackupFlow() {
@@ -244,5 +218,40 @@ extension LoggedInHostingController {
             warningView.dismiss(animated: true, completion: nil)
         }
         topMostViewController?.present(warningView, animated: true)
+    }
+
+    func showQRCodeScanner() {
+        let builder = QRCodeScannerViewControllerBuilder(
+            completed: { [weak self] result in
+                guard case .success(let success) = result else {
+                    return
+                }
+
+                switch success {
+                case .secureChannel(let message):
+                    self?.secureChannelRouter.didScanPairingQRCode(msg: message)
+                case .cryptoTarget(let target):
+                    switch target {
+                    case .address(let account, let address):
+                        self?.tabControllerManager?.send(from: account, target: address)
+                    case .bitpay:
+                        break
+                    }
+                case .walletConnect:
+                    break
+                case .deepLink:
+                    break
+                }
+            }
+        )
+
+        guard let viewController = builder.build() else {
+            // No camera access, an alert will be displayed automatically.
+            return
+        }
+        topMostViewController?.present(
+            viewController,
+            animated: true
+        )
     }
 }
