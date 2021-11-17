@@ -49,6 +49,16 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     @LazyInject var transactionsAdapter: TransactionsAdapterAPI
     @LazyInject var nabuAuthenticationErrorReceiver: NabuAuthenticationErrorReceiverAPI
 
+    convenience init(store: Store<LoggedIn.State, LoggedIn.Action>) {
+        self.init(
+            store: store,
+            onboardingRouter: resolve(),
+            tiersService: resolve(),
+            kycRouter: resolve(),
+            eligibilityService: resolve()
+        )
+    }
+
     init(
         store: Store<LoggedIn.State, LoggedIn.Action>,
         onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI = resolve(),

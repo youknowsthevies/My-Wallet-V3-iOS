@@ -39,6 +39,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables the new Limits UI in Transaction Flow
     case newTxFlowLimitsUIEnabled
 
+    /// Redesign
+    case redesign
+
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -53,7 +56,8 @@ public enum InternalFeature: String, CaseIterable {
              .requestConsoleLogging,
              .secureChannel,
              .unifiedSignIn,
-             .nativeWalletPayload:
+             .nativeWalletPayload,
+             .redesign:
             return false
         }
     }
@@ -90,6 +94,8 @@ extension InternalFeature {
             return "New Limits UI"
         case .unifiedQRCodeScanner:
             return "Unified QR Code Scanner"
+        case .redesign:
+            return "Redesign"
         }
     }
 }
