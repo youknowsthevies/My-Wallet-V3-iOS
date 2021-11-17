@@ -22,6 +22,7 @@ public struct BuyOrderDetails {
 
     public let authorizationData: PartnerAuthorizationData?
     public let state: State
+    public let paymentProcessorErrorType: PaymentProcessorErrorType?
 
     // MARK: - Setup
 
@@ -48,6 +49,17 @@ public struct BuyOrderDetails {
         }
 
         identifier = response.id
+
+        if let processingErrorType = response.processingErrorType {
+            switch processingErrorType {
+            case "ISSUER":
+                paymentProcessorErrorType = .issuer
+            default:
+                paymentProcessorErrorType = .unknown
+            }
+        } else {
+            paymentProcessorErrorType = nil
+        }
 
         self.fiatValue = fiatValue
         self.cryptoValue = cryptoValue

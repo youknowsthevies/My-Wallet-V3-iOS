@@ -102,7 +102,8 @@ extension APIClient {
             paymentType: "BANK",
             paymentMethodId: nil,
             side: order.action == .buy ? .buy : .sell,
-            attributes: nil
+            attributes: nil,
+            processingErrorType: nil
         )
     }
 
@@ -122,7 +123,8 @@ extension APIClient {
                 paymentType: "BANK",
                 paymentMethodId: nil,
                 side: .buy,
-                attributes: nil
+                attributes: nil,
+                processingErrorType: nil
             )
         ]
     }
