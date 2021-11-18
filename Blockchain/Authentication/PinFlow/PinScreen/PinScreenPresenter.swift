@@ -526,10 +526,7 @@ extension PinScreenPresenter {
 
         // Pin MUST NOT be nil at that point as it accompanies the use-case.
         guard let pin = pin.value else {
-            return Completable.create { completable in
-                completable(.error(PinError.nullifiedPinKey))
-                return Disposables.create()
-            }
+            return Completable.error(PinError.nullifiedPinKey)
         }
 
         return Completable.create { [weak self] completable in
