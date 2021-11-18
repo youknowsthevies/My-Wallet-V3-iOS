@@ -64,6 +64,9 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Uses the Transactions Flow implementation of Buy when enabled
     case useTransactionsFlowToBuyCrypto
+
+    /// Enables the new Limits UI in Transaction Flow
+    case newLimitsUIEnabled
 }
 
 extension AppFeature {
@@ -104,6 +107,8 @@ extension AppFeature {
             return "ios_open_banking"
         case .useTransactionsFlowToBuyCrypto:
             return "ios_use_transaction_flow_buy"
+        case .newLimitsUIEnabled:
+            return "ios_use_new_limits_ui"
         }
     }
 
@@ -142,6 +147,8 @@ extension AppFeature {
              .useTransactionsFlowToBuyCrypto:
             return true
         case .openBanking:
+            return true
+        case .newLimitsUIEnabled:
             return true
         }
     }
