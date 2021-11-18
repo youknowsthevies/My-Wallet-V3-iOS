@@ -7,6 +7,7 @@ import SwiftUI
 struct FrequentAction: Hashable, Identifiable {
     var id: Self { self }
     let name: String
+    let icon: Icon
     let description: String
 }
 
@@ -16,34 +17,42 @@ extension FrequentAction {
 
     static let swap = FrequentAction(
         name: Localization.swap.name,
+        icon: .swap,
         description: Localization.swap.description
     )
     static let send = FrequentAction(
         name: Localization.send.name,
-        description: Localization.send.name
+        icon: .send,
+        description: Localization.send.description
     )
     static let receive = FrequentAction(
         name: Localization.receive.name,
-        description: Localization.receive.name
+        icon: .receive,
+        description: Localization.receive.description
     )
     static let rewards = FrequentAction(
         name: Localization.rewards.name,
-        description: Localization.rewards.name
+        icon: .interest,
+        description: Localization.rewards.description
     )
     static let deposit = FrequentAction(
         name: Localization.deposit.name,
-        description: Localization.deposit.name
+        icon: .deposit,
+        description: Localization.deposit.description
     )
     static let withdraw = FrequentAction(
         name: Localization.withdraw.name,
-        description: Localization.withdraw.name
+        icon: .withdraw,
+        description: Localization.withdraw.description
     )
     static let buy = FrequentAction(
         name: Localization.buy,
+        icon: .wallet,
         description: Localization.buy
     )
     static let sell = FrequentAction(
         name: Localization.sell,
+        icon: .sell,
         description: Localization.sell
     )
 }
@@ -54,9 +63,7 @@ struct FrequentActionView: View {
         .swap,
         .send,
         .receive,
-        .rewards,
-        .deposit,
-        .withdraw
+        .rewards
     ]
 
     private let buttons: [FrequentAction] = [

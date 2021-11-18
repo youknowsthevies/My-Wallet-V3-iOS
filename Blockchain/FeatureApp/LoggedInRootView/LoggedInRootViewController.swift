@@ -2,8 +2,12 @@
 
 import Combine
 import ComposableArchitecture
+import DIKit
 import FeatureAppUI
 import FeatureAuthenticationDomain
+import FeatureTransactionUI
+import PlatformKit
+import PlatformUIKit
 import SwiftUI
 import ToolKit
 
@@ -46,6 +50,21 @@ final class LoggedInRootViewController: UIHostingController<LoggedInRootView> {
         tabControllerManager = nil
         bag.removeAll()
     }
+
+    // MARK: Dependencies
+
+    @LazyInject var coincore: CoincoreAPI
+    @LazyInject var transactionsRouter: TransactionsRouterAPI
+    @LazyInject var fiatCurrencyService: FiatCurrencyServiceAPI
+
+    var showFundTransferDetails: (
+        router: PlatformUIKit.RouterAPI,
+        stateService: PlatformUIKit.StateService
+    ) = {
+        let stateService = PlatformUIKit.StateService()
+        let builder = PlatformUIKit.Builder(stateService: stateService)
+        return (PlatformUIKit.Router(builder: builder, currency: .coin(.bitcoin)), stateService)
+    }()
 }
 
 extension LoggedInRootViewController {
@@ -116,15 +135,15 @@ extension LoggedInRootViewController {
             case .swap:
                 handleSwapCrypto(account: nil)
             case .send:
-                "\(action)".peek("‼️ not implemented")
+                handleSendCrypto()
             case .receive:
-                "\(action)".peek("‼️ not implemented")
+                handleReceiveCrypto()
             case .rewards:
-                "\(action)".peek("‼️ not implemented")
+                handleRewards()
             case .deposit:
-                "\(action)".peek("‼️ not implemented")
+                handleDeposit()
             case .withdraw:
-                "\(action)".peek("‼️ not implemented")
+                handleWithdraw()
             case .buy:
                 handleBuyCrypto(account: nil)
             case .sell:

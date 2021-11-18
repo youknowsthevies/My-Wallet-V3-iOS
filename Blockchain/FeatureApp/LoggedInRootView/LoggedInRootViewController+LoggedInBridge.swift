@@ -1,12 +1,14 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import PlatformKit
+import PlatformUIKit
 import ToolKit
 
 extension LoggedInRootViewController: LoggedInBridge {
 
     func toggleSideMenu() {
-        viewStore.send(.enter(into: .account))
+        viewStore.send(.enter(into: .account, context: .none))
     }
 
     func closeSideMenu() {
@@ -74,22 +76,71 @@ extension LoggedInRootViewController: LoggedInBridge {
     }
 
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
-        #function.peek("‼️ not implemented")
+        showFundTransferDetails.stateService.showFundsTransferDetails(
+            for: fiatCurrency,
+            isOriginDeposit: isOriginDeposit
+        )
     }
 
     func handleSwapCrypto(account: CryptoAccount?) {
-        #function.peek("‼️ not implemented")
+        transactionsRouter.presentTransactionFlow(to: .swap(account))
+            .sink { result in
+                "\(result)".peek("🧾 \(#function)")
+            }
+            .store(in: &bag)
+    }
+
+    func handleSendCrypto() {
+        transactionsRouter.presentTransactionFlow(to: .send(nil))
+            .sink { result in
+                "\(result)".peek("🧾 \(#function)")
+            }
+            .store(in: &bag)
+    }
+
+    func handleReceiveCrypto() {
+        transactionsRouter.presentTransactionFlow(to: .receive(nil))
+            .sink { result in
+                "\(result)".peek("🧾 \(#function)")
+            }
+            .store(in: &bag)
     }
 
     func handleSellCrypto(account: CryptoAccount?) {
-        #function.peek("‼️ not implemented")
+        transactionsRouter.presentTransactionFlow(to: .sell(account))
+            .sink { result in
+                "\(result)".peek("🧾 \(#function)")
+            }
+            .store(in: &bag)
     }
 
     func handleBuyCrypto(account: CryptoAccount?) {
-        #function.peek("‼️ not implemented")
+        transactionsRouter.presentTransactionFlow(to: .buy(account))
+            .sink { result in
+                "\(result)".peek("🧾 \(#function)")
+            }
+            .store(in: &bag)
     }
 
     func handleBuyCrypto(currency: CryptoCurrency = .coin(.bitcoin)) {
+        coincore
+            .cryptoAccounts(for: currency, supporting: .buy, filter: .custodial)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] accounts in
+                self?.handleBuyCrypto(account: accounts.first)
+            }
+            .store(in: &bag)
+    }
+
+    func handleDeposit() {
+        #function.peek("‼️ not implemented")
+    }
+
+    func handleWithdraw() {
+        #function.peek("‼️ not implemented")
+    }
+
+    func handleRewards() {
         #function.peek("‼️ not implemented")
     }
 
@@ -98,7 +149,7 @@ extension LoggedInRootViewController: LoggedInBridge {
     }
 
     func showSettingsView() {
-        viewStore.send(.enter(into: .account))
+        viewStore.send(.enter(into: .account, context: .none))
     }
 
     func reload() {
@@ -110,7 +161,9 @@ extension LoggedInRootViewController: LoggedInBridge {
     }
 
     func presentBuyIfNeeded(_ cryptoCurrency: CryptoCurrency) {
-        #function.peek("‼️ not implemented")
+        dismiss(animated: true) { [self] in
+            handleBuyCrypto(currency: cryptoCurrency)
+        }
     }
 
     func enableBiometrics() {
@@ -122,6 +175,6 @@ extension LoggedInRootViewController: LoggedInBridge {
     }
 
     func showQRCodeScanner() {
-        viewStore.send(.enter(into: .QR))
+        viewStore.send(.enter(into: .QR, context: .none))
     }
 }

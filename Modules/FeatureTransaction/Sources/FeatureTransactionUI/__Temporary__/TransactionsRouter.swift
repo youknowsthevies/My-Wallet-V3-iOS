@@ -20,22 +20,37 @@ public enum TransactionFlowAction: Equatable {
     case sell(CryptoAccount?)
     /// Performs a swap. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
     case swap(CryptoAccount?)
+    /// Performs a send. If `CryptoAccount` is `nil`, the users will be presented with a crypto account selector.
+    case send(CryptoAccount?)
+    /// Performs a receive. If `CryptoAccount` is `nil`, the users will be presented with a crypto account selector.
+    case receive(CryptoAccount?)
     /// Performs an interest transfer.
     case interestTransfer(CryptoInterestAccount)
     /// Performs an interest withdraw.
     case interestWithdraw(CryptoInterestAccount)
+    /// Performs a withdraw.
+    case withdraw(FiatAccount)
+    /// Performs a deposit.
+    case deposit(FiatAccount)
 
     case sign(sourceAccount: CryptoAccount, destination: TransactionTarget)
+}
+
+extension TransactionFlowAction {
 
     public static func == (lhs: TransactionFlowAction, rhs: TransactionFlowAction) -> Bool {
         switch (lhs, rhs) {
         case (.buy(let lhsAccount), .buy(let rhsAccount)),
              (.sell(let lhsAccount), .sell(let rhsAccount)),
-             (.swap(let lhsAccount), .swap(let rhsAccount)):
+             (.swap(let lhsAccount), .swap(let rhsAccount)),
+             (.send(let lhsAccount), .send(let rhsAccount)),
+             (.receive(let lhsAccount), .receive(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
-        case (.interestTransfer(let lhsAccount), .interestTransfer(let rhsAccount)):
+        case (.interestTransfer(let lhsAccount), .interestTransfer(let rhsAccount)),
+             (.interestWithdraw(let lhsAccount), .interestWithdraw(let rhsAccount)):
             return lhsAccount.identifier == rhsAccount.identifier
-        case (.interestWithdraw(let lhsAccount), .interestWithdraw(let rhsAccount)):
+        case (.withdraw(let lhsAccount), .withdraw(let rhsAccount)),
+             (.deposit(let lhsAccount), .deposit(let rhsAccount)):
             return lhsAccount.identifier == rhsAccount.identifier
         case (.order(let lhsOrder), .order(let rhsOrder)):
             return lhsOrder.identifier == rhsOrder.identifier
@@ -84,9 +99,12 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private let buyFlowBuilder: BuyFlowBuildable
     private let sellFlowBuilder: SellFlowBuildable
     private let signFlowBuilder: SignFlowBuildable
+    private let sendFlowBuilder: SendRootBuildable
+    private let interestFlowBuilder: InterestTransactionBuilder
+    private let withdrawFlowBuilder: WithdrawRootBuildable
+    private let depositFlowBuilder: DepositRootBuildable
 
     private lazy var tabSwapping: TabSwapping = resolve()
-    private let interestFlowBuilder: InterestTransactionBuilder
 
     // Since RIBs need to be attached to something but we're not, the router in use needs to be retained.
     private var currentRIBRouter: RIBs.Routing?
@@ -102,7 +120,10 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(analyticsRecorder: resolve()),
         sellFlowBuilder: SellFlowBuildable = SellFlowBuilder(),
         signFlowBuilder: SignFlowBuildable = SignFlowBuilder(),
+        sendFlowBuilder: SendRootBuildable = SendRootBuilder(),
         interestFlowBuilder: InterestTransactionBuilder = InterestTransactionBuilder(),
+        withdrawFlowBuilder: WithdrawRootBuildable = WithdrawRootBuilder(),
+        depositFlowBuilder: DepositRootBuildable = DepositRootBuilder(),
         eligibilityService: EligibilityServiceAPI = resolve()
     ) {
         self.featureFlagsService = featureFlagsService
@@ -115,7 +136,10 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.buyFlowBuilder = buyFlowBuilder
         self.sellFlowBuilder = sellFlowBuilder
         self.signFlowBuilder = signFlowBuilder
+        self.sendFlowBuilder = sendFlowBuilder
         self.interestFlowBuilder = interestFlowBuilder
+        self.withdrawFlowBuilder = withdrawFlowBuilder
+        self.depositFlowBuilder = depositFlowBuilder
         self.eligibilityService = eligibilityService
     }
 
@@ -152,7 +176,11 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         case .swap,
              .interestTransfer,
              .interestWithdraw,
-             .sign:
+             .sign,
+             .send,
+             .receive,
+             .withdraw,
+             .deposit:
             return presentNewTransactionFlow(action, from: presenter)
         }
     }
@@ -282,6 +310,33 @@ extension TransactionsRouter {
             router.start(sourceAccount: sourceAccount, destination: destination, presenter: presenter)
             mimicRIBAttachment(router: router)
             return listener.publisher
+        case .send(let account):
+            let router = sendFlowBuilder.build()
+            if let account = account {
+                router.routeToSend(sourceAccount: account)
+            } else {
+                router.routeToSendLanding()
+            }
+            presenter.present(router.viewControllable.uiviewController, animated: true)
+            mimicRIBAttachment(router: router)
+            return .empty()
+        case .receive(let account):
+            let receiveCooridnator = ReceiveCoordinator()
+            presenter.present(receiveCooridnator.builder.receive(), animated: true)
+            if let account = account {
+                receiveCooridnator.routeToReceive(sourceAccount: account)
+            }
+            return .empty()
+        case .withdraw(let fiatAccount):
+            let router = withdrawFlowBuilder.build(sourceAccount: fiatAccount)
+            router.start()
+            mimicRIBAttachment(router: router)
+            return .empty()
+        case .deposit(let fiatAccount):
+            let router = depositFlowBuilder.build(with: fiatAccount)
+            router.start()
+            mimicRIBAttachment(router: router)
+            return .empty()
         }
     }
 
@@ -375,8 +430,12 @@ extension TransactionsRouter {
         case .swap,
              .interestTransfer,
              .interestWithdraw,
-             .sign:
-            unimplemented("There is no legacy swap flow.")
+             .sign,
+             .send,
+             .receive,
+             .withdraw,
+             .deposit:
+            unimplemented("There is no legacy those flows.")
         }
     }
 }
