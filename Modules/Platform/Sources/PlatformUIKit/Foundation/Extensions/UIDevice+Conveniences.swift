@@ -49,6 +49,7 @@ extension UIDevice {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     private func modelName(for machineName: String) -> String {
         switch machineName {
         // iPod Touch line
@@ -104,6 +105,28 @@ extension UIDevice {
             return "iPhone 11 Pro"
         case "iPhone12,5":
             return "iPhone 11 Pro Max"
+        case "iPhone12,8":
+            return "iPhone SE 2nd Gen"
+
+        // iPhone 12 Line
+        case "iPhone13,1":
+            return "iPhone 12 Mini"
+        case "iPhone13,2":
+            return "iPhone 12"
+        case "iPhone13,3":
+            return "iPhone 12 Pro"
+        case "iPhone13,4":
+            return "iPhone 12 Pro Max"
+
+        // iPhone 12 Line
+        case "iPhone14,2":
+            return "iPhone 13 Pro"
+        case "iPhone14,3":
+            return "iPhone 13 Pro Max"
+        case "iPhone14,4":
+            return "iPhone 13 Mini"
+        case "iPhone14,5":
+            return "iPhone 13"
 
         // iPad Air Line
         case "iPad4,1", "iPad4,2", "iPad4,3":
@@ -151,7 +174,7 @@ extension UIDevice {
             return "Simulator"
 
         default:
-            return String(format: "Unknown device: identifier %@", machineName)
+            return "Unknown device: identifier \(machineName)"
         }
     }
 
