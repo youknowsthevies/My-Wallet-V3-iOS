@@ -1,14 +1,14 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
-import FeatureDashboardUI
+import FeatureActivityUI
 import SwiftUI
 
-struct PricesView: UIViewControllerRepresentable {
+struct ActivityView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
     func makeUIViewController(context: Context) -> some UIViewController {
-        let viewController = PricesViewController()
+        let viewController = ActivityScreenViewController()
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController
     }

@@ -63,7 +63,7 @@ struct LoggedInRootView: View {
                     Text("Buy & Sell")
                 }
                 tab(.activity) {
-                    Text("Activity")
+                    ActivityView()
                 }
             }
             .overlay(
