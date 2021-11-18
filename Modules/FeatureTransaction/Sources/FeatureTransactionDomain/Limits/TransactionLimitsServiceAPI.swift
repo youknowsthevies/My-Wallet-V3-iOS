@@ -82,7 +82,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         destination: LimitsAccount,
         limitsCurrency: FiatCurrency
     ) -> TransactionLimitsServicePublisher {
-        featureFlagService.isEnabled(.local(.newTxFlowLimitsUIEnabled))
+        featureFlagService.isEnabled(.remote(.newLimitsUIEnabled))
             .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
                 guard newLimitsEnabled else {
                     return .just(.infinity(for: limitsCurrency.currencyType))
@@ -104,7 +104,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         product: TransactionLimitsProduct
     ) -> TransactionLimitsServicePublisher {
         walletCurrencyService.fiatCurrencyPublisher
-            .zip(featureFlagService.isEnabled(.local(.newTxFlowLimitsUIEnabled)))
+            .zip(featureFlagService.isEnabled(.remote(.newLimitsUIEnabled)))
             .flatMap { [unowned self] walletCurrency, newLimitsEnabled -> TransactionLimitsServicePublisher in
                 let convertedTradeLimits = self
                     .fetchTradeLimits(
@@ -147,7 +147,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         targetCurrency: CurrencyType,
         limitsCurrency: CurrencyType
     ) -> TransactionLimitsServicePublisher {
-        featureFlagService.isEnabled(.local(.newTxFlowLimitsUIEnabled))
+        featureFlagService.isEnabled(.remote(.newLimitsUIEnabled))
             .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
                 guard newLimitsEnabled else {
                     return .just(TransactionLimits(paymentMethod))

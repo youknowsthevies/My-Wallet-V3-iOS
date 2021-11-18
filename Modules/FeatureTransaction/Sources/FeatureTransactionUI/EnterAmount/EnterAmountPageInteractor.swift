@@ -323,7 +323,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .combineLatest(
                 transactionState,
                 featureFlagService
-                    .isEnabled(.local(.newTxFlowLimitsUIEnabled))
+                    .isEnabled(.remote(.newLimitsUIEnabled))
                     .asObservable()
             )
 
@@ -485,7 +485,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
     private func disableAmountViewBadgeIfNeeded() {
         featureFlagService
-            .isEnabled(.local(.newTxFlowLimitsUIEnabled))
+            .isEnabled(.remote(.newLimitsUIEnabled))
             .asSingle()
             .subscribe(onSuccess: { [amountViewInteractor] isNewLimitsUIEnabled in
                 amountViewInteractor.set(auxiliaryViewEnabled: !isNewLimitsUIEnabled)
