@@ -159,7 +159,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
 
     private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable { [sourceAccount] in
-            guard let transactionLimits = pendingTransaction.limits.value else {
+            guard let transactionLimits = pendingTransaction.limits else {
                 throw TransactionValidationFailure(state: .unknownError)
             }
             guard !pendingTransaction.amount.isZero else {

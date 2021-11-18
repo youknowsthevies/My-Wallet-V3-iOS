@@ -12,6 +12,22 @@ public struct TransactionLimits: Equatable {
     public let maximumAnnual: MoneyValue
     public let effectiveLimit: EffectiveLimit
     public let suggestedUpgrade: SuggestedLimitsUpgrade?
+
+    public init(
+        minimum: MoneyValue,
+        maximum: MoneyValue,
+        maximumDaily: MoneyValue,
+        maximumAnnual: MoneyValue,
+        effectiveLimit: EffectiveLimit?,
+        suggestedUpgrade: SuggestedLimitsUpgrade?
+    ) {
+        self.minimum = minimum
+        self.maximum = maximum
+        self.maximumDaily = maximumDaily
+        self.maximumAnnual = maximumAnnual
+        self.effectiveLimit = effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maximum)
+        self.suggestedUpgrade = suggestedUpgrade
+    }
 }
 
 extension TransactionLimits {

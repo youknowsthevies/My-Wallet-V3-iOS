@@ -48,9 +48,7 @@ extension InterestTransactionEngine {
 
     public func checkIfAmountIsBelowMinimumLimit(_ pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
-            guard let minimum = pendingTransaction.minimumLimit else {
-                throw TransactionValidationFailure(state: .uninitialized)
-            }
+            let minimum = pendingTransaction.minLimit
             guard try pendingTransaction.amount >= minimum else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit(minimum))
             }

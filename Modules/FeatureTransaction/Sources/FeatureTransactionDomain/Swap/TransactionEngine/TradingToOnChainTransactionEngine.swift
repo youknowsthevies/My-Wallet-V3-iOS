@@ -129,14 +129,14 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 .map { fees, withdrawableBalance -> PendingTransaction in
                     let fee = fees[fee: amount.currency]
                     let available = try withdrawableBalance - fee
-                    let pendingTransaction = pendingTransaction.update(
+                    var pendingTransaction = pendingTransaction.update(
                         amount: amount,
                         available: available.isNegative ? .zero(currency: available.currency) : available,
                         fee: fee,
                         feeForFullAvailable: fee
                     )
-                    let transactionLimits = pendingTransaction.limits.value ?? .infinity(for: amount.currency)
-                    pendingTransaction.limits.value = TransactionLimits(
+                    let transactionLimits = pendingTransaction.limits ?? .infinity(for: amount.currency)
+                    pendingTransaction.limits = TransactionLimits(
                         minimum: fees[minimumAmount: amount.currency],
                         maximum: transactionLimits.maximum,
                         maximumDaily: transactionLimits.maximumDaily,
@@ -188,7 +188,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             )
             .asSingle()
             .map { [sourceAccount] toWalletRate, toAmountRate -> Void in
-                guard let transactionLimits = pendingTransaction.limits.value?.convert(using: toAmountRate) else {
+                guard let transactionLimits = pendingTransaction.limits?.convert(using: toAmountRate) else {
                     throw TransactionValidationFailure(state: .unknownError)
                 }
                 guard try pendingTransaction.amount >= transactionLimits.minimum else {
