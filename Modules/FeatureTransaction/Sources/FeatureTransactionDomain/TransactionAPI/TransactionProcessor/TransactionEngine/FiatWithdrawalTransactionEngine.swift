@@ -145,12 +145,8 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
 
     private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable { [sourceAccount, transactionTarget] in
-            guard
-                let minLimit = pendingTransaction.minimumLimit,
-                let maxLimit = pendingTransaction.maximumLimit
-            else {
-                throw TransactionValidationFailure(state: .unknownError)
-            }
+            let minLimit = pendingTransaction.minLimit
+            let maxLimit = pendingTransaction.maxLimit
             guard try pendingTransaction.amount >= minLimit else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit(minLimit))
             }

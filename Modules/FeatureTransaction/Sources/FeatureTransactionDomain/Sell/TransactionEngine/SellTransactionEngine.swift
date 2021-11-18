@@ -56,7 +56,7 @@ extension SellTransactionEngine {
         return conversionRates
             .asSingle()
             .map { [sourceAccount, transactionTarget] toWalletRate, toAmountRate -> Void in
-                guard let transactionLimits = pendingTransaction.limits.value else {
+                guard let transactionLimits = pendingTransaction.limits else {
                     throw TransactionValidationFailure(state: .unknownError)
                 }
                 guard try pendingTransaction.amount >= transactionLimits.minimum.convert(using: toAmountRate) else {
@@ -153,8 +153,8 @@ extension SellTransactionEngine {
         return limitsPublisher
             .asSingle()
             .map { transactionLimits -> PendingTransaction in
-                let pendingTransaction = pendingTransaction
-                pendingTransaction.limits.value = try transactionLimits.update(with: pricedQuote)
+                var pendingTransaction = pendingTransaction
+                pendingTransaction.limits = try transactionLimits.update(with: pricedQuote)
                 return pendingTransaction
             }
     }

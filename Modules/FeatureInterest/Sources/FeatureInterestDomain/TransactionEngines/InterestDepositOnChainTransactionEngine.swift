@@ -116,7 +116,14 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
             }
             .map { minimum, pendingTransaction in
                 var tx = pendingTransaction
-                tx.minimumLimit = minimum
+                tx.limits = TransactionLimits(
+                    minimum: minimum,
+                    maximum: tx.maxLimit,
+                    maximumDaily: tx.maxDailyLimit,
+                    maximumAnnual: tx.maxAnnualLimit,
+                    effectiveLimit: tx.limits?.effectiveLimit,
+                    suggestedUpgrade: tx.limits?.suggestedUpgrade
+                )
                 tx.feeSelection = pendingTransaction
                     .feeSelection
                     .update(availableFeeLevels: [.regular])
@@ -161,9 +168,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
         onChainEngine
             .validateAmount(pendingTransaction: pendingTransaction)
             .map { pendingTransaction in
-                guard let minimum = pendingTransaction.minimumLimit else {
-                    return pendingTransaction.update(validationState: .uninitialized)
-                }
+                let minimum = pendingTransaction.minLimit
                 guard try pendingTransaction.amount >= minimum else {
                     return pendingTransaction.update(validationState: .belowMinimumLimit(minimum))
                 }

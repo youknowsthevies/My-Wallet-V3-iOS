@@ -125,7 +125,7 @@ final class BuyTransactionEngine: TransactionEngine {
                 let paymentMethodAccount = sourceAccount as! PaymentMethodAccount
                 let paymentMethodMaxLimit = paymentMethodAccount.paymentMethod.max.moneyValue
                 let convertetSourceMaxLimit = paymentMethodMaxLimit.convert(using: toAmountRate)
-                let limits: TransactionLimits = transaction.limits.value ?? .zero(for: amountCurrency)
+                let limits: TransactionLimits = transaction.limits ?? .zero(for: amountCurrency)
                 if try transaction.amount < limits.minimum {
                     transaction.validationState = .belowMinimumLimit(limits.minimum)
                 } else if try transaction.amount > convertetSourceMaxLimit, try transaction.amount <= limits.maximum {
