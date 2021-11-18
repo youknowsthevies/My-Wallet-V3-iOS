@@ -6,11 +6,14 @@ import FeatureTransactionDomain
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import SwiftUI
 import ToolKit
 
 /// Represents all types of transactions the user can perform
 public enum TransactionFlowAction: Equatable {
 
+    // Restores an existing order.
+    case order(OrderDetails)
     /// Performs a buy. If `CryptoAccount` is `nil`, the users will be presented with a crypto currency selector.
     case buy(CryptoAccount?)
     /// Performs a sell. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
@@ -34,8 +37,10 @@ public enum TransactionFlowAction: Equatable {
             return lhsAccount.identifier == rhsAccount.identifier
         case (.interestWithdraw(let lhsAccount), .interestWithdraw(let rhsAccount)):
             return lhsAccount.identifier == rhsAccount.identifier
-        case (.sign(let lhsSourceAccount, let lhsDestination), .sign(let rhsSourceAccount, let rhsDestination)):
-            return lhsSourceAccount.identifier == rhsSourceAccount.identifier
+        case (.order(let lhsOrder), .order(let rhsOrder)):
+            return lhsOrder.identifier == rhsOrder.identifier
+        case (.sign(let lhsAccount, let lhsDestination), .sign(let rhsAccount, let rhsDestination)):
+            return lhsAccount.identifier == rhsAccount.identifier
                 && lhsDestination.label == rhsDestination.label
         default:
             return false
@@ -69,6 +74,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
 
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let pendingOrdersService: PendingOrderDetailsServiceAPI
+    private let eligibilityService: EligibilityServiceAPI
     private let kycRouter: PlatformUIKit.KYCRouting
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
@@ -78,6 +84,8 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private let buyFlowBuilder: BuyFlowBuildable
     private let sellFlowBuilder: SellFlowBuildable
     private let signFlowBuilder: SignFlowBuildable
+
+    private lazy var tabSwapping: TabSwapping = resolve()
     private let interestFlowBuilder: InterestTransactionBuilder
 
     // Since RIBs need to be attached to something but we're not, the router in use needs to be retained.
@@ -94,7 +102,8 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(analyticsRecorder: resolve()),
         sellFlowBuilder: SellFlowBuildable = SellFlowBuilder(),
         signFlowBuilder: SignFlowBuildable = SignFlowBuilder(),
-        interestFlowBuilder: InterestTransactionBuilder = InterestTransactionBuilder()
+        interestFlowBuilder: InterestTransactionBuilder = InterestTransactionBuilder(),
+        eligibilityService: EligibilityServiceAPI = resolve()
     ) {
         self.featureFlagsService = featureFlagsService
         self.kycRouter = kycRouter
@@ -107,6 +116,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.sellFlowBuilder = sellFlowBuilder
         self.signFlowBuilder = signFlowBuilder
         self.interestFlowBuilder = interestFlowBuilder
+        self.eligibilityService = eligibilityService
     }
 
     func presentTransactionFlow(
@@ -124,37 +134,17 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     ) -> AnyPublisher<TransactionFlowResult, Never> {
         switch action {
         case .buy:
-            loadingViewPresenter.showCircular()
-            // NOTE: This check for pending orders is a hack. Handling pending orders in Transaction Flow requires more planning.
-            // The work required will be scoped in IOS-5575. In the meantime pending orders can be handled by the legacy flow.
-            // Handling orders in the legacy flow unblocks IOS-5368 and the release of this feature.
-            let checkPendingOrders = pendingOrdersService.pendingOrderDetails
-                .asPublisher()
-                .replaceError(with: nil)
-            return featureFlagsService.isEnabled(.remote(.useTransactionsFlowToBuyCrypto))
-                .zip(checkPendingOrders)
-                .receive(on: DispatchQueue.main)
-                .flatMap { [weak self, loadingViewPresenter] tuple -> AnyPublisher<TransactionFlowResult, Never> in
-                    loadingViewPresenter.hide()
-                    let (isEnabled, pendingOrder) = tuple
-                    if isEnabled, pendingOrder == nil {
-                        return self?.presentNewTransactionFlow(action, from: presenter) ?? .empty()
-                    } else {
-                        return self?.presentLegacyTransactionFlow(action, from: presenter) ?? .empty()
-                    }
-                }
-                .eraseToAnyPublisher()
-
-        case .sell:
-            loadingViewPresenter.showCircular()
+            return presentBuyTransactionFlow(to: action, from: presenter)
+        case .sell, .order:
             return featureFlagsService.isEnabled(.remote(.sellUsingTransactionFlowEnabled))
                 .receive(on: DispatchQueue.main)
-                .flatMap { [weak self, loadingViewPresenter] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in
-                    loadingViewPresenter.hide()
+                .handleLoaderForLifecycle(loader: loadingViewPresenter)
+                .flatMap { [weak self] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in
+                    guard let self = self else { return .empty() }
                     if isEnabled {
-                        return self?.presentNewTransactionFlow(action, from: presenter) ?? .empty()
+                        return self.presentNewTransactionFlow(action, from: presenter)
                     } else {
-                        return self?.presentLegacyTransactionFlow(action, from: presenter) ?? .empty()
+                        return self.presentLegacyTransactionFlow(action, from: presenter)
                     }
                 }
                 .eraseToAnyPublisher()
@@ -165,6 +155,51 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
              .sign:
             return presentNewTransactionFlow(action, from: presenter)
         }
+    }
+
+    private func presentBuyTransactionFlow(
+        to action: TransactionFlowAction,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
+        eligibilityService.eligibility()
+            .receive(on: DispatchQueue.main)
+            .handleLoaderForLifecycle(loader: loadingViewPresenter)
+            .flatMap { [weak self] eligibility -> AnyPublisher<TransactionFlowResult, Error> in
+                guard let self = self else { return .empty() }
+                if eligibility.simpleBuyPendingTradesEligible {
+                    let checkPendingOrders = self.pendingOrdersService.pendingOrderDetails
+                        .asPublisher()
+                    return self.featureFlagsService.isEnabled(.remote(.useTransactionsFlowToBuyCrypto))
+                        .setFailureType(to: Error.self)
+                        .zip(checkPendingOrders)
+                        .receive(on: DispatchQueue.main)
+                        .flatMap { [weak self] isEnabled, orders -> AnyPublisher<TransactionFlowResult, Never> in
+                            guard let self = self else { return .empty() }
+                            guard isEnabled else {
+                                return self.presentLegacyTransactionFlow(action, from: presenter)
+                            }
+                            let isAwaitingAction = orders.filter(\.isAwaitingAction)
+                            if let order = isAwaitingAction.first {
+                                return self.presentNewTransactionFlow(.order(order), from: presenter)
+                            } else {
+                                return self.presentNewTransactionFlow(action, from: presenter)
+                            }
+                        }
+                        .eraseToAnyPublisher()
+                } else {
+                    return self.presentTooManyPendingOrders(
+                        count: eligibility.pendingDepositSimpleBuyTrades,
+                        from: presenter
+                    )
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+                }
+            }
+            .catch { [weak self] _ -> AnyPublisher<TransactionFlowResult, Never> in
+                guard let self = self else { return .empty() }
+                return self.presentTooManyPendingOrdersError(from: presenter)
+            }
+            .eraseToAnyPublisher()
     }
 }
 
@@ -205,7 +240,17 @@ extension TransactionsRouter {
             )
             let interactor = BuyFlowInteractor()
             let router = buyFlowBuilder.build(with: listener, interactor: interactor)
-            router.start(with: cryptoAccount, from: presenter)
+            router.start(with: cryptoAccount, order: nil, from: presenter)
+            mimicRIBAttachment(router: router)
+            return listener.publisher
+        case .order(let order):
+            let listener = BuyFlowListener(
+                kycRouter: kycRouter,
+                alertViewPresenter: alertViewPresenter
+            )
+            let interactor = BuyFlowInteractor()
+            let router = buyFlowBuilder.build(with: listener, interactor: interactor)
+            router.start(with: nil, order: order, from: presenter)
             mimicRIBAttachment(router: router)
             return listener.publisher
 
@@ -240,6 +285,58 @@ extension TransactionsRouter {
         }
     }
 
+    private func presentTooManyPendingOrders(
+        count: Int,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
+        let subject = PassthroughSubject<TransactionFlowResult, Never>()
+
+        func dismiss() {
+            presenter.dismiss(animated: true) {
+                subject.send(.abandoned)
+            }
+        }
+
+        presenter.present(
+            NavigationView {
+                TooManyPendingOrdersView(
+                    count: count,
+                    viewActivityAction: { [tabSwapping] in
+                        tabSwapping.switchToActivity()
+                        dismiss()
+                    },
+                    okAction: dismiss
+                )
+                .whiteNavigationBarStyle()
+                .trailingNavigationButton(.close, action: dismiss)
+            }
+        )
+        return subject.eraseToAnyPublisher()
+    }
+
+    private func presentTooManyPendingOrdersError(
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
+        let subject = PassthroughSubject<TransactionFlowResult, Never>()
+
+        func dismiss() {
+            presenter.dismiss(animated: true) {
+                subject.send(.abandoned)
+            }
+        }
+
+        presenter.present(
+            NavigationView {
+                TooManyPendingOrdersErrorView(
+                    okAction: dismiss
+                )
+                .whiteNavigationBarStyle()
+                .trailingNavigationButton(.close, action: dismiss)
+            }
+        )
+        return subject.eraseToAnyPublisher()
+    }
+
     private func presentLegacyTransactionFlow(
         _ action: TransactionFlowAction,
         from presenter: UIViewController
@@ -255,6 +352,11 @@ extension TransactionsRouter {
                 from: presenter,
                 targetCurrency: cryptoAccount.asset,
                 isSDDEligible: true
+            )
+
+        case .order:
+            return legacyBuyRouter.presentBuyFlowWithTargetCurrencySelectionIfNecessary(
+                from: presenter
             )
 
         case .sell:

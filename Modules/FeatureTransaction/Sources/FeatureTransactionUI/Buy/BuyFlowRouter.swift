@@ -7,7 +7,7 @@ import UIKit
 
 protocol BuyFlowRouting: Routing {
 
-    func start(with cryptoAccount: CryptoAccount?, from presenter: UIViewController)
+    func start(with cryptoAccount: CryptoAccount?, order: OrderDetails?, from presenter: UIViewController)
 }
 
 final class BuyFlowRouter: RIBs.Router<BuyFlowInteractor>, BuyFlowRouting {
@@ -22,7 +22,7 @@ final class BuyFlowRouter: RIBs.Router<BuyFlowInteractor>, BuyFlowRouting {
         super.init(interactor: interactor)
     }
 
-    func start(with cryptoAccount: CryptoAccount?, from presenter: UIViewController) {
+    func start(with cryptoAccount: CryptoAccount?, order: OrderDetails?, from presenter: UIViewController) {
         analyticsRecorder.record(event:
             AnalyticsEvents.New.SimpleBuy.buySellViewed(type: .buy)
         )
@@ -31,7 +31,8 @@ final class BuyFlowRouter: RIBs.Router<BuyFlowInteractor>, BuyFlowRouting {
             withListener: interactor,
             action: .buy,
             sourceAccount: nil,
-            target: cryptoAccount
+            target: cryptoAccount,
+            order: order
         )
         attachChild(router)
         let viewController = router.viewControllable.uiviewController

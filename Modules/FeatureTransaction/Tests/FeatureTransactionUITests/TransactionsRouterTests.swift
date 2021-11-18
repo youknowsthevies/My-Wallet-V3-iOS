@@ -4,6 +4,7 @@ import Combine
 @testable import FeatureTransactionDomainMock
 @testable import FeatureTransactionUI
 @testable import FeatureTransactionUIMock
+@testable import PlatformKitMock
 @testable import PlatformUIKitMock
 import TestKit
 @testable import ToolKitMock
@@ -15,12 +16,14 @@ final class TransactionsRouterTests: XCTestCase {
     private var mockBuyFlowBuilder: MockBuyFlowBuilder!
     private var mockLegacyBuyFlowRouter: MockLegacyBuyFlowRouter!
     private var mockFeatureFlagsService: MockFeatureFlagsService!
+    private var mockEligibilityService: MockEligibilityService!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockFeatureFlagsService = MockFeatureFlagsService()
         mockLegacyBuyFlowRouter = MockLegacyBuyFlowRouter()
         mockBuyFlowBuilder = MockBuyFlowBuilder()
+        mockEligibilityService = MockEligibilityService()
         router = TransactionsRouter(
             featureFlagsService: mockFeatureFlagsService,
             pendingOrdersService: MockPendingOrderDetailsService(),
@@ -29,7 +32,8 @@ final class TransactionsRouterTests: XCTestCase {
             topMostViewControllerProvider: MockTopMostViewControllerProvider(),
             loadingViewPresenter: MockLoadingViewPresenter(),
             legacyBuyRouter: mockLegacyBuyFlowRouter,
-            buyFlowBuilder: mockBuyFlowBuilder
+            buyFlowBuilder: mockBuyFlowBuilder,
+            eligibilityService: mockEligibilityService
         )
     }
 

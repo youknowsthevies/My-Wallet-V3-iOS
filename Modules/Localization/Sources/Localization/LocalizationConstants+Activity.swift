@@ -42,12 +42,15 @@ extension LocalizationConstants.Activity.MainScreen {
         public static let of = NSLocalizedString("of", comment: "of")
         public static let failed = NSLocalizedString("Failed", comment: "Failed")
         public static let send = NSLocalizedString("Sent", comment: "Sent")
+        public static let sending = NSLocalizedString("Sending", comment: "Sending")
         public static let deposit = NSLocalizedString("Deposited", comment: "Deposited")
         public static let withdraw = NSLocalizedString("Withdrawn", comment: "Withdrawn")
         public static let transferred = NSLocalizedString("Transferred", comment: "Transferred")
         public static let buy = NSLocalizedString("Bought", comment: "Bought")
+        public static let buying = NSLocalizedString("Buying", comment: "Buying")
         public static let swap = NSLocalizedString("Swapped", comment: "Swapped")
         public static let receive = NSLocalizedString("Received", comment: "Received")
+        public static let receiving = NSLocalizedString("Receiving", comment: "Receiving")
         public static let sell = NSLocalizedString("Sold", comment: "Sold")
     }
 }

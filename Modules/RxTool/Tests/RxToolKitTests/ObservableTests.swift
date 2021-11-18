@@ -91,13 +91,15 @@ class ObservableAsPublisherTests: XCTestCase {
 
         var actual: Set<Either<Int, String>> = []
 
-        for route in routes {
+        for (i, route) in routes.enumerated() {
+            let e = expectation(description: "\(i)")
             subjects[route]?
                 .asObservable()
                 .observeOn(MainScheduler.asyncInstance)
-                .subscribe { event in
+                .subscribe(onNext: { event in
                     actual.insert(event)
-                }
+                    e.fulfill()
+                })
                 .disposed(by: bag)
         }
 
@@ -106,10 +108,8 @@ class ObservableAsPublisherTests: XCTestCase {
         }
 
         for (i, route) in routes.enumerated() {
-            let e = expectation(description: "\(i)")
             q[i % q.count].asyncAfter(deadline: .now() + .random(in: 0...0.01)) {
                 subjects[route]?.send(route)
-                e.fulfill()
             }
         }
 
