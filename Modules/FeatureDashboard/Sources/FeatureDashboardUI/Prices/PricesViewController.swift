@@ -10,7 +10,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class PricesViewController: BaseScreenViewController {
+public final class PricesViewController: BaseScreenViewController {
 
     // MARK: - Private Types
 
@@ -26,7 +26,7 @@ final class PricesViewController: BaseScreenViewController {
 
     // MARK: - Setup
 
-    init(presenter: PricesScreenPresenter = .init()) {
+    public init(presenter: PricesScreenPresenter = .init()) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -36,7 +36,7 @@ final class PricesViewController: BaseScreenViewController {
 
     // MARK: - Lifecycle
 
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupTableView()
@@ -45,7 +45,7 @@ final class PricesViewController: BaseScreenViewController {
         presenter.refreshRelay.accept(())
     }
 
-    override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isTranslucent = false
     }
@@ -158,7 +158,7 @@ final class PricesViewController: BaseScreenViewController {
 
     // MARK: - Navigation
 
-    override func navigationBarLeadingButtonPressed() {
+    override public func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonPressed()
     }
 }

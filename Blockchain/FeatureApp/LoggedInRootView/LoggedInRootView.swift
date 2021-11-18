@@ -56,7 +56,7 @@ struct LoggedInRootView: View {
                     PortfolioView()
                 }
                 tab(.prices) {
-                    Text("Prices")
+                    PricesView()
                 }
                 fab()
                 tab(.buyAndSell) {
