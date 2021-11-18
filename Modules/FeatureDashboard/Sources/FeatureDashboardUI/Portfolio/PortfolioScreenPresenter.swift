@@ -11,7 +11,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class PortfolioScreenPresenter {
+public final class PortfolioScreenPresenter {
 
     // MARK: - Types
 
@@ -175,7 +175,7 @@ final class PortfolioScreenPresenter {
 
     // MARK: - Init
 
-    init(
+    public init(
         interactor: PortfolioScreenInteractor = PortfolioScreenInteractor(),
         accountFetcher: BlockchainAccountFetching = resolve(),
         drawerRouter: DrawerRouting = resolve(),

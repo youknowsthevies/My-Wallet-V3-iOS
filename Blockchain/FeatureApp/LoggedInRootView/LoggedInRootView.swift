@@ -53,7 +53,7 @@ struct LoggedInRootView: View {
         WithViewStore(store) { viewStore in
             TabView(selection: viewStore.binding(\.$tab)) {
                 tab(.home) {
-                    Text("Portfolio")
+                    PortfolioView()
                 }
                 tab(.prices) {
                     Text("Prices")
