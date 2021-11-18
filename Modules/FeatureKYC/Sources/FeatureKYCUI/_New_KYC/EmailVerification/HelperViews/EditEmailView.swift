@@ -94,6 +94,16 @@ struct EditEmailView: View {
     var body: some View {
         WithViewStore(store) { viewStore in
             ActionableView(
+                buttons: [
+                    .init(
+                        title: L10n.EditEmail.saveButtonTitle,
+                        action: {
+                            viewStore.send(.save)
+                        },
+                        loading: viewStore.savingEmailAddress,
+                        enabled: viewStore.isEmailValid
+                    )
+                ],
                 content: {
                     VStack {
                         VStack(alignment: .leading, spacing: 0) {
@@ -139,17 +149,7 @@ struct EditEmailView: View {
 
                         Spacer()
                     }
-                },
-                buttons: [
-                    .init(
-                        title: L10n.EditEmail.saveButtonTitle,
-                        action: {
-                            viewStore.send(.save)
-                        },
-                        loading: viewStore.savingEmailAddress,
-                        enabled: viewStore.isEmailValid
-                    )
-                ]
+                }
             )
             .alert(
                 store.scope(state: \.saveEmailFailureAlert),

@@ -8,22 +8,22 @@ import ToolKit
 public final class MockPendingOrderDetailsService: PendingOrderDetailsServiceAPI {
 
     public struct StubbedResults {
-        public var pendingOrderDetails: Single<OrderDetails?> = .just(nil)
-        public var pendingActionOrderDetails: Single<OrderDetails?> = .just(nil)
+        public var pendingOrderDetails: Single<[OrderDetails]> = .just([])
+        public var pendingActionOrderDetails: Single<[OrderDetails]> = .just([])
         public var cancel: Completable = .empty()
     }
 
     public var stubbedResults = StubbedResults()
 
-    public var pendingOrderDetails: Single<OrderDetails?> {
+    public var pendingOrderDetails: Single<[OrderDetails]> {
         stubbedResults.pendingOrderDetails
     }
 
-    public var pendingActionOrderDetails: Single<OrderDetails?> {
+    public var pendingActionOrderDetails: Single<[OrderDetails]> {
         stubbedResults.pendingActionOrderDetails
     }
 
-    public func cancel() -> Completable {
+    public func cancel(_ order: OrderDetails) -> Completable {
         stubbedResults.cancel
     }
 }

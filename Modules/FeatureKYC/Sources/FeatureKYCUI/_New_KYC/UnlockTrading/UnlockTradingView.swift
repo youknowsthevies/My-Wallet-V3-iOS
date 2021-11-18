@@ -15,10 +15,6 @@ struct UnlockTradingView: View {
                     viewStore.send(.closeButtonTapped)
                 }
                 ActionableView(
-                    content: {
-                        UnlockTradingViewHelper(viewModel: viewStore.viewModel)
-                        Spacer()
-                    },
                     buttons: viewStore.viewModel.actions.map { button in
                         ActionableView.ButtonState(
                             title: button.title,
@@ -27,6 +23,10 @@ struct UnlockTradingView: View {
                             },
                             style: button.style == .primary ? .primary : .secondary
                         )
+                    },
+                    content: {
+                        UnlockTradingViewHelper(viewModel: viewStore.viewModel)
+                        Spacer()
                     }
                 )
             }

@@ -79,7 +79,8 @@ class PublisherTests: XCTestCase {
 
         var actual: Set<Either<Int, String>> = []
 
-        for route in routes {
+        for (i, route) in routes.enumerated() {
+            let e = expectation(description: "\(i)")
             subjects[route]?
                 .asPublisher()
                 .receive(on: DispatchQueue.main)
@@ -87,6 +88,7 @@ class PublisherTests: XCTestCase {
                     receiveCompletion: { _ in },
                     receiveValue: { result in
                         actual.insert(result)
+                        e.fulfill()
                     }
                 )
                 .teardown(in: self)
@@ -97,10 +99,8 @@ class PublisherTests: XCTestCase {
         }
 
         for (i, route) in routes.enumerated() {
-            let e = expectation(description: "\(i)")
             q[i % q.count].asyncAfter(deadline: .now() + .random(in: 0...0.01)) {
                 subjects[route]?.on(.next(route))
-                e.fulfill()
             }
         }
 

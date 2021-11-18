@@ -77,13 +77,15 @@ struct TransactionState: StateType {
         source: BlockchainAccount? = nil,
         destination: TransactionTarget? = nil,
         passwordRequired: Bool = false,
-        step: TransactionFlowStep = .initial
+        step: TransactionFlowStep = .initial,
+        order: TransactionOrder? = nil
     ) {
         self.action = action
         self.source = source
         self.destination = destination
         self.passwordRequired = passwordRequired
         self.step = step
+        self.order = order
     }
 }
 

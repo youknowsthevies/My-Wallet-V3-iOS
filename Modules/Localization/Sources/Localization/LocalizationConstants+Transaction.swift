@@ -992,7 +992,7 @@ extension LocalizationConstants.Transaction.Confirmation.Error {
         comment: ""
     )
     public static let pendingOrderLimitReached = NSLocalizedString(
-        "You have too many pending orders in-progress. Once those complete, try again. You can check your order status in 'Activity'.",
+        "Right now, you have too many pending transactions. Once those finish, you can buy & sell crypto. We’ll email you when the transactions are done.",
         comment: "User has reached the maximum limit of unfullfilled pending orders and cannot create new orders at this time."
     )
     public static let generic = NSLocalizedString(
@@ -1133,8 +1133,8 @@ extension LocalizationConstants.Transaction.Error {
         comment: ""
     )
     public static let pendingOrderLimitReached = NSLocalizedString(
-        "You have too many pending orders in-progress. Once those complete, try again. You can check your order status in 'Activity'.",
-        comment: "User has reached the maximum limit of unfullfilled pending orders and cannot create new orders at this time."
+        "Right now, you have too many pending transactions. Once those finish, you can buy & sell crypto. We’ll email you when the transactions are done.",
+        comment: ""
     )
     public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",
@@ -1530,4 +1530,13 @@ extension LocalizationConstants.Transaction.Error {
         "Oops! Looks like that isn’t a valid amount, please try again.",
         comment: "Oops! Looks like that isn’t a valid amount, please try again."
     )
+
+    public static let buySellUnavailable = NSLocalizedString(
+        "Buy & Sell Unavailable",
+        comment: "Buy & Sell Unavailable"
+    )
+}
+
+extension LocalizationConstants.Transaction {
+    public static let ok = NSLocalizedString("OK", comment: "OK")
 }
