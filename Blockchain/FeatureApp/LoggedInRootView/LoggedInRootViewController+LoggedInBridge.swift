@@ -6,122 +6,122 @@ import ToolKit
 extension LoggedInRootViewController: LoggedInBridge {
 
     func toggleSideMenu() {
-        unimplemented()
+        viewStore.send(.enter(into: .account))
     }
 
     func closeSideMenu() {
-        unimplemented()
+        viewStore.send(.route(nil))
     }
 
     func send(from account: BlockchainAccount) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func send(from account: BlockchainAccount, target: TransactionTarget) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func sign(from account: BlockchainAccount, target: TransactionTarget) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func receive(into account: BlockchainAccount) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func withdraw(from account: BlockchainAccount) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func deposit(into account: BlockchainAccount) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func interestTransfer(into account: BlockchainAccount) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func interestWithdraw(from account: BlockchainAccount) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func switchToSend() {
-        unimplemented()
+        viewStore.send(.tab(.buyAndSell))
     }
 
     func switchTabToSwap() {
-        unimplemented()
+        viewStore.send(.tab(.buyAndSell))
     }
 
     func switchTabToReceive() {
-        unimplemented()
+        viewStore.send(.tab(.buyAndSell))
     }
 
     func switchToActivity() {
-        unimplemented()
+        viewStore.send(.tab(.activity))
     }
 
     func switchToActivity(for currencyType: CurrencyType) {
-        unimplemented()
+        viewStore.send(.tab(.activity))
     }
 
     func showCashIdentityVerificationScreen() {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func handleSwapCrypto(account: CryptoAccount?) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func handleSellCrypto(account: CryptoAccount?) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func handleBuyCrypto(account: CryptoAccount?) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func handleBuyCrypto(currency: CryptoCurrency = .coin(.bitcoin)) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func startBackupFlow() {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func showSettingsView() {
-        unimplemented()
+        viewStore.send(.enter(into: .account))
     }
 
     func reload() {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func presentKYCIfNeeded() {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func presentBuyIfNeeded(_ cryptoCurrency: CryptoCurrency) {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func enableBiometrics() {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func changePin() {
-        unimplemented()
+        #function.peek("‼️ not implemented")
     }
 
     func showQRCodeScanner() {
-        unimplemented()
+        viewStore.send(.enter(into: .QR))
     }
 }

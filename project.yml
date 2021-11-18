@@ -44,7 +44,7 @@ schemeTemplates:
           value: disable
           isEnabled: true
       commandLineArguments:
-        "-_UIConstraintBasedLayoutLogUnsatisfiable NO": false
+        "-_UIConstraintBasedLayoutLogUnsatisfiable NO": true
     test:
       config: ${debugConfig}
       gatherCoverageData: true

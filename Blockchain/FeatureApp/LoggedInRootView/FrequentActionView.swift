@@ -76,7 +76,7 @@ struct FrequentActionView: View {
                 action: { action(item) },
                 label: {
                     HStack {
-                        VStack(alignment: .leading, spacing: 4) {
+                        VStack(alignment: .leading, spacing: 4.pt) {
                             Text(item.name)
                                 .typography(.body2)
                                 .foregroundColor(.semantic.title)

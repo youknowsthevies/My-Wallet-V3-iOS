@@ -37,7 +37,10 @@ final class LoggedInRootViewController: UIHostingController<LoggedInRootView> {
         unimplemented()
     }
 
-    var tabControllerManager: TabControllerManager? // ← Remove requirement from LoggedInBridge
+    var tabControllerManager: TabControllerManager? { // ← Remove requirement from LoggedInBridge
+        get { #function.peek("‼️ not implemented"); return nil }
+        set { #function.peek("‼️ not implemented. newValue = \(String(describing: newValue))") }
+    }
 
     func clear() {
         tabControllerManager = nil
@@ -53,7 +56,7 @@ extension LoggedInRootViewController {
             .reloadAfterMultiAddressResponse
             .filter { $0 }
             .sink { output in
-                output.peek("‼️ Not Implemented")
+                output.peek("‼️ not implemented")
             }
             .store(in: &bag)
 
@@ -61,7 +64,7 @@ extension LoggedInRootViewController {
             .reloadAfterSymbolChanged
             .filter { $0 }
             .sink { output in
-                output.peek("‼️ Not Implemented")
+                output.peek("‼️ not implemented")
             }
             .store(in: &bag)
 
@@ -70,7 +73,7 @@ extension LoggedInRootViewController {
             .compactMap { $0 }
             .removeDuplicates()
             .sink { output in
-                "\(output)".peek("‼️ Not Implemented")
+                "\(output)".peek("‼️ not implemented")
             }
             .store(in: &bag)
 
@@ -78,7 +81,7 @@ extension LoggedInRootViewController {
             .displaySendCryptoScreen
             .filter(\.self)
             .sink { output in
-                output.peek("‼️ Not Implemented")
+                output.peek("‼️ not implemented")
             }
             .store(in: &bag)
 
@@ -86,7 +89,7 @@ extension LoggedInRootViewController {
             .displayOnboardingFlow
             .filter(\.self)
             .sink { output in
-                output.peek("‼️ Not Implemented")
+                output.peek("‼️ not implemented")
             }
             .store(in: &bag)
 
@@ -94,7 +97,7 @@ extension LoggedInRootViewController {
             .displayLegacyBuyFlow
             .filter(\.self)
             .sink { output in
-                output.peek("‼️ Not Implemented")
+                output.peek("‼️ not implemented")
             }
             .store(in: &bag)
     }
@@ -103,10 +106,34 @@ extension LoggedInRootViewController {
 extension LoggedInRootViewController {
 
     func subscribe(to viewStore: ViewStore<LoggedInRootState, LoggedInRootAction>) {
-        #function.peek("‼️ Not Implemented")
+        #function.peek("‼️ not implemented")
     }
 
     func handle(state: LoggedInRootState, action: LoggedInRootAction) {
-        #function.peek("‼️ \(action) Not Implemented")
+        switch action {
+        case .frequentAction(let frequentAction):
+            switch frequentAction {
+            case .swap:
+                handleSwapCrypto(account: nil)
+            case .send:
+                "\(action)".peek("‼️ not implemented")
+            case .receive:
+                "\(action)".peek("‼️ not implemented")
+            case .rewards:
+                "\(action)".peek("‼️ not implemented")
+            case .deposit:
+                "\(action)".peek("‼️ not implemented")
+            case .withdraw:
+                "\(action)".peek("‼️ not implemented")
+            case .buy:
+                handleBuyCrypto(account: nil)
+            case .sell:
+                handleSellCrypto(account: nil)
+            default:
+                assertionFailure("Unhandled action \(action)")
+            }
+        default:
+            break
+        }
     }
 }
