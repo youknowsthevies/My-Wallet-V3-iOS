@@ -12,35 +12,24 @@ final class LoggedInRootViewController: UIHostingController<LoggedInRootView> {
     let viewStore: ViewStore<LoggedInRootState, LoggedInRootAction>
     var bag: Set<AnyCancellable> = []
 
-    enum Action {
-        case frequentAction(FrequentAction)
-    }
-
-    let publisher: AnyPublisher<Action, Never>
-
     init(store global: Store<LoggedIn.State, LoggedIn.Action>) {
 
-        let subject = PassthroughSubject<Action, Never>()
+        let environment = LoggedInRootEnvironment()
         let store = Store(
             initialState: LoggedInRootState(),
             reducer: loggedInRootReducer,
-            environment: LoggedInRootEnvironment(
-                frequentAction: { frequentAction in
-                    subject.send(.frequentAction(frequentAction))
-                }
-            )
+            environment: environment
         )
 
         viewStore = ViewStore(store)
-        publisher = subject.eraseToAnyPublisher()
 
         super.init(rootView: LoggedInRootView(store: store))
 
         subscribe(to: ViewStore(global))
         subscribe(to: viewStore)
 
-        publisher
-            .sink(to: LoggedInRootViewController.handle(action:), on: self)
+        environment.publisher
+            .sink(to: My.handle(state:action:), on: self)
             .store(in: &bag)
     }
 
@@ -117,7 +106,7 @@ extension LoggedInRootViewController {
         #function.peek("‼️ Not Implemented")
     }
 
-    func handle(action: Action) {
+    func handle(state: LoggedInRootState, action: LoggedInRootAction) {
         #function.peek("‼️ \(action) Not Implemented")
     }
 }

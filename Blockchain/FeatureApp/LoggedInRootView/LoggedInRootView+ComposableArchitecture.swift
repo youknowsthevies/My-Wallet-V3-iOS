@@ -1,6 +1,8 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import ComposableArchitecture
+import ComposableArchitectureExtensions
 import ComposableNavigation
 import SwiftUI
 
@@ -34,27 +36,26 @@ enum LoggedInRootRoute: NavigationRoute {
     }
 }
 
-struct LoggedInRootEnvironment {
-    var frequentAction: (FrequentAction) -> Void
+struct LoggedInRootEnvironment: PublishedEnvironment {
+    var subject: PassthroughSubject<(state: LoggedInRootState, action: LoggedInRootAction), Never> = .init()
 }
 
 let loggedInRootReducer = Reducer<
     LoggedInRootState,
     LoggedInRootAction,
     LoggedInRootEnvironment
-> { state, action, environment in
+> { state, action, _ in
     switch action {
     case .tab(let tab):
         state.tab = tab
         return .none
-    case .frequentAction(let frequentAction):
+    case .frequentAction:
         state.fab = false
-        return .fireAndForget {
-            environment.frequentAction(frequentAction)
-        }
+        return .none
     case .route, .binding:
         return .none
     }
 }
 .binding()
-.routable()
+.routing()
+.published()

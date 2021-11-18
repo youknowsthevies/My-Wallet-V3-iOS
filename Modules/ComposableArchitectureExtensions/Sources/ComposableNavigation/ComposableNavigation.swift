@@ -230,7 +230,7 @@ extension Binding where Value == Bool {
 extension Reducer where Action: NavigationAction, State: NavigationState {
     /// Returns a reducer that applies ``NavigationAction`` mutations to `NavigationState` after running this
     /// reducer's logic.
-    public func routable() -> Self {
+    public func routing() -> Self {
         Self { state, action, environment in
             guard let route = (/Action.route).extract(from: action)
             else {
