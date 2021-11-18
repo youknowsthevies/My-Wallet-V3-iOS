@@ -1,9 +1,11 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import ComponentLibrary
 import ComposableArchitecture
 import ComposableArchitectureExtensions
 import ComposableNavigation
+import Localization
 import SwiftUI
 
 struct LoggedInRootState: Equatable, NavigationState {
@@ -29,7 +31,16 @@ enum LoggedInRootRoute: NavigationRoute {
     @ViewBuilder func destination(in store: Store<LoggedInRootState, LoggedInRootAction>) -> some View {
         switch self {
         case .QR:
-            Text("QR")
+            PrimaryNavigationView {
+                WithViewStore(store.stateless) { viewStore in
+                    QRCodeScannerView()
+                        .primaryNavigation(title: LocalizationConstants.scanQRCode) {
+                            IconButton(icon: .closeCirclev2) {
+                                viewStore.send(.route(nil))
+                            }
+                        }
+                }
+            }
         case .account:
             AccountView()
                 .ignoresSafeArea(.container, edges: .bottom)

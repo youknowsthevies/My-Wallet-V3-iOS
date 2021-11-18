@@ -60,6 +60,8 @@ public enum LocalizationConstants {
     public static let scanPairingCode = NSLocalizedString("Scan Pairing Code", comment: " ")
     public static let parsingPairingCode = NSLocalizedString("Parsing Pairing Code", comment: " ")
     public static let invalidPairingCode = NSLocalizedString("Invalid Pairing Code", comment: " ")
+    public static let noCameraAccessTitle = NSLocalizedString("No camera access", comment: "title: Camera access is not available")
+    public static let noCameraAccessMessage = NSLocalizedString("There is a problem connecting to your camera, please check the permissions and try again", comment: "message: Camera access is not available")
 
     public static let dontShowAgain = NSLocalizedString(
         "Don’t show again",

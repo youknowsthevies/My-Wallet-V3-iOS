@@ -112,7 +112,7 @@ extension ActionableView where Content == AnyView {
 
 extension ActionableView where Content == TupleView<(Spacer, InfoView, Spacer)> {
 
-    public init(_ model: InfoView.Model, buttons: [ButtonState], in bundle: Bundle = .main) {
+    public init(_ model: InfoView.Model, buttons: [ButtonState] = [], in bundle: Bundle = .main) {
         self.init(buttons: buttons) {
             Spacer()
             InfoView(model, in: bundle)
