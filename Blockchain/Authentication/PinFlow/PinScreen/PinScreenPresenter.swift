@@ -470,8 +470,12 @@ extension PinScreenPresenter {
             guard let self = self else { return Disposables.create() }
 
             // Extract both current and previous pins before comparing them. Both MUST NOT be nil at that point
-            let previousPin = self.useCase.pin!
-            let pin = self.pin.value!
+            guard let previousPin = self.useCase.pin,
+                  let pin = self.pin.value
+            else {
+                completable(.error(PinError.nullifiedPinKey))
+                return Disposables.create()
+            }
 
             // Current pin must be equal to the previous pin
             guard pin == previousPin else {
@@ -521,7 +525,12 @@ extension PinScreenPresenter {
     func verifyPinBeforeChanging() -> Completable {
 
         // Pin MUST NOT be nil at that point as it accompanies the use-case.
-        let pin = pin.value!
+        guard let pin = pin.value else {
+            return Completable.create { completable in
+                completable(.error(PinError.nullifiedPinKey))
+                return Disposables.create()
+            }
+        }
 
         return Completable.create { [weak self] completable in
             guard let self = self else { return Disposables.create() }
