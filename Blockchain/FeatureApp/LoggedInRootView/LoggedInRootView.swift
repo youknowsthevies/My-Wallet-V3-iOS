@@ -70,7 +70,8 @@ struct LoggedInRootView: View {
                 FloatingActionButton(isOn: viewStore.binding(\.$fab))
                     .padding()
                     .contentShape(Rectangle())
-                    .offset(y: Spacing.padding3),
+                    .offset(y: Spacing.padding3)
+                    .ignoresSafeArea(.keyboard, edges: .bottom),
                 alignment: .bottom
             )
             .bottomSheet(isPresented: viewStore.binding(\.$fab)) {
@@ -121,7 +122,7 @@ struct LoggedInRootView: View {
     @ViewBuilder func QR() -> some View {
         WithViewStore(store.stateless) { viewStore in
             IconButton(icon: .qRCode) {
-                viewStore.send(.enter(into: .QR))
+                viewStore.send(.enter(into: .QR, context: .none))
             }
         }
     }
@@ -129,7 +130,7 @@ struct LoggedInRootView: View {
     @ViewBuilder func account() -> some View {
         WithViewStore(store.stateless) { viewStore in
             IconButton(icon: .user) {
-                viewStore.send(.enter(into: .account))
+                viewStore.send(.enter(into: .account, context: .none))
             }
         }
     }

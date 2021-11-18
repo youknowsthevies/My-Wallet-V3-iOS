@@ -5,7 +5,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class SettingsScreenPresenter {
+public final class SettingsScreenPresenter {
 
     // MARK: - Types
 
@@ -58,7 +58,7 @@ final class SettingsScreenPresenter {
 
     // MARK: - Init
 
-    init(
+    public init(
         interactor: SettingsScreenInteractor,
         router: SettingsRouterAPI
     ) {

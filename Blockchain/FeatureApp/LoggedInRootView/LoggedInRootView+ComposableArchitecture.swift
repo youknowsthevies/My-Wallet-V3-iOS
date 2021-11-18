@@ -31,7 +31,8 @@ enum LoggedInRootRoute: NavigationRoute {
         case .QR:
             Text("QR")
         case .account:
-            Text("Account")
+            AccountView()
+                .ignoresSafeArea(.container, edges: .bottom)
         }
     }
 }

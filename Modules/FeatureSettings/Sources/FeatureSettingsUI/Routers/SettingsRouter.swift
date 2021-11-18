@@ -14,8 +14,10 @@ import RxCocoa
 import RxRelay
 import RxSwift
 import SafariServices
+import SwiftUI
 import ToolKit
 import UIKit
+import WebKit
 
 public protocol AppCoordinating: AnyObject {
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool)
@@ -54,6 +56,7 @@ final class SettingsRouter: SettingsRouterAPI {
 
     let actionRelay = PublishRelay<SettingsScreenAction>()
     let previousRelay = PublishRelay<Void>()
+    let navigationRouter: NavigationRouterAPI
 
     // MARK: - Routers
 
@@ -72,7 +75,6 @@ final class SettingsRouter: SettingsRouterAPI {
     private let alertPresenter: AlertViewPresenter
     private var cardRouter: CardRouter!
 
-    private let navigationRouter: NavigationRouterAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private unowned let tabSwapping: TabSwapping
     private unowned let appCoordinator: AppCoordinating
@@ -161,7 +163,7 @@ final class SettingsRouter: SettingsRouterAPI {
             .disposed(by: disposeBag)
     }
 
-    func presentSettings() {
+    func makeViewController() -> SettingsViewController {
         let interactor = SettingsScreenInteractor(
             pitConnectionAPI: pitConnectionAPI,
             wallet: wallet,
@@ -169,8 +171,11 @@ final class SettingsRouter: SettingsRouterAPI {
             authenticationCoordinator: authenticationCoordinator
         )
         let presenter = SettingsScreenPresenter(interactor: interactor, router: self)
-        let controller = SettingsViewController(presenter: presenter)
-        navigationRouter.present(viewController: controller, using: .modalOverTopMost)
+        return SettingsViewController(presenter: presenter)
+    }
+
+    func presentSettings() {
+        navigationRouter.present(viewController: makeViewController(), using: .modalOverTopMost)
     }
 
     func dismiss() {
@@ -186,8 +191,15 @@ final class SettingsRouter: SettingsRouterAPI {
     private func handle(action: SettingsScreenAction) {
         switch action {
         case .showURL(let url):
-            let controller = SFSafariViewController(url: url)
-            navigationRouter.present(viewController: controller)
+            let viewController = UIHostingController(
+                rootView: SettingsWebView(request: .init(url: url))
+            )
+            viewController.rootView.updateTitle = { [weak viewController] title in
+                viewController?.title = title
+            }
+            navigationRouter.present(
+                viewController: viewController
+            )
         case .launchChangePassword:
             let interactor = ChangePasswordScreenInteractor(passwordAPI: passwordRepository)
             let presenter = ChangePasswordScreenPresenter(previousAPI: self, interactor: interactor)
@@ -447,4 +459,52 @@ final class SettingsRouter: SettingsRouterAPI {
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting()
     }()
+}
+
+struct SettingsWebView: View {
+
+    let request: URLRequest
+    var updateTitle: ((String?) -> Void)?
+
+    var body: some View {
+        WebView(request: request, updateTitle: updateTitle)
+            .ignoresSafeArea(.container, edges: .bottom)
+    }
+}
+
+struct WebView: UIViewRepresentable {
+
+    let request: URLRequest
+    var updateTitle: ((String?) -> Void)?
+
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.allowsBackForwardNavigationGestures = true
+        webView.scrollView.isScrollEnabled = true
+        webView.navigationDelegate = context.coordinator
+        return webView
+    }
+
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+        uiView.load(request)
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, WKNavigationDelegate {
+
+        var parent: WebView
+
+        init(_ webView: WebView) {
+            parent = webView
+        }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            webView.evaluateJavaScript("document.title") { response, _ in
+                self.parent.updateTitle?(response as? String)
+            }
+        }
+    }
 }
