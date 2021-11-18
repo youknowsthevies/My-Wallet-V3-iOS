@@ -15,10 +15,10 @@ public struct WalletRepoState: Equatable, Codable {
     public var encryptedPayload: WalletPayloadWrapper
 
     /// Returns the user id
-    public var userId: String
+    public var userId: String?
 
     /// Returns the lifetime token for the user id
-    public var lifetimeToken: String
+    public var lifetimeToken: String?
 
     /// Provides an empty state
     static let empty = WalletRepoState(

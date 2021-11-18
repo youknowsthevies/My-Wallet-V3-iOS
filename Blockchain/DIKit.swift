@@ -300,21 +300,6 @@ extension DependencyContainer {
             return walletManager.wallet as WalletRecoveryVerifing
         }
 
-        factory { () -> SharedKeyRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as SharedKeyRepositoryAPI
-        }
-
-        factory { () -> FeatureAuthenticationDomain.GuidRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as FeatureAuthenticationDomain.GuidRepositoryAPI
-        }
-
-        factory { () -> PasswordRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as PasswordRepositoryAPI
-        }
-
         // MARK: - BlockchainSettings.App
 
         single { KeychainItemSwiftWrapper() as KeychainItemWrapping }
@@ -532,8 +517,9 @@ extension DependencyContainer {
         }
 
         factory { () -> SessionTokenServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return sessionTokenServiceFactory(walletRepository: manager.repository)
+            sessionTokenServiceFactory(
+                sessionRepository: DIKit.resolve()
+            )
         }
 
         factory { () -> SMSServiceAPI in

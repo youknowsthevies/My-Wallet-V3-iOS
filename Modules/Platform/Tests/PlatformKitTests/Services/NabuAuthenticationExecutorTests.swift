@@ -21,6 +21,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
     private var store: NabuTokenRepositoryAPI!
     private var errorBroadcaster: MockUserAlreadyRestoredHandler!
     private var walletRepository: MockWalletRepository!
+    private var nabuOfflineTokenRepo: MockNabuOfflineTokenRepository!
     private var nabuRepository: MockNabuRepository!
     private var nabuUserEmailProvider: NabuUserEmailProvider = { .just("abcd@abcd.com") }
     private var deviceInfo: MockDeviceInfo!
@@ -37,6 +38,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         errorBroadcaster = MockUserAlreadyRestoredHandler()
         nabuRepository = MockNabuRepository()
         walletRepository = MockWalletRepository()
+        nabuOfflineTokenRepo = MockNabuOfflineTokenRepository()
         deviceInfo = MockDeviceInfo(
             systemVersion: "1.2.3",
             model: "iPhone5S",
@@ -53,6 +55,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             checkAuthenticated: checkAuthenticated,
             jwtService: jwtService,
             credentialsRepository: walletRepository,
+            nabuOfflineTokenRepository: nabuOfflineTokenRepo,
             deviceInfo: deviceInfo
         )
     }
@@ -101,6 +104,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             }, receiveValue: { _ in })
             .store(in: &cancellables)
 
+        nabuRepository.expectedOfflineToken = .success(offlineToken)
         nabuRepository.expectedSessionToken = .success(
             NabuSessionToken(
                 identifier: "identifier",
@@ -213,7 +217,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         let offlineToken = NabuOfflineToken(userId: "user-id", token: "offline-token")
 
         // Offline token is missing - user creation will be attempted
-        walletRepository.expectedOfflineToken = .failure(.offlineToken)
+        nabuOfflineTokenRepo.expectedOfflineToken = .failure(.offlineToken)
         jwtService.expectedResult = .success("jwt-token")
         nabuRepository.expectedOfflineToken = .success(offlineToken)
 
@@ -291,7 +295,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 case .finished:
                     XCTAssertEqual(
                         // swiftlint:disable:next force_try
-                        try! self.walletRepository.expectedOfflineToken.get(),
+                        try! self.nabuOfflineTokenRepo.expectedOfflineToken.get(),
                         offlineToken
                     )
                     authenticationSuccessfulExpectation.fulfill()
@@ -356,6 +360,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
 
         jwtService.expectedResult = .success("jwt-token")
 
+        nabuRepository.expectedOfflineToken = .success(offlineToken)
         nabuRepository.expectedSessionToken = .success(newSessionToken)
 
         wait(for: [expiredAuthTokenStoredExpectation], timeout: 5, enforceOrder: true)
@@ -467,7 +472,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 case .finished:
                     XCTAssertEqual(
                         // swiftlint:disable:next force_try
-                        try! self.walletRepository.expectedOfflineToken.get(),
+                        try! self.nabuOfflineTokenRepo.expectedOfflineToken.get(),
                         offlineToken
                     )
                     authenticationSuccessfulExpectation.fulfill()
@@ -498,7 +503,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             userId: "user-id",
             token: "offline-token"
         )
-        walletRepository.expectedOfflineToken = .success(offlineToken)
+        nabuOfflineTokenRepo.expectedOfflineToken = .success(offlineToken)
         walletRepository.expectedGuid = "guid"
         walletRepository.expectedSharedKey = "shared-key"
         jwtService.expectedResult = .success("jwt-token")
