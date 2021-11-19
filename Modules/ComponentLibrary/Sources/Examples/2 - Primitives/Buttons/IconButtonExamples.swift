@@ -22,7 +22,7 @@ struct IconButtonExamples: View {
     }
 
     @ViewBuilder private var navigationBarItems: some View {
-        IconButton(icon: .qRCode) {
+        IconButton(icon: .qrCode) {
             tapped.toggle()
         }
     }

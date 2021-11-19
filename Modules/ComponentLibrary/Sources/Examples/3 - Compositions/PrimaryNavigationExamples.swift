@@ -21,7 +21,7 @@ struct PrimaryNavigationExamples: View {
             Spacer()
         }
         .primaryNavigation(title: "Navigation") {
-            IconButton(icon: .qRCode) {}
+            IconButton(icon: .qrCode) {}
 
             IconButton(icon: .user) {}
         }

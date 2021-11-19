@@ -331,7 +331,7 @@ struct PrimaryNavigation_Previews: PreviewProvider {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.green)
             .primaryNavigation(title: "Foo") {
-                IconButton(icon: .qRCode) {}
+                IconButton(icon: .qrCode) {}
 
                 IconButton(icon: .user) {}
             }

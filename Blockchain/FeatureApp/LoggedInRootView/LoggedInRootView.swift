@@ -121,7 +121,7 @@ struct LoggedInRootView: View {
 
     @ViewBuilder func QR() -> some View {
         WithViewStore(store.stateless) { viewStore in
-            IconButton(icon: .qRCode) {
+            IconButton(icon: .qrCode) {
                 viewStore.send(.enter(into: .QR, context: .none))
             }
         }

@@ -22,7 +22,7 @@ public final class CryptoAddressTextFieldViewModel: TextFieldViewModel {
             messageRecorder: messageRecorder
         )
         let content = ImageViewContent(
-            imageResource: .local(name: Icon.qRCode.name, bundle: .componentLibrary)
+            imageResource: .local(name: Icon.qrCode.name, bundle: .componentLibrary)
         )
         let theme = BadgeImageViewModel.Theme(
             backgroundColor: .white,

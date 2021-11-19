@@ -6,7 +6,7 @@ import XCTest
 
 final class IconButtonTexts: XCTestCase {
 
-    let button = IconButton(icon: .qRCode) {}
+    let button = IconButton(icon: .qrCode) {}
 
     func testDefault() {
         assertSnapshot(matching: button, as: .image)
