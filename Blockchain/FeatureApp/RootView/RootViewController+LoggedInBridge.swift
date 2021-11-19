@@ -78,6 +78,10 @@ extension RootViewController: LoggedInBridge {
             .store(in: &bag)
     }
 
+    func switchTabToDashboard() {
+        viewStore.send(.tab(.home))
+    }
+
     func switchToSend() {
         viewStore.send(.tab(.buyAndSell))
     }

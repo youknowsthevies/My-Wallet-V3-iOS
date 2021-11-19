@@ -417,6 +417,10 @@ extension LoggedInHostingController {
             }
     }
 
+    func switchTabToDashboard() {
+        tabControllerManager?.showDashboard()
+    }
+
     func switchToSend() {
         tabControllerManager?.showSend()
     }

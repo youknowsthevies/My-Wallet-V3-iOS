@@ -36,7 +36,6 @@ final class RootViewController: UIHostingController<RootView> {
         super.init(rootView: RootView(store: store))
 
         subscribe(to: ViewStore(global))
-        subscribe(to: viewStore)
 
         environment.publisher
             .sink(to: My.handle(state:action:), on: self)
@@ -47,13 +46,7 @@ final class RootViewController: UIHostingController<RootView> {
         unimplemented()
     }
 
-    var tabControllerManager: TabControllerManager? { // ← Remove requirement from LoggedInBridge
-        get { #function.peek("‼️ not implemented"); return nil }
-        set { #function.peek("‼️ not implemented. newValue = \(String(describing: newValue))") }
-    }
-
     func clear() {
-        tabControllerManager = nil
         bag.removeAll()
     }
 
@@ -73,6 +66,7 @@ final class RootViewController: UIHostingController<RootView> {
     @LazyInject var transactionsRouter: TransactionsRouterAPI
 
     var pinRouter: PinRouter?
+
     lazy var bottomSheetPresenter = BottomSheetPresenting()
 
     var showFundTransferDetails: (
@@ -140,10 +134,6 @@ extension RootViewController {
 }
 
 extension RootViewController {
-
-    func subscribe(to viewStore: ViewStore<RootViewState, RootViewAction>) {
-        #function.peek("‼️ not implemented")
-    }
 
     // swiftlint:disable cyclomatic_complexity
     func handle(state: RootViewState, action: RootViewAction) {
