@@ -17,7 +17,7 @@ protocol LoggedInViewController: UIViewController, LoggedInBridge {
 }
 
 extension LoggedInHostingController: LoggedInViewController {}
-extension LoggedInRootViewController: LoggedInViewController {}
+extension RootViewController: LoggedInViewController {}
 
 /// Acts as the main controller for onboarding and logged in states
 final class AppHostingController: UIViewController {
@@ -112,7 +112,7 @@ final class AppHostingController: UIViewController {
                 self.featureFlagsService.isEnabled(.local(.redesign))
                     .sink { isEnabled in
                         if isEnabled {
-                            load(LoggedInRootViewController(store: store))
+                            load(RootViewController(store: store))
                         } else {
                             load(LoggedInHostingController(store: store))
                         }

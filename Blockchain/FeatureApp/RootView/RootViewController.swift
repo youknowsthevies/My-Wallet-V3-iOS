@@ -5,29 +5,35 @@ import ComposableArchitecture
 import DIKit
 import FeatureAppUI
 import FeatureAuthenticationDomain
+import FeatureDashboardUI
+import FeatureOnboardingUI
 import FeatureTransactionUI
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
 import ToolKit
 
-final class LoggedInRootViewController: UIHostingController<LoggedInRootView> {
+final class RootViewController: UIHostingController<RootView> {
 
-    let viewStore: ViewStore<LoggedInRootState, LoggedInRootAction>
+    let viewStore: ViewStore<RootViewState, RootViewAction>
+
+    var send: (LoggedIn.Action) -> Void
     var bag: Set<AnyCancellable> = []
 
     init(store global: Store<LoggedIn.State, LoggedIn.Action>) {
 
-        let environment = LoggedInRootEnvironment()
+        send = ViewStore(global).send
+
+        let environment = RootViewEnvironment()
         let store = Store(
-            initialState: LoggedInRootState(),
-            reducer: loggedInRootReducer,
+            initialState: RootViewState(),
+            reducer: rootViewReducer,
             environment: environment
         )
 
         viewStore = ViewStore(store)
 
-        super.init(rootView: LoggedInRootView(store: store))
+        super.init(rootView: RootView(store: store))
 
         subscribe(to: ViewStore(global))
         subscribe(to: viewStore)
@@ -53,9 +59,21 @@ final class LoggedInRootViewController: UIHostingController<LoggedInRootView> {
 
     // MARK: Dependencies
 
+    @LazyInject var alertViewPresenter: AlertViewPresenterAPI
+    @LazyInject var backupRouter: FeatureDashboardUI.BackupRouterAPI
     @LazyInject var coincore: CoincoreAPI
-    @LazyInject var transactionsRouter: TransactionsRouterAPI
+    @LazyInject var customerSupportChatRouter: CustomerSupportChatRouterAPI
+    @LazyInject var eligibilityService: EligibilityServiceAPI
+    @LazyInject var featureFlagService: FeatureFlagsServiceAPI
     @LazyInject var fiatCurrencyService: FiatCurrencyServiceAPI
+    @LazyInject var kycRouter: PlatformUIKit.KYCRouting
+    @LazyInject var onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI
+    @LazyInject var receiveCoordinator: ReceiveCoordinator
+    @LazyInject var tiersService: KYCTiersServiceAPI
+    @LazyInject var transactionsRouter: TransactionsRouterAPI
+
+    var pinRouter: PinRouter?
+    lazy var bottomSheetPresenter = BottomSheetPresenting()
 
     var showFundTransferDetails: (
         router: PlatformUIKit.RouterAPI,
@@ -65,70 +83,70 @@ final class LoggedInRootViewController: UIHostingController<LoggedInRootView> {
         let builder = PlatformUIKit.Builder(stateService: stateService)
         return (PlatformUIKit.Router(builder: builder, currency: .coin(.bitcoin)), stateService)
     }()
+
+    var sendRoot: (
+        router: SendRootRouting,
+        viewController: UIViewController
+    ) = {
+        let router = SendRootBuilder().build()
+        let viewController = router.viewControllable.uiviewController
+        router.interactable.activate()
+        router.load()
+        return (router, viewController)
+    }()
 }
 
-extension LoggedInRootViewController {
+extension RootViewController {
 
     func subscribe(to viewStore: ViewStore<LoggedIn.State, LoggedIn.Action>) {
 
         viewStore.publisher
             .reloadAfterMultiAddressResponse
             .filter { $0 }
-            .sink { output in
-                output.peek("‼️ not implemented")
-            }
+            .sink(to: My.reload, on: self)
             .store(in: &bag)
 
         viewStore.publisher
             .reloadAfterSymbolChanged
             .filter { $0 }
-            .sink { output in
-                output.peek("‼️ not implemented")
-            }
+            .sink(to: My.reload, on: self)
             .store(in: &bag)
 
         viewStore.publisher
             .displayWalletAlertContent
             .compactMap { $0 }
             .removeDuplicates()
-            .sink { output in
-                "\(output)".peek("‼️ not implemented")
-            }
+            .sink(to: My.alert, on: self)
             .store(in: &bag)
 
         viewStore.publisher
             .displaySendCryptoScreen
             .filter(\.self)
-            .sink { output in
-                output.peek("‼️ not implemented")
-            }
+            .sink(to: My.handleSendCrypto, on: self)
             .store(in: &bag)
 
         viewStore.publisher
             .displayOnboardingFlow
             .filter(\.self)
-            .sink { output in
-                output.peek("‼️ not implemented")
-            }
+            .sink(to: My.presentOnboarding, on: self)
             .store(in: &bag)
 
         viewStore.publisher
             .displayLegacyBuyFlow
             .filter(\.self)
-            .sink { output in
-                output.peek("‼️ not implemented")
-            }
+            .sink(to: My.handleBuyCrypto, on: self)
             .store(in: &bag)
     }
 }
 
-extension LoggedInRootViewController {
+extension RootViewController {
 
-    func subscribe(to viewStore: ViewStore<LoggedInRootState, LoggedInRootAction>) {
+    func subscribe(to viewStore: ViewStore<RootViewState, RootViewAction>) {
         #function.peek("‼️ not implemented")
     }
 
-    func handle(state: LoggedInRootState, action: LoggedInRootAction) {
+    // swiftlint:disable cyclomatic_complexity
+    func handle(state: RootViewState, action: RootViewAction) {
         switch action {
         case .frequentAction(let frequentAction):
             switch frequentAction {

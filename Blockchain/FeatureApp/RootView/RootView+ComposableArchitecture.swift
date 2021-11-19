@@ -8,27 +8,27 @@ import ComposableNavigation
 import Localization
 import SwiftUI
 
-struct LoggedInRootState: Equatable, NavigationState {
+struct RootViewState: Equatable, NavigationState {
 
-    var route: RouteIntent<LoggedInRootRoute>?
+    var route: RouteIntent<RootViewRoute>?
 
     @BindableState var tab: Tab = .home
     @BindableState var fab: Bool = false
 }
 
-enum LoggedInRootAction: Equatable, NavigationAction, BindableAction {
-    case route(RouteIntent<LoggedInRootRoute>?)
+enum RootViewAction: Equatable, NavigationAction, BindableAction {
+    case route(RouteIntent<RootViewRoute>?)
     case tab(Tab)
     case frequentAction(FrequentAction)
-    case binding(BindingAction<LoggedInRootState>)
+    case binding(BindingAction<RootViewState>)
 }
 
-enum LoggedInRootRoute: NavigationRoute {
+enum RootViewRoute: NavigationRoute {
 
     case account
     case QR
 
-    @ViewBuilder func destination(in store: Store<LoggedInRootState, LoggedInRootAction>) -> some View {
+    @ViewBuilder func destination(in store: Store<RootViewState, RootViewAction>) -> some View {
         switch self {
         case .QR:
             PrimaryNavigationView {
@@ -48,14 +48,14 @@ enum LoggedInRootRoute: NavigationRoute {
     }
 }
 
-struct LoggedInRootEnvironment: PublishedEnvironment {
-    var subject: PassthroughSubject<(state: LoggedInRootState, action: LoggedInRootAction), Never> = .init()
+struct RootViewEnvironment: PublishedEnvironment {
+    var subject: PassthroughSubject<(state: RootViewState, action: RootViewAction), Never> = .init()
 }
 
-let loggedInRootReducer = Reducer<
-    LoggedInRootState,
-    LoggedInRootAction,
-    LoggedInRootEnvironment
+let rootViewReducer = Reducer<
+    RootViewState,
+    RootViewAction,
+    RootViewEnvironment
 > { state, action, _ in
     switch action {
     case .tab(let tab):

@@ -34,11 +34,11 @@ extension Tab {
     )
 }
 
-struct LoggedInRootView: View {
+struct RootView: View {
 
-    let store: Store<LoggedInRootState, LoggedInRootAction>
+    let store: Store<RootViewState, RootViewAction>
 
-    init(store: Store<LoggedInRootState, LoggedInRootAction>) {
+    init(store: Store<RootViewState, RootViewAction>) {
         self.store = store
         setupApperance()
     }
