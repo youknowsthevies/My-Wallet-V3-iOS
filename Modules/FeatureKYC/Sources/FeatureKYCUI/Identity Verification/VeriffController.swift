@@ -19,6 +19,8 @@ protocol VeriffController: VeriffSdkDelegate {
 
     func onVeriffSubmissionCompleted()
 
+    func trackInternalVeriffError(_ error: InternalVeriffError)
+
     func onVeriffError(message: String)
 
     func onVeriffCancelled()
@@ -35,11 +37,47 @@ extension VeriffController where Self: UIViewController {
     }
 }
 
+enum InternalVeriffError: Error {
+    case cameraUnavailable
+    case microphoneUnavailable
+    case serverError
+    case localError
+    case networkError
+    case uploadError
+    case videoFailed
+    case deprecatedSDKVersion
+    case unknown
+
+    init(veriffError: VeriffSdk.Error) {
+        switch veriffError {
+        case .cameraUnavailable:
+            self = .cameraUnavailable
+        case .microphoneUnavailable:
+            self = .microphoneUnavailable
+        case .serverError:
+            self = .serverError
+        case .localError:
+            self = .localError
+        case .networkError:
+            self = .networkError
+        case .uploadError:
+            self = .uploadError
+        case .videoFailed:
+            self = .videoFailed
+        case .deprecatedSDKVersion:
+            self = .deprecatedSDKVersion
+        case .unknown:
+            self = .unknown
+        }
+    }
+}
+
 extension VeriffController {
     func sessionDidEndWithResult(_ result: VeriffSdk.Result) {
 
         switch result.status {
         case .error(let error):
+            trackInternalVeriffError(.init(veriffError: error))
             onVeriffError(message: error.localizedErrorMessage)
         case .done:
             onVeriffSubmissionCompleted()
