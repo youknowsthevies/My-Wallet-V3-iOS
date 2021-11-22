@@ -13,6 +13,8 @@ import FeatureInterestData
 import FeatureSettingsData
 import FeatureSettingsDomain
 import FeatureTransactionData
+import FeatureWalletConnectData
+import FeatureWalletConnectUI
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
 import Firebase
@@ -115,6 +117,9 @@ func defineDependencies() {
         DependencyContainer.remoteNotificationsKit
         DependencyContainer.featureAuthenticationData
         DependencyContainer.featureAuthenticationDomain
+        DependencyContainer.featureWalletConnectData
+        DependencyContainer.featureWalletConnectDomain
+        DependencyContainer.featureWalletConnectUI
         DependencyContainer.featureAppUI
         DependencyContainer.featureAppDomain
         DependencyContainer.withdrawalLocksData

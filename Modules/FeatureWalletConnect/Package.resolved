@@ -47,12 +47,30 @@
         }
       },
       {
+        "package": "Gifu",
+        "repositoryURL": "https://github.com/kaishin/Gifu",
+        "state": {
+          "branch": null,
+          "revision": "51f2eab32903e336f590c013267cfa4d7f8b06c4",
+          "version": "3.3.1"
+        }
+      },
+      {
         "package": "Nuke",
         "repositoryURL": "https://github.com/kean/Nuke.git",
         "state": {
           "branch": null,
           "revision": "472a03c15f39592007d94f25abe554350bc8aa2b",
           "version": "10.5.1"
+        }
+      },
+      {
+        "package": "NukeUI",
+        "repositoryURL": "https://github.com/kean/NukeUI.git",
+        "state": {
+          "branch": null,
+          "revision": "08e953d8d80b409bebcd95ba0635fdd748934ce0",
+          "version": "0.7.0"
         }
       },
       {
@@ -92,6 +110,24 @@
         }
       },
       {
+        "package": "Starscream",
+        "repositoryURL": "https://github.com/daltoniam/Starscream.git",
+        "state": {
+          "branch": null,
+          "revision": "e6b65c6d9077ea48b4a7bdda8994a1d3c6969c8d",
+          "version": "3.1.1"
+        }
+      },
+      {
+        "package": "stellarsdk",
+        "repositoryURL": "https://github.com/Soneso/stellar-ios-mac-sdk.git",
+        "state": {
+          "branch": null,
+          "revision": "c2f7a48391555fcac70b55dd728051ba50b059dd",
+          "version": "2.0.2"
+        }
+      },
+      {
         "package": "swift-algorithms",
         "repositoryURL": "https://github.com/apple/swift-algorithms.git",
         "state": {
@@ -114,8 +150,8 @@
         "repositoryURL": "https://github.com/apple/swift-collections",
         "state": {
           "branch": null,
-          "revision": "2d33a0ea89c961dcb2b3da2157963d9c0370347e",
-          "version": "1.0.1"
+          "revision": "48254824bb4248676bf7ce56014ff57b142b77eb",
+          "version": "1.0.2"
         }
       },
       {
@@ -146,6 +182,15 @@
         }
       },
       {
+        "package": "swift-nio-zlib-support",
+        "repositoryURL": "https://github.com/apple/swift-nio-zlib-support.git",
+        "state": {
+          "branch": null,
+          "revision": "37760e9a52030bb9011972c5213c3350fa9d41fd",
+          "version": "1.0.0"
+        }
+      },
+      {
         "package": "swift-numerics",
         "repositoryURL": "https://github.com/apple/swift-numerics",
         "state": {
@@ -164,12 +209,30 @@
         }
       },
       {
+        "package": "Veriff",
+        "repositoryURL": "https://github.com/Veriff/veriff-ios-spm.git",
+        "state": {
+          "branch": null,
+          "revision": "c5b656b1d1fbc25ff448162539db20a824c9e42f",
+          "version": "4.3.1"
+        }
+      },
+      {
         "package": "WalletCore",
         "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
         "state": {
           "branch": null,
           "revision": "985832e0a0746608ded3cc3984066f455d28c30f",
           "version": "2.6.31"
+        }
+      },
+      {
+        "package": "WalletConnectSwift",
+        "repositoryURL": "https://github.com/crucheton-bc/WalletConnectSwift.git",
+        "state": {
+          "branch": "master",
+          "revision": "f951da68a32666712e8c80ba0c77e9df5dce9fd6",
+          "version": null
         }
       },
       {

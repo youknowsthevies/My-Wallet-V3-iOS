@@ -33,6 +33,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables unified QR code scanner
     case unifiedQRCodeScanner
 
+    /// Enables unified QR code scanner
+    case walletConnect
+
     /// OpenBanking
     case openBanking
 
@@ -43,6 +46,7 @@ public enum InternalFeature: String, CaseIterable {
     var isAlphaReady: Bool {
         switch self {
         case .newAccountPicker,
+             .walletConnect,
              .newOnboardingTour,
              .openBanking,
              .pollingForEmailLogin,
@@ -90,6 +94,8 @@ extension InternalFeature {
             return "Unified QR Code Scanner"
         case .redesign:
             return "Redesign"
+        case .walletConnect:
+            return "Wallet Connect"
         }
     }
 }

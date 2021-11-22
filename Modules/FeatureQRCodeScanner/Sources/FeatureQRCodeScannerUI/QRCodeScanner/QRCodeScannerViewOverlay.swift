@@ -1,9 +1,41 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Localization
 import UIKit
 
 final class QRCodeScannerViewOverlay: UIView {
+
+    private enum Images {
+        case cameraRoll
+        case connectedDapps
+        case flashDisabled
+        case flashEnabled
+        case target
+
+        private var name: String {
+            switch self {
+            case .cameraRoll:
+                return "camera-roll-button"
+            case .connectedDapps:
+                return "connectedDappsIcon"
+            case .flashDisabled:
+                return "flashDisabled"
+            case .flashEnabled:
+                return "flashEnabled"
+            case .target:
+                return "target"
+            }
+        }
+
+        var image: UIImage? {
+            UIImage(
+                named: name,
+                in: .featureQRCodeScannerUI,
+                with: nil
+            )
+        }
+    }
 
     /// The area that the QR code must be within.
     var scannableFrame: CGRect {
@@ -26,6 +58,7 @@ final class QRCodeScannerViewOverlay: UIView {
     private let scanningViewFinder = UIView()
     private let flashButton = UIButton()
     private let cameraRollButton = UIButton()
+    private let connectedDappsButton = UIButton()
     private let subtitleLabel = UILabel()
     private let titleLabel = UILabel()
     private var cancellables = [AnyCancellable]()
@@ -34,11 +67,7 @@ final class QRCodeScannerViewOverlay: UIView {
     private let cameraRollButtonSubject = PassthroughSubject<Void, Never>()
     private let flashButtonSubject = PassthroughSubject<Void, Never>()
 
-    private let targetImageView = UIImageView(image: UIImage(
-        named: "target",
-        in: .featureQRCodeScannerUI,
-        with: nil
-    ))
+    private let targetImageView = UIImageView(image: Images.target.image)
 
     init(viewModel: QRCodeScannerOverlayViewModel, targetCoordinateSpace: UICoordinateSpace) {
         self.viewModel = viewModel
@@ -102,6 +131,7 @@ final class QRCodeScannerViewOverlay: UIView {
         addSubview(flashButton)
         addSubview(cameraRollButton)
         addSubview(targetImageView)
+        addSubview(connectedDappsButton)
         cameraRollButton.addTarget(self, action: #selector(onCameraRollTap), for: .touchUpInside)
         cameraRollButton.layout(size: .edge(44))
         cameraRollButton.layoutToSuperview(.trailing, offset: -44)
@@ -112,12 +142,25 @@ final class QRCodeScannerViewOverlay: UIView {
         flashButton.layout(edge: .top, to: .bottom, of: targetImageView, offset: 20)
         flashButton.addTarget(self, action: #selector(onFlashButtonTap), for: .touchUpInside)
 
+        connectedDappsButton.layoutToSuperview(.bottom, offset: -50)
+        connectedDappsButton.layoutToSuperview(.centerX)
+        connectedDappsButton.layout(dimension: .height, to: 48)
+
         viewModel
             .cameraRollButtonVisibility
             .map(\.isHidden)
             .receive(on: RunLoop.main)
             .sink { [weak self] in
                 self?.cameraRollButton.isHidden = $0
+            }
+            .store(in: &cancellables)
+
+        viewModel
+            .dAppsButtonVisibility
+            .map(\.isHidden)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] in
+                self?.connectedDappsButton.isHidden = $0
             }
             .store(in: &cancellables)
 
@@ -149,11 +192,23 @@ final class QRCodeScannerViewOverlay: UIView {
             .sink { [weak self] in self?.viewModel.flashTapRelay.send($0) }
             .store(in: &cancellables)
 
-        cameraRollButton.setImage(UIImage(named: "camera-roll-button"), for: .normal)
+        cameraRollButton.setImage(Images.cameraRoll.image, for: .normal)
 
-        flashButton.setImage(UIImage(named: "flashDisabled", in: .featureQRCodeScannerUI, with: nil), for: .normal)
-        flashButton.setImage(UIImage(named: "flashEnabled", in: .featureQRCodeScannerUI, with: nil), for: .selected)
-        flashButton.setImage(UIImage(named: "flashEnabled", in: .featureQRCodeScannerUI, with: nil), for: .highlighted)
+        connectedDappsButton.setImage(Images.connectedDapps.image, for: .normal)
+        connectedDappsButton.setTitle(
+            String(format: LocalizationConstants.QRCodeScanner.connectedDapps, "0"),
+            for: .normal
+        )
+        connectedDappsButton.titleLabel?.font = UIFont.main(.medium, 16)
+        connectedDappsButton.setTitleColor(.tertiaryButton, for: .normal)
+        connectedDappsButton.layer.cornerRadius = 24
+        connectedDappsButton.backgroundColor = .mediumBackground
+        connectedDappsButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 34)
+        connectedDappsButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -10)
+
+        flashButton.setImage(Images.flashDisabled.image, for: .normal)
+        flashButton.setImage(Images.flashEnabled.image, for: .selected)
+        flashButton.setImage(Images.flashEnabled.image, for: .highlighted)
     }
 
     override func layoutSubviews() {

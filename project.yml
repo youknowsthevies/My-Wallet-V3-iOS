@@ -288,6 +288,8 @@ packages:
     path: Modules/FeatureTransaction
   FeatureWithdrawalLocks:
     path: Modules/FeatureWithdrawalLocks
+  FeatureWalletConnect:
+    path: Modules/FeatureWalletConnect
   HDWallet:
     path: Modules/HDWallet
   Keychain:
@@ -384,6 +386,7 @@ targets:
       - package: FeatureTour
       - package: FeatureTransaction
       - package: FeatureWithdrawalLocks
+      - package: FeatureWalletConnect
 
       - package: BigInt
       - package: ComposableArchitecture
