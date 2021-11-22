@@ -45,7 +45,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private let withdrawFlowBuilder: WithdrawRootBuildable
     private let depositFlowBuilder: DepositRootBuildable
     private let receiveCooridnator: ReceiveCoordinator
-    private let tabSwapping: TabSwapping
+    @LazyInject var tabSwapping: TabSwapping
 
     /// Currently retained RIBs router in use.
     private var currentRIBRouter: RIBs.Routing?
@@ -66,8 +66,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         withdrawFlowBuilder: WithdrawRootBuildable = WithdrawRootBuilder(),
         depositFlowBuilder: DepositRootBuildable = DepositRootBuilder(),
         eligibilityService: EligibilityServiceAPI = resolve(),
-        receiveCooridnator: ReceiveCoordinator = ReceiveCoordinator(),
-        tabSwapping: TabSwapping = resolve()
+        receiveCooridnator: ReceiveCoordinator = ReceiveCoordinator()
     ) {
         self.featureFlagsService = featureFlagsService
         self.kycRouter = kycRouter
@@ -85,7 +84,6 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.depositFlowBuilder = depositFlowBuilder
         self.eligibilityService = eligibilityService
         self.receiveCooridnator = receiveCooridnator
-        self.tabSwapping = tabSwapping
     }
 
     func presentTransactionFlow(
