@@ -10,7 +10,6 @@ final class DefaultRowTests: XCTestCase {
             DefaultRow_Previews.previews
         }
         .fixedSize()
-        .padding()
 
         assertSnapshots(
             matching: view,
