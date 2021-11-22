@@ -50,14 +50,14 @@ public enum InternalFeature: String, CaseIterable {
              .newOnboardingTour,
              .openBanking,
              .pollingForEmailLogin,
-             .unifiedQRCodeScanner:
+             .unifiedQRCodeScanner,
+             .redesign:
             return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
              .secureChannel,
              .unifiedSignIn,
-             .nativeWalletPayload,
-             .redesign:
+             .nativeWalletPayload:
             return false
         }
     }

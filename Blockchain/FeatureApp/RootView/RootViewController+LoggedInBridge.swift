@@ -370,4 +370,25 @@ extension RootViewController: LoggedInBridge {
     func showQRCodeScanner() {
         viewStore.send(.enter(into: .QR, context: .none))
     }
+
+    func logout() {
+        alert(
+            .init(
+                title: LocalizationConstants.SideMenu.logout,
+                message: LocalizationConstants.SideMenu.logoutConfirm,
+                actions: [
+                    UIAlertAction(
+                        title: LocalizationConstants.okString,
+                        style: .default
+                    ) { [weak self] _ in
+                        self?.send(.logout)
+                    },
+                    UIAlertAction(
+                        title: LocalizationConstants.cancel,
+                        style: .cancel
+                    )
+                ]
+            )
+        )
+    }
 }

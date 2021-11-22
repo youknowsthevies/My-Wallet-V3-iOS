@@ -9,6 +9,7 @@ public enum SettingsScreenAction {
     case promptGuidCopy
     case launchKYC
     case launchPIT
+    case logout
     case showAppStore
     case showBackupScreen
     case showChangePinScreen

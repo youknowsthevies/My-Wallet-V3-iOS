@@ -60,7 +60,7 @@ struct RootView: View {
                 }
                 fab()
                 tab(.buyAndSell) {
-                    BuySellView()
+                    BuySellView(selectedSegment: viewStore.buyAndSellSelectedSegment)
                 }
                 tab(.activity) {
                     ActivityView()

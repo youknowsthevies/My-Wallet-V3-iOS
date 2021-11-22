@@ -523,4 +523,25 @@ extension LoggedInHostingController {
         accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
     }
+
+    func logout() {
+        showAlert(
+            with: .init(
+                title: LocalizationConstants.SideMenu.logout,
+                message: LocalizationConstants.SideMenu.logoutConfirm,
+                actions: [
+                    UIAlertAction(
+                        title: LocalizationConstants.okString,
+                        style: .default
+                    ) { [weak self] _ in
+                        self?.viewStore.send(.logout)
+                    },
+                    UIAlertAction(
+                        title: LocalizationConstants.cancel,
+                        style: .cancel
+                    )
+                ]
+            )
+        )
+    }
 }

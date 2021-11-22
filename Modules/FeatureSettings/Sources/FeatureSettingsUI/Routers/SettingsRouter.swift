@@ -88,6 +88,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private let builder: SettingsBuilding
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
+    private let logoutService: LogoutServiceAPI
 
     /// The router for linking a new bank
     private var linkBankFlowRouter: LinkBankFlowStarter?
@@ -119,7 +120,8 @@ final class SettingsRouter: SettingsRouterAPI {
         paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-        presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI = resolve()
+        presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI = resolve(),
+        logoutService: LogoutServiceAPI = resolve()
     ) {
         self.wallet = wallet
         self.appCoordinator = appCoordinator
@@ -140,6 +142,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.analyticsRecorder = analyticsRecorder
         self.featureFlagsService = featureFlagsService
         self.presentAccountLinkingFlow = presentAccountLinkingFlow
+        self.logoutService = logoutService
 
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -346,6 +349,8 @@ final class SettingsRouter: SettingsRouterAPI {
             navigationRouter.present(viewController: controller)
         case .showUpdateMobileScreen:
             updateMobileRouter.start()
+        case .logout:
+            logoutService.logout()
         case .none:
             break
         }

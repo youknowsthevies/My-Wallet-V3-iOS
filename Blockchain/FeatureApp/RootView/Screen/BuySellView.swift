@@ -5,9 +5,13 @@ import SwiftUI
 
 struct BuySellView: UIViewControllerRepresentable {
 
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
+    var selectedSegment: Int = 0
 
-    func makeUIViewController(context: Context) -> some UIViewController {
+    func updateUIViewController(_ uiViewController: SegmentedViewController, context: Context) {
+        uiViewController.selectSegment(selectedSegment)
+    }
+
+    func makeUIViewController(context: Context) -> SegmentedViewController {
         let viewController = SegmentedViewController(
             presenter: BuySellSegmentedViewPresenter()
         )

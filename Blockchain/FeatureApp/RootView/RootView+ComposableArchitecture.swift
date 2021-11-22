@@ -14,6 +14,7 @@ struct RootViewState: Equatable, NavigationState {
 
     @BindableState var tab: Tab = .home
     @BindableState var fab: Bool = false
+    @BindableState var buyAndSellSelectedSegment: Int = 0
 }
 
 enum RootViewAction: Equatable, NavigationAction, BindableAction {
@@ -61,8 +62,18 @@ let rootViewReducer = Reducer<
     case .tab(let tab):
         state.tab = tab
         return .none
-    case .frequentAction:
+    case .frequentAction(let action):
         state.fab = false
+        switch action {
+        case .buy:
+            state.buyAndSellSelectedSegment = 0
+            state.tab = .buyAndSell
+        case .sell:
+            state.buyAndSellSelectedSegment = 1
+            state.tab = .buyAndSell
+        default:
+            break
+        }
         return .none
     case .route, .binding:
         return .none
