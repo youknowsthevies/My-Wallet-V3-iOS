@@ -143,7 +143,8 @@ final class FiatDepositTransactionEngine: TransactionEngine {
                 return transactionLimitsService.fetchLimits(
                     for: paymentMethod,
                     targetCurrency: fiatCurrency.currencyType,
-                    limitsCurrency: fiatCurrency.currencyType
+                    limitsCurrency: fiatCurrency.currencyType,
+                    product: .simplebuy
                 )
                 .asSingle()
             }

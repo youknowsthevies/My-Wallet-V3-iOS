@@ -6,6 +6,10 @@ import PlatformKit
 /// Use this struct to fill transaction data in `TransactionEngine`s.
 public struct TransactionLimits: Equatable {
 
+    public var currencyType: CurrencyType {
+        minimum.currency
+    }
+
     public let minimum: MoneyValue
     public let maximum: MoneyValue
     public let maximumDaily: MoneyValue

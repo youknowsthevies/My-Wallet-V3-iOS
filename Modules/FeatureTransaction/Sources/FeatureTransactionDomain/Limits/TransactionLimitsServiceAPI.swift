@@ -37,7 +37,8 @@ public protocol TransactionLimitsServiceAPI {
     func fetchLimits(
         for paymentMethod: PaymentMethod,
         targetCurrency: CurrencyType,
-        limitsCurrency: CurrencyType
+        limitsCurrency: CurrencyType,
+        product: TransactionLimitsProduct
     ) -> TransactionLimitsServicePublisher
 }
 
@@ -145,25 +146,43 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
     func fetchLimits(
         for paymentMethod: PaymentMethod,
         targetCurrency: CurrencyType,
-        limitsCurrency: CurrencyType
+        limitsCurrency: CurrencyType,
+        product: TransactionLimitsProduct
     ) -> TransactionLimitsServicePublisher {
-        featureFlagService.isEnabled(.remote(.newLimitsUIEnabled))
-            .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
-                guard newLimitsEnabled else {
-                    return .just(TransactionLimits(paymentMethod))
-                        .convertAmounts(
-                            from: paymentMethod.fiatCurrency.currencyType,
-                            to: limitsCurrency,
-                            using: conversionService
-                        )
+        fetchTradeLimits(
+            fiatCurrency: paymentMethod.fiatCurrency,
+            destination: LimitsAccount(
+                currency: targetCurrency,
+                accountType: .custodial
+            ),
+            product: product
+        )
+        .map { tradeLimits in
+            TransactionLimits(tradeLimits).merge(with: TransactionLimits(paymentMethod))
+        }
+        .flatMap { [featureFlagService] transactionLimits in
+            featureFlagService
+                .isEnabled(.remote(.newLimitsUIEnabled))
+                .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
+                    guard newLimitsEnabled else {
+                        return .just(transactionLimits)
+                            .convertAmounts(
+                                from: paymentMethod.fiatCurrency.currencyType,
+                                to: limitsCurrency,
+                                using: conversionService
+                            )
+                    }
+                    return self.fetchCrossBorderLimits(
+                        for: paymentMethod,
+                        targetCurrency: targetCurrency,
+                        limitsCurrency: limitsCurrency
+                    )
                 }
-                return self.fetchCrossBorderLimits(
-                    for: paymentMethod,
-                    targetCurrency: targetCurrency,
-                    limitsCurrency: limitsCurrency
-                )
-            }
-            .eraseToAnyPublisher()
+                .map { crossBorderLimits -> TransactionLimits in
+                    transactionLimits.merge(with: crossBorderLimits)
+                }
+        }
+        .eraseToAnyPublisher()
     }
 }
 
@@ -304,6 +323,17 @@ extension TransactionLimits {
             maximumAnnual: crossBorderLimits.currentLimits?.yearly?.limit ?? infinity,
             effectiveLimit: .init(crossBorderLimits: crossBorderLimits, maxLimitFallbak: infinity),
             suggestedUpgrade: crossBorderLimits.suggestedUpgrade
+        )
+    }
+
+    func merge(with limits: TransactionLimits) -> TransactionLimits {
+        TransactionLimits(
+            minimum: (try? .max(limits.minimum, minimum)) ?? minimum,
+            maximum: (try? .max(limits.maximum, maximum)) ?? maximum,
+            maximumDaily: (try? .max(limits.maximumDaily, maximumDaily)) ?? maximumDaily,
+            maximumAnnual: (try? .max(limits.maximumAnnual, maximumAnnual)) ?? maximumAnnual,
+            effectiveLimit: try? .max(effectiveLimit, limits.effectiveLimit),
+            suggestedUpgrade: try? effectiveLimit.value > limits.effectiveLimit.value ? suggestedUpgrade : limits.suggestedUpgrade
         )
     }
 

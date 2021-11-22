@@ -334,7 +334,8 @@ extension BuyTransactionEngine {
             .fetchLimits(
                 for: paymentMethod,
                 targetCurrency: transactionTarget.currencyType,
-                limitsCurrency: inputCurrency
+                limitsCurrency: inputCurrency,
+                product: .simplebuy
             )
             .mapError(MakeTransactionError.limitsError)
             .eraseToAnyPublisher()
