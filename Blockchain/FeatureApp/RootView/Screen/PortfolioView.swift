@@ -7,7 +7,6 @@ import SwiftUI
 
 struct PortfolioView: UIViewControllerRepresentable {
 
-    var dashboardScreenPresenter: PortfolioScreenPresenter = .init()
     var fiatBalanceCellProvider: FiatBalanceCellProviding = resolve()
 
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
@@ -15,7 +14,7 @@ struct PortfolioView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {
         let viewController = PortfolioViewController(
             fiatBalanceCellProvider: fiatBalanceCellProvider,
-            presenter: dashboardScreenPresenter
+            presenter: PortfolioScreenPresenter()
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController
