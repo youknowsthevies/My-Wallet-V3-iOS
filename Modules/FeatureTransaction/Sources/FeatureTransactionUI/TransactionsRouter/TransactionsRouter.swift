@@ -9,68 +9,9 @@ import RIBs
 import SwiftUI
 import ToolKit
 
-/// Represents all types of transactions the user can perform
-public enum TransactionFlowAction: Equatable {
-
-    // Restores an existing order.
-    case order(OrderDetails)
-    /// Performs a buy. If `CryptoAccount` is `nil`, the users will be presented with a crypto currency selector.
-    case buy(CryptoAccount?)
-    /// Performs a sell. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
-    case sell(CryptoAccount?)
-    /// Performs a swap. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
-    case swap(CryptoAccount?)
-    /// Performs a send. If `CryptoAccount` is `nil`, the users will be presented with a crypto account selector.
-    case send(CryptoAccount?)
-    /// Performs a receive. If `CryptoAccount` is `nil`, the users will be presented with a crypto account selector.
-    case receive(CryptoAccount?)
-    /// Performs an interest transfer.
-    case interestTransfer(CryptoInterestAccount)
-    /// Performs an interest withdraw.
-    case interestWithdraw(CryptoInterestAccount)
-    /// Performs a withdraw.
-    case withdraw(FiatAccount)
-    /// Performs a deposit.
-    case deposit(FiatAccount)
-
-    case sign(sourceAccount: CryptoAccount, destination: TransactionTarget)
-}
-
-extension TransactionFlowAction {
-
-    public static func == (lhs: TransactionFlowAction, rhs: TransactionFlowAction) -> Bool {
-        switch (lhs, rhs) {
-        case (.buy(let lhsAccount), .buy(let rhsAccount)),
-             (.sell(let lhsAccount), .sell(let rhsAccount)),
-             (.swap(let lhsAccount), .swap(let rhsAccount)),
-             (.send(let lhsAccount), .send(let rhsAccount)),
-             (.receive(let lhsAccount), .receive(let rhsAccount)):
-            return lhsAccount?.identifier == rhsAccount?.identifier
-        case (.interestTransfer(let lhsAccount), .interestTransfer(let rhsAccount)),
-             (.interestWithdraw(let lhsAccount), .interestWithdraw(let rhsAccount)):
-            return lhsAccount.identifier == rhsAccount.identifier
-        case (.withdraw(let lhsAccount), .withdraw(let rhsAccount)),
-             (.deposit(let lhsAccount), .deposit(let rhsAccount)):
-            return lhsAccount.identifier == rhsAccount.identifier
-        case (.order(let lhsOrder), .order(let rhsOrder)):
-            return lhsOrder.identifier == rhsOrder.identifier
-        case (.sign(let lhsAccount, let lhsDestination), .sign(let rhsAccount, let rhsDestination)):
-            return lhsAccount.identifier == rhsAccount.identifier
-                && lhsDestination.label == rhsDestination.label
-        default:
-            return false
-        }
-    }
-}
-
-/// Represents the possible outcomes of going through the transaction flow
-public enum TransactionFlowResult: Equatable {
-    case abandoned
-    case completed
-}
-
 /// A protocol defining the API for the app's entry point to any `Transaction Flow`.
-/// NOTE: Presenting a Transaction Flow can never fail because it's expected for any error to be handled within the flow. Non-recoverable errors should force the user to abandon the flow.
+/// NOTE: Presenting a Transaction Flow can never fail because it's expected for any error to be handled within the flow.
+/// Non-recoverable errors should force the user to abandon the flow.
 public protocol TransactionsRouterAPI {
 
     /// Some APIs may not have UIKit available. In this instance we use
@@ -103,10 +44,10 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private let interestFlowBuilder: InterestTransactionBuilder
     private let withdrawFlowBuilder: WithdrawRootBuildable
     private let depositFlowBuilder: DepositRootBuildable
+    private let receiveCooridnator: ReceiveCoordinator
+    private let tabSwapping: TabSwapping
 
-    private lazy var tabSwapping: TabSwapping = resolve()
-
-    // Since RIBs need to be attached to something but we're not, the router in use needs to be retained.
+    /// Currently retained RIBs router in use.
     private var currentRIBRouter: RIBs.Routing?
 
     init(
@@ -124,7 +65,9 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         interestFlowBuilder: InterestTransactionBuilder = InterestTransactionBuilder(),
         withdrawFlowBuilder: WithdrawRootBuildable = WithdrawRootBuilder(),
         depositFlowBuilder: DepositRootBuildable = DepositRootBuilder(),
-        eligibilityService: EligibilityServiceAPI = resolve()
+        eligibilityService: EligibilityServiceAPI = resolve(),
+        receiveCooridnator: ReceiveCoordinator = ReceiveCoordinator(),
+        tabSwapping: TabSwapping = resolve()
     ) {
         self.featureFlagsService = featureFlagsService
         self.kycRouter = kycRouter
@@ -141,6 +84,8 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.withdrawFlowBuilder = withdrawFlowBuilder
         self.depositFlowBuilder = depositFlowBuilder
         self.eligibilityService = eligibilityService
+        self.receiveCooridnator = receiveCooridnator
+        self.tabSwapping = tabSwapping
     }
 
     func presentTransactionFlow(
@@ -243,7 +188,7 @@ extension TransactionsRouter {
 }
 
 extension TransactionsRouter {
-
+    // swiftlint:disable:next cyclomatic_complexity
     private func presentNewTransactionFlow(
         _ action: TransactionFlowAction,
         from presenter: UIViewController
@@ -255,12 +200,14 @@ extension TransactionsRouter {
             router.start()
             mimicRIBAttachment(router: router)
             return listener.publisher
+
         case .interestTransfer(let cryptoAccount):
             let listener = InterestTransactionInteractor(transactionType: .transfer(cryptoAccount))
             let router = interestFlowBuilder.buildWithInteractor(listener)
             router.start()
             mimicRIBAttachment(router: router)
             return listener.publisher
+
         case .buy(let cryptoAccount):
             let listener = BuyFlowListener(
                 kycRouter: kycRouter,
@@ -271,6 +218,7 @@ extension TransactionsRouter {
             router.start(with: cryptoAccount, order: nil, from: presenter)
             mimicRIBAttachment(router: router)
             return listener.publisher
+
         case .order(let order):
             let listener = BuyFlowListener(
                 kycRouter: kycRouter,
@@ -310,28 +258,29 @@ extension TransactionsRouter {
             router.start(sourceAccount: sourceAccount, destination: destination, presenter: presenter)
             mimicRIBAttachment(router: router)
             return listener.publisher
+
         case .send(let account):
             let router = sendFlowBuilder.build()
             if let account = account {
                 router.routeToSend(sourceAccount: account)
-            } else {
-                router.routeToSendLanding()
             }
             presenter.present(router.viewControllable.uiviewController, animated: true)
             mimicRIBAttachment(router: router)
             return .empty()
+
         case .receive(let account):
-            let receiveCooridnator = ReceiveCoordinator()
             presenter.present(receiveCooridnator.builder.receive(), animated: true)
             if let account = account {
                 receiveCooridnator.routeToReceive(sourceAccount: account)
             }
             return .empty()
+
         case .withdraw(let fiatAccount):
             let router = withdrawFlowBuilder.build(sourceAccount: fiatAccount)
             router.start()
             mimicRIBAttachment(router: router)
             return .empty()
+
         case .deposit(let fiatAccount):
             let router = depositFlowBuilder.build(with: fiatAccount)
             router.start()
@@ -435,7 +384,7 @@ extension TransactionsRouter {
              .receive,
              .withdraw,
              .deposit:
-            unimplemented("There is no legacy those flows.")
+            unimplemented("There is no legacy for those flows.")
         }
     }
 }

@@ -6,7 +6,7 @@ import PlatformUIKit
 import SwiftUI
 import UIComponentsKit
 
-enum CryptoCurrencyQuoteAction: Equatable {
+public enum CryptoCurrencyQuoteAction: Equatable {
     case select(CryptoCurrencyQuote)
 }
 

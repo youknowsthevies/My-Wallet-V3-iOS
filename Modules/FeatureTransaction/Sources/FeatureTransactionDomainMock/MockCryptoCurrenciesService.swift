@@ -24,4 +24,10 @@ final class MockCryptoCurrenciesService: CryptoCurrenciesServiceAPI {
         recordedInvocations.fetchPurchasableCryptoCurrencies.append(fiatCurrency)
         return stubbedResults.fetchPurchasableCryptoCurrencies
     }
+
+    func fetchPurchasableCryptoCurrencies(
+    ) -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError> {
+        recordedInvocations.fetchPurchasableCryptoCurrencies.append(FiatCurrency.USD)
+        return stubbedResults.fetchPurchasableCryptoCurrencies
+    }
 }

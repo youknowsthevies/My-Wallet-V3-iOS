@@ -38,6 +38,7 @@ final class SendRootViewController: UINavigationController, SendRootViewControll
     init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         super.init(nibName: nil, bundle: nil)
+        view.backgroundColor = .white
     }
 
     @available(*, unavailable)

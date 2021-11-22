@@ -3,52 +3,102 @@
 import Combine
 import ComposableArchitecture
 import FeatureTransactionDomain
+import Localization
 import PlatformKit // replace with MoneyKit when available
 import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-struct CryptoCurrencySelectionState: Equatable {
-    var cryptoCurrencies: IdentifiedArrayOf<CryptoCurrencyQuote> = []
+typealias LocalizedStrings = LocalizationConstants.CryptoCurrencySelection
+
+public struct CryptoCurrencySelectionState: Equatable {
+    public init(
+        fetchedCryptoCurrencies: IdentifiedArrayOf<CryptoCurrencyQuote> = [],
+        loadingCryptoCurrencies: Bool = false,
+        showDismissButton: Bool = true,
+        showHeader: Bool = true,
+        loadingErrorAlert: AlertState<CryptoCurrencySelectionAction>? = nil
+    ) {
+        self.fetchedCryptoCurrencies = fetchedCryptoCurrencies
+        self.loadingCryptoCurrencies = loadingCryptoCurrencies
+        self.showDismissButton = showDismissButton
+        self.showHeader = showHeader
+        self.loadingErrorAlert = loadingErrorAlert
+    }
+
+    var cryptoCurrencies: IdentifiedArrayOf<CryptoCurrencyQuote> {
+        if searchQuery.isEmpty {
+            return fetchedCryptoCurrencies
+        } else {
+            return filteredCryptoCurrencies
+        }
+    }
+
+    var fetchedCryptoCurrencies: IdentifiedArrayOf<CryptoCurrencyQuote> = []
+    var filteredCryptoCurrencies: IdentifiedArrayOf<CryptoCurrencyQuote> = []
+    var searchQuery: String = ""
+
     var loadingCryptoCurrencies: Bool = false
+    var showDismissButton: Bool = true
+    var showHeader: Bool = true
     var loadingErrorAlert: AlertState<CryptoCurrencySelectionAction>?
 }
 
-enum CryptoCurrencySelectionAction: Equatable {
+public enum CryptoCurrencySelectionAction: Equatable {
     case didReceiveCryptoLoadingResponse(Result<[CryptoCurrencyQuote], CryptoCurrenciesServiceError>)
     case dismissLoadingAlert
     case loadCryptoCurrencies
     case closeButtonTapped
     case cellTapped(CryptoCurrencyQuote.ID, CryptoCurrencyQuoteAction)
     case skipButtonTapped
+    case searchQueryChanged(String)
 }
 
-struct CryptoCurrencySelectionEnvironment {
+public struct CryptoCurrencySelectionEnvironment {
+    public init(
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        close: @escaping () -> Void,
+        select: @escaping (CryptoCurrency) -> Void,
+        loadCryptoCurrencies: @escaping () -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError>
+    ) {
+        self.mainQueue = mainQueue
+        self.close = close
+        self.select = select
+        self.loadCryptoCurrencies = loadCryptoCurrencies
+    }
+
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let close: () -> Void
     let select: (CryptoCurrency) -> Void
     let loadCryptoCurrencies: () -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError>
+    let fuzzyAlgorithm = FuzzyAlgorithm(caseInsensitive: true)
+    let fuzzyTolerance = 0.3
 }
 
-typealias CryptoCurrencySelectionReducer = Reducer<
+public typealias CryptoCurrencySelectionReducer = Reducer<
     CryptoCurrencySelectionState,
     CryptoCurrencySelectionAction,
     CryptoCurrencySelectionEnvironment
 >
 
-let cryptoCurrencySelectionReducer = CryptoCurrencySelectionReducer { state, action, environment in
+public let cryptoCurrencySelectionReducer = CryptoCurrencySelectionReducer { state, action, environment in
     switch action {
     case .didReceiveCryptoLoadingResponse(let result):
         state.loadingCryptoCurrencies = false
         switch result {
         case .success(let cryptoCurrencies):
-            state.cryptoCurrencies = .init(cryptoCurrencies)
+            state.fetchedCryptoCurrencies = .init(uniqueElements: cryptoCurrencies)
         case .failure(let error):
             state.loadingErrorAlert = AlertState(
-                title: TextState("Something went wrong"),
-                message: TextState("Couldn't load a list of available cryptocurrencies: \(String(describing: error))"),
+                title: TextState(LocalizedStrings.errorTitle),
+                message: TextState(
+                    String.localizedStringWithFormat(
+                        LocalizedStrings.errorDescription,
+                        String(describing: error)
+                    )
+                ),
                 primaryButton: .default(
-                    TextState("Retry"),
+                    TextState(LocalizedStrings.errorButtonTitle),
                     action: .send(.loadCryptoCurrencies)
                 ),
                 secondaryButton: .cancel()
@@ -83,52 +133,95 @@ let cryptoCurrencySelectionReducer = CryptoCurrencySelectionReducer { state, act
     case .skipButtonTapped:
         environment.close()
         return .none
+    case .searchQueryChanged(let searchQuery):
+        state.searchQuery = searchQuery
+        state.filteredCryptoCurrencies = state.fetchedCryptoCurrencies.filter {
+            let fuzzy = environment.fuzzyAlgorithm
+            let tolerance = environment.fuzzyTolerance
+            return fuzzy.distance(between: $0.cryptoCurrency.name, and: searchQuery) < tolerance ||
+                fuzzy.distance(between: $0.cryptoCurrency.code, and: searchQuery) < tolerance
+        }
+        return .none
     }
 }
 
-struct CryptoCurrencySelectionView: View {
+public struct CryptoCurrencySelectionView: View {
+
+    public init(store: Store<CryptoCurrencySelectionState, CryptoCurrencySelectionAction>) {
+        self.store = store
+    }
 
     let store: Store<CryptoCurrencySelectionState, CryptoCurrencySelectionAction>
 
-    var body: some View {
+    public var body: some View {
         WithViewStore(store) { viewStore in
             VStack(spacing: .zero) {
-                VStack(alignment: .leading, spacing: .zero) {
-                    Text("Want to Buy Crypto?")
-                        .textStyle(.title)
-                    Text("Select the crypto you want to buy and link a debit or credit card.")
-                        .textStyle(.subheading)
+                if viewStore.showHeader {
+                    VStack(alignment: .leading, spacing: .zero) {
+                        Text(LocalizedStrings.title)
+                            .textStyle(.title)
+                        Text(LocalizedStrings.description)
+                            .textStyle(.subheading)
+                    }
+                    .padding()
                 }
-                .padding()
 
-                if viewStore.cryptoCurrencies.isEmpty, viewStore.loadingCryptoCurrencies {
+                if !viewStore.fetchedCryptoCurrencies.isEmpty {
+                    HStack {
+                        TextField(
+                            LocalizedStrings.searchPlaceholder,
+                            text: viewStore.binding(
+                                get: \.searchQuery,
+                                send: CryptoCurrencySelectionAction.searchQueryChanged
+                            )
+                        )
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                    }
+                    .padding([.top, .leading, .trailing])
+                }
+
+                if viewStore.fetchedCryptoCurrencies.isEmpty, viewStore.loadingCryptoCurrencies {
                     Spacer()
                     ActivityIndicatorView()
                     Spacer()
                 } else if viewStore.cryptoCurrencies.isEmpty {
                     Spacer()
                     VStack {
-                        Text("No purchasable pairs found")
+                        Text(LocalizedStrings.emptyListTitle)
                             .textStyle(.body)
-                        PrimaryButton(title: "Retry") {
-                            viewStore.send(.loadCryptoCurrencies)
+
+                        if viewStore.searchQuery.isEmpty {
+                            PrimaryButton(title: LocalizedStrings.retryButtonTitle) {
+                                viewStore.send(.loadCryptoCurrencies)
+                            }
                         }
                     }
                     .padding()
                     Spacer()
                 } else {
-                    Divider()
+                    if viewStore.showHeader {
+                        Divider()
+                    }
                     List {
-                        ForEachStore(store.scope(state: \.cryptoCurrencies, action: CryptoCurrencySelectionAction.cellTapped)) { cellStore in
+                        ForEachStore(
+                            store.scope(
+                                state: \.cryptoCurrencies,
+                                action: CryptoCurrencySelectionAction.cellTapped
+                            )
+                        ) { cellStore in
                             CryptoCurrencyQuoteCell(store: cellStore)
                         }
                     }
                 }
 
-                SecondaryButton(title: "Not Now") {
-                    viewStore.send(.skipButtonTapped)
+                if viewStore.showDismissButton {
+                    SecondaryButton(title: LocalizedStrings.notNowButtonTitle) {
+                        viewStore.send(.skipButtonTapped)
+                    }
+                    .padding()
                 }
-                .padding()
             }
             .onAppear {
                 viewStore.send(.loadCryptoCurrencies)
@@ -193,7 +286,7 @@ struct SDDIntroBuyView_Previews: PreviewProvider {
             CryptoCurrencySelectionView(
                 store: .init(
                     initialState: CryptoCurrencySelectionState(
-                        cryptoCurrencies: .init(testCurrencyPairs)
+                        fetchedCryptoCurrencies: .init(uniqueElements: testCurrencyPairs)
                     ),
                     reducer: cryptoCurrencySelectionReducer,
                     environment: CryptoCurrencySelectionEnvironment(

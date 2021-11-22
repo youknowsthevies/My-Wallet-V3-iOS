@@ -22,6 +22,7 @@ public final class SegmentedViewController: BaseScreenViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         segmentedView.viewModel = presenter.segmentedViewModel
         add(child: rootViewController)
         presenter.itemIndexSelected
