@@ -577,15 +577,13 @@ extension TransactionErrorState {
         case .none:
             return .inBounds
 
-        case .insufficientGas:
+        case .belowFees:
             return .error(
                 message: LocalizedString.Confirmation.Error.insufficientGas
             )
 
-        case .overMaximumLimit,
-             .overMaximumSourceLimit,
+        case .overMaximumSourceLimit,
              .overMaximumPersonalLimit,
-             .insufficientFundsForFees,
              .insufficientFunds:
             let result = convertToInputCurrency(max, exchangeRate: exchangeRate, input: activeInput)
             return .maxLimitExceeded(result)
@@ -599,7 +597,6 @@ extension TransactionErrorState {
 
         case .addressIsContract,
              .invalidAddress,
-             .invalidAmount,
              .invalidPassword,
              .optionInvalid,
              .transactionInFlight,

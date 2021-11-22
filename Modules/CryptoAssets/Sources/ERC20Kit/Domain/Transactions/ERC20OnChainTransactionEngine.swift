@@ -15,6 +15,9 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
 
     // MARK: - OnChainTransactionEngine
 
+    let currencyConversionService: CurrencyConversionServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
+
     var askForRefreshConfirmation: (AskForRefreshConfirmations)!
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -38,8 +41,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     private let erc20Token: AssetModel
     private let feeCache: CachedValue<EthereumTransactionFee>
     private let feeService: EthereumKit.EthereumFeeServiceAPI
-    private let fiatCurrencyService: FiatCurrencyServiceAPI
-    private let priceService: PriceServiceAPI
     private let ethereumAccountDetails: EthereumAccountDetailsServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
@@ -54,8 +55,8 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         erc20Token: AssetModel,
         requireSecondPassword: Bool,
         ethereumAccountDetails: EthereumAccountDetailsServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         feeService: EthereumKit.EthereumFeeServiceAPI = resolve(),
         transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
@@ -63,10 +64,10 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     ) {
         self.erc20Token = erc20Token
         self.ethereumAccountDetails = ethereumAccountDetails
-        self.fiatCurrencyService = fiatCurrencyService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
         self.feeService = feeService
         self.requireSecondPassword = requireSecondPassword
-        self.priceService = priceService
         self.transactionsService = transactionsService
         self.transactionBuildingService = transactionBuildingService
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
@@ -89,7 +90,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
             .map { [erc20Token] fiatCurrency -> PendingTransaction in
                 .init(
@@ -205,13 +206,6 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         }
     }
 
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAmounts(pendingTransaction: pendingTransaction)
-            .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
-            .andThen(validateSufficientGas(pendingTransaction: pendingTransaction))
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-    }
-
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmounts(pendingTransaction: pendingTransaction)
             .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
@@ -260,8 +254,8 @@ extension ERC20OnChainTransactionEngine {
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable { [erc20Token] in
-            if try pendingTransaction.amount <= .zero(currency: .erc20(erc20Token)) {
-                throw TransactionValidationFailure(state: .invalidAmount)
+            guard try pendingTransaction.amount > .zero(currency: .erc20(erc20Token)) else {
+                throw TransactionValidationFailure(state: .belowMinimumLimit(pendingTransaction.minSpendable))
             }
         }
     }
@@ -277,6 +271,7 @@ extension ERC20OnChainTransactionEngine {
                     throw TransactionValidationFailure(
                         state: .insufficientFunds(
                             actionableBalance,
+                            pendingTransaction.amount,
                             sourceAccount!.currencyType,
                             transactionTarget!.currencyType
                         )
@@ -294,7 +289,9 @@ extension ERC20OnChainTransactionEngine {
             )
             .map { balance, absoluteFee -> Void in
                 guard try absoluteFee <= balance else {
-                    throw TransactionValidationFailure(state: .insufficientGas)
+                    throw TransactionValidationFailure(
+                        state: .belowFees(absoluteFee.moneyValue, balance.moneyValue)
+                    )
                 }
             }
             .asCompletable()
@@ -348,26 +345,24 @@ extension ERC20OnChainTransactionEngine {
 
     /// Streams `MoneyValuePair` for the exchange rate of the source ERC20 Asset in the current fiat currency.
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
-            .flatMap(weak: self) { [sourceAsset] (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: sourceAsset, in: fiatCurrency)
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
     }
 
     /// Streams `MoneyValuePair` for the exchange rate of Ethereum in the current fiat currency.
     private var ethereumExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: CurrencyType.crypto(.coin(.ethereum)), in: fiatCurrency)
+            .flatMap { [currencyConversionService] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: .crypto(.coin(.ethereum)), to: fiatCurrency.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: .crypto(.coin(.ethereum))), quote: $0) }
             }
     }

@@ -11,8 +11,9 @@ final class FiatDepositTransactionEngine: TransactionEngine {
         .empty()
     }
 
-    let fiatCurrencyService: FiatCurrencyServiceAPI
-    let priceService: PriceServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
+
     let requireSecondPassword: Bool = false
     let canTransactFiat: Bool = true
     var askForRefreshConfirmation: ((Bool) -> Completable)!
@@ -36,16 +37,16 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     // MARK: - Init
 
     init(
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         paymentMethodsService: PaymentMethodTypesServiceAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         bankTransferRepository: BankTransferRepositoryAPI = resolve()
     ) {
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
         self.transactionLimitsService = transactionLimitsService
-        self.fiatCurrencyService = fiatCurrencyService
         self.paymentMethodsService = paymentMethodsService
-        self.priceService = priceService
         self.bankTransferRepository = bankTransferRepository
     }
 
@@ -87,15 +88,6 @@ final class FiatDepositTransactionEngine: TransactionEngine {
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .just(pendingTransaction.update(amount: amount))
-    }
-
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        if pendingTransaction.validationState == .uninitialized, pendingTransaction.amount.isZero {
-            return .just(pendingTransaction)
-        } else {
-            return validateAmountCompletable(pendingTransaction: pendingTransaction)
-                .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-        }
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -155,28 +147,5 @@ final class FiatDepositTransactionEngine: TransactionEngine {
                 )
                 .asSingle()
             }
-    }
-
-    private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.fromCallable { [sourceAccount] in
-            guard let transactionLimits = pendingTransaction.limits else {
-                throw TransactionValidationFailure(state: .unknownError)
-            }
-            guard !pendingTransaction.amount.isZero else {
-                throw TransactionValidationFailure(state: .invalidAmount)
-            }
-            guard try pendingTransaction.amount >= transactionLimits.minimum else {
-                throw TransactionValidationFailure(state: .belowMinimumLimit(transactionLimits.minimum))
-            }
-            guard try pendingTransaction.amount <= transactionLimits.maximum else {
-                throw TransactionValidationFailure(
-                    state: .overMaximumSourceLimit(
-                        transactionLimits.maximum,
-                        sourceAccount!.label,
-                        pendingTransaction.amount
-                    )
-                )
-            }
-        }
     }
 }

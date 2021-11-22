@@ -8,11 +8,6 @@ import ToolKit
 
 public protocol InterestTransactionEngine: TransactionEngine {
 
-    // MARK: - Services
-
-    var fiatCurrencyService: FiatCurrencyServiceAPI { get }
-    var priceService: PriceServiceAPI { get }
-
     // MARK: - Properties
 
     var minimumDepositLimits: Single<FiatValue> { get }
@@ -64,6 +59,7 @@ extension InterestTransactionEngine {
                 throw TransactionValidationFailure(
                     state: .insufficientFunds(
                         balance,
+                        pendingTransaction.amount,
                         sourceAccount!.currencyType,
                         transactionTarget!.currencyType
                     )
@@ -106,14 +102,13 @@ extension InterestTransactionEngine {
     // MARK: - Internal
 
     var sourceExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: self.sourceAsset, in: fiatCurrency)
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
     }
 }

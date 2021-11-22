@@ -19,8 +19,8 @@ struct SendDetails {
 }
 
 enum SendFailureReason: Error {
-    /// Takes the account's balance
-    case insufficientFunds(MoneyValue)
+    /// Takes the account's balance and desired amount
+    case insufficientFunds(MoneyValue, MoneyValue)
     /// Takes the minimum limit
     case belowMinimumSend(MoneyValue)
     /// Takes the minimum limit

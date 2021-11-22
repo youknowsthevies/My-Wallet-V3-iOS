@@ -12,8 +12,13 @@ public enum TransactionValidationState: Equatable {
     case unknownError
     /// represents a raw error from backend
     case nabuError(NabuError)
-    /// Takes the balance of the transaction's source in the input currency, the source currency and the target currency
-    case insufficientFunds(MoneyValue, CurrencyType, CurrencyType)
+    /// The available balance of the source account is not sufficient to conver the input amount.
+    /// Takes the balance of the transaction's source in the input currency, the desired amount, the source currency and the target currency
+    case insufficientFunds(MoneyValue, MoneyValue, CurrencyType, CurrencyType)
+    /// The available balance of the source account is not sufficient to conver fees required to pay for the transaction.
+    /// Takes the total fees required for the transaction and the balance for the source account.
+    case belowFees(MoneyValue, MoneyValue)
+    /// The amount is below the minimum allowed for the transaction type.
     /// Takes the minimum valid amount required to execute the transaction.
     case belowMinimumLimit(MoneyValue)
     /// The amount is above the maximum allowed for this transaction for the specific source.
@@ -25,13 +30,9 @@ public enum TransactionValidationState: Equatable {
 
     // MARK: - Not checked
 
-    case overMaximumLimit // TODO: DELETE ME. Should use overMaximumPersonalLimit or overMaximumSourceLimit.
     case noSourcesAvailable
     case addressIsContract
-    case insufficientGas
     case invalidAddress
-    case invalidAmount
-    case insufficientFundsForFees
     case invoiceExpired
     case optionInvalid
     case pendingOrdersLimitReached

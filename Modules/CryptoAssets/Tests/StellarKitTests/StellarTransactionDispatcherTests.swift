@@ -66,9 +66,10 @@ class StellarTransactionDispatcherTests: XCTestCase {
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.toAddress] = toJSON
 
+        let desiredAmount = try sendDetails.value.moneyValue + sendDetails.fee.moneyValue
         dryRunInvalidTransaction(
             sendDetails,
-            with: .insufficientFunds(.create(major: 51, currency: .crypto(.coin(.stellar))))
+            with: .insufficientFunds(.create(major: 51, currency: .crypto(.coin(.stellar))), desiredAmount)
         )
     }
 

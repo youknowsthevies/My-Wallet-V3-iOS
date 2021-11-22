@@ -37,6 +37,9 @@ final class CurrencyConversionService: CurrencyConversionServiceAPI {
         from sourceCurrency: CurrencyType,
         to targetCurrency: CurrencyType
     ) -> AnyPublisher<MoneyValue, PriceServiceError> {
+        guard sourceCurrency != targetCurrency else {
+            return .just(.one(currency: sourceCurrency))
+        }
         // The API doesn't respond on requests like USD-BTC but it responds to BTC-USD 🤷
         guard sourceCurrency.isCryptoCurrency || (sourceCurrency.isFiatCurrency && targetCurrency.isFiatCurrency) else {
             return priceService

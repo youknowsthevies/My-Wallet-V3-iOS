@@ -294,20 +294,15 @@ extension TransactionState {
             return String(format: LocalizationIds.tradingBelowMin, action.name)
         case .insufficientFunds:
             return LocalizationIds.insufficientFunds
-        case .insufficientGas:
-            return LocalizationIds.insufficientGas
-        case .insufficientFundsForFees:
+        case .belowFees:
             return String(format: LocalizationIds.insufficientFundsForFees, amount.currency.name)
         case .invalidAddress:
             return LocalizationIds.invalidAddress
-        case .invalidAmount:
-            return LocalizationIds.invalidAmount
         case .invalidPassword:
             return LocalizationIds.invalidPassword
         case .optionInvalid:
             return LocalizationIds.optionInvalid
-        case .overMaximumLimit,
-             .overMaximumSourceLimit,
+        case .overMaximumSourceLimit,
              .overMaximumPersonalLimit:
             return LocalizationIds.overMaximumLimit
         case .pendingOrdersLimitReached:
