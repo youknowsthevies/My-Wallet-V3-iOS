@@ -218,8 +218,11 @@ extension TransactionLimitsService {
             limitsCurrency: paymentMethod.fiatCurrency
         )
         .map { crossBorderLimits -> TransactionLimits in
-            TransactionLimits(paymentMethod)
-                .merge(with: crossBorderLimits)
+            TransactionLimits.merge(
+                paymentMethod: paymentMethod,
+                with: crossBorderLimits,
+                usePaymentMethodMax: targetCurrency.isFiatCurrency // is true means this is for deposits
+            )
         }
         .convertAmounts(
             from: paymentMethod.fiatCurrency.currencyType,
@@ -316,6 +319,31 @@ extension TransactionLimits {
             maximumDaily: maxCrossBorderDailyLimit,
             maximumAnnual: maxCrossBorderAnnualLimit,
             effectiveLimit: .init(crossBorderLimits: crossBorderLimits, maxLimitFallbak: maxCombinedLimit),
+            suggestedUpgrade: crossBorderLimits.suggestedUpgrade
+        )
+    }
+
+    static func merge(
+        paymentMethod: PaymentMethod,
+        with crossBorderLimits: CrossBorderLimits,
+        usePaymentMethodMax: Bool
+    ) -> TransactionLimits {
+        let infinity = MoneyValue(amount: BigInt(Int.max), currency: crossBorderLimits.currency)
+        let maxCrossBorderCurrentLimit = crossBorderLimits.currentLimits?.available ?? infinity
+        let maxLimit: MoneyValue
+        if usePaymentMethodMax {
+            maxLimit = (try? .min(paymentMethod.max.moneyValue, maxCrossBorderCurrentLimit)) ?? maxCrossBorderCurrentLimit
+        } else {
+            maxLimit = maxCrossBorderCurrentLimit
+        }
+        let maxCrossBorderDailyLimit = crossBorderLimits.currentLimits?.daily?.limit ?? maxLimit
+        let maxCrossBorderAnnualLimit = crossBorderLimits.currentLimits?.yearly?.limit ?? maxCrossBorderDailyLimit
+        return TransactionLimits(
+            minimum: paymentMethod.min.moneyValue,
+            maximum: maxLimit,
+            maximumDaily: maxCrossBorderDailyLimit,
+            maximumAnnual: maxCrossBorderAnnualLimit,
+            effectiveLimit: .init(crossBorderLimits: crossBorderLimits, maxLimitFallbak: maxLimit),
             suggestedUpgrade: crossBorderLimits.suggestedUpgrade
         )
     }

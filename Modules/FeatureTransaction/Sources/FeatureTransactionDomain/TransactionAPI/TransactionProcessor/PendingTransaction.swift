@@ -180,20 +180,31 @@ public struct PendingTransaction: Equatable {
 
 extension PendingTransaction {
 
+    public var normalizedLimits: TransactionLimits {
+        TransactionLimits(
+            minimum: minLimit,
+            maximum: maxLimit,
+            maximumDaily: maxDailyLimit,
+            maximumAnnual: maxAnnualLimit,
+            effectiveLimit: limits?.effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maxLimit),
+            suggestedUpgrade: limits?.suggestedUpgrade
+        )
+    }
+
     public var minLimit: MoneyValue {
         limits?.minimum ?? minimumLimit ?? .zero(currency: amount.currency)
     }
 
     public var maxLimit: MoneyValue {
-        limits?.maximum ?? maximumLimit ?? .zero(currency: amount.currency)
+        limits?.maximum ?? maximumLimit ?? available
     }
 
     public var maxDailyLimit: MoneyValue {
-        limits?.maximumDaily ?? maximumDailyLimit ?? .zero(currency: amount.currency)
+        limits?.maximumDaily ?? maximumDailyLimit ?? maxLimit
     }
 
     public var maxAnnualLimit: MoneyValue {
-        limits?.maximumAnnual ?? maximumAnnualLimit ?? .zero(currency: amount.currency)
+        limits?.maximumAnnual ?? maximumAnnualLimit ?? maxDailyLimit
     }
 
     /// The minimum spending limit

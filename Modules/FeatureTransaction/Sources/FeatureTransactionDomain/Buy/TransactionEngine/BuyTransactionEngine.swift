@@ -16,9 +16,10 @@ final class BuyTransactionEngine: TransactionEngine {
     let canTransactFiat: Bool = true
 
     // Used to convert fiat <-> crypto when user types an amount (mainly crypto -> fiat)
-    private let conversionService: CurrencyConversionServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
     // Used to convert payment method currencies into the wallet's default currency
-    private let walletCurrencyService: FiatCurrencyServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
+
     // Used to convert the user input into an actual quote with fee (takes a fiat amount)
     private let orderQuoteService: OrderQuoteServiceAPI
     // Used to create a pending order when the user confirms the transaction
@@ -35,7 +36,7 @@ final class BuyTransactionEngine: TransactionEngine {
     private var pendingCheckoutData: CheckoutData?
 
     init(
-        conversionService: CurrencyConversionServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         orderQuoteService: OrderQuoteServiceAPI = resolve(),
         orderCreationService: OrderCreationServiceAPI = resolve(),
@@ -43,7 +44,7 @@ final class BuyTransactionEngine: TransactionEngine {
         orderCancellationService: OrderCancellationServiceAPI = resolve(),
         transactionLimitsService: TransactionLimitsServiceAPI = resolve()
     ) {
-        self.conversionService = conversionService
+        self.currencyConversionService = currencyConversionService
         self.walletCurrencyService = walletCurrencyService
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
@@ -73,8 +74,8 @@ final class BuyTransactionEngine: TransactionEngine {
         return walletCurrencyService
             .fiatCurrencyObservable
             .map(\.currencyType)
-            .flatMap { [conversionService] walletCurrency in
-                conversionService
+            .flatMap { [currencyConversionService] walletCurrency in
+                currencyConversionService
                     .conversionRate(from: cryptoCurrency, to: walletCurrency)
                     .map { quote in
                         MoneyValuePair(
@@ -101,56 +102,6 @@ final class BuyTransactionEngine: TransactionEngine {
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         makeTransaction(amount: amount)
-    }
-
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        assertInputsValid()
-        let sourceCurrency = sourceAccount.currencyType
-        let amountCurrency = pendingTransaction.amount.currencyType
-        let conversionRates = walletCurrencyService
-            .fiatCurrencyPublisher
-            .flatMap { [conversionService] walletCurrency in
-                conversionService.conversionRate(
-                    from: amountCurrency,
-                    to: walletCurrency.currencyType
-                )
-            }
-            .zip(
-                conversionService.conversionRate(from: sourceCurrency, to: amountCurrency)
-            )
-        return conversionRates
-            .asSingle()
-            .map { [sourceAccount, transactionTarget] toWalletRate, toAmountRate -> PendingTransaction in
-                var transaction = pendingTransaction
-                let paymentMethodAccount = sourceAccount as! PaymentMethodAccount
-                let paymentMethodMaxLimit = paymentMethodAccount.paymentMethod.max.moneyValue
-                let convertetSourceMaxLimit = paymentMethodMaxLimit.convert(using: toAmountRate)
-                let limits: TransactionLimits = transaction.limits ?? .zero(for: amountCurrency)
-                if try transaction.amount < limits.minimum {
-                    transaction.validationState = .belowMinimumLimit(limits.minimum)
-                } else if try transaction.amount > convertetSourceMaxLimit, try transaction.amount <= limits.maximum {
-                    transaction.validationState = .overMaximumSourceLimit(
-                        paymentMethodMaxLimit,
-                        sourceAccount!.label,
-                        pendingTransaction.amount
-                    )
-                } else if try transaction.amount > limits.maximum {
-                    transaction.validationState = .overMaximumPersonalLimit(
-                        limits.effectiveLimit,
-                        limits.maximum.convert(using: toWalletRate),
-                        limits.suggestedUpgrade
-                    )
-                } else if try transaction.amount > transaction.available {
-                    transaction.validationState = .insufficientFunds(
-                        transaction.available,
-                        sourceCurrency,
-                        transactionTarget!.currencyType
-                    )
-                } else {
-                    transaction.validationState = .canExecute
-                }
-                return transaction
-            }
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -368,8 +319,8 @@ extension BuyTransactionEngine {
             .balance
             .asPublisher()
             .replaceError(with: .zero(currency: currency))
-            .flatMap { [conversionService] balance in
-                conversionService.convert(balance, to: currency)
+            .flatMap { [currencyConversionService] balance in
+                currencyConversionService.convert(balance, to: currency)
             }
             .mapError(MakeTransactionError.priceError)
             .eraseToAnyPublisher()

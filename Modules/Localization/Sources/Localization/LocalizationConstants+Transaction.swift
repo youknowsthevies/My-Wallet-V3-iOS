@@ -983,10 +983,6 @@ extension LocalizationConstants.Transaction.Confirmation.Error {
         "Minimum 1 sat/byte required",
         comment: ""
     )
-    public static let invalidAmount = NSLocalizedString(
-        "Invalid fee",
-        comment: ""
-    )
     public static let transactionInFlight = NSLocalizedString(
         "A transaction is already in progress",
         comment: ""
@@ -1124,10 +1120,6 @@ extension LocalizationConstants.Transaction.Error {
         "Minimum 1 sat/byte required",
         comment: ""
     )
-    public static let invalidAmount = NSLocalizedString(
-        "Invalid fee",
-        comment: ""
-    )
     public static let transactionInFlight = NSLocalizedString(
         "A transaction is already in progress",
         comment: ""
@@ -1187,9 +1179,25 @@ extension LocalizationConstants.Transaction.Error {
         "The maximum amount of %@ you can swap for %@ is **%@**.",
         comment: "Error recovery message - insufficient funds to perform 'swap' transaction"
     )
+    public static let insufficientFundsRecoveryMessage_send = NSLocalizedString(
+        "The maximum amount of %@ you can send is **%@**.",
+        comment: "Error recovery message - insufficient funds to perform 'send' transaction"
+    )
     public static let insufficientFundsRecoveryMessage_withdraw = NSLocalizedString(
         "The maximum amount of %@ you can withdraw from this account is **%@**.",
         comment: "Error recovery message - insufficient funds to perform 'swap' transaction"
+    )
+    public static let belowFeeRecoveryHint = NSLocalizedString(
+        "%@ Minimum",
+        comment: "Error recovery hint - balance below fees required for transaction"
+    )
+    public static let belowFeeRecoveryTitle = NSLocalizedString(
+        "%@ Minimum",
+        comment: "Error recovery title - balance below fees required for transaction"
+    )
+    public static let belowFeeRecoveryMessage = NSLocalizedString(
+        "To execture this transaction the expected fee is %@ but your balance is only %@.",
+        comment: "Error recovery message - balance below fees required for transaction"
     )
     public static let belowMinimumLimitRecoveryHint = NSLocalizedString(
         "%@ Minimum",
@@ -1231,17 +1239,45 @@ extension LocalizationConstants.Transaction.Error {
         "%@ Maximum",
         comment: "Error recovery title - input over maximum limit for source account"
     )
+    public static let overMaximumSourceLimitRecoveryMessage_buy_funds = NSLocalizedString(
+        "The maximum amount of %@ you can buy with your %@ Account is **%@**.",
+        comment: "Error recovery message - insufficient funds to perform 'buy' transaction"
+    )
     public static let overMaximumSourceLimitRecoveryMessage_buy = NSLocalizedString(
         "Looks like your **%@** only allows buys up to **%@ at at time**. To buy **%@**, split your buy into multiple transactions.",
         comment: "Error recovery message - input over maximum limit for source account - buy"
+    )
+    public static let overMaximumSourceLimitRecoveryMessage_sell = NSLocalizedString(
+        "The maximum amount of %@ you can sell from this account is **%@**.",
+        comment: "Error recovery message - input over maximum limit for source account - sell"
+    )
+    public static let overMaximumSourceLimitRecoveryMessage_swap = NSLocalizedString(
+        "The maximum amount of %@ you can swap for %@ is **%@**.",
+        comment: "Error recovery message - input over maximum limit for source account - swap"
     )
     public static let overMaximumSourceLimitRecoveryMessage_deposit = NSLocalizedString(
         "Looks like your **%@** only allows deposits up to **%@ at at time**. To deposit **%@**, split your deposit into multiple transactions.",
         comment: "Error recovery message - input over maximum limit for source account - deposit"
     )
+    public static let overMaximumSourceLimitRecoveryMessage_withdraw = NSLocalizedString(
+        "The maximum amount of %@ you can withdraw from this account is **%@**.",
+        comment: "Error recovery message - input over maximum limit for source account - withdraw"
+    )
     public static let overMaximumSourceLimitRecoveryMessage_send = NSLocalizedString(
         "The max you can send from this wallet is **%@**. Buy **%@** now to send this amount.",
         comment: "Error recovery message - input over maximum limit for source account - send"
+    )
+    public static let belowFeesRecoveryCalloutTitle_send = NSLocalizedString(
+        "Get More %@",
+        comment: "Error recovery callout - title for callout asking the user to buy more crypto to perform a 'send' action."
+    )
+    public static let belowFeesRecoveryCalloutMessage_send = NSLocalizedString(
+        "Buy enough %@ to pay for fees plus any you want to send.",
+        comment: "Error recovery callout - message for callout asking the user to buy more crypto to perform a 'send' action."
+    )
+    public static let belowFeesRecoveryCalloutCTA_send = NSLocalizedString(
+        "BUY",
+        comment: "Error recovery callout - small CTA for callout asking the user to buy more crypto to perform a 'send' action."
     )
     public static let overMaximumSourceLimitRecoveryCalloutTitle_send = NSLocalizedString(
         "Get More %@",
@@ -1375,10 +1411,6 @@ extension LocalizationConstants.Transaction.Error {
     )
     public static let underMinBitcoinFeeShort = NSLocalizedString(
         "Fee too low",
-        comment: ""
-    )
-    public static let invalidAmountShort = NSLocalizedString(
-        "Invalid fee",
         comment: ""
     )
     public static let transactionInFlightShort = NSLocalizedString(

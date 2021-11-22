@@ -5,7 +5,6 @@ import PlatformKit
 
 public enum BitcoinValueError: Error {
     case invalidCryptoValue
-    case invalidAmount
 }
 
 public struct BitcoinValue: CryptoMoney {

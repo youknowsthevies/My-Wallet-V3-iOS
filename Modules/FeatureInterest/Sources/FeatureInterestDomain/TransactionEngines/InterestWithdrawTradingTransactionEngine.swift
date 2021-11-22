@@ -17,16 +17,14 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
 
     // MARK: - TransactionEngine
 
+    public let walletCurrencyService: FiatCurrencyServiceAPI
+    public let currencyConversionService: CurrencyConversionServiceAPI
+
     public var askForRefreshConfirmation: (AskForRefreshConfirmation)!
     public var sourceAccount: BlockchainAccount!
     public var transactionTarget: TransactionTarget!
 
     public var requireSecondPassword: Bool
-
-    // MARK: - InterestTransactionEngine
-
-    public let priceService: PriceServiceAPI
-    public let fiatCurrencyService: FiatCurrencyServiceAPI
 
     // MARK: - Private Properties
 
@@ -48,7 +46,7 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
     }
 
     private var interestAccountLimits: Single<InterestAccountLimits> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
             .flatMap { [accountLimitsRepository, sourceAsset] fiatCurrency in
                 accountLimitsRepository
@@ -70,16 +68,16 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
 
     init(
         requireSecondPassword: Bool,
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
         transferRepository: CustodialTransferRepositoryAPI = resolve(),
         accountTransferRepository: InterestAccountTransferRepositoryAPI = resolve()
     ) {
         self.accountTransferRepository = accountTransferRepository
-        self.fiatCurrencyService = fiatCurrencyService
+        self.walletCurrencyService = walletCurrencyService
         self.requireSecondPassword = requireSecondPassword
-        self.priceService = priceService
+        self.currencyConversionService = currencyConversionService
         self.accountLimitsRepository = accountLimitsRepository
         self.transferRepository = transferRepository
         feeCache = CachedValue(
@@ -106,7 +104,7 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
         -> Single<PendingTransaction>
     {
         Single.zip(
-            fiatCurrencyService
+            walletCurrencyService
                 .fiatCurrency,
             fee,
             availableBalance,

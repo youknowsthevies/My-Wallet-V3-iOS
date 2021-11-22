@@ -104,7 +104,8 @@ public final class SingleAmountPresenter: AmountViewPresenting {
             return .showLimitButton(viewModel)
         case .warning,
              .error:
-            unimplemented()
+            Logger.shared.error(String(describing: state))
+            return .empty
         }
     }
 }

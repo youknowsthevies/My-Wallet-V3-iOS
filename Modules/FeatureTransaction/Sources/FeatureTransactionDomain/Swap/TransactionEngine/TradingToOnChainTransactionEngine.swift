@@ -170,53 +170,6 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             }
     }
 
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        walletCurrencyService
-            .fiatCurrencyPublisher
-            .setFailureType(to: PriceServiceError.self)
-            .flatMap { [currencyConversionService] fiatCurrency -> AnyPublisher<MoneyValue, PriceServiceError> in
-                currencyConversionService.conversionRate(
-                    from: pendingTransaction.amount.currencyType,
-                    to: fiatCurrency.currencyType
-                )
-            }
-            .zip(
-                currencyConversionService.conversionRate(
-                    from: sourceAsset.currencyType,
-                    to: pendingTransaction.amount.currencyType
-                )
-            )
-            .asSingle()
-            .map { [sourceAccount] toWalletRate, toAmountRate -> Void in
-                guard let transactionLimits = pendingTransaction.limits?.convert(using: toAmountRate) else {
-                    throw TransactionValidationFailure(state: .unknownError)
-                }
-                guard try pendingTransaction.amount >= transactionLimits.minimum else {
-                    throw TransactionValidationFailure(state: .belowMinimumLimit(transactionLimits.minimum))
-                }
-                guard try pendingTransaction.amount <= transactionLimits.maximum else {
-                    throw TransactionValidationFailure(
-                        state: .overMaximumPersonalLimit(
-                            transactionLimits.effectiveLimit,
-                            transactionLimits.maximum.convert(using: toWalletRate),
-                            transactionLimits.suggestedUpgrade
-                        )
-                    )
-                }
-                guard try pendingTransaction.amount <= pendingTransaction.available else {
-                    throw TransactionValidationFailure(
-                        state: .overMaximumSourceLimit(
-                            pendingTransaction.available,
-                            sourceAccount!.label,
-                            pendingTransaction.amount
-                        )
-                    )
-                }
-            }
-            .asCompletable()
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-    }
-
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmount(pendingTransaction: pendingTransaction)
     }

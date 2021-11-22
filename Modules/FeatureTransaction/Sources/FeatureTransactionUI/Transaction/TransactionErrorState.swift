@@ -12,8 +12,11 @@ enum TransactionErrorState: Equatable {
     /// A network error
     case nabuError(NabuError)
     /// The balance of the source account is not sufficient to execute the transaction.
-    /// Takes the balance of the transaction's source in the input currency, the source currency and the target currency.
-    case insufficientFunds(MoneyValue, CurrencyType, CurrencyType)
+    /// Takes the balance of the transaction's source in the input currency, the desired amount, the source currency and the target currency.
+    case insufficientFunds(MoneyValue, MoneyValue, CurrencyType, CurrencyType)
+    /// The available balance of the source account is not sufficient to conver fees required to pay for the transaction.
+    /// Takes the total fees required for the transaction and the balance for the source account.
+    case belowFees(MoneyValue, MoneyValue)
     /// The amount is below the user's minimum limit for the transaction.
     /// Takes the minimum valid amount required to execute the transaction.
     case belowMinimumLimit(MoneyValue)
@@ -26,12 +29,8 @@ enum TransactionErrorState: Equatable {
 
     // MARK: - Not checked
 
-    case overMaximumLimit // TODO: DELETE ME. Should use overMaximumPersonalLimit or overMaximumSourceLimit.
     case addressIsContract
-    case insufficientGas
-    case insufficientFundsForFees
     case invalidAddress
-    case invalidAmount
     case invalidPassword
     case optionInvalid
     case pendingOrdersLimitReached

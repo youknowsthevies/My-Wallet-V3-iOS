@@ -9,8 +9,6 @@ protocol SellTransactionEngine: TransactionEngine {
 
     var orderDirection: OrderDirection { get }
     var quotesEngine: SwapQuotesEngine { get }
-    var walletCurrencyService: FiatCurrencyServiceAPI { get }
-    var currencyConversionService: CurrencyConversionServiceAPI { get }
     var transactionLimitsService: TransactionLimitsServiceAPI { get }
     var orderQuoteRepository: OrderQuoteRepositoryAPI { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
@@ -36,58 +34,6 @@ extension SellTransactionEngine {
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmount(pendingTransaction: pendingTransaction)
-    }
-
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        let conversionRates = walletCurrencyService
-            .fiatCurrencyPublisher
-            .flatMap { [currencyConversionService] walletCurrency in
-                currencyConversionService.conversionRate(
-                    from: pendingTransaction.amount.currencyType,
-                    to: walletCurrency.currencyType
-                )
-            }
-            .zip(
-                currencyConversionService.conversionRate(
-                    from: pendingTransaction.available.currencyType,
-                    to: pendingTransaction.amount.currencyType
-                )
-            )
-        return conversionRates
-            .asSingle()
-            .map { [sourceAccount, transactionTarget] toWalletRate, toAmountRate -> Void in
-                guard let transactionLimits = pendingTransaction.limits else {
-                    throw TransactionValidationFailure(state: .unknownError)
-                }
-                guard try pendingTransaction.amount >= transactionLimits.minimum.convert(using: toAmountRate) else {
-                    throw TransactionValidationFailure(
-                        state: .belowMinimumLimit(
-                            transactionLimits.minimum.convert(using: toAmountRate)
-                        )
-                    )
-                }
-                let maximum = transactionLimits.maximum.convert(using: toAmountRate)
-                guard try pendingTransaction.amount <= maximum else {
-                    throw TransactionValidationFailure(
-                        state: .overMaximumPersonalLimit(
-                            transactionLimits.effectiveLimit,
-                            maximum.convert(using: toWalletRate),
-                            transactionLimits.suggestedUpgrade
-                        )
-                    )
-                }
-                guard try pendingTransaction.amount <= pendingTransaction.available.convert(using: toAmountRate) else {
-                    throw TransactionValidationFailure(
-                        state: .insufficientFunds(
-                            pendingTransaction.available.convert(using: toAmountRate),
-                            sourceAccount!.currencyType,
-                            transactionTarget!.currencyType
-                        )
-                    )
-                }
-            }
-            .asCompletable()
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
     func validateUpdateAmount(_ amount: MoneyValue) -> Single<MoneyValue> {

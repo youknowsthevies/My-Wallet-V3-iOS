@@ -15,10 +15,15 @@ extension TransactionErrorState {
         switch self {
         case .none:
             text = "" // no error
-        case .insufficientFunds(_, let sourceCurrency, _):
+        case .insufficientFunds(_, _, let sourceCurrency, _):
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryHint,
-                sourceCurrency.code
+                sourceCurrency.displayCode
+            )
+        case .belowFees(let fees, _):
+            text = String.localizedStringWithFormat(
+                Localization.insufficientFundsRecoveryHint,
+                fees.displayCode
             )
         case .belowMinimumLimit(let minimum):
             text = String.localizedStringWithFormat(
@@ -35,18 +40,10 @@ extension TransactionErrorState {
 
         // MARK: Unchecked
 
-        case .overMaximumLimit:
-            text = Localization.overMaximumPersonalLimitRecoveryHint
         case .addressIsContract:
             text = Localization.addressIsContractShort
-        case .insufficientGas:
-            text = Localization.insufficientGasShort
-        case .insufficientFundsForFees:
-            text = Localization.insufficientFundsForFeesShort
         case .invalidAddress:
             text = Localization.invalidAddressShort
-        case .invalidAmount:
-            text = Localization.invalidAmountShort
         case .invalidPassword:
             text = Localization.invalidPasswordShort
         case .optionInvalid:
@@ -68,15 +65,21 @@ extension TransactionErrorState {
     func recoveryWarningTitle(for action: AssetAction) -> String {
         let text: String
         switch self {
-        case .insufficientFunds(let maximum, _, _) where action == .swap:
+        case .insufficientFunds(let balance, _, _, _) where action == .swap:
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryTitle_swap,
-                maximum.displayString
+                balance.displayString
             )
-        case .insufficientFunds(_, let sourceCurrency, _):
+        case .insufficientFunds(_, _, let sourceCurrency, _):
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryTitle,
                 sourceCurrency.code
+            )
+        case .belowFees(let fees, let balance):
+            text = String.localizedStringWithFormat(
+                Localization.belowMinimumLimitRecoveryTitle,
+                fees.shortDisplayString,
+                balance.shortDisplayString
             )
         case .belowMinimumLimit(let minimum):
             text = String.localizedStringWithFormat(
@@ -127,6 +130,38 @@ extension TransactionErrorState {
     func recoveryWarningCallouts(for action: AssetAction) -> [ErrorRecoveryState.Callout] {
         let callouts: [ErrorRecoveryState.Callout]
         switch self {
+        case .belowFees(let fees, let balance) where action == .send:
+            callouts = [
+                ErrorRecoveryState.Callout(
+                    id: ErrorRecoveryCalloutIdentifier.buy.rawValue,
+                    image: fees.currency.image,
+                    title: String.localizedStringWithFormat(
+                        Localization.belowFeesRecoveryCalloutTitle_send,
+                        fees.displayCode
+                    ),
+                    message: String.localizedStringWithFormat(
+                        Localization.belowFeesRecoveryCalloutMessage_send,
+                        balance.displayString
+                    ),
+                    callToAction: Localization.belowFeesRecoveryCalloutCTA_send
+                )
+            ]
+        case .insufficientFunds(_, let desiredAmount, let sourceCurrency, let targetCurrency) where action == .send:
+            callouts = [
+                ErrorRecoveryState.Callout(
+                    id: ErrorRecoveryCalloutIdentifier.buy.rawValue,
+                    image: targetCurrency.image,
+                    title: String.localizedStringWithFormat(
+                        Localization.overMaximumSourceLimitRecoveryCalloutTitle_send,
+                        sourceCurrency.displayCode
+                    ),
+                    message: String.localizedStringWithFormat(
+                        Localization.overMaximumSourceLimitRecoveryCalloutMessage_send,
+                        desiredAmount.displayString
+                    ),
+                    callToAction: Localization.overMaximumSourceLimitRecoveryCalloutCTA_send
+                )
+            ]
         case .overMaximumSourceLimit(let availableAmount, _, let desiredAmount) where action == .send:
             callouts = [
                 ErrorRecoveryState.Callout(
@@ -179,7 +214,7 @@ extension TransactionErrorState {
 extension TransactionErrorState {
 
     private func localizedInsufficientFundsMessage(action: AssetAction) -> String {
-        guard case .insufficientFunds(let balance, let sourceCurrency, let targetCurrency) = self else {
+        guard case .insufficientFunds(let balance, _, let sourceCurrency, let targetCurrency) = self else {
             impossible("Developer error")
         }
         let text: String
@@ -204,6 +239,12 @@ extension TransactionErrorState {
                 targetCurrency.code,
                 balance.displayString
             )
+        case .send:
+            text = String.localizedStringWithFormat(
+                Localization.insufficientFundsRecoveryMessage_send,
+                sourceCurrency.code,
+                balance.displayString
+            )
         case .withdraw:
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryMessage_withdraw,
@@ -214,7 +255,6 @@ extension TransactionErrorState {
              .deposit,
              .interestTransfer,
              .interestWithdraw,
-             .send,
              .sign,
              .viewActivity:
             impossible("This message should not be needed for \(action)")
@@ -275,9 +315,27 @@ extension TransactionErrorState {
         let text: String
         switch action {
         case .buy:
+            let format: String
+            if accountLabel.contains(availableAmount.displayCode) {
+                format = Localization.overMaximumSourceLimitRecoveryMessage_buy_funds
+            } else {
+                format = Localization.overMaximumSourceLimitRecoveryMessage_buy
+            }
             text = String.localizedStringWithFormat(
-                Localization.overMaximumSourceLimitRecoveryMessage_buy,
+                format,
                 accountLabel,
+                availableAmount.shortDisplayString,
+                desiredAmount.shortDisplayString
+            )
+        case .sell:
+            text = String.localizedStringWithFormat(
+                Localization.overMaximumSourceLimitRecoveryMessage_sell,
+                availableAmount.shortDisplayString,
+                desiredAmount.shortDisplayString
+            )
+        case .swap:
+            text = String.localizedStringWithFormat(
+                Localization.overMaximumSourceLimitRecoveryMessage_swap,
                 availableAmount.shortDisplayString,
                 desiredAmount.shortDisplayString
             )
@@ -294,10 +352,13 @@ extension TransactionErrorState {
                 availableAmount.shortDisplayString,
                 desiredAmount.shortDisplayString
             )
+        case .withdraw:
+            text = String.localizedStringWithFormat(
+                Localization.overMaximumSourceLimitRecoveryMessage_withdraw,
+                availableAmount.shortDisplayString,
+                desiredAmount.shortDisplayString
+            )
         case .receive,
-             .sell,
-             .swap,
-             .withdraw,
              .interestTransfer,
              .interestWithdraw,
              .sign,
