@@ -445,7 +445,6 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.createWallet(email: "", newPassword: "a-password"))
         testStore.receive(.create)
 
-
         let guid = String(repeating: "a", count: 36)
         let sharedKey = String(repeating: "b", count: 36)
         // we need to assign this here as the WalletManager+Rx gets the password hash the legacy password
