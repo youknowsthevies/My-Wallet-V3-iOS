@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxSwift
 import ToolKit
@@ -8,7 +9,7 @@ public protocol PendingOrderDetailsServiceAPI: AnyObject {
     var pendingOrderDetails: Single<[OrderDetails]> { get }
     var pendingActionOrderDetails: Single<[OrderDetails]> { get }
 
-    func cancel(_ order: OrderDetails) -> Completable
+    func cancel(_ order: OrderDetails) -> AnyPublisher<Void, OrderCancellationError>
 }
 
 final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
@@ -46,7 +47,7 @@ final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
         self.cancallationService = cancallationService
     }
 
-    func cancel(_ order: OrderDetails) -> Completable {
-        cancallationService.cancel(order: order.identifier)
+    func cancel(_ order: OrderDetails) -> AnyPublisher<Void, OrderCancellationError> {
+        cancallationService.cancelOrder(with: order.identifier)
     }
 }

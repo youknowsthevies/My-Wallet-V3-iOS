@@ -20,8 +20,8 @@ public struct TooManyPendingOrdersView: View {
             .init(
                 media: .image(named: "icon_cart"),
                 overlay: .init(progress: true),
-                title: Localization.Error.buySellUnavailable,
-                subtitle: Localization.Error.pendingOrderLimitReached
+                title: Localization.Error.pendingTransactionLimit,
+                subtitle: String.localizedStringWithFormat(Localization.Error.pendingOrderLimitReached, "\(count)")
             ),
             buttons: [
                 .init(
