@@ -24,7 +24,9 @@ extension RootViewController: LoggedInBridge {
     }
 
     func toggleSideMenu() {
-        viewStore.send(.enter(into: .account, context: .none))
+        dismiss(animated: true) { [self] in
+            viewStore.send(.enter(into: .account, context: .none))
+        }
     }
 
     func closeSideMenu() {
@@ -79,27 +81,39 @@ extension RootViewController: LoggedInBridge {
     }
 
     func switchTabToDashboard() {
-        viewStore.send(.tab(.home))
+        dismiss(animated: true) { [self] in
+            viewStore.send(.tab(.home))
+        }
     }
 
     func switchToSend() {
-        viewStore.send(.tab(.buyAndSell))
+        dismiss(animated: true) { [self] in
+            viewStore.send(.tab(.buyAndSell))
+        }
     }
 
     func switchTabToSwap() {
-        viewStore.send(.tab(.buyAndSell))
+        dismiss(animated: true) { [self] in
+            viewStore.send(.tab(.buyAndSell))
+        }
     }
 
     func switchTabToReceive() {
-        viewStore.send(.tab(.buyAndSell))
+        dismiss(animated: true) { [self] in
+            viewStore.send(.tab(.buyAndSell))
+        }
     }
 
     func switchToActivity() {
-        viewStore.send(.tab(.activity))
+        dismiss(animated: true) { [self] in
+            viewStore.send(.tab(.activity))
+        }
     }
 
     func switchToActivity(for currencyType: CurrencyType) {
-        viewStore.send(.tab(.activity))
+        dismiss(animated: true) { [self] in
+            viewStore.send(.tab(.activity))
+        }
     }
 
     func showCashIdentityVerificationScreen() {
@@ -368,7 +382,9 @@ extension RootViewController: LoggedInBridge {
     }
 
     func showQRCodeScanner() {
-        viewStore.send(.enter(into: .QR, context: .none))
+        dismiss(animated: true) { [self] in
+            viewStore.send(.enter(into: .QR, context: .none))
+        }
     }
 
     func logout() {
