@@ -3,7 +3,7 @@
 import Foundation
 import SwiftUI
 
-public enum Header: Equatable {
+public enum HeaderStyle: Equatable {
     case none
     case simple(subtitle: String)
     case normal(
