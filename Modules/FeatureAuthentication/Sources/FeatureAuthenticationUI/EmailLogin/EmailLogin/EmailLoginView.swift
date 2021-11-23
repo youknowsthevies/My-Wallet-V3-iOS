@@ -64,7 +64,7 @@ public struct EmailLoginView: View {
                     action: {
                         viewStore.send(.sendDeviceVerificationEmail)
                     },
-                    loading: viewStore.binding(get: \.isLoading, send: .none)
+                    loading: .constant(viewStore.isLoading)
                 )
                 .disabled(!viewStore.isEmailValid)
                 .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.continueButton)
@@ -106,10 +106,7 @@ public struct EmailLoginView: View {
                     send: { .didChangeEmailAddress($0) }
                 ),
                 isFirstResponder: $isEmailFieldFirstResponder,
-                isError: viewStore.binding(
-                    get: { !$0.isEmailValid && !$0.emailAddress.isEmpty },
-                    send: .none
-                ),
+                isError: .constant(!viewStore.isEmailValid && !viewStore.emailAddress.isEmpty),
                 title: LocalizedString.TextFieldTitle.email,
                 configuration: {
                     $0.autocorrectionType = .no

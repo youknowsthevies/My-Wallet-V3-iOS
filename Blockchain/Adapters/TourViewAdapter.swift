@@ -25,10 +25,7 @@ public struct TourViewAdapter: View {
     private let tourView: TourView
 
     public var body: some View {
-        WithViewStore(self.store) { _ in
-            tourView
-                .navigationRoute(in: store)
-        }
+        tourView.navigationRoute(in: store)
     }
 
     @ViewBuilder private func makeContent(_ viewStore: ViewStore<WelcomeState, WelcomeAction>) -> some View {

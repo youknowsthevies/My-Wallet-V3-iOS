@@ -173,20 +173,21 @@ public struct SeedPhraseView: View {
     private struct CustomNavigationTitle: ViewModifier {
         let viewStore: ViewStore<SeedPhraseState, SeedPhraseAction>
 
+        @ViewBuilder
         func body(content: Content) -> some View {
             if viewStore.context == .restoreWallet {
-                return AnyView(content.whiteNavigationBarStyle().toolbar {
+                content.whiteNavigationBarStyle().toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Text(LocalizedString.NavigationTitle.restoreWallet)
                             .font(Font(weight: .semibold, size: Layout.largeNavigationTitleFontSize))
                             .padding(.top, Layout.largeNavigationTitleTopPadding)
                     }
-                })
+                }
             } else {
-                return AnyView(content.whiteNavigationBarStyle().navigationBarTitle(
+                content.whiteNavigationBarStyle().navigationBarTitle(
                     LocalizedString.NavigationTitle.troubleLoggingIn,
                     displayMode: .inline
-                ))
+                )
             }
         }
     }

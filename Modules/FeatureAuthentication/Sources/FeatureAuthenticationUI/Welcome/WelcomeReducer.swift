@@ -190,15 +190,12 @@ public let welcomeReducer = Reducer.combine(
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .map { result -> WelcomeAction in
-                    guard case .success(let isEnabled) = result else {
-                        return .none
-                    }
-                    switch isEnabled {
-                    case true:
+                    guard case .success(let isEnabled) = result,
+                          isEnabled
+                    else {
                         return .enterOldCreateWalletScreen
-                    case false:
-                        return .enter(into: .createWallet)
                     }
+                    return .enter(into: .createWallet)
                 }
         case .enterOldCreateWalletScreen:
             return .none
@@ -304,7 +301,6 @@ public let welcomeReducer = Reducer.combine(
     }
 )
 .analytics()
-.debug()
 
 extension Reducer where
     Action == WelcomeAction,
