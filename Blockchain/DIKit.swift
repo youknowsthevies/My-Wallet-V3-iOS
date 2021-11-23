@@ -445,17 +445,8 @@ extension DependencyContainer {
 
         // MARK: KYC Module
 
-        factory { () -> FeatureKYCUI.Routing in
-            let emailVerificationService: FeatureKYCDomain.EmailVerificationServiceAPI = DIKit.resolve()
-            let externalAppOpener: ExternalAppOpener = DIKit.resolve()
-            return FeatureKYCUI.Router(
-                analyticsRecorder: DIKit.resolve(),
-                loadingViewPresenter: DIKit.resolve(),
-                legacyRouter: DIKit.resolve(),
-                kycService: DIKit.resolve(),
-                emailVerificationService: emailVerificationService,
-                openMailApp: externalAppOpener.openMailApp
-            )
+        factory { () -> FeatureSettingsUI.KYCRouterAPI in
+            KYCAdapter()
         }
 
         factory { () -> FeatureKYCDomain.EmailVerificationAPI in

@@ -39,14 +39,7 @@ public struct WalletSectionHeader: View {
         }
         .padding(.vertical, Spacing.baseline)
         .background(Color.semantic.light)
-        .listRowInsets(
-            EdgeInsets(
-                top: 0,
-                leading: 0,
-                bottom: 0,
-                trailing: 0
-            )
-        )
+        .listRowInsets(EdgeInsets())
     }
 }
 

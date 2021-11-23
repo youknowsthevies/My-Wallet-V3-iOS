@@ -15,7 +15,7 @@ extension SettingsSectionType.CellType {
             case .emailVerification:
                 return .showUpdateEmailScreen
             case .limits:
-                return .launchKYC
+                return .presentTradeLimits
             case .mobileVerification:
                 return .showUpdateMobileScreen
             case .pitConnection:

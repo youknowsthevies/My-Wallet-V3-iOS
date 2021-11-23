@@ -59,10 +59,13 @@ public protocol KYCClientAPI: AnyObject {
 
     func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError>
 
-    func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError>
+    func checkSimplifiedDueDiligenceVerification(
+    ) -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError>
+
+    func fetchLimitsOverview() -> AnyPublisher<KYCLimitsOverviewResponse, NabuNetworkError>
 }
 
-public final class KYCClient: KYCClientAPI {
+final class KYCClient: KYCClientAPI {
 
     // MARK: - Types
 
@@ -76,6 +79,7 @@ public final class KYCClient: KYCClientAPI {
         static let currentUser = ["users", "current"]
         static let simplifiedDueDiligenceEligibility = ["sdd", "eligible"]
         static let simplifiedDueDiligenceVerification = ["sdd", "verified"]
+        static let tierTradingLimitsOverview = ["limits", "overview"]
 
         static func supportedDocuments(for country: String) -> [String] {
             ["kyc", "supported-documents", country]
@@ -104,7 +108,7 @@ public final class KYCClient: KYCClientAPI {
 
     // MARK: - Setup
 
-    public init(
+    init(
         networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
     ) {
@@ -112,7 +116,7 @@ public final class KYCClient: KYCClientAPI {
         self.requestBuilder = requestBuilder
     }
 
-    public func tiers() -> AnyPublisher<KYC.UserTiers, NabuNetworkError> {
+    func tiers() -> AnyPublisher<KYC.UserTiers, NabuNetworkError> {
         let request = requestBuilder.get(
             path: Path.tiers,
             authenticated: true
@@ -120,7 +124,7 @@ public final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    public func supportedDocuments(
+    func supportedDocuments(
         for country: String
     ) -> AnyPublisher<KYCSupportedDocumentsResponse, NabuNetworkError> {
         let request = requestBuilder.get(
@@ -130,7 +134,7 @@ public final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    public func credentialsForVeriff() -> AnyPublisher<VeriffCredentials, NabuNetworkError> {
+    func credentialsForVeriff() -> AnyPublisher<VeriffCredentials, NabuNetworkError> {
         let request = requestBuilder.get(
             path: Path.credentiasForVeriff,
             authenticated: true
@@ -138,11 +142,11 @@ public final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    public func user() -> AnyPublisher<NabuUser, NabuNetworkError> {
+    func user() -> AnyPublisher<NabuUser, NabuNetworkError> {
         fetchUser()
     }
 
-    public func listOfStates(
+    func listOfStates(
         in country: String
     ) -> AnyPublisher<[KYCState], NabuNetworkError> {
         let request = requestBuilder.get(
@@ -156,7 +160,7 @@ public final class KYCClient: KYCClientAPI {
             .eraseToAnyPublisher()
     }
 
-    public func submitToVeriffForVerification(
+    func submitToVeriffForVerification(
         applicantId: String
     ) -> AnyPublisher<Void, NabuNetworkError> {
         struct Payload: Encodable {
@@ -185,7 +189,7 @@ public final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    public func selectCountry(
+    func selectCountry(
         country: String,
         state: String?,
         notifyWhenAvailable: Bool,
@@ -220,7 +224,7 @@ public final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    public func updatePersonalDetails(
+    func updatePersonalDetails(
         firstName: String?,
         lastName: String?,
         birthday: Date?
@@ -242,7 +246,7 @@ public final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    public func updateAddress(
+    func updateAddress(
         userAddress: UserAddress
     ) -> AnyPublisher<Void, NabuNetworkError> {
         let payload = KYCUpdateAddressRequest(address: userAddress)
@@ -256,7 +260,7 @@ public final class KYCClient: KYCClientAPI {
 
     // MARK: Combine Interface
 
-    public func fetchUser() -> AnyPublisher<NabuUser, NabuNetworkError> {
+    func fetchUser() -> AnyPublisher<NabuUser, NabuNetworkError> {
         let request = requestBuilder.get(
             path: Path.currentUser,
             authenticated: true
@@ -264,9 +268,7 @@ public final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    public func checkSimplifiedDueDiligenceEligibility()
-        -> AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError>
-    {
+    func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError> {
         let request = requestBuilder.get(
             path: Path.simplifiedDueDiligenceEligibility,
             authenticated: true
@@ -274,11 +276,18 @@ public final class KYCClient: KYCClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    public func checkSimplifiedDueDiligenceVerification()
-        -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError>
-    {
+    func checkSimplifiedDueDiligenceVerification(
+    ) -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> {
         let request = requestBuilder.get(
             path: Path.simplifiedDueDiligenceVerification,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    func fetchLimitsOverview() -> AnyPublisher<KYCLimitsOverviewResponse, NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: Path.tierTradingLimitsOverview,
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

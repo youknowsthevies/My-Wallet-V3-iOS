@@ -4,8 +4,6 @@ import AnalyticsKit
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
-import FeatureKYCDomain
-import FeatureKYCUI
 import FeatureSettingsDomain
 import Localization
 import PlatformKit
@@ -50,6 +48,11 @@ public protocol PaymentMethodsLinkerAPI {
     func routeToCardLinkingFlow(from viewController: UIViewController, completion: @escaping () -> Void)
 }
 
+public protocol KYCRouterAPI {
+
+    func presentLimitsOverview(from presenter: UIViewController)
+}
+
 final class SettingsRouter: SettingsRouterAPI {
 
     typealias AnalyticsEvent = AnalyticsEvents.Settings
@@ -73,7 +76,6 @@ final class SettingsRouter: SettingsRouterAPI {
     private let guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
-    private var cardRouter: CardRouter!
 
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private unowned let tabSwapping: TabSwapping
@@ -90,15 +92,24 @@ final class SettingsRouter: SettingsRouterAPI {
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let logoutService: LogoutServiceAPI
 
-    /// The router for linking a new bank
-    private var linkBankFlowRouter: LinkBankFlowStarter?
+    private let kycRouter: KYCRouterAPI
 
+    private var cardRouter: CardRouter!
+    private var linkBankFlowRouter: LinkBankFlowStarter?
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
     private let presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI
 
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
-    private var bag: Set<AnyCancellable> = []
+    private var cancellables = Set<AnyCancellable>()
+
+    private var topViewController: UIViewController {
+        let topViewController = navigationRouter.topMostViewControllerProvider.topMostViewController
+        guard let viewController = topViewController else {
+            fatalError("Failed to present open banking flow, no view controller available for presentation")
+        }
+        return viewController
+    }
 
     init(
         appCoordinator: AppCoordinating = resolve(),
@@ -111,6 +122,7 @@ final class SettingsRouter: SettingsRouterAPI {
         navigationRouter: NavigationRouterAPI = resolve(),
         analyticsRecording: AnalyticsEventRecorderAPI = resolve(),
         alertPresenter: AlertViewPresenter = resolve(),
+        kycRouter: KYCRouterAPI = resolve(),
         cardListService: CardListServiceAPI = resolve(),
         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
         pitConnectionAPI: PITConnectionStatusProviding = resolve(),
@@ -132,6 +144,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.navigationRouter = navigationRouter
         self.alertPresenter = alertPresenter
         self.analyticsRecording = analyticsRecording
+        self.kycRouter = kycRouter
         self.tabSwapping = tabSwapping
         self.guidRepositoryAPI = guidRepositoryAPI
         self.paymentMethodTypesService = paymentMethodTypesService
@@ -212,16 +225,14 @@ final class SettingsRouter: SettingsRouterAPI {
             let viewController = builder.removeCardPaymentMethodViewController(cardData: data)
             viewController.transitioningDelegate = sheetPresenter
             viewController.modalPresentationStyle = .custom
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
+            topViewController.present(viewController, animated: true, completion: nil)
         case .showRemoveBankScreen(let data):
             let viewController = builder.removeBankPaymentMethodViewController(beneficiary: data)
             viewController.transitioningDelegate = sheetPresenter
             viewController.modalPresentationStyle = .custom
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
+            topViewController.present(viewController, animated: true, completion: nil)
         case .showAddCardScreen:
-            guard let presenter = navigationRouter.topMostViewControllerProvider.topMostViewController else {
-                impossible("The top view controller cannot be nil")
-            }
+            let presenter = topViewController
             paymentMethodLinker.routeToCardLinkingFlow(from: presenter) { [addCardCompletionRelay] in
                 presenter.dismiss(animated: true) {
                     addCardCompletionRelay.accept(())
@@ -244,7 +255,7 @@ final class SettingsRouter: SettingsRouterAPI {
                             self.showFundTransferDetails(currency: fiatCurrency)
                         }
                     )
-                    .store(in: &bag)
+                    .store(in: &cancellables)
             default:
                 showFundTransferDetails(currency: fiatCurrency)
             }
@@ -298,11 +309,9 @@ final class SettingsRouter: SettingsRouterAPI {
                 })
                 .disposed(by: disposeBag)
 
-        case .launchKYC:
-            guard let navController = navigationRouter.navigationControllerAPI as? UINavigationController else { return }
-            KYCTiersViewController
-                .routeToTiers(fromViewController: navController)
-                .disposed(by: disposeBag)
+        case .presentTradeLimits:
+            kycRouter.presentLimitsOverview(from: topViewController)
+
         case .launchPIT:
             guard let supportURL = URL(string: Constants.Url.exchangeSupport) else { return }
             let startPITCoordinator = { [weak self] in
@@ -361,11 +370,7 @@ final class SettingsRouter: SettingsRouterAPI {
     }
 
     private func showLinkOpenBankingFlow(currency: FiatCurrency) {
-
-        guard let viewController = navigationRouter.topMostViewControllerProvider.topMostViewController else {
-            fatalError("Failed to present open banking flow, no view controller available for presentation")
-        }
-
+        let viewController = topViewController
         presentAccountLinkingFlow
             .presentAccountLinkingFlow(
                 from: viewController,
