@@ -803,10 +803,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
          .onboarding(.welcomeScreen(.restoreWallet(.resetPassword(.reset(let password))))):
         return Effect(value: .resetPassword(newPassword: password))
 
-    case .onboarding(.welcomeScreen(.enter(into: .createWallet))):
-        // send `authenticate` action so that we can listen for wallet creation
-        return Effect(value: .authenticate)
-
     case .onboarding(.createAccountScreenClosed):
         // cancel any authentication publishers in case the create wallet is closed
         environment.loadingViewPresenter.hide()

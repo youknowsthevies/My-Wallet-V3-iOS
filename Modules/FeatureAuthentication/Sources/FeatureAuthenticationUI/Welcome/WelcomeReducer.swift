@@ -290,8 +290,7 @@ public let welcomeReducer = Reducer.combine(
             return .none
 
         case .informSecondPasswordDetected:
-            state.secondPasswordNoticeState = .init()
-            return .none
+            return .enter(into: .secondPassword)
 
         case .createWallet,
              .emailLogin,
