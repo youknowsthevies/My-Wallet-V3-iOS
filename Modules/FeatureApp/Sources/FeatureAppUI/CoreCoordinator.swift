@@ -380,7 +380,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             state.onboarding?.displayAlert = .walletAuthentication(error)
             return .cancel(id: WalletCancelations.AuthenticationId())
         }
-        if state.onboarding?.welcomeState?.screenFlow == .manualLoginScreen {
+        if state.onboarding?.welcomeState?.manualCredentialsState != nil {
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
                 Effect(
@@ -473,7 +473,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             }
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
-                Effect(value: .onboarding(.welcomeScreen(.presentScreenFlow(.welcomeScreen)))),
+                Effect(value: .onboarding(.welcomeScreen(.enter(into: nil)))),
                 Effect(value: .setupPin)
             )
         }
@@ -803,7 +803,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
          .onboarding(.welcomeScreen(.restoreWallet(.resetPassword(.reset(let password))))):
         return Effect(value: .resetPassword(newPassword: password))
 
-    case .onboarding(.welcomeScreen(.presentScreenFlow(.createWalletScreen))):
+    case .onboarding(.welcomeScreen(.enter(into: .createWallet))):
         // send `authenticate` action so that we can listen for wallet creation
         return Effect(value: .authenticate)
 

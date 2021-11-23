@@ -50,7 +50,7 @@ let importWalletReducer = Reducer.combine(
             state.isCreateAccountScreenVisible = isVisible
             if isVisible {
                 state.createAccountState = .init(
-                    isImportWallet: true
+                    context: .importWallet
                 )
             }
             return .none

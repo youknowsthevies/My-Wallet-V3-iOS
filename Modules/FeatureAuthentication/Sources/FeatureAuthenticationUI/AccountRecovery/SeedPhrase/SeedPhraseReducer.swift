@@ -45,6 +45,7 @@ public enum AccountRecoveryContext: Equatable {
 // MARK: - Properties
 
 public struct SeedPhraseState: Equatable {
+    var context: AccountRecoveryContext
     var emailAddress: String
     var nabuInfo: WalletInfo.NabuInfo?
     var seedPhrase: String
@@ -62,7 +63,8 @@ public struct SeedPhraseState: Equatable {
         nabuInfo != nil
     }
 
-    init(emailAddress: String = "", nabuInfo: WalletInfo.NabuInfo? = nil) {
+    init(context: AccountRecoveryContext, emailAddress: String = "", nabuInfo: WalletInfo.NabuInfo? = nil) {
+        self.context = context
         self.emailAddress = emailAddress
         self.nabuInfo = nabuInfo
         seedPhrase = ""

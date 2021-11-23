@@ -139,21 +139,21 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             state.showLegacyCreateWalletScreen = false
             state.walletCreationContext = nil
             return .none
-        case .welcomeScreen(.presentScreenFlow(.welcomeScreen)):
+        case .welcomeScreen(.route(nil)):
             // don't clear the state if the state is .new when dismissing the modal by setting the screen flow back to welcome screen
             if state.walletCreationContext == .existing || state.walletCreationContext == .recovery {
                 state.walletCreationContext = nil
             }
             return .none
-        case .welcomeScreen(.presentScreenFlow(.createWalletScreen)):
+        case .welcomeScreen(.enterOldCreateWalletScreen):
             state.showLegacyCreateWalletScreen = true
             state.walletCreationContext = .new
             return .none
-        case .welcomeScreen(.presentScreenFlow(.emailLoginScreen)):
+        case .welcomeScreen(.enter(into: .emailLogin)):
             state.walletCreationContext = .existing
             return .none
 
-        case .welcomeScreen(.presentScreenFlow(.restoreWalletScreen)):
+        case .welcomeScreen(.enter(into: .restoreWallet)):
             state.walletCreationContext = .recovery
             return .none
         case .welcomeScreen:

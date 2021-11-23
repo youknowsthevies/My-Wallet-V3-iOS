@@ -17,21 +17,28 @@ public enum CreateAccountAction: Equatable {
     case didChangePasswordStrength(PasswordValidationScore)
     case validatePasswordStrength
     case openExternalLink(URL)
-    case createButtonTapped(String, String)
+    case createButtonTapped(email: String, password: String)
     case noop
+}
+
+enum CreateAccountContext {
+    case importWallet
+    case createWallet
 }
 
 // MARK: - Properties
 
 public struct CreateAccountState: Equatable {
-    var isImportWallet: Bool
+    var context: CreateAccountContext
     var emailAddress: String
     var password: String
     var confirmPassword: String
     var passwordStrength: PasswordValidationScore
 
-    init(isImportWallet: Bool) {
-        self.isImportWallet = isImportWallet
+    init(
+        context: CreateAccountContext
+    ) {
+        self.context = context
         emailAddress = ""
         password = ""
         confirmPassword = ""
@@ -120,14 +127,14 @@ extension Reducer where
             > { state, action, environment in
                 switch action {
                 case .onWillDisappear:
-                    if state.isImportWallet {
+                    if state.context == .importWallet {
                         environment.analyticsRecorder.record(
                             event: .importWalletCancelled
                         )
                     }
                     return .none
                 case .createButtonTapped:
-                    if state.isImportWallet {
+                    if state.context == .importWallet {
                         environment.analyticsRecorder.record(
                             event: .importWalletConfirmed
                         )

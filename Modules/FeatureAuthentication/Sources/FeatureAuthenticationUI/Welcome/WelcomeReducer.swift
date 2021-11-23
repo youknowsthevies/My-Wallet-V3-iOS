@@ -3,74 +3,72 @@
 import AnalyticsKit
 import Combine
 import ComposableArchitecture
+import ComposableNavigation
 import DIKit
 import FeatureAuthenticationDomain
 import ToolKit
 
 // MARK: - Type
 
-public enum WelcomeAction: Equatable {
+public enum WelcomeAction: Equatable, NavigationAction {
+
+    // MARK: - Start Up
+
     case start
-    case presentScreenFlow(WelcomeState.ScreenFlow)
-    case createWallet(CreateAccountAction)
-    case emailLogin(EmailLoginAction)
-    case restoreWallet(SeedPhraseAction)
+
+    // MARK: - Deep link
+
     case deeplinkReceived(URL)
+
+    // MARK: - Wallet
+
     case requestedToCreateWallet(String, String)
     case requestedToDecryptWallet(String)
     case requestedToRestoreWallet(WalletRecovery)
-    /// should only be used on internal builds
-    case setManualPairingEnabled
-    case manualPairing(CredentialsAction)
+
+    // MARK: - Navigation
+
+    case openCreateWalletScreen // TODO: remove this with the feature flag when it's ready
+    case enterOldCreateWalletScreen // TODO: remove this with the feature flag when it's ready
+    case route(RouteIntent<WelcomeRoute>?)
+
+    // MARK: - Local Action
+
+    case createWallet(CreateAccountAction)
+    case emailLogin(EmailLoginAction)
+    case restoreWallet(SeedPhraseAction)
+    case setManualPairingEnabled // should only be on internal build
+    case manualPairing(CredentialsAction) // should only be on internal build
     case secondPasswordNotice(SecondPasswordNotice.Action)
     case informSecondPasswordDetected
-    case modalDismissed(WelcomeState.Modals)
+
+    // MARK: - Utils
+
     case none
 }
 
 // MARK: - Properties
 
 /// The `master` `State` for the Single Sign On (SSO) Flow
-public struct WelcomeState: Equatable {
-    public enum ScreenFlow {
-        case welcomeScreen
-        case createScreen
-        case createWalletScreen
-        case newCreateWalletScreen
-        case emailLoginScreen
-        case restoreWalletScreen
-        /// this should only be used for internal builds
-        case manualLoginScreen
-    }
-
-    public enum Modals: Equatable {
-        case secondPasswordNoticeScreen
-        case none
-    }
-
-    public var screenFlow: ScreenFlow
-    public var modals: Modals
+public struct WelcomeState: Equatable, NavigationState {
     public var buildVersion: String
+    public var route: RouteIntent<WelcomeRoute>?
     public var createWalletState: CreateAccountState?
     public var emailLoginState: EmailLoginState?
     public var restoreWalletState: SeedPhraseState?
-
+    public var manualPairingEnabled: Bool
+    public var manualCredentialsState: CredentialsState?
     public var secondPasswordNoticeState: SecondPasswordNotice.State?
 
-    /// should only be used on internal builds
-    var manualCredentialsState: CredentialsState?
-    var manualPairingEnabled: Bool
-
     public init() {
+        buildVersion = ""
+        route = nil
         createWalletState = nil
         restoreWalletState = nil
         emailLoginState = nil
+        manualPairingEnabled = false
         manualCredentialsState = nil
         secondPasswordNoticeState = nil
-        buildVersion = ""
-        screenFlow = .welcomeScreen
-        manualPairingEnabled = false
-        modals = .none
     }
 }
 
@@ -185,6 +183,49 @@ public let welcomeReducer = Reducer.combine(
             // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
+        case .openCreateWalletScreen:
+            return environment
+                .featureFlagsService
+                .isEnabled(.local(.newCreateWalletScreen))
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map { result -> WelcomeAction in
+                    guard case .success(let isEnabled) = result else {
+                        return .none
+                    }
+                    switch isEnabled {
+                    case true:
+                        return .enterOldCreateWalletScreen
+                    case false:
+                        return .enter(into: .createWallet)
+                    }
+                }
+        case .enterOldCreateWalletScreen:
+            return .none
+        case .route(let route):
+            guard let routeValue = route?.route else {
+                state.createWalletState = nil
+                state.emailLoginState = nil
+                state.restoreWalletState = nil
+                state.manualCredentialsState = nil
+                state.secondPasswordNoticeState = nil
+                state.route = route
+                return .none
+            }
+            switch routeValue {
+            case .createWallet:
+                state.createWalletState = .init(context: .createWallet)
+            case .emailLogin:
+                state.emailLoginState = .init()
+            case .restoreWallet:
+                state.restoreWalletState = .init(context: .restoreWallet)
+            case .manualLogin:
+                state.manualCredentialsState = .init()
+            case .secondPassword:
+                state.secondPasswordNoticeState = .init()
+            }
+            state.route = route
+            return .none
 
         case .start:
             state.buildVersion = environment.buildVersionProvider()
@@ -206,44 +247,6 @@ public let welcomeReducer = Reducer.combine(
             state.manualPairingEnabled = true
             return .none
 
-        case .presentScreenFlow(let screenFlow):
-            state.screenFlow = screenFlow
-            switch screenFlow {
-            case .createScreen:
-                return environment
-                    .featureFlagsService
-                    .isEnabled(.local(.newCreateWalletScreen))
-                    .receive(on: environment.mainQueue)
-                    .catchToEffect()
-                    .map { result -> WelcomeAction in
-                        guard case .success(let isEnabled) = result else {
-                            return .none
-                        }
-                        switch isEnabled {
-                        case true:
-                            return .presentScreenFlow(.newCreateWalletScreen)
-                        case false:
-                            return .presentScreenFlow(.createWalletScreen)
-                        }
-                    }
-            case .newCreateWalletScreen:
-                state.createWalletState = .init(
-                    isImportWallet: false
-                )
-            case .emailLoginScreen:
-                state.emailLoginState = .init()
-            case .restoreWalletScreen:
-                state.restoreWalletState = .init()
-            case .welcomeScreen, .createWalletScreen, .manualLoginScreen:
-                state.createWalletState = nil
-                state.emailLoginState = nil
-                state.restoreWalletState = nil
-            }
-            if BuildFlag.isInternal, screenFlow == .manualLoginScreen {
-                state.manualCredentialsState = .init()
-            }
-            return .none
-
         case .deeplinkReceived(let url):
             // handle deeplink if we've entered verify device flow
             guard let loginState = state.emailLoginState,
@@ -259,21 +262,15 @@ public let welcomeReducer = Reducer.combine(
             // handled in core coordinator
             return .none
 
-        case .createWallet(.closeButtonTapped):
-            state.screenFlow = .welcomeScreen
-            state.createWalletState = nil
-            return .none
-
         case .createWallet(.createButtonTapped(let email, let password)):
             return Effect(value: .requestedToCreateWallet(email, password))
 
-        case .createWallet:
-            return .none
-
-        case .emailLogin(.closeButtonTapped):
-            state.screenFlow = .welcomeScreen
-            state.emailLoginState = nil
-            return .none
+        case .createWallet(.closeButtonTapped),
+             .emailLogin(.closeButtonTapped),
+             .restoreWallet(.closeButtonTapped),
+             .manualPairing(.closeButtonTapped),
+             .secondPasswordNotice(.closeButtonTapped):
+            return .enter(into: nil)
 
         // TODO: refactor this by not relying on access lower level reducers
         case .emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))),
@@ -286,54 +283,20 @@ public let welcomeReducer = Reducer.combine(
         case .restoreWallet(.restoreWallet(let walletRecovery)):
             return Effect(value: .requestedToRestoreWallet(walletRecovery))
 
-        case .emailLogin:
-            // handled in email login reducer
-            return .none
-
         case .manualPairing(.walletPairing(.decryptWalletWithPassword(let password))):
             return Effect(value: .requestedToDecryptWallet(password))
-
-        case .manualPairing(.closeButtonTapped):
-            state.screenFlow = .welcomeScreen
-            return .none
 
         case .manualPairing:
             return .none
 
-        case .restoreWallet(.closeButtonTapped):
-            state.screenFlow = .welcomeScreen
-            state.restoreWalletState = .init()
-            return .none
-
-        case .restoreWallet:
-            return .none
-
         case .informSecondPasswordDetected:
-            state.screenFlow = .welcomeScreen
-            state.modals = .secondPasswordNoticeScreen
             state.secondPasswordNoticeState = .init()
             return .none
 
-        case .secondPasswordNotice(.closeButtonTapped):
-            state.screenFlow = .welcomeScreen
-            state.modals = .none
-            state.emailLoginState = nil
-            state.manualCredentialsState = nil
-            state.secondPasswordNoticeState = nil
-            return .none
-
-        case .secondPasswordNotice:
-            return .none
-
-        case .modalDismissed(.secondPasswordNoticeScreen) where state.secondPasswordNoticeState != nil:
-            state.screenFlow = .welcomeScreen
-            state.modals = .none
-            state.emailLoginState = nil
-            state.manualCredentialsState = nil
-            state.secondPasswordNoticeState = nil
-            return .none
-
-        case .modalDismissed:
+        case .createWallet,
+             .emailLogin,
+             .restoreWallet,
+             .secondPasswordNotice:
             return .none
 
         case .none:
@@ -342,6 +305,7 @@ public let welcomeReducer = Reducer.combine(
     }
 )
 .analytics()
+.debug()
 
 extension Reducer where
     Action == WelcomeAction,
@@ -356,15 +320,22 @@ extension Reducer where
                 WelcomeEnvironment
             > { _, action, environment in
                 switch action {
-                case .presentScreenFlow(.emailLoginScreen):
-                    environment.analyticsRecorder.record(
-                        event: .loginClicked()
-                    )
-                    return .none
-                case .presentScreenFlow(.restoreWalletScreen):
-                    environment.analyticsRecorder.record(
-                        event: .recoveryOptionSelected
-                    )
+                case .route(let route):
+                    guard let routeValue = route?.route else {
+                        return .none
+                    }
+                    switch routeValue {
+                    case .emailLogin:
+                        environment.analyticsRecorder.record(
+                            event: .loginClicked()
+                        )
+                    case .restoreWallet:
+                        environment.analyticsRecorder.record(
+                            event: .recoveryOptionSelected
+                        )
+                    default:
+                        break
+                    }
                     return .none
                 default:
                     return .none
