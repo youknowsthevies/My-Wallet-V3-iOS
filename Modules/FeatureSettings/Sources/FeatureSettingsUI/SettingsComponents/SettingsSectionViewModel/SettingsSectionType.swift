@@ -124,6 +124,7 @@ enum SettingsSectionType: Int, Equatable {
             case termsOfService
             case privacyPolicy
             case cookiesPolicy
+            case logout
         }
     }
 }

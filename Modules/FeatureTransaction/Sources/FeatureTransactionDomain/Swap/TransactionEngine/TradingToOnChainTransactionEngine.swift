@@ -129,14 +129,14 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 .map { fees, withdrawableBalance -> PendingTransaction in
                     let fee = fees[fee: amount.currency]
                     let available = try withdrawableBalance - fee
-                    let pendingTransaction = pendingTransaction.update(
+                    var pendingTransaction = pendingTransaction.update(
                         amount: amount,
                         available: available.isNegative ? .zero(currency: available.currency) : available,
                         fee: fee,
                         feeForFullAvailable: fee
                     )
-                    let transactionLimits = pendingTransaction.limits.value ?? .infinity(for: amount.currency)
-                    pendingTransaction.limits.value = TransactionLimits(
+                    let transactionLimits = pendingTransaction.limits ?? .infinity(for: amount.currency)
+                    pendingTransaction.limits = TransactionLimits(
                         minimum: fees[minimumAmount: amount.currency],
                         maximum: transactionLimits.maximum,
                         maximumDaily: transactionLimits.maximumDaily,
@@ -168,53 +168,6 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             .map { confirmations -> PendingTransaction in
                 pendingTransaction.update(confirmations: confirmations)
             }
-    }
-
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        walletCurrencyService
-            .fiatCurrencyPublisher
-            .setFailureType(to: PriceServiceError.self)
-            .flatMap { [currencyConversionService] fiatCurrency -> AnyPublisher<MoneyValue, PriceServiceError> in
-                currencyConversionService.conversionRate(
-                    from: pendingTransaction.amount.currencyType,
-                    to: fiatCurrency.currencyType
-                )
-            }
-            .zip(
-                currencyConversionService.conversionRate(
-                    from: sourceAsset.currencyType,
-                    to: pendingTransaction.amount.currencyType
-                )
-            )
-            .asSingle()
-            .map { [sourceAccount] toWalletRate, toAmountRate -> Void in
-                guard let transactionLimits = pendingTransaction.limits.value?.convert(using: toAmountRate) else {
-                    throw TransactionValidationFailure(state: .unknownError)
-                }
-                guard try pendingTransaction.amount >= transactionLimits.minimum else {
-                    throw TransactionValidationFailure(state: .belowMinimumLimit(transactionLimits.minimum))
-                }
-                guard try pendingTransaction.amount <= transactionLimits.maximum else {
-                    throw TransactionValidationFailure(
-                        state: .overMaximumPersonalLimit(
-                            transactionLimits.effectiveLimit,
-                            transactionLimits.maximum.convert(using: toWalletRate),
-                            transactionLimits.suggestedUpgrade
-                        )
-                    )
-                }
-                guard try pendingTransaction.amount <= pendingTransaction.available else {
-                    throw TransactionValidationFailure(
-                        state: .overMaximumSourceLimit(
-                            pendingTransaction.available,
-                            sourceAccount!.label,
-                            pendingTransaction.amount
-                        )
-                    )
-                }
-            }
-            .asCompletable()
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

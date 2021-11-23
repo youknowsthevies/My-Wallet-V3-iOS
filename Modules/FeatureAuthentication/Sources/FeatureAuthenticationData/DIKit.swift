@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import NetworkKit
+import WalletPayloadKit
 
 extension DependencyContainer {
 
@@ -56,6 +57,71 @@ extension DependencyContainer {
         factory { MobileAuthSyncRepository() as MobileAuthSyncRepositoryAPI }
 
         factory { PushNotificationsRepository() as PushNotificationsRepositoryAPI }
+
+        // MARK: - Wallet Repositories
+
+        factory { () -> AuthenticatorRepositoryAPI in
+            let walletRepository: WalletRepositoryProvider = DIKit.resolve()
+            return AuthenticatorRepository(
+                walletRepository: walletRepository.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
+
+        factory { () -> SharedKeyRepositoryAPI in
+            let walletRepository: WalletRepositoryProvider = DIKit.resolve()
+            return SharedKeyRepository(
+                walletRepository: walletRepository.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
+
+        factory { () -> SessionTokenRepositoryAPI in
+            let walletRepository: WalletRepositoryProvider = DIKit.resolve()
+            return SessionTokenRepository(
+                walletRepository: walletRepository.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
+
+        factory { () -> GuidRepositoryAPI in
+            let walletRepository: WalletRepositoryProvider = DIKit.resolve()
+            return GuidRepository(
+                walletRepository: walletRepository.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
+
+        factory { () -> PasswordRepositoryAPI in
+            let walletRepository: WalletRepositoryProvider = DIKit.resolve()
+            return PasswordRepository(
+                walletRepository: walletRepository.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
+
+        factory { () -> CredentialsRepositoryAPI in
+            let repository: WalletRepositoryAPI = DIKit.resolve()
+            return CredentialsRepository(
+                walletRepository: repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
+
+        factory { () -> NabuOfflineTokenRepositoryAPI in
+            let repository: WalletRepositoryAPI = DIKit.resolve()
+            return NabuOfflineTokenRepository(
+                walletRepository: repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
 
         // MARK: - Nabu Authentication
 

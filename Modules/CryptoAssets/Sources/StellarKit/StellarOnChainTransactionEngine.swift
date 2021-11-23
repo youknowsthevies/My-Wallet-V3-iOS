@@ -24,12 +24,12 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             .asObservable()
     }
 
+    let walletCurrencyService: FiatCurrencyServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
     var askForRefreshConfirmation: (AskForRefreshConfirmation)!
     var requireSecondPassword: Bool
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
-    var fiatCurrencyService: FiatCurrencyServiceAPI
-    var priceService: PriceServiceAPI
     var transactionDispatcher: StellarTransactionDispatcher
     var feeService: AnyCryptoFeeService<StellarTransactionFee>
 
@@ -40,17 +40,16 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private var userFiatCurrency: Single<FiatCurrency> {
-        fiatCurrencyService.fiatCurrency
+        walletCurrencyService.fiatCurrency
     }
 
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         userFiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: self.sourceAsset, in: fiatCurrency)
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
     }
 
@@ -66,14 +65,14 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     init(
         requireSecondPassword: Bool,
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         feeService: AnyCryptoFeeService<StellarTransactionFee> = resolve(),
         transactionDispatcher: StellarTransactionDispatcher = resolve()
     ) {
         self.requireSecondPassword = requireSecondPassword
-        self.fiatCurrencyService = fiatCurrencyService
-        self.priceService = priceService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
         self.transactionDispatcher = transactionDispatcher
         self.feeService = feeService
     }
@@ -213,15 +212,8 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAmounts(pendingTransaction: pendingTransaction)
-            .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-    }
-
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateTargetAddress()
-            .andThen(validateAmounts(pendingTransaction: pendingTransaction))
             .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
             .andThen(validateOptions(pendingTransaction: pendingTransaction))
             .andThen(validateDryRun(pendingTransaction: pendingTransaction))
@@ -241,14 +233,6 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
 extension StellarOnChainTransactionEngine {
 
-    private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.fromCallable {
-            guard pendingTransaction.amount.isPositive else {
-                throw TransactionValidationFailure(state: .invalidAmount)
-            }
-        }
-    }
-
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
         Single.zip(sourceAccount.actionableBalance, absoluteFee)
             .map { [sourceAccount, transactionTarget] balance, fee -> Void in
@@ -256,6 +240,7 @@ extension StellarOnChainTransactionEngine {
                     throw TransactionValidationFailure(
                         state: .insufficientFunds(
                             balance,
+                            pendingTransaction.amount,
                             sourceAccount!.currencyType,
                             transactionTarget!.currencyType
                         )
@@ -380,10 +365,11 @@ extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
                 throw TransactionValidationFailure(state: .belowMinimumLimit(minimum))
             case SendFailureReason.belowMinimumSendNewAccount(let minimum):
                 throw TransactionValidationFailure(state: .belowMinimumLimit(minimum))
-            case SendFailureReason.insufficientFunds(let balance):
+            case SendFailureReason.insufficientFunds(let balance, let desiredAmount):
                 throw TransactionValidationFailure(
                     state: .insufficientFunds(
                         balance,
+                        desiredAmount,
                         balance.currencyType,
                         balance.currencyType
                     )

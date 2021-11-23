@@ -9,6 +9,7 @@ import FeatureDashboardUI
 import FeatureInterestUI
 import FeatureOnboardingUI
 import FeatureSettingsUI
+import FeatureWalletConnectDomain
 import PlatformKit
 import PlatformUIKit
 import ToolKit
@@ -36,6 +37,8 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 
     @Inject var airdropRouter: AirdropRouterAPI
 
+    let walletConnectService: WalletConnectServiceAPI
+    private let walletConnectRouter: WalletConnectRouterAPI
     private let onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI
     private let kycRouter: PlatformUIKit.KYCRouting
 
@@ -49,12 +52,24 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     @LazyInject var transactionsAdapter: TransactionsAdapterAPI
     @LazyInject var nabuAuthenticationErrorReceiver: NabuAuthenticationErrorReceiverAPI
 
+    convenience init(store: Store<LoggedIn.State, LoggedIn.Action>) {
+        self.init(
+            store: store,
+            onboardingRouter: resolve(),
+            tiersService: resolve(),
+            kycRouter: resolve(),
+            eligibilityService: resolve()
+        )
+    }
+
     init(
         store: Store<LoggedIn.State, LoggedIn.Action>,
         onboardingRouter: FeatureOnboardingUI.OnboardingRouterAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         kycRouter: KYCRouting = resolve(),
-        eligibilityService: EligibilityServiceAPI = resolve()
+        eligibilityService: EligibilityServiceAPI = resolve(),
+        walletConnectService: WalletConnectServiceAPI = resolve(),
+        walletConnectRouter: WalletConnectRouterAPI = resolve()
     ) {
         self.kycRouter = kycRouter
         self.store = store
@@ -62,6 +77,8 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
         simpleBuyEligiblityService = eligibilityService
         viewStore = ViewStore(store)
         self.onboardingRouter = onboardingRouter
+        self.walletConnectRouter = walletConnectRouter
+        self.walletConnectService = walletConnectService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -272,6 +289,7 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 }
 
 extension LoggedInHostingController: SideMenuViewControllerDelegate {
+    // swiftlint:disable:next cyclomatic_complexity
     func sideMenuViewController(
         _ viewController: SideMenuViewController,
         didTapOn item: SideMenuItem
@@ -407,6 +425,10 @@ extension LoggedInHostingController {
             }
     }
 
+    func switchTabToDashboard() {
+        tabControllerManager?.showDashboard()
+    }
+
     func switchToSend() {
         tabControllerManager?.showSend()
     }
@@ -500,5 +522,26 @@ extension LoggedInHostingController {
         }
         accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
+    }
+
+    func logout() {
+        showAlert(
+            with: .init(
+                title: LocalizationConstants.SideMenu.logout,
+                message: LocalizationConstants.SideMenu.logoutConfirm,
+                actions: [
+                    UIAlertAction(
+                        title: LocalizationConstants.okString,
+                        style: .default
+                    ) { [weak self] _ in
+                        self?.viewStore.send(.logout)
+                    },
+                    UIAlertAction(
+                        title: LocalizationConstants.cancel,
+                        style: .cancel
+                    )
+                ]
+            )
+        )
     }
 }

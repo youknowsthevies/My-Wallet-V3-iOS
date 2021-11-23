@@ -1,4 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+// swiftlint:disable line_length
 
 import Combine
 import DIKit
@@ -21,9 +22,10 @@ final class EligibilityService: EligibilityServiceAPI {
     var isEligible: Single<Bool> {
         isEligibileValue
             .valueSingle
+            .map(\.eligible)
     }
 
-    private let isEligibileValue: CachedValue<Bool>
+    private let isEligibileValue: CachedValue<Eligibility>
     private let client: EligibilityClientAPI
     private let reactiveWallet: ReactiveWalletAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
@@ -47,9 +49,9 @@ final class EligibilityService: EligibilityServiceAPI {
 
         isEligibileValue.setFetch(weak: self) { (self) in
             self.reactiveWallet.waitUntilInitializedSingle
-                .flatMap(weak: self) { (self, _) -> Single<Bool> in
+                .flatMap(weak: self) { (self, _) -> Single<Eligibility> in
                     self.fiatCurrencyService.fiatCurrency
-                        .flatMap { currency -> Single<EligibilityResponse> in
+                        .flatMap { currency -> Single<Eligibility> in
                             self.client.isEligible(
                                 for: currency.code,
                                 methods: [
@@ -57,14 +59,31 @@ final class EligibilityService: EligibilityServiceAPI {
                                     PaymentMethodPayloadType.card.rawValue
                                 ]
                             )
+                            .map { response in
+                                Eligibility(
+                                    eligible: response.eligible,
+                                    simpleBuyTradingEligible: response.simpleBuyTradingEligible,
+                                    simpleBuyPendingTradesEligible: response.simpleBuyPendingTradesEligible,
+                                    pendingDepositSimpleBuyTrades: response.pendingDepositSimpleBuyTrades,
+                                    pendingConfirmationSimpleBuyTrades: response.pendingConfirmationSimpleBuyTrades,
+                                    maxPendingDepositSimpleBuyTrades: response.maxPendingDepositSimpleBuyTrades,
+                                    maxPendingConfirmationSimpleBuyTrades: response.maxPendingConfirmationSimpleBuyTrades
+                                )
+                            }
                             .asSingle()
                         }
-                        .map(\.eligible)
                 }
         }
     }
 
     func fetch() -> Single<Bool> {
         isEligibileValue.fetchValue
+            .map(\.eligible)
+    }
+
+    func eligibility() -> AnyPublisher<Eligibility, Error> {
+        isEligibileValue.fetchValue
+            .asPublisher()
+            .eraseToAnyPublisher()
     }
 }

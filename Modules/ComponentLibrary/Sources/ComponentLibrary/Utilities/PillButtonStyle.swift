@@ -58,6 +58,7 @@ struct PillButtonStyle: ButtonStyle {
                     .typography(size.typograhy)
             }
         }
+        .accentColor(colorSet(for: configuration).foreground)
         .foregroundColor(colorSet(for: configuration).foreground)
         .frame(maxWidth: size.maxWidth, minHeight: size.minHeight)
         .padding(size.padding)

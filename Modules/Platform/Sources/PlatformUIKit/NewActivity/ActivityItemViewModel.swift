@@ -42,11 +42,18 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
         var text = ""
         switch event {
         case .buySell(let orderDetails):
-            if orderDetails.isBuy {
+            switch (orderDetails.status, orderDetails.isBuy) {
+            case (.pending, true):
+                text = "\(LocalizationStrings.buying) \(orderDetails.outputValue.currency.displayCode)"
+            case (_, true):
                 text = "\(LocalizationStrings.buy) \(orderDetails.outputValue.currency.displayCode)"
-            } else {
-                text = "\(LocalizationStrings.sell) "
-                    + "\(orderDetails.inputValue.currency.displayCode) -> \(orderDetails.outputValue.currency.displayCode)"
+            case (_, false):
+                text = [
+                    LocalizationStrings.sell,
+                    orderDetails.inputValue.currency.displayCode,
+                    "->",
+                    orderDetails.outputValue.currency.displayCode
+                ].joined(separator: " ")
             }
         case .interest(let event):
             switch event.type {
@@ -71,10 +78,14 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             }
 
         case .transactional(let event):
-            switch event.type {
-            case .receive:
+            switch (event.status, event.type) {
+            case (.pending, .receive):
+                text = LocalizationStrings.receiving + " \(event.currency.displayCode)"
+            case (.pending, .send):
+                text = LocalizationStrings.sending + " \(event.currency.displayCode)"
+            case (.complete, .receive):
                 text = LocalizationStrings.receive + " \(event.currency.displayCode)"
-            case .send:
+            case (.complete, .send):
                 text = LocalizationStrings.send + " \(event.currency.displayCode)"
             }
         case .fiat(let event):
@@ -85,10 +96,14 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 text = LocalizationStrings.withdraw + " \(event.amount.displayCode)"
             }
         case .crypto(let event):
-            switch event.type {
-            case .deposit:
+            switch (event.state, event.type) {
+            case (.pending, .deposit):
+                text = LocalizationStrings.receiving + " \(event.amount.displayCode)"
+            case (.pending, .withdrawal):
+                text = LocalizationStrings.sending + " \(event.amount.displayCode)"
+            case (_, .deposit):
                 text = LocalizationStrings.receive + " \(event.amount.displayCode)"
-            case .withdrawal:
+            case (_, .withdrawal):
                 text = LocalizationStrings.send + " \(event.amount.displayCode)"
             }
         }

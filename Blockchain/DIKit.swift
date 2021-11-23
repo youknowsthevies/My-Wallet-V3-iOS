@@ -239,11 +239,6 @@ extension DependencyContainer {
             return bridge.resolveSettingsStarter() as SettingsStarterAPI
         }
 
-        factory { () -> TabControllerManagerProvider in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveTabControllerProvider() as TabControllerManagerProvider
-        }
-
         factory { () -> DrawerRouting in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveDrawerRouting() as DrawerRouting
@@ -261,6 +256,11 @@ extension DependencyContainer {
         factory { () -> QRCodeScannerRouting in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveQRCodeScannerRouting() as QRCodeScannerRouting
+        }
+
+        factory { () -> LogoutServiceAPI in
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveLogoutService() as LogoutServiceAPI
         }
 
         factory { () -> QRCodeScannerLinkerAPI in
@@ -298,21 +298,6 @@ extension DependencyContainer {
         factory { () -> WalletRecoveryVerifing in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as WalletRecoveryVerifing
-        }
-
-        factory { () -> SharedKeyRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as SharedKeyRepositoryAPI
-        }
-
-        factory { () -> FeatureAuthenticationDomain.GuidRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as FeatureAuthenticationDomain.GuidRepositoryAPI
-        }
-
-        factory { () -> PasswordRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as PasswordRepositoryAPI
         }
 
         // MARK: - BlockchainSettings.App
@@ -532,8 +517,9 @@ extension DependencyContainer {
         }
 
         factory { () -> SessionTokenServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return sessionTokenServiceFactory(walletRepository: manager.repository)
+            sessionTokenServiceFactory(
+                sessionRepository: DIKit.resolve()
+            )
         }
 
         factory { () -> SMSServiceAPI in

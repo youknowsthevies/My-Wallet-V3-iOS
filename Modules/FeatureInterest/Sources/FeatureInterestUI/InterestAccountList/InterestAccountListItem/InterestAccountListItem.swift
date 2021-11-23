@@ -18,6 +18,15 @@ struct InterestAccountListItem: View {
     var body: some View {
         WithViewStore(store) { viewStore in
             ActionableView(
+                buttons: viewStore.actions.map { action in
+                    .init(
+                        title: viewStore.actionDisplayString,
+                        action: {
+                            viewStore.send(action)
+                        },
+                        enabled: viewStore.isEligible
+                    )
+                },
                 content: {
                     VStack(alignment: .leading, spacing: 12.0) {
                         HStack {
@@ -84,15 +93,6 @@ struct InterestAccountListItem: View {
                         )
                         .frame(maxWidth: .infinity)
                     }
-                },
-                buttons: viewStore.actions.map { action in
-                    .init(
-                        title: viewStore.actionDisplayString,
-                        action: {
-                            viewStore.send(action)
-                        },
-                        enabled: viewStore.isEligible
-                    )
                 }
             )
         }

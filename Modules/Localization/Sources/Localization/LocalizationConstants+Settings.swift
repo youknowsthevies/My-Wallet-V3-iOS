@@ -64,6 +64,7 @@ extension LocalizationConstants.Settings {
     public static let termsOfService = NSLocalizedString("Terms of Service", comment: "Terms of Service")
     public static let privacyPolicy = NSLocalizedString("Privacy Policy", comment: "Privacy Policy")
     public static let cookiesPolicy = NSLocalizedString("Cookies Policy", comment: "Cookies Policy")
+    public static let logout = NSLocalizedString("Logout", comment: "Logout title in settings")
     public static let changePIN = NSLocalizedString("Change PIN", comment: "Change PIN")
     public static let loginToWebWallet = NSLocalizedString("Log in to Web Wallet", comment: "Log in to Web Wallet")
     public static let changePassword = NSLocalizedString("Change Password", comment: "Change Password")

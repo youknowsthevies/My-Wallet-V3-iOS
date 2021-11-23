@@ -15,7 +15,8 @@ final class AboutSectionPresenter: SettingsSectionPresenting {
                             .init(cellType: .plain(.rateUs)),
                             .init(cellType: .plain(.termsOfService)),
                             .init(cellType: .plain(.privacyPolicy)),
-                            .init(cellType: .plain(.cookiesPolicy))
+                            .init(cellType: .plain(.cookiesPolicy)),
+                            .init(cellType: .plain(.logout))
                         ]
                     )
                 )

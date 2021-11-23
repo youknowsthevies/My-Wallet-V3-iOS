@@ -77,13 +77,15 @@ struct TransactionState: StateType {
         source: BlockchainAccount? = nil,
         destination: TransactionTarget? = nil,
         passwordRequired: Bool = false,
-        step: TransactionFlowStep = .initial
+        step: TransactionFlowStep = .initial,
+        order: TransactionOrder? = nil
     ) {
         self.action = action
         self.source = source
         self.destination = destination
         self.passwordRequired = passwordRequired
         self.step = step
+        self.order = order
     }
 }
 
@@ -112,6 +114,46 @@ extension TransactionState: Equatable {
     }
 }
 
+// MARK: - Limits
+
+extension TransactionState {
+
+    /// The amount the user is swapping from.
+    var amount: MoneyValue {
+        normalizedValue(for: pendingTransaction?.amount)
+    }
+
+    /// The maximum amount the user can use daily for the given transaction.
+    /// This is a different value than the spendable amount (and usually higher)
+    var maxDaily: MoneyValue {
+        normalizedValue(for: pendingTransaction?.maxSpendableDaily)
+    }
+
+    /// The minimum spending limit
+    var minSpendable: MoneyValue {
+        normalizedValue(for: pendingTransaction?.minSpendable)
+    }
+
+    /// The maximum amount the user can spend. We compare the amount entered to the
+    /// `maxLimit` as `CryptoValues` and return whichever is smaller.
+    var maxSpendable: MoneyValue {
+        normalizedValue(for: pendingTransaction?.maxSpendable)
+    }
+
+    /// The balance in `MoneyValue` based on the `PendingTransaction`
+    var availableBalance: MoneyValue {
+        normalizedValue(for: pendingTransaction?.available)
+    }
+
+    private func normalizedValue(for originalValue: MoneyValue?) -> MoneyValue {
+        let zero: MoneyValue = .zero(currency: asset)
+        let value = originalValue ?? zero
+        return (try? value >= zero) == true ? value : zero
+    }
+}
+
+// MARK: - Other
+
 extension TransactionState {
 
     /// The source account `CryptoCurrency`.
@@ -130,43 +172,6 @@ extension TransactionState {
             return .empty(asset: asset)
         }
         return pendingTx.feeSelection
-    }
-
-    /// The amount the user is swapping from.
-    var amount: MoneyValue {
-        pendingTransaction?.amount ?? .zero(currency: asset)
-    }
-
-    /// The minimum spending limit
-    var minSpendable: MoneyValue {
-        pendingTransaction?.limits.value?.minimum
-            ?? pendingTransaction?.minimumLimit
-            ?? .zero(currency: asset)
-    }
-
-    /// The maximum amount the user can use daily for the given transaction.
-    /// This is a different value than the spendable amount (and usually higher)
-    var maxDaily: MoneyValue {
-        pendingTransaction?.limits.value?.maximumDaily
-            ?? pendingTransaction?.maximumDailyLimit
-            ?? .zero(currency: asset)
-    }
-
-    /// The maximum amount the user can spend. We compare the amount entered to the
-    /// `maxLimit` as `CryptoValues` and return whichever is smaller.
-    var maxSpendable: MoneyValue {
-        if let maxSpendable = pendingTransaction?.maxSpendable,
-           (try? maxSpendable > .zero(currency: asset)) == true
-        {
-            return maxSpendable
-        } else {
-            return .zero(currency: asset)
-        }
-    }
-
-    /// The balance in `MoneyValue` based on the `PendingTransaction`
-    var availableBalance: MoneyValue {
-        pendingTransaction?.available ?? .zero(currency: asset)
     }
 
     func moneyValueFromSource() -> Result<MoneyValue, FeatureTransactionUIError> {
@@ -289,20 +294,15 @@ extension TransactionState {
             return String(format: LocalizationIds.tradingBelowMin, action.name)
         case .insufficientFunds:
             return LocalizationIds.insufficientFunds
-        case .insufficientGas:
-            return LocalizationIds.insufficientGas
-        case .insufficientFundsForFees:
+        case .belowFees:
             return String(format: LocalizationIds.insufficientFundsForFees, amount.currency.name)
         case .invalidAddress:
             return LocalizationIds.invalidAddress
-        case .invalidAmount:
-            return LocalizationIds.invalidAmount
         case .invalidPassword:
             return LocalizationIds.invalidPassword
         case .optionInvalid:
             return LocalizationIds.optionInvalid
-        case .overMaximumLimit,
-             .overMaximumSourceLimit,
+        case .overMaximumSourceLimit,
              .overMaximumPersonalLimit:
             return LocalizationIds.overMaximumLimit
         case .pendingOrdersLimitReached:

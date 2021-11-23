@@ -3,12 +3,18 @@
 import Combine
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 final class QRCodeScannerOverlayViewModel {
 
     /// The visibility of the camera roll button
     var cameraRollButtonVisibility: AnyPublisher<Visibility, Never> {
         cameraRollButtonVisibilityRelay.eraseToAnyPublisher()
+    }
+
+    /// The visibility of the connect dApps button
+    var dAppsButtonVisibility: AnyPublisher<Visibility, Never> {
+        dAppsButtonVisibilityRelay.eraseToAnyPublisher()
     }
 
     var titleLabelContent: AnyPublisher<LabelContent, Never> {
@@ -38,18 +44,34 @@ final class QRCodeScannerOverlayViewModel {
 
     private let qrCodeFlashService = QRCodeScannerFlashService()
     private let cameraRollButtonVisibilityRelay = CurrentValueSubject<Visibility, Never>(.hidden)
+    private let dAppsButtonVisibilityRelay = CurrentValueSubject<Visibility, Never>(.hidden)
     private let titleLabelContentRelay = CurrentValueSubject<LabelContent, Never>(.empty)
     private let subtitleLabelContentRelay = CurrentValueSubject<LabelContent, Never>(.empty)
     private var cancellables = [AnyCancellable]()
 
-    init(supportsCameraRoll: Bool, titleText: String?, subtitleText: String? = nil) {
-        cameraRollButtonVisibilityRelay.send(supportsCameraRoll ? .visible : .hidden)
+    init(
+        supportsCameraRoll: Bool,
+        titleText: String?,
+        subtitleText: String? = nil,
+        featureFlagsService: FeatureFlagsServiceAPI
+    ) {
+        cameraRollButtonVisibilityRelay.send(.init(boolValue: supportsCameraRoll))
         if let subtitleText = subtitleText {
-            let labelContent = LabelContent(text: subtitleText, font: .main(.medium, 14), color: .white, alignment: .left)
+            let labelContent = LabelContent(
+                text: subtitleText,
+                font: .main(.medium, 14),
+                color: .white,
+                alignment: .left
+            )
             subtitleLabelContentRelay.send(labelContent)
         }
         if let titleText = titleText {
-            let titleContent = LabelContent(text: titleText, font: .main(.semibold, 16), color: .white, alignment: .center)
+            let titleContent = LabelContent(
+                text: titleText,
+                font: .main(.semibold, 16),
+                color: .white,
+                alignment: .center
+            )
             titleLabelContentRelay.send(titleContent)
         }
         flashTapRelay
@@ -61,6 +83,13 @@ final class QRCodeScannerOverlayViewModel {
         cameraTapRelay
             .sink { [weak self] in
                 self?.cameraButtonTapped?()
+            }
+            .store(in: &cancellables)
+
+        featureFlagsService
+            .isEnabled(.local(.walletConnect))
+            .sink { [dAppsButtonVisibilityRelay] visibility in
+                dAppsButtonVisibilityRelay.send(.init(boolValue: visibility))
             }
             .store(in: &cancellables)
     }

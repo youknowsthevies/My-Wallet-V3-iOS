@@ -62,6 +62,8 @@ public struct BottomSheetView<Content: View>: View {
         _isPresented = isPresented
     }
 
+    @State private var height: CGFloat = 0
+
     public var body: some View {
         GeometryReader { geometry in
             let maximumHeight = maximumHeight.in(geometry)
@@ -71,9 +73,15 @@ public struct BottomSheetView<Content: View>: View {
                 content()
             }
             .padding(.bottom, 20.pt)
+            .background(
+                GeometryReader { geometry in
+                    Color.clear
+                        .onAppear { height = geometry.size.height }
+                }
+            )
             .frame(
                 width: geometry.size.width,
-                height: maximumHeight,
+                height: height,
                 alignment: .top
             )
             .background(Color.semantic.background)

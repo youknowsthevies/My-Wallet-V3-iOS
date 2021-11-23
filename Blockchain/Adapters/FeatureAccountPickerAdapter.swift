@@ -20,13 +20,11 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
     fileprivate let closeButtonRelay = PublishRelay<Void>()
     private let searchRelay = PublishRelay<String?>()
     fileprivate let sections = PassthroughSubject<[AccountPickerRow], Never>()
-    fileprivate let header = PassthroughSubject<Header, Error>()
+    fileprivate let header = PassthroughSubject<HeaderStyle, Error>()
 
     fileprivate lazy var environment = AccountPickerEnvironment(
-        rowSelected: { [unowned self] identifier in
-            let viewModel = self.models.lazy.flatMap(\.items).first { item in
-                item.identity == identifier
-            }
+        rowSelected: { [unowned self] (identifier: AnyHashable) -> Void in
+            let viewModel = self.model(for: identifier)
 
             if let viewModel = viewModel {
                 self.modelSelectedRelay.accept(viewModel)
@@ -36,54 +34,84 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
         closeButtonTapped: { [unowned self] in self.closeButtonRelay.accept(()) },
         search: { [unowned self] searchText in self.searchRelay.accept(searchText) },
         sections: { [unowned self] in self.sections.eraseToAnyPublisher() },
-        updateSingleAccount: { [unowned self] account in
-            guard case .singleAccount(let presenter) = self.presenter(for: account.id) else {
-                return nil
-            }
+        updateSingleAccounts: { [unowned self] ids in
+            let presenters = Dictionary(uniqueKeysWithValues: ids.map { ($0, self.presenter(for: $0)) })
+            let publishers = presenters
+                .compactMap { id, presenter
+                    -> AnyPublisher<(AnyHashable, AccountPickerRow.SingleAccount.Balances), Error>? in
 
-            return presenter.assetBalanceViewPresenter.state
-                .asPublisher()
-                .map { value in
-                    let balances: AccountPickerRow.SingleAccount.Balances
-                    switch value {
-                    case .loading:
-                        balances = .init(
-                            fiatBalance: .loading,
-                            cryptoBalance: .loading
-                        )
-                    case .loaded(let balance):
-                        balances = .init(
-                            fiatBalance: .loaded(next: balance.primaryBalance.text),
-                            cryptoBalance: .loaded(next: balance.secondaryBalance.text)
-                        )
+                    guard case .singleAccount(let item) = presenter else {
+                        return nil
                     }
-                    return balances
+
+                    return item.assetBalanceViewPresenter.state
+                        .asPublisher()
+                        .map { value -> (AnyHashable, AccountPickerRow.SingleAccount.Balances) in
+                            switch value {
+                            case .loading:
+                                return (
+                                    id,
+                                    .init(
+                                        fiatBalance: .loading,
+                                        cryptoBalance: .loading
+                                    )
+                                )
+                            case .loaded(let balance):
+                                return (
+                                    id,
+                                    .init(
+                                        fiatBalance: .loaded(next: balance.primaryBalance.text),
+                                        cryptoBalance: .loaded(next: balance.secondaryBalance.text)
+                                    )
+                                )
+                            }
+                        }
+                        .eraseToAnyPublisher()
                 }
+
+            return Publishers.MergeMany(publishers)
+                .collect(publishers.count)
+                .map { Dictionary($0) { _, right in right } } // Don't care which value we take, just no dupes
                 .eraseToAnyPublisher()
         },
-        updateAccountGroup: { [unowned self] group in
-            guard case .accountGroup(let presenter) = self.presenter(for: group.id) else {
-                return nil
-            }
+        updateAccountGroups: { [unowned self] ids in
+            let presenters = Dictionary(uniqueKeysWithValues: ids.map { ($0, self.presenter(for: $0)) })
+            let publishers = presenters
+                .compactMap { id, presenter
+                    -> AnyPublisher<(AnyHashable, AccountPickerRow.AccountGroup.Balances), Error>? in
 
-            return presenter.walletBalanceViewPresenter.state
-                .asPublisher()
-                .map { value in
-                    let balances: AccountPickerRow.AccountGroup.Balances
-                    switch value {
-                    case .loading:
-                        balances = .init(
-                            fiatBalance: .loading,
-                            currencyCode: .loading
-                        )
-                    case .loaded(let balance):
-                        balances = .init(
-                            fiatBalance: .loaded(next: balance.fiatBalance.text),
-                            currencyCode: .loaded(next: balance.currencyCode.text)
-                        )
+                    guard case .accountGroup(let item) = presenter else {
+                        return nil
                     }
-                    return balances
+
+                    return item.walletBalanceViewPresenter.state
+                        .asPublisher()
+                        .map { value -> (AnyHashable, AccountPickerRow.AccountGroup.Balances) in
+                            switch value {
+                            case .loading:
+                                return (
+                                    id,
+                                    .init(
+                                        fiatBalance: .loading,
+                                        currencyCode: .loading
+                                    )
+                                )
+                            case .loaded(let balance):
+                                return (
+                                    id,
+                                    .init(
+                                        fiatBalance: .loaded(next: balance.fiatBalance.text),
+                                        currencyCode: .loaded(next: balance.currencyCode.text)
+                                    )
+                                )
+                            }
+                        }
+                        .eraseToAnyPublisher()
                 }
+
+            return Publishers.MergeMany(publishers)
+                .collect(publishers.count)
+                .map { Dictionary($0) { _, right in right } } // Don't care which value we take, just no dupes.
                 .eraseToAnyPublisher()
         },
         header: { [header] in header.eraseToAnyPublisher() }
@@ -160,54 +188,48 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
 
     // MARK: - View Functions
 
-    func presenter(for identity: AnyHashable) -> AccountPickerCellItem.Presenter? {
+    func model(for identity: AnyHashable) -> AccountPickerCellItem? {
         models.lazy
             .flatMap(\.items)
-            .first(where: { $0.identity == identity })?
+            .first(where: { $0.identity == identity })
+    }
+
+    func presenter(for identity: AnyHashable) -> AccountPickerCellItem.Presenter? {
+        model(for: identity)?
             .presenter
     }
 
-    func badgeView(for identity: AnyHashable) -> AnyView {
+    @ViewBuilder func badgeView(for identity: AnyHashable) -> some View {
         switch presenter(for: identity) {
         case .singleAccount(let presenter):
-            return AnyView(
-                BadgeImageViewRepresentable(viewModel: presenter.badgeRelay.value, size: 32)
-            )
+            BadgeImageViewRepresentable(viewModel: presenter.badgeRelay.value, size: 32)
         case .accountGroup(let presenter):
-            return AnyView(
-                BadgeImageViewRepresentable(viewModel: presenter.badgeImageViewModel, size: 32)
-            )
+            BadgeImageViewRepresentable(viewModel: presenter.badgeImageViewModel, size: 32)
         default:
-            return AnyView(EmptyView())
+            EmptyView()
         }
     }
 
-    func iconView(for identity: AnyHashable) -> AnyView {
+    @ViewBuilder func iconView(for identity: AnyHashable) -> some View {
         switch presenter(for: identity) {
         case .singleAccount(let presenter):
-            return AnyView(
-                BadgeImageViewRepresentable(
-                    viewModel: presenter.iconImageViewContentRelay.value,
-                    size: 16
-                )
+            BadgeImageViewRepresentable(
+                viewModel: presenter.iconImageViewContentRelay.value,
+                size: 16
             )
         default:
-            return AnyView(EmptyView())
+            EmptyView()
         }
     }
 
-    func multiBadgeView(for identity: AnyHashable) -> AnyView {
+    @ViewBuilder func multiBadgeView(for identity: AnyHashable) -> some View {
         switch presenter(for: identity) {
         case .linkedBankAccount(let presenter):
-            return AnyView(
-                MultiBadgeViewRepresentable(viewModel: presenter.multiBadgeViewModel)
-            )
+            MultiBadgeViewRepresentable(viewModel: presenter.multiBadgeViewModel)
         case .singleAccount(let presenter):
-            return AnyView(
-                MultiBadgeViewRepresentable(viewModel: .just(presenter.multiBadgeViewModel))
-            )
+            MultiBadgeViewRepresentable(viewModel: .just(presenter.multiBadgeViewModel))
         default:
-            return AnyView(EmptyView())
+            EmptyView()
         }
     }
 }
@@ -228,18 +250,23 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
         stateWait
             .map(\.navigationModel)
             .drive(weak: self) { (self, model) in
-                self.titleViewStyle = model.titleViewStyle
-                self.set(
-                    barStyle: model.barStyle,
-                    leadingButtonStyle: model.leadingButton,
-                    trailingButtonStyle: model.trailingButton
-                )
+                if let model = model {
+                    self.navigationController?.setNavigationBarHidden(false, animated: false)
+                    self.titleViewStyle = model.titleViewStyle
+                    self.set(
+                        barStyle: model.barStyle,
+                        leadingButtonStyle: model.leadingButton,
+                        trailingButtonStyle: model.trailingButton
+                    )
+                } else {
+                    self.navigationController?.setNavigationBarHidden(true, animated: false)
+                }
             }
             .disposed(by: disposeBag)
 
         stateWait.map(\.headerModel)
             .drive(weak: self) { (self, headerType) in
-                let header: Header
+                let header: HeaderStyle
                 switch headerType {
                 case .default(let model):
                     header = .normal(

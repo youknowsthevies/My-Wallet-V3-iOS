@@ -44,7 +44,7 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransa
             }
             let error = TransactionConfirmation.Model.ErrorNotice(
                 validationState: pendingTransaction.validationState,
-                moneyValue: isBelowMinimumState ? pendingTransaction.minimumLimit : nil
+                moneyValue: isBelowMinimumState ? pendingTransaction.minLimit : nil
             )
             return pendingTransaction.insert(confirmation: .errorNotice(error))
         }

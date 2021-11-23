@@ -19,7 +19,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: ButtonExamplesView(), title: "🕹 Buttons"),
             NavigationLinkProvider(view: PrimaryDividerExamples(), title: "🗂 Dividers"),
             NavigationLinkProvider(view: PrimarySwitchExamples(), title: "🔘 PrimarySwitch"),
-            NavigationLinkProvider(view: TagExamples(), title: "🏷 Tag")
+            NavigationLinkProvider(view: TagExamples(), title: "🏷 Tag"),
+            NavigationLinkProvider(view: CheckboxExamples(), title: "✅ Checkbox")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),

@@ -6,104 +6,77 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-struct AccountPickerRowView: View {
+struct AccountPickerRowView<
+    BadgeView: View,
+    IconView: View,
+    MultiBadgeView: View
+>: View {
 
     // MARK: - Internal properties
 
-    let store: Store<AccountPickerRow, AccountPickerRowAction>
-    let badgeView: (AnyHashable) -> AnyView
-    let iconView: (AnyHashable) -> AnyView
-    let multiBadgeView: (AnyHashable) -> (AnyView)
-    let fiatBalances: [AnyHashable: String]
-    let cryptoBalances: [AnyHashable: String]
-    let currencyCodes: [AnyHashable: String]
-
-    // MARK: - Init
-
-    // swiftlint:disable:next function_parameter_count
-    static func with(
-        badgeView: @escaping (AnyHashable) -> AnyView,
-        iconView: @escaping (AnyHashable) -> AnyView,
-        multiBadgeView: @escaping (AnyHashable) -> (AnyView),
-        fiatBalances: [AnyHashable: String],
-        cryptoBalances: [AnyHashable: String],
-        currencyCodes: [AnyHashable: String]
-    ) -> (Store<AccountPickerRow, AccountPickerRowAction>) -> Self {
-        { store in
-            Self(
-                store: store,
-                badgeView: badgeView,
-                iconView: iconView,
-                multiBadgeView: multiBadgeView,
-                fiatBalances: fiatBalances,
-                cryptoBalances: cryptoBalances,
-                currencyCodes: currencyCodes
-            )
-        }
-    }
+    let model: AccountPickerRow
+    let send: (SuccessRowsAction) -> Void
+    let badgeView: (AnyHashable) -> BadgeView
+    let iconView: (AnyHashable) -> IconView
+    let multiBadgeView: (AnyHashable) -> MultiBadgeView
+    let fiatBalance: String?
+    let cryptoBalance: String?
+    let currencyCode: String?
 
     // MARK: - Body
 
     var body: some View {
-        WithViewStore(store) { viewStore in
-            ZStack {
-                Rectangle()
-                    .foregroundColor(.viewPrimaryBackground)
-                    .contentShape(Rectangle())
-                switch viewStore.state {
-                case .label(let model):
-                    Text(model.text)
-                case .accountGroup(let model):
-                    AccountGroupRow(
-                        model: model,
-                        badgeView: badgeView(model.id),
-                        fiatBalance: fiatBalances[model.id],
-                        currencyCode: currencyCodes[model.id]
-                    )
-                    .onAppear {
-                        viewStore.send(.accountGroup(action: .subscribeToUpdates))
-                    }
-                case .button(let model):
-                    ButtonRow(model: model) {
-                        viewStore.send(.accountPickerRowDidTap)
-                    }
-                case .linkedBankAccount(let model):
-                    LinkedBankAccountRow(
-                        model: model,
-                        badgeView: badgeView(model.id),
-                        multiBadgeView: multiBadgeView(model.id)
-                    )
-                case .paymentMethodAccount(let model):
-                    PaymentMethodRow(
-                        model: model
-                    )
-                case .singleAccount(let model):
-                    SingleAccountRow(
-                        model: model,
-                        badgeView: badgeView(model.id),
-                        iconView: iconView(model.id),
-                        multiBadgeView: multiBadgeView(model.id),
-                        fiatBalance: fiatBalances[model.id],
-                        cryptoBalance: cryptoBalances[model.id]
-                    )
-                    .onAppear {
-                        viewStore.send(.singleAccount(action: .subscribeToUpdates))
-                    }
+        ZStack {
+            Rectangle()
+                .foregroundColor(.viewPrimaryBackground)
+                .contentShape(Rectangle())
+            switch model {
+            case .label(let model):
+                Text(model.text)
+            case .accountGroup(let model):
+                AccountGroupRow(
+                    model: model,
+                    badgeView: badgeView(model.id),
+                    fiatBalance: fiatBalance,
+                    currencyCode: currencyCode
+                )
+            case .button(let model):
+                ButtonRow(model: model) {
+                    send(.accountPickerRowDidTap(model.id))
                 }
+            case .linkedBankAccount(let model):
+                LinkedBankAccountRow(
+                    model: model,
+                    badgeView: badgeView(model.id),
+                    multiBadgeView: multiBadgeView(model.id)
+                )
+            case .paymentMethodAccount(let model):
+                PaymentMethodRow(
+                    model: model
+                )
+            case .singleAccount(let model):
+                SingleAccountRow(
+                    model: model,
+                    badgeView: badgeView(model.id),
+                    iconView: iconView(model.id),
+                    multiBadgeView: multiBadgeView(model.id),
+                    fiatBalance: fiatBalance,
+                    cryptoBalance: cryptoBalance
+                )
             }
-            .onTapGesture {
-                viewStore.send(.accountPickerRowDidTap)
-            }
+        }
+        .onTapGesture {
+            send(.accountPickerRowDidTap(model.id))
         }
     }
 }
 
 // MARK: - Specific Rows
 
-private struct AccountGroupRow: View {
+private struct AccountGroupRow<BadgeView: View>: View {
 
     let model: AccountPickerRow.AccountGroup
-    let badgeView: AnyView
+    let badgeView: BadgeView
     let fiatBalance: String?
     let currencyCode: String?
 
@@ -163,11 +136,11 @@ private struct ButtonRow: View {
     }
 }
 
-private struct LinkedBankAccountRow: View {
+private struct LinkedBankAccountRow<BadgeView: View, MultiBadgeView: View>: View {
 
     let model: AccountPickerRow.LinkedBankAccount
-    let badgeView: AnyView
-    let multiBadgeView: AnyView
+    let badgeView: BadgeView
+    let multiBadgeView: MultiBadgeView
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -241,12 +214,16 @@ private struct PaymentMethodRow: View {
     }
 }
 
-private struct SingleAccountRow: View {
+private struct SingleAccountRow<
+    BadgeView: View,
+    IconView: View,
+    MultiBadgeView: View
+>: View {
 
     let model: AccountPickerRow.SingleAccount
-    let badgeView: AnyView
-    let iconView: AnyView
-    let multiBadgeView: AnyView
+    let badgeView: BadgeView
+    let iconView: IconView
+    let multiBadgeView: MultiBadgeView
     let fiatBalance: String?
     let cryptoBalance: String?
 
@@ -281,7 +258,7 @@ private struct SingleAccountRow: View {
                                     enabled: fiatBalance == nil,
                                     width: 90
                                 )
-                            Text(cryptoBalance ?? "")
+                            Text(cryptoBalance ?? " ")
                                 .textStyle(.subheading)
                                 .shimmer(
                                     enabled: cryptoBalance == nil,
@@ -306,20 +283,6 @@ struct AccountPickerRowView_Previews: PreviewProvider {
 
     static let accountGroupIdentifier = UUID()
     static let singleAccountIdentifier = UUID()
-
-    static let fiatBalances: [AnyHashable: String] = [
-        accountGroupIdentifier: "$2,302.39",
-        singleAccountIdentifier: "$2,302.39"
-    ]
-
-    static let currencyCodes: [AnyHashable: String] = [
-        accountGroupIdentifier: "USD"
-    ]
-
-    static let cryptoBalances: [AnyHashable: String] = [
-        accountGroupIdentifier: "0.21204887 BTC",
-        singleAccountIdentifier: "0.21204887 BTC"
-    ]
 
     static let accountGroupRow = AccountPickerRow.accountGroup(
         AccountPickerRow.AccountGroup(
@@ -362,98 +325,78 @@ struct AccountPickerRowView_Previews: PreviewProvider {
         )
     )
 
-    static let environment = AccountPickerRowEnvironment(
-        mainQueue: .main,
-        updateSingleAccount: { _ in nil },
-        updateAccountGroup: { _ in nil }
-    )
-
     static var previews: some View {
         Group {
             AccountPickerRowView(
-                store: Store(
-                    initialState: accountGroupRow,
-                    reducer: accountPickerRowReducer,
-                    environment: environment
-                ),
-                badgeView: { _ in AnyView(EmptyView()) },
-                iconView: { _ in AnyView(EmptyView()) },
-                multiBadgeView: { _ in AnyView(EmptyView()) },
-                fiatBalances: fiatBalances,
-                cryptoBalances: cryptoBalances,
-                currencyCodes: currencyCodes
+                model: accountGroupRow,
+                send: { _ in },
+                badgeView: { _ in EmptyView() },
+                iconView: { _ in EmptyView() },
+                multiBadgeView: { _ in EmptyView() },
+                fiatBalance: "$2,302.39",
+                cryptoBalance: "0.21204887 BTC",
+                currencyCode: "USD"
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
             .previewDisplayName("AccountGroupRow")
 
             AccountPickerRowView(
-                store: Store(
-                    initialState: buttonRow,
-                    reducer: accountPickerRowReducer,
-                    environment: environment
-                ),
-                badgeView: { _ in AnyView(EmptyView()) },
-                iconView: { _ in AnyView(EmptyView()) },
-                multiBadgeView: { _ in AnyView(EmptyView()) },
-                fiatBalances: fiatBalances,
-                cryptoBalances: cryptoBalances,
-                currencyCodes: currencyCodes
+                model: buttonRow,
+                send: { _ in },
+                badgeView: { _ in EmptyView() },
+                iconView: { _ in EmptyView() },
+                multiBadgeView: { _ in EmptyView() },
+                fiatBalance: nil,
+                cryptoBalance: nil,
+                currencyCode: nil
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
             .previewDisplayName("ButtonRow")
 
             AccountPickerRowView(
-                store: Store(
-                    initialState: linkedBankAccountRow,
-                    reducer: accountPickerRowReducer,
-                    environment: environment
-                ),
-                badgeView: { _ in AnyView(EmptyView()) },
-                iconView: { _ in AnyView(EmptyView()) },
-                multiBadgeView: { _ in AnyView(EmptyView()) },
-                fiatBalances: fiatBalances,
-                cryptoBalances: cryptoBalances,
-                currencyCodes: currencyCodes
+                model: linkedBankAccountRow,
+                send: { _ in },
+                badgeView: { _ in EmptyView() },
+                iconView: { _ in EmptyView() },
+                multiBadgeView: { _ in EmptyView() },
+                fiatBalance: nil,
+                cryptoBalance: nil,
+                currencyCode: nil
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
             .previewDisplayName("LinkedBankAccountRow")
 
             AccountPickerRowView(
-                store: Store(
-                    initialState: paymentMethodAccountRow,
-                    reducer: accountPickerRowReducer,
-                    environment: environment
-                ),
-                badgeView: { _ in AnyView(EmptyView()) },
-                iconView: { _ in AnyView(EmptyView()) },
-                multiBadgeView: { _ in AnyView(EmptyView()) },
-                fiatBalances: fiatBalances,
-                cryptoBalances: cryptoBalances,
-                currencyCodes: currencyCodes
+                model: paymentMethodAccountRow,
+                send: { _ in },
+                badgeView: { _ in EmptyView() },
+                iconView: { _ in EmptyView() },
+                multiBadgeView: { _ in EmptyView() },
+                fiatBalance: nil,
+                cryptoBalance: nil,
+                currencyCode: nil
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
             .previewDisplayName("PaymentMethodAccountRow")
 
             AccountPickerRowView(
-                store: Store(
-                    initialState: singleAccountRow,
-                    reducer: accountPickerRowReducer,
-                    environment: environment
-                ),
-                badgeView: { _ in AnyView(EmptyView()) },
-                iconView: { _ in AnyView(EmptyView()) },
-                multiBadgeView: { _ in AnyView(EmptyView()) },
-                fiatBalances: fiatBalances,
-                cryptoBalances: cryptoBalances,
-                currencyCodes: currencyCodes
+                model: singleAccountRow,
+                send: { _ in },
+                badgeView: { _ in EmptyView() },
+                iconView: { _ in EmptyView() },
+                multiBadgeView: { _ in EmptyView() },
+                fiatBalance: "$2,302.39",
+                cryptoBalance: "0.21204887 BTC",
+                currencyCode: nil
             )
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
             .previewDisplayName("SingleAccountRow")
         }
+        EmptyView()
     }
 }

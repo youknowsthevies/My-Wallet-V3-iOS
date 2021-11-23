@@ -2,6 +2,7 @@
 
 import Combine
 import NetworkError
+import WalletPayloadKit
 
 public enum SessionTokenServiceError: Error, Equatable {
     case networkError(NetworkError)
@@ -12,6 +13,6 @@ public protocol SessionTokenServiceAPI: AnyObject {
     func setupSessionToken() -> AnyPublisher<Void, SessionTokenServiceError>
 }
 
-public func sessionTokenServiceFactory(walletRepository: SessionTokenRepositoryAPI) -> SessionTokenServiceAPI {
-    SessionTokenService(walletRepository: walletRepository)
+public func sessionTokenServiceFactory(sessionRepository: SessionTokenRepositoryAPI) -> SessionTokenServiceAPI {
+    SessionTokenService(sessionRepository: sessionRepository)
 }

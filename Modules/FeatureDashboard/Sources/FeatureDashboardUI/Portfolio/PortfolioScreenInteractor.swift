@@ -7,7 +7,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-final class PortfolioScreenInteractor {
+public final class PortfolioScreenInteractor {
 
     // MARK: - Properties
 
@@ -30,7 +30,7 @@ final class PortfolioScreenInteractor {
 
     // MARK: - Init
 
-    init(
+    public init(
         historicalProvider: HistoricalFiatPriceProviding = resolve(),
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         reactiveWallet: ReactiveWalletAPI = resolve(),

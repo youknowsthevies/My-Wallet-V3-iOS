@@ -96,9 +96,9 @@ struct ErrorRecoveryView: View {
                                 }
                             )
                         )
-                        .frame(maxHeight: .infinity)
                     }
                 }
+                .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
@@ -129,27 +129,13 @@ struct BottomSheetModal<Content: View>: View {
             HStack(alignment: .top) {
                 Text(title)
                     .typography(.body2)
-                    .padding(
-                        EdgeInsets(
-                            top: 12, // half the close button size
-                            leading: 0,
-                            bottom: 0,
-                            trailing: 0
-                        )
-                    )
+                    .padding([.top], 12) // half the close button size
                 Spacer()
-                CircularIconButton(icon: .closev2, action: closeAction)
+                IconButton(icon: .closev2.circle(), action: closeAction)
                     .frame(width: 24, height: 24)
             }
             content()
-                .padding(
-                    EdgeInsets(
-                        top: Spacing.padding2,
-                        leading: 0,
-                        bottom: 0,
-                        trailing: 0
-                    )
-                )
+                .padding([.top], Spacing.padding2)
         }
         .padding(Spacing.padding3)
         .background(Color.semantic.background)

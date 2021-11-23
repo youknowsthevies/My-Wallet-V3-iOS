@@ -23,6 +23,8 @@ extension SettingsSectionType.CellType.PlainCellType {
             return LocalizationConstants.Settings.privacyPolicy
         case .cookiesPolicy:
             return LocalizationConstants.Settings.cookiesPolicy
+        case .logout:
+            return LocalizationConstants.Settings.logout
         }
     }
 

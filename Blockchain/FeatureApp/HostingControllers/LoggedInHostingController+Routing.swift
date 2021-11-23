@@ -6,9 +6,11 @@ import FeatureAuthenticationUI
 import FeatureDashboardUI
 import FeatureInterestUI
 import FeatureQRCodeScannerData
+import FeatureQRCodeScannerDomain
 import FeatureQRCodeScannerUI
 import FeatureSettingsUI
 import FeatureTransactionUI
+import FeatureWalletConnectDomain
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
@@ -223,25 +225,7 @@ extension LoggedInHostingController {
     func showQRCodeScanner() {
         let builder = QRCodeScannerViewControllerBuilder(
             completed: { [weak self] result in
-                guard case .success(let success) = result else {
-                    return
-                }
-
-                switch success {
-                case .secureChannel(let message):
-                    self?.secureChannelRouter.didScanPairingQRCode(msg: message)
-                case .cryptoTarget(let target):
-                    switch target {
-                    case .address(let account, let address):
-                        self?.tabControllerManager?.send(from: account, target: address)
-                    case .bitpay:
-                        break
-                    }
-                case .walletConnect:
-                    break
-                case .deepLink:
-                    break
-                }
+                self?.didCompleteQRCodeScanner(result: result)
             }
         )
 
@@ -253,5 +237,34 @@ extension LoggedInHostingController {
             viewController,
             animated: true
         )
+    }
+
+    private func didCompleteQRCodeScanner(
+        result: Result<QRCodeScannerResultType, QRCodeScannerResultError>
+    ) {
+        featureFlagService.isEnabled(.local(.walletConnect))
+            .sink { [weak self] isWalletConnectEnabled in
+                switch result {
+                case .success(.secureChannel(let message)):
+                    self?.secureChannelRouter.didScanPairingQRCode(msg: message)
+                case .success(.cryptoTarget(let target)):
+                    switch target {
+                    case .address(let account, let address):
+                        self?.tabControllerManager?.send(from: account, target: address)
+                    case .bitpay:
+                        break
+                    }
+                case .success(.walletConnect(let url)):
+                    guard isWalletConnectEnabled else {
+                        return
+                    }
+                    self?.walletConnectService.connect(url)
+                case .success(.deepLink):
+                    break
+                case .failure:
+                    break
+                }
+            }
+            .store(in: &cancellables)
     }
 }

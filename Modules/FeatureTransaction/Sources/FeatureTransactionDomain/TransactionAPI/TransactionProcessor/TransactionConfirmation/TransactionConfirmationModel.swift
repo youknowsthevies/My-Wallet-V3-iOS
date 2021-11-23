@@ -252,16 +252,13 @@ extension TransactionConfirmation.Model {
                 return (LocalizedString.Error.title, message)
             case .insufficientFunds:
                 return (LocalizedString.Error.title, LocalizedString.Error.insufficientFunds)
-            case .insufficientGas:
+            case .belowFees:
                 return (LocalizedString.Error.title, LocalizedString.Error.insufficientGas)
-            case .invalidAmount:
-                return (LocalizedString.Error.title, LocalizedString.Error.invalidAmount)
             case .invoiceExpired:
                 return (LocalizedString.Error.title, LocalizedString.Error.invoiceExpired)
             case .transactionInFlight:
                 return (LocalizedString.Error.title, LocalizedString.Error.transactionInFlight)
-            case .overMaximumLimit,
-                 .overMaximumSourceLimit,
+            case .overMaximumSourceLimit,
                  .overMaximumPersonalLimit:
                 return (LocalizedString.Error.title, LocalizedString.Error.overMaximumLimit)
             // these should be filtered out by now
@@ -271,8 +268,7 @@ extension TransactionConfirmation.Model {
                 return (LocalizedString.Error.title, LocalizationConstants.Transaction.Error.invalidAddress)
             case .optionInvalid:
                 return (LocalizedString.Error.title, LocalizationConstants.Transaction.Error.optionInvalid)
-            case .insufficientFundsForFees,
-                 .unknownError:
+            case .unknownError:
                 return (LocalizedString.Error.title, LocalizedString.Error.generic)
             case .pendingOrdersLimitReached:
                 return (LocalizedString.Error.title, LocalizedString.Error.pendingOrderLimitReached)

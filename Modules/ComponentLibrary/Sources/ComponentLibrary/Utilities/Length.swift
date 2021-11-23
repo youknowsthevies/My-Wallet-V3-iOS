@@ -364,3 +364,35 @@ extension View {
         )
     }
 }
+
+extension HStack {
+
+    public init(
+        alignment: VerticalAlignment = .center,
+        spacing: Length,
+        in parent: CGRect? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.init(
+            alignment: alignment,
+            spacing: parent.map { spacing.in(parent: $0, screen: .screen) },
+            content: content
+        )
+    }
+}
+
+extension VStack {
+
+    public init(
+        alignment: HorizontalAlignment = .center,
+        spacing: Length,
+        in parent: CGRect? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.init(
+            alignment: alignment,
+            spacing: parent.map { spacing.in(parent: $0, screen: .screen) },
+            content: content
+        )
+    }
+}

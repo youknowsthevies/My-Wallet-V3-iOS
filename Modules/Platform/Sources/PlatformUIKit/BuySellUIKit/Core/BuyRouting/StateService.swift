@@ -319,7 +319,7 @@ public final class StateService: StateServiceAPI {
 
         Single
             .zip(
-                pendingOrderDetailsService.pendingOrderDetails,
+                pendingOrderDetailsService.pendingOrderDetails.map(\.first),
                 isFiatCurrencySupported
             ) { (pendingOrderDetails: $0, isFiatCurrencySupported: $1) }
             .observeOn(MainScheduler.asyncInstance)

@@ -51,6 +51,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
 
     private var presenter: KYCVerifyIdentityPresenter!
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
+    private let identityVerificationAnalyticsService: IdentityVerificationAnalyticsServiceAPI = resolve()
     let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
     // MARK: - KYCRouterDelegate
@@ -143,6 +144,27 @@ extension KYCResubmitIdentityController: VeriffController {
 
     func onVeriffError(message: String) {
         showErrorMessage(message)
+    }
+
+    func trackInternalVeriffError(_ error: InternalVeriffError) {
+        switch error {
+        case .localError:
+            identityVerificationAnalyticsService.recordLocalError()
+        case .serverError:
+            identityVerificationAnalyticsService.recordServerError()
+        case .networkError:
+            identityVerificationAnalyticsService.recordNetworkError()
+        case .uploadError:
+            identityVerificationAnalyticsService.recordUploadError()
+        case .videoFailed:
+            identityVerificationAnalyticsService.recordVideoFailure()
+        case .unknown:
+            identityVerificationAnalyticsService.recordUnknownError()
+        case .cameraUnavailable,
+             .microphoneUnavailable,
+             .deprecatedSDKVersion:
+            break
+        }
     }
 
     func onVeriffCancelled() {

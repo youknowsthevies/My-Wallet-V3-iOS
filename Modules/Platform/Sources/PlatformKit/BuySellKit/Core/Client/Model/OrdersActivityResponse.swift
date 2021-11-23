@@ -25,6 +25,7 @@ public struct OrdersActivityResponse: Decodable {
         let state: String
         let extraAttributes: ExtraAttributes?
         let txHash: String?
+        let error: String?
     }
 
     let items: [Item]

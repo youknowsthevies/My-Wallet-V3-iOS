@@ -10,7 +10,6 @@ final class ActionRowTests: XCTestCase {
             ActionRow_Previews.previews
         }
         .fixedSize()
-        .padding()
 
         assertSnapshots(
             matching: view,

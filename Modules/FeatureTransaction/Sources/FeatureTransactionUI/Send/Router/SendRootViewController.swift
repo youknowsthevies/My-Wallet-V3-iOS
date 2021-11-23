@@ -38,18 +38,13 @@ final class SendRootViewController: UINavigationController, SendRootViewControll
     init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         super.init(nibName: nil, bundle: nil)
+        view.backgroundColor = .white
+        setNavigationBarHidden(true, animated: false)
     }
 
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         unimplemented()
-    }
-
-    // MARK: - Lifecycle
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        listener?.viewDidAppear()
     }
 
     // MARK: - Public Functions (SendRootViewControllable)

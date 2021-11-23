@@ -396,6 +396,10 @@ final class APIClient: FeatureTransactionDomainClientAPI {
             parameters.append(
                 URLQueryItem(name: Parameter.orderDirection, value: orderDirection.rawValue)
             )
+        case .simplebuy:
+            parameters.append(
+                URLQueryItem(name: Parameter.product, value: Parameter.simpleBuy)
+            )
         }
         let request = retailRequestBuilder.get(
             path: Path.limits,

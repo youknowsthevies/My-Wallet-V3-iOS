@@ -16,22 +16,6 @@ final class EnterAmountViewController: BaseScreenViewController,
     EnterAmountPagePresentable
 {
 
-    // MARK: - Types
-
-    private enum Constant {
-        enum SuperCompact {
-            static let digitPadHeight: CGFloat = 216
-            static let continueButtonViewBottomOffset: CGFloat = 16
-            static let topSelectionViewHeight: CGFloat = 48
-            static let bottomAuxiliaryViewOffset: CGFloat = 8
-        }
-
-        enum Standard {
-            static let topSelectionViewHeight: CGFloat = 78
-            static let bottomSelectionViewHeight: CGFloat = 78
-        }
-    }
-
     // MARK: - Auxiliary Views
 
     private let topAuxiliaryViewContainer = UIView()
@@ -62,10 +46,9 @@ final class EnterAmountViewController: BaseScreenViewController,
     // MARK: - Main CTA
 
     private let continueButtonView = ButtonView()
-    internal let continueButtonTapped: Signal<Void>
+    let continueButtonTapped: Signal<Void>
 
     private var ctaContainerView = UIView()
-    private var ctaTopConstraint: NSLayoutConstraint!
 
     private var errorRecoveryCTAModel: ErrorRecoveryCTAModel
     private let errorRecoveryViewController: UIViewController
@@ -75,7 +58,6 @@ final class EnterAmountViewController: BaseScreenViewController,
     private let bottomSheetPresenting = BottomSheetPresenting(ignoresBackgroundTouches: true)
     private let amountViewable: AmountViewable
     private let digitPadView = DigitPadView()
-    private var digitPadHeightConstraint: NSLayoutConstraint!
 
     private let closeTriggerred = PublishSubject<Void>()
     private let backTriggered = PublishSubject<Void>()
@@ -145,7 +127,7 @@ final class EnterAmountViewController: BaseScreenViewController,
         topAuxiliaryViewContainer.layoutToSuperview(.top, usesSafeAreaLayoutGuide: true)
         topAuxiliaryViewHeightConstraint = topAuxiliaryViewContainer.layout(
             dimension: .height,
-            to: Constant.Standard.topSelectionViewHeight
+            to: Constant.topSelectionViewHeight(device: devicePresenterType)
         )
 
         topAuxiliaryItemSeparatorView.layout(edge: .top, to: .bottom, of: topAuxiliaryViewContainer)
@@ -169,7 +151,7 @@ final class EnterAmountViewController: BaseScreenViewController,
 
         bottomAuxiliaryViewHeightConstraint = bottomAuxiliaryViewContainer.layout(
             dimension: .height,
-            to: Constant.Standard.topSelectionViewHeight
+            to: Constant.topSelectionViewHeight(device: devicePresenterType)
         )
 
         let stackView = UIStackView(arrangedSubviews: [bottomAuxiliaryViewContainer, ctaContainerView])
@@ -193,26 +175,11 @@ final class EnterAmountViewController: BaseScreenViewController,
         digitPadView.layoutToSuperview(axis: .horizontal, priority: .penultimateHigh)
         digitPadView.layout(edge: .top, to: .bottom, of: stackView, offset: 16)
         digitPadView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
-        digitPadHeightConstraint = digitPadView.layout(dimension: .height, to: 260, priority: .penultimateHigh)
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-    }
-
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        // NOTE: This must be in `viewWillLayoutSubviews`
-        // This is a special treatment due to the manner view controllers
-        // are modally displayed on iOS 13 (with additional gap on the top that enable
-        // dismissal of the screen.
-        if view.bounds.height <= UIDevice.PhoneHeight.eight.rawValue {
-            digitPadHeightConstraint.constant = Constant.SuperCompact.digitPadHeight
-            if view.bounds.height <= UIDevice.PhoneHeight.se.rawValue {
-                ctaTopConstraint.constant = Constant.SuperCompact.bottomAuxiliaryViewOffset
-                topAuxiliaryViewHeightConstraint.constant = Constant.SuperCompact.topSelectionViewHeight
-            }
-        }
+        digitPadView.layout(
+            dimension: .height,
+            to: Constant.digitPadHeight(device: devicePresenterType),
+            priority: .penultimateHigh
+        )
     }
 
     func connect(
@@ -341,7 +308,9 @@ final class EnterAmountViewController: BaseScreenViewController,
         topAuxiliaryViewController = presenter?.makeViewController()
 
         if let viewController = topAuxiliaryViewController {
-            topAuxiliaryViewHeightConstraint.constant = Constant.Standard.topSelectionViewHeight
+            topAuxiliaryViewHeightConstraint.constant = Constant
+                .topSelectionViewHeight(device: devicePresenterType)
+
             embed(viewController, in: topAuxiliaryViewContainer)
             topAuxiliaryItemSeparatorView.alpha = 1
         } else {
@@ -356,7 +325,8 @@ final class EnterAmountViewController: BaseScreenViewController,
         bottomAuxiliaryViewController = presenter?.makeViewController()
 
         if let viewController = bottomAuxiliaryViewController {
-            bottomAuxiliaryViewHeightConstraint.constant = Constant.Standard.bottomSelectionViewHeight
+            bottomAuxiliaryViewHeightConstraint.constant = Constant
+                .bottomSelectionViewHeight(device: devicePresenterType)
             embed(viewController, in: bottomAuxiliaryViewContainer)
             // NOTE: ATM this separator is unused as some auxiliary views already have one.
             bottomAuxiliaryItemSeparatorView.alpha = .zero
@@ -391,6 +361,50 @@ final class EnterAmountViewController: BaseScreenViewController,
         viewController.transitioningDelegate = bottomSheetPresenting
         viewController.modalPresentationStyle = .custom
         present(viewController, animated: true, completion: nil)
+    }
+}
+
+extension EnterAmountViewController {
+
+    // MARK: - Types
+
+    private enum Constant {
+        private enum SuperCompact {
+            static let topSelectionViewHeight: CGFloat = 48
+            static let bottomAuxiliaryViewOffset: CGFloat = 8
+        }
+
+        private enum Compact {
+            static let digitPadHeight: CGFloat = 216
+        }
+
+        private enum Standard {
+            static let digitPadHeight: CGFloat = 260
+            static let topSelectionViewHeight: CGFloat = 78
+            static let bottomSelectionViewHeight: CGFloat = 78
+        }
+
+        static func digitPadHeight(device: DevicePresenter.DeviceType) -> CGFloat {
+            switch device {
+            case .superCompact, .compact:
+                return Compact.digitPadHeight
+            case .max, .regular:
+                return Standard.digitPadHeight
+            }
+        }
+
+        static func topSelectionViewHeight(device: DevicePresenter.DeviceType) -> CGFloat {
+            switch device {
+            case .superCompact:
+                return SuperCompact.topSelectionViewHeight
+            case .compact, .max, .regular:
+                return Standard.topSelectionViewHeight
+            }
+        }
+
+        static func bottomSelectionViewHeight(device: DevicePresenter.DeviceType) -> CGFloat {
+            Standard.bottomSelectionViewHeight
+        }
     }
 }
 

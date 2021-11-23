@@ -39,6 +39,10 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
     // MARK: - SwapRootRouting
 
     func routeToSendLanding() {
+        routeToSendLanding(navigationBarHidden: false)
+    }
+
+    func routeToSendLanding(navigationBarHidden: Bool) {
         let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
         let header = AccountPickerHeaderModel(
             imageContent: .init(
@@ -49,12 +53,17 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
             subtitle: LocalizedSend.Header.chooseWalletToSend,
             title: LocalizedSend.Header.sendCryptoNow
         )
-        let navigationModel = ScreenNavigationModel(
-            leadingButton: .drawer,
-            trailingButton: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none,
-            titleViewStyle: .text(value: LocalizedSend.Text.send),
-            barStyle: .lightContent()
-        )
+        let navigationModel: ScreenNavigationModel?
+        if !navigationBarHidden {
+            navigationModel = ScreenNavigationModel(
+                leadingButton: .drawer,
+                trailingButton: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none,
+                titleViewStyle: .text(value: LocalizedSend.Text.send),
+                barStyle: .lightContent()
+            )
+        } else {
+            navigationModel = nil
+        }
         let builder = AccountPickerBuilder(
             singleAccountsOnly: true,
             action: .send
