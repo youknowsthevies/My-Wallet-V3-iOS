@@ -5,6 +5,7 @@ import SwiftUI
 
 struct IconButtonExamples: View {
     @State var tapped: Bool = false
+    @State var apple: Bool = true
 
     var body: some View {
         HStack {
@@ -14,6 +15,14 @@ struct IconButtonExamples: View {
                 Text(tapped ? "👍" : "👆")
                     .typography(.display)
                     .padding(.trailing, Spacing.padding1)
+
+                Spacer()
+
+                Text(apple ? "🍎" : "🍐")
+                IconButton(icon: .apple.circle()) {
+                    apple.toggle()
+                }
+                .padding()
 
                 Spacer()
             }

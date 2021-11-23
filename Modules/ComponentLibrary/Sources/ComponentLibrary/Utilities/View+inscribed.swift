@@ -4,6 +4,12 @@ import SwiftUI
 
 extension View {
 
+    /// Inscribe `content` with the aspect ratio of 1 (square) inside of the incircle of the bounding
+    /// box. This ensures `content` will never exceed the bounds of the incircle. The content will be
+    /// overlaid.
+    ///
+    /// - Parameter content: The contents to display inside the inscribed incircle bounds
+    /// - Returns: The current view with `contents` overlaid
     @ViewBuilder
     public func inscribed<Content>(
         _ content: @autoclosure @escaping () -> Content
@@ -11,6 +17,13 @@ extension View {
         inscribed(content)
     }
 
+    /// Inscribe `content` with the aspect ratio of 1 (square) inside the an incircle of the bounding
+    /// box. This ensures `content` will never exceed the bounds of the incircle. The content will be
+    /// overlaid.
+    ///
+    /// - Parameter aspectRatio: The aspect ratio which should be applied to `content`
+    /// - Parameter content: The contents to display inside of the inscribed incircle bounds
+    /// - Returns: The current view with `contents` overlaid
     @ViewBuilder
     public func inscribed<Content>(
         @ViewBuilder _ content: @escaping () -> Content
@@ -18,6 +31,13 @@ extension View {
         inscribed(aspectRatio: 1, content)
     }
 
+    /// Inscribe `content` with the aspect ratio `aspectRatio` inside the incircle of the bounding
+    /// box. This ensures `content` will never exceed the bounds of the incircle. The content will be
+    /// overlaid.
+    ///
+    /// - Parameter aspectRatio: The aspect ratio which should be applied to `content`
+    /// - Parameter content: The contents to display inside of the inscribed incircle bounds
+    /// - Returns: The current view with `contents` overlaid
     @ViewBuilder
     public func inscribed<Content>(
         aspectRatio: CGFloat,
@@ -26,6 +46,13 @@ extension View {
         inscribed(aspectRatio: aspectRatio, content)
     }
 
+    /// Inscribe `content` with the aspect ratio `aspectRatio` inside the incircle of the bounding
+    /// box. This ensures `content` will never exceed the bounds of the incircle. The content will be
+    /// overlaid.
+    ///
+    /// - Parameter aspectRatio: The aspect ratio which should be applied to `content`
+    /// - Parameter content: The contents to display inside of the inscribed incircle bounds
+    /// - Returns: The current view with `contents` overlaid
     @ViewBuilder
     public func inscribed<Content>(
         aspectRatio: CGFloat,

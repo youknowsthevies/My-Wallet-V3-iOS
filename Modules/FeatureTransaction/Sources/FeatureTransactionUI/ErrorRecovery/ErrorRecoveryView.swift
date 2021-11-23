@@ -131,7 +131,7 @@ struct BottomSheetModal<Content: View>: View {
                     .typography(.body2)
                     .padding([.top], 12) // half the close button size
                 Spacer()
-                CircularIconButton(icon: .closev2, action: closeAction)
+                IconButton(icon: .closev2.circle(), action: closeAction)
                     .frame(width: 24, height: 24)
             }
             content()
