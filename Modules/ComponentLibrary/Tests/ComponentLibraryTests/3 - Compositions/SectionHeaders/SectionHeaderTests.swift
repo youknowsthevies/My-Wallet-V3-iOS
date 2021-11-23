@@ -5,15 +5,13 @@ import SnapshotTesting
 import SwiftUI
 import XCTest
 
-final class WalletSectionHeaderTests: XCTestCase {
+final class SectionHeaderTests: XCTestCase {
 
     func testSnapshot() {
         let view = VStack(spacing: Spacing.baseline) {
-            WalletSectionHeader_Previews.previews
+            SectionHeader_Previews.previews
         }
-        .frame(width: 320, height: 600)
         .fixedSize()
-        .padding()
 
         assertSnapshots(
             matching: view,

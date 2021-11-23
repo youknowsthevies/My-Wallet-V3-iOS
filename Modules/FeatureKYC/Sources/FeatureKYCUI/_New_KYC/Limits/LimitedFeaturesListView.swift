@@ -146,7 +146,7 @@ struct LimitedFeaturesListView: View {
                     .padding(.bottom, Spacing.padding3)
 
                     Section(
-                        header: WalletSectionHeader(
+                        header: SectionHeader(
                             title: LocalizedStrings.featureListHeader
                         ),
                         footer: LimitedFeaturesListFooter()

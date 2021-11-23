@@ -3,11 +3,11 @@
 import ComponentLibrary
 import SwiftUI
 
-struct SectionHeaderExamplesView: View {
+struct SectionHeadersExamples: View {
 
     private let data: NavigationLinkProviderList = [
         "Section Headers": [
-            NavigationLinkProvider(view: WalletSectionHeaderExamplesView(), title: "WalletSectionHeader")
+            NavigationLinkProvider(view: SectionHeaderExamplesView(), title: "SectionHeader")
         ]
     ]
 
@@ -16,10 +16,10 @@ struct SectionHeaderExamplesView: View {
     }
 }
 
-struct SectionHeaderExamplesView_Previews: PreviewProvider {
+struct SectionHeadersExamples_Previews: PreviewProvider {
     static var previews: some View {
         PrimaryNavigationView {
-            SectionHeaderExamplesView()
+            SectionHeadersExamples()
         }
     }
 }
