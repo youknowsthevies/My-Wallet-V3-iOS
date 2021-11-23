@@ -164,7 +164,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         eligibilityService.eligibility()
             .receive(on: DispatchQueue.main)
             .handleLoaderForLifecycle(loader: loadingViewPresenter)
-            .flatMap { [weak self] eligibility -> AnyPublisher<TransactionFlowResult, Error> in
+            .flatMap { [weak self, loadingViewPresenter] eligibility -> AnyPublisher<TransactionFlowResult, Error> in
                 guard let self = self else { return .empty() }
                 if eligibility.simpleBuyPendingTradesEligible {
                     let checkPendingOrders = self.pendingOrdersService.pendingOrderDetails
@@ -180,7 +180,19 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                             }
                             let isAwaitingAction = orders.filter(\.isAwaitingAction)
                             if let order = isAwaitingAction.first {
-                                return self.presentNewTransactionFlow(.order(order), from: presenter)
+                                return self.pendingOrdersService.cancel(order)
+                                    .receive(on: DispatchQueue.main)
+                                    .handleLoaderForLifecycle(loader: loadingViewPresenter)
+                                    .flatMap {
+                                        self.presentNewTransactionFlow(action, from: presenter)
+                                    }
+                                    .catch { _ in
+                                        self.presentTooManyPendingOrders(
+                                            count: eligibility.maxPendingDepositSimpleBuyTrades,
+                                            from: presenter
+                                        )
+                                    }
+                                    .eraseToAnyPublisher()
                             } else {
                                 return self.presentNewTransactionFlow(action, from: presenter)
                             }
@@ -188,7 +200,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                         .eraseToAnyPublisher()
                 } else {
                     return self.presentTooManyPendingOrders(
-                        count: eligibility.pendingDepositSimpleBuyTrades,
+                        count: eligibility.maxPendingDepositSimpleBuyTrades,
                         from: presenter
                     )
                     .setFailureType(to: Error.self)

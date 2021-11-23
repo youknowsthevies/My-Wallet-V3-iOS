@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import FeatureTransactionDomain
 import PlatformKit
 import RxSwift
@@ -23,7 +24,7 @@ public final class MockPendingOrderDetailsService: PendingOrderDetailsServiceAPI
         stubbedResults.pendingActionOrderDetails
     }
 
-    public func cancel(_ order: OrderDetails) -> Completable {
-        stubbedResults.cancel
+    public func cancel(_ order: OrderDetails) -> AnyPublisher<Void, OrderCancellationError> {
+        .just(())
     }
 }

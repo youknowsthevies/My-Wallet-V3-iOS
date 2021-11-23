@@ -57,7 +57,11 @@ final class OrdersService: OrdersServiceAPI {
         ordersCachedValue.setFetch { [client, analyticsRecorder] in
             client.orderDetails(pendingOnly: false)
                 .asSingle()
-                .map { $0.filter { $0.processingErrorType != nil } }
+                .map { orders -> [OrderPayload.Response] in
+                    orders.filter { order in
+                        order.processingErrorType == nil
+                    }
+                }
                 .map { orders in
                     orders.compactMap {
                         OrderDetails(recorder: analyticsRecorder, response: $0)
