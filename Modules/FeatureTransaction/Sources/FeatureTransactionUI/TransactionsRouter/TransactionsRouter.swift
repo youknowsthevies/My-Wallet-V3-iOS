@@ -262,6 +262,7 @@ extension TransactionsRouter {
             if let account = account {
                 router.routeToSend(sourceAccount: account)
             }
+            router.routeToSendLanding(navigationBarHidden: true)
             presenter.present(router.viewControllable.uiviewController, animated: true)
             mimicRIBAttachment(router: router)
             return .empty()
