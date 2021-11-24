@@ -22,6 +22,7 @@ public struct PrimaryButton<LeadingView: View>: View {
     private let action: () -> Void
 
     @Environment(\.pillButtonSize) private var size
+    @Environment(\.isEnabled) private var isEnabled
 
     public init(
         title: String,
@@ -49,6 +50,7 @@ public struct PrimaryButton<LeadingView: View>: View {
         .buttonStyle(
             PillButtonStyle(
                 isLoading: isLoading,
+                isEnabled: isEnabled,
                 size: size,
                 colorCombination: primaryButtonColorCombination
             )
