@@ -53,7 +53,7 @@ public struct WalletInfo: Codable, Equatable {
         }
 
         public func encode(to encoder: Encoder) throws {
-            var container = try encoder.container(keyedBy: NabuInfoCodingKeys.self)
+            var container = encoder.container(keyedBy: NabuInfoCodingKeys.self)
             try container.encode(userId, forKey: .userId)
             try container.encode(recoveryToken, forKey: .recoveryToken)
         }

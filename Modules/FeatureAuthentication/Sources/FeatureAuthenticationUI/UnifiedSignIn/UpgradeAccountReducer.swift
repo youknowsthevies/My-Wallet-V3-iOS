@@ -22,10 +22,6 @@ public enum UpgradeAccountAction: Equatable, NavigationAction {
     // MARK: Web Account Upgrade
 
     case setCurrentMessage(String)
-
-    // MARK: - Utils
-
-    case noop
 }
 
 // MARK: - Properties
@@ -132,9 +128,6 @@ let upgradeAccountReducer = Reducer.combine(
 
         case .setCurrentMessage(let message):
             state.currentMessage = message
-            return .none
-
-        case .noop:
             return .none
         }
     }

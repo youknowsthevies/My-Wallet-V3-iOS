@@ -29,10 +29,7 @@ public enum UpgradeAccountRoute: NavigationRoute {
             )
         case .webUpgrade:
             WebUpgradeAccountView(
-                currentMessage: viewStore.binding(
-                    get: { $0.currentMessage },
-                    send: .noop
-                ),
+                currentMessage: .constant(viewStore.currentMessage),
                 connectionStatusCallback: { _ in
                     viewStore.send(.setCurrentMessage(viewStore.base64Str))
                 },
