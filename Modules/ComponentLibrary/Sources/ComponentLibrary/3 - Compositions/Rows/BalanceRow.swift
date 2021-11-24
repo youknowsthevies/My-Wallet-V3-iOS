@@ -34,9 +34,9 @@ import SwiftUI
 ///
 ///  [Table Rows](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=209%3A11163)
 
-public struct BalanceRow<LeadingView: View, Graph: View>: View {
+public struct BalanceRow<Leading: View, Graph: View>: View {
 
-    private let leadingView: LeadingView
+    private let leading: Leading
     private let leadingTitle: String
     private let leadingSubtitle: String?
     private let leadingDescription: String
@@ -60,7 +60,7 @@ public struct BalanceRow<LeadingView: View, Graph: View>: View {
     ///   - trailingDescription: Description string on the trailing side of the row view
     ///   - trailingDescriptionColor: Optional color for the trailingDescription text
     ///   - tags: Optional array of tags object. They show up on the bottom part of the main vertical content view, and align themself horizontally
-    ///   - leadingView: View on the leading side of the row.
+    ///   - leading: View on the leading side of the row.
     ///   - graph: View on the trailing side of the row.
     public init(
         leadingTitle: String,
@@ -70,7 +70,7 @@ public struct BalanceRow<LeadingView: View, Graph: View>: View {
         trailingDescription: String,
         trailingDescriptionColor: Color? = nil,
         tags: [Tag] = [],
-        @ViewBuilder leadingView: () -> LeadingView,
+        @ViewBuilder leading: () -> Leading,
         @ViewBuilder graph: () -> Graph
     ) {
         self.leadingTitle = leadingTitle
@@ -83,13 +83,13 @@ public struct BalanceRow<LeadingView: View, Graph: View>: View {
             dark: .palette.dark200
         )
         self.tags = tags
-        self.leadingView = leadingView()
+        self.leading = leading()
         self.graph = graph()
     }
 
     public var body: some View {
         HStack(alignment: .customRowVerticalAlignment, spacing: 16) {
-            leadingView
+            leading
             VStack(alignment: .leading, spacing: 8) {
                 mainContent()
                 if !tags.isEmpty {
@@ -233,7 +233,7 @@ extension BalanceRow where Graph == EmptyView {
         trailingDescription: String,
         trailingDescriptionColor: Color? = nil,
         tags: [Tag] = [],
-        @ViewBuilder leadingView: () -> LeadingView
+        @ViewBuilder leading: () -> Leading
     ) {
         self.init(
             leadingTitle: leadingTitle,
@@ -243,7 +243,7 @@ extension BalanceRow where Graph == EmptyView {
             trailingDescription: trailingDescription,
             trailingDescriptionColor: trailingDescriptionColor,
             tags: tags,
-            leadingView: leadingView
+            leading: leading
         ) {
             EmptyView()
         }
@@ -307,7 +307,7 @@ struct BalanceRow_Previews: PreviewProvider {
                 trailingTitle: "$44,403.13",
                 trailingDescription: "↓ 12.32%",
                 trailingDescriptionColor: .semantic.error,
-                leadingView: {
+                leading: {
                     Icon.trade
                         .fixedSize()
                         .accentColor(.semantic.warning)
@@ -325,7 +325,7 @@ struct BalanceRow_Previews: PreviewProvider {
                 trailingTitle: "$44,403.13",
                 trailingDescription: "↓ 12.32%",
                 trailingDescriptionColor: .semantic.error,
-                leadingView: {
+                leading: {
                     Icon.trade
                         .fixedSize()
                         .accentColor(.semantic.warning)

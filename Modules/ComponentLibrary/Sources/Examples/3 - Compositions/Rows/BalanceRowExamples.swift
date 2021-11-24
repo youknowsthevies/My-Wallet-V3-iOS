@@ -54,7 +54,7 @@ struct BalanceRowExamplesView: View {
                 trailingTitle: "$44,403.13",
                 trailingDescription: "↓ 12.32%",
                 trailingDescriptionColor: .semantic.error,
-                leadingView: {
+                leading: {
                     Icon.trade
                         .fixedSize()
                         .accentColor(.semantic.warning)
@@ -70,7 +70,7 @@ struct BalanceRowExamplesView: View {
                 trailingTitle: "$44,403.13",
                 trailingDescription: "↓ 12.32%",
                 trailingDescriptionColor: .semantic.error,
-                leadingView: {
+                leading: {
                     Icon.trade
                         .fixedSize()
                         .accentColor(.semantic.warning)

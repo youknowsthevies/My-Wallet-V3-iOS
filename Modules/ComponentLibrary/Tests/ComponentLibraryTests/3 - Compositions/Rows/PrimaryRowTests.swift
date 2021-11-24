@@ -3,11 +3,11 @@ import SnapshotTesting
 import SwiftUI
 import XCTest
 
-final class ActionRowTests: XCTestCase {
+final class PrimaryRowTests: XCTestCase {
 
     func testSnapshot() {
-        let view = VStack(spacing: Spacing.baseline) {
-            ActionRow_Previews.previews
+        let view = VStack(spacing: 0) {
+            PrimaryRow_Previews.previews
         }
         .fixedSize()
 

@@ -124,7 +124,7 @@ struct BottomSheetView_Previews: PreviewProvider {
                     maximumHeight: 70.vh
                 ) {
                     ForEach(0..<10) { i in
-                        DefaultRow(title: "\(i)", accessoryView: { Icon.chevronRight })
+                        PrimaryRow(title: "\(i)")
                             .accentColor(.semantic.muted)
                         if i != 9 {
                             Divider()

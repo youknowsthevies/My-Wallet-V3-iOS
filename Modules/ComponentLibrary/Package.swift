@@ -67,6 +67,7 @@ let package = Package(
                 "3 - Compositions/__Snapshots__",
                 "3 - Compositions/Rows/__Snapshots__",
                 "3 - Compositions/SectionHeaders/__Snapshots__",
+                "3 - Compositions/Sheets/__Snapshots__",
                 "Utilities/__Snapshots__"
             ]
         ),
