@@ -20,7 +20,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: PrimaryDividerExamples(), title: "🗂 Dividers"),
             NavigationLinkProvider(view: PrimarySwitchExamples(), title: "🔘 PrimarySwitch"),
             NavigationLinkProvider(view: TagExamples(), title: "🏷 Tag"),
-            NavigationLinkProvider(view: CheckboxExamples(), title: "✅ Checkbox")
+            NavigationLinkProvider(view: CheckboxExamples(), title: "✅ Checkbox"),
+            NavigationLinkProvider(view: RichTextExamples(), title: "🤑 Rich Text")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),

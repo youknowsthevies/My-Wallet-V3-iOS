@@ -22,6 +22,24 @@ public struct CardPayload {
 
     /// The addition date (e.g: `2020-04-07T23:23:26.761Z`)
     let additionDate: String
+
+    public init(
+        identifier: String,
+        partner: Partner,
+        address: BillingAddress!,
+        currency: String,
+        state: State,
+        card: CardDetails!,
+        additionDate: String
+    ) {
+        self.identifier = identifier
+        self.partner = partner
+        self.address = address
+        self.currency = currency
+        self.state = state
+        self.card = card
+        self.additionDate = additionDate
+    }
 }
 
 // MARK: - Decodable
@@ -80,10 +98,16 @@ extension CardPayload {
     }
 
     /// The partner for the card
-    public enum Partner: String, Decodable {
+    public enum Partner: String, Codable {
 
         /// EveryPay partner
         case everyPay = "EVERYPAY"
+
+        /// Stripe partner
+        case stripe = "STRIPE"
+
+        /// Checkout.com partner
+        case checkout = "CHECKOUT"
 
         /// Any other
         case unknown
@@ -97,7 +121,7 @@ extension CardPayload {
             }
         }
 
-        init(partner: String) {
+        public init(partner: String) {
             self = Partner(rawValue: partner) ?? .unknown
         }
     }

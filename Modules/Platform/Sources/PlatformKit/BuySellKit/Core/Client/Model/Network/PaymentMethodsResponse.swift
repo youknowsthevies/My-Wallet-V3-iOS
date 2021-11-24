@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// The available payment methods
-struct PaymentMethodsResponse: Decodable {
+public struct PaymentMethodsResponse: Decodable {
 
-    struct Method: Decodable {
+    public struct Method: Decodable {
 
         /// The limits for a given window of time (e.g. annual or daily)
         struct Limits: Decodable {
@@ -100,4 +100,32 @@ struct PaymentMethodsResponse: Decodable {
 
     /// The available methods of payment
     let methods: [Method]
+}
+
+public struct PaymentCardAcquirer: Decodable {
+    enum Acquirer: String {
+        case stripe
+        case checkout
+        case unknown
+    }
+
+    /// Name of the acquirer (Stripe, Checkout, ...)
+    let cardAcquirerName: String
+    /// List of the accounts (stripe_uk, stripe_us)
+    let cardAcquirerAccountCodes: [String]
+    let apiKey: String
+
+    var type: Acquirer {
+        Acquirer(rawValue: cardAcquirerName.lowercased()) ?? .unknown
+    }
+
+    public init(
+        cardAcquirerName: String,
+        cardAcquirerAccountCodes: [String],
+        apiKey: String
+    ) {
+        self.cardAcquirerName = cardAcquirerName
+        self.cardAcquirerAccountCodes = cardAcquirerAccountCodes
+        self.apiKey = apiKey
+    }
 }

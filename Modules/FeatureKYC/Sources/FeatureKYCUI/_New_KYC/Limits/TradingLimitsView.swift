@@ -12,7 +12,7 @@ struct TradingLimitsState: Equatable {
     var loading: Bool = false
     var userTiers: KYC.UserTiers?
     var featuresList: LimitedFeaturesListState = .init(
-        features: exampleFeatures,
+        features: [],
         kycTiers: .init(tiers: [])
     )
 }
@@ -165,7 +165,7 @@ struct TradingLimitsView_Previews: PreviewProvider {
                     fetchLimitsOverview: {
                         let overview = KYCLimitsOverview(
                             tiers: KYC.UserTiers(tiers: []),
-                            features: exampleFeatures
+                            features: []
                         )
                         return .just(overview)
                     }

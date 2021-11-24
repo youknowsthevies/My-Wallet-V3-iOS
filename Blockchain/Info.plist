@@ -6,6 +6,8 @@
 	<string>$(ZENDESK_ACCOUNT_KEY)</string>
 	<key>API_URL</key>
 	<string>$(API_URL)</string>
+	<key>CHECKOUT_ENV</key>
+	<string>$(CHECKOUT_ENV)</string>
 	<key>EVERYPAY_API_URL</key>
 	<string>$(EVERYPAY_API_URL)</string>
 	<key>EXCHANGE_URL</key>
