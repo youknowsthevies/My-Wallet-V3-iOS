@@ -35,7 +35,7 @@ final class WalletFetcher: WalletFetcherAPI {
         // 0. load the payload
         walletRepo
             .map(\.encryptedPayload)
-            .eraseToAnyPublisher()
+            .first()
             .receive(on: operationsQueue)
             .flatMap { [payloadCrypto] payloadWrapper -> AnyPublisher<String, WalletError> in
                 guard !payloadWrapper.payload.isEmpty else {
@@ -50,12 +50,18 @@ final class WalletFetcher: WalletFetcherAPI {
                 .mapError { _ in WalletError.decryption(.decryptionError) }
                 .eraseToAnyPublisher()
             }
-            .flatMap { [walletLogic] string -> AnyPublisher<Wallet, WalletError>in
+            .flatMap { [walletLogic] string -> AnyPublisher<Wallet, WalletError> in
                 guard let data = string.data(using: .utf8) else {
                     return .failure(.decryption(.decryptionError))
                 }
                 return walletLogic
                     .initialize(using: data)
+            }
+            .flatMap { [walletRepo] wallet -> AnyPublisher<Wallet, WalletError> in
+                walletRepo
+                    .set(keyPath: \.credentials.sharedKey, value: wallet.sharedKey)
+                    .map { _ in wallet }
+                    .mapError()
                     .eraseToAnyPublisher()
             }
             .map { _ in .noValue }

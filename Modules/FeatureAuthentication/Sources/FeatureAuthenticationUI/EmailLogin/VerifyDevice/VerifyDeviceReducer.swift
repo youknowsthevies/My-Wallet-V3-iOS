@@ -178,20 +178,16 @@ let verifyDeviceReducer = Reducer.combine(
         // MARK: - Navigations
 
         case .onAppear:
-            return Publishers.Zip(
-                environment.featureFlagsService.isEnabled(.local(.pollingForEmailLogin)),
-                environment.featureFlagsService.isEnabled(.remote(.pollingForEmailLogin))
-            )
-            .map { isLocalEnabled, isRemoteEnabled in
-                isLocalEnabled && isRemoteEnabled
-            }
-            .flatMap { isEnabled -> Effect<VerifyDeviceAction, Never> in
-                guard isEnabled else {
-                    return .none
+            return environment
+                .featureFlagsService
+                .isEnabled(.remote(.pollingForEmailLogin))
+                .flatMap { isEnabled -> Effect<VerifyDeviceAction, Never> in
+                    guard isEnabled else {
+                        return .none
+                    }
+                    return Effect(value: .pollWalletInfo)
                 }
-                return Effect(value: .pollWalletInfo)
-            }
-            .eraseToEffect()
+                .eraseToEffect()
 
         case .onWillDisappear:
             return .cancel(id: VerifyDeviceCancellations.WalletInfoPollingId())

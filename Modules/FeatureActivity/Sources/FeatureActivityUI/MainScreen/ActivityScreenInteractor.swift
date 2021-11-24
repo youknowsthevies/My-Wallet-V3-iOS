@@ -56,6 +56,12 @@ final class ActivityScreenInteractor {
             }
     }
 
+    var isUnifiedQRCodeScannerEnabled: Bool {
+        serviceContainer
+            .internalFeatureFlagService
+            .isEnabled(.unifiedQRCodeScanner)
+    }
+
     // MARK: - Private Properties
 
     private let refreshRelay: PublishRelay<Void> = .init()
@@ -98,6 +104,14 @@ extension ActivityScreenInteractor.State {
         exchangeProviding: ExchangeProviding
     ) {
         let interactors: [ActivityItemInteractor] = items
+            .filter { item in
+                switch item {
+                case .buySell(let item):
+                    return item.status != .pendingConfirmation
+                default:
+                    return true
+                }
+            }
             .sorted(by: >)
             .map { item in
                 ActivityItemInteractor(

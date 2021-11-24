@@ -30,6 +30,34 @@ struct InterestAccountDetailsView: View {
             } else {
                 NavigationView {
                     ActionableView(
+                        buttons: viewStore
+                            .supportedActions
+                            .map { action in
+                                switch action {
+                                case .interestTransfer:
+                                    return .init(
+                                        title: LocalizationIds.transfer,
+                                        action: {
+                                            viewStore.send(
+                                                .interestTransferTapped(viewStore.interestAccountOverview.currency)
+                                            )
+                                        },
+                                        style: .primary
+                                    )
+                                case .interestWithdraw:
+                                    return .init(
+                                        title: LocalizationIds.withdraw,
+                                        action: {
+                                            viewStore.send(
+                                                .interestWithdrawTapped(viewStore.interestAccountOverview.currency)
+                                            )
+                                        },
+                                        style: .secondary
+                                    )
+                                default:
+                                    unimplemented("This action type is not supported in this view")
+                                }
+                            },
                         content: {
                             List {
                                 if let balance = viewStore.interestAccountBalanceSummary {
@@ -73,35 +101,7 @@ struct InterestAccountDetailsView: View {
                                     InterestAccountDetailsRowItemView(store: cellStore)
                                 }
                             }
-                        },
-                        buttons: viewStore
-                            .supportedActions
-                            .map { action in
-                                switch action {
-                                case .interestTransfer:
-                                    return .init(
-                                        title: LocalizationIds.transfer,
-                                        action: {
-                                            viewStore.send(
-                                                .interestTransferTapped(viewStore.interestAccountOverview.currency)
-                                            )
-                                        },
-                                        style: .primary
-                                    )
-                                case .interestWithdraw:
-                                    return .init(
-                                        title: LocalizationIds.withdraw,
-                                        action: {
-                                            viewStore.send(
-                                                .interestWithdrawTapped(viewStore.interestAccountOverview.currency)
-                                            )
-                                        },
-                                        style: .secondary
-                                    )
-                                default:
-                                    unimplemented("This action type is not supported in this view")
-                                }
-                            }
+                        }
                     )
                     .trailingNavigationButton(.close) {
                         presentationMode.wrappedValue.dismiss()

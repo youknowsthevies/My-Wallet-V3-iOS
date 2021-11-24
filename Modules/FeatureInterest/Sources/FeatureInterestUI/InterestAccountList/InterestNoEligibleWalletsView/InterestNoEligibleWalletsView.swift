@@ -18,6 +18,14 @@ struct InterestNoEligibleWalletsView: View {
     var body: some View {
         WithViewStore(store) { viewStore in
             ActionableView(
+                buttons: [
+                    .init(
+                        title: viewStore.action,
+                        action: {
+                            viewStore.send(.startBuyTapped)
+                        }
+                    )
+                ],
                 content: {
                     Spacer()
                     VStack(
@@ -32,15 +40,7 @@ struct InterestNoEligibleWalletsView: View {
                         }
                     )
                     Spacer()
-                },
-                buttons: [
-                    .init(
-                        title: viewStore.action,
-                        action: {
-                            viewStore.send(.startBuyTapped)
-                        }
-                    )
-                ]
+                }
             )
             .onDisappear {
                 viewStore.send(.startBuyOnDismissalIfNeeded)

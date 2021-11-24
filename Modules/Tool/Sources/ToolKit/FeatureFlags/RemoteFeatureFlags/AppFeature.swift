@@ -23,9 +23,6 @@ public enum AppFeature: Int, CaseIterable {
     /// Sift Science SDK is enabled
     case siftScienceEnabled
 
-    /// Enable Secure Channel
-    case secureChannel
-
     // MARK: Onboarding (After Login)
 
     /// Shows Email Verification insted of Simple Buy at Login
@@ -67,6 +64,9 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Uses the Transactions Flow implementation of Buy when enabled
     case useTransactionsFlowToBuyCrypto
+
+    /// Enables the new Limits UI in Transaction Flow
+    case newLimitsUIEnabled
 }
 
 extension AppFeature {
@@ -83,8 +83,6 @@ extension AppFeature {
             return "rename_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
-        case .secureChannel:
-            return "secure_channel_ios"
         case .withdrawAndDepositACH:
             return "ach_withdraw_deposit_enabled"
         case .biometry:
@@ -109,6 +107,8 @@ extension AppFeature {
             return "ios_open_banking"
         case .useTransactionsFlowToBuyCrypto:
             return "ios_use_transaction_flow_buy"
+        case .newLimitsUIEnabled:
+            return "ios_use_new_limits_ui"
         }
     }
 
@@ -124,8 +124,6 @@ extension AppFeature {
         case .announcements:
             return false
         case .siftScienceEnabled:
-            return false
-        case .secureChannel:
             return false
         case .withdrawAndDepositACH:
             return false
@@ -149,6 +147,8 @@ extension AppFeature {
              .useTransactionsFlowToBuyCrypto:
             return true
         case .openBanking:
+            return true
+        case .newLimitsUIEnabled:
             return true
         }
     }

@@ -110,8 +110,9 @@ final class TabControllerManager: NSObject {
         let router = SendRootBuilder().build()
         sendP2ViewController = router.viewControllable.uiviewController
         sendRouter = router
-        router.interactable.activate()
-        router.load()
+        sendRouter.routeToSendLanding()
+        sendRouter.interactable.activate()
+        sendRouter.load()
     }
 
     private func setSendAsActive() {

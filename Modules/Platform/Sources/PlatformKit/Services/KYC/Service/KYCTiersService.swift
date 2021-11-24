@@ -8,9 +8,13 @@ import NetworkError
 import RxSwift
 import ToolKit
 
-public enum KYCTierServiceError: Error {
+public enum KYCTierServiceError: Error, Equatable {
     case networkError(NetworkError)
     case other(Error)
+
+    public static func == (lhs: KYCTierServiceError, rhs: KYCTierServiceError) -> Bool {
+        String(describing: lhs) == String(describing: rhs)
+    }
 }
 
 public protocol KYCVerificationServiceAPI: AnyObject {
@@ -19,7 +23,7 @@ public protocol KYCVerificationServiceAPI: AnyObject {
     var isKYCVerified: AnyPublisher<Bool, Never> { get }
 }
 
-public protocol KYCTiersServiceAPI: AnyObject, KYCVerificationServiceAPI {
+public protocol KYCTiersServiceAPI: KYCVerificationServiceAPI {
 
     /// Returns the cached tiers. Fetches them if they are not already cached
     var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> { get }
@@ -28,19 +32,31 @@ public protocol KYCTiersServiceAPI: AnyObject, KYCVerificationServiceAPI {
     func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError>
 
     /// Fetches the Simplified Due Diligence Eligibility Status returning the whole response
-    func simplifiedDueDiligenceEligibility(for tier: KYC.Tier) -> AnyPublisher<SimplifiedDueDiligenceResponse, Never>
+    func simplifiedDueDiligenceEligibility(
+        for tier: KYC.Tier
+    ) -> AnyPublisher<SimplifiedDueDiligenceResponse, Never>
 
     /// Fetches Simplified Due Diligence Eligibility Status
     func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never>
 
     /// Fetches Simplified Due Diligence Eligibility Status
-    func checkSimplifiedDueDiligenceEligibility(for tier: KYC.Tier) -> AnyPublisher<Bool, Never>
+    func checkSimplifiedDueDiligenceEligibility(
+        for tier: KYC.Tier
+    ) -> AnyPublisher<Bool, Never>
 
     /// Fetches the Simplified Due Diligence Verification Status. It pools the API until a valid result is available. If the check fails, it returns `false`.
-    func checkSimplifiedDueDiligenceVerification(for tier: KYC.Tier, pollUntilComplete: Bool) -> AnyPublisher<Bool, Never>
+    func checkSimplifiedDueDiligenceVerification(
+        for tier: KYC.Tier,
+        pollUntilComplete: Bool
+    ) -> AnyPublisher<Bool, Never>
 
     /// Checks if the current user is SDD Verified
-    func checkSimplifiedDueDiligenceVerification(pollUntilComplete: Bool) -> AnyPublisher<Bool, Never>
+    func checkSimplifiedDueDiligenceVerification(
+        pollUntilComplete: Bool
+    ) -> AnyPublisher<Bool, Never>
+
+    /// Fetches the KYC overview (features and limits) for the logged-in user
+    func fetchOverview() -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError>
 }
 
 final class KYCTiersService: KYCTiersServiceAPI {
@@ -85,16 +101,9 @@ final class KYCTiersService: KYCTiersServiceAPI {
         cachedTiers = CachedValueNew(
             cache: cache,
             fetch: { _ in
-                client.tiers()
-                    .mapError { (error: NabuNetworkError) -> KYCTierServiceError in
-                        switch error {
-                        case .communicatorError(let networkError):
-                            return .networkError(networkError)
-                        case .nabuError:
-                            return .other(error)
-                        }
-                    }
-                    .eraseToAnyPublisher()
+                client
+                    .tiers()
+                    .mapErrorToKYCServiceError()
             }
         )
     }
@@ -206,13 +215,29 @@ final class KYCTiersService: KYCTiersServiceAPI {
             }
             .eraseToAnyPublisher()
     }
+
+    func fetchOverview() -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError> {
+        fetchTiers()
+            .zip(
+                client
+                    .fetchLimitsOverview()
+                    .mapErrorToKYCServiceError()
+            )
+            .map { tiers, rawOverview -> KYCLimitsOverview in
+                KYCLimitsOverview(tiers: tiers, features: rawOverview.limits)
+            }
+            .eraseToAnyPublisher()
+    }
 }
 
 /// Temporary legacy SDD analytics events definition. To be removed after dropping Firebase analytics.
 enum SDDAnalytics: AnalyticsEvent {
-    var type: AnalyticsEventType { .firebase }
 
     case userIsSddEligible
+
+    var type: AnalyticsEventType {
+        .firebase
+    }
 
     var name: String {
         "user_is_sdd_eligible"
@@ -220,5 +245,20 @@ enum SDDAnalytics: AnalyticsEvent {
 
     var params: [String: Any]? {
         nil
+    }
+}
+
+extension Publisher where Failure == NabuNetworkError {
+
+    func mapErrorToKYCServiceError() -> AnyPublisher<Output, KYCTierServiceError> {
+        mapError { nabuError -> KYCTierServiceError in
+            switch nabuError {
+            case .communicatorError(let networkError):
+                return .networkError(networkError)
+            case .nabuError:
+                return .other(nabuError)
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }

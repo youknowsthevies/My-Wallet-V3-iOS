@@ -57,6 +57,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     blurEffectHandler: $0.blurEffectHandler,
                     backgroundAppHandler: $0.backgroundAppHandler,
                     supportedAssetsRemoteService: $0.supportedAssetsRemoteService,
+                    featureFlagService: $0.featureFlagsService,
                     mainQueue: $0.mainQueue
                 )
             }

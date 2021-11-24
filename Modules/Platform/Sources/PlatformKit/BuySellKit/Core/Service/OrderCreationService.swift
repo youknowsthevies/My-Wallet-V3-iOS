@@ -63,8 +63,8 @@ final class OrderCreationService: OrderCreationServiceAPI {
             }
             .map { CheckoutData(order: $0) }
 
-        return pendingOrderDetailsService
-            .cancel()
-            .andThen(creation)
+        return creation
+            .asObservable()
+            .asSingle()
     }
 }

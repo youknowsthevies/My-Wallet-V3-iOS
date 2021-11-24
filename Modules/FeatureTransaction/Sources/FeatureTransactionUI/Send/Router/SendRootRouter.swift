@@ -5,6 +5,7 @@ import Localization
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import ToolKit
 import UIComponentsKit
 
 protocol SendRootInteractable: Interactable, TransactionFlowListener {
@@ -38,6 +39,11 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
     // MARK: - SwapRootRouting
 
     func routeToSendLanding() {
+        routeToSendLanding(navigationBarHidden: false)
+    }
+
+    func routeToSendLanding(navigationBarHidden: Bool) {
+        let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
         let header = AccountPickerHeaderModel(
             imageContent: .init(
                 imageResource: ImageAsset.iconSend.imageResource,
@@ -47,12 +53,17 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
             subtitle: LocalizedSend.Header.chooseWalletToSend,
             title: LocalizedSend.Header.sendCryptoNow
         )
-        let navigationModel = ScreenNavigationModel(
-            leadingButton: .drawer,
-            trailingButton: .none,
-            titleViewStyle: .text(value: LocalizedSend.Text.send),
-            barStyle: .lightContent()
-        )
+        let navigationModel: ScreenNavigationModel?
+        if !navigationBarHidden {
+            navigationModel = ScreenNavigationModel(
+                leadingButton: .drawer,
+                trailingButton: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none,
+                titleViewStyle: .text(value: LocalizedSend.Text.send),
+                barStyle: .lightContent()
+            )
+        } else {
+            navigationModel = nil
+        }
         let builder = AccountPickerBuilder(
             singleAccountsOnly: true,
             action: .send
@@ -68,7 +79,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
             listener: .simple(didSelect),
             navigationModel: navigationModel,
             headerModel: .default(header),
-            showsWithdrawalLocks: true
+            showsWithdrawalLocks: false
         )
         attachChild(sendAccountPickerRouter)
         viewController.replaceRoot(

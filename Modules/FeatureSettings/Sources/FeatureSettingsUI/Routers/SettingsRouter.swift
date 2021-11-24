@@ -4,8 +4,6 @@ import AnalyticsKit
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
-import FeatureKYCDomain
-import FeatureKYCUI
 import FeatureSettingsDomain
 import Localization
 import PlatformKit
@@ -14,8 +12,10 @@ import RxCocoa
 import RxRelay
 import RxSwift
 import SafariServices
+import SwiftUI
 import ToolKit
 import UIKit
+import WebKit
 
 public protocol AppCoordinating: AnyObject {
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool)
@@ -48,12 +48,18 @@ public protocol PaymentMethodsLinkerAPI {
     func routeToCardLinkingFlow(from viewController: UIViewController, completion: @escaping () -> Void)
 }
 
+public protocol KYCRouterAPI {
+
+    func presentLimitsOverview(from presenter: UIViewController)
+}
+
 final class SettingsRouter: SettingsRouterAPI {
 
     typealias AnalyticsEvent = AnalyticsEvents.Settings
 
     let actionRelay = PublishRelay<SettingsScreenAction>()
     let previousRelay = PublishRelay<Void>()
+    let navigationRouter: NavigationRouterAPI
 
     // MARK: - Routers
 
@@ -70,9 +76,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private let guidRepositoryAPI: FeatureAuthenticationDomain.GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
-    private var cardRouter: CardRouter!
 
-    private let navigationRouter: NavigationRouterAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private unowned let tabSwapping: TabSwapping
     private unowned let appCoordinator: AppCoordinating
@@ -86,16 +90,26 @@ final class SettingsRouter: SettingsRouterAPI {
     private let builder: SettingsBuilding
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
+    private let logoutService: LogoutServiceAPI
 
-    /// The router for linking a new bank
+    private let kycRouter: KYCRouterAPI
+
+    private var cardRouter: CardRouter!
     private var linkBankFlowRouter: LinkBankFlowStarter?
-
     private let paymentMethodLinker: PaymentMethodsLinkerAPI
     private let presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI
 
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
-    private var bag: Set<AnyCancellable> = []
+    private var cancellables = Set<AnyCancellable>()
+
+    private var topViewController: UIViewController {
+        let topViewController = navigationRouter.topMostViewControllerProvider.topMostViewController
+        guard let viewController = topViewController else {
+            fatalError("Failed to present open banking flow, no view controller available for presentation")
+        }
+        return viewController
+    }
 
     init(
         appCoordinator: AppCoordinating = resolve(),
@@ -108,6 +122,7 @@ final class SettingsRouter: SettingsRouterAPI {
         navigationRouter: NavigationRouterAPI = resolve(),
         analyticsRecording: AnalyticsEventRecorderAPI = resolve(),
         alertPresenter: AlertViewPresenter = resolve(),
+        kycRouter: KYCRouterAPI = resolve(),
         cardListService: CardListServiceAPI = resolve(),
         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
         pitConnectionAPI: PITConnectionStatusProviding = resolve(),
@@ -117,7 +132,8 @@ final class SettingsRouter: SettingsRouterAPI {
         paymentMethodLinker: PaymentMethodsLinkerAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-        presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI = resolve()
+        presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI = resolve(),
+        logoutService: LogoutServiceAPI = resolve()
     ) {
         self.wallet = wallet
         self.appCoordinator = appCoordinator
@@ -128,6 +144,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.navigationRouter = navigationRouter
         self.alertPresenter = alertPresenter
         self.analyticsRecording = analyticsRecording
+        self.kycRouter = kycRouter
         self.tabSwapping = tabSwapping
         self.guidRepositoryAPI = guidRepositoryAPI
         self.paymentMethodTypesService = paymentMethodTypesService
@@ -138,6 +155,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.analyticsRecorder = analyticsRecorder
         self.featureFlagsService = featureFlagsService
         self.presentAccountLinkingFlow = presentAccountLinkingFlow
+        self.logoutService = logoutService
 
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -161,7 +179,7 @@ final class SettingsRouter: SettingsRouterAPI {
             .disposed(by: disposeBag)
     }
 
-    func presentSettings() {
+    func makeViewController() -> SettingsViewController {
         let interactor = SettingsScreenInteractor(
             pitConnectionAPI: pitConnectionAPI,
             wallet: wallet,
@@ -169,8 +187,11 @@ final class SettingsRouter: SettingsRouterAPI {
             authenticationCoordinator: authenticationCoordinator
         )
         let presenter = SettingsScreenPresenter(interactor: interactor, router: self)
-        let controller = SettingsViewController(presenter: presenter)
-        navigationRouter.present(viewController: controller, using: .modalOverTopMost)
+        return SettingsViewController(presenter: presenter)
+    }
+
+    func presentSettings() {
+        navigationRouter.present(viewController: makeViewController(), using: .modalOverTopMost)
     }
 
     func dismiss() {
@@ -186,8 +207,15 @@ final class SettingsRouter: SettingsRouterAPI {
     private func handle(action: SettingsScreenAction) {
         switch action {
         case .showURL(let url):
-            let controller = SFSafariViewController(url: url)
-            navigationRouter.present(viewController: controller)
+            let viewController = UIHostingController(
+                rootView: SettingsWebView(request: .init(url: url))
+            )
+            viewController.rootView.updateTitle = { [weak viewController] title in
+                viewController?.title = title
+            }
+            navigationRouter.present(
+                viewController: viewController
+            )
         case .launchChangePassword:
             let interactor = ChangePasswordScreenInteractor(passwordAPI: passwordRepository)
             let presenter = ChangePasswordScreenPresenter(previousAPI: self, interactor: interactor)
@@ -197,16 +225,14 @@ final class SettingsRouter: SettingsRouterAPI {
             let viewController = builder.removeCardPaymentMethodViewController(cardData: data)
             viewController.transitioningDelegate = sheetPresenter
             viewController.modalPresentationStyle = .custom
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
+            topViewController.present(viewController, animated: true, completion: nil)
         case .showRemoveBankScreen(let data):
             let viewController = builder.removeBankPaymentMethodViewController(beneficiary: data)
             viewController.transitioningDelegate = sheetPresenter
             viewController.modalPresentationStyle = .custom
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
+            topViewController.present(viewController, animated: true, completion: nil)
         case .showAddCardScreen:
-            guard let presenter = navigationRouter.topMostViewControllerProvider.topMostViewController else {
-                impossible("The top view controller cannot be nil")
-            }
+            let presenter = topViewController
             paymentMethodLinker.routeToCardLinkingFlow(from: presenter) { [addCardCompletionRelay] in
                 presenter.dismiss(animated: true) {
                     addCardCompletionRelay.accept(())
@@ -229,7 +255,7 @@ final class SettingsRouter: SettingsRouterAPI {
                             self.showFundTransferDetails(currency: fiatCurrency)
                         }
                     )
-                    .store(in: &bag)
+                    .store(in: &cancellables)
             default:
                 showFundTransferDetails(currency: fiatCurrency)
             }
@@ -283,11 +309,9 @@ final class SettingsRouter: SettingsRouterAPI {
                 })
                 .disposed(by: disposeBag)
 
-        case .launchKYC:
-            guard let navController = navigationRouter.navigationControllerAPI as? UINavigationController else { return }
-            KYCTiersViewController
-                .routeToTiers(fromViewController: navController)
-                .disposed(by: disposeBag)
+        case .presentTradeLimits:
+            kycRouter.presentLimitsOverview(from: topViewController)
+
         case .launchPIT:
             guard let supportURL = URL(string: Constants.Url.exchangeSupport) else { return }
             let startPITCoordinator = { [weak self] in
@@ -334,6 +358,8 @@ final class SettingsRouter: SettingsRouterAPI {
             navigationRouter.present(viewController: controller)
         case .showUpdateMobileScreen:
             updateMobileRouter.start()
+        case .logout:
+            logoutService.logout()
         case .none:
             break
         }
@@ -344,11 +370,7 @@ final class SettingsRouter: SettingsRouterAPI {
     }
 
     private func showLinkOpenBankingFlow(currency: FiatCurrency) {
-
-        guard let viewController = navigationRouter.topMostViewControllerProvider.topMostViewController else {
-            fatalError("Failed to present open banking flow, no view controller available for presentation")
-        }
-
+        let viewController = topViewController
         presentAccountLinkingFlow
             .presentAccountLinkingFlow(
                 from: viewController,
@@ -447,4 +469,52 @@ final class SettingsRouter: SettingsRouterAPI {
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting()
     }()
+}
+
+struct SettingsWebView: View {
+
+    let request: URLRequest
+    var updateTitle: ((String?) -> Void)?
+
+    var body: some View {
+        WebView(request: request, updateTitle: updateTitle)
+            .ignoresSafeArea(.container, edges: .bottom)
+    }
+}
+
+struct WebView: UIViewRepresentable {
+
+    let request: URLRequest
+    var updateTitle: ((String?) -> Void)?
+
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.allowsBackForwardNavigationGestures = true
+        webView.scrollView.isScrollEnabled = true
+        webView.navigationDelegate = context.coordinator
+        return webView
+    }
+
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+        uiView.load(request)
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, WKNavigationDelegate {
+
+        var parent: WebView
+
+        init(_ webView: WebView) {
+            parent = webView
+        }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            webView.evaluateJavaScript("document.title") { response, _ in
+                self.parent.updateTitle?(response as? String)
+            }
+        }
+    }
 }

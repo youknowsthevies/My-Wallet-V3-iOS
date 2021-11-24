@@ -45,7 +45,9 @@ let package = Package(
         .package(path: "../Platform"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
-        .package(path: "../UIComponents")
+        .package(path: "../UIComponents"),
+        .package(path: "../ComponentLibrary"),
+        .package(path: "../ComposableArchitectureExtensions")
     ],
     targets: [
         .target(
@@ -65,6 +67,7 @@ let package = Package(
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "ComposableNavigation", package: "ComposableArchitectureExtensions"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "Localization", package: "Localization"),
@@ -73,6 +76,7 @@ let package = Package(
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "ToolKit", package: "Tool"),
+                .product(name: "ComponentLibrary", package: "ComponentLibrary"),
                 .product(name: "UIComponents", package: "UIComponents"),
                 .product(name: "Veriff", package: "Veriff")
             ],
@@ -119,6 +123,7 @@ let package = Package(
                 .product(name: "TestKit", package: "Test")
             ],
             exclude: [
+                "_New_KYC/Limits/__Snapshots__",
                 "_New_KYC/EmailVerification/__Snapshots__"
             ]
         )

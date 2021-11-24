@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-public protocol TabSwapping: AnyObject {
+public protocol TabSwapping: UIViewController {
     func send(from account: BlockchainAccount)
     func send(from account: BlockchainAccount, target: TransactionTarget)
     func sign(from account: BlockchainAccount, target: TransactionTarget)
@@ -11,6 +11,7 @@ public protocol TabSwapping: AnyObject {
     func deposit(into account: BlockchainAccount)
     func interestTransfer(into account: BlockchainAccount)
     func interestWithdraw(from account: BlockchainAccount)
+    func switchTabToDashboard()
     func switchToSend()
     func switchTabToSwap()
     func switchTabToReceive()

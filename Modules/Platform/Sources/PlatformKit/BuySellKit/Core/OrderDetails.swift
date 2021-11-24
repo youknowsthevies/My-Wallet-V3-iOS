@@ -150,12 +150,20 @@ public struct OrderDetails {
         }
     }
 
+    public var isNotAwaitingAction: Bool {
+        !isAwaitingAction
+    }
+
     public var isAwaitingAction: Bool {
         isPendingDepositBankWire || isPendingConfirmation || isPending3DSCardOrder
     }
 
     public var isBankWire: Bool {
         paymentMethodId == nil
+    }
+
+    public var isNotCancellable: Bool {
+        !isCancellable
     }
 
     public var isCancellable: Bool {

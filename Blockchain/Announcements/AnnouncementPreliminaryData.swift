@@ -20,7 +20,7 @@ struct AnnouncementPreliminaryData {
         let hasLinkedBanks: Bool
         let isAvailable: Bool
         let isEligible: Bool
-        let pendingOrderDetails: OrderDetails?
+        let pendingOrderDetails: [OrderDetails]
     }
 
     // MARK: Properties

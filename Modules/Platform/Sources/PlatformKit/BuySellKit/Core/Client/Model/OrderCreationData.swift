@@ -133,6 +133,8 @@ enum OrderPayload {
         let paymentMethodId: String?
         let side: Side
         let attributes: Attributes?
+
+        let processingErrorType: String?
     }
 }
 

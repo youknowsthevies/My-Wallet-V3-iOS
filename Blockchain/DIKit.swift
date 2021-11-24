@@ -19,6 +19,7 @@ import FeatureOnboardingUI
 import FeatureOpenBankingData
 import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
+import FeatureQRCodeScannerDomain
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
@@ -238,11 +239,6 @@ extension DependencyContainer {
             return bridge.resolveSettingsStarter() as SettingsStarterAPI
         }
 
-        factory { () -> TabControllerManagerProvider in
-            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveTabControllerProvider() as TabControllerManagerProvider
-        }
-
         factory { () -> DrawerRouting in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveDrawerRouting() as DrawerRouting
@@ -255,6 +251,24 @@ extension DependencyContainer {
 
         factory { () -> ClearOnLogoutAPI in
             EmptyClearOnLogout()
+        }
+
+        factory { () -> QRCodeScannerRouting in
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveQRCodeScannerRouting() as QRCodeScannerRouting
+        }
+
+        factory { () -> LogoutServiceAPI in
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveLogoutService() as LogoutServiceAPI
+        }
+
+        factory { () -> QRCodeScannerLinkerAPI in
+            QRCodeScannerAdapter()
+        }
+
+        factory { () -> CryptoTargetQRCodeParserAdapter in
+            QRCodeScannerAdapter()
         }
 
         // MARK: - WalletManager
@@ -284,21 +298,6 @@ extension DependencyContainer {
         factory { () -> WalletRecoveryVerifing in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as WalletRecoveryVerifing
-        }
-
-        factory { () -> SharedKeyRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as SharedKeyRepositoryAPI
-        }
-
-        factory { () -> FeatureAuthenticationDomain.GuidRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as FeatureAuthenticationDomain.GuidRepositoryAPI
-        }
-
-        factory { () -> PasswordRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as PasswordRepositoryAPI
         }
 
         // MARK: - BlockchainSettings.App
@@ -446,17 +445,8 @@ extension DependencyContainer {
 
         // MARK: KYC Module
 
-        factory { () -> FeatureKYCUI.Routing in
-            let emailVerificationService: FeatureKYCDomain.EmailVerificationServiceAPI = DIKit.resolve()
-            let externalAppOpener: ExternalAppOpener = DIKit.resolve()
-            return FeatureKYCUI.Router(
-                analyticsRecorder: DIKit.resolve(),
-                loadingViewPresenter: DIKit.resolve(),
-                legacyRouter: DIKit.resolve(),
-                kycService: DIKit.resolve(),
-                emailVerificationService: emailVerificationService,
-                openMailApp: externalAppOpener.openMailApp
-            )
+        factory { () -> FeatureSettingsUI.KYCRouterAPI in
+            KYCAdapter()
         }
 
         factory { () -> FeatureKYCDomain.EmailVerificationAPI in
@@ -518,8 +508,9 @@ extension DependencyContainer {
         }
 
         factory { () -> SessionTokenServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return sessionTokenServiceFactory(walletRepository: manager.repository)
+            sessionTokenServiceFactory(
+                sessionRepository: DIKit.resolve()
+            )
         }
 
         factory { () -> SMSServiceAPI in

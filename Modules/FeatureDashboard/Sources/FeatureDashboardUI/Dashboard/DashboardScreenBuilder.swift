@@ -11,15 +11,18 @@ public final class DashboardScreenBuilder {
     private let drawerRouter: DrawerRouting
     private let fiatBalanceCellProvider: FiatBalanceCellProviding
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
+    private let qrCodeScannerRouter: QRCodeScannerRouting
 
     public init(
         drawerRouter: DrawerRouting = resolve(),
         fiatBalanceCellProvider: FiatBalanceCellProviding = resolve(),
-        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve()
+        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
+        qrCodeScannerRouter: QRCodeScannerRouting = resolve()
     ) {
         self.drawerRouter = drawerRouter
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.internalFeatureFlagService = internalFeatureFlagService
+        self.qrCodeScannerRouter = qrCodeScannerRouter
     }
 
     public func build() -> UIViewController {
@@ -27,7 +30,9 @@ public final class DashboardScreenBuilder {
             presenter: DashboardSegmentedViewScreenPresenter(
                 drawerRouter: drawerRouter,
                 fiatBalanceCellProvider: fiatBalanceCellProvider,
-                dashboardScreenPresenter: .init()
+                dashboardScreenPresenter: .init(),
+                qrCodeScannerRouter: qrCodeScannerRouter,
+                internalFeatureFlagService: internalFeatureFlagService
             )
         )
     }

@@ -57,6 +57,9 @@ public enum CryptoCurrenciesServiceError: Error, Equatable {
 }
 
 public protocol CryptoCurrenciesServiceAPI {
+    /// Fetches purchasable crypto currencies for fiat currency defaulted to USD.
+    /// This is used for showing the list of crypto in buy button as card payment.
+    func fetchPurchasableCryptoCurrencies() -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError>
 
     func fetchPurchasableCryptoCurrencies(
         using fiatCurrency: FiatCurrency
@@ -78,6 +81,10 @@ internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
     }
 
     // MARK: - CryptoCurrenciesServiceAPI
+
+    func fetchPurchasableCryptoCurrencies() -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError> {
+        fetchPurchasableCryptoCurrencies(using: FiatCurrency.USD)
+    }
 
     func fetchPurchasableCryptoCurrencies(
         using fiatCurrency: FiatCurrency

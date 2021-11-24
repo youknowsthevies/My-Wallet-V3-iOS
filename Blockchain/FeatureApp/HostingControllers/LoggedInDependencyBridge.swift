@@ -9,11 +9,6 @@ import PlatformUIKit
 // these are adopted both by `LoggedInHostingController` and `AppCoordinator`
 // The methods and properties provided by these protocol where used by accessing the `.shared` property of AppCoordinator
 
-/// Provider the `TabControllerManager`
-protocol TabControllerManagerProvider: AnyObject {
-    var tabControllerManager: TabControllerManager? { get }
-}
-
 /// Provides the ability to start a backup flow
 protocol BackupFlowStarterAPI: AnyObject {
     func startBackupFlow()
@@ -39,21 +34,19 @@ protocol LoggedInBridge: DrawerRouting,
     InterestIdentityVerificationAnnouncementRouting,
     AppCoordinating,
     WalletOperationsRouting,
-    TabControllerManagerProvider,
     BackupFlowStarterAPI,
     SettingsStarterAPI,
     LoggedInReloadAPI,
     InterestAccountListHostingControllerDelegate,
-    AuthenticationCoordinating {}
+    AuthenticationCoordinating,
+    QRCodeScannerRouting,
+    LogoutServiceAPI {}
 
 protocol LoggedInDependencyBridgeAPI: AnyObject {
     /// Registers the bridge
     func register(bridge: LoggedInBridge)
     /// Unregisters the bridge
     func unregister()
-
-    /// Provides the `TabControllerManager` for instances that might need
-    func resolveTabControllerProvider() -> TabControllerManagerProvider
 
     /// Provides `BackupFlowStarterAPI` methods
     func resolveBackupFlowStarter() -> BackupFlowStarterAPI
@@ -78,6 +71,10 @@ protocol LoggedInDependencyBridgeAPI: AnyObject {
     func resolveWalletOperationsRouting() -> WalletOperationsRouting
     /// Provides `AuthenticationCoordinating` methods
     func resolveAuthenticationCoordinating() -> AuthenticationCoordinating
+    /// Proves `QRCodeScannerRouting` methods
+    func resolveQRCodeScannerRouting() -> QRCodeScannerRouting
+    /// Provides logout
+    func resolveLogoutService() -> LogoutServiceAPI
 }
 
 final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
@@ -92,10 +89,6 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
 
     func unregister() {
         hostingControllerBridge = nil
-    }
-
-    func resolveTabControllerProvider() -> TabControllerManagerProvider {
-        resolve() as TabControllerManagerProvider
     }
 
     func resolveBackupFlowStarter() -> BackupFlowStarterAPI {
@@ -136,6 +129,14 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
 
     func resolveAuthenticationCoordinating() -> AuthenticationCoordinating {
         resolve() as AuthenticationCoordinating
+    }
+
+    func resolveQRCodeScannerRouting() -> QRCodeScannerRouting {
+        resolve() as QRCodeScannerRouting
+    }
+
+    func resolveLogoutService() -> LogoutServiceAPI {
+        resolve() as LogoutServiceAPI
     }
 
     /// Resolves the underlying bridge with a type

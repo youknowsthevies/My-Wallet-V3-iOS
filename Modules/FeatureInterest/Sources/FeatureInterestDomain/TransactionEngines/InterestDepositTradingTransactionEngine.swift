@@ -11,7 +11,7 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
     // MARK: - InterestTransactionEngine
 
     public var minimumDepositLimits: Single<FiatValue> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
             .flatMap { [sourceCryptoCurrency, accountLimitsRepository] fiatCurrency in
                 accountLimitsRepository
@@ -19,8 +19,6 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
                         sourceCryptoCurrency,
                         fiatCurrency: fiatCurrency
                     )
-                    .asObservable()
-                    .take(1)
                     .asSingle()
             }
             .map(\.minDepositAmount)
@@ -36,20 +34,19 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
 
     // MARK: - InterestTransactionEngine
 
-    public let priceService: PriceServiceAPI
-    public let fiatCurrencyService: FiatCurrencyServiceAPI
+    public let walletCurrencyService: FiatCurrencyServiceAPI
+    public let currencyConversionService: CurrencyConversionServiceAPI
 
     // MARK: - Private Properties
 
     private var minimumDepositCryptoLimits: Single<CryptoValue> {
         minimumDepositLimits
-            .flatMap { [priceService, sourceAsset] fiatValue -> Single<(FiatValue, FiatValue)> in
-                let quote = priceService
-                    .price(of: sourceAsset, in: fiatValue.currency)
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<(FiatValue, FiatValue)> in
+                let quote = currencyConversionService
+                    .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
-                    .map { $0.fiatValue ?? .zero(currency: fiatValue.currency) }
-                return Single.zip(quote, .just(fiatValue))
+                    .map { $0.fiatValue ?? .zero(currency: fiatCurrency.currency) }
+                return Single.zip(quote, .just(fiatCurrency))
             }
             .map { [sourceAsset] (quote: FiatValue, deposit: FiatValue) -> CryptoValue in
                 deposit
@@ -66,7 +63,7 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
     }
 
     private var interestAccountLimits: Single<InterestAccountLimits> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
             .flatMap { [accountLimitsRepository, sourceAsset] fiatCurrency in
                 accountLimitsRepository
@@ -74,8 +71,6 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
                         sourceAsset.cryptoCurrency!,
                         fiatCurrency: fiatCurrency
                     )
-                    .asObservable()
-                    .take(1)
                     .asSingle()
             }
     }
@@ -87,14 +82,14 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
 
     init(
         requireSecondPassword: Bool,
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
         accountTransferRepository: InterestAccountTransferRepositoryAPI = resolve()
     ) {
-        self.fiatCurrencyService = fiatCurrencyService
+        self.walletCurrencyService = walletCurrencyService
         self.requireSecondPassword = requireSecondPassword
-        self.priceService = priceService
+        self.currencyConversionService = currencyConversionService
         self.accountTransferRepository = accountTransferRepository
         self.accountLimitsRepository = accountLimitsRepository
     }
@@ -113,7 +108,7 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
             .zip(
                 minimumDepositCryptoLimits,
                 availableBalance,
-                fiatCurrencyService
+                walletCurrencyService
                     .fiatCurrency
             )
             .map { limits, balance, fiatCurrency -> PendingTransaction in

@@ -16,7 +16,6 @@ extension AnnouncementRecord {
         case verifyEmail
         case resubmitDocumentsAfterRecovery
         case blockstackAirdropRegisteredMini
-        case simpleBuyPendingTransaction
         case simpleBuyKYCIncomplete
 
         // MARK: - Periodic
@@ -57,8 +56,6 @@ extension AnnouncementRecord {
                 key = "cache-resubmit-documents-after-recovery"
             case .blockstackAirdropRegisteredMini:
                 key = "cache-stx-registered-airdrop-mini"
-            case .simpleBuyPendingTransaction:
-                key = "simple-buy-pending-transaction"
             case .simpleBuyKYCIncomplete:
                 key = "simple-buy-kyc-incomplete"
 

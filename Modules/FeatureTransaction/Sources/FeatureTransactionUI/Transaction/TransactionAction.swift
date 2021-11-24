@@ -492,8 +492,10 @@ extension TransactionValidationState {
             return .unknownError
         case .nabuError(let error):
             return .nabuError(error)
-        case .insufficientFunds(let balance, let sourceCurrency, let targetCurrency):
-            return .insufficientFunds(balance, sourceCurrency, targetCurrency)
+        case .insufficientFunds(let balance, let desired, let sourceCurrency, let targetCurrency):
+            return .insufficientFunds(balance, desired, sourceCurrency, targetCurrency)
+        case .belowFees(let fees, let balance):
+            return .belowFees(fees, balance)
         case .belowMinimumLimit(let minimumLimit):
             return .belowMinimumLimit(minimumLimit)
         case .overMaximumSourceLimit(let maxLimit, let label, let desiredAmount):
@@ -503,18 +505,10 @@ extension TransactionValidationState {
 
         // MARK: Unchecked
 
-        case .overMaximumLimit:
-            return .overMaximumLimit
         case .addressIsContract:
             return .addressIsContract
-        case .insufficientFundsForFees:
-            return .insufficientFundsForFees
-        case .insufficientGas:
-            return .insufficientGas
         case .invalidAddress:
             return .invalidAddress
-        case .invalidAmount:
-            return .invalidAmount
         case .invoiceExpired:
             return .unknownError
         case .optionInvalid:

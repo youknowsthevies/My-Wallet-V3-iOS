@@ -11,8 +11,9 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
         .empty()
     }
 
-    let fiatCurrencyService: FiatCurrencyServiceAPI
-    let priceService: PriceServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
+
     let requireSecondPassword: Bool = false
     let canTransactFiat: Bool = true
     var askForRefreshConfirmation: ((Bool) -> Completable)!
@@ -35,14 +36,14 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     // MARK: - Init
 
     init(
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         withdrawalService: WithdrawalServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
         fiatWithdrawRepository: FiatWithdrawRepositoryAPI = resolve()
     ) {
-        self.fiatCurrencyService = fiatCurrencyService
+        self.walletCurrencyService = walletCurrencyService
         self.withdrawalService = withdrawalService
-        self.priceService = priceService
+        self.currencyConversionService = currencyConversionService
         self.fiatWithdrawRepository = fiatWithdrawRepository
     }
 
@@ -60,7 +61,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 for: target.fiatCurrency,
                 paymentMethodType: target.paymentType
             ),
-            fiatCurrencyService
+            walletCurrencyService
                 .fiatCurrency
         )
         .map { [sourceAsset] values -> PendingTransaction in
@@ -100,14 +101,6 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
         .just(pendingTransaction.update(amount: amount))
     }
 
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        if pendingTransaction.validationState == .uninitialized, pendingTransaction.amount.isZero {
-            return .just(pendingTransaction)
-        }
-        return validateAmountCompletable(pendingTransaction: pendingTransaction)
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-    }
-
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmount(pendingTransaction: pendingTransaction)
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
@@ -145,12 +138,8 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
 
     private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable { [sourceAccount, transactionTarget] in
-            guard
-                let minLimit = pendingTransaction.minimumLimit,
-                let maxLimit = pendingTransaction.maximumLimit
-            else {
-                throw TransactionValidationFailure(state: .unknownError)
-            }
+            let minLimit = pendingTransaction.minLimit
+            let maxLimit = pendingTransaction.maxLimit
             guard try pendingTransaction.amount >= minLimit else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit(minLimit))
             }
@@ -167,6 +156,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 throw TransactionValidationFailure(
                     state: .insufficientFunds(
                         pendingTransaction.available,
+                        pendingTransaction.amount,
                         sourceAccount!.currencyType,
                         transactionTarget!.currencyType
                     )

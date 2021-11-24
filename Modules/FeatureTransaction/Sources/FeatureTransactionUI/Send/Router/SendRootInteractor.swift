@@ -12,6 +12,7 @@ public protocol SendRootRouting: ViewableRouting {
     /// Landing shows the wallets that the user
     /// can send from.
     func routeToSendLanding()
+    func routeToSendLanding(navigationBarHidden: Bool)
     func routeToSend(sourceAccount: CryptoAccount)
     func routeToSend(sourceAccount: CryptoAccount, destination: TransactionTarget)
     func dismissTransactionFlow()
@@ -37,14 +38,5 @@ final class SendRootInteractor: Interactor, SendRootInteractable, SendRootListen
 
     func dismissTransactionFlow() {
         router?.dismissTransactionFlow()
-    }
-
-    private lazy var routeViewDidAppear: Void = {
-        router?.routeToSendLanding()
-    }()
-
-    func viewDidAppear() {
-        // if first time, got to variant router
-        _ = routeViewDidAppear
     }
 }

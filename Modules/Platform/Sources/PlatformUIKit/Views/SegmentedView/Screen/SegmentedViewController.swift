@@ -22,6 +22,7 @@ public final class SegmentedViewController: BaseScreenViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         segmentedView.viewModel = presenter.segmentedViewModel
         add(child: rootViewController)
         presenter.itemIndexSelected
@@ -61,5 +62,10 @@ public final class SegmentedViewController: BaseScreenViewController {
 
     override public func navigationBarTrailingButtonPressed() {
         presenter.trailingButtonTapRelay.accept(())
+    }
+
+    public func selectSegment(_ index: Int) {
+        segmentedView.selectedSegmentIndex = index
+        presenter.itemIndexSelectedRelay.accept(index)
     }
 }

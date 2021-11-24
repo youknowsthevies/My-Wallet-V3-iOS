@@ -32,7 +32,7 @@ public struct PrimaryDoubleButton: View {
     private let leadingButton: ButtonData
     private let trailingButton: ButtonData
 
-    private let colorCombination = PrimaryButton.colorCombination
+    private let colorCombination = primaryButtonColorCombination
 
     public init(
         leadingTitle: String,

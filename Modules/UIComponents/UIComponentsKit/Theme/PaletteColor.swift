@@ -71,6 +71,7 @@ enum PaletteColor: String, CaseIterable {
     case greyFade400
     case greyFade600
     case greyFade800
+    case greyFade900
 
     // MARK: Orange
 

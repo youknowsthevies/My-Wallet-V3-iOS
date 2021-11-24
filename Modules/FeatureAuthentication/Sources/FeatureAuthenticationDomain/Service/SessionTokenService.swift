@@ -9,16 +9,16 @@ final class SessionTokenService: SessionTokenServiceAPI {
     // MARK: - Injected
 
     private let repository: RemoteSessionTokenRepositoryAPI
-    private let walletRepository: SessionTokenRepositoryAPI
+    private let sessionRepository: SessionTokenRepositoryAPI
 
     // MARK: - Setup
 
     init(
         repository: RemoteSessionTokenRepositoryAPI = resolve(),
-        walletRepository: SessionTokenRepositoryAPI
+        sessionRepository: SessionTokenRepositoryAPI
     ) {
         self.repository = repository
-        self.walletRepository = walletRepository
+        self.sessionRepository = sessionRepository
     }
 
     func setupSessionToken() -> AnyPublisher<Void, SessionTokenServiceError> {
@@ -31,10 +31,9 @@ final class SessionTokenService: SessionTokenServiceAPI {
                 }
                 return .just(sessionToken)
             }
-            .flatMap { [walletRepository] sessionToken
+            .flatMap { [sessionRepository] sessionToken
                 -> AnyPublisher<Void, SessionTokenServiceError> in
-                walletRepository
-                    .setPublisher(sessionToken: sessionToken)
+                sessionRepository.setPublisher(sessionToken: sessionToken)
                     .mapError()
             }
             .eraseToAnyPublisher()

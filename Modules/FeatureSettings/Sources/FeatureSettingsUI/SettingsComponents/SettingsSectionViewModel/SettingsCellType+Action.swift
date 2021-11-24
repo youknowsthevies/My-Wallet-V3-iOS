@@ -15,7 +15,7 @@ extension SettingsSectionType.CellType {
             case .emailVerification:
                 return .showUpdateEmailScreen
             case .limits:
-                return .launchKYC
+                return .presentTradeLimits
             case .mobileVerification:
                 return .showUpdateMobileScreen
             case .pitConnection:
@@ -64,6 +64,8 @@ extension SettingsSectionType.CellType {
                 return .showURL(URL(string: Constants.Url.privacyPolicy)!)
             case .cookiesPolicy:
                 return .showURL(URL(string: Constants.Url.cookiesPolicy)!)
+            case .logout:
+                return .logout
             }
         case .switch:
             return .none

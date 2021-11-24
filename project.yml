@@ -44,7 +44,7 @@ schemeTemplates:
           value: disable
           isEnabled: true
       commandLineArguments:
-        "-_UIConstraintBasedLayoutLogUnsatisfiable NO": false
+        "-_UIConstraintBasedLayoutLogUnsatisfiable NO": true
     test:
       config: ${debugConfig}
       gatherCoverageData: true
@@ -278,6 +278,8 @@ packages:
     path: Modules/FeatureOpenBanking
   FeatureOnboarding:
     path: Modules/FeatureOnboarding
+  FeatureQRCodeScanner:
+    path: Modules/FeatureQRCodeScanner
   FeatureSettings:
     path: Modules/FeatureSettings
   FeatureTour:
@@ -286,6 +288,8 @@ packages:
     path: Modules/FeatureTransaction
   FeatureWithdrawalLocks:
     path: Modules/FeatureWithdrawalLocks
+  FeatureWalletConnect:
+    path: Modules/FeatureWalletConnect
   HDWallet:
     path: Modules/HDWallet
   Keychain:
@@ -375,12 +379,14 @@ targets:
       - package: FeatureDebug
       - package: FeatureInterest
       - package: FeatureKYC
+      - package: FeatureQRCodeScanner
       - package: FeatureOnboarding
       - package: FeatureOpenBanking
       - package: FeatureSettings
       - package: FeatureTour
       - package: FeatureTransaction
       - package: FeatureWithdrawalLocks
+      - package: FeatureWalletConnect
 
       - package: BigInt
       - package: ComposableArchitecture

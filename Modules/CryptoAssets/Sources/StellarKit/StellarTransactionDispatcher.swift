@@ -115,7 +115,7 @@ final class StellarTransactionDispatcher {
                 let total = try sendDetails.value + sendDetails.fee
                 let minBalance = self.horizonProxy.minimumBalance(subentryCount: response.subentryCount)
                 if try response.totalBalance < (total + minBalance) {
-                    throw SendFailureReason.insufficientFunds(response.totalBalance.moneyValue)
+                    throw SendFailureReason.insufficientFunds(response.totalBalance.moneyValue, total.moneyValue)
                 }
                 return response
             }

@@ -28,4 +28,22 @@ public enum AccountPickerRow: Equatable, Identifiable {
             return model.id
         }
     }
+
+    var isAccountGroup: Bool {
+        switch self {
+        case .accountGroup:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isSingleAccount: Bool {
+        switch self {
+        case .singleAccount:
+            return true
+        default:
+            return false
+        }
+    }
 }

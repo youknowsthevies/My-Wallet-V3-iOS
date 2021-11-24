@@ -42,18 +42,17 @@ public struct ActionableView<Content: View>: View {
         }
     }
 
-    public let content: Content
+    public let content: () -> Content
     public let buttons: [ButtonState]
 
-    // TODO: make content builder a trailing closure
-    public init(@ViewBuilder content: () -> Content, buttons: [ButtonState] = []) {
-        self.content = content()
+    public init(buttons: [ButtonState] = [], @ViewBuilder content: @escaping () -> Content) {
         self.buttons = buttons
+        self.content = content
     }
 
     public var body: some View {
         VStack(alignment: .center) {
-            content
+            content()
             VStack(spacing: LayoutConstants.VerticalSpacing.withinButtonsGroup) {
                 ForEach(buttons, id: \.title) { button in
                     switch button.style {
@@ -84,47 +83,41 @@ public struct ActionableView<Content: View>: View {
 extension ActionableView where Content == AnyView {
 
     public init<Image: View>(
-        @ViewBuilder image: () -> Image,
+        @ViewBuilder image: @escaping () -> Image,
         title: String,
         message: String,
         buttons: [ButtonState] = [],
         imageSpacing: CGFloat = LayoutConstants.VerticalSpacing.betweenContentGroups
     ) {
-        self.init(
-            content: {
-                AnyView(
-                    VStack(alignment: .center, spacing: imageSpacing) {
-                        Spacer()
-                        image()
-                        VStack {
-                            RichText(title)
-                                .textStyle(.title)
-                            RichText(message)
-                                .textStyle(.body)
-                        }
-                        Spacer()
+        self.init(buttons: buttons) {
+            AnyView(
+                VStack(alignment: .center, spacing: imageSpacing) {
+                    Spacer()
+                    image()
+                    VStack {
+                        RichText(title)
+                            .textStyle(.title)
+                        RichText(message)
+                            .textStyle(.body)
                     }
-                    .frame(maxWidth: .infinity)
-                    .multilineTextAlignment(.center)
-                    .background(Color.viewPrimaryBackground)
-                )
-            },
-            buttons: buttons
-        )
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+                .multilineTextAlignment(.center)
+                .background(Color.viewPrimaryBackground)
+            )
+        }
     }
 }
 
 extension ActionableView where Content == TupleView<(Spacer, InfoView, Spacer)> {
 
     public init(_ model: InfoView.Model, buttons: [ButtonState] = [], in bundle: Bundle = .main) {
-        self.init(
-            content: {
-                Spacer()
-                InfoView(model, in: bundle)
-                Spacer()
-            },
-            buttons: buttons
-        )
+        self.init(buttons: buttons) {
+            Spacer()
+            InfoView(model, in: bundle)
+            Spacer()
+        }
     }
 }
 

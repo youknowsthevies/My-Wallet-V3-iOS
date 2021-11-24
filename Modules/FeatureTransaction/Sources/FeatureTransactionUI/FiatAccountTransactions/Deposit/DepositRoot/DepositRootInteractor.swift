@@ -8,7 +8,7 @@ import RIBs
 import RxSwift
 import ToolKit
 
-public protocol DepositRootRouting: AnyObject {
+public protocol DepositRootRouting: Routing {
     /// Routes to the `Select a Funding Method` screen
     func routeToDepositLanding()
 

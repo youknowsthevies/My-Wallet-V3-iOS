@@ -11,12 +11,15 @@ import ToolKit
 
 final class EthereumSignMessageTransactionEngine: TransactionEngine {
 
+    let currencyConversionService: CurrencyConversionServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
+
     var askForRefreshConfirmation: (AskForRefreshConfirmation)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrencyPublisher
             .map { fiatCurrency -> MoneyValuePair in
                 MoneyValuePair(
@@ -42,18 +45,19 @@ final class EthereumSignMessageTransactionEngine: TransactionEngine {
     private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
     private let ethereumSigner: EthereumSignerAPI
     private let feeService: EthereumFeeServiceAPI
-    private let fiatCurrencyService: FiatCurrencyServiceAPI
 
     init(
         ethereumSigner: EthereumSignerAPI = resolve(),
         keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         feeService: EthereumFeeServiceAPI = resolve()
     ) {
         self.ethereumSigner = ethereumSigner
         self.feeService = feeService
         self.keyPairProvider = keyPairProvider
-        self.fiatCurrencyService = fiatCurrencyService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
     }
 
     func assertInputsValid() {
@@ -100,7 +104,7 @@ final class EthereumSignMessageTransactionEngine: TransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
             .map { fiatCurrency -> PendingTransaction in
                 .init(

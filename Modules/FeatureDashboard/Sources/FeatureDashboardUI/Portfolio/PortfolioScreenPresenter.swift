@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitectureExtensions
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -10,7 +11,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final class PortfolioScreenPresenter {
+public final class PortfolioScreenPresenter {
 
     // MARK: - Types
 
@@ -53,8 +54,8 @@ final class PortfolioScreenPresenter {
             interactor: (CryptoCurrency) -> HistoricalBalanceCellInteractor?
         ) -> [PortfolioCellType] {
             var items: [PortfolioCellType] = [
-                .totalBalance(totalBalancePresenter),
-                .withdrawalLock
+                .totalBalance(totalBalancePresenter)
+                // .withdrawalLock
             ]
             if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
@@ -130,6 +131,15 @@ final class PortfolioScreenPresenter {
             }
     }
 
+    var screenNavigationModel: ScreenNavigationModel {
+        ScreenNavigationModel(
+            leadingButton: .drawer,
+            trailingButton: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none,
+            titleViewStyle: .text(value: LocalizationConstants.DashboardScreen.title),
+            barStyle: .lightContent()
+        )
+    }
+
     // MARK: - Private Properties
 
     private let accountFetcher: BlockchainAccountFetching
@@ -165,7 +175,7 @@ final class PortfolioScreenPresenter {
 
     // MARK: - Init
 
-    init(
+    public init(
         interactor: PortfolioScreenInteractor = PortfolioScreenInteractor(),
         accountFetcher: BlockchainAccountFetching = resolve(),
         drawerRouter: DrawerRouting = resolve(),

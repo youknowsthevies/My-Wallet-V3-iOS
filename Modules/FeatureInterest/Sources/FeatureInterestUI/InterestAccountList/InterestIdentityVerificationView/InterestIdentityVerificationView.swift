@@ -19,6 +19,7 @@ struct InterestIdentityVerificationView: View {
 
     var body: some View {
         ActionableView(
+            buttons: [.init(title: LocalizationId.action, action: buttonTapped)],
             content: {
                 VStack(alignment: .leading) {
                     VStack(alignment: .leading) {
@@ -67,8 +68,7 @@ struct InterestIdentityVerificationView: View {
                     }
                     Spacer(minLength: Spacing.padding2)
                 }
-            },
-            buttons: [.init(title: LocalizationId.action, action: buttonTapped)]
+            }
         )
     }
 

@@ -20,7 +20,7 @@ final class PrimaryNavigationTests: XCTestCase {
                     Text("First")
                 }
                 .primaryNavigation(title: "First") {
-                    IconButton(icon: .qRCode) {}
+                    IconButton(icon: .qrCode) {}
 
                     IconButton(icon: .user) {}
                 }
@@ -31,7 +31,7 @@ final class PrimaryNavigationTests: XCTestCase {
         @ViewBuilder private var secondView: some View {
             Text("Second")
                 .primaryNavigation(title: "Second") {
-                    IconButton(icon: .qRCode) {}
+                    IconButton(icon: .qrCode) {}
                 }
         }
     }

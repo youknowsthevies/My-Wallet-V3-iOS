@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -7,6 +8,7 @@ import RIBs
 import RxCocoa
 import RxDataSources
 import RxSwift
+import ToolKit
 import UIKit
 
 protocol SwapLandingPresentableListener: AnyObject {
@@ -32,12 +34,13 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
         setupTableView()
         title = LocalizationIds.swap
         set(
             barStyle: .lightContent(),
             leadingButtonStyle: .drawer,
-            trailingButtonStyle: .none
+            trailingButtonStyle: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none
         )
     }
 

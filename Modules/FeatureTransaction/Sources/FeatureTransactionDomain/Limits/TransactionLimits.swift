@@ -6,12 +6,32 @@ import PlatformKit
 /// Use this struct to fill transaction data in `TransactionEngine`s.
 public struct TransactionLimits: Equatable {
 
+    public var currencyType: CurrencyType {
+        minimum.currency
+    }
+
     public let minimum: MoneyValue
     public let maximum: MoneyValue
     public let maximumDaily: MoneyValue
     public let maximumAnnual: MoneyValue
     public let effectiveLimit: EffectiveLimit
     public let suggestedUpgrade: SuggestedLimitsUpgrade?
+
+    public init(
+        minimum: MoneyValue,
+        maximum: MoneyValue,
+        maximumDaily: MoneyValue,
+        maximumAnnual: MoneyValue,
+        effectiveLimit: EffectiveLimit?,
+        suggestedUpgrade: SuggestedLimitsUpgrade?
+    ) {
+        self.minimum = minimum
+        self.maximum = maximum
+        self.maximumDaily = maximumDaily
+        self.maximumAnnual = maximumAnnual
+        self.effectiveLimit = effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maximum)
+        self.suggestedUpgrade = suggestedUpgrade
+    }
 }
 
 extension TransactionLimits {

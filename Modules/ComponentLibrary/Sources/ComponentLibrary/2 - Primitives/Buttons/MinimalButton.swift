@@ -14,12 +14,12 @@ import SwiftUI
 /// # Figma
 ///
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=3%3A367)
-
-public struct MinimalButton: View {
+public struct MinimalButton<LeadingView: View>: View {
 
     private let title: String
-    private let action: () -> Void
     private let isLoading: Bool
+    private let leadingView: LeadingView
+    private let action: () -> Void
 
     @Environment(\.pillButtonSize) private var size
 
@@ -58,16 +58,25 @@ public struct MinimalButton: View {
     public init(
         title: String,
         isLoading: Bool = false,
+        @ViewBuilder leadingView: () -> LeadingView,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.isLoading = isLoading
+        self.leadingView = leadingView()
         self.action = action
     }
 
     public var body: some View {
-        Button(title) {
+        Button {
             action()
+        } label: {
+            HStack(spacing: Spacing.padding2) {
+                leadingView
+                    .frame(width: 24, height: 24)
+
+                Text(title)
+            }
         }
         .buttonStyle(
             PillButtonStyle(
@@ -79,6 +88,27 @@ public struct MinimalButton: View {
     }
 }
 
+extension MinimalButton where LeadingView == EmptyView {
+
+    /// Create a minimal button without a leading view.
+    /// - Parameters:
+    ///   - title: Centered title label
+    ///   - isLoading: True to display a loading indicator instead of the label.
+    ///   - action: Action to be triggered on tap
+    public init(
+        title: String,
+        isLoading: Bool = false,
+        action: @escaping () -> Void
+    ) {
+        self.init(
+            title: title,
+            isLoading: isLoading,
+            leadingView: { EmptyView() },
+            action: action
+        )
+    }
+}
+
 struct MinimalButton_Previews: PreviewProvider {
 
     static var previews: some View {
@@ -86,6 +116,16 @@ struct MinimalButton_Previews: PreviewProvider {
             MinimalButton(title: "Enabled", action: {})
                 .previewLayout(.sizeThatFits)
                 .previewDisplayName("Enabled")
+
+            MinimalButton(
+                title: "With Icon",
+                leadingView: {
+                    Icon.placeholder
+                },
+                action: {}
+            )
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("With Icon")
 
             MinimalButton(title: "Disabled", action: {})
                 .disabled(true)

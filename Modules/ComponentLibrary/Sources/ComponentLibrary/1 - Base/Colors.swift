@@ -89,6 +89,9 @@ extension Color {
         public static let orangeBG: Color = .palette.orange100
 
         public static let redBG: Color = .palette.red100
+
+        public static let gold: Color = .palette.gold
+        public static let silver: Color = .palette.silver
     }
 }
 

@@ -10,7 +10,7 @@ open class BaseScreenViewController: UIViewController {
         static let titleViewHeight: CGFloat = 40
     }
 
-    // MARK: - Exposed
+    // MARK: - Public Properties
 
     /**
      The style of the navigation bar.
@@ -101,7 +101,14 @@ open class BaseScreenViewController: UIViewController {
         }
     }
 
-    // MARK: - Private
+    public var automaticallyApplyNavigationBarStyle: Bool = true
+
+    override open var preferredStatusBarStyle: UIStatusBarStyle {
+        loadViewIfNeeded()
+        return determineStatusBarStyle()
+    }
+
+    // MARK: - Private Properties
 
     /// The ancestor navigation controller
     private weak var _baseNavigationController: UINavigationController?
@@ -116,13 +123,10 @@ open class BaseScreenViewController: UIViewController {
         return _baseNavigationController
     }
 
+    private lazy var drawerRouter: DrawerRouting = resolve()
+    private lazy var qrCodeScannerRouter: QRCodeScannerRouting = resolve()
     private var currentNavigationItem: UINavigationItem? {
         navigationItem
-    }
-
-    override open var preferredStatusBarStyle: UIStatusBarStyle {
-        loadViewIfNeeded()
-        return determineStatusBarStyle()
     }
 
     private var trailingBarButtonItem: UIBarButtonItem! {
@@ -131,10 +135,40 @@ open class BaseScreenViewController: UIViewController {
         }
     }
 
-    private(set) var leadingBarButtonItem: UIBarButtonItem! {
+    private var leadingBarButtonItem: UIBarButtonItem! {
         didSet {
             currentNavigationItem?.setLeftBarButton(leadingBarButtonItem, animated: false)
         }
+    }
+
+    private var standardNavigationBarButtonStyles: (leading: Screen.Style.LeadingButton, trailing: Screen.Style.TrailingButton) {
+        var trailing: Screen.Style.TrailingButton = .none
+        var leading: Screen.Style.LeadingButton = .none
+        let viewControllersCount = navigationController?.viewControllers.count ?? 1
+        if viewControllersCount > 1 {
+            leading = .back
+        } else {
+            trailing = .close
+        }
+        return (leading, trailing)
+    }
+
+    // MARK: - Lifecycle
+
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if automaticallyApplyNavigationBarStyle {
+            setBackground(by: barStyle)
+            if !barStyle.ignoresStatusBar {
+                UIApplication.shared.statusBarStyle = determineStatusBarStyle()
+            }
+            currentNavigationItem?.setHidesBackButton(true, animated: false)
+        }
+    }
+
+    override open func viewWillLayoutSubviews() {
+        updateExtendSafeAreaUnderNavigationBar()
+        super.viewWillLayoutSubviews()
     }
 
     private func updateExtendSafeAreaUnderNavigationBar() {
@@ -149,22 +183,6 @@ open class BaseScreenViewController: UIViewController {
             navigationBarHeight = 0
         }
         additionalSafeAreaInsets.top = -navigationBarHeight
-    }
-
-    // MARK: - Lifecycle
-
-    override open func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setBackground(by: barStyle)
-        if !barStyle.ignoresStatusBar {
-            UIApplication.shared.statusBarStyle = determineStatusBarStyle()
-        }
-        currentNavigationItem?.setHidesBackButton(true, animated: false)
-    }
-
-    override open func viewWillLayoutSubviews() {
-        updateExtendSafeAreaUnderNavigationBar()
-        super.viewWillLayoutSubviews()
     }
 
     // MARK: - Setup
@@ -218,20 +236,6 @@ open class BaseScreenViewController: UIViewController {
         }
     }
 
-    // MARK: - Exposed
-
-    public var standardNavigationBarButtonStyles: (leading: Screen.Style.LeadingButton, trailing: Screen.Style.TrailingButton) {
-        var trailing: Screen.Style.TrailingButton = .none
-        var leading: Screen.Style.LeadingButton = .none
-        let viewControllersCount = navigationController?.viewControllers.count ?? 1
-        if viewControllersCount > 1 {
-            leading = .back
-        } else {
-            trailing = .close
-        }
-        return (leading, trailing)
-    }
-
     public func setStandardDarkContentStyle() {
         let (leading, trailing) = standardNavigationBarButtonStyles
         set(
@@ -255,6 +259,7 @@ open class BaseScreenViewController: UIViewController {
         leadingButtonStyle: Screen.Style.LeadingButton = .none,
         trailingButtonStyle: Screen.Style.TrailingButton = .none
     ) {
+        guard automaticallyApplyNavigationBarStyle else { return }
         self.barStyle = barStyle
         self.leadingButtonStyle = leadingButtonStyle
         self.trailingButtonStyle = trailingButtonStyle
@@ -271,12 +276,12 @@ open class BaseScreenViewController: UIViewController {
         switch trailingButtonStyle {
         case .close:
             dismiss(animated: true, completion: nil)
-        case .none, .processing, .qrCode, .content:
+        case .qrCode:
+            qrCodeScannerRouter.showQRCodeScanner()
+        case .none, .processing, .content:
             break
         }
     }
-
-    private lazy var drawerRouter: DrawerRouting = resolve()
 
     open func navigationBarLeadingButtonPressed() {
         switch leadingButtonStyle {

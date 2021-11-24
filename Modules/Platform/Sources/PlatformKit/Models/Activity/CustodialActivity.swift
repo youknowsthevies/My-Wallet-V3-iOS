@@ -9,6 +9,7 @@ public enum CustodialActivityEvent {
         public let date: Date
         public let type: EventType
         public let state: State
+        public let paymentError: PaymentErrorType?
     }
 
     public struct Crypto: Equatable {
@@ -21,6 +22,12 @@ public enum CustodialActivityEvent {
         public let fee: CryptoValue
         public let price: FiatValue
         public let txHash: String
+    }
+
+    public enum PaymentErrorType: String {
+        case cardPaymentFailed = "CARD_PAYMENT_FAILED"
+        case cardPaymentAbandoned = "CARD_PAYMENT_ABANDONED"
+        case cardPaymentExpired = "CARD_PAYMENT_EXPIRED"
     }
 
     public enum EventType: String {
@@ -80,7 +87,10 @@ extension CustodialActivityEvent.Fiat {
             identifier: item.id,
             date: date,
             type: eventType,
-            state: state
+            state: state,
+            paymentError: CustodialActivityEvent.PaymentErrorType(
+                rawValue: item.error ?? ""
+            )
         )
     }
 }
