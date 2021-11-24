@@ -90,22 +90,26 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        walletCurrencyService
-            .fiatCurrency
-            .map { [erc20Token] fiatCurrency -> PendingTransaction in
-                .init(
-                    amount: .zero(currency: .erc20(erc20Token)),
-                    available: .zero(currency: .erc20(erc20Token)),
-                    feeAmount: .zero(currency: .coin(.ethereum)),
-                    feeForFullAvailable: .zero(currency: .coin(.ethereum)),
-                    feeSelection: .init(
-                        selectedLevel: .regular,
-                        availableLevels: [.regular, .priority],
-                        asset: .crypto(.coin(.ethereum))
-                    ),
-                    selectedFiatCurrency: fiatCurrency
-                )
-            }
+        Single.zip(
+            walletCurrencyService
+                .fiatCurrency,
+            availableBalance
+        )
+
+        .map { [erc20Token] fiatCurrency, availableBalance -> PendingTransaction in
+            .init(
+                amount: .zero(currency: .erc20(erc20Token)),
+                available: availableBalance,
+                feeAmount: .zero(currency: .coin(.ethereum)),
+                feeForFullAvailable: .zero(currency: .coin(.ethereum)),
+                feeSelection: .init(
+                    selectedLevel: .regular,
+                    availableLevels: [.regular, .priority],
+                    asset: .crypto(.coin(.ethereum))
+                ),
+                selectedFiatCurrency: fiatCurrency
+            )
+        }
     }
 
     func start(

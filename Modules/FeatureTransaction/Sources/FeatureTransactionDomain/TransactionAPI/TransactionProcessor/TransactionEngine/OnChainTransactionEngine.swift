@@ -11,6 +11,11 @@ extension OnChainTransactionEngine {
         sourceAccount as! CryptoAccount
     }
 
+    public var availableBalance: Single<MoneyValue> {
+        sourceAccount
+            .actionableBalance
+    }
+
     /// A default implementation for `assertInputsValid()` that validates that `transactionTarget`
     /// is a `CryptoReceiveAddress` and that its address isn't empty, and that the source account and
     /// target account have the same asset.

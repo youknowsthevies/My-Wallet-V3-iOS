@@ -144,34 +144,38 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        Single.zip(userFiatCurrency, isMemoRequired)
-            .map { [receiveAddress] fiatCurrency, isMemoRequired -> PendingTransaction in
-                var memo: String?
-                if let stellarReceive = receiveAddress as? StellarReceiveAddress {
-                    memo = stellarReceive.memo
-                }
-                let memoModel = TransactionConfirmation.Model.Memo(
-                    textMemo: memo,
-                    required: isMemoRequired
-                )
-                let zeroStellar: MoneyValue = .zero(currency: .coin(.stellar))
-                var transaction = PendingTransaction(
-                    amount: zeroStellar,
-                    available: zeroStellar,
-                    feeAmount: zeroStellar,
-                    feeForFullAvailable: zeroStellar,
-                    feeSelection: .init(
-                        selectedLevel: .regular,
-                        availableLevels: [.regular],
-                        asset: .crypto(.coin(.stellar))
-                    ),
-                    selectedFiatCurrency: fiatCurrency,
-                    minimumLimit: nil,
-                    maximumLimit: nil
-                )
-                transaction.setMemo(memo: memoModel)
-                return transaction
+        Single.zip(
+            userFiatCurrency,
+            isMemoRequired,
+            availableBalance
+        )
+        .map { [receiveAddress] fiatCurrency, isMemoRequired, availableBalance -> PendingTransaction in
+            var memo: String?
+            if let stellarReceive = receiveAddress as? StellarReceiveAddress {
+                memo = stellarReceive.memo
             }
+            let memoModel = TransactionConfirmation.Model.Memo(
+                textMemo: memo,
+                required: isMemoRequired
+            )
+            let zeroStellar: MoneyValue = .zero(currency: .coin(.stellar))
+            var transaction = PendingTransaction(
+                amount: zeroStellar,
+                available: availableBalance,
+                feeAmount: zeroStellar,
+                feeForFullAvailable: zeroStellar,
+                feeSelection: .init(
+                    selectedLevel: .regular,
+                    availableLevels: [.regular],
+                    asset: .crypto(.coin(.stellar))
+                ),
+                selectedFiatCurrency: fiatCurrency,
+                minimumLimit: nil,
+                maximumLimit: nil
+            )
+            transaction.setMemo(memo: memoModel)
+            return transaction
+        }
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

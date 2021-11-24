@@ -103,22 +103,25 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        walletCurrencyService
-            .fiatCurrency
-            .map { fiatCurrency -> PendingTransaction in
-                .init(
-                    amount: .zero(currency: Token.coin.cryptoCurrency),
-                    available: .zero(currency: Token.coin.cryptoCurrency),
-                    feeAmount: .zero(currency: Token.coin.cryptoCurrency),
-                    feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
-                    feeSelection: .init(
-                        selectedLevel: .regular,
-                        availableLevels: [.regular, .priority],
-                        asset: Token.coin.cryptoCurrency.currencyType
-                    ),
-                    selectedFiatCurrency: fiatCurrency
-                )
-            }
+        Single.zip(
+            walletCurrencyService
+                .fiatCurrency,
+            availableBalance
+        )
+        .map { fiatCurrency, availableBalance -> PendingTransaction in
+            .init(
+                amount: .zero(currency: Token.coin.cryptoCurrency),
+                available: availableBalance,
+                feeAmount: .zero(currency: Token.coin.cryptoCurrency),
+                feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
+                feeSelection: .init(
+                    selectedLevel: .regular,
+                    availableLevels: [.regular, .priority],
+                    asset: Token.coin.cryptoCurrency.currencyType
+                ),
+                selectedFiatCurrency: fiatCurrency
+            )
+        }
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

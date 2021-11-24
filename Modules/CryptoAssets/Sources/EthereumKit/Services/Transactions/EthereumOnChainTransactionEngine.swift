@@ -92,22 +92,25 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        walletCurrencyService
-            .fiatCurrency
-            .map { fiatCurrency -> PendingTransaction in
-                .init(
-                    amount: .zero(currency: .coin(.ethereum)),
-                    available: .zero(currency: .coin(.ethereum)),
-                    feeAmount: .zero(currency: .coin(.ethereum)),
-                    feeForFullAvailable: .zero(currency: .coin(.ethereum)),
-                    feeSelection: .init(
-                        selectedLevel: .regular,
-                        availableLevels: [.regular, .priority],
-                        asset: .crypto(.coin(.ethereum))
-                    ),
-                    selectedFiatCurrency: fiatCurrency
-                )
-            }
+        Single.zip(
+            walletCurrencyService
+                .fiatCurrency,
+            availableBalance
+        )
+        .map { fiatCurrency, availableBalance -> PendingTransaction in
+            .init(
+                amount: .zero(currency: .coin(.ethereum)),
+                available: availableBalance,
+                feeAmount: .zero(currency: .coin(.ethereum)),
+                feeForFullAvailable: .zero(currency: .coin(.ethereum)),
+                feeSelection: .init(
+                    selectedLevel: .regular,
+                    availableLevels: [.regular, .priority],
+                    asset: .crypto(.coin(.ethereum))
+                ),
+                selectedFiatCurrency: fiatCurrency
+            )
+        }
     }
 
     func start(
