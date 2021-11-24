@@ -2,6 +2,7 @@
 
 import Foundation
 import MoneyKit
+import WalletPayloadKit
 
 public struct WalletSettings: Equatable {
 
