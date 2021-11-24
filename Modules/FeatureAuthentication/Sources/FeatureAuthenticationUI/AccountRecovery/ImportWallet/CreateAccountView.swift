@@ -8,7 +8,7 @@ import SwiftUI
 import ToolKit
 import UIComponentsKit
 
-struct CreateAccountView: View {
+public struct CreateAccountView: View {
 
     private typealias LocalizedString = LocalizationConstants.FeatureAuthentication.CreateAccount
 
@@ -22,6 +22,9 @@ struct CreateAccountView: View {
 
         static let messageFontSize: CGFloat = 12
         static let lineSpacing: CGFloat = 4
+
+        static let largeNavigationTitleFontSize: CGFloat = 20
+        static let largeNavigationTitleTopPadding: CGFloat = 15
     }
 
     private let store: Store<CreateAccountState, CreateAccountAction>
@@ -33,12 +36,14 @@ struct CreateAccountView: View {
     @State private var isConfirmPasswordFieldFirstResponder: Bool = false
     @State private var isConfirmPasswordVisible: Bool = false
 
-    init(store: Store<CreateAccountState, CreateAccountAction>) {
+    public init(
+        store: Store<CreateAccountState, CreateAccountAction>
+    ) {
         self.store = store
         viewStore = ViewStore(store)
     }
 
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading) {
 
             emailField
@@ -69,17 +74,22 @@ struct CreateAccountView: View {
             Spacer()
 
             PrimaryButton(title: LocalizedString.createAccountButton) {
-                viewStore.send(.createButtonTapped)
+                viewStore.send(
+                    .createButtonTapped(
+                        email: viewStore.emailAddress,
+                        password: viewStore.password
+                    )
+                )
             }
             .disabled(viewStore.password.isEmpty ||
                 viewStore.password != viewStore.confirmPassword ||
                 viewStore.passwordStrength == .weak)
             .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.createAccountButton)
         }
-        .onDisappear {
-            viewStore.send(.onDisappear)
+        .onWillDisappear {
+            viewStore.send(.onWillDisappear)
         }
-        .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
+        .modifier(CustomNavigationTitle(viewStore: viewStore))
         .padding(
             EdgeInsets(
                 top: Layout.topPadding,
@@ -88,6 +98,27 @@ struct CreateAccountView: View {
                 trailing: Layout.trailingPadding
             )
         )
+    }
+
+    private struct CustomNavigationTitle: ViewModifier {
+        let viewStore: ViewStore<CreateAccountState, CreateAccountAction>
+
+        func body(content: Content) -> some View {
+            if viewStore.context == .createWallet {
+                return AnyView(content.whiteNavigationBarStyle().toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Text(LocalizationConstants.FeatureAuthentication.Welcome.Button.buyCryptoNow)
+                            .font(Font(weight: .semibold, size: Layout.largeNavigationTitleFontSize))
+                            .padding(.top, Layout.largeNavigationTitleTopPadding)
+                    }
+                })
+            } else {
+                return AnyView(content.whiteNavigationBarStyle().navigationBarTitle(
+                    LocalizedString.navigationTitle,
+                    displayMode: .inline
+                ))
+            }
+        }
     }
 
     private var agreementText: some View {
@@ -231,7 +262,9 @@ struct CreateAccountView_Previews: PreviewProvider {
     static var previews: some View {
         CreateAccountView(
             store: .init(
-                initialState: .init(),
+                initialState: .init(
+                    context: .createWallet
+                ),
                 reducer: createAccountReducer,
                 environment: .init(
                     analyticsRecorder: NoOpAnalyticsRecorder()

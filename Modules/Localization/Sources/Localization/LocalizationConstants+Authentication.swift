@@ -416,7 +416,7 @@ extension LocalizationConstants.FeatureAuthentication {
 
     public enum CreateAccount {
         public static let navigationTitle = NSLocalizedString(
-            "Create Account",
+            "Buy Crypto Now",
             comment: "Create Account screen: navigation title"
         )
         public enum TextFieldTitle {
@@ -481,7 +481,7 @@ extension LocalizationConstants.FeatureAuthentication {
             comment: "Create Account screen: privacy policy link"
         )
         public static let createAccountButton = NSLocalizedString(
-            "Create Account",
+            "Buy Crypto Now",
             comment: "Create Account screen: create account CTA button"
         )
     }

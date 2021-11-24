@@ -3,6 +3,7 @@
 import ComposableArchitecture
 import FeatureAuthenticationUI
 import FeatureTourUI
+import Localization
 import SwiftUI
 
 public struct TourViewAdapter: View {
@@ -14,9 +15,9 @@ public struct TourViewAdapter: View {
         let viewStore = ViewStore(store)
         tourView = TourView(
             environment: TourEnvironment(
-                createAccountAction: { viewStore.send(.presentScreenFlow(.createWalletScreen)) },
-                restoreAction: { viewStore.send(.presentScreenFlow(.restoreWalletScreen)) },
-                logInAction: { viewStore.send(.presentScreenFlow(.emailLoginScreen)) }
+                createAccountAction: { viewStore.send(.enter(into: .createWallet)) },
+                restoreAction: { viewStore.send(.enter(into: .restoreWallet)) },
+                logInAction: { viewStore.send(.enter(into: .emailLogin)) }
             )
         )
     }
@@ -24,37 +25,65 @@ public struct TourViewAdapter: View {
     private let tourView: TourView
 
     public var body: some View {
-        WithViewStore(self.store) { viewStore in
-            tourView
-                .sheet(
-                    isPresented: .constant(
-                        viewStore.screenFlow == .emailLoginScreen
-                            || viewStore.screenFlow == .restoreWalletScreen
-                            || viewStore.screenFlow == .manualLoginScreen
-                            || viewStore.modals == .secondPasswordNoticeScreen
-                    ),
-                    onDismiss: {
-                        if viewStore.screenFlow == .emailLoginScreen {
-                            viewStore.send(.presentScreenFlow(.welcomeScreen))
-                        } else if viewStore.modals == .secondPasswordNoticeScreen {
-                            viewStore.send(.modalDismissed(.secondPasswordNoticeScreen))
-                        }
-                    },
-                    content: {
-                        makeContent(viewStore)
-                    }
-                )
-        }
+        tourView.navigationRoute(in: store)
     }
 
     @ViewBuilder private func makeContent(_ viewStore: ViewStore<WelcomeState, WelcomeAction>) -> some View {
-        if viewStore.screenFlow == .emailLoginScreen {
+        switch viewStore.route?.route {
+        case .createWallet:
+            makeCreateWalletView(viewStore)
+        case .emailLogin:
             makeEmailLoginView()
-        } else if viewStore.screenFlow == .restoreWalletScreen {
+        case .restoreWallet:
             makeSeedPhraseView(viewStore)
-        } else if viewStore.modals == .secondPasswordNoticeScreen {
+        case .manualLogin:
+            makeManualLoginView(viewStore)
+        case .secondPassword:
             makeSecondPasswordNoticeView()
+        default:
+            EmptyView()
         }
+    }
+
+    @ViewBuilder private func makeCreateWalletView(_ viewStore: ViewStore<WelcomeState, WelcomeAction>) -> some View {
+        IfLetStore(
+            store.scope(
+                state: \.createWalletState,
+                action: WelcomeAction.createWallet
+            ),
+            then: { store in
+                NavigationView {
+                    CreateAccountView(store: store)
+                        .trailingNavigationButton(.close) {
+                            viewStore.send(.createWallet(.closeButtonTapped))
+                        }
+                }
+            }
+        )
+    }
+
+    @ViewBuilder private func makeManualLoginView(_ viewStore: ViewStore<WelcomeState, WelcomeAction>) -> some View {
+        IfLetStore(
+            store.scope(
+                state: \.manualCredentialsState,
+                action: WelcomeAction.manualPairing
+            ),
+            then: { store in
+                NavigationView {
+                    CredentialsView(
+                        context: .manualPairing,
+                        store: store
+                    )
+                    .trailingNavigationButton(.close) {
+                        viewStore.send(.manualPairing(.closeButtonTapped))
+                    }
+                    .whiteNavigationBarStyle()
+                    .navigationTitle(
+                        LocalizationConstants.FeatureAuthentication.Welcome.Button.manualPairing
+                    )
+                }
+            }
+        )
     }
 
     @ViewBuilder private func makeEmailLoginView() -> some View {
@@ -75,7 +104,7 @@ public struct TourViewAdapter: View {
             ),
             then: { store in
                 NavigationView {
-                    SeedPhraseView(context: .restoreWallet, store: store)
+                    SeedPhraseView(store: store)
                         .trailingNavigationButton(.close) {
                             viewStore.send(.restoreWallet(.closeButtonTapped))
                         }

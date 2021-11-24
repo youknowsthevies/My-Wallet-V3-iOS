@@ -9,26 +9,36 @@ import ToolKit
 // MARK: - Type
 
 public enum CreateAccountAction: Equatable {
-    case onDisappear
+    case onWillDisappear
+    case closeButtonTapped
     case didChangeEmailAddress(String)
     case didChangePassword(String)
     case didChangeConfirmPassword(String)
     case didChangePasswordStrength(PasswordValidationScore)
     case validatePasswordStrength
     case openExternalLink(URL)
-    case createButtonTapped
+    case createButtonTapped(email: String, password: String)
     case noop
+}
+
+enum CreateAccountContext {
+    case importWallet
+    case createWallet
 }
 
 // MARK: - Properties
 
-struct CreateAccountState: Equatable {
+public struct CreateAccountState: Equatable {
+    var context: CreateAccountContext
     var emailAddress: String
     var password: String
     var confirmPassword: String
     var passwordStrength: PasswordValidationScore
 
-    init() {
+    init(
+        context: CreateAccountContext
+    ) {
+        self.context = context
         emailAddress = ""
         password = ""
         confirmPassword = ""
@@ -61,10 +71,9 @@ let createAccountReducer = Reducer<
     CreateAccountEnvironment
 > { state, action, environment in
     switch action {
-    case .onDisappear:
-        environment.analyticsRecorder.record(
-            event: .importWalletCancelled
-        )
+    case .onWillDisappear:
+        return .none
+    case .closeButtonTapped:
         return .none
     case .didChangeEmailAddress(let emailAddress):
         state.emailAddress = emailAddress
@@ -94,11 +103,47 @@ let createAccountReducer = Reducer<
         environment.externalAppOpener.open(url)
         return .none
     case .createButtonTapped:
-        environment.analyticsRecorder.record(
-            event: .importWalletConfirmed
-        )
         return .none
     case .noop:
         return .none
+    }
+}
+.analytics()
+
+// MARK: - Private
+
+extension Reducer where
+    Action == CreateAccountAction,
+    State == CreateAccountState,
+    Environment == CreateAccountEnvironment
+{
+    /// Helper function for analytics tracking
+    fileprivate func analytics() -> Self {
+        combined(
+            with: Reducer<
+                CreateAccountState,
+                CreateAccountAction,
+                CreateAccountEnvironment
+            > { state, action, environment in
+                switch action {
+                case .onWillDisappear:
+                    if state.context == .importWallet {
+                        environment.analyticsRecorder.record(
+                            event: .importWalletCancelled
+                        )
+                    }
+                    return .none
+                case .createButtonTapped:
+                    if state.context == .importWallet {
+                        environment.analyticsRecorder.record(
+                            event: .importWalletConfirmed
+                        )
+                    }
+                    return .none
+                default:
+                    return .none
+                }
+            }
+        )
     }
 }

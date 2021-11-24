@@ -24,7 +24,7 @@ final class SeedPhraseReducerTests: XCTestCase {
         try super.setUpWithError()
         mockMainQueue = DispatchQueue.test
         testStore = TestStore(
-            initialState: .init(),
+            initialState: .init(context: .restoreWallet),
             reducer: seedPhraseReducer,
             environment: SeedPhraseEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
@@ -42,7 +42,7 @@ final class SeedPhraseReducerTests: XCTestCase {
     }
 
     func test_verify_initial_state_is_correct() {
-        let state = SeedPhraseState()
+        let state = SeedPhraseState(context: .restoreWallet)
         XCTAssertEqual(state.seedPhrase, "")
         XCTAssertEqual(state.seedPhraseScore, .none)
     }

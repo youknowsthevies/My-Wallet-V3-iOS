@@ -49,7 +49,9 @@ let importWalletReducer = Reducer.combine(
         case .setCreateAccountScreenVisible(let isVisible):
             state.isCreateAccountScreenVisible = isVisible
             if isVisible {
-                state.createAccountState = .init()
+                state.createAccountState = .init(
+                    context: .importWallet
+                )
             }
             return .none
         case .importWalletButtonTapped:
