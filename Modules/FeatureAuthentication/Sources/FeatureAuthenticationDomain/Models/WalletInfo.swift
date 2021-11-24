@@ -29,6 +29,23 @@ public struct WalletInfo: Codable, Equatable {
         case userType = "user_type"
     }
 
+    public enum UserType: String, Codable {
+        /// only wallet
+        case wallet = "WALLET"
+
+        /// only exchange
+        case exchange = "EXCHANGE"
+
+        /// wallet object has embedded exchange object
+        case linked = "WALLET_EXCHANGE_LINKED"
+
+        /// payload has only root-level wallet & exchange objects
+        case notLinked = "WALLET_EXCHANGE_NOT_LINKED"
+
+        /// there are root-level wallet & exchange objects, but wallet also has embedded exchange object (e.g. tied to different e-mail & linked via legacy linking)
+        case both = "WALLET_EXCHANGE_BOTH"
+    }
+
     public struct NabuInfo: Codable, Equatable {
         public let userId: String
         public let recoveryToken: String
@@ -87,7 +104,7 @@ public struct WalletInfo: Codable, Equatable {
     public let unified: Bool?
     public let upgradeable: Bool?
     public let mergeable: Bool?
-    public let userType: String?
+    public let userType: UserType?
 
     // MARK: - Setup
 
@@ -103,7 +120,7 @@ public struct WalletInfo: Codable, Equatable {
         unified: Bool? = nil,
         upgradeable: Bool? = nil,
         mergeable: Bool? = nil,
-        userType: String? = nil
+        userType: UserType? = nil
     ) {
         self.guid = guid
         self.email = email
@@ -138,7 +155,7 @@ public struct WalletInfo: Codable, Equatable {
         unified = try container.decodeIfPresent(Bool.self, forKey: .unified)
         upgradeable = try container.decodeIfPresent(Bool.self, forKey: .upgradeable)
         mergeable = try container.decodeIfPresent(Bool.self, forKey: .mergeable)
-        userType = try container.decodeIfPresent(String.self, forKey: .userType)
+        userType = try container.decodeIfPresent(UserType.self, forKey: .userType)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -156,5 +173,19 @@ public struct WalletInfo: Codable, Equatable {
         try wallet.encodeIfPresent(upgradeable, forKey: .upgradeable)
         try wallet.encodeIfPresent(mergeable, forKey: .mergeable)
         try wallet.encodeIfPresent(userType, forKey: .userType)
+    }
+}
+
+extension WalletInfo {
+
+    /// Determine whether the account attached could be upgraded
+    public var shouldUpgradeAccount: Bool {
+        guard let unified = self.unified,
+              let upgradeable = self.upgradeable,
+              let mergeable = self.mergeable,
+              self.userType != nil else {
+            return false
+        }
+        return !unified && (upgradeable || mergeable)
     }
 }
