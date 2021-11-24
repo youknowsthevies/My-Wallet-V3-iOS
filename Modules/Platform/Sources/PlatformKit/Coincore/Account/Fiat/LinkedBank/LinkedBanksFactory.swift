@@ -27,7 +27,7 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
 
     var linkedBanks: Single<[LinkedBankAccount]> {
         linkedBankService
-            .linkedBanks
+            .fetchLinkedBanks()
             .map { linkedBankData in
                 linkedBankData.filter(\.isActive)
             }
