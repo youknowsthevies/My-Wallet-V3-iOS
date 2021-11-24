@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import DIKit
 import NabuNetworkError
+import MoneyKit
 import RxSwift
 import RxToolKit
 
