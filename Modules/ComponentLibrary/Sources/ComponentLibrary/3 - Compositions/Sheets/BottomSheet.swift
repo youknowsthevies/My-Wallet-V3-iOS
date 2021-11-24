@@ -76,7 +76,7 @@ public struct BottomSheetView<Content: View>: View {
             .background(
                 GeometryReader { geometry in
                     Color.clear
-                        .onAppear { height = geometry.size.height }
+                        .onAppear { height = min(geometry.size.height, maximumHeight) }
                 }
             )
             .frame(
@@ -87,7 +87,7 @@ public struct BottomSheetView<Content: View>: View {
             .background(Color.semantic.background)
             .cornerRadius(16)
             .frame(height: geometry.size.height, alignment: .bottom)
-            .offset(y: max((isPresented ? 0 : maximumHeight) + translation, 0))
+            .offset(y: max((isPresented ? 0 : height) + translation, 0))
             .animation(.interactiveSpring())
             .gesture(
                 DragGesture()

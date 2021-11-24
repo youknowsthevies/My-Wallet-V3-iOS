@@ -83,32 +83,18 @@ struct FrequentActionView: View {
                 Button(
                     action: { action(item) },
                     label: {
-                        HStack {
-                            item.icon.circle()
-                                .accentColor(.semantic.primary)
-                                .frame(width: 32.pt)
-                                .padding(.trailing, 8.pt)
-                            VStack(alignment: .leading) {
-                                Text(item.name)
-                                    .typography(.body2)
-                                    .foregroundColor(.semantic.title)
-                                Text(item.description)
-                                    .typography(.paragraph1)
-                                    .foregroundColor(.semantic.body)
+                        PrimaryRow(
+                            title: item.name,
+                            subtitle: item.description,
+                            leading: {
+                                item.icon.circle()
+                                    .accentColor(.semantic.primary)
+                                    .frame(width: 32.pt)
                             }
-                            .multilineTextAlignment(.leading)
-                            Spacer()
-                            Icon.chevronRight
-                                .frame(width: 24.pt)
-                                .accentColor(.semantic.muted)
-                        }
-                        .background(Color.semantic.background)
-                        .padding([.leading, .trailing], 24.pt)
+                        )
                     }
                 )
                 .buttonStyle(PlainButtonStyle())
-                .frame(width: .infinity)
-                .frame(minHeight: 76.pt)
             }
         }
         HStack {
