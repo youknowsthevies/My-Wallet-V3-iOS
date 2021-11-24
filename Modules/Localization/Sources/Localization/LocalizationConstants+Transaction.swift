@@ -1124,8 +1124,12 @@ extension LocalizationConstants.Transaction.Error {
         "A transaction is already in progress",
         comment: ""
     )
-    public static let pendingOrderLimitReached = NSLocalizedString(
+    public static let maximumPendingOrderLimitReached = NSLocalizedString(
         "Right now, we only allow up to %@ buys pending at a time.",
+        comment: "User has reached the maximum limit of unfulfilled pending orders and cannot create new orders at this time."
+    )
+    public static let pendingOrderLimitReached = NSLocalizedString(
+        "You can start this transaction once one of the pending orders finish.",
         comment: "User has reached the maximum limit of unfulfilled pending orders and cannot create new orders at this time."
     )
     public static let generic = NSLocalizedString(
