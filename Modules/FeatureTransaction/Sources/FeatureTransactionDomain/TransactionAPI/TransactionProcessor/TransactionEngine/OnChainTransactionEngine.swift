@@ -62,7 +62,26 @@ extension OnChainTransactionEngine {
             }
     }
 
-    public func getFeeState(pendingTransaction: PendingTransaction, feeOptions: FeeOptions? = nil) throws -> FeeState {
+    public func getFeeState(
+        pendingTransaction: PendingTransaction,
+        feeOptions: FeeOptions? = nil
+    ) -> Single<FeeState> {
+        do {
+            return .just(
+                try getFeeState(
+                    pendingTransaction: pendingTransaction,
+                    feeOptions: feeOptions
+                )
+            )
+        } catch {
+            return .error(error)
+        }
+    }
+
+    public func getFeeState(
+        pendingTransaction: PendingTransaction,
+        feeOptions: FeeOptions? = nil
+    ) throws -> FeeState {
         switch (pendingTransaction.feeLevel, pendingTransaction.customFeeAmount) {
         case (.custom, nil):
             return .validCustomFee

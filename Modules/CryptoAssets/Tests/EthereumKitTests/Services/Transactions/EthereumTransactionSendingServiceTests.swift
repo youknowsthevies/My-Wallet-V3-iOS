@@ -16,7 +16,6 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
 
     var accountDetailsService: EthereumAccountDetailsServiceAPIMock!
     var client: TransactionPushClientAPIMock!
-    var feeService: EthereumFeeServiceMock!
     var subject: EthereumTransactionSendingService!
 
     override func setUp() {
@@ -25,14 +24,13 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
         disposeBag = DisposeBag()
         accountDetailsService = EthereumAccountDetailsServiceAPIMock()
         client = TransactionPushClientAPIMock()
-        feeService = EthereumFeeServiceMock(underlyingFees: .default)
         subject = EthereumTransactionSendingService(
-            accountDetailsService: accountDetailsService,
             client: client,
-            feeService: feeService,
-            transactionBuilder: EthereumTransactionBuilder(),
-            transactionSigner: EthereumSigner(),
-            transactionEncoder: EthereumTransactionEncoder()
+            transactionSigner: EthereumTransactionSigningService(
+                accountDetailsService: accountDetailsService,
+                transactionSigner: EthereumSigner(),
+                transactionEncoder: EthereumTransactionEncoder()
+            )
         )
     }
 
@@ -41,7 +39,6 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
         disposeBag = nil
         accountDetailsService = nil
         client = nil
-        feeService = nil
         subject = nil
         super.tearDown()
     }

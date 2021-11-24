@@ -89,7 +89,7 @@ final class BuyTransactionEngine: TransactionEngine {
     }
 
     // Unused but required by `TransactionEngine` protocol
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
 
     func assertInputsValid() {
         assert(sourceAccount is PaymentMethodAccount)

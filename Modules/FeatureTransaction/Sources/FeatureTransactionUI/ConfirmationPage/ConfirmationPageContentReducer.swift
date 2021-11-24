@@ -68,7 +68,6 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         self.messageRecorder = messageRecorder
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
         continueButtonViewModel = .primary(with: "")
-        buttons.append(continueButtonViewModel)
         memoModel = TextFieldViewModel(
             with: .memo,
             validator: TextValidationFactory.General.alwaysValid,
@@ -85,14 +84,20 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             trailing: .none,
             barStyle: .darkContent(ignoresStatusBar: false, background: .white)
         )
+
+        buttons = createButtons(state: state)
         cells = createCells(state: state)
     }
 
-    private func createCells(state: TransactionState) -> [DetailsScreen.CellType] {
-        if state.action == .sign {
+    private func createButtons(state: TransactionState) -> [ButtonViewModel] {
+        var buttons = [continueButtonViewModel]
+        if state.destination is StaticTransactionTarget {
             buttons.insert(cancelButtonViewModel, at: 0)
         }
+        return buttons
+    }
 
+    private func createCells(state: TransactionState) -> [DetailsScreen.CellType] {
         let amount = state.amount
         let fee = state.pendingTransaction?.feeAmount ?? .zero(currency: amount.currency)
         let value = (try? amount + fee) ?? .zero(currency: amount.currency)

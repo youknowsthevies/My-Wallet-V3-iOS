@@ -9,17 +9,14 @@ import XCTest
 class EthereumSignerTests: XCTestCase {
 
     var subject: EthereumSigner!
-    var builder: EthereumTransactionBuilder!
 
     override func setUp() {
         super.setUp()
-        builder = EthereumTransactionBuilder()
         subject = EthereumSigner()
     }
 
     override func tearDown() {
         subject = nil
-        builder = nil
         super.tearDown()
     }
 
@@ -32,10 +29,12 @@ class EthereumSignerTests: XCTestCase {
             gasPrice: MockEthereumWalletTestData.Transaction.gasPrice,
             gasLimit: MockEthereumWalletTestData.Transaction.gasLimit,
             value: amount,
-            data: Data(),
-            transferType: .transfer
+            transferType: .transfer()
         )
-        guard case .success(let costed) = builder.build(transaction: candidate, nonce: 9) else {
+        guard case .success(let costed) = EthereumTransactionCandidateCosted.create(
+            transaction: candidate,
+            nonce: 9
+        ) else {
             XCTFail("Transaction building failed")
             return
         }

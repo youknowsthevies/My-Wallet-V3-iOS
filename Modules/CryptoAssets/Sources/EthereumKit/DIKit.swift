@@ -33,6 +33,8 @@ extension DependencyContainer {
 
         factory { EthereumTransactionSendingService() as EthereumTransactionSendingServiceAPI }
 
+        factory { EthereumTransactionSigningService() as EthereumTransactionSigningServiceAPI }
+
         factory { EthereumFeeService() as EthereumFeeServiceAPI }
 
         factory { EthereumAccountService() as EthereumAccountServiceAPI }
@@ -40,8 +42,6 @@ extension DependencyContainer {
         factory { EthereumKeyPairProvider() }
 
         factory { AnyKeyPairProvider<EthereumKeyPair>.ethereum() }
-
-        factory { EthereumTransactionBuilder() as EthereumTransactionBuilderAPI }
 
         factory { EthereumSigner() as EthereumSignerAPI }
 
@@ -54,6 +54,10 @@ extension DependencyContainer {
         }
 
         factory { WalletConnectEngineFactory() as WalletConnectEngineFactoryAPI }
+
+        factory { RPCClient() as LatestBlockClientAPI }
+
+        factory { RPCClient() as EstimateGasClientAPI }
     }
 }
 

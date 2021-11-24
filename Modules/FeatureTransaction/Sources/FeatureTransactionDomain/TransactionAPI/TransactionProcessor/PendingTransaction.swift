@@ -10,6 +10,8 @@ public struct PendingTransaction: Equatable {
         case userTiers
         case xlmMemo
         case bitpayTimer
+        case gasPrice
+        case gasLimit
     }
 
     public var amount: MoneyValue

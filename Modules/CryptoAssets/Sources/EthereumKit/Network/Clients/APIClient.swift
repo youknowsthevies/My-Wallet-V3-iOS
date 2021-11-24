@@ -4,7 +4,6 @@ import Combine
 import DIKit
 import NetworkKit
 import PlatformKit
-import RxSwift
 
 protocol TransactionPushClientAPI: AnyObject {
 
@@ -14,8 +13,6 @@ protocol TransactionPushClientAPI: AnyObject {
 }
 
 protocol TransactionClientAPI {
-
-    var latestBlock: AnyPublisher<LatestBlockResponse, NetworkError> { get }
 
     func transaction(
         with hash: String
@@ -82,38 +79,24 @@ final class APIClient: TransactionPushClientAPI,
             base + ["account", address, "balance"]
         }
 
-        static func account(for address: String) -> [String] {
-            base + ["account", address]
-        }
-
         static func isContract(address: String) -> [String] {
-            account(for: address) + ["isContract"]
+            base + ["account", address, "isContract"]
         }
     }
 
     /// Privately used endpoint data
     private enum EndpointV2 {
         private static let base: [String] = ["v2", "eth", "data"]
-        private static let account: [String] = base + ["account"]
 
         static let latestBlock: [String] = base + ["block", "latest", "number"]
 
         static func transactions(for address: String) -> [String] {
-            account + [address, "transactions"]
+            base + ["account", address, "transactions"]
         }
 
         static func transaction(with hash: String) -> [String] {
             base + ["transaction", hash]
         }
-    }
-
-    // MARK: - Properties
-
-    /// Streams the latest block
-    var latestBlock: AnyPublisher<LatestBlockResponse, NetworkError> {
-        let path = EndpointV2.latestBlock
-        let request = requestBuilder.get(path: path)!
-        return networkAdapter.perform(request: request)
     }
 
     // MARK: - Private Properties

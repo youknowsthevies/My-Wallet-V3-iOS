@@ -21,7 +21,7 @@ public protocol TransactionEngine: AnyObject {
     /// Does this engine accept fiat input amounts
     var canTransactFiat: Bool { get }
     /// askForRefreshConfirmation: Must be set by TransactionProcessor
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)! { get set }
+    var askForRefreshConfirmation: AskForRefreshConfirmation! { get set }
 
     /// The account the user is transacting from
     var sourceAccount: BlockchainAccount! { get set }

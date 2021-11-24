@@ -26,7 +26,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     let walletCurrencyService: FiatCurrencyServiceAPI
     let currencyConversionService: CurrencyConversionServiceAPI
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
     var requireSecondPassword: Bool
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!

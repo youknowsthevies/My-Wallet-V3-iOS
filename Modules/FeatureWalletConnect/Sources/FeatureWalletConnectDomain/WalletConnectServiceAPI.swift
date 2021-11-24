@@ -16,11 +16,14 @@ public enum WalletConnectSessionEvent {
 
 public enum WalletConnectUserEvent {
     case sign(SingleAccount, EthereumSignMessageTarget)
+    case signTransaction(SingleAccount, EthereumSendTransactionTarget)
+    case sendTransaction(SingleAccount, EthereumSendTransactionTarget)
 }
 
 public enum WalletConnectResponseEvent {
     case invalid(Request)
     case signature(String, Request)
+    case transactionHash(String, Request)
 }
 
 public protocol WalletConnectServiceAPI {

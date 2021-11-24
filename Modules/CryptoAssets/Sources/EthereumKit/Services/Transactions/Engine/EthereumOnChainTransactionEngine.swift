@@ -10,14 +10,12 @@ import ToolKit
 
 final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
-    typealias AskForRefreshConfirmations = (Bool) -> Completable
-
     // MARK: - OnChainTransactionEngine
 
     let currencyConversionService: CurrencyConversionServiceAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
 
-    var askForRefreshConfirmation: (AskForRefreshConfirmations)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
 
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
@@ -116,7 +114,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     func start(
         sourceAccount: CryptoAccount,
         transactionTarget: TransactionTarget,
-        askForRefreshConfirmation: @escaping AskForRefreshConfirmations
+        askForRefreshConfirmation: @escaping AskForRefreshConfirmation
     ) {
         self.sourceAccount = sourceAccount
         self.transactionTarget = transactionTarget
@@ -133,41 +131,66 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         )
     }
 
-    func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    func doBuildConfirmations(
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
         Single
             .zip(
                 fiatAmountAndFees(from: pendingTransaction),
-                makeFeeSelectionOption(pendingTransaction: pendingTransaction)
+                getFeeState(pendingTransaction: pendingTransaction)
             )
-            .map { fiatAmountAndFees, feeSelectionOption ->
-                (
-                    amountInFiat: MoneyValue,
-                    feesInFiat: MoneyValue,
-                    feeSelectionOption: TransactionConfirmation.Model.FeeSelection
-                ) in
-                let (amountInFiat, feesInFiat) = fiatAmountAndFees
-                return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
+            .map(weak: self) { (self, payload) -> PendingTransaction in
+                let ((amount, fees), feeState) = payload
+                return self.doBuildConfirmations(
+                    pendingTransaction: pendingTransaction,
+                    amountInFiat: amount.moneyValue,
+                    feesInFiat: fees.moneyValue,
+                    feeState: feeState
+                )
             }
-            .map(weak: self) { (self, payload) -> [TransactionConfirmation] in
-                [
-                    .sendDestinationValue(.init(value: pendingTransaction.amount)),
-                    .source(.init(value: self.sourceAccount.label)),
-                    .destination(.init(value: self.transactionTarget.label)),
-                    .feeSelection(payload.feeSelectionOption),
-                    .feedTotal(
-                        .init(
-                            amount: pendingTransaction.amount,
-                            amountInFiat: payload.amountInFiat,
-                            fee: pendingTransaction.feeAmount,
-                            feeInFiat: payload.feesInFiat
-                        )
-                    )
-                ]
-            }
-            .map { pendingTransaction.update(confirmations: $0) }
     }
 
-    func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    private func doBuildConfirmations(
+        pendingTransaction: PendingTransaction,
+        amountInFiat: MoneyValue,
+        feesInFiat: MoneyValue,
+        feeState: FeeState
+    ) -> PendingTransaction {
+        let sendDestinationValue = TransactionConfirmation.Model.SendDestinationValue(
+            value: pendingTransaction.amount
+        )
+        let source = TransactionConfirmation.Model.Source(
+            value: sourceAccount.label
+        )
+        let destination = TransactionConfirmation.Model.Destination(
+            value: transactionTarget.label
+        )
+        let feeSelection = TransactionConfirmation.Model.FeeSelection(
+            feeState: feeState,
+            selectedLevel: pendingTransaction.feeLevel,
+            fee: pendingTransaction.feeAmount
+        )
+        let feedTotal = TransactionConfirmation.Model.FeedTotal(
+            amount: pendingTransaction.amount,
+            amountInFiat: amountInFiat,
+            fee: pendingTransaction.feeAmount,
+            feeInFiat: feesInFiat
+        )
+        return pendingTransaction.update(
+            confirmations: [
+                .sendDestinationValue(sendDestinationValue),
+                .source(source),
+                .destination(destination),
+                .feeSelection(feeSelection),
+                .feedTotal(feedTotal)
+            ]
+        )
+    }
+
+    func update(
+        amount: MoneyValue,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
         guard let crypto = amount.cryptoValue else {
             preconditionFailure("Not a `CryptoValue`")
         }
@@ -211,7 +234,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         }
     }
 
-    func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    func doValidateAll(
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
         sourceAccount.actionableBalance
             .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
                 self.validateSufficientFunds(
@@ -223,24 +248,26 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+    func execute(
+        pendingTransaction: PendingTransaction,
+        secondPassword: String
+    ) -> Single<TransactionResult> {
         guard pendingTransaction.amount.currency == .crypto(.coin(.ethereum)) else {
-            preconditionFailure("Not an ethereum value")
+            fatalError("Not an ethereum value.")
         }
 
         let address = receiveAddress
             .map(\.address)
             .map { try EthereumAddress(string: $0) }
         return Single.zip(feeCache.valueSingle, address)
-            .flatMap(weak: self) { (self, values) -> Single<EthereumTransactionCandidate> in
-                let (fee, address) = values
-                return self.transactionBuildingService.buildTransaction(
+            .flatMap { [transactionBuildingService] fee, address -> Single<EthereumTransactionCandidate> in
+                transactionBuildingService.buildTransaction(
                     amount: pendingTransaction.amount,
                     to: address,
                     feeLevel: pendingTransaction.feeLevel,
                     fee: fee,
                     contractAddress: nil
-                )
+                ).single
             }
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
                 self.ethereumTransactionDispatcher
@@ -252,7 +279,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    func doRefreshConfirmations(
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
         unimplemented()
     }
 }
@@ -294,23 +323,6 @@ extension EthereumOnChainTransactionEngine {
                 }
             }
             .asCompletable()
-    }
-
-    private func makeFeeSelectionOption(
-        pendingTransaction: PendingTransaction
-    ) -> Single<TransactionConfirmation.Model.FeeSelection> {
-        Single
-            .just(pendingTransaction)
-            .map(weak: self) { (self, pendingTransaction) -> FeeState in
-                try self.getFeeState(pendingTransaction: pendingTransaction)
-            }
-            .map { feeState -> TransactionConfirmation.Model.FeeSelection in
-                TransactionConfirmation.Model.FeeSelection(
-                    feeState: feeState,
-                    selectedLevel: pendingTransaction.feeLevel,
-                    fee: pendingTransaction.feeAmount
-                )
-            }
     }
 
     private func absoluteFee(with feeLevel: FeeLevel) -> Single<CryptoValue> {

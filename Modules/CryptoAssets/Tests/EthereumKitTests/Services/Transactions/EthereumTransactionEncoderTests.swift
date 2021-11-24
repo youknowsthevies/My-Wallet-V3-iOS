@@ -10,20 +10,17 @@ import XCTest
 class EthereumTransactionEncoderTests: XCTestCase {
 
     var signer: EthereumSigner!
-    var builder: EthereumTransactionBuilder!
     var subject: EthereumTransactionEncoder!
 
     override func setUp() {
         super.setUp()
         signer = EthereumSigner()
-        builder = EthereumTransactionBuilder()
         subject = EthereumTransactionEncoder()
     }
 
     override func tearDown() {
         subject = nil
         signer = nil
-        builder = nil
         super.tearDown()
     }
 
@@ -37,10 +34,13 @@ class EthereumTransactionEncoderTests: XCTestCase {
             gasPrice: 23,
             gasLimit: 21000,
             value: BigUInt("0.1", decimals: CryptoCurrency.coin(.ethereum).precision)!,
-            data: nil,
-            transferType: .transfer
+            transferType: .transfer()
         )
-        guard case .success(let costed) = builder.build(transaction: candidate, nonce: 9) else {
+
+        guard case .success(let costed) = EthereumTransactionCandidateCosted.create(
+            transaction: candidate,
+            nonce: 9
+        ) else {
             XCTFail("Transaction building failed")
             return
         }

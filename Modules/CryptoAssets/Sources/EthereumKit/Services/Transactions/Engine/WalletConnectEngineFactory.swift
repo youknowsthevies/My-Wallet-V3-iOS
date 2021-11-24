@@ -6,12 +6,13 @@ import PlatformKit
 
 struct WalletConnectEngineFactory: WalletConnectEngineFactoryAPI {
     func build(
-        target: TransactionTarget,
-        onChainEngine: OnChainTransactionEngine
+        target: TransactionTarget
     ) -> TransactionEngine {
         switch target {
         case is EthereumSignMessageTarget:
-            return EthereumSignMessageTransactionEngine()
+            return WalletConnectSignMessageEngine()
+        case is EthereumSendTransactionTarget:
+            return WalletConnectTransactionEngine(requireSecondPassword: false)
         default:
             fatalError("Transaction target '\(type(of: target))' not supported.")
         }

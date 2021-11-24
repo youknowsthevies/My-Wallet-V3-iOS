@@ -6,19 +6,7 @@ import BigInt
 import PlatformKit
 import XCTest
 
-class EthereumTransactionBuilderTests: XCTestCase {
-
-    var subject: EthereumTransactionBuilder!
-
-    override func setUp() {
-        super.setUp()
-        subject = EthereumTransactionBuilder()
-    }
-
-    override func tearDown() {
-        subject = nil
-        super.tearDown()
-    }
+final class EthereumTransactionCandidateCostedTests: XCTestCase {
 
     func test_build_transaction() {
         let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
@@ -32,11 +20,10 @@ class EthereumTransactionBuilderTests: XCTestCase {
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             value: value,
-            data: nil,
-            transferType: .transfer
+            transferType: .transfer()
         )
 
-        let result = subject.build(
+        let result = EthereumTransactionCandidateCosted.create(
             transaction: transaction,
             nonce: nonce
         )
@@ -68,11 +55,10 @@ class EthereumTransactionBuilderTests: XCTestCase {
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             value: value,
-            data: nil,
-            transferType: .transfer
+            transferType: .transfer()
         )
 
-        let result = subject.build(
+        let result = EthereumTransactionCandidateCosted.create(
             transaction: transaction,
             nonce: nonce
         )
@@ -96,11 +82,10 @@ class EthereumTransactionBuilderTests: XCTestCase {
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             value: value,
-            data: nil,
-            transferType: .transfer
+            transferType: .transfer()
         )
 
-        let result = subject.build(
+        let result = EthereumTransactionCandidateCosted.create(
             transaction: transaction,
             nonce: nonce
         )

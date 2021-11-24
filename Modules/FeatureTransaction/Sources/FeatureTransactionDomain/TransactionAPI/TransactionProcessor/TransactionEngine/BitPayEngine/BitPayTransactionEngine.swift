@@ -10,7 +10,7 @@ final class BitPayTransactionEngine: TransactionEngine {
 
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
 
     let currencyConversionService: CurrencyConversionServiceAPI
     let walletCurrencyService: FiatCurrencyServiceAPI

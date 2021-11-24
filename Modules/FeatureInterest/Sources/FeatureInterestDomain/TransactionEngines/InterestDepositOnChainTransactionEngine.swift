@@ -30,8 +30,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
 
     public let walletCurrencyService: FiatCurrencyServiceAPI
     public let currencyConversionService: CurrencyConversionServiceAPI
-
-    public var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    public var askForRefreshConfirmation: AskForRefreshConfirmation!
 
     public var requireSecondPassword: Bool
 

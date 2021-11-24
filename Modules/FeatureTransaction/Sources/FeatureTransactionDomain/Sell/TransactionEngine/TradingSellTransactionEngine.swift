@@ -37,7 +37,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     // MARK: - Transaction Engine
 
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
 
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
