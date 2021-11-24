@@ -159,7 +159,7 @@ let verifyDeviceReducer = Reducer.combine(
         VerifyDeviceState,
         VerifyDeviceAction,
         VerifyDeviceEnvironment
-        // swiftlint:disable closure_body_length
+            // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
 
@@ -255,7 +255,7 @@ let verifyDeviceReducer = Reducer.combine(
                             walletInfo: info,
                             base64Str: base64Str
                         )
-                    } catch let error {
+                    } catch {
                         environment.errorRecorder.error(error)
                     }
                 }
