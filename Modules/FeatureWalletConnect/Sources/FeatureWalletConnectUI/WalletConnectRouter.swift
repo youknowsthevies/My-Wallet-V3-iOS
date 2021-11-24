@@ -46,6 +46,10 @@ class WalletConnectRouter: WalletConnectRouterAPI {
                 switch event {
                 case .sign(let account, let target):
                     self?.tabSwapping.sign(from: account, target: target)
+                case .signTransaction(let account, let target):
+                    self?.tabSwapping.sign(from: account, target: target)
+                case .sendTransaction(let account, let target):
+                    self?.tabSwapping.send(from: account, target: target)
                 }
             })
             .store(in: &cancellables)

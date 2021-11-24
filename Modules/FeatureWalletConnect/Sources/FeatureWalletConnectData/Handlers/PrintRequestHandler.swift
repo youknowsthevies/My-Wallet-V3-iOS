@@ -8,7 +8,7 @@ import WalletConnectSwift
 final class PrintRequestHandler: RequestHandler {
     func canHandle(request: Request) -> Bool {
         #if DEBUG
-        print(request)
+        print("Request: \(request)")
         #endif
         return false
     }

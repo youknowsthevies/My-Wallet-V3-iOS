@@ -41,6 +41,23 @@ final class WalletConnectService {
     // MARK: - Private Methods
 
     private func configureServer() {
+        let userEvent: (WalletConnectUserEvent) -> Void = { [userEventsSubject] userEvent in
+            userEventsSubject.send(userEvent)
+        }
+        let responseEvent: (WalletConnectResponseEvent) -> Void = { [weak server] responseEvent in
+            switch responseEvent {
+            case .invalid(let request):
+                server?.send(.invalid(request))
+            case .signature(let signature, let request):
+                server?.send(.create(string: signature, for: request))
+            case .transactionHash(let transactionHash, let request):
+                server?.send(.create(string: transactionHash, for: request))
+            }
+        }
+        let getSession: (WCURL) -> Session? = { [sessionLinks] url in
+            sessionLinks.value[url]
+        }
+
         // PrintRequestHandler for debugging.
         server.register(
             handler: PrintRequestHandler()
@@ -49,30 +66,31 @@ final class WalletConnectService {
         // personal_sign, eth_sign, eth_signTypedData
         server.register(
             handler: SignRequestHandler(
-                userEvent: { [userEventsSubject] userEvent in
-                    userEventsSubject.send(userEvent)
-                },
-                responseEvent: { [weak server] responseEvent in
-                    switch responseEvent {
-                    case .invalid(let request):
-                        server?.send(.invalid(request))
-                    case .signature(let string, let request):
-                        server?.send(.signature(string, for: request))
-                    }
-                },
-                getSession: { [sessionLinks] url in
-                    sessionLinks.value[url]
-                }
+                userEvent: userEvent,
+                responseEvent: responseEvent,
+                getSession: getSession
+            )
+        )
+
+        // eth_sendTransaction, eth_signTransaction
+        server.register(
+            handler: TransactionRequestHandler(
+                userEvent: userEvent,
+                responseEvent: responseEvent,
+                getSession: getSession
             )
         )
 
         sessionRepository
             .retrieve()
             .publisher
-            .sink { [server] sessions in
+            .sink { [server, sessionLinks] sessions in
                 sessions
                     .compactMap(\.session)
                     .forEach { session in
+                        sessionLinks.mutate {
+                            $0[session.url] = session
+                        }
                         try? server?.reconnect(to: session)
                     }
             }
@@ -205,9 +223,11 @@ extension WalletConnectService: WalletConnectServiceAPI {
 }
 
 extension Response {
-    static func signature(_ signature: String, for request: Request) -> Response {
-        guard let response = try? Response(url: request.url, value: signature, id: request.id!) else {
-            fatalError("Response Signature Failed")
+
+    /// Response for any 'sign'/'send' method that sends back a single string as result.
+    fileprivate static func create(string: String, for request: Request) -> Response {
+        guard let response = try? Response(url: request.url, value: string, id: request.id!) else {
+            fatalError("Wallet Connect Response Failed: \(request.method)")
         }
         return response
     }

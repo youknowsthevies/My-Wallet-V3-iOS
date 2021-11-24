@@ -312,8 +312,11 @@ final class TransactionModel {
             )
     }
 
-    private func processValidateTransaction() -> Disposable {
-        interactor.validateTransaction
+    private func processValidateTransaction() -> Disposable? {
+        guard hasInitializedTransaction else {
+            return nil
+        }
+        return interactor.validateTransaction
             .subscribe(onCompleted: {
                 Logger.shared.debug("!TRANSACTION!> Tx validation complete")
             }, onError: { [weak self] error in

@@ -129,14 +129,12 @@ public struct PrimaryNavigationLink<Destination: View, Label: View>: View {
 
 extension EnvironmentValues {
 
-    /// Whether `PrimaryNavigation` uses a circular filled back button, or just a plain chevron.
+    /// Accent color for navigation bar back button in `PrimaryNavigation`
     ///
-    /// Defaults to `true`
-    ///
-    /// Design spec: `true` for Wallet (default), `false` for Exchange.
-    public var navigationUsesCircledBackButton: Bool {
-        get { self[NavigationUsesCircledBackButton.self] }
-        set { self[NavigationUsesCircledBackButton.self] = newValue }
+    /// Defaults to `.semantic.primary` (Wallet)
+    public var navigationBackButtonColor: Color {
+        get { self[NavigationBackButtonColor.self] }
+        set { self[NavigationBackButtonColor.self] = newValue }
     }
 }
 
@@ -210,8 +208,8 @@ private struct IsSecondaryViewInNavigation: EnvironmentKey {
 }
 
 /// Environment key set by `PrimaryNavigation`
-private struct NavigationUsesCircledBackButton: EnvironmentKey {
-    static var defaultValue = true
+private struct NavigationBackButtonColor: EnvironmentKey {
+    static var defaultValue = Color.semantic.primary
 }
 
 extension EnvironmentValues {
@@ -224,26 +222,26 @@ extension EnvironmentValues {
 #if canImport(UIKit)
 /// Customizing `UINavigationController` without using `UIAppearance`
 private struct NavigationConfigurator: UIViewControllerRepresentable {
-    @Environment(\.navigationUsesCircledBackButton) var usesCircledBackButton
+    @Environment(\.navigationBackButtonColor) var navigationBackButtonColor
 
     func makeUIViewController(context: Context) -> NavigationConfiguratorViewController {
-        let controller = NavigationConfiguratorViewController(usesCircledBackButton: usesCircledBackButton)
+        let controller = NavigationConfiguratorViewController(navigationBackButtonColor: navigationBackButtonColor)
         return controller
     }
 
     func updateUIViewController(_ uiViewController: NavigationConfiguratorViewController, context: Context) {
-        uiViewController.usesCircledBackButton = usesCircledBackButton
+        uiViewController.navigationBackButtonColor = navigationBackButtonColor
     }
 
     final class NavigationConfiguratorViewController: UIViewController {
-        var usesCircledBackButton: Bool {
+        var navigationBackButtonColor: Color {
             didSet {
                 styleNavigationBar()
             }
         }
 
-        init(usesCircledBackButton: Bool) {
-            self.usesCircledBackButton = usesCircledBackButton
+        init(navigationBackButtonColor: Color) {
+            self.navigationBackButtonColor = navigationBackButtonColor
             super.init(nibName: nil, bundle: nil)
         }
 
@@ -284,17 +282,12 @@ private struct NavigationConfigurator: UIViewControllerRepresentable {
                 navigationBar.barTintColor = UIColor(.semantic.background)
                 navigationBar.shadowImage = UIImage()
 
-                let image: UIImage?
-                if usesCircledBackButton {
-                    image = Icon.chevronLeft.uiImage?
-                        .circled
-                        .padded(by: UIEdgeInsets(top: 0, left: Spacing.padding1, bottom: 0, right: 0))
-                } else {
-                    image = Icon.chevronLeft.uiImage?
-                        .padded(by: UIEdgeInsets(top: 0, left: Spacing.padding1, bottom: 0, right: 0))
-                }
+                let image = Icon.chevronLeft.uiImage?
+                    .padded(by: UIEdgeInsets(top: 0, left: Spacing.padding1, bottom: 0, right: 0))
+
                 navigationBar.backIndicatorImage = image
                 navigationBar.backIndicatorTransitionMaskImage = image
+                navigationBar.tintColor = UIColor(navigationBackButtonColor)
             }
         }
     }
@@ -309,7 +302,7 @@ struct PrimaryNavigation_Previews: PreviewProvider {
             .previewDisplayName("Wallet")
 
         PreviewContainer()
-            .environment(\.navigationUsesCircledBackButton, false)
+            .environment(\.navigationBackButtonColor, Color(light: .palette.dark400, dark: .palette.white))
             .previewDisplayName("Exchange")
     }
 

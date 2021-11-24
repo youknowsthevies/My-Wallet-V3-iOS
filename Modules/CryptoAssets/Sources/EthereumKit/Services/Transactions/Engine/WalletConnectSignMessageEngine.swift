@@ -10,12 +10,12 @@ import RxSwift
 import RxToolKit
 import ToolKit
 
-final class EthereumSignMessageTransactionEngine: TransactionEngine {
+final class WalletConnectSignMessageEngine: TransactionEngine {
 
     let currencyConversionService: CurrencyConversionServiceAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
 
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
@@ -39,7 +39,7 @@ final class EthereumSignMessageTransactionEngine: TransactionEngine {
 
     let requireSecondPassword: Bool = false
 
-    var ethereumSignTarget: EthereumSignMessageTarget {
+    private var ethereumSignTarget: EthereumSignMessageTarget {
         transactionTarget as! EthereumSignMessageTarget
     }
 

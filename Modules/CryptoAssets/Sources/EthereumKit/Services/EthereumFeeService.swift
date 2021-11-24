@@ -17,7 +17,6 @@ final class EthereumFeeService: EthereumFeeServiceAPI {
             .fees(cryptoCurrency: cryptoCurrency)
             .map { response in
                 EthereumTransactionFee(
-                    limits: response.limits,
                     regular: response.regular,
                     priority: response.priority,
                     gasLimit: response.gasLimit,

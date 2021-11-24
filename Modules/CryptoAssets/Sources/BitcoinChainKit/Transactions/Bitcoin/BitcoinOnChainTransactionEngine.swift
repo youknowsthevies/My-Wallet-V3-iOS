@@ -342,11 +342,7 @@ extension BitcoinOnChainTransactionEngine {
     private func makeFeeSelectionOption(
         pendingTransaction: PendingTransaction
     ) -> Single<TransactionConfirmation.Model.FeeSelection> {
-        Single
-            .just(pendingTransaction)
-            .map(weak: self) { (self, pendingTransaction) -> FeeState in
-                try self.getFeeState(pendingTransaction: pendingTransaction)
-            }
+        getFeeState(pendingTransaction: pendingTransaction)
             .map { feeState -> TransactionConfirmation.Model.FeeSelection in
                 TransactionConfirmation.Model.FeeSelection(
                     feeState: feeState,

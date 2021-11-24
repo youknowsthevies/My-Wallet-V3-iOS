@@ -20,8 +20,7 @@ public final class InterestWithdrawTradingTransationEngine: InterestTransactionE
 
     public let walletCurrencyService: FiatCurrencyServiceAPI
     public let currencyConversionService: CurrencyConversionServiceAPI
-
-    public var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    public var askForRefreshConfirmation: AskForRefreshConfirmation!
     public var sourceAccount: BlockchainAccount!
     public var transactionTarget: TransactionTarget!
 

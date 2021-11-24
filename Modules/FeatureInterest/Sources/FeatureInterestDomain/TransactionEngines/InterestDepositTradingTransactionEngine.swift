@@ -27,7 +27,7 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
 
     // MARK: - TransactionEngine
 
-    public var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    public var askForRefreshConfirmation: AskForRefreshConfirmation!
     public var sourceAccount: BlockchainAccount!
     public var transactionTarget: TransactionTarget!
 
