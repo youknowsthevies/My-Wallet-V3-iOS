@@ -238,10 +238,9 @@ extension TransactionEngine {
 
                 let amount = pendingTransaction.amount
                 let limits = pendingTransaction.normalizedLimits.convert(using: conversionRates.limitsToAmountRate)
-                try self?.validate(amount, isWithin: limits, amountToWalletRate: conversionRates.amountToWalletRate)
-
                 let availableBalance = try convertedBalance - convertedFee
                 try self?.validate(amount, hasAmountUpToSourceLimit: availableBalance)
+                try self?.validate(amount, isWithin: limits, amountToWalletRate: conversionRates.amountToWalletRate)
             }
             .asCompletable()
             .updateTxValidityCompletable(pendingTransaction: pendingTransaction)

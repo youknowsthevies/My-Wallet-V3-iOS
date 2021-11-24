@@ -239,13 +239,15 @@ extension TransactionErrorState {
                 targetCurrency.code,
                 balance.displayString
             )
-        case .send:
+        case .send,
+             .interestTransfer:
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryMessage_send,
                 sourceCurrency.code,
                 balance.displayString
             )
-        case .withdraw:
+        case .withdraw,
+             .interestWithdraw:
             text = String.localizedStringWithFormat(
                 Localization.insufficientFundsRecoveryMessage_withdraw,
                 sourceCurrency.code,
@@ -253,8 +255,6 @@ extension TransactionErrorState {
             )
         case .receive,
              .deposit,
-             .interestTransfer,
-             .interestWithdraw,
              .sign,
              .viewActivity:
             impossible("This message should not be needed for \(action)")
@@ -283,7 +283,8 @@ extension TransactionErrorState {
                 Localization.belowMinimumLimitRecoveryMessage_swap,
                 minimum.displayString
             )
-        case .send:
+        case .send,
+             .interestTransfer:
             text = String.localizedStringWithFormat(
                 Localization.belowMinimumLimitRecoveryMessage_send,
                 minimum.displayString
@@ -293,14 +294,13 @@ extension TransactionErrorState {
                 Localization.belowMinimumLimitRecoveryMessage_deposit,
                 minimum.displayString
             )
-        case .withdraw:
+        case .withdraw,
+             .interestWithdraw:
             text = String.localizedStringWithFormat(
                 Localization.belowMinimumLimitRecoveryMessage_withdraw,
                 minimum.displayString
             )
         case .receive,
-             .interestTransfer,
-             .interestWithdraw,
              .sign,
              .viewActivity:
             impossible("This message should not be needed for \(action)")
