@@ -17,7 +17,7 @@ enum OrderPayload {
     struct ConfirmOrder: Encodable {
 
         enum Partner {
-            case everyPay(customerUrl: String)
+            case card(redirectURL: String)
             case bank
             case funds
         }
@@ -27,7 +27,13 @@ enum OrderPayload {
                 let customerUrl: String
             }
 
+            let redirectURL: String
             let everypay: EveryPay?
+
+            init(redirectURL: String) {
+                everypay = .init(customerUrl: redirectURL)
+                self.redirectURL = redirectURL
+            }
         }
 
         let paymentMethodId: String?
@@ -36,8 +42,8 @@ enum OrderPayload {
 
         init(partner: Partner, action: CreateActionType, paymentMethodId: String?) {
             switch partner {
-            case .everyPay(customerUrl: let url):
-                attributes = Attributes(everypay: .init(customerUrl: url))
+            case .card(redirectURL: let url):
+                attributes = Attributes(redirectURL: url)
             case .bank, .funds:
                 attributes = nil
             }
@@ -110,7 +116,17 @@ enum OrderPayload {
                 let paymentState: PaymentState
             }
 
+            struct CardProvider: Decodable {
+                let cardAcquirerName: CardPayload.Partner
+                let cardAcquirerAccountCode: String?
+                let paymentLink: String?
+                let paymentState: String?
+                let clientSecret: String?
+                let publishableKey: String?
+            }
+
             let everypay: EveryPay?
+            let cardProvider: CardProvider?
         }
 
         let state: String

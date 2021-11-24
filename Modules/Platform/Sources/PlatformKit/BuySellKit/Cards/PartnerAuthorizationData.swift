@@ -5,19 +5,30 @@ public struct PartnerAuthorizationData {
     public static var exitLink = "https://www.blockchain.com/"
 
     /// Required authorization type
-    public enum State {
-        public struct Urls {
-            public let paymentLink: URL
+    public enum State: Equatable {
+        public struct PaymentParams: Equatable {
+            public let cardAcquirer: CardPayload.Partner
+            public let clientSecret: String?
+            public let publishableKey: String?
+            public let paymentLink: URL?
             public let exitLink: URL
 
-            init(paymentLink: URL) {
+            public init(
+                cardAcquirer: CardPayload.Partner,
+                clientSecret: String? = nil,
+                paymentLink: URL? = nil,
+                publishableKey: String? = nil
+            ) {
+                self.cardAcquirer = cardAcquirer
                 self.paymentLink = paymentLink
+                self.clientSecret = clientSecret
+                self.publishableKey = publishableKey
                 exitLink = URL(string: PartnerAuthorizationData.exitLink)!
             }
         }
 
         /// Requires user user authorization by visiting the associated link
-        case required(Urls)
+        case required(PaymentParams)
 
         /// Confirmed authorization
         case confirmed
@@ -62,7 +73,7 @@ extension PartnerAuthorizationData {
             switch everypay.paymentState {
             case .waitingFor3DS:
                 let url = URL(string: everypay.paymentLink)!
-                state = .required(.init(paymentLink: url))
+                state = .required(.init(cardAcquirer: .everyPay, paymentLink: url))
             case .confirmed3DS:
                 state = .confirmed
             }

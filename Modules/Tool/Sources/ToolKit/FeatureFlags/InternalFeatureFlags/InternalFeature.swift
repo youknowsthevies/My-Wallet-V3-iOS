@@ -42,6 +42,9 @@ public enum InternalFeature: String, CaseIterable {
     /// OpenBanking
     case openBanking
 
+    /// Enables New Card Acquirers (Stripe and Checkout)
+    case newCardAcquirers
+
     /// Redesign
     case redesign
 
@@ -52,6 +55,7 @@ public enum InternalFeature: String, CaseIterable {
              .walletConnect,
              .newOnboardingTour,
              .openBanking,
+             .newCardAcquirers,
              .pollingForEmailLogin,
              .newCreateWalletScreen,
              .unifiedQRCodeScanner,
@@ -99,6 +103,8 @@ extension InternalFeature {
             return "Open Banking"
         case .unifiedQRCodeScanner:
             return "Unified QR Code Scanner"
+        case .newCardAcquirers:
+            return "New Card Acquirers (Stripe, Checkout)"
         case .redesign:
             return "Redesign"
         case .walletConnect:

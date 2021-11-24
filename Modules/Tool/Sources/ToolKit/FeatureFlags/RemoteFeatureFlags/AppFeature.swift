@@ -60,6 +60,9 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Open Banking
     case openBanking
 
+    /// Enable New Card Acquirers (Stripe & Checkout)
+    case newCardAcquirers
+
     // MARK: - Transactions Flow
 
     /// Uses the Transactions Flow implementation of Buy when enabled
@@ -107,6 +110,8 @@ extension AppFeature {
             return "ios_open_banking"
         case .useTransactionsFlowToBuyCrypto:
             return "ios_use_transaction_flow_buy"
+        case .newCardAcquirers:
+            return "ios_ff_new_card_acquirers"
         case .newLimitsUIEnabled:
             return "ios_use_new_limits_ui"
         }
@@ -145,6 +150,8 @@ extension AppFeature {
             return false
         case .sellUsingTransactionFlowEnabled,
              .useTransactionsFlowToBuyCrypto:
+            return true
+        case .newCardAcquirers:
             return true
         case .openBanking:
             return true

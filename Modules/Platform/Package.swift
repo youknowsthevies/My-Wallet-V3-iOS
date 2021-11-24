@@ -63,6 +63,16 @@ let package = Package(
             url: "https://github.com/apple/swift-algorithms.git",
             from: "0.2.1"
         ),
+        .package(
+            name: "Stripe",
+            url: "https://github.com/stripe/stripe-ios",
+            from: "21.9.0"
+        ),
+        .package(
+            name: "Frames",
+            url: "https://github.com/checkout/frames-ios.git",
+            .upToNextMajor(from: "3.0.0")
+        ),
         .package(path: "../Analytics"),
         .package(path: "../RxAnalytics"),
         .package(path: "../FeatureAuthentication"),
@@ -102,7 +112,9 @@ let package = Package(
                 .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
-                .product(name: "Algorithms", package: "swift-algorithms")
+                .product(name: "Algorithms", package: "swift-algorithms"),
+                .product(name: "Frames", package: "Frames"),
+                .product(name: "Stripe", package: "Stripe")
             ],
             resources: [
                 .copy("Services/Currencies/local-currencies-custodial.json"),
@@ -135,7 +147,9 @@ let package = Package(
                 .product(name: "Zxcvbn", package: "Zxcvbn"),
                 .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "ComponentLibrary", package: "ComponentLibrary"),
-                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks")
+                .product(name: "FeatureWithdrawalLocksUI", package: "FeatureWithdrawalLocks"),
+                .product(name: "Frames", package: "Frames"),
+                .product(name: "Stripe", package: "Stripe")
             ],
             resources: [
                 .copy("PlatformUIKitAssets.xcassets")

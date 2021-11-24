@@ -47,6 +47,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let transactions = ["payments", "transactions"]
         static let paymentMethods = ["payments", "methods"]
         static let eligiblePaymentMethods = ["eligible", "payment-methods"]
+        static let paymentsCardAcquirers = ["payments", "card-acquirers"]
         static let beneficiaries = ["payments", "beneficiaries"]
         static let banks = ["payments", "banks"]
         static let supportedPairs = ["simple-buy", "pairs"]
@@ -373,6 +374,14 @@ final class APIClient: SimpleBuyClientAPI {
         let request = requestBuilder.get(
             path: Path.eligiblePaymentMethods,
             parameters: queryParameters,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    func paymentsCardAcquirers() -> AnyPublisher<[PaymentCardAcquirer], NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: Path.paymentsCardAcquirers,
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

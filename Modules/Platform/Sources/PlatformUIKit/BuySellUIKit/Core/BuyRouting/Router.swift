@@ -50,6 +50,7 @@ public final class Router: RouterAPI {
     private let navigationRouter: NavigationRouterAPI
     private let alertViewPresenter: AlertViewPresenterAPI
     private let paymentAccountService: PaymentAccountServiceAPI
+    private var stripeClient: StripeUIClientAPI
 
     private var cardRouter: CardRouter!
 
@@ -83,7 +84,8 @@ public final class Router: RouterAPI {
         kycRouter: KYCRouterAPI = resolve(), // TODO: merge with the following or remove (IOS-4471)
         newKYCRouter: KYCRouting = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        paymentAccountService: PaymentAccountServiceAPI = resolve()
+        paymentAccountService: PaymentAccountServiceAPI = resolve(),
+        stripeClient: StripeUIClientAPI = resolve()
     ) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
@@ -96,6 +98,7 @@ public final class Router: RouterAPI {
         self.builder = builder
         self.analyticsRecorder = analyticsRecorder
         self.paymentAccountService = paymentAccountService
+        self.stripeClient = stripeClient
 
         let cryptoSelectionService = CryptoCurrencySelectionService(
             service: supportedPairsInteractor,
@@ -588,10 +591,25 @@ public final class Router: RouterAPI {
             interactor: interactor,
             data: data.authorizationData!
         )
-        let viewController = CardAuthorizationScreenViewController(
-            presenter: presenter
-        )
-        navigationRouter.present(viewController: viewController)
+
+        guard let authorizationData = data.authorizationData,
+              case .required(let params) = authorizationData.state
+        else {
+            presenter.redirect()
+            return
+        }
+
+        switch params.cardAcquirer {
+        case .stripe:
+            stripeClient.confirmPayment(authorizationData, with: presenter)
+        case .everyPay, .checkout:
+            let viewController = CardAuthorizationScreenViewController(
+                presenter: presenter
+            )
+            navigationRouter.present(viewController: viewController)
+        case .unknown:
+            presenter.redirect()
+        }
     }
 
     private func showOpenBankingAuthorization(with data: CheckoutData) {
