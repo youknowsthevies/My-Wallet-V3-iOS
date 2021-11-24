@@ -4,6 +4,7 @@ import Combine
 import ComposableArchitectureExtensions
 import DIKit
 import Localization
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa

@@ -4,6 +4,7 @@ import BigInt
 import DIKit
 import EthereumKit
 import FeatureTransactionDomain
+import MoneyKit
 import PlatformKit
 import RxSwift
 import RxToolKit

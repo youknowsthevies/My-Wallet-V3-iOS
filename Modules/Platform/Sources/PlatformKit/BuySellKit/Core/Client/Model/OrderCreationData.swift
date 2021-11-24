@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import MoneyKit
+
 public enum Order {
     public enum Action: String, Codable {
         case buy = "BUY"

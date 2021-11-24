@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import FeatureInterestDomain
+import MoneyKit
 import PlatformKit
 
 typealias InterestAccountDetailsReducer = Reducer<

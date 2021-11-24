@@ -2,6 +2,7 @@
 
 import ComponentLibrary
 import ComposableArchitectureExtensions
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa

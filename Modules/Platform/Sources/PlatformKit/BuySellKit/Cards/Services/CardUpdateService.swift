@@ -3,6 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import MoneyKit
 import NabuNetworkError
 import RxSwift
 import RxToolKit

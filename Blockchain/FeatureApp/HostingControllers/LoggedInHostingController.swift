@@ -10,6 +10,7 @@ import FeatureInterestUI
 import FeatureOnboardingUI
 import FeatureSettingsUI
 import FeatureWalletConnectDomain
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit

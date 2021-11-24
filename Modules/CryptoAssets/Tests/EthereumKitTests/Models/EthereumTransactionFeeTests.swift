@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import EthereumKit
+import MoneyKit
 import PlatformKit
 import XCTest
 

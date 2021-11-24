@@ -4,6 +4,7 @@ import ComposableArchitecture
 import ComposableNavigation
 import FeatureInterestDomain
 import Localization
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import SwiftUI

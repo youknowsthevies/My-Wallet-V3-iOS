@@ -2,6 +2,7 @@
 
 import BigInt
 import Foundation
+import MoneyKit
 
 public protocol HasPathComponent {
     var pathComponent: String { get }

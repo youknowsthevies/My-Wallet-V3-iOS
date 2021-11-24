@@ -4,6 +4,7 @@ import ComponentLibrary
 import DIKit
 import FeatureInterestDomain
 import Localization
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa

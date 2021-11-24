@@ -2,6 +2,7 @@
 
 import BigInt
 import Combine
+import MoneyKit
 import NabuNetworkError
 import PlatformKit
 import ToolKit

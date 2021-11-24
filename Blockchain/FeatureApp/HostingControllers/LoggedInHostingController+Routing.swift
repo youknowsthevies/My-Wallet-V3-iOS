@@ -11,6 +11,7 @@ import FeatureQRCodeScannerUI
 import FeatureSettingsUI
 import FeatureTransactionUI
 import FeatureWalletConnectDomain
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
