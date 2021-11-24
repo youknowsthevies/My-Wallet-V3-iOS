@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import ComponentLibrary
+import ComponentLibrary
 import SwiftUI
 
 struct PrimaryNavigationExamples: View {
@@ -38,7 +38,7 @@ struct PrimaryNavigationExamples_Previews: PreviewProvider {
         PrimaryNavigationView {
             PrimaryNavigationExamples()
         }
-        .environment(\.navigationBackButtonColor, Color(light: .palette.dark400, dark: .palette.white))
-        .previewDisplayName("Exchange")
+        .environment(\.navigationBackButtonColor, .semantic.gold)
+        .previewDisplayName("Custom Back button Color")
     }
 }
