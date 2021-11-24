@@ -7,6 +7,7 @@ extension DependencyContainer {
     // MARK: - MoneyKit Module
 
     public static var moneyKit = module {
+        
         single { EnabledCurrenciesService() as EnabledCurrenciesServiceAPI }
 
         factory { SupportedAssetsFilePathProvider() as SupportedAssetsFilePathProviderAPI }
