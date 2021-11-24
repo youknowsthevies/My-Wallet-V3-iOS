@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import MoneyKit
 import PlatformKit
 import ToolKit
-import MoneyKit
 
 public struct PendingTransaction: Equatable {
 
