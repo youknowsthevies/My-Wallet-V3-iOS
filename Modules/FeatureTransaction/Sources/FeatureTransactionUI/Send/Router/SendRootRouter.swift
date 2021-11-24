@@ -70,7 +70,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
             listener: .simple(didSelect),
             navigationModel: navigationModel,
             headerModel: .default(header),
-            showsWithdrawalLocks: false
+            showWithdrawalLocks: true
         )
         attachChild(sendAccountPickerRouter)
         viewController.replaceRoot(

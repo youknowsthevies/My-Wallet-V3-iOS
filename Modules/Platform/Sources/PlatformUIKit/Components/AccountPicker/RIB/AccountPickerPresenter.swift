@@ -28,7 +28,7 @@ public final class AccountPickerPresenter: Presenter<AccountPickerViewControllab
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
     private let headerModel: AccountPickerHeaderType
-    private let showsWithdrawalLocks: Bool
+    private let showWithdrawalLocks: Bool
 
     // MARK: - Init
 
@@ -38,13 +38,13 @@ public final class AccountPickerPresenter: Presenter<AccountPickerViewControllab
         navigationModel: ScreenNavigationModel,
         headerModel: AccountPickerHeaderType,
         buttonViewModel: ButtonViewModel? = nil,
-        showsWithdrawalLocks: Bool = false
+        showWithdrawalLocks: Bool = false
     ) {
         self.action = action
         button = buttonViewModel
         self.navigationModel = navigationModel
         self.headerModel = headerModel
-        self.showsWithdrawalLocks = showsWithdrawalLocks
+        self.showWithdrawalLocks = showWithdrawalLocks
         super.init(viewController: viewController)
     }
 
@@ -57,8 +57,8 @@ public final class AccountPickerPresenter: Presenter<AccountPickerViewControllab
                     AccountPickerCellItem(interactor: interactor, assetAction: action)
                 }
             }
-            .map { [action, showsWithdrawalLocks] items -> AccountPickerSectionViewModel in
-                if showsWithdrawalLocks {
+            .map { [action, showWithdrawalLocks] items -> AccountPickerSectionViewModel in
+                if showWithdrawalLocks {
                     return AccountPickerSectionViewModel(
                         items: [AccountPickerCellItem(interactor: .withdrawalLocks, assetAction: action)] + items
                     )
