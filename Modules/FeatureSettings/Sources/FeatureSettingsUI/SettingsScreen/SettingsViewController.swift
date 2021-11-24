@@ -78,7 +78,7 @@ public final class SettingsViewController: BaseScreenViewController {
         tableView.registerNibCell(SwitchTableViewCell.self, in: .module)
         tableView.registerNibCell(ClipboardTableViewCell.self, in: .module)
         tableView.registerNibCell(BadgeTableViewCell.self, in: .platformUIKit)
-        tableView.registerNibCell(PlainTableViewCell.self, in: .module)
+        tableView.registerNibCell(CommonTableViewCell.self, in: .module)
         tableView.registerNibCell(AddPaymentMethodTableViewCell.self, in: .module)
         tableView.register(LinkedBankTableViewCell.self)
         tableView.registerNibCell(LinkedCardTableViewCell.self, in: .platformUIKit)
@@ -93,8 +93,8 @@ public final class SettingsViewController: BaseScreenViewController {
                 cell = self.badgeCell(for: indexPath, presenter: presenter)
             case .clipboard(let type):
                 cell = self.clipboardCell(for: indexPath, viewModel: type.viewModel)
-            case .plain(let type):
-                cell = self.plainCell(for: indexPath, viewModel: type.viewModel)
+            case .common(let type):
+                cell = self.commonCell(for: indexPath, viewModel: type.viewModel)
             case .cards(let type):
                 switch type {
                 case .skeleton:
@@ -169,8 +169,8 @@ extension SettingsViewController: UITableViewDelegate {
         return cell
     }
 
-    private func plainCell(for indexPath: IndexPath, viewModel: PlainCellViewModel) -> PlainTableViewCell {
-        let cell = tableView.dequeue(PlainTableViewCell.self, for: indexPath)
+    private func commonCell(for indexPath: IndexPath, viewModel: CommonCellViewModel) -> CommonTableViewCell {
+        let cell = tableView.dequeue(CommonTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell
     }

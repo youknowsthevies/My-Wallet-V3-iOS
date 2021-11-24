@@ -3,6 +3,7 @@
 import FeatureSettingsDomain
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 extension SettingsSectionType.CellType {
     var action: SettingsScreenAction {
@@ -48,7 +49,7 @@ extension SettingsSectionType.CellType {
             case .walletID:
                 return .promptGuidCopy
             }
-        case .plain(let type):
+        case .common(let type):
             switch type {
             case .changePassword:
                 return .launchChangePassword
@@ -66,6 +67,21 @@ extension SettingsSectionType.CellType {
                 return .showURL(URL(string: Constants.Url.cookiesPolicy)!)
             case .logout:
                 return .logout
+            case .addresses:
+                if BuildFlag.isInternal {
+                    fatalError("Implement Addresses")
+                }
+                return .none
+            case .contactSupport:
+                if BuildFlag.isInternal {
+                    fatalError("Implement Contact Support")
+                }
+                return .none
+            case .airdrops:
+                if BuildFlag.isInternal {
+                    fatalError("Implement Airdrops")
+                }
+                return .none
             }
         case .switch:
             return .none
