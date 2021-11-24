@@ -2,6 +2,7 @@
 
 import ComposableArchitecture
 @testable import FeatureKYCUI
+import MoneyKit
 import PlatformKit
 import SnapshotTesting
 import XCTest
