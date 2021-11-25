@@ -321,6 +321,7 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - QuoteClientAPI
 
+    // swiftlint:disable function_parameter_count
     func getQuote(
         for profile: Profile,
         from fiatCurrency: FiatCurrency,
@@ -351,10 +352,10 @@ final class APIClient: SimpleBuyClientAPI {
             parameters.append(URLQueryItem(name: Parameter.Quote.paymentMethod, value: method.rawValue))
         }
         if let methodId = paymentMethodId {
-            parameters.append(URLQueryItem(name: Parameter.Quote.paymentMethodId, value:methodId))
+            parameters.append(URLQueryItem(name: Parameter.Quote.paymentMethodId, value: methodId))
         }
         let path = Path.quote
-        let request = requestBuilder.get(
+        let request = requestBuilder.post(
             path: path,
             parameters: parameters,
             authenticated: true

@@ -9,16 +9,19 @@ struct QuoteResponse: Decodable {
         enum FeeFlag: String, Decodable {
             case newUserWaiver = "NEW_USER_WAIVER"
         }
+
         let feeWithoutPromo: String
         let fee: String
         let feeFlags: [FeeFlag]
     }
+
     struct SettlementDetails: Decodable {
         enum AvailabilityType: String, Decodable {
             case instant = "INSTANT"
             case regular = "REGULAR"
             case unavailable = "UNAVAILABLE"
         }
+
         let availability: AvailabilityType
     }
 

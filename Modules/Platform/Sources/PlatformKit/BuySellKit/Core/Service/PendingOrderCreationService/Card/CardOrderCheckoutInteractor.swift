@@ -53,11 +53,13 @@ public final class CardOrderCheckoutInteractor {
         }
         /// `CardOrderCheckoutInteractor` is for purchasing `Crypto` and not `Fiat`.
         guard let fiatCurrency = checkoutData.order.inputValue.currency.fiatCurrency,
-              let fiat = checkoutData.order.inputValue.fiatValue else {
+              let fiat = checkoutData.order.inputValue.fiatValue
+        else {
             return Single.error(InteractionError.inputMustBeFiat(checkoutData.order.inputValue))
         }
         guard let cryptoCurrency = checkoutData.order.outputValue.currency.cryptoCurrency,
-              let crypto = checkoutData.order.outputValue.cryptoValue else {
+              let crypto = checkoutData.order.outputValue.cryptoValue
+        else {
             return Single.error(InteractionError.outputMustBeCrypto(checkoutData.outputCurrency))
         }
         return orderQuoteService

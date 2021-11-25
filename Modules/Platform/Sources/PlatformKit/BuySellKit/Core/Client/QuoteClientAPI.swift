@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import NabuNetworkError
 import MoneyKit
+import NabuNetworkError
 
 public enum Profile: String {
     case simpleBuy = "SIMPLEBUY"

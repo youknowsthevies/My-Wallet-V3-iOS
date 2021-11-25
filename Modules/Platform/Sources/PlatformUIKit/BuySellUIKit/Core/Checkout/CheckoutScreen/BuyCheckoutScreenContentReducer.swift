@@ -213,13 +213,8 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             .loaded(next: .init(text: "\(totalCost) \(LocalizedSummary.of) \(data.outputCurrency.displayCode)"))
         )
 
-        let description = data.order.state.localizedDescription
-
-        cryptoPriceItemCellPresenter = LineItem.cryptoPrice(
-            data.cryptoValue?.displayCode ?? LocalizedLineItem.price
-        ).defaultPresenter(
-            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-        )
+        cryptoPriceItemCellPresenter = LineItem.cryptoPrice(data.cryptoValue?.displayCode ?? LocalizedLineItem.price)
+            .defaultPresenter(accessibilityIdPrefix: AccessibilityId.lineItemPrefix)
 
         // MARK: Title Setup
 
@@ -230,8 +225,12 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         continueButtonViewModel = BuyCheckoutScreenContentReducer.continueButton(data: data)
         cancelButtonViewModel = BuyCheckoutScreenContentReducer.cancelButton(data: data)
 
-        switch (data.order.paymentMethod, data.hasCardCheckoutMade,
-                data.isPendingDepositBankWire, data.isPendingDeposit) {
+        switch (
+            data.order.paymentMethod,
+            data.hasCardCheckoutMade,
+            data.isPendingDepositBankWire,
+            data.isPendingDeposit
+        ) {
         case (.card, true, _, _):
 
             // MARK: Cells Setup

@@ -48,7 +48,8 @@ public final class FundsAndBankOrderCheckoutInteractor {
         guard let fiat = checkoutData.fiatValue,
               let fiatCurrency = checkoutData.inputCurrency.fiatCurrency,
               let crypto = checkoutData.cryptoValue,
-              let cryptoCurrency = checkoutData.outputCurrency.cryptoCurrency else {
+              let cryptoCurrency = checkoutData.outputCurrency.cryptoCurrency
+        else {
             return Single.error(InteractionError.unsupportedQuoteParameters)
         }
         let quote = orderQuoteService
