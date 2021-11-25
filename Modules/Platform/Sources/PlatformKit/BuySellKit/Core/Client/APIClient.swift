@@ -27,15 +27,6 @@ final class APIClient: SimpleBuyClientAPI {
     // MARK: - Types
 
     fileprivate enum Parameter {
-        enum Quote {
-            static let profile = "profile"
-            static let inputValue = "inputValue"
-            static let inputCurrency = "inputCurrency"
-            static let outputCurrency = "outputCurrency"
-            static let paymentMethod = "paymentMethod"
-            static let paymentMethodId = "paymentMethodId"
-        }
-
         static let product = "product"
         static let currency = "currency"
         static let fiatCurrency = "fiatCurrency"
@@ -330,34 +321,18 @@ final class APIClient: SimpleBuyClientAPI {
         paymentMethod: PaymentMethodPayloadType?,
         paymentMethodId: String?
     ) -> AnyPublisher<QuoteResponse, NabuNetworkError> {
-        var parameters: [URLQueryItem] = [
-            URLQueryItem(
-                name: Parameter.Quote.profile,
-                value: profile.rawValue
-            ),
-            URLQueryItem(
-                name: Parameter.Quote.inputValue,
-                value: amount.minorString
-            ),
-            URLQueryItem(
-                name: Parameter.Quote.inputCurrency,
-                value: fiatCurrency.displayCode
-            ),
-            URLQueryItem(
-                name: Parameter.Quote.outputCurrency,
-                value: cryptoCurrency.displayCode
-            )
-        ]
-        if let method = paymentMethod {
-            parameters.append(URLQueryItem(name: Parameter.Quote.paymentMethod, value: method.rawValue))
-        }
-        if let methodId = paymentMethodId {
-            parameters.append(URLQueryItem(name: Parameter.Quote.paymentMethodId, value: methodId))
-        }
+        let payload = try? QuoteRequest(
+            profile: profile.rawValue,
+            inputCurrency: fiatCurrency.displayCode,
+            outputCurrency: cryptoCurrency.displayCode,
+            inputValue: amount.minorString,
+            paymentMethod: paymentMethod?.rawValue,
+            paymentMethodId: paymentMethodId
+        ).encode()
         let path = Path.quote
         let request = requestBuilder.post(
             path: path,
-            parameters: parameters,
+            body: payload,
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

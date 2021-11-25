@@ -302,8 +302,8 @@ extension BuyTransactionEngine {
                     from: source.fiatCurrency,
                     to: destination.asset,
                     amount: fiatValue,
-                    paymentMethod: nil,
-                    paymentMethodId: nil
+                    paymentMethod: (self.sourceAccount as? PaymentMethodAccount)?.paymentMethodType.method.rawType,
+                    paymentMethodId: (self.sourceAccount as? PaymentMethodAccount)?.paymentMethodType.id
                 )
             }
     }
