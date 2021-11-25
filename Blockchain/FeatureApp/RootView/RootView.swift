@@ -67,14 +67,15 @@ struct RootView: View {
                 }
             }
             .overlay(
-                FloatingActionButton(isOn: viewStore.binding(\.$fab))
+                FloatingActionButton(isOn: viewStore.binding(\.fab.$isOn))
+                    .pulse(enabled: viewStore.fab.animate, inset: 8)
                     .padding([.leading, .bottom, .trailing], 16.pt)
                     .contentShape(Rectangle())
                     .offset(y: 24.pt),
                 alignment: .bottom
             )
             .ignoresSafeArea(.keyboard, edges: .bottom)
-            .bottomSheet(isPresented: viewStore.binding(\.$fab)) {
+            .bottomSheet(isPresented: viewStore.binding(\.fab.$isOn)) {
                 FrequentActionView { action in
                     viewStore.send(.frequentAction(action))
                 }

@@ -17,6 +17,7 @@ final class RootViewController: UIHostingController<RootView> {
 
     let viewStore: ViewStore<RootViewState, RootViewAction>
 
+    var defaults: CacheSuite = UserDefaults.standard
     var send: (LoggedIn.Action) -> Void
     var bag: Set<AnyCancellable> = []
 
@@ -26,7 +27,11 @@ final class RootViewController: UIHostingController<RootView> {
 
         let environment = RootViewEnvironment()
         let store = Store(
-            initialState: RootViewState(),
+            initialState: RootViewState(
+                fab: .init(
+                    animate: !defaults.hasInteractedWithFrequentActionButton
+                )
+            ),
             reducer: rootViewReducer,
             environment: environment
         )
@@ -36,6 +41,14 @@ final class RootViewController: UIHostingController<RootView> {
         super.init(rootView: RootView(store: store))
 
         subscribe(to: ViewStore(global))
+
+        if !defaults.hasInteractedWithFrequentActionButton {
+            environment.publisher
+                .map(\.state.fab.isOn)
+                .first(where: \.self)
+                .sink(to: My.handleFirstFrequentActionButtonInteraction, on: self)
+                .store(in: &bag)
+        }
 
         environment.publisher
             .sink(to: My.handle(state:action:), on: self)
@@ -136,7 +149,10 @@ extension RootViewController {
 
 extension RootViewController {
 
-    // swiftlint:disable cyclomatic_complexity
+    func handleFirstFrequentActionButtonInteraction() {
+        defaults.hasInteractedWithFrequentActionButton = true
+    }
+
     func handle(state: RootViewState, action: RootViewAction) {
         switch action {
         case .frequentAction(let frequentAction):
@@ -162,5 +178,13 @@ extension RootViewController {
         default:
             break
         }
+    }
+}
+
+extension CacheSuite {
+
+    var hasInteractedWithFrequentActionButton: Bool {
+        get { bool(forKey: #function) }
+        set { set(newValue, forKey: #function) }
     }
 }

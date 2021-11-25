@@ -14,7 +14,7 @@ struct RootViewState: Equatable, NavigationState {
     var route: RouteIntent<RootViewRoute>?
 
     @BindableState var tab: Tab = .home
-    @BindableState var fab: Bool = false
+    @BindableState var fab: FrequentAction
 
     var buyAndSell: BuyAndSell = .init()
 }
@@ -23,6 +23,11 @@ extension RootViewState {
 
     struct BuyAndSell: Equatable {
         var segment: Int = 0
+    }
+
+    struct FrequentAction: Equatable {
+        @BindableState var isOn: Bool = false
+        var animate: Bool
     }
 }
 
@@ -64,7 +69,7 @@ let rootViewReducer = Reducer<
         state.tab = tab
         return .none
     case .frequentAction(let action):
-        state.fab = false
+        state.fab.isOn = false
         switch action {
         case .buy:
             state.buyAndSell.segment = 0
@@ -75,6 +80,9 @@ let rootViewReducer = Reducer<
         default:
             break
         }
+        return .none
+    case .binding(.set(\.fab.$isOn, true)):
+        state.fab.animate = false
         return .none
     case .route, .binding:
         return .none
