@@ -321,18 +321,18 @@ final class APIClient: SimpleBuyClientAPI {
         paymentMethod: PaymentMethodPayloadType?,
         paymentMethodId: String?
     ) -> AnyPublisher<QuoteResponse, NabuNetworkError> {
-        let payload = try? QuoteRequest(
+        let payload = QuoteRequest(
             profile: profile.rawValue,
             inputCurrency: fiatCurrency.displayCode,
             outputCurrency: cryptoCurrency.displayCode,
             inputValue: amount.minorString,
             paymentMethod: paymentMethod?.rawValue,
             paymentMethodId: paymentMethodId
-        ).encode()
+        )
         let path = Path.quote
         let request = requestBuilder.post(
             path: path,
-            body: payload,
+            body: try? payload.encode(),
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

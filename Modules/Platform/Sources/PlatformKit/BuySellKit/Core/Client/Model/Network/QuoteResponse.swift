@@ -41,6 +41,7 @@ public struct Quote {
 
     // MARK: - Properties
 
+    public let quoteId: String
     public let fee: FiatValue
     public let rate: FiatValue
     public let estimatedCryptoAmount: CryptoValue
@@ -55,6 +56,7 @@ public struct Quote {
         amount: FiatValue,
         response: QuoteResponse
     ) throws {
+        quoteId = response.quoteId
         guard let feeRateMinor = Decimal(string: response.feeDetails.fee) else {
             throw SetupError.feeParsing
         }

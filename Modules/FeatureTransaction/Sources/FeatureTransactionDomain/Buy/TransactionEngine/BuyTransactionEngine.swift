@@ -181,6 +181,7 @@ final class BuyTransactionEngine: TransactionEngine {
                     paymentMethodId = sourceAccount.paymentMethodType.id
                 }
                 let orderDetails = CandidateOrderDetails.buy(
+                    quoteId: refreshedQuote.quoteId,
                     paymentMethod: sourceAccount.paymentMethodType,
                     fiatValue: refreshedQuote.estimatedFiatAmount,
                     cryptoValue: refreshedQuote.estimatedCryptoAmount,
