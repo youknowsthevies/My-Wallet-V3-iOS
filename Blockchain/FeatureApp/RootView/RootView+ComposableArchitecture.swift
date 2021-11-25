@@ -7,6 +7,7 @@ import ComposableArchitectureExtensions
 import ComposableNavigation
 import Localization
 import SwiftUI
+import ToolKit
 
 struct RootViewState: Equatable, NavigationState {
 
@@ -14,7 +15,15 @@ struct RootViewState: Equatable, NavigationState {
 
     @BindableState var tab: Tab = .home
     @BindableState var fab: Bool = false
-    @BindableState var buyAndSellSelectedSegment: Int = 0
+
+    var buyAndSell: BuyAndSell = .init()
+}
+
+extension RootViewState {
+
+    struct BuyAndSell: Equatable {
+        var segment: Int = 0
+    }
 }
 
 enum RootViewAction: Equatable, NavigationAction, BindableAction {
@@ -32,16 +41,8 @@ enum RootViewRoute: NavigationRoute {
     @ViewBuilder func destination(in store: Store<RootViewState, RootViewAction>) -> some View {
         switch self {
         case .QR:
-            PrimaryNavigationView {
-                WithViewStore(store.stateless) { viewStore in
-                    QRCodeScannerView()
-                        .primaryNavigation(title: LocalizationConstants.scanQRCode) {
-                            IconButton(icon: .closeCirclev2) {
-                                viewStore.send(.route(nil))
-                            }
-                        }
-                }
-            }
+            QRCodeScannerView()
+                .ignoresSafeArea()
         case .account:
             AccountView()
                 .ignoresSafeArea(.container, edges: .bottom)
@@ -66,10 +67,10 @@ let rootViewReducer = Reducer<
         state.fab = false
         switch action {
         case .buy:
-            state.buyAndSellSelectedSegment = 0
+            state.buyAndSell.segment = 0
             state.tab = .buyAndSell
         case .sell:
-            state.buyAndSellSelectedSegment = 1
+            state.buyAndSell.segment = 1
             state.tab = .buyAndSell
         default:
             break

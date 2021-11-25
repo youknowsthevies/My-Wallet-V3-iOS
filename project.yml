@@ -38,8 +38,8 @@ schemeTemplates:
       config: ${debugConfig}
       environmentVariables:
         - variable: BLOCKCHAIN_DEBUG_NETWORK_REQUEST
-          value: TRUE
-          isEnabled: false
+          value: "TRUE"
+          isEnabled: true
         - variable: OS_ACTIVITY_MODE
           value: disable
           isEnabled: true

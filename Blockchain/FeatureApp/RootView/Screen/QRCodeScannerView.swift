@@ -1,5 +1,6 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import DIKit
 import FeatureQRCodeScannerUI
 import FeatureTransactionUI
@@ -47,14 +48,21 @@ struct QRCodeScannerView: UIViewControllerRepresentable {
 
         guard let viewController = builder.build() else {
             return UIHostingController(
-                rootView: ActionableView(
-                    .init(
-                        media: .image(named: "circular-error-icon"),
-                        title: LocalizationConstants.noCameraAccessTitle,
-                        subtitle: LocalizationConstants.noCameraAccessMessage
-                    ),
-                    in: .platformUIKit
-                )
+                rootView: PrimaryNavigationView {
+                    ActionableView(
+                        .init(
+                            media: .image(named: "circular-error-icon"),
+                            title: LocalizationConstants.noCameraAccessTitle,
+                            subtitle: LocalizationConstants.noCameraAccessMessage
+                        ),
+                        in: .platformUIKit
+                    )
+                    .primaryNavigation(title: LocalizationConstants.scanQRCode) {
+                        IconButton(icon: .closeCirclev2) {
+                            context.environment.presentationMode.wrappedValue.dismiss()
+                        }
+                    }
+                }
             ) as UIViewController
         }
 

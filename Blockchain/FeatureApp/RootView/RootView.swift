@@ -59,8 +59,8 @@ struct RootView: View {
                     PricesView()
                 }
                 fab()
-                tab(.buyAndSell) {
-                    BuySellView(selectedSegment: viewStore.buyAndSellSelectedSegment)
+                tab(.buyAndSell, state: \.buyAndSell) { context in
+                    BuySellView(selectedSegment: context.segment)
                 }
                 tab(.activity) {
                     ActivityView()
@@ -68,12 +68,12 @@ struct RootView: View {
             }
             .overlay(
                 FloatingActionButton(isOn: viewStore.binding(\.$fab))
-                    .padding()
+                    .padding([.leading, .bottom, .trailing], 16.pt)
                     .contentShape(Rectangle())
-                    .offset(y: Spacing.padding3)
-                    .ignoresSafeArea(.keyboard, edges: .bottom),
+                    .offset(y: 24.pt),
                 alignment: .bottom
             )
+            .ignoresSafeArea(.keyboard, edges: .bottom)
             .bottomSheet(isPresented: viewStore.binding(\.$fab)) {
                 FrequentActionView { action in
                     viewStore.send(.frequentAction(action))
@@ -110,6 +110,16 @@ struct RootView: View {
         }
         .id(tab)
         .tag(tab)
+    }
+
+    func tab<Content, Scope>(
+        _ tab: Tab,
+        state: @escaping (RootViewState) -> Scope,
+        @ViewBuilder content: @escaping (Scope) -> Content
+    ) -> some View where Content: View, Scope: Equatable {
+        WithViewStore(store.scope(state: state)) { viewStore in
+            self.tab(tab) { content(viewStore.state) }
+        }
     }
 
     @ViewBuilder func navigationButtons() -> some View {
