@@ -1,16 +1,31 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import MoneyKit
 import ToolKit
 
 struct QuoteResponse: Decodable {
-    let time: String
-    let rate: String
-    let rateWithoutFee: String
-    /* the fee value is more of a feeRate (ie it is the fee per 1 unit of crypto) to get the actual
-     "fee" you'll need to multiply by amount of crypto
-     */
-    let fee: String
+    struct FeeDetails: Decodable {
+        enum FeeFlag: String, Decodable {
+            case newUserWaiver = "NEW_USER_WAIVER"
+        }
+        let feeWithoutPromo: String
+        let fee: String
+        let feeFlags: [FeeFlag]
+    }
+    struct SettlementDetails: Decodable {
+        enum AvailabilityType: String, Decodable {
+            case instant = "INSTANT"
+            case regular = "REGULAR"
+            case unavailable = "UNAVAILABLE"
+        }
+        let availability: AvailabilityType
+    }
+
+    let quoteId: String
+    let price: Double
+    let feeDetails: FeeDetails
+    let settlementDetails: SettlementDetails
 }
 
 public struct Quote {
@@ -18,14 +33,11 @@ public struct Quote {
     // MARK: - Types
 
     enum SetupError: Error {
-        case dateFormatting
-        case rateParsing
         case feeParsing
     }
 
     // MARK: - Properties
 
-    public let time: Date
     public let fee: FiatValue
     public let rate: FiatValue
     public let estimatedCryptoAmount: CryptoValue
@@ -35,24 +47,21 @@ public struct Quote {
 
     // MARK: - Setup
 
-    init(to cryptoCurrency: CryptoCurrency, amount: FiatValue, response: QuoteResponse) throws {
-        guard let time = dateFormatter.date(from: response.time) else {
-            throw SetupError.dateFormatting
-        }
-        guard let rate = BigInt(response.rate) else {
-            throw SetupError.rateParsing
-        }
-        guard let feeRateMinor = Decimal(string: response.fee) else {
+    init(
+        to cryptoCurrency: CryptoCurrency,
+        amount: FiatValue,
+        response: QuoteResponse
+    ) throws {
+        guard let feeRateMinor = Decimal(string: response.feeDetails.fee) else {
             throw SetupError.feeParsing
         }
-        let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: rate)
+        let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: BigInt(response.price))
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         estimatedCryptoAmount = CryptoValue.create(major: majorEstimatedAmount, currency: cryptoCurrency)
         let feeAmountMinor = feeRateMinor * estimatedCryptoAmount.displayMajorValue
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         fee = FiatValue.create(minor: feeAmountMinor, currency: amount.currency)
-        self.time = time
-        self.rate = FiatValue.create(minor: rate, currency: amount.currency)
-        estimatedFiatAmount = estimatedCryptoAmount.convertToFiatValue(exchangeRate: self.rate)
+        rate = FiatValue.create(minor: BigInt(response.price), currency: amount.currency)
+        estimatedFiatAmount = estimatedCryptoAmount.convertToFiatValue(exchangeRate: rate)
     }
 }

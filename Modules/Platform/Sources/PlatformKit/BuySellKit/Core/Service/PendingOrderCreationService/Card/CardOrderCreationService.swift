@@ -18,9 +18,12 @@ final class CardOrderCreationService: PendingOrderCreationServiceAPI {
 
     func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<PendingConfirmationCheckoutData> {
         let quote = orderQuoteService.getQuote(
-            for: .buy,
-            cryptoCurrency: candidateOrderDetails.cryptoCurrency,
-            fiatValue: candidateOrderDetails.fiatValue
+            for: .simpleBuy,
+            from: candidateOrderDetails.fiatCurrency,
+            to: candidateOrderDetails.cryptoCurrency,
+            amount: candidateOrderDetails.fiatValue,
+            paymentMethod: candidateOrderDetails.paymentMethod?.method.rawType,
+            paymentMethodId: candidateOrderDetails.paymentMethodId
         )
         let creation = orderCreationService.create(using: candidateOrderDetails)
         return Single

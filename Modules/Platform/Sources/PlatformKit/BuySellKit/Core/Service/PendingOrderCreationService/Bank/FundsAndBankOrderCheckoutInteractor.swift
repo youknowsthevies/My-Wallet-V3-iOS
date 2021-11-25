@@ -45,17 +45,20 @@ public final class FundsAndBankOrderCheckoutInteractor {
     /// 2. Fetch the quote and append it to the result.
     /// The order must be created beforehand and present in the checkout data.
     func prepare(using checkoutData: CheckoutData, action: Order.Action) -> InteractionData {
-        guard let fiat = checkoutData.fiatValue else {
-            return Single.error(InteractionError.unsupportedQuoteParameters)
-        }
-        guard let crypto = checkoutData.cryptoValue else {
+        guard let fiat = checkoutData.fiatValue,
+              let fiatCurrency = checkoutData.inputCurrency.fiatCurrency,
+              let crypto = checkoutData.cryptoValue,
+              let cryptoCurrency = checkoutData.outputCurrency.cryptoCurrency else {
             return Single.error(InteractionError.unsupportedQuoteParameters)
         }
         let quote = orderQuoteService
             .getQuote(
-                for: action,
-                cryptoCurrency: crypto.currency,
-                fiatValue: fiat
+                for: .simpleBuy,
+                from: fiatCurrency,
+                to: cryptoCurrency,
+                amount: fiat,
+                paymentMethod: checkoutData.order.paymentMethod.rawType,
+                paymentMethodId: checkoutData.order.paymentMethodId
             )
 
         let finalCheckoutData: Single<CheckoutData>
@@ -83,7 +86,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
             )
             .map { (payload: (quote: Quote, checkoutData: CheckoutData)) in
                 let interactionData = CheckoutInteractionData(
-                    time: payload.quote.time,
+                    time: Date(),
                     fee: payload.checkoutData.order.fee ?? MoneyValue(fiatValue: payload.quote.fee),
                     amount: MoneyValue(cryptoValue: payload.quote.estimatedCryptoAmount),
                     exchangeRate: MoneyValue(fiatValue: payload.quote.rate),

@@ -289,15 +289,21 @@ extension BuyTransactionEngine {
     }
 
     private func fetchQuote(for amount: MoneyValue) -> Single<Quote> {
+        guard let source = sourceAccount as? FiatAccount else {
+            return .error(TransactionValidationFailure(state: .uninitialized))
+        }
         guard let destination = transactionTarget as? CryptoAccount else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
         return convertAmountIntoWalletFiatCurrency(amount)
             .flatMap { [orderQuoteService] fiatValue in
                 orderQuoteService.getQuote(
-                    for: .buy,
-                    cryptoCurrency: destination.asset,
-                    fiatValue: fiatValue
+                    for: .simpleBuy,
+                    from: source.fiatCurrency,
+                    to: destination.asset,
+                    amount: fiatValue,
+                    paymentMethod: nil,
+                    paymentMethodId: nil
                 )
             }
     }

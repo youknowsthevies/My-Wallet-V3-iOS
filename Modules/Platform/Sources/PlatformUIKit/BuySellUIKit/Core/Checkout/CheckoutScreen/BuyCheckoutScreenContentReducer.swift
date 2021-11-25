@@ -9,6 +9,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+// swiftlint:disable type_body_length
 final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
     // MARK: - Types
@@ -51,15 +52,18 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
     private let feeLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.fee().defaultPresenter(
         accessibilityIdPrefix: AccessibilityId.lineItemPrefix
     )
-    private let paymentMethodLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.paymentMethod().defaultPresenter(
-        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-    )
-    private let exchangeRateLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.exchangeRate().defaultPresenter(
-        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-    )
-    private let statusLineItemCellPresenter: DefaultLineItemCellPresenter = LineItem.status(LocalizedLineItem.pending).defaultPresenter(
-        accessibilityIdPrefix: AccessibilityId.lineItemPrefix
-    )
+    private let paymentMethodLineItemCellPresenter: DefaultLineItemCellPresenter =
+        LineItem.paymentMethod().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+    private let exchangeRateLineItemCellPresenter: DefaultLineItemCellPresenter =
+        LineItem.exchangeRate().defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
+    private let statusLineItemCellPresenter: DefaultLineItemCellPresenter =
+        LineItem.status(LocalizedLineItem.pending).defaultPresenter(
+            accessibilityIdPrefix: AccessibilityId.lineItemPrefix
+        )
 
     private let availableToTradeInstantlyItemCellPresenter: DefaultLineItemCellPresenter =
         LineItem.availableToTrade(LocalizedLineItem.instantly).defaultPresenter(
@@ -108,7 +112,9 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         switch data.order.paymentMethod {
         case .card:
             if data.hasCardCheckoutMade {
-                title = data.isPending3DS ? LocalizedSummary.completePaymentButton : LocalizedSummary.continueButtonPrefix
+                title = data.isPending3DS ?
+                    LocalizedSummary.completePaymentButton :
+                    LocalizedSummary.continueButtonPrefix
             } else {
                 title = LocalizedSummary.buyButtonTitle
             }
@@ -170,7 +176,8 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         let localizedPaymentMethod: String
         switch data.paymentMethod {
         case .funds:
-            localizedPaymentMethod = "\(LocalizedLineItem.Funds.prefix) \(data.fee.displayCode) \(LocalizedLineItem.Funds.suffix)"
+            localizedPaymentMethod =
+                "\(LocalizedLineItem.Funds.prefix) \(data.fee.displayCode) \(LocalizedLineItem.Funds.suffix)"
         case .card:
             localizedPaymentMethod = "\(data.card?.label ?? "") \(data.card?.displaySuffix ?? "")"
         case .bankAccount:
@@ -188,6 +195,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         )
     }
 
+    // swiftlint:disable function_body_length
     init(data: CheckoutData) {
 
         // MARK: Presenters Setup
@@ -207,7 +215,9 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
         let description = data.order.state.localizedDescription
 
-        cryptoPriceItemCellPresenter = LineItem.cryptoPrice(data.cryptoValue?.displayCode ?? LocalizedLineItem.price).defaultPresenter(
+        cryptoPriceItemCellPresenter = LineItem.cryptoPrice(
+            data.cryptoValue?.displayCode ?? LocalizedLineItem.price
+        ).defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
@@ -220,7 +230,8 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         continueButtonViewModel = BuyCheckoutScreenContentReducer.continueButton(data: data)
         cancelButtonViewModel = BuyCheckoutScreenContentReducer.cancelButton(data: data)
 
-        switch (data.order.paymentMethod, data.hasCardCheckoutMade, data.isPendingDepositBankWire, data.isPendingDeposit) {
+        switch (data.order.paymentMethod, data.hasCardCheckoutMade,
+                data.isPendingDepositBankWire, data.isPendingDeposit) {
         case (.card, true, _, _):
 
             // MARK: Cells Setup

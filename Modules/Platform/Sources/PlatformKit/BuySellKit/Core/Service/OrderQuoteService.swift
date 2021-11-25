@@ -7,9 +7,12 @@ import RxSwift
 public protocol OrderQuoteServiceAPI: AnyObject {
 
     func getQuote(
-        for action: Order.Action,
-        cryptoCurrency: CryptoCurrency,
-        fiatValue: FiatValue
+        for profile: Profile,
+        from fiatCurrency: FiatCurrency,
+        to cryptoCurrency: CryptoCurrency,
+        amount: FiatValue,
+        paymentMethod: PaymentMethodPayloadType?,
+        paymentMethodId: String?
     ) -> Single<Quote>
 }
 
@@ -28,20 +31,26 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
     // MARK: - API
 
     func getQuote(
-        for action: Order.Action,
-        cryptoCurrency: CryptoCurrency,
-        fiatValue: FiatValue
+        for profile: Profile,
+        from fiatCurrency: FiatCurrency,
+        to cryptoCurrency: CryptoCurrency,
+        amount: FiatValue,
+        paymentMethod: PaymentMethodPayloadType?,
+        paymentMethodId: String?
     ) -> Single<Quote> {
         client.getQuote(
-            for: action,
+            for: profile,
+            from: fiatCurrency,
             to: cryptoCurrency,
-            amount: fiatValue
+            amount: amount,
+            paymentMethod: paymentMethod,
+            paymentMethodId: paymentMethodId
         )
         .asSingle()
         .map {
             try Quote(
                 to: cryptoCurrency,
-                amount: fiatValue,
+                amount: amount,
                 response: $0
             )
         }

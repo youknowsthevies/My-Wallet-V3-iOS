@@ -21,15 +21,24 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
     LinkedBanksClientAPI
 
 /// Simple-Buy network client
+// swiftlint:disable type_body_length
 final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - Types
 
     fileprivate enum Parameter {
+        enum Quote {
+            static let profile = "profile"
+            static let inputValue = "inputValue"
+            static let inputCurrency = "inputCurrency"
+            static let outputCurrency = "outputCurrency"
+            static let paymentMethod = "paymentMethod"
+            static let paymentMethodId = "paymentMethodId"
+        }
+
         static let product = "product"
         static let currency = "currency"
         static let fiatCurrency = "fiatCurrency"
-        static let currencyPair = "currencyPair"
         static let pendingOnly = "pendingOnly"
         static let action = "action"
         static let amount = "amount"
@@ -54,7 +63,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let suggestedAmounts = ["simple-buy", "amounts"]
         static let trades = ["simple-buy", "trades"]
         static let paymentAccount = ["payments", "accounts", "simplebuy"]
-        static let quote = ["simple-buy", "quote"]
+        static let quote = ["brokerage", "quote"]
         static let eligible = ["simple-buy", "eligible"]
         static let withdrawalLocks = ["payments", "withdrawals", "locks"]
         static let withdrawalLocksCheck = ["payments", "withdrawals", "locks", "check"]
@@ -313,24 +322,37 @@ final class APIClient: SimpleBuyClientAPI {
     // MARK: - QuoteClientAPI
 
     func getQuote(
-        for action: Order.Action,
+        for profile: Profile,
+        from fiatCurrency: FiatCurrency,
         to cryptoCurrency: CryptoCurrency,
-        amount: FiatValue
+        amount: FiatValue,
+        paymentMethod: PaymentMethodPayloadType?,
+        paymentMethodId: String?
     ) -> AnyPublisher<QuoteResponse, NabuNetworkError> {
-        let parameters = [
+        var parameters: [URLQueryItem] = [
             URLQueryItem(
-                name: Parameter.currencyPair,
-                value: "\(cryptoCurrency.code)-\(amount.code)"
+                name: Parameter.Quote.profile,
+                value: profile.rawValue
             ),
             URLQueryItem(
-                name: Parameter.action,
-                value: action.rawValue
-            ),
-            URLQueryItem(
-                name: Parameter.amount,
+                name: Parameter.Quote.inputValue,
                 value: amount.minorString
+            ),
+            URLQueryItem(
+                name: Parameter.Quote.inputCurrency,
+                value: fiatCurrency.displayCode
+            ),
+            URLQueryItem(
+                name: Parameter.Quote.outputCurrency,
+                value: cryptoCurrency.displayCode
             )
         ]
+        if let method = paymentMethod {
+            parameters.append(URLQueryItem(name: Parameter.Quote.paymentMethod, value: method.rawValue))
+        }
+        if let methodId = paymentMethodId {
+            parameters.append(URLQueryItem(name: Parameter.Quote.paymentMethodId, value:methodId))
+        }
         let path = Path.quote
         let request = requestBuilder.get(
             path: path,
