@@ -70,6 +70,11 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
+
+    // MARK: - Account Picker
+
+    /// New SwiftUI account picker from `FeatureAccountPicker`
+    case swiftUIAccountPicker
 }
 
 extension AppFeature {
@@ -114,6 +119,8 @@ extension AppFeature {
             return "ios_ff_new_card_acquirers"
         case .newLimitsUIEnabled:
             return "ios_use_new_limits_ui"
+        case .swiftUIAccountPicker:
+            return "ios_swiftui_account_picker"
         }
     }
 
@@ -156,6 +163,8 @@ extension AppFeature {
         case .openBanking:
             return true
         case .newLimitsUIEnabled:
+            return true
+        case .swiftUIAccountPicker:
             return true
         }
     }

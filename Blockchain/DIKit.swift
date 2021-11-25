@@ -595,12 +595,8 @@ extension DependencyContainer {
         // MARK: Account Picker
 
         factory { () -> AccountPickerViewControllable in
-            let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
-
-            if internalFeatureFlagService.isEnabled(.newAccountPicker) {
-                return FeatureAccountPickerControllableAdapter() as AccountPickerViewControllable
-            }
-            return AccountPickerViewController() as AccountPickerViewControllable
+            let controller = LoadableAccountPickerControllable()
+            return controller as AccountPickerViewControllable
         }
 
         // MARK: Open Banking
