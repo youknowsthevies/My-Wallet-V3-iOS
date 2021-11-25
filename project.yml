@@ -311,6 +311,8 @@ packages:
     path: Modules/Keychain
   Localization:
     path: Modules/Localization
+  Metadata:
+    path: Modules/Metadata
   Network:
     path: Modules/Network
   NetworkErrors:
@@ -443,6 +445,8 @@ targets:
         product: KeychainKit
       - package: Localization
         product: Localization
+      - package: Metadata
+        product: MetadataKit
       - package: Network
         product: NetworkKit
       - package: NetworkErrors
