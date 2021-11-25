@@ -12,8 +12,10 @@ public final class PricesScreenInteractor {
 
     // MARK: - Properties
 
-    var enabledCryptoCurrencies: [CryptoCurrency] {
-        enabledCurrenciesService.allEnabledCryptoCurrencies
+    var enabledCryptoCurrencies: Observable<[CryptoCurrency]> {
+        showSupportedPairsOnly
+            ? supportedPairsInteractorService.pairs.map(\.cryptoCurrencies)
+            : .just(enabledCurrenciesService.allEnabledCryptoCurrencies)
     }
 
     // MARK: - Private Properties
@@ -21,17 +23,23 @@ public final class PricesScreenInteractor {
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let priceService: PriceServiceAPI
+    private let supportedPairsInteractorService: SupportedPairsInteractorServiceAPI
+    private let showSupportedPairsOnly: Bool
 
     // MARK: - Init
 
     public init(
         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve()
+        priceService: PriceServiceAPI = resolve(),
+        supportedPairsInteractorService: SupportedPairsInteractorServiceAPI = resolve(),
+        showSupportedPairsOnly: Bool
     ) {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
+        self.supportedPairsInteractorService = supportedPairsInteractorService
+        self.showSupportedPairsOnly = showSupportedPairsOnly
     }
 
     // MARK: - Methods

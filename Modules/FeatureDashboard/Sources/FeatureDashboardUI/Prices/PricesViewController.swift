@@ -24,11 +24,17 @@ public final class PricesViewController: BaseScreenViewController {
     private let presenter: PricesScreenPresenter
     private let tableView = UITableView()
     private let searchBar = UISearchBar()
+    public typealias CustomSelectionActionClosure = ((CryptoCurrency) -> Void)
+    private let customSelectionActionClosure: CustomSelectionActionClosure?
 
     // MARK: - Setup
 
-    public init(presenter: PricesScreenPresenter = .init()) {
+    public init(
+        presenter: PricesScreenPresenter,
+        customSelectionActionClosure: CustomSelectionActionClosure? = nil
+    ) {
         self.presenter = presenter
+        self.customSelectionActionClosure = customSelectionActionClosure
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -146,7 +152,11 @@ public final class PricesViewController: BaseScreenViewController {
                 case .emptyState:
                     break
                 case .currency(let cryptoCurrency, _):
-                    self.presenter.router.showDetailsScreen(for: cryptoCurrency)
+                    if let customSelectionActionClosure = self.customSelectionActionClosure {
+                        customSelectionActionClosure(cryptoCurrency)
+                    } else {
+                        self.presenter.router.showDetailsScreen(for: cryptoCurrency)
+                    }
                 }
             }
             .disposed(by: disposeBag)

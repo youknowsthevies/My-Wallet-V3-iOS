@@ -42,7 +42,13 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
         ),
         SegmentedViewScreenItem(
             title: LocalizedString.prices,
-            viewController: PricesViewController()
+            viewController: PricesViewController(
+                presenter: PricesScreenPresenter(
+                    interactor: PricesScreenInteractor(
+                        showSupportedPairsOnly: false
+                    )
+                )
+            )
         )
     ]
 

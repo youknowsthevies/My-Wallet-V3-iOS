@@ -8,7 +8,13 @@ struct PricesView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
     func makeUIViewController(context: Context) -> some UIViewController {
-        let viewController = PricesViewController()
+        let viewController = PricesViewController(
+            presenter: PricesScreenPresenter(
+                interactor: PricesScreenInteractor(
+                    showSupportedPairsOnly: false
+                )
+            )
+        )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController
     }
