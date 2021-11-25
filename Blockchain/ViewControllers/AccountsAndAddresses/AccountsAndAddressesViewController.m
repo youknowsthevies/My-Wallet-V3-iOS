@@ -31,7 +31,7 @@
     self.view.backgroundColor = UIColor.lightGray;
     self.title = BC_STRING_ADDRESSES;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-                                              initWithImage:[UIImage imageNamed:@"close"]
+                                              initWithImage:[UIImage imageNamed:@"Icon-Close-Circle"]
                                               style:UIBarButtonItemStylePlain
                                               target:self
                                               action:@selector(closeButtonClicked:)];

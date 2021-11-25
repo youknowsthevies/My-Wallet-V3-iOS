@@ -91,7 +91,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private let builder: SettingsBuilding
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
-    private let logoutService: LogoutServiceAPI
+    private let externalActionsProvider: ExternalActionsProviderAPI
 
     private let kycRouter: KYCRouterAPI
 
@@ -134,7 +134,7 @@ final class SettingsRouter: SettingsRouterAPI {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         presentAccountLinkingFlow: AccountLinkingFlowPresenterAPI = resolve(),
-        logoutService: LogoutServiceAPI = resolve()
+        externalActionsProvider: ExternalActionsProviderAPI = resolve()
     ) {
         self.wallet = wallet
         self.appCoordinator = appCoordinator
@@ -156,7 +156,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.analyticsRecorder = analyticsRecorder
         self.featureFlagsService = featureFlagsService
         self.presentAccountLinkingFlow = presentAccountLinkingFlow
-        self.logoutService = logoutService
+        self.externalActionsProvider = externalActionsProvider
 
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -205,6 +205,7 @@ final class SettingsRouter: SettingsRouterAPI {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     private func handle(action: SettingsScreenAction) {
         switch action {
         case .showURL(let url):
@@ -305,7 +306,11 @@ final class SettingsRouter: SettingsRouterAPI {
                     let cancelAction = UIAlertAction(title: LocalizationConstants.cancel, style: .cancel, handler: nil)
                     alert.addAction(cancelAction)
                     alert.addAction(copyAction)
-                    guard let navController = self.navigationRouter.navigationControllerAPI as? UINavigationController else { return }
+                    guard let navController = self.navigationRouter
+                        .navigationControllerAPI as? UINavigationController
+                    else {
+                        return
+                    }
                     navController.present(alert, animated: true)
                 })
                 .disposed(by: disposeBag)
@@ -317,7 +322,8 @@ final class SettingsRouter: SettingsRouterAPI {
             guard let supportURL = URL(string: Constants.Url.exchangeSupport) else { return }
             let startPITCoordinator = { [weak self] in
                 guard let self = self else { return }
-                guard let navController = self.navigationRouter.navigationControllerAPI as? UINavigationController else { return }
+                guard let navController = self.navigationRouter
+                    .navigationControllerAPI as? UINavigationController else { return }
                 self.exchangeCoordinator.start(from: navController)
             }
             let launchPIT = AlertAction(
@@ -360,7 +366,15 @@ final class SettingsRouter: SettingsRouterAPI {
         case .showUpdateMobileScreen:
             updateMobileRouter.start()
         case .logout:
-            logoutService.logout()
+            externalActionsProvider.logout()
+        case .showAccountsAndAddresses:
+            externalActionsProvider.handleAccountsAndAddresses()
+        case .showAirdrops:
+            externalActionsProvider.handleAirdrops()
+        case .showContactSupport:
+            externalActionsProvider.handleSupport()
+        case .showWebLogin:
+            externalActionsProvider.handleSecureChannel()
         case .none:
             break
         }

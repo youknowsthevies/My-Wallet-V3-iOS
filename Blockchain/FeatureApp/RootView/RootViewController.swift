@@ -64,6 +64,7 @@ final class RootViewController: UIHostingController<RootView> {
     @LazyInject var receiveCoordinator: ReceiveCoordinator
     @LazyInject var tiersService: KYCTiersServiceAPI
     @LazyInject var transactionsRouter: TransactionsRouterAPI
+    @LazyInject var airdropRouter: AirdropRouterAPI
 
     var pinRouter: PinRouter?
 

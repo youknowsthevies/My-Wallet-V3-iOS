@@ -408,4 +408,23 @@ extension RootViewController: LoggedInBridge {
             )
         )
     }
+
+    func handleAccountsAndAddresses() {
+        let storyboard = UIStoryboard(name: "AccountsAndAddresses", bundle: nil)
+        let viewController = storyboard.instantiateViewController(
+            withIdentifier: "AccountsAndAddressesNavigationController"
+        ) as! AccountsAndAddressesNavigationController
+        viewController.navigationBar.backgroundColor = .white
+        viewController.navigationBar.tintColor = .lightGray
+        viewController.reload()
+        (topMostViewController ?? self).present(viewController, animated: true, completion: nil)
+    }
+
+    func handleAirdrops() {
+        airdropRouter.presentAirdropCenterScreen()
+    }
+
+    func handleSecureChannel() {
+        showQRCodeScanner()
+    }
 }

@@ -258,9 +258,9 @@ extension DependencyContainer {
             return bridge.resolveQRCodeScannerRouting() as QRCodeScannerRouting
         }
 
-        factory { () -> LogoutServiceAPI in
+        factory { () -> ExternalActionsProviderAPI in
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveLogoutService() as LogoutServiceAPI
+            return bridge.resolveExternalActionsProvider() as ExternalActionsProviderAPI
         }
 
         factory { () -> QRCodeScannerLinkerAPI in
