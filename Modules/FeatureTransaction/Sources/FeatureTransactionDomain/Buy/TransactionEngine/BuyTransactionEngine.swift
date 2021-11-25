@@ -148,7 +148,6 @@ final class BuyTransactionEngine: TransactionEngine {
                 var confirmations: [TransactionConfirmation] = [
                     .buyCryptoValue(.init(baseValue: cryptoAmount)),
                     .buyExchangeRateValue(.init(baseValue: moneyPair.source.quote, code: moneyPair.source.base.code)),
-                    .buyPaymentMethod(.init(name: sourceAccountLabel)),
                     .transactionFee(.init(fee: fee))
                 ]
 
@@ -156,7 +155,10 @@ final class BuyTransactionEngine: TransactionEngine {
                     confirmations.append(.transactionFee(.init(fee: customFeeAmount)))
                 }
 
-                confirmations.append(.total(.init(total: totalCost)))
+                confirmations += [
+                    .total(.init(total: totalCost)),
+                    .buyPaymentMethod(.init(name: sourceAccountLabel))
+                ]
 
                 return pendingTransaction.update(confirmations: confirmations)
             }
