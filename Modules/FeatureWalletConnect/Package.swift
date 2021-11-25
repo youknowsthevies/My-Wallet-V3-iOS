@@ -34,7 +34,7 @@ let package = Package(
         .package(
             name: "WalletConnectSwift",
             url: "https://github.com/crucheton-bc/WalletConnectSwift.git",
-            .branch("master")
+            from: "1.6.2"
         ),
         .package(path: "../Localization"),
         .package(path: "../UIComponents"),

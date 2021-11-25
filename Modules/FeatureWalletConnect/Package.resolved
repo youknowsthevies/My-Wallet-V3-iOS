@@ -230,9 +230,9 @@
         "package": "WalletConnectSwift",
         "repositoryURL": "https://github.com/crucheton-bc/WalletConnectSwift.git",
         "state": {
-          "branch": "master",
-          "revision": "f951da68a32666712e8c80ba0c77e9df5dce9fd6",
-          "version": null
+          "branch": null,
+          "revision": "708d9421413bf47f0f093793d6075714b326995d",
+          "version": "1.6.2"
         }
       },
       {

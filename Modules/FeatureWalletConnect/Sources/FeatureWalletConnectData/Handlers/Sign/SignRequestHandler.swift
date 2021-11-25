@@ -116,7 +116,10 @@ extension SignRequestHandler {
                 }
                 return .data(Data(hex: messageBytes))
             case .ethSignTypedData:
-                return nil
+                guard let typedData = try? request.parameterJson(at: dataIndex) else {
+                    return nil
+                }
+                return .typedData(typedData)
             }
         }
     }
