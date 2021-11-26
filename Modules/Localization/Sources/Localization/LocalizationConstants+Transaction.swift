@@ -1195,6 +1195,10 @@ extension LocalizationConstants.Transaction.Error {
         "The maximum amount of %@ you can withdraw from this account is **%@**.",
         comment: "Error recovery message - insufficient funds to perform 'swap' transaction"
     )
+    public static let insuffientFundsToPayForFeesMessage = NSLocalizedString(
+        "You don't have enough %@ to pay for fees. The expected fee for this transaction is **%@**. Please note that **we don't set nor collect fees for transactions from Private Key Wallets**. Those fees go directly to the blockchain's node validators and are algoritmically set by the %@ network.",
+        comment: "Error recovery message - insufficient funds to pay for fees for transaction"
+    )
     public static let belowFeeRecoveryHint = NSLocalizedString(
         "%@ Minimum",
         comment: "Error recovery hint - balance below fees required for transaction"
