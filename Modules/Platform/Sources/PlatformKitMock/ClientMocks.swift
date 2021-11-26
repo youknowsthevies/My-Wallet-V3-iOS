@@ -80,10 +80,22 @@ extension APIClient {
         amount: FiatValue
     ) -> QuoteResponse {
         QuoteResponse(
-            time: "2020-01-15T22:09:45.600Z",
-            rate: "1000000",
-            rateWithoutFee: "995000",
-            fee: "5000"
+            quoteId: "00000000-0000-0000-0000-000000000000",
+            quoteMarginPercent: 0.5,
+            quoteCreatedAt: "2021-12-31T01:00:02.030000000Z",
+            quoteExpiresAt: "2021-12-31T01:00:04.030000000Z",
+            price: "5830206",
+            networkFee: nil,
+            staticFee: nil,
+            feeDetails: .init(
+                feeWithoutPromo: "10",
+                fee: "10",
+                feeFlags: []
+            ),
+            settlementDetails: .init(
+                availability: .instant
+            ),
+            sampleDepositAddress: nil
         )
     }
 

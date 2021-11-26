@@ -26,6 +26,9 @@ struct QuoteResponse: Decodable {
     }
 
     let quoteId: String
+    let quoteMarginPercent: Double
+    let quoteCreatedAt: String
+    let quoteExpiresAt: String
     let price: String
     let networkFee: String?
     let staticFee: String?
