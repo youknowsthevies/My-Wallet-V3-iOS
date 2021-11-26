@@ -33,6 +33,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case termsOfService(TransactionConfirmation.Model.AnyBoolOption<Bool>)
     case total(TransactionConfirmation.Model.Total)
     case totalCost(TransactionConfirmation.Model.TotalCost)
+    case purchase(TransactionConfirmation.Model.Purchase)
     case transactionFee(TransactionConfirmation.Model.FiatTransactionFee)
     case transferAgreement(TransactionConfirmation.Model.AnyBoolOption<Bool>)
 
@@ -95,6 +96,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .total(let model):
             return model.type
         case .totalCost(let model):
+            return model.type
+        case .purchase(let model):
             return model.type
         case .transactionFee(let model):
             return model.type
@@ -163,6 +166,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
             return model.formatted
         case .totalCost(let model):
             return model.formatted
+        case .purchase(let model):
+            return model.formatted
         case .transactionFee(let model):
             return model.formatted
         case .transferAgreement(let model):
@@ -202,6 +207,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
              (.termsOfService, .termsOfService),
              (.total, .total),
              (.totalCost, .totalCost),
+             (.purchase, .purchase),
              (.transactionFee, .transactionFee),
              (.transferAgreement, .transferAgreement):
             return true

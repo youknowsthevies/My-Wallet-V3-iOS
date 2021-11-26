@@ -57,16 +57,17 @@ public struct Quote {
         response: QuoteResponse
     ) throws {
         quoteId = response.quoteId
+        rate = FiatValue.create(major: Decimal(response.price), currency: amount.currency)
+        let minorPrice = BigInt(response.price).toMinor(decimalPlaces: 2)
+        let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: minorPrice)
+        // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
+        estimatedCryptoAmount = CryptoValue.create(major: majorEstimatedAmount, currency: cryptoCurrency)
         guard let feeRateMinor = Decimal(string: response.feeDetails.fee) else {
             throw SetupError.feeParsing
         }
-        let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: BigInt(response.price))
-        // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        estimatedCryptoAmount = CryptoValue.create(major: majorEstimatedAmount, currency: cryptoCurrency)
         let feeAmountMinor = feeRateMinor * estimatedCryptoAmount.displayMajorValue
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         fee = FiatValue.create(minor: feeAmountMinor, currency: amount.currency)
-        rate = FiatValue.create(minor: BigInt(response.price), currency: amount.currency)
         estimatedFiatAmount = estimatedCryptoAmount.convertToFiatValue(exchangeRate: rate)
     }
 }

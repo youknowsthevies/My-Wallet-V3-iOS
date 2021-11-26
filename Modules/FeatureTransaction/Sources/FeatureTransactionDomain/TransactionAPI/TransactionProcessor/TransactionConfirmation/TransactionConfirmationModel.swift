@@ -108,6 +108,26 @@ extension TransactionConfirmation.Model {
         }
     }
 
+    public struct Purchase: TransactionConfirmationModelable {
+
+        public let purchase: MoneyValue
+        public let exchange: MoneyValue?
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public init(purchase: MoneyValue, exchange: MoneyValue? = nil) {
+            self.purchase = purchase
+            self.exchange = exchange
+        }
+
+        public var formatted: (title: String, subtitle: String)? {
+            var value: String = purchase.displayString
+            if let exchange = exchange {
+                value = purchase.convert(using: exchange).displayString
+            }
+            return (LocalizedString.purchase, value)
+        }
+    }
+
     public struct App: TransactionConfirmationModelable {
 
         public let type: TransactionConfirmation.Kind = .readOnly
@@ -466,7 +486,7 @@ extension TransactionConfirmation.Model {
 
         public var formatted: (title: String, subtitle: String)? {
             (
-                String(format: LocalizedString.transactionFee, fee.displayCode),
+                String(format: LocalizedString.blockchainFee, fee.displayCode),
                 fee.displayString
             )
         }

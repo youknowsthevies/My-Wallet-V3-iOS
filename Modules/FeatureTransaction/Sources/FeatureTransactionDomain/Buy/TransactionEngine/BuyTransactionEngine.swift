@@ -148,6 +148,7 @@ final class BuyTransactionEngine: TransactionEngine {
                 var confirmations: [TransactionConfirmation] = [
                     .buyCryptoValue(.init(baseValue: cryptoAmount)),
                     .buyExchangeRateValue(.init(baseValue: moneyPair.source.quote, code: moneyPair.source.base.code)),
+                    .purchase(.init(purchase: try totalCost - fee)),
                     .transactionFee(.init(fee: fee))
                 ]
 
