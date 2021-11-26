@@ -12,7 +12,7 @@ final class SimpleBuyQuoteTests: XCTestCase {
         for this in sut {
             XCTAssertNotNil(this.quote)
             XCTAssertFalse(this.quote.estimatedCryptoAmount.isZero, "\(this.locale) has zero estimatedAmount")
-            XCTAssertEqual(this.quote.fee.displayMajorValue, 10, "\(this.locale) fee major value should be 12.5")
+            XCTAssertEqual(this.quote.fee.displayMajorValue, 12.5, "\(this.locale) fee major value should be 12.5")
         }
     }
 }
@@ -39,8 +39,8 @@ extension SimpleBuyQuoteTests {
             networkFee: nil,
             staticFee: nil,
             feeDetails: .init(
-                feeWithoutPromo: "10",
-                fee: "10",
+                feeWithoutPromo: "1250",
+                fee: "1250",
                 feeFlags: []
             ),
             settlementDetails: .init(

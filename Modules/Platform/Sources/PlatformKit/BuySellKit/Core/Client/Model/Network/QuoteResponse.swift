@@ -42,9 +42,9 @@ public struct Quote {
     // MARK: - Types
 
     enum SetupError: Error {
+        case feeParsing
         case dateFormatting
         case priceParsing
-        case feeParsing
     }
 
     // MARK: - Properties
@@ -83,12 +83,11 @@ public struct Quote {
         let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: priceMinorBigInt)
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         estimatedCryptoAmount = CryptoValue.create(major: majorEstimatedAmount, currency: cryptoCurrency)
-        guard let feeRateMinor = Decimal(string: response.feeDetails.fee) else {
+        guard let feeMinor = Decimal(string: response.feeDetails.fee) else {
             throw SetupError.feeParsing
         }
-        let feeAmountMinor = feeRateMinor * estimatedCryptoAmount.displayMajorValue
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        fee = FiatValue.create(minor: feeAmountMinor, currency: amount.currency)
+        fee = FiatValue.create(minor: feeMinor, currency: amount.currency)
         estimatedFiatAmount = estimatedCryptoAmount.convertToFiatValue(exchangeRate: rate)
     }
 }
