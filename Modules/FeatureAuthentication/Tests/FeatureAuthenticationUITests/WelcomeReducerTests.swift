@@ -123,7 +123,7 @@ final class WelcomeReducerTests: XCTestCase {
             state.emailLoginState = .init()
         }
         testStore.send(.emailLogin(.closeButtonTapped))
-        testStore.receive(.enter(into: nil)) { state in
+        testStore.receive(.dismiss()) { state in
             state.route = nil
             state.emailLoginState = nil
         }
@@ -135,7 +135,7 @@ final class WelcomeReducerTests: XCTestCase {
             state.createWalletState = .init(context: .createWallet)
         }
         testStore.send(.createWallet(.closeButtonTapped))
-        testStore.receive(.enter(into: nil)) { state in
+        testStore.receive(.dismiss()) { state in
             state.route = nil
             state.createWalletState = nil
         }
@@ -174,7 +174,7 @@ final class WelcomeReducerTests: XCTestCase {
 
         // when
         testStore.send(.secondPasswordNotice(.closeButtonTapped))
-        testStore.receive(.enter(into: nil)) { state in
+        testStore.receive(.dismiss()) { state in
             state.route = nil
             state.manualCredentialsState = nil
             state.secondPasswordNoticeState = nil
@@ -198,7 +198,7 @@ final class WelcomeReducerTests: XCTestCase {
 
         // when
         testStore.send(.secondPasswordNotice(.closeButtonTapped))
-        testStore.receive(.enter(into: nil)) { state in
+        testStore.receive(.dismiss()) { state in
             state.route = nil
             state.manualCredentialsState = nil
             state.secondPasswordNoticeState = nil

@@ -479,7 +479,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.showLegacyCreateWalletScreen = false
         }
-        testStore.receive(.onboarding(.welcomeScreen(.enter(into: nil)))) { state in
+        testStore.receive(.onboarding(.welcomeScreen(.dismiss()))) { state in
             state.onboarding?.welcomeState?.route = nil
             state.onboarding?.welcomeState?.createWalletState = nil
             state.onboarding?.walletCreationContext = nil
@@ -708,7 +708,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.welcomeState?.route = RouteIntent(route: .emailLogin, action: .enterInto())
         }
-        testStore.receive(.onboarding(.welcomeScreen(.enter(into: nil)))) { state in
+        testStore.receive(.onboarding(.welcomeScreen(.dismiss()))) { state in
             state.onboarding?.welcomeState?.route = nil
             state.onboarding?.welcomeState?.emailLoginState = nil
             state.onboarding?.walletCreationContext = nil
@@ -791,7 +791,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.welcomeState?.route = RouteIntent(route: .restoreWallet, action: .enterInto())
         }
-        testStore.receive(.onboarding(.welcomeScreen(.route(nil)))) { state in
+        testStore.receive(.onboarding(.welcomeScreen(.dismiss()))) { state in
             state.onboarding?.welcomeState?.route = nil
             state.onboarding?.welcomeState?.restoreWalletState = nil
             state.onboarding?.walletCreationContext = nil

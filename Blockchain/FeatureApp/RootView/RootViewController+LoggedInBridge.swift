@@ -31,7 +31,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     func closeSideMenu() {
-        viewStore.send(.route(nil))
+        viewStore.send(.dismiss())
     }
 
     func send(from account: BlockchainAccount) {
@@ -88,21 +88,15 @@ extension RootViewController: LoggedInBridge {
     }
 
     func switchToSend() {
-        dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.buyAndSell))
-        }
+        handleSendCrypto()
     }
 
     func switchTabToSwap() {
-        dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.buyAndSell))
-        }
+        handleSwapCrypto(account: nil)
     }
 
     func switchTabToReceive() {
-        dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.buyAndSell))
-        }
+        handleReceiveCrypto()
     }
 
     func switchToActivity() {
@@ -427,6 +421,14 @@ extension RootViewController: LoggedInBridge {
     }
 
     func handleSecureChannel() {
-        showQRCodeScanner()
+        func show() {
+            viewStore.send(.enter(into: .QR, context: .none))
+        }
+        if viewStore.route == nil {
+            show()
+        } else {
+            viewStore.send(.dismiss())
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { show() }
+        }
     }
 }

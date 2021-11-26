@@ -267,7 +267,7 @@ public let welcomeReducer = Reducer.combine(
              .restoreWallet(.closeButtonTapped),
              .manualPairing(.closeButtonTapped),
              .secondPasswordNotice(.closeButtonTapped):
-            return .enter(into: nil)
+            return .dismiss()
 
         // TODO: refactor this by not relying on access lower level reducers
         case .emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))),

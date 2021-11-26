@@ -47,9 +47,11 @@ enum RootViewRoute: NavigationRoute {
         switch self {
         case .QR:
             QRCodeScannerView()
+                .identity(blockchain.ux.user.scan.qr)
                 .ignoresSafeArea()
         case .account:
             AccountView()
+                .identity(blockchain.ux.user.account)
                 .ignoresSafeArea(.container, edges: .bottom)
         }
     }

@@ -144,7 +144,7 @@ final class TradingLimitsViewTests: XCTestCase {
     func test_view_tiers_close_modal() throws {
         testStore.assert(
             .send(.listAction(.tiersStatusViewAction(.close))),
-            .receive(.listAction(.route(nil))) {
+            .receive(.listAction(.dismiss())) {
                 $0.featuresList.route = nil
             }
         )

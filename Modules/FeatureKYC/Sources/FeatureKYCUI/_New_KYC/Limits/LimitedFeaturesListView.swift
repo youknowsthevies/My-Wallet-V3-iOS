@@ -86,7 +86,7 @@ let limitedFeaturesListReducer: Reducer<
         case .tiersStatusViewAction(let action):
             switch action {
             case .close:
-                return .init(value: .route(nil))
+                return .init(value: .dismiss())
 
             default:
                 return .none
