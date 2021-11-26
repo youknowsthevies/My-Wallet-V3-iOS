@@ -374,7 +374,17 @@ extension TransactionAction {
             return newState
 
         case .returnToPreviousStep:
-            return oldState.stateForMovingOneStepBack()
+            var newState = oldState.stateForMovingOneStepBack()
+            // HOTFIX: this check fixes a problem when navigating back using a navigation controller's pop mechanism
+            if oldState.step == .selectTarget, newState.step == .selectSource {
+                // Fixes a crash with precondition in some TransactionEngines like Swap.
+                // The issue was caused by the fact we don't clear state when moving back from step to step.
+                // This caused the destination never to be removed, so when popping from enter amount to destination picker to source picker,
+                // selecting a new source would cause us to move directly to the enter amount screen with the old destination selected.
+                // Some transaction engines like swap check for the source and destination currency to match or not not match as a precondition.
+                newState.destination = nil
+            }
+            return newState
 
         case .modifyTransactionConfirmation:
             return oldState
