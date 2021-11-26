@@ -100,7 +100,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             guard case .hashed(let hash, let amount, _) = result else {
                 return .error(PlatformKitError.default)
             }
-            guard amount.isCrypto else {
+            guard let amount = amount, amount.isCrypto else {
                 return .error(PlatformKitError.default)
             }
             return self.receiveAddress

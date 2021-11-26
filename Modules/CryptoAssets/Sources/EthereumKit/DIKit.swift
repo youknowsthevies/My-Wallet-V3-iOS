@@ -46,8 +46,6 @@ extension DependencyContainer {
 
         factory { EthereumSigner() as EthereumSignerAPI }
 
-        factory { EthereumTransactionEncoder() as EthereumTransactionEncoderAPI }
-
         factory { EthereumTransactionDispatcher() as EthereumTransactionDispatcherAPI }
 
         single(tag: Tags.EthereumAccountService.isContractAddressCache) {

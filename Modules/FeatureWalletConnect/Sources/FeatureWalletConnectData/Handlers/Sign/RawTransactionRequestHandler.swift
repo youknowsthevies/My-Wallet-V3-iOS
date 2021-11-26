@@ -8,7 +8,7 @@ import Foundation
 import PlatformKit
 import WalletConnectSwift
 
-final class SignRequestHandler: RequestHandler {
+final class RawTransactionRequestHandler: RequestHandler {
 
     private let accountProvider: WalletConnectAccountProviderAPI
     private let userEvent: (WalletConnectUserEvent) -> Void
@@ -36,34 +36,32 @@ final class SignRequestHandler: RequestHandler {
         accountProvider
             .defaultAccount
             .map { [responseEvent, getSession] defaultAccount -> WalletConnectUserEvent? in
-                guard let method = Method(rawValue: request.method) else {
+                guard Method(rawValue: request.method) != nil else {
                     return nil
                 }
                 guard let session = getSession(request.url) else {
                     return nil
                 }
-                guard let address = method.address(request: request) else {
+                guard let transaction = try? request.parameter(of: String.self, at: 0) else {
                     return nil
                 }
-                guard let message = method.message(request: request) else {
-                    return nil
-                }
-                let target = EthereumSignMessageTarget(
+                let target = EthereumRawTransactionTarget(
                     dAppAddress: session.dAppInfo.peerMeta.url.absoluteString,
                     dAppName: session.dAppInfo.peerMeta.name,
-                    account: address,
-                    message: message,
+                    rawTransaction: Data(hex: transaction),
                     onTxCompleted: { transactionResult in
                         switch transactionResult {
                         case .signed(let string):
                             responseEvent(.signature(string, request))
-                        default:
+                        case .hashed(let txHash, _, _):
+                            responseEvent(.transactionHash(txHash, request))
+                        case .unHashed:
                             break
                         }
                         return .empty()
                     }
                 )
-                return .signMessage(defaultAccount, target)
+                return .sendTransaction(defaultAccount, target)
             }
             .sink(
                 receiveValue: { [userEvent, responseEvent] event in
@@ -78,49 +76,9 @@ final class SignRequestHandler: RequestHandler {
     }
 }
 
-extension SignRequestHandler {
+extension RawTransactionRequestHandler {
 
     private enum Method: String {
-        case personalSign = "personal_sign"
-        case ethSign = "eth_sign"
-        case ethSignTypedData = "eth_signTypedData"
-
-        private var dataIndex: Int {
-            switch self {
-            case .personalSign:
-                return 0
-            case .ethSign, .ethSignTypedData:
-                return 1
-            }
-        }
-
-        private var addressIndex: Int {
-            switch self {
-            case .personalSign:
-                return 1
-            case .ethSign, .ethSignTypedData:
-                return 0
-            }
-        }
-
-        func address(request: Request) -> String? {
-            try? request.parameter(of: String.self, at: addressIndex)
-        }
-
-        func message(request: Request) -> EthereumSignMessageTarget.Message? {
-            switch self {
-            case .ethSign,
-                 .personalSign:
-                guard let messageBytes = try? request.parameter(of: String.self, at: dataIndex) else {
-                    return nil
-                }
-                return .data(Data(hex: messageBytes))
-            case .ethSignTypedData:
-                guard let typedData = try? request.parameterJson(at: dataIndex) else {
-                    return nil
-                }
-                return .typedData(typedData)
-            }
-        }
+        case sendRawTransaction = "eth_sendRawTransaction"
     }
 }

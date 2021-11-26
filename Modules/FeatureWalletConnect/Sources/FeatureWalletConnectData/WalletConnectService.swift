@@ -81,6 +81,15 @@ final class WalletConnectService {
             )
         )
 
+        // eth_sendRawTransaction
+        server.register(
+            handler: RawTransactionRequestHandler(
+                userEvent: userEvent,
+                responseEvent: responseEvent,
+                getSession: getSession
+            )
+        )
+
         sessionRepository
             .retrieve()
             .publisher

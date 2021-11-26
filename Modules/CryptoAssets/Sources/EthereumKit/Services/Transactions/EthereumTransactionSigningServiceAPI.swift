@@ -15,51 +15,44 @@ protocol EthereumTransactionSigningServiceAPI {
     func sign(
         transaction: EthereumTransactionCandidate,
         keyPair: EthereumKeyPair
-    ) -> AnyPublisher<EthereumTransactionFinalised, EthereumTransactionSigningServiceError>
+    ) -> AnyPublisher<EthereumTransactionEncoded, EthereumTransactionSigningServiceError>
 }
 
 final class EthereumTransactionSigningService: EthereumTransactionSigningServiceAPI {
 
     private let accountDetailsService: EthereumAccountDetailsServiceAPI
     private let transactionSigner: EthereumSignerAPI
-    private let transactionEncoder: EthereumTransactionEncoderAPI
 
     init(
         accountDetailsService: EthereumAccountDetailsServiceAPI = resolve(),
-        transactionSigner: EthereumSignerAPI = resolve(),
-        transactionEncoder: EthereumTransactionEncoderAPI = resolve()
+        transactionSigner: EthereumSignerAPI = resolve()
     ) {
         self.accountDetailsService = accountDetailsService
         self.transactionSigner = transactionSigner
-        self.transactionEncoder = transactionEncoder
     }
 
     func sign(
         transaction: EthereumTransactionCandidate,
         keyPair: EthereumKeyPair
-    ) -> AnyPublisher<EthereumTransactionFinalised, EthereumTransactionSigningServiceError> {
+    ) -> AnyPublisher<EthereumTransactionEncoded, EthereumTransactionSigningServiceError> {
         defaultAccountNonce()
-            .flatMap { [buildSignEncode] nonce in
-                buildSignEncode(transaction, nonce, keyPair)
+            .flatMap { [buildSign] nonce in
+                buildSign(transaction, nonce, keyPair)
                     .publisher
             }
             .eraseToAnyPublisher()
     }
 
-    private func buildSignEncode(
+    private func buildSign(
         transaction: EthereumTransactionCandidate,
         nonce: UInt64,
         keyPair: EthereumKeyPair
-    ) -> Result<EthereumTransactionFinalised, EthereumTransactionSigningServiceError> {
+    ) -> Result<EthereumTransactionEncoded, EthereumTransactionSigningServiceError> {
         EthereumTransactionCandidateCosted
             .create(transaction: transaction, nonce: BigUInt(nonce))
             .eraseError()
             .flatMap { costed in
                 transactionSigner.sign(transaction: costed, keyPair: keyPair)
-                    .eraseError()
-            }
-            .flatMap { signed in
-                transactionEncoder.encode(signed: signed)
                     .eraseError()
             }
             .mapError(EthereumTransactionSigningServiceError.errorSigningTransaction)

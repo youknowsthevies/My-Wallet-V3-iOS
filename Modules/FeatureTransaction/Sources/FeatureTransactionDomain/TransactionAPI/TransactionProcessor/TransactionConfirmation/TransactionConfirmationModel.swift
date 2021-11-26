@@ -161,6 +161,25 @@ extension TransactionConfirmation.Model {
         }
     }
 
+    public struct RawTransaction: TransactionConfirmationModelable {
+
+        public let type: TransactionConfirmation.Kind = .readOnly
+        public var formatted: (title: String, subtitle: String)? {
+            (title: title, subtitle: rawTransaction)
+        }
+
+        private let dAppName: String
+        private let rawTransaction: String
+        private var title: String {
+            String(format: LocalizedString.rawTransaction, dAppName)
+        }
+
+        public init(dAppName: String, rawTransaction: String) {
+            self.dAppName = dAppName
+            self.rawTransaction = rawTransaction
+        }
+    }
+
     public struct Destination: TransactionConfirmationModelable {
         public let value: String
         public let type: TransactionConfirmation.Kind = .readOnly

@@ -1084,6 +1084,10 @@ extension LocalizationConstants.Transaction.Confirmation {
         "Message from %@",
         comment: "Message from %@"
     )
+    public static let rawTransaction = NSLocalizedString(
+        "Raw transaction from %@",
+        comment: "Raw transaction from %@"
+    )
     public static let network = NSLocalizedString(
         "Network",
         comment: "Network"

@@ -4,9 +4,14 @@ import BigInt
 import PlatformKit
 import WalletCore
 
-public struct EthereumTransactionCandidateSigned {
+public struct EthereumTransactionEncoded {
+
     public let transactionHash: String
     let encodedTransaction: Data
+
+    var rawTransaction: String {
+        encodedTransaction.hexValue.withHex.lowercased()
+    }
 
     init(transaction: WalletCore.EthereumSigningOutput) {
         self.init(encodedTransaction: transaction.encoded)

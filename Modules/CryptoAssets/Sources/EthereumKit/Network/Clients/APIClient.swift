@@ -9,7 +9,7 @@ import PlatformKit
 protocol TransactionPushClientAPI: AnyObject {
 
     func push(
-        transaction: EthereumTransactionFinalised
+        transaction: EthereumTransactionEncoded
     ) -> AnyPublisher<EthereumPushTxResponse, NetworkError>
 }
 
@@ -137,7 +137,7 @@ final class APIClient: TransactionPushClientAPI,
 
     /// Pushes a transaction
     func push(
-        transaction: EthereumTransactionFinalised
+        transaction: EthereumTransactionEncoded
     ) -> AnyPublisher<EthereumPushTxResponse, NetworkError> {
         let pushTxRequest = PushTxRequest(
             rawTx: transaction.rawTransaction,

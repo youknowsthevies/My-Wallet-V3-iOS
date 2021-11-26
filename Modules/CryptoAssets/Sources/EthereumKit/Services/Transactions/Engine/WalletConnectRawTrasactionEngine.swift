@@ -10,7 +10,7 @@ import RxSwift
 import RxToolKit
 import ToolKit
 
-final class WalletConnectSignMessageEngine: TransactionEngine {
+final class WalletConnectRawTrasactionEngine: TransactionEngine {
 
     let currencyConversionService: CurrencyConversionServiceAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
@@ -39,32 +39,29 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
 
     let requireSecondPassword: Bool = false
 
-    private var walletConnectTarget: EthereumSignMessageTarget {
-        transactionTarget as! EthereumSignMessageTarget
+    private var walletConnectTarget: EthereumRawTransactionTarget {
+        transactionTarget as! EthereumRawTransactionTarget
     }
 
-    private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
-    private let ethereumSigner: EthereumSignerAPI
+    private let sendingService: EthereumTransactionSendingServiceAPI
     private let feeService: EthereumFeeServiceAPI
 
     init(
-        ethereumSigner: EthereumSignerAPI = resolve(),
-        keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
+        sendingService: EthereumTransactionSendingServiceAPI = resolve(),
         walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         feeService: EthereumFeeServiceAPI = resolve()
     ) {
-        self.ethereumSigner = ethereumSigner
-        self.feeService = feeService
-        self.keyPairProvider = keyPairProvider
-        self.walletCurrencyService = walletCurrencyService
         self.currencyConversionService = currencyConversionService
+        self.feeService = feeService
+        self.sendingService = sendingService
+        self.walletCurrencyService = walletCurrencyService
     }
 
     func assertInputsValid() {
         precondition(sourceAccount is CryptoNonCustodialAccount)
         precondition(sourceCryptoCurrency == .coin(.ethereum))
-        precondition(transactionTarget is EthereumSignMessageTarget)
+        precondition(transactionTarget is EthereumRawTransactionTarget)
     }
 
     func start(
@@ -88,9 +85,9 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
         let network = TransactionConfirmation.Model.Network(
             network: AssetModel.ethereum.name
         )
-        let message = TransactionConfirmation.Model.Message(
+        let message = TransactionConfirmation.Model.RawTransaction(
             dAppName: walletConnectTarget.dAppName,
-            message: walletConnectTarget.readableMessage
+            rawTransaction: walletConnectTarget.rawTransaction.toHexString()
         )
         return .just(
             pendingTransaction.update(
@@ -98,7 +95,7 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
                     .notice(notice),
                     .app(app),
                     .network(network),
-                    .message(message)
+                    .rawTransaction(message)
                 ]
             )
         )
@@ -138,34 +135,21 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
     }
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        sourceAccount.receiveAddress
-            .map { [walletConnectTarget] receiveAddress in
-                guard receiveAddress.address.caseInsensitiveCompare(walletConnectTarget.account) == .orderedSame else {
-                    throw TransactionValidationFailure(state: .invalidAddress)
-                }
-                return pendingTransaction
-            }
+        Single.just(pendingTransaction)
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        keyPairProvider
-            .keyPair(with: secondPassword)
-            .flatMap { [ethereumSigner, walletConnectTarget] ethereumKeyPair -> Single<Data> in
-                switch walletConnectTarget.message {
-                case .data(let data):
-                    return ethereumSigner
-                        .sign(messageData: data, keyPair: ethereumKeyPair)
-                        .single
-                case .typedData(let typedData):
-                    return ethereumSigner
-                        .signTypedData(messageJson: typedData, keyPair: ethereumKeyPair)
-                        .single
-                }
+        let encodedTransaction = EthereumTransactionEncoded(
+            encodedTransaction: walletConnectTarget.rawTransaction
+        )
+        return sendingService
+            .send(transaction: encodedTransaction)
+            .map(\.transactionHash)
+            .map { transactionHash -> TransactionResult in
+                .hashed(txHash: transactionHash, amount: pendingTransaction.amount)
             }
-            .map { personalSigned -> TransactionResult in
-                .signed(rawTx: personalSigned.hexString.withHex)
-            }
+            .asSingle()
     }
 
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
