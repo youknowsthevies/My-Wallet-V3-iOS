@@ -42,6 +42,7 @@ public struct Quote {
     // MARK: - Types
 
     enum SetupError: Error {
+        case dateFormatting
         case priceParsing
         case feeParsing
     }
@@ -49,6 +50,8 @@ public struct Quote {
     // MARK: - Properties
 
     public let quoteId: String
+    public let quoteCreatedAt: Date
+    public let quoteExpiresAt: Date
     public let fee: FiatValue
     public let rate: FiatValue
     public let estimatedCryptoAmount: CryptoValue
@@ -64,6 +67,12 @@ public struct Quote {
         response: QuoteResponse
     ) throws {
         quoteId = response.quoteId
+        guard let quoteCreatedDate = dateFormatter.date(from: response.quoteCreatedAt),
+              let quoteExpiresDate = dateFormatter.date(from: response.quoteExpiresAt) else {
+            throw SetupError.dateFormatting
+        }
+        quoteCreatedAt = quoteCreatedDate
+        quoteExpiresAt = quoteExpiresDate
         guard let priceMinor = Decimal(string: response.price),
               let priceMinorBigInt = BigInt(response.price)
         else {
