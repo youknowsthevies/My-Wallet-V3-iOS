@@ -25,7 +25,7 @@ extension View {
             )
             Color.black
                 .opacity(isPresented.wrappedValue ? 0.4 : 0)
-                .frame(width: .infinity, height: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
                 .animation(.linear)
                 .onTapGesture {

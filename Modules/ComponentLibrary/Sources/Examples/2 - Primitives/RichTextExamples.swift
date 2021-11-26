@@ -6,17 +6,29 @@ import SwiftUI
 struct RichTextExamples: View {
     @State var text: String = """
     ## Markdown
-    The *quick* brown _fox_ **jumps** over the lazy dog.
-    [https://blockchain.com](Links) get styling, but no tap action.
+    The *quick* brown _fox_ **jumps** over the ~lazy~ dog.
+
+    [Links](https://blockchain.com) get styling, but no tap action.
     """
 
     var body: some View {
         VStack(spacing: 0) {
-            TextEditor(text: $text)
-                .frame(height: 50.ph)
+            SectionHeader(title: "Rendered")
 
-            RichText(text) // or `Text(rich:)`
-                .typography(.body1)
+            ScrollView {
+                HStack {
+                    RichText(text) // or `Text(rich:)`
+                        .typography(.body1)
+                        .padding(Spacing.padding())
+
+                    Spacer(minLength: 0)
+                }
+            }
+
+            SectionHeader(title: "Edit Below")
+
+            TextEditor(text: $text)
+                .padding(.vertical)
         }
     }
 }
