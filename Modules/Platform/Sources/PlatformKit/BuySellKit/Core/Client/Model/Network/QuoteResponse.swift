@@ -68,7 +68,8 @@ public struct Quote {
     ) throws {
         quoteId = response.quoteId
         guard let quoteCreatedDate = dateFormatter.date(from: response.quoteCreatedAt),
-              let quoteExpiresDate = dateFormatter.date(from: response.quoteExpiresAt) else {
+              let quoteExpiresDate = dateFormatter.date(from: response.quoteExpiresAt)
+        else {
             throw SetupError.dateFormatting
         }
         quoteCreatedAt = quoteCreatedDate
