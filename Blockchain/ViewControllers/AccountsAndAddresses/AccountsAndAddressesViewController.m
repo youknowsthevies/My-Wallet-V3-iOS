@@ -53,7 +53,7 @@
     self.assetSelectorView.delegate = self;
 
     CGRect frame = CGRectMake(self.view.frame.origin.x,
-                              self.assetSelectorView.frame.origin.x + self.assetSelectorView.frame.size.height,
+                              self.assetSelectorView.frame.origin.y + self.assetSelectorView.frame.size.height,
                               self.view.frame.size.width,
                               self.view.frame.size.height - [ConstantsObjcBridge assetSelectorHeight]);
     self.tableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStyleGrouped];

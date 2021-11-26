@@ -80,6 +80,7 @@ final class RootViewController: UIHostingController<RootView> {
     @LazyInject var airdropRouter: AirdropRouterAPI
 
     var pinRouter: PinRouter?
+    weak var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController?
 
     lazy var bottomSheetPresenter = BottomSheetPresenting()
 

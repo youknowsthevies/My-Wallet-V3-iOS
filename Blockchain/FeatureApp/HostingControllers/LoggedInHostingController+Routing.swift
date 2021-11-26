@@ -47,7 +47,7 @@ extension LoggedInHostingController {
     }
 
     func handleAccountsAndAddresses() {
-        present(createAccountsAndAddressesViewController(), animated: true)
+        (topMostViewController ?? self).present(createAccountsAndAddressesViewController(), animated: true)
     }
 
     func handleInterest() {

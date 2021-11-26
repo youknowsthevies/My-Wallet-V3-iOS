@@ -320,7 +320,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     func reload() {
-        #function.peek("‼️ not implemented")
+        accountsAndAddressesNavigationController?.reload()
     }
 
     func presentKYCIfNeeded() {
@@ -414,10 +414,12 @@ extension RootViewController: LoggedInBridge {
         let viewController = storyboard.instantiateViewController(
             withIdentifier: "AccountsAndAddressesNavigationController"
         ) as! AccountsAndAddressesNavigationController
-        viewController.navigationBar.backgroundColor = .white
+        viewController.modalPresentationStyle = .fullScreen
+        viewController.modalTransitionStyle = .coverVertical
         viewController.navigationBar.tintColor = .lightGray
         viewController.reload()
-        (topMostViewController ?? self).present(viewController, animated: true, completion: nil)
+        (topMostViewController ?? self).present(viewController, animated: true)
+        accountsAndAddressesNavigationController = viewController
     }
 
     func handleAirdrops() {
