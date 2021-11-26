@@ -45,10 +45,14 @@ final class CardClient: CardClientAPI {
 
     /// Streams a list of available cards
     /// - Returns: A Single with `CardPayload` array
-    var cardList: AnyPublisher<[CardPayload], NabuNetworkError> {
+    func getCardList(enableProviders: Bool) -> AnyPublisher<[CardPayload], NabuNetworkError> {
         let path = Path.card
+        let parameters = [
+            URLQueryItem(name: "cardProvider", value: "true")
+        ]
         let request = requestBuilder.get(
             path: path,
+            parameters: enableProviders ? parameters : nil,
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

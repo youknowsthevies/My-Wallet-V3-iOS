@@ -18,13 +18,13 @@ class PaymentEligibleMethodsClientMock: PaymentEligibleMethodsClientAPI {
     func paymentsCardAcquirers() -> AnyPublisher<[PaymentCardAcquirer], NabuNetworkError> {
         .just([
             PaymentCardAcquirer(
-                cardAcquirerName: "stripe",
+                cardAcquirerName: .stripe,
                 cardAcquirerAccountCodes: ["stripe_uk", "stripe_us"],
                 // swiftlint:disable line_length
                 apiKey: "pk_test_51JhAakHxBe1tOCzxhX2cvybhcCPMMXfQQghkI7X9VEUFMTyLvcyLVFXSkM9bjsynKmRRwLwkalcPrWJeGaNriU6S00x8XQ9VLX"
             ),
             PaymentCardAcquirer(
-                cardAcquirerName: "checkout",
+                cardAcquirerName: .checkout,
                 cardAcquirerAccountCodes: ["checkout_uk"],
                 apiKey: "pk_sbox_eiq2rsadi5eambtzil662iccmil"
             )

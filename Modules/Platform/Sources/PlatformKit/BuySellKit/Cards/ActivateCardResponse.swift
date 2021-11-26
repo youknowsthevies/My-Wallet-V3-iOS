@@ -29,13 +29,13 @@ public struct ActivateCardResponse: Decodable {
         case cardProvider
     }
 
-    public struct CardAcquirer: Codable {
+    public struct CardAcquirer: Decodable {
         let cardAcquirerName: CardPayload.Partner
         let cardAcquirerAccountCode: String
         let apiUserID: String?
         let apiToken: String?
         let paymentLink: String?
-        let paymentState: String?
+        let paymentState: OrderPayload.Response.Attributes.PaymentState
         let paymentReference: String?
         let orderReference: String?
         let clientSecret: String?
@@ -47,7 +47,7 @@ public struct ActivateCardResponse: Decodable {
             apiUserID: String?,
             apiToken: String?,
             paymentLink: String?,
-            paymentState: String?,
+            paymentState: String,
             paymentReference: String?,
             orderReference: String?,
             clientSecret: String?,
@@ -58,7 +58,7 @@ public struct ActivateCardResponse: Decodable {
             self.apiUserID = apiUserID
             self.apiToken = apiToken
             self.paymentLink = paymentLink
-            self.paymentState = paymentState
+            self.paymentState = .init(rawValue: paymentState) ?? .unknown
             self.paymentReference = paymentReference
             self.orderReference = orderReference
             self.clientSecret = clientSecret

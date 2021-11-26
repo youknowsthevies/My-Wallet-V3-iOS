@@ -38,7 +38,8 @@ public class StripeClient: CardAcquirerClientAPI {
     static func authorizationState(
         _ acquirer: ActivateCardResponse.CardAcquirer
     ) -> PartnerAuthorizationData.State {
-        guard let clientSecret = acquirer.clientSecret,
+        guard acquirer.paymentState == .waitingFor3DS,
+              let clientSecret = acquirer.clientSecret,
               let publishableKey = acquirer.publishableKey
         else {
             return .confirmed

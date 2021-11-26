@@ -68,17 +68,6 @@ extension PartnerAuthorizationData {
             return nil
         }
         self.paymentMethodId = paymentMethodId
-
-        if let everypay = orderPayloadResponse.attributes?.everypay {
-            switch everypay.paymentState {
-            case .waitingFor3DS:
-                let url = URL(string: everypay.paymentLink)!
-                state = .required(.init(cardAcquirer: .everyPay, paymentLink: url))
-            case .confirmed3DS:
-                state = .confirmed
-            }
-        } else {
-            state = .none
-        }
+        state = orderPayloadResponse.authorizationState
     }
 }

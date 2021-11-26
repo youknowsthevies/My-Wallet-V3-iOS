@@ -93,7 +93,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             .map { acquirers -> [Single<Result<CardTokenizationResponse, Error>>] in
                 acquirers
                     .compactMap { acquirer -> Single<CardTokenizationResponse>? in
-                        switch acquirer.type {
+                        switch acquirer.cardAcquirerName {
                         case .checkout:
                             return CheckoutClient(acquirer.apiKey)
                                 .tokenize(card, accounts: acquirer.cardAcquirerAccountCodes)
@@ -102,7 +102,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                             return StripeClient(acquirer.apiKey)
                                 .tokenize(card, accounts: acquirer.cardAcquirerAccountCodes)
                                 .asSingle()
-                        case .unknown:
+                        case .unknown, .everyPay:
                             return nil
                         }
                     }
@@ -229,8 +229,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
         case .everyPay:
             guard let apiUsername = acquirer.apiUserID,
                   let mobileToken = acquirer.apiToken,
-                  let paymentLink = acquirer.paymentLink,
-                  let paymentState = acquirer.paymentState
+                  let paymentLink = acquirer.paymentLink
             else {
                 return Single.error(CardAcquirerError.missingParameters)
             }
@@ -238,7 +237,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                 apiUsername: apiUsername,
                 mobileToken: mobileToken,
                 paymentLink: paymentLink,
-                paymentState: paymentState
+                paymentState: acquirer.paymentState.rawValue
             ))
         case .stripe:
             return .just(StripeClient.authorizationState(acquirer))

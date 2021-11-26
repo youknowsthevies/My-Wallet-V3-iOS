@@ -45,12 +45,13 @@ class CheckoutClient: CardAcquirerClientAPI {
     static func authorizationState(
         _ acquirer: ActivateCardResponse.CardAcquirer
     ) -> PartnerAuthorizationData.State {
-        if let paymentLink = acquirer.paymentLink,
-           let paymentLinkURL = URL(string: paymentLink)
-        {
-            return .required(.init(cardAcquirer: .checkout, paymentLink: paymentLinkURL))
+        guard acquirer.paymentState == .waitingFor3DS,
+              let paymentLink = acquirer.paymentLink,
+              let paymentLinkURL = URL(string: paymentLink)
+        else {
+            return .confirmed
         }
-        return .confirmed
+        return .required(.init(cardAcquirer: .checkout, paymentLink: paymentLinkURL))
     }
 }
 
