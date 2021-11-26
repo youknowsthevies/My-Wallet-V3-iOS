@@ -65,7 +65,8 @@ public struct Quote {
     ) throws {
         quoteId = response.quoteId
         guard let priceMinor = Decimal(string: response.price),
-              let priceMinorBigInt = BigInt(response.price) else {
+              let priceMinorBigInt = BigInt(response.price)
+        else {
             throw SetupError.priceParsing
         }
         rate = FiatValue.create(minor: priceMinor, currency: amount.currency)
