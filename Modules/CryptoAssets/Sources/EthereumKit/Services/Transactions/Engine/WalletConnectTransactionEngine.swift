@@ -4,6 +4,7 @@ import BigInt
 import DIKit
 import FeatureTransactionDomain
 import Localization
+import MoneyKit
 import PlatformKit
 import RxSwift
 import RxToolKit
@@ -160,15 +161,10 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     func doValidateAll(
         pendingTransaction: PendingTransaction
     ) -> Single<PendingTransaction> {
-        sourceAccount.actionableBalance
-            .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
-                self.validateSufficientFunds(
-                    pendingTransaction: pendingTransaction,
-                    actionableBalance: actionableBalance
-                )
-                .andThen(self.validateNoPendingTransaction())
-                .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-            }
+        validateSourceAddress()
+            .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
+            .andThen(validateNoPendingTransaction())
+            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
     func execute(
@@ -196,7 +192,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                     transaction.single,
                     keyPairProvider.keyPair(with: secondPassword)
                 )
-                .flatMap { [transactionSigningService] transaction, keyPair -> Single<EthereumTransactionFinalised> in
+                .flatMap { [transactionSigningService] transaction, keyPair -> Single<EthereumTransactionEncoded> in
                     transactionSigningService.sign(
                         transaction: transaction,
                         keyPair: keyPair
@@ -321,6 +317,17 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
             }
     }
 
+    private func validateSourceAddress() -> Completable {
+        sourceAccount
+            .receiveAddress
+            .map { [walletConnectTarget] receiveAddress in
+                guard receiveAddress.address.caseInsensitiveCompare(walletConnectTarget.transaction.from) == .orderedSame else {
+                    throw TransactionValidationFailure(state: .invalidAddress)
+                }
+            }
+            .asCompletable()
+    }
+
     private func validateNoPendingTransaction() -> Completable {
         transactionsService
             .isWaitingOnTransaction
@@ -333,12 +340,10 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     }
 
     private func validateSufficientFunds(
-        pendingTransaction: PendingTransaction,
-        actionableBalance: MoneyValue
+        pendingTransaction: PendingTransaction
     ) -> Completable {
-        Single
-            .just(())
-            .map { [sourceAccount, transactionTarget] _ in
+        sourceAccount.actionableBalance
+            .map { [sourceAccount, transactionTarget] actionableBalance in
                 guard pendingTransaction.gasLimit != nil,
                       pendingTransaction.gasPrice != nil
                 else {

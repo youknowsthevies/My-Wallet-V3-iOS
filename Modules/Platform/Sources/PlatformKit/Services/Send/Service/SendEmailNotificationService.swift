@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import FeatureAuthenticationDomain
 import Foundation
+import MoneyKit
 import NetworkKit
 import ToolKit
 

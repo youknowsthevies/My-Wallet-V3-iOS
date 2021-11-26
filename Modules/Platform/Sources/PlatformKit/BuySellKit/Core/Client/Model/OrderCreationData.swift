@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import MoneyKit
+
 public enum Order {
     public enum Action: String, Codable {
         case buy = "BUY"
@@ -109,12 +111,33 @@ enum OrderPayload {
         }
 
         struct Attributes: Decodable {
-            struct EveryPay: Decodable {
-                enum PaymentState: String, Decodable {
-                    case waitingFor3DS = "WAITING_FOR_3DS_RESPONSE"
-                    case confirmed3DS = "CONFIRMED_3DS"
-                }
+            enum PaymentState: String, Decodable {
+                /// Should never happen. It means a case was forgotten by backend
+                case initial = "INITIAL"
 
+                /// We have to display a 3DS verification popup
+                case waitingFor3DS = "WAITING_FOR_3DS_RESPONSE"
+
+                /// 3DS valid
+                case confirmed3DS = "CONFIRMED_3DS"
+
+                /// Ready for capture, no need for 3DS
+                case settled = "SETTLED"
+
+                /// Payment voided
+                case voided = "VOIDED"
+
+                /// Payment abandonned
+                case abandoned = "ABANDONED"
+
+                /// Payment failed
+                case failed = "FAILED"
+
+                /// Just in case
+                case unknown
+            }
+
+            struct EveryPay: Decodable {
                 let paymentLink: String
                 let paymentState: PaymentState
             }
@@ -123,7 +146,7 @@ enum OrderPayload {
                 let cardAcquirerName: CardPayload.Partner
                 let cardAcquirerAccountCode: String?
                 let paymentLink: String?
-                let paymentState: String?
+                let paymentState: PaymentState
                 let clientSecret: String?
                 let publishableKey: String?
             }
@@ -168,6 +191,82 @@ extension OrderPayload.Response.Attributes.EveryPay {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         paymentLink = try container.decode(String.self, forKey: .paymentLink)
         let paymentState = try container.decode(String.self, forKey: .paymentState)
-        self.paymentState = PaymentState(rawValue: paymentState) ?? .confirmed3DS
+        self.paymentState = OrderPayload.Response.Attributes.PaymentState(rawValue: paymentState) ?? .unknown
+    }
+}
+
+extension OrderPayload.Response.Attributes.CardProvider {
+
+    private enum CodingKeys: String, CodingKey {
+        case cardAcquirerName
+        case cardAcquirerAccountCode
+        case paymentLink
+        case paymentState
+        case clientSecret
+        case publishableKey
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        paymentLink = try container.decodeIfPresent(String.self, forKey: .paymentLink)
+        let paymentState = try container.decode(String.self, forKey: .paymentState)
+        self.paymentState = OrderPayload.Response.Attributes.PaymentState(rawValue: paymentState) ?? .unknown
+        let partnerName = try container.decode(String.self, forKey: .cardAcquirerName)
+        cardAcquirerName = CardPayload.Partner(partner: partnerName)
+        cardAcquirerAccountCode = try container.decode(String.self, forKey: .cardAcquirerAccountCode)
+        clientSecret = try container.decode(String.self, forKey: .clientSecret)
+        publishableKey = try container.decode(String.self, forKey: .publishableKey)
+    }
+}
+
+extension OrderPayload.Response {
+    var authorizationState: PartnerAuthorizationData.State {
+        if let everypay = attributes?.everypay {
+            switch everypay.paymentState {
+            case .waitingFor3DS:
+                let url = URL(string: everypay.paymentLink)!
+                return .required(.init(cardAcquirer: .everyPay, paymentLink: url))
+            case .confirmed3DS, .settled:
+                return .confirmed
+            case .abandoned, .failed, .voided, .unknown, .initial:
+                return .none
+            }
+        } else if let cardAcquirer = attributes?.cardProvider {
+            switch cardAcquirer.paymentState {
+            case .confirmed3DS, .settled:
+                return .confirmed
+            case .waitingFor3DS:
+                switch cardAcquirer.cardAcquirerName {
+                case .everyPay:
+                    guard let paymentLink = cardAcquirer.paymentLink else {
+                        return .none
+                    }
+                    return .required(.init(
+                        cardAcquirer: .everyPay,
+                        paymentLink: URL(string: paymentLink)
+                    ))
+                case .checkout:
+                    guard let paymentLink = cardAcquirer.paymentLink else {
+                        return .confirmed
+                    }
+                    return .required(.init(
+                        cardAcquirer: .checkout,
+                        paymentLink: URL(string: paymentLink),
+                        publishableKey: cardAcquirer.publishableKey
+                    ))
+                case .stripe:
+                    return .required(.init(
+                        cardAcquirer: .stripe,
+                        clientSecret: cardAcquirer.clientSecret,
+                        publishableKey: cardAcquirer.publishableKey
+                    ))
+                case .unknown:
+                    return .none
+                }
+            case .abandoned, .failed, .voided, .unknown, .initial:
+                return .none
+            }
+        }
+        return .none
     }
 }

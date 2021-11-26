@@ -44,7 +44,7 @@ class WalletConnectRouter: WalletConnectRouterAPI {
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] event in
                 switch event {
-                case .sign(let account, let target):
+                case .signMessage(let account, let target):
                     self?.tabSwapping.sign(from: account, target: target)
                 case .signTransaction(let account, let target):
                     self?.tabSwapping.sign(from: account, target: target)

@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import Localization
+import MoneyKit
 import RxSwift
 import ToolKit
 

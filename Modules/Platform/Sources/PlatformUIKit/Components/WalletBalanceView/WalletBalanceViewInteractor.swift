@@ -2,6 +2,7 @@
 
 import ComposableArchitectureExtensions
 import DIKit
+import MoneyKit
 import PlatformKit
 import RxRelay
 import RxSwift

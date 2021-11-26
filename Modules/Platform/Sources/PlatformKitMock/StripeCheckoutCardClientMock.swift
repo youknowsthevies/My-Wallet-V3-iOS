@@ -12,8 +12,8 @@ private class CardClientMock: CardClientAPI {
         self.cardClient = cardClient
     }
 
-    var cardList: AnyPublisher<[CardPayload], NabuNetworkError> {
-        cardClient.cardList
+    func getCardList(enableProviders: Bool) -> AnyPublisher<[CardPayload], NabuNetworkError> {
+        cardClient.getCardList(enableProviders: true)
     }
 
     func chargeCard(by id: String) -> AnyPublisher<Void, NabuNetworkError> {
@@ -31,7 +31,7 @@ private class CardClientMock: CardClientAPI {
 //                                                                        apiUserID: nil,
 //                                                                        apiToken: nil,
 //                                                                        paymentLink: link,
-//                                                                        paymentState: nil,
+//                                                                        paymentState: "WAITING_FOR_3DS_RESPONSE",
 //                                                                        paymentReference: nil,
 //                                                                        orderReference: nil,
 //                                                                        clientSecret: nil,
@@ -48,7 +48,7 @@ private class CardClientMock: CardClientAPI {
             apiUserID: nil,
             apiToken: nil,
             paymentLink: nil,
-            paymentState: nil,
+            paymentState: "WAITING_FOR_3DS_RESPONSE",
             paymentReference: nil,
             orderReference: nil,
             clientSecret: "pi_3JxYDPHxBe1tOCzx0eL6Zo8u_secret_jgjGD59uSZZ4Hgc8QodCpIYwx",

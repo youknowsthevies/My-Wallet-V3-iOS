@@ -57,6 +57,8 @@ extension SettingsSectionType.CellType {
                 return .showChangePinScreen
             case .loginToWebWallet:
                 return .launchWebLogin
+            case .webLogin:
+                return .showWebLogin
             case .rateUs:
                 return .showAppStore
             case .termsOfService:
@@ -68,20 +70,11 @@ extension SettingsSectionType.CellType {
             case .logout:
                 return .logout
             case .addresses:
-                if BuildFlag.isInternal {
-                    fatalError("Implement Addresses")
-                }
-                return .none
+                return .showAccountsAndAddresses
             case .contactSupport:
-                if BuildFlag.isInternal {
-                    fatalError("Implement Contact Support")
-                }
-                return .none
+                return .showContactSupport
             case .airdrops:
-                if BuildFlag.isInternal {
-                    fatalError("Implement Airdrops")
-                }
-                return .none
+                return .showAirdrops
             }
         case .switch:
             return .none

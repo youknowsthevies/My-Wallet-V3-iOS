@@ -2,6 +2,7 @@
 
 import Algorithms
 import Combine
+import MoneyKit
 import RxSwift
 import ToolKit
 

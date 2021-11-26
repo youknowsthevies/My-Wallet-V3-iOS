@@ -22,6 +22,7 @@ public struct MinimalButton<LeadingView: View>: View {
     private let action: () -> Void
 
     @Environment(\.pillButtonSize) private var size
+    @Environment(\.isEnabled) private var isEnabled
 
     private let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
@@ -81,6 +82,7 @@ public struct MinimalButton<LeadingView: View>: View {
         .buttonStyle(
             PillButtonStyle(
                 isLoading: isLoading,
+                isEnabled: isEnabled,
                 size: size,
                 colorCombination: colorCombination
             )

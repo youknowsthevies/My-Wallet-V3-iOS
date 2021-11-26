@@ -38,8 +38,8 @@ schemeTemplates:
       config: ${debugConfig}
       environmentVariables:
         - variable: BLOCKCHAIN_DEBUG_NETWORK_REQUEST
-          value: TRUE
-          isEnabled: false
+          value: "TRUE"
+          isEnabled: true
         - variable: OS_ACTIVITY_MODE
           value: disable
           isEnabled: true
@@ -236,6 +236,21 @@ packages:
   ZendeskChatSDK:
     url: https://github.com/zendesk/chat_sdk_ios.git
     version: 2.11.1
+  ZendeskChatProvidersSDK:
+    url: https://github.com/zendesk/chat_providers_sdk_ios
+    version: 2.11.1
+  ZendeskMessagingSDK:
+    url: https://github.com/zendesk/messaging_sdk_ios
+    version: 3.8.2
+  ZendeskSDKConfigurationsSDK:
+    url: https://github.com/zendesk/sdkconfigurations_sdk_ios
+    version: 1.1.8
+  ZendeskMessagingAPISDK:
+    url: https://github.com/zendesk/messagingapi_sdk_ios
+    version: 3.8.2
+  ZendeskCommonUISDK:
+    url: https://github.com/zendesk/commonui_sdk_ios
+    version: 6.1.1
   DIKit:
     url: https://github.com/jackpooleybc/DIKit.git
     branch: safe-property-wrappers
@@ -296,10 +311,14 @@ packages:
     path: Modules/Keychain
   Localization:
     path: Modules/Localization
+  Metadata:
+    path: Modules/Metadata
   Network:
     path: Modules/Network
   NetworkErrors:
     path: Modules/NetworkErrors
+  Money:
+    path: Modules/Money
   Platform:
     path: Modules/Platform
   RemoteNotifications:
@@ -426,10 +445,14 @@ targets:
         product: KeychainKit
       - package: Localization
         product: Localization
+      - package: Metadata
+        product: MetadataKit
       - package: Network
         product: NetworkKit
       - package: NetworkErrors
         product: NetworkErrors
+      - package: Money
+        product: MoneyKit
       - package: Platform
         product: PlatformKit
       - package: Platform
@@ -570,6 +593,8 @@ targets:
       path: Modules/NetworkErrors/Sources/NabuNetworkErrorMock
     - createIntermediateGroups: true
       path: Modules/Network/Sources/NetworkKitMock
+    - createIntermediateGroups: true
+      path: Modules/Money/Sources/MoneyKitMock
     - createIntermediateGroups: true
       path: Modules/Platform/Sources/PlatformKitMock
     - createIntermediateGroups: true

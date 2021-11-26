@@ -18,9 +18,8 @@ struct PillButtonStyle: ButtonStyle {
         let progressViewTrack: Color
     }
 
-    @Environment(\.isEnabled) private var isEnabled
-
     let isLoading: Bool
+    let isEnabled: Bool
     let size: PillButtonSize
     let isRounded: Bool
     let colorCombination: ColorCombination
@@ -31,11 +30,13 @@ struct PillButtonStyle: ButtonStyle {
 
     init(
         isLoading: Bool,
+        isEnabled: Bool,
         size: PillButtonSize = .standard,
         isRounded: Bool = true,
         colorCombination: ColorCombination
     ) {
         self.isLoading = isLoading
+        self.isEnabled = isEnabled
         self.size = size
         self.isRounded = isRounded
         self.colorCombination = colorCombination

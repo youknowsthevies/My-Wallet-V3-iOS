@@ -40,6 +40,8 @@ public enum AppFeature: Int, CaseIterable {
 
     case pollingForEmailLogin
 
+    case newCreateWalletScreen
+
     // MARK: - SDD
 
     /// Enables SDD checks. If `false`, all checks immediately fail
@@ -70,6 +72,11 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
+
+    // MARK: - Account Picker
+
+    /// New SwiftUI account picker from `FeatureAccountPicker`
+    case swiftUIAccountPicker
 }
 
 extension AppFeature {
@@ -100,6 +107,8 @@ extension AppFeature {
             return "sso_unified_sign_in_enabled_ios"
         case .pollingForEmailLogin:
             return "ios_ff_sso_polling"
+        case .newCreateWalletScreen:
+            return "ios_ff_new_create_wallet_screen"
         case .sddEnabled:
             return "sdd_enabled_ios"
         case .customerSupportChat:
@@ -114,6 +123,8 @@ extension AppFeature {
             return "ios_ff_new_card_acquirers"
         case .newLimitsUIEnabled:
             return "ios_use_new_limits_ui"
+        case .swiftUIAccountPicker:
+            return "ios_swiftui_account_picker"
         }
     }
 
@@ -144,6 +155,8 @@ extension AppFeature {
             return false
         case .pollingForEmailLogin:
             return true
+        case .newCreateWalletScreen:
+            return true
         case .sddEnabled:
             return false
         case .customerSupportChat:
@@ -156,6 +169,8 @@ extension AppFeature {
         case .openBanking:
             return true
         case .newLimitsUIEnabled:
+            return true
+        case .swiftUIAccountPicker:
             return true
         }
     }

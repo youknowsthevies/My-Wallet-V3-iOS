@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import Localization
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -38,7 +39,7 @@ public final class PricesScreenPresenter {
 
     public init(
         drawerRouter: DrawerRouting = resolve(),
-        interactor: PricesScreenInteractor = PricesScreenInteractor()
+        interactor: PricesScreenInteractor
     ) {
         self.drawerRouter = drawerRouter
         self.interactor = interactor
@@ -48,14 +49,14 @@ public final class PricesScreenPresenter {
 
     /// Should be called once the view is loaded
     func setup() {
-        let enabledCryptoCurrencies = interactor.enabledCryptoCurrencies
-        reloadRelay
+        let searchText = reloadRelay
             .startWith(())
             .throttle(.seconds(250), scheduler: MainScheduler.asyncInstance)
             .flatMapLatest { [searchRelay] in
                 searchRelay.asObservable()
             }
-            .map { searchText -> [CryptoCurrency] in
+        Observable.combineLatest(interactor.enabledCryptoCurrencies, searchText)
+            .map { enabledCryptoCurrencies, searchText -> [CryptoCurrency] in
                 guard !searchText.isEmpty else {
                     return enabledCryptoCurrencies
                 }

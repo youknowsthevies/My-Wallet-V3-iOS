@@ -63,7 +63,7 @@ final class SignRequestHandler: RequestHandler {
                         return .empty()
                     }
                 )
-                return .sign(defaultAccount, target)
+                return .signMessage(defaultAccount, target)
             }
             .sink(
                 receiveValue: { [userEvent, responseEvent] event in
@@ -116,7 +116,10 @@ extension SignRequestHandler {
                 }
                 return .data(Data(hex: messageBytes))
             case .ethSignTypedData:
-                return nil
+                guard let typedData = try? request.parameterJson(at: dataIndex) else {
+                    return nil
+                }
+                return .typedData(typedData)
             }
         }
     }

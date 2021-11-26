@@ -3,6 +3,7 @@
 import ComposableArchitectureExtensions
 import ComposableNavigation
 import Localization
+import MoneyKit
 import PlatformKit
 import RxCocoa
 import RxRelay

@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
+import MoneyKit
 
 public enum TransactionConfirmation: TransactionConfirmationModelable {
 
@@ -22,6 +22,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case network(TransactionConfirmation.Model.Network)
     case networkFee(TransactionConfirmation.Model.NetworkFee)
     case notice(TransactionConfirmation.Model.Notice)
+    case rawTransaction(TransactionConfirmation.Model.RawTransaction)
     case sellDestinationValue(TransactionConfirmation.Model.SellDestinationValue)
     case sellExchangeRateValue(TransactionConfirmation.Model.SellExchangeRateValue)
     case sellSourceValue(TransactionConfirmation.Model.SellSourceValue)
@@ -74,6 +75,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .networkFee(let model):
             return model.type
         case .notice(let model):
+            return model.type
+        case .rawTransaction(let model):
             return model.type
         case .sellDestinationValue(let model):
             return model.type
@@ -144,6 +147,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
             return model.formatted
         case .notice(let model):
             return model.formatted
+        case .rawTransaction(let model):
+            return model.formatted
         case .sellDestinationValue(let model):
             return model.formatted
         case .sellExchangeRateValue(let model):
@@ -196,6 +201,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
              (.network, .network),
              (.networkFee, .networkFee),
              (.notice, .notice),
+             (.rawTransaction, .rawTransaction),
              (.sellDestinationValue, .sellDestinationValue),
              (.sellExchangeRateValue, .sellExchangeRateValue),
              (.sellSourceValue, .sellSourceValue),

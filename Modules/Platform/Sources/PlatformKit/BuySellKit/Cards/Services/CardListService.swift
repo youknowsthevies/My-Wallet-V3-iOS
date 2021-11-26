@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import NabuNetworkError
 import RxRelay
 import RxSwift
 import ToolKit
@@ -47,17 +49,20 @@ public final class CardListService: CardListServiceAPI {
     private let client: CardListClientAPI
     private let reactiveWallet: ReactiveWalletAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     // MARK: - Setup
 
     public init(
         client: CardListClientAPI = resolve(),
         reactiveWallet: ReactiveWalletAPI = resolve(),
-        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.client = client
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencyService = fiatCurrencyService
+        self.featureFlagsService = featureFlagsService
 
         NotificationCenter.when(.logout) { [weak self] _ in
             self?.cardsRelay.accept(nil)
@@ -76,14 +81,22 @@ public final class CardListService: CardListServiceAPI {
 
     /// Always fetches data from API, updates relay on success.
     private func createFetchSingle() -> Single<[CardData]> {
-        client.cardList
-            .asObservable()
-            .asSingle()
-            .map([CardData].init)
-            .do(onSuccess: { [weak self] (cards: [CardData]) in
-                self?.cardsRelay.accept(cards)
-            })
-            .catchErrorJustReturn([])
+        Publishers.Zip(
+            featureFlagsService.isEnabled(.local(.newCardAcquirers)),
+            featureFlagsService.isEnabled(.remote(.newCardAcquirers))
+        )
+        .map { isLocalEnabled, isRemoteEnabled in
+            isLocalEnabled && isRemoteEnabled
+        }
+        .flatMap { [client] isEnabled -> AnyPublisher<[CardPayload], NabuNetworkError> in
+            client.getCardList(enableProviders: isEnabled)
+        }
+        .asSingle()
+        .map([CardData].init)
+        .do(onSuccess: { [weak self] (cards: [CardData]) in
+            self?.cardsRelay.accept(cards)
+        })
+        .catchErrorJustReturn([])
     }
 
     public func fetchCards() -> Single<[CardData]> {

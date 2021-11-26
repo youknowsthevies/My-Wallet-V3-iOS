@@ -2,6 +2,7 @@
 
 import Combine
 import FeatureInterestUI
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
@@ -30,7 +31,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     func closeSideMenu() {
-        viewStore.send(.route(nil))
+        viewStore.send(.dismiss())
     }
 
     func send(from account: BlockchainAccount) {
@@ -87,21 +88,15 @@ extension RootViewController: LoggedInBridge {
     }
 
     func switchToSend() {
-        dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.buyAndSell))
-        }
+        handleSendCrypto()
     }
 
     func switchTabToSwap() {
-        dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.buyAndSell))
-        }
+        handleSwapCrypto(account: nil)
     }
 
     func switchTabToReceive() {
-        dismiss(animated: true) { [self] in
-            viewStore.send(.tab(.buyAndSell))
-        }
+        handleReceiveCrypto()
     }
 
     func switchToActivity() {
@@ -319,7 +314,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     func reload() {
-        #function.peek("‼️ not implemented")
+        accountsAndAddressesNavigationController?.reload()
     }
 
     func presentKYCIfNeeded() {
@@ -406,5 +401,34 @@ extension RootViewController: LoggedInBridge {
                 ]
             )
         )
+    }
+
+    func handleAccountsAndAddresses() {
+        let storyboard = UIStoryboard(name: "AccountsAndAddresses", bundle: nil)
+        let viewController = storyboard.instantiateViewController(
+            withIdentifier: "AccountsAndAddressesNavigationController"
+        ) as! AccountsAndAddressesNavigationController
+        viewController.modalPresentationStyle = .fullScreen
+        viewController.modalTransitionStyle = .coverVertical
+        viewController.navigationBar.tintColor = .lightGray
+        viewController.reload()
+        (topMostViewController ?? self).present(viewController, animated: true)
+        accountsAndAddressesNavigationController = viewController
+    }
+
+    func handleAirdrops() {
+        airdropRouter.presentAirdropCenterScreen()
+    }
+
+    func handleSecureChannel() {
+        func show() {
+            viewStore.send(.enter(into: .QR, context: .none))
+        }
+        if viewStore.route == nil {
+            show()
+        } else {
+            viewStore.send(.dismiss())
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { show() }
+        }
     }
 }

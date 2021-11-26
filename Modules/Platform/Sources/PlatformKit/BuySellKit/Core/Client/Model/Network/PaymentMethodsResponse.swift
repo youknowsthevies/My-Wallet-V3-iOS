@@ -103,24 +103,13 @@ public struct PaymentMethodsResponse: Decodable {
 }
 
 public struct PaymentCardAcquirer: Decodable {
-    enum Acquirer: String {
-        case stripe
-        case checkout
-        case unknown
-    }
-
-    /// Name of the acquirer (Stripe, Checkout, ...)
-    let cardAcquirerName: String
+    let cardAcquirerName: CardPayload.Partner
     /// List of the accounts (stripe_uk, stripe_us)
     let cardAcquirerAccountCodes: [String]
     let apiKey: String
 
-    var type: Acquirer {
-        Acquirer(rawValue: cardAcquirerName.lowercased()) ?? .unknown
-    }
-
     public init(
-        cardAcquirerName: String,
+        cardAcquirerName: CardPayload.Partner,
         cardAcquirerAccountCodes: [String],
         apiKey: String
     ) {

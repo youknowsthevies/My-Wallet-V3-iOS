@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import FeatureTransactionDomain
 import Localization
+import MoneyKit
 import PlatformKit
 import RxSwift
 import RxToolKit
@@ -38,7 +39,7 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
 
     let requireSecondPassword: Bool = false
 
-    private var ethereumSignTarget: EthereumSignMessageTarget {
+    private var walletConnectTarget: EthereumSignMessageTarget {
         transactionTarget as! EthereumSignMessageTarget
     }
 
@@ -81,15 +82,15 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
             value: LocalizationConstants.Transaction.Sign.dappRequestWarning
         )
         let app = TransactionConfirmation.Model.App(
-            dAppAddress: ethereumSignTarget.dAppAddress,
-            dAppName: ethereumSignTarget.dAppName
+            dAppAddress: walletConnectTarget.dAppAddress,
+            dAppName: walletConnectTarget.dAppName
         )
         let network = TransactionConfirmation.Model.Network(
             network: AssetModel.ethereum.name
         )
         let message = TransactionConfirmation.Model.Message(
-            dAppName: ethereumSignTarget.dAppName,
-            message: ethereumSignTarget.readableMessage
+            dAppName: walletConnectTarget.dAppName,
+            message: walletConnectTarget.readableMessage
         )
         return .just(
             pendingTransaction.update(
@@ -138,8 +139,8 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
 
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         sourceAccount.receiveAddress
-            .map { [ethereumSignTarget] receiveAddress in
-                guard receiveAddress.address.caseInsensitiveCompare(ethereumSignTarget.account) == .orderedSame else {
+            .map { [walletConnectTarget] receiveAddress in
+                guard receiveAddress.address.caseInsensitiveCompare(walletConnectTarget.account) == .orderedSame else {
                     throw TransactionValidationFailure(state: .invalidAddress)
                 }
                 return pendingTransaction
@@ -150,8 +151,8 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         keyPairProvider
             .keyPair(with: secondPassword)
-            .flatMap { [ethereumSigner, ethereumSignTarget] ethereumKeyPair -> Single<Data> in
-                switch ethereumSignTarget.message {
+            .flatMap { [ethereumSigner, walletConnectTarget] ethereumKeyPair -> Single<Data> in
+                switch walletConnectTarget.message {
                 case .data(let data):
                     return ethereumSigner
                         .sign(messageData: data, keyPair: ethereumKeyPair)

@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
+import MoneyKit
 import PlatformKit
 import ToolKit
 

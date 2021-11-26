@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import DIKit
+import FeatureDashboardUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
 import Foundation
@@ -38,41 +39,30 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
 
     private(set) lazy var items: [SegmentedViewScreenItem] = {
         // Buy
-        let buyListViewController = UIHostingController(
-            rootView: CryptoCurrencySelectionView(
-                store: .init(
-                    initialState: CryptoCurrencySelectionState(
-                        loadingCryptoCurrencies: true,
-                        showDismissButton: false,
-                        showHeader: false
-                    ),
-                    reducer: cryptoCurrencySelectionReducer,
-                    environment: CryptoCurrencySelectionEnvironment(
-                        mainQueue: .main,
-                        close: {},
-                        select: { [weak self] currency in
-                            guard let self = self else { return }
-                            self.coincore.cryptoAccounts(for: currency, supporting: .buy, filter: .custodial)
-                                .ignoreFailure()
-                                .receive(on: DispatchQueue.main)
-                                .flatMap { [weak self] accounts -> AnyPublisher<TransactionFlowResult, Never> in
-                                    guard let self = self, let account = accounts.first else {
-                                        return Just(.abandoned).eraseToAnyPublisher()
-                                    }
-                                    return self.transactionsRouter.presentTransactionFlow(to: .buy(account))
-                                }
-                                .sink { result in
-                                    "\(result)".peek("🧾 \(#function)")
-                                }
-                                .store(in: &self.cancellables)
-                        },
-                        loadCryptoCurrencies: { [cryptoCurrenciesService] in
-                            cryptoCurrenciesService.fetchPurchasableCryptoCurrencies()
-                        }
-                    )
+        let buyListViewController = PricesViewController(
+            presenter: PricesScreenPresenter(
+                interactor: PricesScreenInteractor(
+                    showSupportedPairsOnly: true
                 )
-            )
+            ),
+            customSelectionActionClosure: { [weak self] currency in
+                guard let self = self else { return }
+                self.coincore.cryptoAccounts(for: currency, supporting: .buy, filter: .custodial)
+                    .ignoreFailure()
+                    .receive(on: DispatchQueue.main)
+                    .flatMap { [weak self] accounts -> AnyPublisher<TransactionFlowResult, Never> in
+                        guard let self = self, let account = accounts.first else {
+                            return Just(.abandoned).eraseToAnyPublisher()
+                        }
+                        return self.transactionsRouter.presentTransactionFlow(to: .buy(account))
+                    }
+                    .sink { result in
+                        "\(result)".peek("🧾 \(#function)")
+                    }
+                    .store(in: &self.cancellables)
+            }
         )
+        buyListViewController.automaticallyApplyNavigationBarStyle = false
 
         // Sell
         let sellBuilder = AccountPickerBuilder(

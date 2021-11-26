@@ -2,6 +2,7 @@
 
 import DIKit
 import FeatureTransactionDomain
+import MoneyKit
 import PlatformKit
 import ToolKit
 
@@ -44,8 +45,6 @@ extension DependencyContainer {
         factory { AnyKeyPairProvider<EthereumKeyPair>.ethereum() }
 
         factory { EthereumSigner() as EthereumSignerAPI }
-
-        factory { EthereumTransactionEncoder() as EthereumTransactionEncoderAPI }
 
         factory { EthereumTransactionDispatcher() as EthereumTransactionDispatcherAPI }
 

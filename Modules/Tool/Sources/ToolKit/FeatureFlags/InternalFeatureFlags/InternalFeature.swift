@@ -15,20 +15,11 @@ public enum InternalFeature: String, CaseIterable {
     /// - Note: Old manual guid login screen is used only for internal builds
     case disableGUIDLogin
 
-    /// Enable new account SwiftUI picker.
-    case newAccountPicker
-
     /// Enable new Onboarding Tour on the Welcome Flow
     case newOnboardingTour
 
     /// Enable unified sign in (account upgrade)
     case unifiedSignIn
-
-    /// Enable polling for email login
-    case pollingForEmailLogin
-
-    /// New Create Wallet Screen
-    case newCreateWalletScreen
 
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
@@ -51,14 +42,10 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .newAccountPicker,
-             .walletConnect,
+        case .walletConnect,
              .newOnboardingTour,
              .openBanking,
              .newCardAcquirers,
-             .pollingForEmailLogin,
-             .newCreateWalletScreen,
-             .unifiedQRCodeScanner,
              .unifiedQRCodeScanner,
              .redesign:
             return true
@@ -87,16 +74,10 @@ extension InternalFeature {
             return "Enable Network Request Console Logs"
         case .disableGUIDLogin:
             return "Disable manual (guid) login option"
-        case .newAccountPicker:
-            return "New SwiftUI Account Picker"
         case .newOnboardingTour:
             return "New Onboarding Tour"
         case .unifiedSignIn:
             return "Unified Sign In"
-        case .pollingForEmailLogin:
-            return "Polling (Email Login)"
-        case .newCreateWalletScreen:
-            return "New Create Wallet Screen"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
         case .openBanking:

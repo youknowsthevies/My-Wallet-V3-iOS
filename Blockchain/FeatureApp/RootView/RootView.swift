@@ -7,9 +7,15 @@ import Localization
 import SwiftUI
 
 struct Tab: Hashable, Identifiable {
-    var id: Tab { self }
+    var id: Tag { tag }
+    var tag: Tag
     var name: String
     var icon: Icon
+}
+
+extension Tab: CustomStringConvertible {
+
+    var description: String { id() }
 }
 
 extension Tab {
@@ -17,18 +23,22 @@ extension Tab {
     typealias Localization = LocalizationConstants.TabItems
 
     static let home = Tab(
+        tag: blockchain.ux.user.portfolio,
         name: Localization.home,
         icon: .home
     )
     static let prices = Tab(
+        tag: blockchain.ux.user.prices,
         name: Localization.prices,
         icon: .lineChartUp
     )
     static let buyAndSell = Tab(
+        tag: blockchain.ux.user.buy_and_sell,
         name: Localization.buyAndSell,
         icon: .cart
     )
     static let activity = Tab(
+        tag: blockchain.ux.user.activity,
         name: Localization.activity,
         icon: .pending
     )
@@ -59,22 +69,24 @@ struct RootView: View {
                     PricesView()
                 }
                 fab()
-                tab(.buyAndSell) {
-                    BuySellView(selectedSegment: viewStore.buyAndSellSelectedSegment)
+                tab(.buyAndSell, state: \.buyAndSell) { context in
+                    BuySellView(selectedSegment: context.segment)
                 }
                 tab(.activity) {
                     ActivityView()
                 }
             }
             .overlay(
-                FloatingActionButton(isOn: viewStore.binding(\.$fab))
-                    .padding()
+                FloatingActionButton(isOn: viewStore.binding(\.fab.$isOn))
+                    .identity(blockchain.ux.user.fab)
+                    .pulse(enabled: viewStore.fab.animate, inset: 8)
+                    .padding([.leading, .bottom, .trailing], 16.pt)
                     .contentShape(Rectangle())
-                    .offset(y: Spacing.padding3)
-                    .ignoresSafeArea(.keyboard, edges: .bottom),
+                    .offset(y: 24.pt),
                 alignment: .bottom
             )
-            .bottomSheet(isPresented: viewStore.binding(\.$fab)) {
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+            .bottomSheet(isPresented: viewStore.binding(\.fab.$isOn)) {
                 FrequentActionView { action in
                     viewStore.send(.frequentAction(action))
                 }
@@ -108,8 +120,18 @@ struct RootView: View {
                 icon: { tab.icon.image }
             )
         }
-        .id(tab)
         .tag(tab)
+        .identity(tab.tag)
+    }
+
+    func tab<Content, Scope>(
+        _ tab: Tab,
+        state: @escaping (RootViewState) -> Scope,
+        @ViewBuilder content: @escaping (Scope) -> Content
+    ) -> some View where Content: View, Scope: Equatable {
+        WithViewStore(store.scope(state: state)) { viewStore in
+            self.tab(tab) { content(viewStore.state) }
+        }
     }
 
     @ViewBuilder func navigationButtons() -> some View {

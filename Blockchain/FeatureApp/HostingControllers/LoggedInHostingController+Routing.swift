@@ -11,6 +11,7 @@ import FeatureQRCodeScannerUI
 import FeatureSettingsUI
 import FeatureTransactionUI
 import FeatureWalletConnectDomain
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
@@ -46,7 +47,7 @@ extension LoggedInHostingController {
     }
 
     func handleAccountsAndAddresses() {
-        present(createAccountsAndAddressesViewController(), animated: true)
+        (topMostViewController ?? self).present(createAccountsAndAddressesViewController(), animated: true)
     }
 
     func handleInterest() {

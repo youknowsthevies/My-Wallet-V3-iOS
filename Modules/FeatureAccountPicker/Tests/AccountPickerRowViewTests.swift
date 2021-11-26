@@ -2,6 +2,7 @@
 
 import ComposableArchitecture
 @testable import FeatureAccountPickerUI
+import MoneyKit
 @testable import PlatformKit
 @testable import PlatformKitMock
 @testable import PlatformUIKit

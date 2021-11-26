@@ -35,7 +35,7 @@ public enum UpgradeAccountRoute: NavigationRoute {
                 },
                 credentialsCallback: { _ in
                     // dismiss the web upgrade screen when received a callback
-                    viewStore.send(.enter(into: nil, context: .fullScreen))
+                    viewStore.send(.dismiss())
                 }
             )
         }

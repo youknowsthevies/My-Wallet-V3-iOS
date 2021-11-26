@@ -107,7 +107,7 @@ extension CardPayload {
         case stripe = "STRIPE"
 
         /// Checkout.com partner
-        case checkout = "CHECKOUT"
+        case checkout = "CHECKOUTDOTCOM"
 
         /// Any other
         case unknown

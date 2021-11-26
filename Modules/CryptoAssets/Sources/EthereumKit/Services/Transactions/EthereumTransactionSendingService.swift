@@ -13,6 +13,10 @@ public enum EthereumTransactionSendingServiceError: Error {
 }
 
 protocol EthereumTransactionSendingServiceAPI {
+    func send(
+        transaction: EthereumTransactionEncoded
+    ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError>
+
     func signAndSend(
         transaction: EthereumTransactionCandidate,
         keyPair: EthereumKeyPair
@@ -45,14 +49,14 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
             .eraseToAnyPublisher()
     }
 
-    private func send(
-        transaction: EthereumTransactionFinalised
+    func send(
+        transaction: EthereumTransactionEncoded
     ) -> AnyPublisher<EthereumTransactionPublished, EthereumTransactionSendingServiceError> {
         client.push(transaction: transaction)
             .mapError(EthereumTransactionSendingServiceError.pushTransactionFailed)
             .flatMap { response in
                 EthereumTransactionPublished.create(
-                    finalisedTransaction: transaction,
+                    transaction: transaction,
                     responseHash: response.txHash
                 )
                 .publisher

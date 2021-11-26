@@ -2,6 +2,7 @@
 
 import DIKit
 import FeatureSettingsDomain
+import MoneyKit
 import PlatformKit
 import RxRelay
 import RxSwift

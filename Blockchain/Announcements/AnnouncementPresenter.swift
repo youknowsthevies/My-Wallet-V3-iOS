@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import FeatureDashboardUI
 import FeatureKYCDomain
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa

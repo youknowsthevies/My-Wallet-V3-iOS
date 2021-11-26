@@ -15,9 +15,9 @@ public enum WalletConnectSessionEvent {
 }
 
 public enum WalletConnectUserEvent {
-    case sign(SingleAccount, EthereumSignMessageTarget)
-    case signTransaction(SingleAccount, EthereumSendTransactionTarget)
-    case sendTransaction(SingleAccount, EthereumSendTransactionTarget)
+    case signMessage(SingleAccount, TransactionTarget)
+    case signTransaction(SingleAccount, TransactionTarget)
+    case sendTransaction(SingleAccount, TransactionTarget)
 }
 
 public enum WalletConnectResponseEvent {

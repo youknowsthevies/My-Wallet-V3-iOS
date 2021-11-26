@@ -5,6 +5,7 @@ import Combine
 import DIKit
 import FeatureOpenBankingUI
 import Localization
+import MoneyKit
 import PlatformKit
 import RxSwift
 import SafariServices

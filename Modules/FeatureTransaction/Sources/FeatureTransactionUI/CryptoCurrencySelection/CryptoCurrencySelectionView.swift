@@ -4,7 +4,7 @@ import Combine
 import ComposableArchitecture
 import FeatureTransactionDomain
 import Localization
-import PlatformKit // replace with MoneyKit when available
+import MoneyKit
 import SwiftUI
 import ToolKit
 import UIComponentsKit

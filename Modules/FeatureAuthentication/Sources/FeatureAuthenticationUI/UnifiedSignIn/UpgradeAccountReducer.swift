@@ -121,7 +121,7 @@ let upgradeAccountReducer = Reducer.combine(
         // MARK: - Local Reducers
 
         case .skipUpgrade(.returnToUpgradeButtonTapped):
-            return Effect(value: .navigate(to: nil))
+            return .dismiss()
 
         case .skipUpgrade:
             return .none

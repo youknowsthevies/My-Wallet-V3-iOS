@@ -40,7 +40,7 @@ protocol LoggedInBridge: DrawerRouting,
     InterestAccountListHostingControllerDelegate,
     AuthenticationCoordinating,
     QRCodeScannerRouting,
-    LogoutServiceAPI {}
+    ExternalActionsProviderAPI {}
 
 protocol LoggedInDependencyBridgeAPI: AnyObject {
     /// Registers the bridge
@@ -74,7 +74,7 @@ protocol LoggedInDependencyBridgeAPI: AnyObject {
     /// Proves `QRCodeScannerRouting` methods
     func resolveQRCodeScannerRouting() -> QRCodeScannerRouting
     /// Provides logout
-    func resolveLogoutService() -> LogoutServiceAPI
+    func resolveExternalActionsProvider() -> ExternalActionsProviderAPI
 }
 
 final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
@@ -135,8 +135,8 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
         resolve() as QRCodeScannerRouting
     }
 
-    func resolveLogoutService() -> LogoutServiceAPI {
-        resolve() as LogoutServiceAPI
+    func resolveExternalActionsProvider() -> ExternalActionsProviderAPI {
+        resolve() as ExternalActionsProviderAPI
     }
 
     /// Resolves the underlying bridge with a type

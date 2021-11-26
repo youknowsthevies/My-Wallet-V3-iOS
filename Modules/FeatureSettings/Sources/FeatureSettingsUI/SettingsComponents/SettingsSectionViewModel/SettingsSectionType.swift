@@ -118,6 +118,7 @@ enum SettingsSectionType: Int, Equatable {
 
         enum CommonCellType: String {
             case loginToWebWallet
+            case webLogin
             case changePassword
             case changePIN
             case rateUs
