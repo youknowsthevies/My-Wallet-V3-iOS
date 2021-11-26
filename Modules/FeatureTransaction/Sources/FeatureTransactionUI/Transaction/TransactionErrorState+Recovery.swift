@@ -110,6 +110,13 @@ extension TransactionErrorState {
     func recoveryWarningMessage(for action: AssetAction) -> String {
         let text: String
         switch self {
+        case .belowFees(let fee, let balance):
+            text = String.localizedStringWithFormat(
+                Localization.insuffientFundsToPayForFeesMessage,
+                balance.currencyType.displayCode,
+                fee.shortDisplayString,
+                balance.currencyType.name
+            )
         case .insufficientFunds:
             text = localizedInsufficientFundsMessage(action: action)
         case .belowMinimumLimit:
