@@ -186,7 +186,7 @@ public let welcomeReducer = Reducer.combine(
         case .openCreateWalletScreen:
             return environment
                 .featureFlagsService
-                .isEnabled(.local(.newCreateWalletScreen))
+                .isEnabled(.remote(.newCreateWalletScreen))
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .map { result -> WelcomeAction in

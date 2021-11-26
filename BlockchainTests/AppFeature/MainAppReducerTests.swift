@@ -1042,7 +1042,6 @@ final class MainAppReducerTests: XCTestCase {
     }
 
     func test_session_mismatch_deeplink_show_show_authorization() {
-        mockFeatureFlagsService.enable(.local(.pollingForEmailLogin)).subscribe().store(in: &cancellables)
         mockFeatureFlagsService.enable(.remote(.pollingForEmailLogin))
             .subscribe().store(in: &cancellables)
         mockDeviceVerificationService.expectedSessionMismatch = true
