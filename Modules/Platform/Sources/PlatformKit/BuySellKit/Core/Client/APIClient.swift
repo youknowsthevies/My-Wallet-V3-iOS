@@ -321,10 +321,10 @@ final class APIClient: SimpleBuyClientAPI {
         paymentMethod: PaymentMethodPayloadType?,
         paymentMethodId: String?
     ) -> AnyPublisher<QuoteResponse, NabuNetworkError> {
+        let pair = "\(fiatCurrency.displayCode)-\(cryptoCurrency.displayCode)"
         let payload = QuoteRequest(
             profile: profile.rawValue,
-            inputCurrency: fiatCurrency.displayCode,
-            outputCurrency: cryptoCurrency.displayCode,
+            pair: pair,
             inputValue: amount.minorString,
             paymentMethod: paymentMethod?.rawValue,
             paymentMethodId: paymentMethodId

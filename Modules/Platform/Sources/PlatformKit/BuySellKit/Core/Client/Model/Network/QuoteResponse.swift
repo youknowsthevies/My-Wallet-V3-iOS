@@ -26,9 +26,12 @@ struct QuoteResponse: Decodable {
     }
 
     let quoteId: String
-    let price: Double
+    let price: String
+    let networkFee: String?
+    let staticFee: String?
     let feeDetails: FeeDetails
     let settlementDetails: SettlementDetails
+    let sampleDepositAddress: String?
 }
 
 public struct Quote {
@@ -36,6 +39,7 @@ public struct Quote {
     // MARK: - Types
 
     enum SetupError: Error {
+        case priceParsing
         case feeParsing
     }
 
@@ -57,9 +61,12 @@ public struct Quote {
         response: QuoteResponse
     ) throws {
         quoteId = response.quoteId
-        rate = FiatValue.create(major: Decimal(response.price), currency: amount.currency)
-        let minorPrice = BigInt(response.price).toMinor(decimalPlaces: 2)
-        let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: minorPrice)
+        guard let priceMinor = Decimal(string: response.price),
+              let priceMinorBigInt = BigInt(response.price) else {
+            throw SetupError.priceParsing
+        }
+        rate = FiatValue.create(minor: priceMinor, currency: amount.currency)
+        let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: priceMinorBigInt)
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         estimatedCryptoAmount = CryptoValue.create(major: majorEstimatedAmount, currency: cryptoCurrency)
         guard let feeRateMinor = Decimal(string: response.feeDetails.fee) else {

@@ -17,11 +17,8 @@ public struct QuoteRequest: Encodable {
     /// Profile for the quote
     let profile: String
 
-    /// The fiat currency representation
-    let inputCurrency: String
-
-    /// The crypto currency representation
-    let outputCurrency: String
+    /// The trading pair for the quote
+    let pair: String
 
     /// The fiat value represented in minor units
     let inputValue: String
