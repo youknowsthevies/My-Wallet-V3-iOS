@@ -21,7 +21,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: PrimarySwitchExamples(), title: "🔘 PrimarySwitch"),
             NavigationLinkProvider(view: TagExamples(), title: "🏷 Tag"),
             NavigationLinkProvider(view: CheckboxExamples(), title: "✅ Checkbox"),
-            NavigationLinkProvider(view: RichTextExamples(), title: "🤑 Rich Text")
+            NavigationLinkProvider(view: RichTextExamples(), title: "🤑 Rich Text"),
+            NavigationLinkProvider(view: SegmentedControlExamples(), title: "🚥 SegmentedControl")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
