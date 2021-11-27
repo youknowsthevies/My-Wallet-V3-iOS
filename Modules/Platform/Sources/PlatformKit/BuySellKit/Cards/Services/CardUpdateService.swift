@@ -165,14 +165,8 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                     self.analyticsRecorder.record(event: CardUpdateEvent.sbAddCardFailure)
                 })
         }
-        // 2. Make sure the card partner is supported
-        .map { payload -> CardPayload in
-            guard payload.partner.isKnown else {
-                throw ServiceError.unknownPartner
-            }
-            return payload
-        }
-        // 3. Activate the card
+
+        // 2. Activate the card
         .flatMap(weak: self) { (self, payload) -> Single<(cardId: String, partner: ActivateCardResponse.Partner)> in
             self.cardClient.activateCard(
                 by: payload.identifier,
@@ -186,7 +180,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                 self.analyticsRecorder.record(event: CardUpdateEvent.sbCardActivationFailure)
             })
         }
-        // 4. Partner
+        // 3. Partner
         .flatMap(weak: self) { (self, payload) -> Single<PartnerAuthorizationData> in
             self
                 .add(

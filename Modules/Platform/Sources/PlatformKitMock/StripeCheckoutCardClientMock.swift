@@ -68,6 +68,6 @@ private class CardClientMock: CardClientAPI {
         billingAddress: CardPayload.BillingAddress,
         paymentMethodTokens: [String: String]
     ) -> AnyPublisher<CardPayload, NabuNetworkError> {
-        .just(CardPayload(identifier: "", partner: .stripe, address: nil, currency: "GBP", state: .active, card: nil, additionDate: ""))
+        .just(CardPayload(identifier: "", partner: "CARDPROVIDER", address: nil, currency: "GBP", state: .active, card: nil, additionDate: ""))
     }
 }

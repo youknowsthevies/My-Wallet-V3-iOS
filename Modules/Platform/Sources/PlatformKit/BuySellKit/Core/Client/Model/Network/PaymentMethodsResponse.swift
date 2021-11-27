@@ -103,13 +103,13 @@ public struct PaymentMethodsResponse: Decodable {
 }
 
 public struct PaymentCardAcquirer: Decodable {
-    let cardAcquirerName: CardPayload.Partner
+    let cardAcquirerName: CardPayload.Acquirer
     /// List of the accounts (stripe_uk, stripe_us)
     let cardAcquirerAccountCodes: [String]
     let apiKey: String
 
     public init(
-        cardAcquirerName: CardPayload.Partner,
+        cardAcquirerName: CardPayload.Acquirer,
         cardAcquirerAccountCodes: [String],
         apiKey: String
     ) {

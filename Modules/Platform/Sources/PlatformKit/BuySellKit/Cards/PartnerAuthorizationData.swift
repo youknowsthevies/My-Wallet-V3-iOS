@@ -7,14 +7,14 @@ public struct PartnerAuthorizationData {
     /// Required authorization type
     public enum State: Equatable {
         public struct PaymentParams: Equatable {
-            public let cardAcquirer: CardPayload.Partner
+            public let cardAcquirer: CardPayload.Acquirer
             public let clientSecret: String?
             public let publishableKey: String?
             public let paymentLink: URL?
             public let exitLink: URL
 
             public init(
-                cardAcquirer: CardPayload.Partner,
+                cardAcquirer: CardPayload.Acquirer,
                 clientSecret: String? = nil,
                 paymentLink: URL? = nil,
                 publishableKey: String? = nil
