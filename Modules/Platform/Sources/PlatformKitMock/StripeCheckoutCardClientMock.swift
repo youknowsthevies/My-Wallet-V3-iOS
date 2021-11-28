@@ -35,7 +35,7 @@ private class CardClientMock: CardClientAPI {
 //                                                                        paymentReference: nil,
 //                                                                        orderReference: nil,
 //                                                                        clientSecret: nil,
-//                                                                        publishableKey: "pk_sbox_eiq2rsadi5eambtzil662iccmil"))
+//                                                                        publishableApiKey: "pk_sbox_eiq2rsadi5eambtzil662iccmil"))
 //
 //        return .just(partner)
 //    }
@@ -52,7 +52,7 @@ private class CardClientMock: CardClientAPI {
             paymentReference: nil,
             orderReference: nil,
             clientSecret: "pi_3JxYDPHxBe1tOCzx0eL6Zo8u_secret_jgjGD59uSZZ4Hgc8QodCpIYwx",
-            publishableKey: pk
+            publishableApiKey: pk
         ))
 
         return .just(partner)

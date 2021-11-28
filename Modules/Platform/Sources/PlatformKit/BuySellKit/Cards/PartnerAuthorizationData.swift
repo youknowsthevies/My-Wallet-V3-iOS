@@ -9,7 +9,7 @@ public struct PartnerAuthorizationData {
         public struct PaymentParams: Equatable {
             public let cardAcquirer: CardPayload.Acquirer
             public let clientSecret: String?
-            public let publishableKey: String?
+            public let publishableApiKey: String?
             public let paymentLink: URL?
             public let exitLink: URL
 
@@ -17,12 +17,12 @@ public struct PartnerAuthorizationData {
                 cardAcquirer: CardPayload.Acquirer,
                 clientSecret: String? = nil,
                 paymentLink: URL? = nil,
-                publishableKey: String? = nil
+                publishableApiKey: String? = nil
             ) {
                 self.cardAcquirer = cardAcquirer
                 self.paymentLink = paymentLink
                 self.clientSecret = clientSecret
-                self.publishableKey = publishableKey
+                self.publishableApiKey = publishableApiKey
                 exitLink = URL(string: PartnerAuthorizationData.exitLink)!
             }
         }

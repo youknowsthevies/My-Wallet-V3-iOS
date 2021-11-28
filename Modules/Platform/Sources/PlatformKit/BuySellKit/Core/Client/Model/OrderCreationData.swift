@@ -145,7 +145,7 @@ enum OrderPayload {
                 let paymentLink: String?
                 let paymentState: PaymentState
                 let clientSecret: String?
-                let publishableKey: String?
+                let publishableApiKey: String?
             }
 
             let everypay: EveryPay?
@@ -200,7 +200,7 @@ extension OrderPayload.Response.Attributes.CardProvider {
         case paymentLink
         case paymentState
         case clientSecret
-        case publishableKey
+        case publishableApiKey
     }
 
     init(from decoder: Decoder) throws {
@@ -212,7 +212,7 @@ extension OrderPayload.Response.Attributes.CardProvider {
         cardAcquirerName = CardPayload.Acquirer(acquirer: acquirerName)
         cardAcquirerAccountCode = try container.decode(String.self, forKey: .cardAcquirerAccountCode)
         clientSecret = try container.decode(String.self, forKey: .clientSecret)
-        publishableKey = try container.decode(String.self, forKey: .publishableKey)
+        publishableApiKey = try container.decode(String.self, forKey: .publishableApiKey)
     }
 }
 
@@ -249,13 +249,13 @@ extension OrderPayload.Response {
                     return .required(.init(
                         cardAcquirer: .checkout,
                         paymentLink: URL(string: paymentLink),
-                        publishableKey: cardAcquirer.publishableKey
+                        publishableApiKey: cardAcquirer.publishableApiKey
                     ))
                 case .stripe:
                     return .required(.init(
                         cardAcquirer: .stripe,
                         clientSecret: cardAcquirer.clientSecret,
-                        publishableKey: cardAcquirer.publishableKey
+                        publishableApiKey: cardAcquirer.publishableApiKey
                     ))
                 case .unknown:
                     return .none
