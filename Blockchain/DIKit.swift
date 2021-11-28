@@ -24,6 +24,7 @@ import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
+import FeatureWalletConnectData
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -298,6 +299,11 @@ extension DependencyContainer {
         factory { () -> WalletRecoveryVerifing in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as WalletRecoveryVerifing
+        }
+
+        factory { () -> WalletConnectMetadataAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager.wallet.walletConnect as WalletConnectMetadataAPI
         }
 
         // MARK: - BlockchainSettings.App

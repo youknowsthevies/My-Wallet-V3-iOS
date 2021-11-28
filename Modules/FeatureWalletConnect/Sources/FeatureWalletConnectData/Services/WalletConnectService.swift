@@ -30,7 +30,7 @@ final class WalletConnectService {
 
     init(
         publicKeyProvider: WalletConnectPublicKeyProviderAPI = resolve(),
-        sessionRepository: SessionRepositoryAPI = SessionRepository()
+        sessionRepository: SessionRepositoryAPI = SessionRepositoryMetadata()
     ) {
         self.sessionRepository = sessionRepository
         self.publicKeyProvider = publicKeyProvider
@@ -92,7 +92,6 @@ final class WalletConnectService {
 
         sessionRepository
             .retrieve()
-            .publisher
             .sink { [server, sessionLinks] sessions in
                 sessions
                     .compactMap(\.session)
@@ -128,11 +127,9 @@ extension WalletConnectService: ServerDelegate {
     func server(_ server: Server, didConnect session: Session) {
         sessionRepository
             .contains(session: session)
-            .publisher
             .flatMap { [sessionRepository] containsSession in
                 sessionRepository
                     .store(session: session)
-                    .publisher
                     .map { containsSession }
             }
             .sink { [didConnectSubject] containsSession in
@@ -146,7 +143,6 @@ extension WalletConnectService: ServerDelegate {
     func server(_ server: Server, didDisconnect session: Session) {
         sessionRepository
             .remove(session: session)
-            .publisher
             .sink { [didDisconnectSubject] _ in
                 didDisconnectSubject.send(session)
             }
@@ -156,7 +152,6 @@ extension WalletConnectService: ServerDelegate {
     func server(_ server: Server, didUpdate session: Session) {
         sessionRepository
             .store(session: session)
-            .publisher
             .sink { [didUpdateSubject] _ in
                 didUpdateSubject.send(session)
             }

@@ -9,15 +9,23 @@ let package = Package(
     products: [
         .library(
             name: "FeatureWalletConnect",
-            targets: ["FeatureWalletConnectUI", "FeatureWalletConnectData", "FeatureWalletConnectDomain"]
-        ),
-        .library(
-            name: "FeatureWalletConnectUI",
-            targets: ["FeatureWalletConnectUI"]
+            targets: [
+                "FeatureWalletConnectDomain",
+                "FeatureWalletConnectData",
+                "FeatureWalletConnectUI"
+            ]
         ),
         .library(
             name: "FeatureWalletConnectDomain",
             targets: ["FeatureWalletConnectDomain"]
+        ),
+        .library(
+            name: "FeatureWalletConnectData",
+            targets: ["FeatureWalletConnectData"]
+        ),
+        .library(
+            name: "FeatureWalletConnectUI",
+            targets: ["FeatureWalletConnectUI"]
         )
     ],
     dependencies: [
@@ -46,8 +54,8 @@ let package = Package(
             name: "FeatureWalletConnectDomain",
             dependencies: [
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "Localization", package: "Localization"),
                 .product(name: "EthereumKit", package: "CryptoAssets"),
+                .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "WalletConnectSwift", package: "WalletConnectSwift")
             ]
@@ -56,9 +64,10 @@ let package = Package(
             name: "FeatureWalletConnectData",
             dependencies: [
                 .target(name: "FeatureWalletConnectDomain"),
-                .product(name: "Localization", package: "Localization"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "EthereumKit", package: "CryptoAssets"),
+                .product(name: "Localization", package: "Localization"),
+                .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "WalletConnectSwift", package: "WalletConnectSwift")
             ]
         ),
@@ -66,6 +75,7 @@ let package = Package(
             name: "FeatureWalletConnectUI",
             dependencies: [
                 .target(name: "FeatureWalletConnectDomain"),
+                .target(name: "FeatureWalletConnectData"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformKit", package: "Platform"),
