@@ -467,6 +467,11 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
             .map { AccountPickerInteractor.Effects.select($0) }
             .asDriver(onErrorJustReturn: .none)
 
+        let buttonSelected = modelSelectedRelay
+            .filter(\.isButton)
+            .map { _ in AccountPickerInteractor.Effects.button }
+            .asDriver(onErrorJustReturn: .none)
+
         let backButtonEffect = backButtonRelay
             .map { AccountPickerInteractor.Effects.back }
             .asDriverCatchError()
@@ -479,6 +484,6 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
             .map { AccountPickerInteractor.Effects.filter($0) }
             .asDriverCatchError()
 
-        return .merge(modelSelected, backButtonEffect, closeButtonEffect, searchEffect)
+        return .merge(modelSelected, buttonSelected, backButtonEffect, closeButtonEffect, searchEffect)
     }
 }
