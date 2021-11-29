@@ -15,6 +15,7 @@ final class BanksSettingsSectionInteractor {
     var state: Observable<State> {
         _ = setup
         return stateRelay
+            .observeOn(MainScheduler.instance)
             .asObservable()
     }
 
