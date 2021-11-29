@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import DIKit
 import FeatureWalletConnectDomain
@@ -23,17 +24,20 @@ final class WalletConnectService {
     private let didUpdateSubject = PassthroughSubject<Session, Never>()
     private let userEventsSubject = PassthroughSubject<WalletConnectUserEvent, Never>()
 
+    private let analyticsEventRecorder: AnalyticsEventRecorderAPI
     private let sessionRepository: SessionRepositoryAPI
     private let publicKeyProvider: WalletConnectPublicKeyProviderAPI
 
     // MARK: - Init
 
     init(
+        analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
         publicKeyProvider: WalletConnectPublicKeyProviderAPI = resolve(),
         sessionRepository: SessionRepositoryAPI = resolve()
     ) {
-        self.sessionRepository = sessionRepository
+        self.analyticsEventRecorder = analyticsEventRecorder
         self.publicKeyProvider = publicKeyProvider
+        self.sessionRepository = sessionRepository
         server = Server(delegate: self)
         configureServer()
     }

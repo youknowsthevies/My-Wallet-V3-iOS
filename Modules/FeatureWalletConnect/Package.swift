@@ -44,6 +44,7 @@ let package = Package(
             url: "https://github.com/crucheton-bc/WalletConnectSwift.git",
             from: "1.6.2"
         ),
+        .package(path: "../Analytics"),
         .package(path: "../Localization"),
         .package(path: "../UIComponents"),
         .package(path: "../CryptoAssets"),
@@ -53,6 +54,7 @@ let package = Package(
         .target(
             name: "FeatureWalletConnectDomain",
             dependencies: [
+                .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "EthereumKit", package: "CryptoAssets"),
                 .product(name: "Localization", package: "Localization"),
@@ -64,6 +66,7 @@ let package = Package(
             name: "FeatureWalletConnectData",
             dependencies: [
                 .target(name: "FeatureWalletConnectDomain"),
+                .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "EthereumKit", package: "CryptoAssets"),
                 .product(name: "Localization", package: "Localization"),
@@ -76,6 +79,7 @@ let package = Package(
             dependencies: [
                 .target(name: "FeatureWalletConnectDomain"),
                 .target(name: "FeatureWalletConnectData"),
+                .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "PlatformKit", package: "Platform"),

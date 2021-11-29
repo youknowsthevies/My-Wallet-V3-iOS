@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -13,13 +14,16 @@ import WalletConnectSwift
 class WalletConnectRouter: WalletConnectRouterAPI {
 
     private var cancellables = [AnyCancellable]()
+    private let analyticsEventRecorder: AnalyticsEventRecorderAPI
     private let service: WalletConnectServiceAPI
     @LazyInject private var navigation: NavigationRouterAPI
     @LazyInject private var tabSwapping: TabSwapping
 
     init(
+        analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
         service: WalletConnectServiceAPI = resolve()
     ) {
+        self.analyticsEventRecorder = analyticsEventRecorder
         self.service = service
 
         service.sessionEvents
@@ -27,11 +31,11 @@ class WalletConnectRouter: WalletConnectRouterAPI {
             .sink(receiveValue: { [weak self] event in
                 switch event {
                 case .didConnect(let session):
-                    self?.didConnect(session)
+                    self?.didConnect(session: session)
                 case .didDisconnect:
                     break
                 case .didFailToConnect(let session):
-                    self?.didFail(session)
+                    self?.didFail(session: session)
                 case .didUpdate:
                     break
                 case .shouldStart(let session, let action):
@@ -55,7 +59,11 @@ class WalletConnectRouter: WalletConnectRouterAPI {
             .store(in: &cancellables)
     }
 
-    private func didFail(_ session: Session) {
+    private func didFail(session: Session) {
+        let event = AnalyticsEvents.New.WalletConnect
+            .dappConnectionRejected(appName: session.dAppInfo.peerMeta.name)
+        analyticsEventRecorder.record(event: event)
+
         let presenter = navigation.topMostViewControllerProvider.topMostViewController
         let env = WalletConnectEventEnvironment(
             mainQueue: .main,
@@ -80,13 +88,24 @@ class WalletConnectRouter: WalletConnectRouterAPI {
             mainQueue: .main,
             service: resolve(),
             router: resolve(),
-            onComplete: { [service, action] validate in
+            onComplete: { [service, analyticsEventRecorder, action] validate in
                 presenter?.dismiss(animated: true) {
+                    let event: AnalyticsEvents.New.WalletConnect
+                    let appName = session.dAppInfo.peerMeta.name
                     if validate {
+                        event = .dappConnectionActioned(
+                            action: .confirm,
+                            appName: appName
+                        )
                         service.acceptConnection(action)
                     } else {
+                        event = .dappConnectionActioned(
+                            action: .cancel,
+                            appName: appName
+                        )
                         service.denyConnection(action)
                     }
+                    analyticsEventRecorder.record(event: event)
                 }
             }
         )
@@ -99,7 +118,11 @@ class WalletConnectRouter: WalletConnectRouterAPI {
         presenter?.present(controller, animated: true, completion: nil)
     }
 
-    private func didConnect(_ session: Session) {
+    private func didConnect(session: Session) {
+        let event = AnalyticsEvents.New.WalletConnect
+            .dappConnectionConfirmed(appName: session.dAppInfo.peerMeta.name)
+        analyticsEventRecorder.record(event: event)
+
         let presenter = navigation.topMostViewControllerProvider.topMostViewController
         let env = WalletConnectEventEnvironment(
             mainQueue: .main,
