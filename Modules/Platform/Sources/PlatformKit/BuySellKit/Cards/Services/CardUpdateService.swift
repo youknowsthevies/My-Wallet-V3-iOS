@@ -130,18 +130,12 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             }
             .catchErrorJustReturn([:])
 
-        let ffNewAcquirers = Publishers.Zip(
-            featureFlagsService.isEnabled(.local(.newCardAcquirers)),
-            featureFlagsService.isEnabled(.remote(.newCardAcquirers))
-        )
-        .map { isLocalEnabled, isRemoteEnabled in
-            isLocalEnabled && isRemoteEnabled
-        }
-        .asSingle()
-
-        let ffCardAcquirerTokens = ffNewAcquirers.flatMap { enabled -> Single<[String: String]> in
-            enabled ? cardAcquirerTokens : .just([:])
-        }
+        let ffCardAcquirerTokens = featureFlagsService
+            .isEnabled(.remote(.newCardAcquirers))
+            .asSingle()
+            .flatMap { enabled -> Single<[String: String]> in
+                enabled ? cardAcquirerTokens : .just([:])
+            }
 
         return Single.zip(
             fiatCurrencyService.fiatCurrency,

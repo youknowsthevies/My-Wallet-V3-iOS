@@ -81,22 +81,16 @@ public final class CardListService: CardListServiceAPI {
 
     /// Always fetches data from API, updates relay on success.
     private func createFetchSingle() -> Single<[CardData]> {
-        Publishers.Zip(
-            featureFlagsService.isEnabled(.local(.newCardAcquirers)),
-            featureFlagsService.isEnabled(.remote(.newCardAcquirers))
-        )
-        .map { isLocalEnabled, isRemoteEnabled in
-            isLocalEnabled && isRemoteEnabled
-        }
-        .flatMap { [client] isEnabled -> AnyPublisher<[CardPayload], NabuNetworkError> in
-            client.getCardList(enableProviders: isEnabled)
-        }
-        .asSingle()
-        .map([CardData].init)
-        .do(onSuccess: { [weak self] (cards: [CardData]) in
-            self?.cardsRelay.accept(cards)
-        })
-        .catchErrorJustReturn([])
+        featureFlagsService.isEnabled(.remote(.newCardAcquirers))
+            .flatMap { [client] isEnabled -> AnyPublisher<[CardPayload], NabuNetworkError> in
+                client.getCardList(enableProviders: isEnabled)
+            }
+            .asSingle()
+            .map([CardData].init)
+            .do(onSuccess: { [weak self] (cards: [CardData]) in
+                self?.cardsRelay.accept(cards)
+            })
+            .catchErrorJustReturn([])
     }
 
     public func fetchCards() -> Single<[CardData]> {

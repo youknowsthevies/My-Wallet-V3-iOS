@@ -27,9 +27,6 @@ public enum InternalFeature: String, CaseIterable {
     /// OpenBanking
     case openBanking
 
-    /// Enables New Card Acquirers (Stripe and Checkout)
-    case newCardAcquirers
-
     /// Redesign
     case redesign
 
@@ -38,7 +35,6 @@ public enum InternalFeature: String, CaseIterable {
         switch self {
         case .newOnboardingTour,
              .openBanking,
-             .newCardAcquirers,
              .redesign:
             return true
         case .disableGUIDLogin,
@@ -74,8 +70,6 @@ extension InternalFeature {
             return "Native Wallet Payload"
         case .openBanking:
             return "Open Banking"
-        case .newCardAcquirers:
-            return "New Card Acquirers (Stripe, Checkout)"
         case .redesign:
             return "Redesign"
         }
