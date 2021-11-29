@@ -2,6 +2,8 @@
 
 import Combine
 import ComposableArchitecture
+import FeatureWalletConnectDomain
+import UIKit
 import WalletConnectSwift
 
 extension Session: Equatable {
@@ -15,13 +17,19 @@ extension Session: Equatable {
 struct WalletConnectEventEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let onComplete: (_ validate: Bool) -> Void
+    let service: WalletConnectServiceAPI
+    let router: WalletConnectRouterAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
+        service: WalletConnectServiceAPI,
+        router: WalletConnectRouterAPI,
         onComplete: @escaping (_ validate: Bool) -> Void
     ) {
         self.mainQueue = mainQueue
         self.onComplete = onComplete
+        self.service = service
+        self.router = router
     }
 }
 
@@ -30,13 +38,19 @@ let walletConnectEventReducer = Reducer.combine(
         WalletConnectEventState,
         WalletConnectEventAction,
         WalletConnectEventEnvironment
-    > { _, action, env in
+    > { state, action, env in
         switch action {
         case .accept:
             env.onComplete(true)
             return .none
         case .close:
             env.onComplete(false)
+            return .none
+        case .disconnect:
+            env.service.disconnect(state.session)
+            return Effect(value: .close)
+        case .openWebsite:
+            env.router.openWebsite(for: state.session.dAppInfo.peerMeta)
             return .none
         }
     }

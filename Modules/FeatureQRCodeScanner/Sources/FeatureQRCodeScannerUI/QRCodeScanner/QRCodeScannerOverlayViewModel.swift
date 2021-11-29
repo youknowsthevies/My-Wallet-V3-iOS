@@ -1,6 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import DIKit
+import FeatureWalletConnectDomain
+import Localization
 import PlatformKit
 import PlatformUIKit
 import ToolKit
@@ -25,6 +28,10 @@ final class QRCodeScannerOverlayViewModel {
         subtitleLabelContentRelay.eraseToAnyPublisher()
     }
 
+    var dAppsButtonTitle: AnyPublisher<String, Never> {
+        dAppsButtonTitleRelay.eraseToAnyPublisher()
+    }
+
     /// Is the flash enabled
     var flashEnabled: AnyPublisher<Bool, Never> {
         qrCodeFlashService.isEnabled.eraseToAnyPublisher()
@@ -42,9 +49,15 @@ final class QRCodeScannerOverlayViewModel {
     /// Closure for handling camera tap events
     var cameraButtonTapped: (() -> Void)?
 
+    var connectedDAppsTapped: (() -> Void)?
+
+    private let walletConnectSessionRepository: SessionRepositoryAPI
     private let qrCodeFlashService = QRCodeScannerFlashService()
     private let cameraRollButtonVisibilityRelay = CurrentValueSubject<Visibility, Never>(.hidden)
     private let dAppsButtonVisibilityRelay = CurrentValueSubject<Visibility, Never>(.hidden)
+    private let dAppsButtonTitleRelay = CurrentValueSubject<String, Never>(
+        String(format: LocalizationConstants.QRCodeScanner.connectedDapps, 0)
+    )
     private let titleLabelContentRelay = CurrentValueSubject<LabelContent, Never>(.empty)
     private let subtitleLabelContentRelay = CurrentValueSubject<LabelContent, Never>(.empty)
     private var cancellables = [AnyCancellable]()
@@ -53,8 +66,9 @@ final class QRCodeScannerOverlayViewModel {
         supportsCameraRoll: Bool,
         titleText: String?,
         subtitleText: String? = nil,
-        featureFlagsService: FeatureFlagsServiceAPI
+        walletConnectSessionRepository: SessionRepositoryAPI
     ) {
+        self.walletConnectSessionRepository = walletConnectSessionRepository
         cameraRollButtonVisibilityRelay.send(.init(boolValue: supportsCameraRoll))
         if let subtitleText = subtitleText {
             let labelContent = LabelContent(
@@ -86,12 +100,22 @@ final class QRCodeScannerOverlayViewModel {
             }
             .store(in: &cancellables)
 
-        featureFlagsService
-            .isEnabled(.local(.walletConnect))
-            .sink { [dAppsButtonVisibilityRelay] visibility in
-                dAppsButtonVisibilityRelay.send(.init(boolValue: visibility))
+        self.walletConnectSessionRepository
+            .retrieve()
+            .sink { [weak self] sessions in
+                self?.dAppsButtonVisibilityRelay.send(sessions.isEmpty ? .hidden : .visible)
+                self?.dAppsButtonTitleRelay
+                    .send(String(
+                        format: LocalizationConstants.QRCodeScanner.connectedDapps,
+                        String(sessions.count)
+                    ))
             }
             .store(in: &cancellables)
+
+        connectedDAppsTapped = {
+            let router: WalletConnectRouterAPI = resolve()
+            router.showConnectedDApps()
+        }
     }
 
     private func toggleFlash() {

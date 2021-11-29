@@ -17,7 +17,7 @@ final class WalletConnectService {
     private var sessionLinks = Atomic<[WCURL: Session]>([:])
 
     private let didConnectSubject = PassthroughSubject<Session, Never>()
-    private let didFailSubject = PassthroughSubject<Session.ClientMeta, Never>()
+    private let didFailSubject = PassthroughSubject<Session, Never>()
     private let shouldStartSubject = PassthroughSubject<(Session, (Session.WalletInfo) -> Void), Never>()
     private let didDisconnectSubject = PassthroughSubject<Session, Never>()
     private let didUpdateSubject = PassthroughSubject<Session, Never>()
@@ -30,7 +30,7 @@ final class WalletConnectService {
 
     init(
         publicKeyProvider: WalletConnectPublicKeyProviderAPI = resolve(),
-        sessionRepository: SessionRepositoryAPI = SessionRepositoryMetadata()
+        sessionRepository: SessionRepositoryAPI = resolve()
     ) {
         self.sessionRepository = sessionRepository
         self.publicKeyProvider = publicKeyProvider
@@ -114,7 +114,7 @@ extension WalletConnectService: ServerDelegate {
         guard let session = sessionLinks.value[url] else {
             return
         }
-        didFailSubject.send(session.dAppInfo.peerMeta)
+        didFailSubject.send(session)
     }
 
     func server(_ server: Server, shouldStart session: Session, completion: @escaping (Session.WalletInfo) -> Void) {
@@ -223,6 +223,10 @@ extension WalletConnectService: WalletConnectServiceAPI {
             return
         }
         try? server.connect(to: wcUrl)
+    }
+
+    func disconnect(_ session: Session) {
+        try? server.disconnect(from: session)
     }
 }
 

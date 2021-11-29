@@ -55,15 +55,17 @@ class WalletConnectRouter: WalletConnectRouterAPI {
             .store(in: &cancellables)
     }
 
-    private func didFail(_ meta: Session.ClientMeta) {
+    private func didFail(_ session: Session) {
         let presenter = navigation.topMostViewControllerProvider.topMostViewController
         let env = WalletConnectEventEnvironment(
             mainQueue: .main,
+            service: resolve(),
+            router: resolve(),
             onComplete: { _ in
                 presenter?.dismiss(animated: true)
             }
         )
-        let state = WalletConnectEventState(meta: meta, state: .fail)
+        let state = WalletConnectEventState(session: session, state: .fail)
         let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
         let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
         controller.view.backgroundColor = .clear
@@ -76,6 +78,8 @@ class WalletConnectRouter: WalletConnectRouterAPI {
         let presenter = navigation.topMostViewControllerProvider.topMostViewController
         let env = WalletConnectEventEnvironment(
             mainQueue: .main,
+            service: resolve(),
+            router: resolve(),
             onComplete: { [service, action] validate in
                 presenter?.dismiss(animated: true) {
                     if validate {
@@ -86,7 +90,7 @@ class WalletConnectRouter: WalletConnectRouterAPI {
                 }
             }
         )
-        let state = WalletConnectEventState(meta: session.dAppInfo.peerMeta, state: .idle)
+        let state = WalletConnectEventState(session: session, state: .idle)
         let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
         let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
         controller.view.backgroundColor = .clear
@@ -99,16 +103,73 @@ class WalletConnectRouter: WalletConnectRouterAPI {
         let presenter = navigation.topMostViewControllerProvider.topMostViewController
         let env = WalletConnectEventEnvironment(
             mainQueue: .main,
+            service: resolve(),
+            router: resolve(),
             onComplete: { _ in
                 presenter?.dismiss(animated: true)
             }
         )
-        let state = WalletConnectEventState(meta: session.dAppInfo.peerMeta, state: .success)
+        let state = WalletConnectEventState(session: session, state: .success)
         let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
         let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
         controller.view.backgroundColor = .clear
         controller.modalTransitionStyle = .crossDissolve
         controller.modalPresentationStyle = .overCurrentContext
         presenter?.present(controller, animated: true, completion: nil)
+    }
+
+    public func showConnectedDApps() {
+        let presenter = navigation.topMostViewControllerProvider.topMostViewController
+        let env = DAppListEnvironment(
+            mainQueue: .main,
+            router: resolve(),
+            sessionRepository: resolve(),
+            onComplete: { _ in
+                presenter?.dismiss(animated: true)
+            }
+        )
+        let state = DAppListState()
+        let store = Store(initialState: state, reducer: dAppListReducer, environment: env)
+        let controller = UIHostingController(rootView: DAppListView(store: store))
+        controller.view.backgroundColor = .clear
+        controller.modalTransitionStyle = .crossDissolve
+        controller.modalPresentationStyle = .overCurrentContext
+        presenter?.present(controller, animated: true, completion: nil)
+    }
+
+    func showSessionDetails(session: WalletConnectSession) -> AnyPublisher<Void, Never> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let walletConnectSession = session.session else {
+                    return
+                }
+
+                let presenter = self?.navigation.topMostViewControllerProvider.topMostViewController
+                let env = WalletConnectEventEnvironment(
+                    mainQueue: .main,
+                    service: resolve(),
+                    router: resolve(),
+                    onComplete: { _ in
+                        presenter?.dismiss(animated: true)
+                        promise(.success(()))
+                    }
+                )
+
+                let state = WalletConnectEventState(
+                    session: walletConnectSession,
+                    state: .details
+                )
+                let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
+                let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
+                controller.view.backgroundColor = .clear
+                controller.modalTransitionStyle = .crossDissolve
+                controller.modalPresentationStyle = .overCurrentContext
+                presenter?.present(controller, animated: true, completion: nil)
+            }
+        }.eraseToAnyPublisher()
+    }
+
+    func openWebsite(for client: Session.ClientMeta) {
+        UIApplication.shared.open(client.url)
     }
 }

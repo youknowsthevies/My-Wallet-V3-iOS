@@ -8,6 +8,9 @@ extension DependencyContainer {
     // MARK: - FeatureWalletConnectData Module
 
     public static var featureWalletConnectData = module {
+
         single { WalletConnectService() as WalletConnectServiceAPI }
+
+        single { SessionRepositoryMetadata() as SessionRepositoryAPI }
     }
 }

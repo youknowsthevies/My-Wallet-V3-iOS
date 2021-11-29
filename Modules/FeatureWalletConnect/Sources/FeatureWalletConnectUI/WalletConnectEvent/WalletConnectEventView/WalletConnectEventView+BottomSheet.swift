@@ -61,9 +61,15 @@ extension WalletConnectEventView {
                         if let secondaryButtonTitle = viewStore.secondaryButtonTitle,
                            let secondaryAction = viewStore.secondaryAction
                         {
-                            SecondaryButton(title: secondaryButtonTitle) {
+                            Button(secondaryButtonTitle) {
                                 viewStore.send(secondaryAction)
                             }
+                            .buttonStyle(
+                                SecondaryButtonStyle(
+                                    isEnabled: true,
+                                    foregroundColor: viewStore.secondaryButtonColor
+                                )
+                            )
                         }
                         PrimaryButton(title: viewStore.primaryButtonTitle) {
                             viewStore.send(viewStore.primaryAction)

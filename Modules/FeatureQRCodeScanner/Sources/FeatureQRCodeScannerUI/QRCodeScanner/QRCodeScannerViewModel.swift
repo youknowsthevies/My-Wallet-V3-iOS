@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import FeatureQRCodeScannerData
 import FeatureQRCodeScannerDomain
+import FeatureWalletConnectDomain
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -72,8 +73,8 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         deepLinkHandler: DeepLinkHandling = resolve(),
         deepLinkRouter: DeepLinkRouting = resolve(),
         secureChannelService: SecureChannelAPI = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-        adapter: CryptoTargetQRCodeParserAdapter = resolve()
+        adapter: CryptoTargetQRCodeParserAdapter = resolve(),
+        walletConnectSessionRepository: SessionRepositoryAPI = resolve()
     ) {
         let additionalLinkRoutes: [DeepLinkRoute]
         switch additionalParsingOptions {
@@ -111,7 +112,7 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         overlayViewModel = QRCodeScannerOverlayViewModel(
             supportsCameraRoll: supportsCameraRoll,
             titleText: LocalizationConstants.scanQRCode,
-            featureFlagsService: featureFlagsService
+            walletConnectSessionRepository: walletConnectSessionRepository
         )
 
         let parsers: [QRCodeScannerParsing] = [

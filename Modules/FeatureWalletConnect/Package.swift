@@ -82,12 +82,6 @@ let package = Package(
                 .product(name: "PlatformUIKit", package: "Platform"),
                 .product(name: "UIComponents", package: "UIComponents")
             ]
-        ),
-        .testTarget(
-            name: "FeatureWalletConnectDomainTests",
-            dependencies: [
-                .target(name: "FeatureWalletConnectDomain")
-            ]
         )
     ]
 )

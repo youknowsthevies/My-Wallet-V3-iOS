@@ -7,7 +7,7 @@ import PlatformKit
 import WalletConnectSwift
 
 public enum WalletConnectSessionEvent {
-    case didFailToConnect(Session.ClientMeta)
+    case didFailToConnect(Session)
     case shouldStart(Session, (Session.WalletInfo) -> Void)
     case didConnect(Session)
     case didDisconnect(Session)
@@ -31,6 +31,7 @@ public protocol WalletConnectServiceAPI {
     var userEvents: AnyPublisher<WalletConnectUserEvent, Never> { get }
 
     func connect(_ url: String)
+    func disconnect(_ session: Session)
     func acceptConnection(_ completion: @escaping (Session.WalletInfo) -> Void)
     func denyConnection(_ completion: @escaping (Session.WalletInfo) -> Void)
 }
