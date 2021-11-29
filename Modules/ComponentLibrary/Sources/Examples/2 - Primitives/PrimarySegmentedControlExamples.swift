@@ -9,6 +9,15 @@ struct PrimarySegmentedControlExamples: View {
     @State var thirdSelection: AnyHashable = "first"
     @State var fourthSelection: AnyHashable = "ready"
 
+    enum Option: String {
+        case one
+        case two
+        case three
+        case four
+    }
+
+    @State var option: Option = .two
+
     var body: some View {
         VStack(spacing: Spacing.padding1) {
             PrimarySegmentedControl(
@@ -52,6 +61,16 @@ struct PrimarySegmentedControlExamples: View {
                     PrimarySegmentedControl.Item(title: "Ready", variant: .dot, identifier: "ready")
                 ],
                 selection: $fourthSelection
+            )
+
+            PrimarySegmentedControl(
+                items: [
+                    PrimarySegmentedControl.Item(title: Option.one.rawValue, variant: .dot, identifier: Option.one),
+                    PrimarySegmentedControl.Item(title: Option.two.rawValue, identifier: Option.two),
+                    PrimarySegmentedControl.Item(title: Option.three.rawValue, identifier: Option.three),
+                    PrimarySegmentedControl.Item(title: Option.four.rawValue, variant: .dot, identifier: Option.four)
+                ],
+                selection: $option
             )
         }
         .padding(Spacing.padding())

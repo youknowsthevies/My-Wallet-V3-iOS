@@ -37,6 +37,8 @@ extension PrimarySegmentedControl {
                 Text(title)
                     .typography(.paragraph2)
             }
+            .fixedSize()
+            .frame(maxWidth: .infinity)
             .onTapGesture {
                 isOn.toggle()
             }
@@ -77,11 +79,11 @@ struct PrimarySegmentedControlButton_Previews: PreviewProvider {
 
     struct PreviewController: View {
         let title: String
-        let variant: PrimarySegmentedControl.Item.Variant
+        let variant: PrimarySegmentedControl<AnyHashable>.Item.Variant
         @State var isOn: Bool
 
         var body: some View {
-            PrimarySegmentedControl.Button(title: title, variant: variant, isOn: $isOn)
+            PrimarySegmentedControl<AnyHashable>.Button(title: title, variant: variant, isOn: $isOn)
         }
     }
 }
