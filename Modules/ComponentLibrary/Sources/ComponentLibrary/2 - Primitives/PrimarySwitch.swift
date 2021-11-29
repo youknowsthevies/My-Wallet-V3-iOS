@@ -32,11 +32,19 @@ public struct PrimarySwitch: View {
     }
 
     public var body: some View {
+        #if canImport(UIKit)
         Toggle(accessibilityLabel, isOn: $isOn)
             .labelsHidden()
             .toggleStyle(
                 PrimarySwitchToggleStyle(onBackgroundColor: variant.onBackgroundColor)
             )
+        #else
+        Toggle(accessibilityLabel, isOn: $isOn)
+            .labelsHidden()
+            .toggleStyle(
+                SwitchToggleStyle(tint: variant.onBackgroundColor)
+            )
+        #endif
     }
 
     /// Color variants for PrimarySwitch
@@ -63,6 +71,7 @@ extension PrimarySwitch.Variant {
 
 // MARK: - Private
 
+#if canImport(UIKit)
 private struct PrimarySwitchToggleStyle: ToggleStyle {
     let onBackgroundColor: Color
 
@@ -114,6 +123,7 @@ private struct UISwitchRepresentable: UIViewRepresentable {
         }
     }
 }
+#endif
 
 // MARK: - Previews
 
