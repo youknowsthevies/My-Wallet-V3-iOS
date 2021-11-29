@@ -87,7 +87,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         featureFlagService.isEnabled(.remote(.newLimitsUIEnabled))
             .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
                 guard newLimitsEnabled else {
-                    return .just(.infinity(for: limitsCurrency.currencyType))
+                    return .just(.noLimits(for: limitsCurrency.currencyType))
                 }
                 return self.fetchCrossBorderLimits(
                     source: source,
@@ -316,7 +316,7 @@ extension TransactionLimits {
     }
 
     init(_ crossBorderLimits: CrossBorderLimits) {
-        let infinity = MoneyValue(amount: BigInt(Int.max), currency: crossBorderLimits.currency)
+        let infinity = MoneyValue.decimalMaximum(for: crossBorderLimits.currency)
         self.init(
             minimum: .zero(currency: crossBorderLimits.currency),
             maximum: crossBorderLimits.currentLimits?.available ?? infinity,
@@ -339,7 +339,7 @@ extension TransactionLimits {
     }
 
     func merge(with crossBorderLimits: CrossBorderLimits) -> TransactionLimits {
-        let infinity = MoneyValue(amount: BigInt(Int.max), currency: crossBorderLimits.currency)
+        let infinity = MoneyValue.decimalMaximum(for: crossBorderLimits.currency)
         let maxCrossBorderCurrentLimit = crossBorderLimits.currentLimits?.available ?? infinity
         let maxCombinedLimit = (try? MoneyValue.min(maximum, maxCrossBorderCurrentLimit)) ?? maximum
         let maxCrossBorderDailyLimit = crossBorderLimits.currentLimits?.daily?.limit ?? maxCombinedLimit
@@ -359,11 +359,11 @@ extension TransactionLimits {
         with crossBorderLimits: CrossBorderLimits,
         usePaymentMethodMax: Bool
     ) -> TransactionLimits {
-        let infinity = MoneyValue(amount: BigInt(Int.max), currency: crossBorderLimits.currency)
+        let infinity = MoneyValue.decimalMaximum(for: crossBorderLimits.currency)
         let maxCrossBorderCurrentLimit = crossBorderLimits.currentLimits?.available ?? infinity
         let maxLimit: MoneyValue
-        if usePaymentMethodMax {
-            maxLimit = (try? .min(paymentMethod.max.moneyValue, maxCrossBorderCurrentLimit)) ?? maxCrossBorderCurrentLimit
+        if usePaymentMethodMax, let max = try? MoneyValue.min(paymentMethod.max.moneyValue, maxCrossBorderCurrentLimit) {
+            maxLimit = max
         } else {
             maxLimit = maxCrossBorderCurrentLimit
         }

@@ -136,7 +136,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                         fee: fee,
                         feeForFullAvailable: fee
                     )
-                    let transactionLimits = pendingTransaction.limits ?? .infinity(for: amount.currency)
+                    let transactionLimits = pendingTransaction.limits ?? .noLimits(for: amount.currency)
                     pendingTransaction.limits = TransactionLimits(
                         minimum: fees[minimumAmount: amount.currency],
                         maximum: transactionLimits.maximum,
