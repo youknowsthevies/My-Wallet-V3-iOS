@@ -15,7 +15,7 @@ public enum TransactionFlowAction {
     /// Performs a swap. If `CryptoCurrency` is `nil`, the users will be presented with a crypto currency selector.
     case swap(CryptoAccount?)
     /// Performs a send. If `CryptoAccount` is `nil`, the users will be presented with a crypto account selector.
-    case send(CryptoAccount?)
+    case send(CryptoAccount?, CryptoAccount?)
     /// Performs a receive. If `CryptoAccount` is `nil`, the users will be presented with a crypto account selector.
     case receive(CryptoAccount?)
     /// Performs an interest transfer.
@@ -36,7 +36,6 @@ extension TransactionFlowAction: Equatable {
         case (.buy(let lhsAccount), .buy(let rhsAccount)),
              (.sell(let lhsAccount), .sell(let rhsAccount)),
              (.swap(let lhsAccount), .swap(let rhsAccount)),
-             (.send(let lhsAccount), .send(let rhsAccount)),
              (.receive(let lhsAccount), .receive(let rhsAccount)):
             return lhsAccount?.identifier == rhsAccount?.identifier
         case (.interestTransfer(let lhsAccount), .interestTransfer(let rhsAccount)),
@@ -50,6 +49,9 @@ extension TransactionFlowAction: Equatable {
         case (.sign(let lhsAccount, let lhsDestination), .sign(let rhsAccount, let rhsDestination)):
             return lhsAccount.identifier == rhsAccount.identifier
                 && lhsDestination.label == rhsDestination.label
+        case (.send(let lhsFromAccount, let lhsToAccount), .send(let rhsFromAccount, let rhsToAccount)):
+            return lhsFromAccount?.identifier == rhsFromAccount?.identifier
+                && lhsToAccount?.identifier == rhsToAccount?.identifier
         default:
             return false
         }

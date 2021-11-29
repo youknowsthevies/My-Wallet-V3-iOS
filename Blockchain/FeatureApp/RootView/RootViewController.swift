@@ -95,17 +95,6 @@ final class RootViewController: UIHostingController<RootView> {
         let builder = PlatformUIKit.Builder(stateService: stateService)
         return (PlatformUIKit.Router(builder: builder, currency: .coin(.bitcoin)), stateService)
     }()
-
-    var sendRoot: (
-        router: SendRootRouting,
-        viewController: UIViewController
-    ) = {
-        let router = SendRootBuilder().build()
-        let viewController = router.viewControllable.uiviewController
-        router.interactable.activate()
-        router.load()
-        return (router, viewController)
-    }()
 }
 
 extension RootViewController {

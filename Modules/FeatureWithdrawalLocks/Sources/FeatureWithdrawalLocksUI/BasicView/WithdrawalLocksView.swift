@@ -117,7 +117,8 @@ public struct WithdrawalLocksView: View {
                     }
                     .navigationRoute(in: store)
                 }
-            }.onAppear {
+            }
+            .onAppear {
                 viewStore.send(.loadWithdrawalLocks)
             }
         }

@@ -37,6 +37,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private let loadingViewPresenter: LoadingViewPresenting
     private let legacyBuyRouter: LegacyBuyFlowRouting
     private var legacySellRouter: LegacySellRouter?
+    private var transactionFlowBuilder: TransactionFlowBuildable
     private let buyFlowBuilder: BuyFlowBuildable
     private let sellFlowBuilder: SellFlowBuildable
     private let signFlowBuilder: SignFlowBuildable
@@ -58,6 +59,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter(),
         legacyBuyRouter: LegacyBuyFlowRouting = LegacyBuyFlowRouter(),
+        transactionFlowBuilder: TransactionFlowBuildable = TransactionFlowBuilder(),
         buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(analyticsRecorder: resolve()),
         sellFlowBuilder: SellFlowBuildable = SellFlowBuilder(),
         signFlowBuilder: SignFlowBuildable = SignFlowBuilder(),
@@ -75,6 +77,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.loadingViewPresenter = loadingViewPresenter
         self.pendingOrdersService = pendingOrdersService
         self.legacyBuyRouter = legacyBuyRouter
+        self.transactionFlowBuilder = transactionFlowBuilder
         self.buyFlowBuilder = buyFlowBuilder
         self.sellFlowBuilder = sellFlowBuilder
         self.signFlowBuilder = signFlowBuilder
@@ -249,9 +252,16 @@ extension TransactionsRouter {
             return listener.publisher
 
         case .swap(let cryptoAccount):
+            if cryptoAccount == nil {
+                let router = SwapRootBuilder().build()
+                router.interactable.activate()
+                router.load()
+                presenter.present(router.viewControllable.uiviewController, animated: true, completion: nil)
+                mimicRIBAttachment(router: router)
+                return .empty()
+            }
             let listener = SwapRootInteractor()
-            let builder = TransactionFlowBuilder()
-            let router = builder.build(
+            let router = transactionFlowBuilder.build(
                 withListener: listener,
                 action: .swap,
                 sourceAccount: cryptoAccount,
@@ -269,10 +279,15 @@ extension TransactionsRouter {
             mimicRIBAttachment(router: router)
             return listener.publisher
 
-        case .send(let account):
+        case .send(let fromAccount, let toAccount):
             let router = sendFlowBuilder.build()
-            if let account = account {
-                router.routeToSend(sourceAccount: account)
+            switch (fromAccount, toAccount) {
+            case (.some(let fromAccount), .some(let toAccount)):
+                router.routeToSend(sourceAccount: fromAccount, destination: toAccount)
+            case (.some(let fromAccount), _):
+                router.routeToSend(sourceAccount: fromAccount)
+            default:
+                break
             }
             router.routeToSendLanding(navigationBarHidden: true)
             presenter.present(router.viewControllable.uiviewController, animated: true)

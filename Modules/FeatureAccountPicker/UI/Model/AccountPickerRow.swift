@@ -4,13 +4,13 @@ import ComposableArchitecture
 import SwiftUI
 
 public enum AccountPickerRow: Equatable, Identifiable {
-
     case label(Label)
     case button(Button)
     case linkedBankAccount(LinkedBankAccount)
     case paymentMethodAccount(PaymentMethod)
     case accountGroup(AccountGroup)
     case singleAccount(SingleAccount)
+    case withdrawalLocks
 
     public var id: AnyHashable {
         switch self {
@@ -26,6 +26,8 @@ public enum AccountPickerRow: Equatable, Identifiable {
             return model.id
         case .singleAccount(let model):
             return model.id
+        case .withdrawalLocks:
+            return "withdrawal-locks-id"
         }
     }
 

@@ -45,6 +45,7 @@ final class AssetDetailsViewController: BaseScreenViewController {
         setupNavigationBar()
 
         navigationController?.setNavigationBarHidden(true, animated: false)
+        view.backgroundColor = .white
 
         presenter.presentationAction
             .emit(onNext: { [weak self] action in

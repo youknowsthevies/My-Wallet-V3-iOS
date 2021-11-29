@@ -99,7 +99,7 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
         ]
     }()
 
-    let itemIndexSelectedRelay: BehaviorRelay<Int?> = .init(value: nil)
+    let itemIndexSelectedRelay: BehaviorRelay<(index: Int, animated: Bool)> = .init(value: (index: 0, animated: false))
 
     // MARK: - Private Properties
 

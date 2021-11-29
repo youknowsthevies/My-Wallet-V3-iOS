@@ -26,9 +26,20 @@ public final class SegmentedViewController: BaseScreenViewController {
         segmentedView.viewModel = presenter.segmentedViewModel
         add(child: rootViewController)
         presenter.itemIndexSelected
+            .bindAndCatch(to: rootViewController.itemIndexSelectedRelay)
+            .disposed(by: disposeBag)
+
+        presenter.itemIndexSelected
+            .map(\.index)
+            .distinctUntilChanged()
+            .bind(to: segmentedView.rx.selectedSegmentIndex)
+            .disposed(by: disposeBag)
+
+        presenter.itemIndexSelected
             .compactMap { $0 }
             .bindAndCatch(to: rootViewController.itemIndexSelectedRelay)
             .disposed(by: disposeBag)
+
         set(
             barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
@@ -65,7 +76,6 @@ public final class SegmentedViewController: BaseScreenViewController {
     }
 
     public func selectSegment(_ index: Int) {
-        segmentedView.selectedSegmentIndex = index
-        presenter.itemIndexSelectedRelay.accept(index)
+        presenter.itemIndexSelectedRelay.accept((index: index, animated: false))
     }
 }
