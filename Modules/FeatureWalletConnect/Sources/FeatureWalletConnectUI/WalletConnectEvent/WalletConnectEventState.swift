@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
+import FeatureWalletConnectDomain
 import Foundation
 import Localization
 import SwiftUI
@@ -65,6 +67,65 @@ public struct WalletConnectEventState: Equatable {
             primaryAction = .openWebsite
             secondaryAction = .disconnect
             secondaryButtonColor = .textError
+        }
+    }
+
+    func analyticsEvent(for action: WalletConnectEventAction) -> AnalyticsEvent? {
+        switch state {
+        case .idle:
+            switch action {
+            case .accept:
+                return AnalyticsEvents
+                    .New
+                    .WalletConnect
+                    .dappConnectionActioned(
+                        action: .confirm,
+                        appName: session.dAppInfo.peerMeta.name
+                    )
+            case .close:
+                return AnalyticsEvents
+                    .New
+                    .WalletConnect
+                    .dappConnectionActioned(
+                        action: .cancel,
+                        appName: session.dAppInfo.peerMeta.name
+                    )
+            default:
+                return nil
+            }
+        case .fail:
+            return AnalyticsEvents
+                .New
+                .WalletConnect
+                .dappConnectionRejected(appName: session.dAppInfo.peerMeta.name)
+        case .success:
+            return AnalyticsEvents
+                .New
+                .WalletConnect
+                .dappConnectionConfirmed(appName: session.dAppInfo.peerMeta.name)
+        case .details:
+            switch action {
+            case .disconnect:
+                return AnalyticsEvents
+                    .New
+                    .WalletConnect
+                    .connectedDappActioned(
+                        action: .disconnect,
+                        appName: session.dAppInfo.peerMeta.name,
+                        origin: .appsList
+                    )
+            case .openWebsite:
+                return AnalyticsEvents
+                    .New
+                    .WalletConnect
+                    .connectedDappActioned(
+                        action: .launch,
+                        appName: session.dAppInfo.peerMeta.name,
+                        origin: .appsList
+                    )
+            default:
+                return nil
+            }
         }
     }
 }

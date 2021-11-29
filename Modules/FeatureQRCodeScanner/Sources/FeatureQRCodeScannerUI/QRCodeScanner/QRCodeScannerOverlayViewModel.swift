@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import DIKit
 import FeatureWalletConnectDomain
@@ -51,6 +52,7 @@ final class QRCodeScannerOverlayViewModel {
 
     var connectedDAppsTapped: (() -> Void)?
 
+    private let analyticsEventRecorder: AnalyticsEventRecorderAPI
     private let walletConnectSessionRepository: SessionRepositoryAPI
     private let qrCodeFlashService = QRCodeScannerFlashService()
     private let cameraRollButtonVisibilityRelay = CurrentValueSubject<Visibility, Never>(.hidden)
@@ -67,8 +69,10 @@ final class QRCodeScannerOverlayViewModel {
         titleText: String?,
         subtitleText: String? = nil,
         walletConnectSessionRepository: SessionRepositoryAPI,
-        featureFlagsService: FeatureFlagsServiceAPI
+        featureFlagsService: FeatureFlagsServiceAPI,
+        analyticsEventRecorder: AnalyticsEventRecorderAPI
     ) {
+        self.analyticsEventRecorder = analyticsEventRecorder
         self.walletConnectSessionRepository = walletConnectSessionRepository
         cameraRollButtonVisibilityRelay.send(.init(boolValue: supportsCameraRoll))
         if let subtitleText = subtitleText {
@@ -124,6 +128,10 @@ final class QRCodeScannerOverlayViewModel {
             .store(in: &cancellables)
 
         connectedDAppsTapped = {
+            analyticsEventRecorder.record(event: AnalyticsEvents
+                .New
+                .WalletConnect
+                .connectedDappsListClicked(origin: .qrCode))
             let router: WalletConnectRouterAPI = resolve()
             router.showConnectedDApps()
         }

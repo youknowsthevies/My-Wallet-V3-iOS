@@ -60,15 +60,12 @@ class WalletConnectRouter: WalletConnectRouterAPI {
     }
 
     private func didFail(session: Session) {
-        let event = AnalyticsEvents.New.WalletConnect
-            .dappConnectionRejected(appName: session.dAppInfo.peerMeta.name)
-        analyticsEventRecorder.record(event: event)
-
         let presenter = navigation.topMostViewControllerProvider.topMostViewController
         let env = WalletConnectEventEnvironment(
             mainQueue: .main,
             service: resolve(),
             router: resolve(),
+            analyticsEventRecorder: analyticsEventRecorder,
             onComplete: { _ in
                 presenter?.dismiss(animated: true)
             }
@@ -88,24 +85,14 @@ class WalletConnectRouter: WalletConnectRouterAPI {
             mainQueue: .main,
             service: resolve(),
             router: resolve(),
-            onComplete: { [service, analyticsEventRecorder, action] validate in
+            analyticsEventRecorder: analyticsEventRecorder,
+            onComplete: { [service, action] validate in
                 presenter?.dismiss(animated: true) {
-                    let event: AnalyticsEvents.New.WalletConnect
-                    let appName = session.dAppInfo.peerMeta.name
                     if validate {
-                        event = .dappConnectionActioned(
-                            action: .confirm,
-                            appName: appName
-                        )
                         service.acceptConnection(action)
                     } else {
-                        event = .dappConnectionActioned(
-                            action: .cancel,
-                            appName: appName
-                        )
                         service.denyConnection(action)
                     }
-                    analyticsEventRecorder.record(event: event)
                 }
             }
         )
@@ -119,15 +106,12 @@ class WalletConnectRouter: WalletConnectRouterAPI {
     }
 
     private func didConnect(session: Session) {
-        let event = AnalyticsEvents.New.WalletConnect
-            .dappConnectionConfirmed(appName: session.dAppInfo.peerMeta.name)
-        analyticsEventRecorder.record(event: event)
-
         let presenter = navigation.topMostViewControllerProvider.topMostViewController
         let env = WalletConnectEventEnvironment(
             mainQueue: .main,
             service: resolve(),
             router: resolve(),
+            analyticsEventRecorder: analyticsEventRecorder,
             onComplete: { _ in
                 presenter?.dismiss(animated: true)
             }
@@ -147,6 +131,7 @@ class WalletConnectRouter: WalletConnectRouterAPI {
             mainQueue: .main,
             router: resolve(),
             sessionRepository: resolve(),
+            analyticsEventRecorder: analyticsEventRecorder,
             onComplete: { _ in
                 presenter?.dismiss(animated: true)
             }
@@ -163,15 +148,18 @@ class WalletConnectRouter: WalletConnectRouterAPI {
     func showSessionDetails(session: WalletConnectSession) -> AnyPublisher<Void, Never> {
         Deferred {
             Future { [weak self] promise in
-                guard let walletConnectSession = session.session else {
+                guard let walletConnectSession = session.session,
+                      let self = self
+                else {
                     return
                 }
 
-                let presenter = self?.navigation.topMostViewControllerProvider.topMostViewController
+                let presenter = self.navigation.topMostViewControllerProvider.topMostViewController
                 let env = WalletConnectEventEnvironment(
                     mainQueue: .main,
                     service: resolve(),
                     router: resolve(),
+                    analyticsEventRecorder: self.analyticsEventRecorder,
                     onComplete: { _ in
                         presenter?.dismiss(animated: true)
                         promise(.success(()))

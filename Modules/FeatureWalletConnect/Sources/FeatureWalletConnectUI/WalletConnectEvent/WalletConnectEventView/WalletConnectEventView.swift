@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import FeatureWalletConnectDomain
@@ -72,6 +73,10 @@ class MockWalletConnectRouter: WalletConnectRouterAPI {
     func openWebsite(for client: Session.ClientMeta) {}
 }
 
+class MockAnalyticsRecorder: AnalyticsEventRecorderAPI {
+    func record(event: AnalyticsEvent) {}
+}
+
 struct ConnectView_Previews: PreviewProvider {
     static var previews: some View {
 
@@ -79,6 +84,7 @@ struct ConnectView_Previews: PreviewProvider {
             mainQueue: .main,
             service: MockWalletConnectService(),
             router: MockWalletConnectRouter(),
+            analyticsEventRecorder: MockAnalyticsRecorder(),
             onComplete: { _ in }
         )
         let store = Store(

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import DIKit
 import FeatureQRCodeScannerData
@@ -75,7 +76,8 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         secureChannelService: SecureChannelAPI = resolve(),
         adapter: CryptoTargetQRCodeParserAdapter = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-        walletConnectSessionRepository: SessionRepositoryAPI = resolve()
+        walletConnectSessionRepository: SessionRepositoryAPI = resolve(),
+        analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         let additionalLinkRoutes: [DeepLinkRoute]
         switch additionalParsingOptions {
@@ -114,7 +116,8 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
             supportsCameraRoll: supportsCameraRoll,
             titleText: LocalizationConstants.scanQRCode,
             walletConnectSessionRepository: walletConnectSessionRepository,
-            featureFlagsService: featureFlagsService
+            featureFlagsService: featureFlagsService,
+            analyticsEventRecorder: analyticsEventRecorder
         )
 
         let parsers: [QRCodeScannerParsing] = [
