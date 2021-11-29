@@ -31,8 +31,7 @@ public final class DashboardScreenBuilder {
                 drawerRouter: drawerRouter,
                 fiatBalanceCellProvider: fiatBalanceCellProvider,
                 dashboardScreenPresenter: .init(),
-                qrCodeScannerRouter: qrCodeScannerRouter,
-                internalFeatureFlagService: internalFeatureFlagService
+                qrCodeScannerRouter: qrCodeScannerRouter
             )
         )
     }

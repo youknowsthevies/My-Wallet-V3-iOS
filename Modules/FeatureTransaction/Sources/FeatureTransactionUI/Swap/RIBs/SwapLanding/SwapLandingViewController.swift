@@ -34,13 +34,12 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
         setupTableView()
         title = LocalizationIds.swap
         set(
             barStyle: .lightContent(),
             leadingButtonStyle: .drawer,
-            trailingButtonStyle: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none
+            trailingButtonStyle: .qrCode
         )
     }
 

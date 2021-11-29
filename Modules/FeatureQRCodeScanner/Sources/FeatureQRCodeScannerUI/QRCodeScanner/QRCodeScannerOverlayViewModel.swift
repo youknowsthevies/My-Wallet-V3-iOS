@@ -66,7 +66,8 @@ final class QRCodeScannerOverlayViewModel {
         supportsCameraRoll: Bool,
         titleText: String?,
         subtitleText: String? = nil,
-        walletConnectSessionRepository: SessionRepositoryAPI
+        walletConnectSessionRepository: SessionRepositoryAPI,
+        featureFlagsService: FeatureFlagsServiceAPI
     ) {
         self.walletConnectSessionRepository = walletConnectSessionRepository
         cameraRollButtonVisibilityRelay.send(.init(boolValue: supportsCameraRoll))
@@ -100,15 +101,25 @@ final class QRCodeScannerOverlayViewModel {
             }
             .store(in: &cancellables)
 
-        self.walletConnectSessionRepository
-            .retrieve()
-            .sink { [weak self] sessions in
-                self?.dAppsButtonVisibilityRelay.send(sessions.isEmpty ? .hidden : .visible)
-                self?.dAppsButtonTitleRelay
-                    .send(String(
-                        format: LocalizationConstants.QRCodeScanner.connectedDapps,
-                        String(sessions.count)
-                    ))
+        featureFlagsService
+            .isEnabled(.remote(.walletConnectEnabled))
+            .flatMap { [walletConnectSessionRepository] isEnabled -> AnyPublisher<[WalletConnectSession], Never> in
+                isEnabled ? walletConnectSessionRepository.retrieve()
+                    : AnyPublisher<[WalletConnectSession], Never>.just([])
+            }
+            .map { sessions -> (Visibility, String) in
+                guard !sessions.isEmpty else {
+                    return (.hidden, "")
+                }
+                let title = String(
+                    format: LocalizationConstants.QRCodeScanner.connectedDapps,
+                    String(sessions.count)
+                )
+                return (.visible, title)
+            }
+            .sink { [weak self] visibility, title in
+                self?.dAppsButtonVisibilityRelay.send(visibility)
+                self?.dAppsButtonTitleRelay.send(title)
             }
             .store(in: &cancellables)
 

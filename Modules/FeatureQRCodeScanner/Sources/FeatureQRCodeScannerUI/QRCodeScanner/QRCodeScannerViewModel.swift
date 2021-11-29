@@ -74,6 +74,7 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         deepLinkRouter: DeepLinkRouting = resolve(),
         secureChannelService: SecureChannelAPI = resolve(),
         adapter: CryptoTargetQRCodeParserAdapter = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         walletConnectSessionRepository: SessionRepositoryAPI = resolve()
     ) {
         let additionalLinkRoutes: [DeepLinkRoute]
@@ -112,7 +113,8 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
         overlayViewModel = QRCodeScannerOverlayViewModel(
             supportsCameraRoll: supportsCameraRoll,
             titleText: LocalizationConstants.scanQRCode,
-            walletConnectSessionRepository: walletConnectSessionRepository
+            walletConnectSessionRepository: walletConnectSessionRepository,
+            featureFlagsService: featureFlagsService
         )
 
         let parsers: [QRCodeScannerParsing] = [

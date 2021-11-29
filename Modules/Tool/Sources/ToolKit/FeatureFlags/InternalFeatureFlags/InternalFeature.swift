@@ -24,12 +24,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
-    /// Enables unified QR code scanner
-    case unifiedQRCodeScanner
-
-    /// Enables unified QR code scanner
-    case walletConnect
-
     /// OpenBanking
     case openBanking
 
@@ -42,11 +36,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .walletConnect,
-             .newOnboardingTour,
+        case .newOnboardingTour,
              .openBanking,
              .newCardAcquirers,
-             .unifiedQRCodeScanner,
              .redesign:
             return true
         case .disableGUIDLogin,
@@ -82,14 +74,10 @@ extension InternalFeature {
             return "Native Wallet Payload"
         case .openBanking:
             return "Open Banking"
-        case .unifiedQRCodeScanner:
-            return "Unified QR Code Scanner"
         case .newCardAcquirers:
             return "New Card Acquirers (Stripe, Checkout)"
         case .redesign:
             return "Redesign"
-        case .walletConnect:
-            return "Wallet Connect"
         }
     }
 }
