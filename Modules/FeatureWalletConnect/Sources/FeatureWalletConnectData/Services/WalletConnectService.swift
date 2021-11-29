@@ -28,16 +28,20 @@ final class WalletConnectService {
     private let sessionRepository: SessionRepositoryAPI
     private let publicKeyProvider: WalletConnectPublicKeyProviderAPI
 
+    private let featureFlagService: FeatureFlagsServiceAPI
+
     // MARK: - Init
 
     init(
         analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
         publicKeyProvider: WalletConnectPublicKeyProviderAPI = resolve(),
-        sessionRepository: SessionRepositoryAPI = resolve()
+        sessionRepository: SessionRepositoryAPI = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.analyticsEventRecorder = analyticsEventRecorder
         self.publicKeyProvider = publicKeyProvider
         self.sessionRepository = sessionRepository
+        self.featureFlagService = featureFlagService
         server = Server(delegate: self)
         configureServer()
     }
@@ -223,10 +227,16 @@ extension WalletConnectService: WalletConnectServiceAPI {
     }
 
     func connect(_ url: String) {
-        guard let wcUrl = WCURL(url) else {
-            return
-        }
-        try? server.connect(to: wcUrl)
+        featureFlagService.isEnabled(.remote(.walletConnectEnabled))
+            .sink { [weak self] isEnabled in
+                guard isEnabled,
+                      let wcUrl = WCURL(url)
+                else {
+                    return
+                }
+                try? self?.server.connect(to: wcUrl)
+            }
+            .store(in: &cancellables)
     }
 
     func disconnect(_ session: Session) {

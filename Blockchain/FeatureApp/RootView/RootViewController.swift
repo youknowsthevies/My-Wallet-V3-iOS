@@ -8,6 +8,7 @@ import FeatureAuthenticationDomain
 import FeatureDashboardUI
 import FeatureOnboardingUI
 import FeatureTransactionUI
+import FeatureWalletConnectDomain
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
@@ -78,6 +79,8 @@ final class RootViewController: UIHostingController<RootView> {
     @LazyInject var tiersService: KYCTiersServiceAPI
     @LazyInject var transactionsRouter: TransactionsRouterAPI
     @LazyInject var airdropRouter: AirdropRouterAPI
+    @Inject var walletConnectService: WalletConnectServiceAPI
+    @Inject var walletConnectRouter: WalletConnectRouterAPI
 
     var pinRouter: PinRouter?
     weak var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController?
