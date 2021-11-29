@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Foundation
 
 /// A money value.
 public struct MoneyValue: Money, Hashable {
@@ -264,5 +265,43 @@ extension FiatValue {
     /// Creates a money value from the current `FiatValue`.
     public var moneyValue: MoneyValue {
         MoneyValue(fiatValue: self)
+    }
+}
+
+extension BigInt {
+
+    /// Use this to represent a very large value where you'd want to compare this value with something close to the idea of infinity.
+    public static var decimalMaximum: BigInt {
+        BigInt(BigUInt(NSDecimalNumber.maximum.stringValue)!)
+    }
+}
+
+extension MoneyValue {
+
+    /// Use this to represent a very large value where you'd want to compare this value with something close to the idea of infinity.
+    public static func decimalMaximum(for currency: Currency) -> Self {
+        self.init(amount: .decimalMaximum, currency: currency.currencyType)
+    }
+}
+
+extension CryptoValue {
+
+    /// Use this to represent a very large value where you'd want to compare this value with something close to the idea of infinity.
+    public static func decimalMaximum(for currency: Currency) -> Self {
+        guard let currency = currency as? CryptoCurrency else {
+            fatalError("Invalid currency")
+        }
+        return self.init(amount: .decimalMaximum, currency: currency)
+    }
+}
+
+extension FiatValue {
+
+    /// Use this to represent a very large value where you'd want to compare this value with something close to the idea of infinity.
+    public static func decimalMaximum(for currency: Currency) -> Self {
+        guard let currency = currency as? FiatCurrency else {
+            fatalError("Invalid currency")
+        }
+        return self.init(amount: .decimalMaximum, currency: currency)
     }
 }

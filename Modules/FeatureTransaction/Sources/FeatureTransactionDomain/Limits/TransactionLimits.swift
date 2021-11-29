@@ -36,8 +36,10 @@ extension TransactionLimits {
         fixedValue(.zero(currency: currency))
     }
 
-    public static func infinity(for currency: CurrencyType) -> TransactionLimits {
-        fixedValue(MoneyValue(amount: BigInt(Int.max), currency: currency))
+    public static func noLimits(for currency: CurrencyType) -> TransactionLimits {
+        // NOTE: This should really use `nil` for all values.
+        // Not done so because of required refactoring in TxFlow and lack of time.
+        fixedValue(MoneyValue.decimalMaximum(for: currency))
     }
 
     private static func fixedValue(_ fixedValue: MoneyValue) -> TransactionLimits {
