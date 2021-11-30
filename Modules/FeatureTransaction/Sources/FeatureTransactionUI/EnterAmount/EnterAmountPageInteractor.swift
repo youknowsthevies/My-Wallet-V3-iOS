@@ -140,6 +140,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     }
                     .asObservable()
             }
+            .subscribeOn(MainScheduler.asyncInstance)
             .subscribe { [weak self] (amount: MoneyValue) in
                 self?.transactionModel.process(action: .updateAmount(amount))
             }
@@ -329,6 +330,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             )
 
         let interactorState = transactionStateAndLimitsFeature
+            .subscribeOn(MainScheduler.asyncInstance)
             .scan(initialState()) { [weak self] currentState, tuple -> State in
                 let (updater, newLimitsUIEnabled) = tuple
                 guard let self = self else {
