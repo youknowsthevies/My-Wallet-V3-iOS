@@ -97,6 +97,8 @@ class LoadableAccountPickerControllable: LoadableEitherViewController<
             shouldOverrideNavigationEffects = controllable.shouldOverrideNavigationEffects
         }
 
+        disposeBag = DisposeBag()
+
         connectChildIfPossible()
 
         super.updateChild(to: newValue)

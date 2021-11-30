@@ -9,6 +9,7 @@ import FeatureTransactionUI
 import Foundation
 import PlatformKit
 import PlatformUIKit
+import RIBs
 import RxRelay
 import SwiftUI
 import ToolKit
@@ -65,27 +66,27 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
         buyListViewController.automaticallyApplyNavigationBarStyle = false
 
         // Sell
-        let sellBuilder = AccountPickerBuilder(
+        let accountPickerBuilder = AccountPickerBuilder(
             singleAccountsOnly: true,
             action: .sell
         )
-        let sellDidSelect: AccountPickerDidSelect = { [transactionsRouter] account in
+        let accountPickerDidSelect: AccountPickerDidSelect = { [weak self] account in
+            guard let self = self else { return }
             guard let cryptoAccount = account as? CryptoAccount else {
                 return
             }
-            transactionsRouter.presentTransactionFlow(to: .sell(cryptoAccount))
+            self.transactionsRouter.presentTransactionFlow(to: .sell(cryptoAccount))
                 .sink { result in
                     "\(result)".peek("🧾 \(#function)")
                 }
                 .store(in: &self.cancellables)
         }
-        sellAccountPickerRouter = sellBuilder.build(
-            listener: .simple(sellDidSelect),
+        let accountPickerRouter = accountPickerBuilder.build(
+            listener: .simple(accountPickerDidSelect),
             navigationModel: ScreenNavigationModel.AccountPicker.modal(),
             headerModel: .none
         )
-        sellAccountPickerRouter.interactable.activate()
-        sellAccountPickerRouter.load()
+        mimicRIBAttachment(router: accountPickerRouter)
 
         return [
             SegmentedViewScreenItem(
@@ -94,10 +95,17 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
             ),
             SegmentedViewScreenItem(
                 title: LocalizedStrings.sellTitle,
-                viewController: sellAccountPickerRouter.viewControllable.uiviewController
+                viewController: accountPickerRouter.viewControllable.uiviewController
             )
         ]
     }()
+
+    private func mimicRIBAttachment(router: RIBs.Routing) {
+        currentRIBRouter?.interactable.deactivate()
+        currentRIBRouter = router
+        router.load()
+        router.interactable.activate()
+    }
 
     let itemIndexSelectedRelay: BehaviorRelay<(index: Int, animated: Bool)> = .init(value: (index: 0, animated: false))
 
@@ -107,7 +115,8 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
     private let cryptoCurrenciesService: CryptoCurrenciesServiceAPI
     private let coincore: CoincoreAPI
 
-    private var sellAccountPickerRouter: AccountPickerRouting!
+    /// Currently retained RIBs router in use.
+    private var currentRIBRouter: RIBs.Routing?
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Init

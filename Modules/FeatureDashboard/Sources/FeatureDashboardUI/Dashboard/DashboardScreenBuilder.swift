@@ -32,7 +32,8 @@ public final class DashboardScreenBuilder {
                 fiatBalanceCellProvider: fiatBalanceCellProvider,
                 dashboardScreenPresenter: .init(),
                 qrCodeScannerRouter: qrCodeScannerRouter
-            )
+            ),
+            selectedSegmentBinding: .constant(0)
         )
     }
 }

@@ -5,7 +5,7 @@ import SwiftUI
 
 struct BuySellView: UIViewControllerRepresentable {
 
-    var selectedSegment: Int = 0
+    @Binding var selectedSegment: Int
 
     func updateUIViewController(_ uiViewController: SegmentedViewController, context: Context) {
         uiViewController.selectSegment(selectedSegment)
@@ -13,7 +13,8 @@ struct BuySellView: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> SegmentedViewController {
         let viewController = SegmentedViewController(
-            presenter: BuySellSegmentedViewPresenter()
+            presenter: BuySellSegmentedViewPresenter(),
+            selectedSegmentBinding: $selectedSegment
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController

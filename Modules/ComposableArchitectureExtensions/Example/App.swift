@@ -44,7 +44,6 @@ let exampleReducer = Reducer<ExampleState, ExampleAction, Void>
                 return .fireAndForget { print("✅") }
             }
         }
-        .debug()
     )
 
 enum ExampleRoute: NavigationRoute, CaseIterable {

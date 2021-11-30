@@ -2,6 +2,7 @@
 
 import PlatformKit
 import RxSwift
+import SwiftUI
 import ToolKit
 
 /// `SegmentedViewController` is a easy to used ViewController containing a `SegmentedView`
@@ -11,11 +12,16 @@ public final class SegmentedViewController: BaseScreenViewController {
     private lazy var segmentedView = SegmentedView()
     private let presenter: SegmentedViewScreenPresenting
     private let rootViewController: SegmentedTabViewController
+    @Binding private var selectedSegmentBinding: Int
     private let disposeBag = DisposeBag()
 
     required init?(coder: NSCoder) { unimplemented() }
-    public init(presenter: SegmentedViewScreenPresenting) {
+    public init(
+        presenter: SegmentedViewScreenPresenting,
+        selectedSegmentBinding: Binding<Int>
+    ) {
         self.presenter = presenter
+        _selectedSegmentBinding = selectedSegmentBinding
         rootViewController = SegmentedTabViewController(items: presenter.items)
         super.init(nibName: nil, bundle: nil)
     }
@@ -38,6 +44,12 @@ public final class SegmentedViewController: BaseScreenViewController {
         presenter.itemIndexSelected
             .compactMap { $0 }
             .bindAndCatch(to: rootViewController.itemIndexSelectedRelay)
+            .disposed(by: disposeBag)
+
+        presenter.itemIndexSelected
+            .subscribe(onNext: { [weak self] index, _ in
+                self?.selectedSegmentBinding = index
+            })
             .disposed(by: disposeBag)
 
         set(

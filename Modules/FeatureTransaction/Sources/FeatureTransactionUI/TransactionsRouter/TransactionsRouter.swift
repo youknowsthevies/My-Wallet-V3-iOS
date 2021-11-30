@@ -246,7 +246,7 @@ extension TransactionsRouter {
         case .sell(let cryptoAccount):
             let listener = SellFlowListener()
             let interactor = SellFlowInteractor()
-            let router = sellFlowBuilder.build(with: listener, interactor: interactor)
+            let router = SellFlowBuilder().build(with: listener, interactor: interactor)
             router.start(with: cryptoAccount, from: presenter)
             mimicRIBAttachment(router: router)
             return listener.publisher
@@ -254,22 +254,21 @@ extension TransactionsRouter {
         case .swap(let cryptoAccount):
             if cryptoAccount == nil {
                 let router = SwapRootBuilder().build()
-                router.interactable.activate()
-                router.load()
                 presenter.present(router.viewControllable.uiviewController, animated: true, completion: nil)
                 mimicRIBAttachment(router: router)
                 return .empty()
+            } else {
+                let listener = SwapRootInteractor()
+                let router = transactionFlowBuilder.build(
+                    withListener: listener,
+                    action: .swap,
+                    sourceAccount: cryptoAccount,
+                    target: nil
+                )
+                presenter.present(router.viewControllable.uiviewController, animated: true)
+                mimicRIBAttachment(router: router)
+                return .empty()
             }
-            let listener = SwapRootInteractor()
-            let router = transactionFlowBuilder.build(
-                withListener: listener,
-                action: .swap,
-                sourceAccount: cryptoAccount,
-                target: nil
-            )
-            presenter.present(router.viewControllable.uiviewController, animated: true)
-            mimicRIBAttachment(router: router)
-            return .empty()
 
         case .sign(let sourceAccount, let destination):
             let listener = SignFlowListener()
