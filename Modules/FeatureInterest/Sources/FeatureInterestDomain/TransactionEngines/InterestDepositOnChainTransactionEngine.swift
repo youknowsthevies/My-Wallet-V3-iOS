@@ -117,6 +117,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
             .map { minimum, pendingTransaction in
                 var tx = pendingTransaction
                 tx.limits = TransactionLimits(
+                    currencyType: minimum.currencyType,
                     minimum: minimum,
                     maximum: tx.maxLimit,
                     maximumDaily: tx.maxDailyLimit,

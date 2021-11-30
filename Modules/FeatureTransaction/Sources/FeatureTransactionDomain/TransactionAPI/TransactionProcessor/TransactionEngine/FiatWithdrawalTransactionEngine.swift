@@ -79,7 +79,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 ),
                 selectedFiatCurrency: fiatCurrency,
                 minimumLimit: feeAndLimit.minLimit.moneyValue,
-                maximumLimit: feeAndLimit.maxLimit.moneyValue
+                maximumLimit: feeAndLimit.maxLimit?.moneyValue ?? actionableBalance
             )
         }
     }

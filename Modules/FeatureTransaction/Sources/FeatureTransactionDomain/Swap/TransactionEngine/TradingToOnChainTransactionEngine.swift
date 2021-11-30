@@ -138,6 +138,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                     )
                     let transactionLimits = pendingTransaction.limits ?? .noLimits(for: amount.currency)
                     pendingTransaction.limits = TransactionLimits(
+                        currencyType: transactionLimits.currencyType,
                         minimum: fees[minimumAmount: amount.currency],
                         maximum: transactionLimits.maximum,
                         maximumDaily: transactionLimits.maximumDaily,

@@ -269,7 +269,7 @@ extension TransactionEngine {
                     to: pendingTransaction.amount.currencyType
                 ),
                 currencyConversionService.conversionRate(
-                    from: pendingTransaction.normalizedLimits.minimum.currencyType,
+                    from: pendingTransaction.normalizedLimits.currencyType,
                     to: pendingTransaction.amount.currencyType
                 )
             )
@@ -290,15 +290,20 @@ extension TransactionEngine {
         isWithin limits: TransactionLimits,
         amountToWalletRate: MoneyValue
     ) throws {
-        guard try amount >= limits.minimum else {
-            throw TransactionValidationFailure(state: .belowMinimumLimit(limits.minimum))
+        let minLimit = limits.minimum ?? .zero(currency: limits.currencyType)
+        guard try amount >= minLimit else {
+            throw TransactionValidationFailure(state: .belowMinimumLimit(minLimit))
         }
 
-        guard try amount <= limits.maximum else {
+        guard let maxLimit = limits.maximum else {
+            return
+        }
+
+        guard try amount <= maxLimit else {
             if sourceAccount is LinkedBankAccount {
                 throw TransactionValidationFailure(
                     state: .overMaximumSourceLimit(
-                        limits.maximum.convert(using: amountToWalletRate),
+                        maxLimit.convert(using: amountToWalletRate),
                         sourceAccount.label,
                         amount
                     )
@@ -306,8 +311,8 @@ extension TransactionEngine {
             }
             throw TransactionValidationFailure(
                 state: .overMaximumPersonalLimit(
-                    limits.effectiveLimit,
-                    limits.maximum.convert(using: amountToWalletRate),
+                    limits.effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maxLimit),
+                    maxLimit.convert(using: amountToWalletRate),
                     limits.suggestedUpgrade
                 )
             )

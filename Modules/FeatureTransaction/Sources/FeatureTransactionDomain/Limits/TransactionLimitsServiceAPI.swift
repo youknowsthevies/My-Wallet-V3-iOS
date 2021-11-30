@@ -295,6 +295,7 @@ extension TransactionLimits {
 
     init(_ tradeLimits: TradeLimits) {
         self.init(
+            currencyType: tradeLimits.currency,
             minimum: tradeLimits.minOrder,
             maximum: tradeLimits.maxPossibleOrder,
             maximumDaily: tradeLimits.daily?.limit ?? tradeLimits.maxPossibleOrder,
@@ -306,6 +307,7 @@ extension TransactionLimits {
 
     init(_ paymentMethod: PaymentMethod) {
         self.init(
+            currencyType: paymentMethod.fiatCurrency.currencyType,
             minimum: paymentMethod.min.moneyValue,
             maximum: paymentMethod.max.moneyValue,
             maximumDaily: paymentMethod.maxDaily.moneyValue,
@@ -316,40 +318,76 @@ extension TransactionLimits {
     }
 
     init(_ crossBorderLimits: CrossBorderLimits) {
-        let infinity = MoneyValue.decimalMaximum(for: crossBorderLimits.currency)
+        let effectiveLimit: EffectiveLimit?
+        if let maxCurrentLimit = crossBorderLimits.currentLimits?.available {
+            effectiveLimit = .init(crossBorderLimits: crossBorderLimits, maxLimitFallbak: maxCurrentLimit)
+        } else {
+            effectiveLimit = nil
+        }
         self.init(
+            currencyType: crossBorderLimits.currency,
             minimum: .zero(currency: crossBorderLimits.currency),
-            maximum: crossBorderLimits.currentLimits?.available ?? infinity,
-            maximumDaily: crossBorderLimits.currentLimits?.daily?.limit ?? infinity,
-            maximumAnnual: crossBorderLimits.currentLimits?.yearly?.limit ?? infinity,
-            effectiveLimit: .init(crossBorderLimits: crossBorderLimits, maxLimitFallbak: infinity),
+            maximum: crossBorderLimits.currentLimits?.available,
+            maximumDaily: crossBorderLimits.currentLimits?.daily?.limit,
+            maximumAnnual: crossBorderLimits.currentLimits?.yearly?.limit,
+            effectiveLimit: effectiveLimit,
             suggestedUpgrade: crossBorderLimits.suggestedUpgrade
         )
     }
 
     func merge(with limits: TransactionLimits) -> TransactionLimits {
-        TransactionLimits(
-            minimum: (try? .max(limits.minimum, minimum)) ?? minimum,
-            maximum: (try? .max(limits.maximum, maximum)) ?? maximum,
-            maximumDaily: (try? .max(limits.maximumDaily, maximumDaily)) ?? maximumDaily,
-            maximumAnnual: (try? .max(limits.maximumAnnual, maximumAnnual)) ?? maximumAnnual,
-            effectiveLimit: try? .max(effectiveLimit, limits.effectiveLimit),
-            suggestedUpgrade: try? effectiveLimit.value > limits.effectiveLimit.value ? suggestedUpgrade : limits.suggestedUpgrade
+        guard currencyType == limits.currencyType else {
+            fatalError("Merging limits with mismatching currency types is not allowed")
+        }
+
+        let effectiveLimit: EffectiveLimit? = try? .max(effectiveLimit, limits.effectiveLimit)
+        let suggestedUpgrade: SuggestedLimitsUpgrade?
+        if let lhs = effectiveLimit, let rhs = limits.effectiveLimit {
+            suggestedUpgrade = try? lhs.value > rhs.value ? self.suggestedUpgrade : limits.suggestedUpgrade
+        } else {
+            suggestedUpgrade = self.suggestedUpgrade ?? limits.suggestedUpgrade
+        }
+
+        let defaultMin = limits.minimum ?? minimum
+        let defaultMax = limits.maximum ?? maximum
+        let combinedMax = (try? .max(limits.maximum, maximum)) ?? defaultMax
+        let defaultMaxDaily = limits.maximumDaily ?? maximumDaily ?? combinedMax
+        let defaultMaxAnnual = limits.maximumAnnual ?? maximumAnnual ?? defaultMaxDaily
+
+        return TransactionLimits(
+            currencyType: limits.currencyType,
+            minimum: (try? .max(limits.minimum, minimum)) ?? defaultMin,
+            maximum: combinedMax,
+            maximumDaily: (try? .max(limits.maximumDaily, maximumDaily)) ?? defaultMaxDaily,
+            maximumAnnual: (try? .max(limits.maximumAnnual, maximumAnnual)) ?? defaultMaxAnnual,
+            effectiveLimit: effectiveLimit,
+            suggestedUpgrade: suggestedUpgrade
         )
     }
 
     func merge(with crossBorderLimits: CrossBorderLimits) -> TransactionLimits {
-        let infinity = MoneyValue.decimalMaximum(for: crossBorderLimits.currency)
-        let maxCrossBorderCurrentLimit = crossBorderLimits.currentLimits?.available ?? infinity
-        let maxCombinedLimit = (try? MoneyValue.min(maximum, maxCrossBorderCurrentLimit)) ?? maximum
+        let maxCrossBorderCurrentLimit = crossBorderLimits.currentLimits?.available
+        let maxCombinedLimit: MoneyValue?
+        if let maximum = maximum, let maxCrossBorderCurrentLimit = maxCrossBorderCurrentLimit {
+            maxCombinedLimit = (try? MoneyValue.min(maximum, maxCrossBorderCurrentLimit)) ?? maximum
+        } else {
+            maxCombinedLimit = maxCrossBorderCurrentLimit ?? maximum
+        }
         let maxCrossBorderDailyLimit = crossBorderLimits.currentLimits?.daily?.limit ?? maxCombinedLimit
         let maxCrossBorderAnnualLimit = crossBorderLimits.currentLimits?.yearly?.limit ?? maxCombinedLimit
+        let effectiveLimit: EffectiveLimit?
+        if let maxCombinedLimit = maxCombinedLimit {
+            effectiveLimit = .init(crossBorderLimits: crossBorderLimits, maxLimitFallbak: maxCombinedLimit)
+        } else {
+            effectiveLimit = nil
+        }
         return TransactionLimits(
+            currencyType: crossBorderLimits.currency,
             minimum: minimum,
             maximum: maxCombinedLimit,
             maximumDaily: maxCrossBorderDailyLimit,
             maximumAnnual: maxCrossBorderAnnualLimit,
-            effectiveLimit: .init(crossBorderLimits: crossBorderLimits, maxLimitFallbak: maxCombinedLimit),
+            effectiveLimit: effectiveLimit,
             suggestedUpgrade: crossBorderLimits.suggestedUpgrade
         )
     }
@@ -359,17 +397,17 @@ extension TransactionLimits {
         with crossBorderLimits: CrossBorderLimits,
         usePaymentMethodMax: Bool
     ) -> TransactionLimits {
-        let infinity = MoneyValue.decimalMaximum(for: crossBorderLimits.currency)
-        let maxCrossBorderCurrentLimit = crossBorderLimits.currentLimits?.available ?? infinity
+        let maxCrossBorderCurrentLimit = crossBorderLimits.currentLimits?.available ?? paymentMethod.max.moneyValue
         let maxLimit: MoneyValue
-        if usePaymentMethodMax, let max = try? MoneyValue.min(paymentMethod.max.moneyValue, maxCrossBorderCurrentLimit) {
-            maxLimit = max
+        if usePaymentMethodMax, let m = try? MoneyValue.min(paymentMethod.max.moneyValue, maxCrossBorderCurrentLimit) {
+            maxLimit = m
         } else {
             maxLimit = maxCrossBorderCurrentLimit
         }
         let maxCrossBorderDailyLimit = crossBorderLimits.currentLimits?.daily?.limit ?? maxLimit
         let maxCrossBorderAnnualLimit = crossBorderLimits.currentLimits?.yearly?.limit ?? maxCrossBorderDailyLimit
         return TransactionLimits(
+            currencyType: crossBorderLimits.currency,
             minimum: paymentMethod.min.moneyValue,
             maximum: maxLimit,
             maximumDaily: maxCrossBorderDailyLimit,
