@@ -59,7 +59,7 @@ extension OpenBankingState {
     }
 }
 
-public enum OpenBankingAction {
+public enum OpenBankingAction: Equatable {
     case institutionList(InstitutionListAction)
     case approve(ApproveAction)
 }
@@ -100,22 +100,9 @@ public let openBankingReducer = Reducer<OpenBankingState, OpenBankingAction, Ope
 public struct OpenBankingView: View {
 
     let store: Store<OpenBankingState, OpenBankingAction>
-    let environment: OpenBankingEnvironment
 
-    public init(state: OpenBankingState, environment: OpenBankingEnvironment) {
-        self.init(
-            store: .init(
-                initialState: state,
-                reducer: openBankingReducer,
-                environment: environment
-            ),
-            in: environment
-        )
-    }
-
-    private init(store: Store<OpenBankingState, OpenBankingAction>, in environment: OpenBankingEnvironment) {
+    public init(store: Store<OpenBankingState, OpenBankingAction>) {
         self.store = store
-        self.environment = environment
     }
 
     public var body: some View {

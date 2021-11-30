@@ -5,7 +5,11 @@
 import CombineSchedulers
 import FeatureOpenBankingData
 import Foundation
+#if canImport(WalletNetworkKit)
+import WalletNetworkKit
+#else
 import NetworkKit
+#endif
 import ToolKit
 
 extension OpenBankingEnvironment {
@@ -41,7 +45,7 @@ extension OpenBankingClient {
         ),
         network: NetworkAdapter(
             communicator: EphemeralNetworkCommunicator()
-        )
+        ).network
     )
 }
 

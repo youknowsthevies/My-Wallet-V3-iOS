@@ -604,7 +604,7 @@ extension DependencyContainer {
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = OpenBankingClient(
                 requestBuilder: builder,
-                network: adapter
+                network: adapter.network
             )
             return OpenBanking(banking: client)
         }
