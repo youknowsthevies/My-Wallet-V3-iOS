@@ -69,5 +69,6 @@ final class CustodialPendingDepositService: CustodialPendingDepositServiceAPI {
         return client.createPendingDeposit(body: body)
             .asObservable()
             .ignoreElements()
+            .asCompletable()
     }
 }

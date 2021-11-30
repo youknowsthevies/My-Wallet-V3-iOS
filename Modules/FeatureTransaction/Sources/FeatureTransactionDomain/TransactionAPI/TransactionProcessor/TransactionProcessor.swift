@@ -104,6 +104,7 @@ public final class TransactionProcessor {
                 })
                 .asObservable()
                 .ignoreElements()
+                .asCompletable()
         } catch {
             return .just(event: .error(error))
         }

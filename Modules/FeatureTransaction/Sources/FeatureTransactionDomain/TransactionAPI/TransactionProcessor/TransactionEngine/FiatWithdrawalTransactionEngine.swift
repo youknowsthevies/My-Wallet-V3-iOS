@@ -116,6 +116,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                     .createWithdrawOrder(id: address, amount: pendingTransaction.amount)
                     .asObservable()
                     .ignoreElements()
+                    .asCompletable()
             }
             .flatMapSingle {
                 .just(TransactionResult.unHashed(amount: pendingTransaction.amount))

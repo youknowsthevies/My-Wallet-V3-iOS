@@ -213,6 +213,7 @@ final class SecureChannelService: SecureChannelAPI {
             .eraseToAnyPublisher()
             .asObservable()
             .ignoreElements()
+            .asCompletable()
     }
 
     private func decodePairingCode(payload: String) -> SecureChannel.PairingCode? {
@@ -316,6 +317,7 @@ final class SecureChannelService: SecureChannelAPI {
                 self.secureChannelNetwork.sendMessage(msg: response)
                     .asObservable()
                     .ignoreElements()
+                    .asCompletable()
             }
     }
 }

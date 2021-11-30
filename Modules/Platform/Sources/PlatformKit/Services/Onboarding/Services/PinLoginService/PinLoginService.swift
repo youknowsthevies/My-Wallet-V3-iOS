@@ -53,6 +53,7 @@ public final class PinLoginService: PinLoginServiceAPI {
             .requestUsingSharedKey()
             .asObservable()
             .ignoreElements()
+            .asCompletable()
             .flatMapSingle(weak: self) { (self) -> Single<PasscodePayload> in
                 self.passcodePayload(from: pinDecryptionKey)
             }

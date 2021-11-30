@@ -96,7 +96,7 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
     }
 
     func deleteBank(by id: String) -> Completable {
-        client.deleteLinkedBank(for: id).asObservable().ignoreElements()
+        client.deleteLinkedBank(for: id).asObservable().ignoreElements().asCompletable()
     }
 
     func invalidate() {
