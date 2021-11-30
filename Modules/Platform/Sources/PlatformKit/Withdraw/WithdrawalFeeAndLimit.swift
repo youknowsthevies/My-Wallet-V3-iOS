@@ -2,12 +2,12 @@
 
 public struct WithdrawalFeeAndLimit {
 
-    public let maxLimit: FiatValue
+    public let maxLimit: FiatValue?
     public let minLimit: FiatValue
     public let fee: FiatValue
 
     public init(
-        maxLimit: FiatValue,
+        maxLimit: FiatValue?,
         minLimit: FiatValue,
         fee: FiatValue
     ) {

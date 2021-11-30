@@ -62,7 +62,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
             .map { [sourceAsset, target] paymentLimits -> PendingTransaction in
                 PendingTransaction(
                     amount: .zero(currency: sourceAsset),
-                    available: paymentLimits.maximum,
+                    available: paymentLimits.maximum ?? .zero(currency: sourceAsset),
                     feeAmount: .zero(currency: sourceAsset),
                     feeForFullAvailable: .zero(currency: sourceAsset),
                     feeSelection: .init(selectedLevel: .none, availableLevels: []),

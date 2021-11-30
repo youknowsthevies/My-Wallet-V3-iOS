@@ -48,9 +48,8 @@ final class WithdrawalService: WithdrawalServiceAPI {
             .map { withdrawData, limitsData -> WithdrawalFeeAndLimit in
                 let (feeResponse, minResponse) = withdrawData
                 let zero: FiatValue = .zero(currency: currency)
-                let infinity = FiatValue.decimalMaximum(for: currency)
                 return WithdrawalFeeAndLimit(
-                    maxLimit: limitsData.maximum.fiatValue ?? infinity,
+                    maxLimit: limitsData.maximum?.fiatValue,
                     minLimit: FiatValue.create(minor: minResponse.minorValue, currency: currency) ?? zero,
                     fee: FiatValue.create(minor: feeResponse.minorValue, currency: currency) ?? zero
                 )
