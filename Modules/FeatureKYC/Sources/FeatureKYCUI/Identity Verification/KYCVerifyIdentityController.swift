@@ -244,6 +244,20 @@ extension KYCVerifyIdentityController: LoadingView {
 
 extension KYCVerifyIdentityController: VeriffController {
 
+    func sessionDidEndWithResult(_ result: VeriffSdk.Result) {
+        switch result.status {
+        case .error(let error):
+            trackInternalVeriffError(.init(veriffError: error))
+            onVeriffError(message: error.localizedErrorMessage)
+        case .done:
+            onVeriffSubmissionCompleted()
+        case .canceled:
+            onVeriffCancelled()
+        @unknown default:
+            onVeriffCancelled()
+        }
+    }
+
     func onVeriffSubmissionCompleted() {
         analyticsRecorder.record(event: AnalyticsEvents.KYC.kycVeriffInfoSubmitted)
         loadingViewPresenter.show(with: LocalizationConstants.KYC.submittingInformation)

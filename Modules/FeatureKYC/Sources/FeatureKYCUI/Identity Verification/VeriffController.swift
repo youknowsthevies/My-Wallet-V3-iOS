@@ -5,7 +5,7 @@ import PlatformKit
 import UIKit
 import Veriff
 
-protocol VeriffController: VeriffSdkDelegate {
+protocol VeriffController: UIViewController, VeriffSdkDelegate {
 
     var veriff: VeriffSdk { get }
 
@@ -27,6 +27,7 @@ protocol VeriffController: VeriffSdkDelegate {
 }
 
 extension VeriffController where Self: UIViewController {
+
     internal var veriff: VeriffSdk {
         VeriffSdk.shared
     }
@@ -37,7 +38,7 @@ extension VeriffController where Self: UIViewController {
     }
 }
 
-enum InternalVeriffError: Error {
+enum InternalVeriffError: Swift.Error {
     case cameraUnavailable
     case microphoneUnavailable
     case serverError
@@ -68,23 +69,8 @@ enum InternalVeriffError: Error {
             self = .deprecatedSDKVersion
         case .unknown:
             self = .unknown
-        }
-    }
-}
-
-extension VeriffController {
-    func sessionDidEndWithResult(_ result: VeriffSdk.Result) {
-
-        switch result.status {
-        case .error(let error):
-            trackInternalVeriffError(.init(veriffError: error))
-            onVeriffError(message: error.localizedErrorMessage)
-        case .done:
-            onVeriffSubmissionCompleted()
-        case .canceled:
-            onVeriffCancelled()
         @unknown default:
-            onVeriffCancelled()
+            self = .unknown
         }
     }
 }
