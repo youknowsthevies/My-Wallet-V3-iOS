@@ -169,7 +169,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     // MARK: - Setup
 
     init(
-        repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
+        repository: AuthenticatorRepositoryAPI = resolve(),
         wallet: WalletProtocol = WalletManager.shared.wallet,
         userService: NabuUserServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),

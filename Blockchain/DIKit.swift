@@ -504,12 +504,9 @@ extension DependencyContainer {
         }
 
         factory { () -> GuidServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return GuidService(
-                sessionTokenRepository: manager.repository,
-                client: DIKit.resolve(),
-                walletRepo: DIKit.resolve(),
-                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+            GuidService(
+                sessionTokenRepository: DIKit.resolve(),
+                client: DIKit.resolve()
             )
         }
 
@@ -520,12 +517,10 @@ extension DependencyContainer {
         }
 
         factory { () -> SMSServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return SMSService(
+            SMSService(
                 client: DIKit.resolve(),
-                repository: manager.repository,
-                walletRepo: DIKit.resolve(),
-                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+                credentialsRepository: DIKit.resolve(),
+                sessionTokenRepository: DIKit.resolve()
             )
         }
 
@@ -550,13 +545,10 @@ extension DependencyContainer {
         }
 
         factory { () -> LoginServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return LoginService(
+            LoginService(
                 payloadService: DIKit.resolve(),
                 twoFAPayloadService: DIKit.resolve(),
-                repository: manager.repository,
-                walletRepo: DIKit.resolve(),
-                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+                repository: DIKit.resolve()
             )
         }
 

@@ -35,22 +35,25 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
 
     private let autoPairingService: AutoWalletPairingServiceAPI
     private let walletCryptoService: WalletCryptoServiceAPI
-    private let walletRepository: WalletRepositoryAPI
+    private let credentialsRepository: CredentialsRepositoryAPI
+    private let passwordRepository: PasswordRepositoryAPI
 
     // MARK: - Setup
 
     public init(
         autoPairingService: AutoWalletPairingServiceAPI = resolve(),
         walletCryptoService: WalletCryptoServiceAPI = resolve(),
-        walletRepository: WalletRepositoryAPI = resolve()
+        credentialsRepository: CredentialsRepositoryAPI = resolve(),
+        passwordRepository: PasswordRepositoryAPI = resolve()
     ) {
         self.autoPairingService = autoPairingService
         self.walletCryptoService = walletCryptoService
-        self.walletRepository = walletRepository
+        self.credentialsRepository = credentialsRepository
+        self.passwordRepository = passwordRepository
     }
 
     private var guid: Single<String> {
-        walletRepository
+        credentialsRepository
             .guid
             .map {
                 guard let guid = $0 else {
@@ -74,8 +77,8 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
     private func encrypteWalletData(with encryptionPhrase: String) -> Single<String> {
         Single
             .zip(
-                walletRepository.password,
-                walletRepository.sharedKey
+                passwordRepository.password,
+                credentialsRepository.sharedKey
             )
             .map { password, sharedKey -> (String, String) in
                 guard let password = password else {
