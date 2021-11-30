@@ -30,7 +30,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: CalloutCardExamples(), title: "💬 CalloutCard"),
             NavigationLinkProvider(view: SectionHeadersExamples(), title: "🪖 SectionHeaders"),
             NavigationLinkProvider(view: RowExamplesView(), title: "🚣‍♀️ Rows"),
-            NavigationLinkProvider(view: BottomSheetExamples(), title: "📄 BottomSheet")
+            NavigationLinkProvider(view: BottomSheetExamples(), title: "📄 BottomSheet"),
+            NavigationLinkProvider(view: SearchBarExamples(), title: "🔎 SearchBar")
         ]
     ]
 
