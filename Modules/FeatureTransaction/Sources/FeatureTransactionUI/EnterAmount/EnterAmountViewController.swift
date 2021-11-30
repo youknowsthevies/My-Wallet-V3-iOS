@@ -185,16 +185,17 @@ final class EnterAmountViewController: BaseScreenViewController,
     func connect(
         state: Driver<EnterAmountPageInteractor.State>
     ) -> Driver<EnterAmountPageInteractor.NavigationEffects> {
-        state
+        let stateDriver = state
             .distinctUntilChanged()
+
+        stateDriver
             .map(\.topAuxiliaryViewPresenter)
             .drive(weak: self) { (self, presenter) in
                 self.topAuxiliaryViewModelStateDidChange(to: presenter)
             }
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.bottomAuxiliaryViewPresenter)
             .drive(weak: self) { (self, presenter) in
                 self.bottomAuxiliaryViewModelStateDidChange(to: presenter)
@@ -231,37 +232,32 @@ final class EnterAmountViewController: BaseScreenViewController,
             .drive()
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.canContinue)
             .drive(continueButtonView.viewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.showContinueAction)
             .map { !$0 } // flip the flag because we're modifying the hidden state
             .drive(continueButtonView.viewModel.isHiddenRelay)
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.showErrorRecoveryAction)
             .drive(onNext: { [weak errorRecoveryViewController] showError in
                 errorRecoveryViewController?.view.isHidden = !showError
             })
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map { $0.showContinueAction || $0.showErrorRecoveryAction }
             .drive(onNext: { [ctaContainerView] canShowAnyCTA in
                 ctaContainerView.isHidden = !canShowAnyCTA
             })
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.errorState)
             .map(\.recoveryWarningHint)
             .drive(onNext: { [errorRecoveryCTAModel] errorTitle in
@@ -269,8 +265,7 @@ final class EnterAmountViewController: BaseScreenViewController,
             })
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.showWithdrawalLocks)
             .drive(onNext: { [weak self] showWithdrawalLocks in
                 let heightAnchor = self?.withdrawalLocksHostingController.view.heightAnchor

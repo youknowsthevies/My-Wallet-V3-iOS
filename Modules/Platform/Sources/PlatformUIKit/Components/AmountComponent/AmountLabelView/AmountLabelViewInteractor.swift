@@ -11,6 +11,7 @@ public final class AmountLabelViewInteractor {
         currencyRelay
             .asObservable()
             .distinctUntilChanged { $0.code == $1.code }
+            .subscribeOn(MainScheduler.asyncInstance)
     }
 
     // MARK: - Injected
