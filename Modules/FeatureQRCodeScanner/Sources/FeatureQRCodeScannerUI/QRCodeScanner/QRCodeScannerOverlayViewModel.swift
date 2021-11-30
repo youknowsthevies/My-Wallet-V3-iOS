@@ -105,7 +105,7 @@ final class QRCodeScannerOverlayViewModel {
             }
             .store(in: &cancellables)
 
-        featureFlagsService
+        let walletConnectSessions = featureFlagsService
             .isEnabled(.remote(.walletConnectEnabled))
             .flatMap { [walletConnectSessionRepository] isEnabled -> AnyPublisher<[WalletConnectSession], Never> in
                 isEnabled ? walletConnectSessionRepository.retrieve()
@@ -115,12 +115,29 @@ final class QRCodeScannerOverlayViewModel {
                 guard !sessions.isEmpty else {
                     return (.hidden, "")
                 }
-                let title = String(
-                    format: LocalizationConstants.QRCodeScanner.connectedDapps,
-                    String(sessions.count)
-                )
+                let title: String
+                if sessions.count == 1 {
+                    title = LocalizationConstants.QRCodeScanner.connectedDApp
+                } else {
+                    title = String(
+                        format: LocalizationConstants.QRCodeScanner.connectedDapps,
+                        String(sessions.count)
+                    )
+                }
                 return (.visible, title)
             }
+
+        let reloadConnectedDApps = PassthroughSubject<Void, Never>()
+
+        walletConnectSessions
+            .sink { [weak self] visibility, title in
+                self?.dAppsButtonVisibilityRelay.send(visibility)
+                self?.dAppsButtonTitleRelay.send(title)
+            }
+            .store(in: &cancellables)
+
+        reloadConnectedDApps
+            .flatMap { walletConnectSessions }
             .sink { [weak self] visibility, title in
                 self?.dAppsButtonVisibilityRelay.send(visibility)
                 self?.dAppsButtonTitleRelay.send(title)
@@ -133,7 +150,9 @@ final class QRCodeScannerOverlayViewModel {
                 .WalletConnect
                 .connectedDappsListClicked(origin: .qrCode))
             let router: WalletConnectRouterAPI = resolve()
-            router.showConnectedDApps()
+            router.showConnectedDApps {
+                reloadConnectedDApps.send(())
+            }
         }
     }
 

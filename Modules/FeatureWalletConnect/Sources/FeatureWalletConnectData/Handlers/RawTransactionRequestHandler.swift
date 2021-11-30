@@ -52,7 +52,7 @@ final class RawTransactionRequestHandler: RequestHandler {
                 }
                 let dAppName = session.dAppInfo.peerMeta.name
                 let target = EthereumRawTransactionTarget(
-                    dAppAddress: session.dAppInfo.peerMeta.url.absoluteString,
+                    dAppAddress: session.dAppInfo.peerMeta.url.host ?? "",
                     dAppName: dAppName,
                     rawTransaction: Data(hex: transaction),
                     onTxCompleted: { [analyticsEventRecorder] transactionResult in

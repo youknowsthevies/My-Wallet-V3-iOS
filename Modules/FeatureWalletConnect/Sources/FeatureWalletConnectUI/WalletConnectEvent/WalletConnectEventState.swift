@@ -43,7 +43,7 @@ public struct WalletConnectEventState: Equatable {
         switch state {
         case .idle:
             title = String(format: LocalizationConstants.WalletConnect.dAppWantsToConnect, meta.name)
-            subtitle = meta.url.absoluteString
+            subtitle = meta.url.host
             secondaryButtonTitle = LocalizationConstants.cancel
             primaryButtonTitle = LocalizationConstants.WalletConnect.confirm
             primaryAction = .accept

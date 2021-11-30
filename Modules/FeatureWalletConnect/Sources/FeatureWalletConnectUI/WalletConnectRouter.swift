@@ -73,9 +73,9 @@ class WalletConnectRouter: WalletConnectRouterAPI {
         let state = WalletConnectEventState(session: session, state: .fail)
         let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
         let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
-        controller.view.backgroundColor = .clear
-        controller.modalTransitionStyle = .crossDissolve
-        controller.modalPresentationStyle = .overCurrentContext
+        controller.transitioningDelegate = sheetPresenter
+        controller.modalPresentationStyle = .custom
+
         presenter?.present(controller, animated: true, completion: nil)
     }
 
@@ -99,9 +99,9 @@ class WalletConnectRouter: WalletConnectRouterAPI {
         let state = WalletConnectEventState(session: session, state: .idle)
         let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
         let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
-        controller.view.backgroundColor = .clear
-        controller.modalTransitionStyle = .crossDissolve
-        controller.modalPresentationStyle = .overCurrentContext
+        controller.transitioningDelegate = sheetPresenter
+        controller.modalPresentationStyle = .custom
+
         presenter?.present(controller, animated: true, completion: nil)
     }
 
@@ -119,13 +119,13 @@ class WalletConnectRouter: WalletConnectRouterAPI {
         let state = WalletConnectEventState(session: session, state: .success)
         let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
         let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
-        controller.view.backgroundColor = .clear
-        controller.modalTransitionStyle = .crossDissolve
-        controller.modalPresentationStyle = .overCurrentContext
+        controller.transitioningDelegate = sheetPresenter
+        controller.modalPresentationStyle = .custom
+
         presenter?.present(controller, animated: true, completion: nil)
     }
 
-    public func showConnectedDApps() {
+    func showConnectedDApps(_ completion: (() -> Void)?) {
         let presenter = navigation.topMostViewControllerProvider.topMostViewController
         let env = DAppListEnvironment(
             mainQueue: .main,
@@ -133,15 +133,16 @@ class WalletConnectRouter: WalletConnectRouterAPI {
             sessionRepository: resolve(),
             analyticsEventRecorder: analyticsEventRecorder,
             onComplete: { _ in
+                completion?()
                 presenter?.dismiss(animated: true)
             }
         )
         let state = DAppListState()
         let store = Store(initialState: state, reducer: dAppListReducer, environment: env)
         let controller = UIHostingController(rootView: DAppListView(store: store))
-        controller.view.backgroundColor = .clear
-        controller.modalTransitionStyle = .crossDissolve
-        controller.modalPresentationStyle = .overCurrentContext
+        controller.transitioningDelegate = sheetPresenter
+        controller.modalPresentationStyle = .custom
+
         presenter?.present(controller, animated: true, completion: nil)
     }
 
@@ -172,9 +173,9 @@ class WalletConnectRouter: WalletConnectRouterAPI {
                 )
                 let store = Store(initialState: state, reducer: walletConnectEventReducer, environment: env)
                 let controller = UIHostingController(rootView: WalletConnectEventView(store: store))
-                controller.view.backgroundColor = .clear
-                controller.modalTransitionStyle = .crossDissolve
-                controller.modalPresentationStyle = .overCurrentContext
+                controller.transitioningDelegate = self.sheetPresenter
+                controller.modalPresentationStyle = .custom
+
                 presenter?.present(controller, animated: true, completion: nil)
             }
         }.eraseToAnyPublisher()
@@ -183,4 +184,8 @@ class WalletConnectRouter: WalletConnectRouterAPI {
     func openWebsite(for client: Session.ClientMeta) {
         UIApplication.shared.open(client.url)
     }
+
+    private lazy var sheetPresenter: BottomSheetPresenting = {
+        BottomSheetPresenting(ignoresBackgroundTouches: true)
+    }()
 }

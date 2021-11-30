@@ -52,7 +52,7 @@ final class TransactionRequestHandler: RequestHandler {
                 }
                 let dAppName = session.dAppInfo.peerMeta.name
                 let target = EthereumSendTransactionTarget(
-                    dAppAddress: session.dAppInfo.peerMeta.url.absoluteString,
+                    dAppAddress: session.dAppInfo.peerMeta.url.host ?? "",
                     dAppName: dAppName,
                     transaction: transaction,
                     method: method.targetMethod,

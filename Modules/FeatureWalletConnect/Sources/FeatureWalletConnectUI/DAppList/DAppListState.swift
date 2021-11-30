@@ -20,7 +20,7 @@ public struct DAppListState: Equatable {
     }
 
     var sessions: [WalletConnectSession] = []
-    var title = String(format: LocalizationConstants.WalletConnect.connectedAppsCount, 0)
+    var title = String(format: LocalizationConstants.WalletConnect.connectedAppsCount, "0")
 }
 
 extension DAppListState.DAppViewState {
@@ -37,7 +37,12 @@ extension DAppListState.DAppViewState {
         id = session.dAppInfo.peerId
         imageResource = image
         name = session.dAppInfo.peerMeta.name
-        domain = session.dAppInfo.peerMeta.url
+
+        if let url = URL(string: session.dAppInfo.peerMeta.url) {
+            domain = url.host ?? ""
+        } else {
+            domain = session.dAppInfo.peerMeta.url
+        }
     }
 }
 

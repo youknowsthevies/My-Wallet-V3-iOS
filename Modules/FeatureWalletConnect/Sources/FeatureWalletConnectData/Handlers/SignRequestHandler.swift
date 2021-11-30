@@ -55,7 +55,7 @@ final class SignRequestHandler: RequestHandler {
                 }
                 let dAppName = session.dAppInfo.peerMeta.name
                 let target = EthereumSignMessageTarget(
-                    dAppAddress: session.dAppInfo.peerMeta.url.absoluteString,
+                    dAppAddress: session.dAppInfo.peerMeta.url.host ?? "",
                     dAppName: dAppName,
                     account: address,
                     message: message,

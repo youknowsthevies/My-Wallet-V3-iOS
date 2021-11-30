@@ -7,8 +7,6 @@ import UIComponentsKit
 import WalletConnectSwift
 
 struct DAppListView: View {
-    @GestureState private var dragState = WalletConnectEventView.BottomSheet.DragState.inactive
-
     private let store: Store<DAppListState, DAppListAction>
 
     init(store: Store<DAppListState, DAppListAction>) {
@@ -49,26 +47,17 @@ struct DAppListView: View {
                         DAppList()
                     }
                     .padding([.vertical], 24)
-                    .backgroundTexture(.white)
-                    .clipShape(RoundedCorner(cornerRadius: 8, corners: [.topLeft, .topRight]))
                 }
-                .backgroundTexture(.clear)
-                .offset(y: self.dragState.yOffset)
-                .animation(self.dragState.animate ? .easeInOut : nil)
                 .gesture(
-                    DragGesture()
-                        .updating($dragState) { drag, state, _ in
-                            state = .dragging(translation: drag.translation)
-                        }
-                        .onChanged { _ in
-                            if dragState.dismiss {
+                    DragGesture(minimumDistance: 20, coordinateSpace: .global)
+                        .onEnded { drag in
+                            if drag.translation.height >= 20 {
                                 viewStore.send(.close)
                             }
                         }
                 )
                 .onAppear { viewStore.send(.onAppear) }
             }
-            .backgroundTexture(.lightContentBackground.opacity(0.64))
         }
     }
 
@@ -90,7 +79,7 @@ struct DAppListView: View {
     @ViewBuilder func DAppItem(session: DAppListState.DAppViewState) -> some View {
         HStack(spacing: 16) {
             if let imageResource = session.imageResource {
-                ImageResourceView(imageResource)
+                ImageResourceView(imageResource, placeholder: { Color.viewPrimaryBackground })
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 24, height: 24)

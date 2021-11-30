@@ -48,10 +48,14 @@ let dAppListReducer = Reducer.combine(
         case .didReceiveSessions(let result):
             if case .success(let sessions) = result {
                 state.sessions = sessions
-                state.title = String(
-                    format: LocalizationConstants.WalletConnect.connectedAppsCount,
-                    String(sessions.count)
-                )
+                if sessions.count == 1 {
+                    state.title = LocalizationConstants.WalletConnect.connectedAppCount
+                } else {
+                    state.title = String(
+                        format: LocalizationConstants.WalletConnect.connectedAppsCount,
+                        String(sessions.count)
+                    )
+                }
             }
             return .none
         case .showSessionDetails(let session):

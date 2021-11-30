@@ -18,7 +18,6 @@ struct WalletConnectEventView: View {
         ZStack {
             BottomSheet(store: store)
         }
-        .backgroundTexture(.lightContentBackground.opacity(0.64))
     }
 }
 
@@ -65,7 +64,7 @@ class MockWalletConnectService: WalletConnectServiceAPI {
 }
 
 class MockWalletConnectRouter: WalletConnectRouterAPI {
-    func showConnectedDApps() {}
+    func showConnectedDApps(_ completion: (() -> Void)?) {}
     func showSessionDetails(session: WalletConnectSession) -> AnyPublisher<Void, Never> {
         .just(())
     }
