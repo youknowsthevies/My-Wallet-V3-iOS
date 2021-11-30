@@ -50,6 +50,15 @@ public struct OrderDetails {
 
     // MARK: - Properties
 
+    public var paymentProccessorErrorOccurred: Bool {
+        switch _value {
+        case .buy(let details):
+            return details.paymentProcessorErrorType != nil
+        case .sell:
+            return false
+        }
+    }
+
     public var isBuy: Bool {
         _value.isBuy
     }

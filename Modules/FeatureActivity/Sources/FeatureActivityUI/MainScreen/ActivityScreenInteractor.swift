@@ -107,7 +107,7 @@ extension ActivityScreenInteractor.State {
             .filter { item in
                 switch item {
                 case .buySell(let item):
-                    return item.status != .pendingConfirmation
+                    return item.status != .pendingConfirmation && !item.paymentProcessorErrorOccurred
                 default:
                     return true
                 }
