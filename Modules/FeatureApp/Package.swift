@@ -52,6 +52,7 @@ let package = Package(
                 .product(name: "FeatureDashboardUI", package: "FeatureDashboard"),
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "FeatureOpenBankingDomain", package: "FeatureOpenBanking"),
+                .product(name: "FeatureOpenBankingUI", package: "FeatureOpenBanking"),
                 .product(name: "FeatureAuthenticationUI", package: "FeatureAuthentication"),
                 .product(name: "FeatureSettingsDomain", package: "FeatureSettings"),
                 .product(name: "RemoteNotificationsKit", package: "RemoteNotifications"),

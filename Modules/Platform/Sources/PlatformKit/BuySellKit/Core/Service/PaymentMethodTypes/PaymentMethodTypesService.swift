@@ -544,7 +544,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 paymentMethodsService.paymentMethods,
                 cardListService.cards,
                 tradingBalanceService.balances.asObservable(),
-                linkedBankService.linkedBanks.asObservable(),
+                linkedBankService.fetchLinkedBanks().asObservable(),
                 featureFetching.fetchBool(for: .withdrawAndDepositACH).asObservable()
             )
             .map {

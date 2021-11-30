@@ -87,7 +87,7 @@ public let openBankingReducer = Reducer<OpenBankingState, OpenBankingAction, Ope
             case .institutionList(.approve(.bank(.finished))), .approve(.bank(.finished)):
                 environment.eventPublisher.send(.success(()))
                 return .none
-            case .approve(.bank(.cancel)):
+            case .institutionList(.approve(.deny)), .approve(.deny), .approve(.bank(.cancel)):
                 return .fireAndForget(environment.cancel)
             case .approve:
                 return .none

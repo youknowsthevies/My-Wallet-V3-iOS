@@ -18,6 +18,10 @@ enum OrderPayload {
 
     struct ConfirmOrder: Encodable {
 
+        enum Callback {
+            static let url = "https://blockchainwallet.page.link/obapproval"
+        }
+
         enum Partner {
             case card(redirectURL: String)
             case bank
@@ -29,12 +33,14 @@ enum OrderPayload {
                 let customerUrl: String
             }
 
-            let redirectURL: String
+            let redirectURL: String?
             let everypay: EveryPay?
+            let callback: String?
 
-            init(redirectURL: String) {
-                everypay = .init(customerUrl: redirectURL)
+            init(redirectURL: String?, callback: String?) {
+                everypay = redirectURL.map(EveryPay.init)
                 self.redirectURL = redirectURL
+                self.callback = callback
             }
         }
 
@@ -45,8 +51,16 @@ enum OrderPayload {
         init(partner: Partner, action: CreateActionType, paymentMethodId: String?) {
             switch partner {
             case .card(redirectURL: let url):
-                attributes = Attributes(redirectURL: url)
-            case .bank, .funds:
+                attributes = Attributes(
+                    redirectURL: url,
+                    callback: nil
+                )
+            case .bank:
+                attributes = Attributes(
+                    redirectURL: nil,
+                    callback: Callback.url
+                )
+            case .funds:
                 attributes = nil
             }
             self.action = action

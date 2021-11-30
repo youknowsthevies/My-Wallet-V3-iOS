@@ -616,13 +616,5 @@ extension DependencyContainer {
             )
             return OpenBanking(banking: client)
         }
-
-        factory { () -> FeatureOpenBankingUI.FiatCurrencyFormatter in
-            FiatCurrencyFormatter()
-        }
-
-        factory { OpenBankingViewController.self as StartOpenBanking.Type }
-
-        factory { AccountLinkingFlowPresenter() as AccountLinkingFlowPresenterAPI }
     }
 }
