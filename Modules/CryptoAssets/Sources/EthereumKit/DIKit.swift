@@ -57,6 +57,8 @@ extension DependencyContainer {
         factory { RPCClient() as LatestBlockClientAPI }
 
         factory { RPCClient() as EstimateGasClientAPI }
+
+        factory { GasEstimateService() as GasEstimateServiceAPI }
     }
 }
 

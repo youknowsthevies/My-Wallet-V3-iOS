@@ -37,7 +37,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
     private let feeCache: CachedValue<EthereumTransactionFee>
     private let feeService: EthereumFeeServiceAPI
-    private let gasEstimateClient: EstimateGasClientAPI
+    private let gasEstimateService: GasEstimateServiceAPI
     private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
     private let priceService: PriceServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
@@ -55,7 +55,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve(),
         feeService: EthereumFeeServiceAPI = resolve(),
-        gasEstimateClient: EstimateGasClientAPI = resolve(),
+        gasEstimateService: GasEstimateServiceAPI = resolve(),
         keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
         priceService: PriceServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
@@ -66,7 +66,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         self.currencyConversionService = currencyConversionService
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
         self.feeService = feeService
-        self.gasEstimateClient = gasEstimateClient
+        self.gasEstimateService = gasEstimateService
         self.keyPairProvider = keyPairProvider
         self.priceService = priceService
         self.requireSecondPassword = requireSecondPassword
@@ -283,8 +283,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
                 .flatMap { Single.just($0) }
         }
         func estimateGas() -> Single<BigInt> {
-            gasEstimateClient.estimateGas(transaction: walletConnectTarget.transaction)
-                .map(\.result)
+            gasEstimateService
+                .estimateGas(transaction: walletConnectTarget.transaction)
                 .asSingle()
         }
         return transactionGas() ?? estimateGas()
