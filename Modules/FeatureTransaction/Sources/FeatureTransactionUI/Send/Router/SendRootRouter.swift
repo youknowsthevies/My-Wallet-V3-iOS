@@ -87,7 +87,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
         )
     }
 
-    func routeToSend(sourceAccount: CryptoAccount) {
+    func routeToSend(sourceAccount: BlockchainAccount) {
         let builder = TransactionFlowBuilder()
         transactionRouter = builder.build(
             withListener: interactor,
@@ -102,7 +102,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
         }
     }
 
-    func routeToSend(sourceAccount: CryptoAccount, destination: TransactionTarget) {
+    func routeToSend(sourceAccount: BlockchainAccount, destination: TransactionTarget) {
         let builder = TransactionFlowBuilder()
         transactionRouter = builder.build(
             withListener: interactor,

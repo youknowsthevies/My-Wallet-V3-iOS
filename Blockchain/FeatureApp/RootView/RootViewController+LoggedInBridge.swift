@@ -35,13 +35,13 @@ extension RootViewController: LoggedInBridge {
     }
 
     func send(from account: BlockchainAccount) {
-        transactionsRouter.presentTransactionFlow(to: .send(account as! CryptoAccount, nil))
+        transactionsRouter.presentTransactionFlow(to: .send(account, nil))
             .sink { result in "\(result)".peek("🧾") }
             .store(in: &bag)
     }
 
     func send(from account: BlockchainAccount, target: TransactionTarget) {
-        transactionsRouter.presentTransactionFlow(to: .send(account as! CryptoAccount, target as! CryptoAccount))
+        transactionsRouter.presentTransactionFlow(to: .send(account, target))
             .sink { result in "\(result)".peek("🧾") }
             .store(in: &bag)
     }
@@ -49,7 +49,7 @@ extension RootViewController: LoggedInBridge {
     func sign(from account: BlockchainAccount, target: TransactionTarget) {
         transactionsRouter.presentTransactionFlow(
             to: .sign(
-                sourceAccount: account as! CryptoAccount,
+                sourceAccount: account,
                 destination: target
             )
         )

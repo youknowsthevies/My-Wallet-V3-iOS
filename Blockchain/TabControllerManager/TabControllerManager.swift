@@ -150,12 +150,12 @@ final class TabControllerManager: NSObject {
 
     func send(from account: BlockchainAccount) {
         loadSend()
-        sendRouter.routeToSend(sourceAccount: account as! CryptoAccount)
+        sendRouter.routeToSend(sourceAccount: account)
     }
 
     func send(from account: BlockchainAccount, target: TransactionTarget) {
         loadSend()
-        sendRouter.routeToSend(sourceAccount: account as! CryptoAccount, destination: target)
+        sendRouter.routeToSend(sourceAccount: account, destination: target)
     }
 
     func showSend(cryptoCurrency: CryptoCurrency) {
