@@ -306,7 +306,7 @@ extension BuyTransactionEngine {
                     for: .simpleBuy,
                     from: source.fiatCurrency,
                     to: destination.asset,
-                    amount: fiatValue,
+                    fiatAmount: fiatValue,
                     paymentMethod: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.method.rawType,
                     paymentMethodId: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.id
                 )

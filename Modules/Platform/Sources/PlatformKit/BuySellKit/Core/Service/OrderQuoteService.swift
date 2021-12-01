@@ -11,7 +11,7 @@ public protocol OrderQuoteServiceAPI: AnyObject {
         for profile: Profile,
         from fiatCurrency: FiatCurrency,
         to cryptoCurrency: CryptoCurrency,
-        amount: FiatValue,
+        fiatAmount: FiatValue,
         paymentMethod: PaymentMethodPayloadType?,
         paymentMethodId: String?
     ) -> Single<Quote>
@@ -35,7 +35,7 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
         for profile: Profile,
         from fiatCurrency: FiatCurrency,
         to cryptoCurrency: CryptoCurrency,
-        amount: FiatValue,
+        fiatAmount: FiatValue,
         paymentMethod: PaymentMethodPayloadType?,
         paymentMethodId: String?
     ) -> Single<Quote> {
@@ -43,7 +43,7 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
             for: profile,
             from: fiatCurrency,
             to: cryptoCurrency,
-            amount: amount,
+            fiatAmount: fiatAmount,
             paymentMethod: paymentMethod,
             paymentMethodId: paymentMethodId
         )
@@ -51,7 +51,7 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
         .map {
             try Quote(
                 to: cryptoCurrency,
-                amount: amount,
+                amount: fiatAmount,
                 response: $0
             )
         }

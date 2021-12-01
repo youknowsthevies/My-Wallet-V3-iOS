@@ -58,7 +58,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
                 for: .simpleBuy,
                 from: fiatCurrency,
                 to: cryptoCurrency,
-                amount: fiat,
+                fiatAmount: fiat,
                 paymentMethod: checkoutData.order.paymentMethod.rawType,
                 paymentMethodId: checkoutData.order.paymentMethodId
             )

@@ -26,7 +26,7 @@ final class FundsAndBankOrderCreationService: PendingOrderCreationServiceAPI {
                 for: .simpleBuy,
                 from: candidateOrderDetails.fiatCurrency,
                 to: candidateOrderDetails.cryptoCurrency,
-                amount: candidateOrderDetails.fiatValue,
+                fiatAmount: candidateOrderDetails.fiatValue,
                 paymentMethod: candidateOrderDetails.paymentMethod?.method.rawType,
                 paymentMethodId: candidateOrderDetails.paymentMethodId
             )

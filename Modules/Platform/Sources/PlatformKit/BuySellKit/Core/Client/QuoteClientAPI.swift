@@ -37,7 +37,7 @@ protocol QuoteClientAPI: AnyObject {
         for profile: Profile,
         from fiatCurrency: FiatCurrency,
         to cryptoCurrency: CryptoCurrency,
-        amount: FiatValue,
+        fiatAmount: FiatValue,
         paymentMethod: PaymentMethodPayloadType?,
         paymentMethodId: String?
     ) -> AnyPublisher<QuoteResponse, NabuNetworkError>
