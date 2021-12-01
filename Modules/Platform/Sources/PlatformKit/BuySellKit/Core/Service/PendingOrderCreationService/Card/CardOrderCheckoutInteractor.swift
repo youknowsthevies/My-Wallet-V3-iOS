@@ -66,9 +66,9 @@ public final class CardOrderCheckoutInteractor {
         return orderQuoteService
             .getQuote(
                 for: .simpleBuy,
-                from: fiatCurrency,
-                to: cryptoCurrency,
-                fiatAmount: fiat,
+                sourceCurrency: fiatCurrency,
+                destinationCurrency: cryptoCurrency,
+                amount: MoneyValue(fiatValue: fiat),
                 paymentMethod: checkoutData.order.paymentMethod.rawType,
                 paymentMethodId: paymentMethodId
             )
@@ -78,9 +78,9 @@ public final class CardOrderCheckoutInteractor {
                     .map { card in
                         let interactionData = CheckoutInteractionData(
                             creationDate: quote.quoteCreatedAt,
-                            fee: checkoutData.order.fee ?? MoneyValue(fiatValue: quote.fee),
-                            amount: MoneyValue(cryptoValue: quote.estimatedCryptoAmount),
-                            exchangeRate: MoneyValue(fiatValue: quote.rate),
+                            fee: checkoutData.order.fee ?? quote.fee,
+                            amount: quote.estimatedDestinationAmount,
+                            exchangeRate: quote.rate,
                             card: card,
                             bankTransferData: nil,
                             orderId: checkoutData.order.identifier,

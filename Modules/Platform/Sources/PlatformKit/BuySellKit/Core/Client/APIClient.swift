@@ -316,17 +316,17 @@ final class APIClient: SimpleBuyClientAPI {
     // swiftlint:disable function_parameter_count
     func getQuote(
         for profile: Profile,
-        from fiatCurrency: FiatCurrency,
-        to cryptoCurrency: CryptoCurrency,
-        fiatAmount: FiatValue,
+        sourceCurrency: Currency,
+        destinationCurrency: Currency,
+        amount: MoneyValue,
         paymentMethod: PaymentMethodPayloadType?,
         paymentMethodId: String?
     ) -> AnyPublisher<QuoteResponse, NabuNetworkError> {
-        let pair = "\(fiatCurrency.code)-\(cryptoCurrency.code)"
+        let pair = "\(sourceCurrency.code)-\(destinationCurrency.code)"
         let payload = QuoteRequest(
             profile: profile.rawValue,
             pair: pair,
-            inputValue: fiatAmount.minorString,
+            inputValue: amount.minorString,
             paymentMethod: paymentMethod?.rawValue,
             paymentMethodId: paymentMethodId
         )

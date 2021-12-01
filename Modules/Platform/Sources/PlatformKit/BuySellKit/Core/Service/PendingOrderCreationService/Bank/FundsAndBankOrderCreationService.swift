@@ -24,9 +24,9 @@ final class FundsAndBankOrderCreationService: PendingOrderCreationServiceAPI {
         let quote = orderQuoteService
             .getQuote(
                 for: .simpleBuy,
-                from: candidateOrderDetails.fiatCurrency,
-                to: candidateOrderDetails.cryptoCurrency,
-                fiatAmount: candidateOrderDetails.fiatValue,
+                sourceCurrency: candidateOrderDetails.fiatCurrency,
+                destinationCurrency: candidateOrderDetails.cryptoCurrency,
+                amount: MoneyValue(fiatValue: candidateOrderDetails.fiatValue),
                 paymentMethod: candidateOrderDetails.paymentMethod?.method.rawType,
                 paymentMethodId: candidateOrderDetails.paymentMethodId
             )

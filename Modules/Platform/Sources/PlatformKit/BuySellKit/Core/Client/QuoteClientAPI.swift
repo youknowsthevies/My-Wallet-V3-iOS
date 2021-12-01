@@ -35,9 +35,9 @@ protocol QuoteClientAPI: AnyObject {
     /// Get a quote from a simple-buy order. In the future, it will support all sorts of order (buy, sell, swap)
     func getQuote(
         for profile: Profile,
-        from fiatCurrency: FiatCurrency,
-        to cryptoCurrency: CryptoCurrency,
-        fiatAmount: FiatValue,
+        sourceCurrency: Currency,
+        destinationCurrency: Currency,
+        amount: MoneyValue,
         paymentMethod: PaymentMethodPayloadType?,
         paymentMethodId: String?
     ) -> AnyPublisher<QuoteResponse, NabuNetworkError>

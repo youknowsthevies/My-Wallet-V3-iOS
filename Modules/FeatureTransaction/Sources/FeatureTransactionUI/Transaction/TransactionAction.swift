@@ -542,7 +542,7 @@ extension TransactionValidationState {
             return .transactionInFlight
         case .pendingOrdersLimitReached:
             return .pendingOrdersLimitReached
-        case .noSourcesAvailable:
+        case .noSourcesAvailable, .incorrectCurrencies:
             return .unknownError
         }
     }

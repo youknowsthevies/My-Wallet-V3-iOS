@@ -9,9 +9,9 @@ public protocol OrderQuoteServiceAPI: AnyObject {
 
     func getQuote(
         for profile: Profile,
-        from fiatCurrency: FiatCurrency,
-        to cryptoCurrency: CryptoCurrency,
-        fiatAmount: FiatValue,
+        sourceCurrency: Currency,
+        destinationCurrency: Currency,
+        amount: MoneyValue,
         paymentMethod: PaymentMethodPayloadType?,
         paymentMethodId: String?
     ) -> Single<Quote>
@@ -33,25 +33,26 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
 
     func getQuote(
         for profile: Profile,
-        from fiatCurrency: FiatCurrency,
-        to cryptoCurrency: CryptoCurrency,
-        fiatAmount: FiatValue,
+        sourceCurrency: Currency,
+        destinationCurrency: Currency,
+        amount: MoneyValue,
         paymentMethod: PaymentMethodPayloadType?,
         paymentMethodId: String?
     ) -> Single<Quote> {
         client.getQuote(
             for: profile,
-            from: fiatCurrency,
-            to: cryptoCurrency,
-            fiatAmount: fiatAmount,
+            sourceCurrency: sourceCurrency,
+            destinationCurrency: destinationCurrency,
+            amount: amount,
             paymentMethod: paymentMethod,
             paymentMethodId: paymentMethodId
         )
         .asSingle()
         .map {
             try Quote(
-                to: cryptoCurrency,
-                amount: fiatAmount,
+                sourceCurrency: sourceCurrency,
+                destinationCurrency: destinationCurrency,
+                value: amount,
                 response: $0
             )
         }

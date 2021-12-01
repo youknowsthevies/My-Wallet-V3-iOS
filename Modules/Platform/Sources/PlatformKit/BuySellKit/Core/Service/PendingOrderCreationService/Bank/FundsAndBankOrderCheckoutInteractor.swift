@@ -56,9 +56,9 @@ public final class FundsAndBankOrderCheckoutInteractor {
         let quote = orderQuoteService
             .getQuote(
                 for: .simpleBuy,
-                from: fiatCurrency,
-                to: cryptoCurrency,
-                fiatAmount: fiat,
+                sourceCurrency: fiatCurrency,
+                destinationCurrency: cryptoCurrency,
+                amount: MoneyValue(fiatValue: fiat),
                 paymentMethod: checkoutData.order.paymentMethod.rawType,
                 paymentMethodId: checkoutData.order.paymentMethodId
             )
@@ -89,9 +89,9 @@ public final class FundsAndBankOrderCheckoutInteractor {
             .map { (payload: (quote: Quote, checkoutData: CheckoutData)) in
                 let interactionData = CheckoutInteractionData(
                     creationDate: payload.quote.quoteCreatedAt,
-                    fee: payload.checkoutData.order.fee ?? MoneyValue(fiatValue: payload.quote.fee),
-                    amount: MoneyValue(cryptoValue: payload.quote.estimatedCryptoAmount),
-                    exchangeRate: MoneyValue(fiatValue: payload.quote.rate),
+                    fee: payload.checkoutData.order.fee ?? payload.quote.fee,
+                    amount: payload.quote.estimatedDestinationAmount,
+                    exchangeRate: payload.quote.rate,
                     card: nil,
                     bankTransferData: payload.checkoutData.linkedBankData,
                     orderId: payload.checkoutData.order.identifier,

@@ -11,7 +11,7 @@ final class SimpleBuyQuoteTests: XCTestCase {
         let sut = try createTestCases(locales: [.US, .Canada, .GreatBritain, .France, .Japan, .Lithuania])
         for this in sut {
             XCTAssertNotNil(this.quote)
-            XCTAssertFalse(this.quote.estimatedCryptoAmount.isZero, "\(this.locale) has zero estimatedAmount")
+            XCTAssertFalse(this.quote.estimatedDestinationAmount.isZero, "\(this.locale) has zero estimatedAmount")
             XCTAssertEqual(this.quote.fee.displayMajorValue, 12.5, "\(this.locale) fee major value should be 12.5")
         }
     }
@@ -35,7 +35,7 @@ extension SimpleBuyQuoteTests {
             quoteMarginPercent: 0.5,
             quoteCreatedAt: "2021-12-31T01:00:02.030000000Z",
             quoteExpiresAt: "2021-12-31T01:00:04.030000000Z",
-            price: "5830206",
+            price: "2300",
             networkFee: nil,
             staticFee: nil,
             feeDetails: .init(
@@ -50,8 +50,9 @@ extension SimpleBuyQuoteTests {
         )
         let twoThousandFiveHundred = FiatValue.create(minor: "250000", currency: .GBP)!
         let quote = try Quote(
-            to: .coin(.bitcoin),
-            amount: twoThousandFiveHundred,
+            sourceCurrency: FiatCurrency.GBP,
+            destinationCurrency: CryptoCurrency.coin(.bitcoin),
+            value: MoneyValue(fiatValue: twoThousandFiveHundred),
             response: response
         )
         return QuoteTestCase(locale: locale, response: response, quote: quote)
