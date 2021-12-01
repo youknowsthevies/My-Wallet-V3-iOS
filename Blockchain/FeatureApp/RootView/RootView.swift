@@ -80,9 +80,10 @@ struct RootView: View {
                 FloatingActionButton(isOn: viewStore.binding(\.fab.$isOn))
                     .identity(blockchain.ux.user.fab)
                     .pulse(enabled: viewStore.fab.animate, inset: 8)
-                    .padding([.leading, .bottom, .trailing], 16.pt)
+                    .padding([.leading, .trailing], 24.pt)
+                    .offset(y: 6.pt)
                     .contentShape(Rectangle())
-                    .offset(y: 24.pt),
+                    .background(Color.white.invisible()),
                 alignment: .bottom
             )
             .ignoresSafeArea(.keyboard, edges: .bottom)
@@ -96,8 +97,9 @@ struct RootView: View {
     }
 
     func fab() -> some View {
-        Spacer()
-            .tabItem { Spacer() }
+        Icon.blockchain
+            .frame(width: 32.pt, height: 32.pt)
+            .tabItem { Color.clear }
     }
 
     func tab<Content>(
@@ -155,5 +157,13 @@ struct RootView: View {
                 viewStore.send(.enter(into: .account, context: .none))
             }
         }
+    }
+}
+
+extension Color {
+
+    /// A workaround to ensure taps are not passed through to the view behind
+    func invisible() -> Color {
+        opacity(0.001)
     }
 }

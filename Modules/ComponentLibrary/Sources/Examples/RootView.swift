@@ -5,7 +5,7 @@ import SwiftUI
 
 public struct RootView: View {
 
-    @State var colorScheme: ColorScheme = .light
+    @State var colorScheme: ColorScheme
 
     private let data: NavigationLinkProviderList = [
         "1 - Base": [
@@ -21,18 +21,21 @@ public struct RootView: View {
             NavigationLinkProvider(view: PrimarySwitchExamples(), title: "🔘 PrimarySwitch"),
             NavigationLinkProvider(view: TagExamples(), title: "🏷 Tag"),
             NavigationLinkProvider(view: CheckboxExamples(), title: "✅ Checkbox"),
-            NavigationLinkProvider(view: RichTextExamples(), title: "🤑 Rich Text")
+            NavigationLinkProvider(view: RichTextExamples(), title: "🤑 Rich Text"),
+            NavigationLinkProvider(view: SegmentedControlExamples(), title: "🚥 SegmentedControl")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
             NavigationLinkProvider(view: CalloutCardExamples(), title: "💬 CalloutCard"),
             NavigationLinkProvider(view: SectionHeadersExamples(), title: "🪖 SectionHeaders"),
-            NavigationLinkProvider(view: RowExamplesView(), title: "🚗🚙🚚 Rows"),
+            NavigationLinkProvider(view: RowExamplesView(), title: "🚣‍♀️ Rows"),
             NavigationLinkProvider(view: BottomSheetExamples(), title: "📄 BottomSheet")
         ]
     ]
 
-    public init() {}
+    public init(colorScheme: ColorScheme = .light) {
+        _colorScheme = State(initialValue: colorScheme)
+    }
 
     public var body: some View {
         PrimaryNavigationView {
@@ -52,7 +55,7 @@ struct RootView_Previews: PreviewProvider {
         ForEach(
             ColorScheme.allCases,
             id: \.self,
-            content: RootView().preferredColorScheme
+            content: RootView.init(colorScheme:)
         )
     }
 }

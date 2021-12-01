@@ -288,6 +288,8 @@ private struct NavigationConfigurator: UIViewControllerRepresentable {
                 navigationBar.backIndicatorImage = image
                 navigationBar.backIndicatorTransitionMaskImage = image
                 navigationBar.tintColor = UIColor(navigationBackButtonColor)
+
+                UITableView.appearance().backgroundColor = .clear
             }
         }
     }

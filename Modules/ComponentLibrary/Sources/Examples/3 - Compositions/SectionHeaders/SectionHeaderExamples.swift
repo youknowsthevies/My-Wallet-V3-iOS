@@ -4,11 +4,6 @@ import ComponentLibrary
 import SwiftUI
 
 struct SectionHeaderExamplesView: View {
-
-    init() {
-        UITableView.appearance().backgroundColor = .white
-    }
-
     var body: some View {
         VStack {
             SectionHeader(title: "Regular (wallet)")
