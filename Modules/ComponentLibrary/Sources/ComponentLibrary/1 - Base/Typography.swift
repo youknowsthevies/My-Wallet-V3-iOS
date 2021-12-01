@@ -265,7 +265,7 @@ extension Typography: ViewModifier {
         let size = size.in(CGRect.screen)
 
         guard let descriptor = UIFont(name: fontName.rawValue, size: size)?.fontDescriptor else {
-            return nil
+            nil
         }
 
         switch design {
