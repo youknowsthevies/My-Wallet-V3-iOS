@@ -24,6 +24,7 @@ final class EnterAmountCryptoCurrencyProvider: CryptoCurrencyServiceAPI {
                     unimplemented()
                 }
             }
+            .subscribeOn(MainScheduler.asyncInstance)
     }
 
     var cryptoCurrency: Single<CryptoCurrency> {

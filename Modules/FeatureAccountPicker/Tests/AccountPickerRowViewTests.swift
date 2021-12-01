@@ -232,6 +232,7 @@ class AccountPickerRowViewTests: XCTestCase {
             badgeView: badgeView(for:),
             iconView: iconView(for:),
             multiBadgeView: multiBadgeView(for:),
+            withdrawalLocksView: { EmptyView() },
             fiatBalance: fiatBalance,
             cryptoBalance: cryptoBalance,
             currencyCode: currencyCode

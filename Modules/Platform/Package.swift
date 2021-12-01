@@ -30,18 +30,18 @@ let package = Package(
         ),
         .package(
             name: "RIBs",
-            url: "https://github.com/paulo-bc/RIBs.git",
-            from: "0.10.2"
+            url: "https://github.com/uber/RIBs.git",
+            from: "0.12.1"
         ),
         .package(
             name: "RxDataSources",
             url: "https://github.com/RxSwiftCommunity/RxDataSources.git",
-            from: "4.0.1"
+            from: "5.0.2"
         ),
         .package(
             name: "RxSwift",
             url: "https://github.com/ReactiveX/RxSwift.git",
-            from: "5.1.3"
+            from: "6.2.0"
         ),
         .package(
             name: "Nuke",

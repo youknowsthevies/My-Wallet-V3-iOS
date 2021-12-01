@@ -7,7 +7,6 @@ import UIComponentsKit
 extension WalletConnectEventView {
     struct BottomSheet: View {
 
-        @GestureState private var dragState = DragState.inactive
         private let store: Store<WalletConnectEventState, WalletConnectEventAction>
 
         init(store: Store<WalletConnectEventState, WalletConnectEventAction>) {
@@ -36,7 +35,7 @@ extension WalletConnectEventView {
                         }
                         if let imageResource = viewStore.imageResource {
                             ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
-                                ImageResourceView(imageResource)
+                                ImageResourceView(imageResource, placeholder: { Color.viewPrimaryBackground })
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
                                     .frame(width: 64, height: 64)
@@ -61,84 +60,31 @@ extension WalletConnectEventView {
                         if let secondaryButtonTitle = viewStore.secondaryButtonTitle,
                            let secondaryAction = viewStore.secondaryAction
                         {
-                            SecondaryButton(title: secondaryButtonTitle) {
+                            Button(secondaryButtonTitle) {
                                 viewStore.send(secondaryAction)
                             }
+                            .buttonStyle(
+                                SecondaryButtonStyle(
+                                    isEnabled: true,
+                                    foregroundColor: viewStore.secondaryButtonColor
+                                )
+                            )
                         }
                         PrimaryButton(title: viewStore.primaryButtonTitle) {
                             viewStore.send(viewStore.primaryAction)
                         }
                     }
                     .padding(24)
-                    .backgroundTexture(.white)
-                    .clipShape(RoundedCorner(cornerRadius: 8, corners: [.topLeft, .topRight]))
                 }
-                .backgroundTexture(.clear)
-                .offset(y: self.dragState.yOffset)
-                .animation(self.dragState.animate ? .easeInOut : nil)
                 .gesture(
-                    DragGesture()
-                        .updating($dragState) { drag, state, _ in
-                            state = .dragging(translation: drag.translation)
-                        }
-                        .onChanged { _ in
-                            if dragState.dismiss {
+                    DragGesture(minimumDistance: 20, coordinateSpace: .global)
+                        .onEnded { drag in
+                            if drag.translation.height >= 20 {
                                 viewStore.send(.close)
                             }
                         }
                 )
             }
-        }
-    }
-}
-
-extension WalletConnectEventView.BottomSheet {
-    enum DragState {
-
-        static let maxOffset: CGFloat = UIScreen.main.bounds.height
-        static let closingThreshold: CGFloat = maxOffset / 4
-
-        case inactive
-        case dragging(translation: CGSize)
-
-        var yOffset: CGFloat {
-            switch self {
-            case .inactive:
-                return .zero
-            case .dragging(let translation):
-                let offset = yOffset(translation: translation)
-                return shouldDismiss(yOffset: offset)
-                    ? Self.maxOffset
-                    : offset
-            }
-        }
-
-        var animate: Bool {
-            switch self {
-            case .inactive:
-                return true
-            case .dragging(let translation):
-                let offset = max(0, translation.height)
-                return offset >= Self.closingThreshold
-            }
-        }
-
-        var dismiss: Bool {
-            switch self {
-            case .inactive:
-                return false
-            case .dragging(let translation):
-                let offset = yOffset(translation: translation)
-                return shouldDismiss(yOffset: offset)
-            }
-        }
-
-        private func yOffset(translation: CGSize) -> CGFloat {
-            max(0, translation.height)
-        }
-
-        private func shouldDismiss(yOffset: CGFloat) -> Bool {
-            yOffset >= Self.closingThreshold
         }
     }
 }

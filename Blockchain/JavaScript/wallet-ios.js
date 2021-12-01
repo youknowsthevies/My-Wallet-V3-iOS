@@ -1032,6 +1032,32 @@ MyWalletPhone.KYC = {
     }
 }
 
+MyWalletPhone.walletConnect = {
+
+    /**
+     * Updates the wallet connect metadata entry with the given v1 sessions.
+     * @param {string} json - The JSON string of the V1 sessions array.
+     */
+    updateV1Sessions: function(json) {
+        const walletConnect = MyWallet.wallet.walletConnect;
+        const v1Sessions = JSON.parse(json);
+        walletConnect.updatev1Sessions(
+            v1Sessions,
+            objc_updateWalletConnect_success,
+            objc_updateWalletConnect_error
+        )
+    },
+
+    /**
+     * Returns JSON string of the V1 sessions stored in the Wallet Connect metadata entry.
+     */
+    v1Sessions: function() {
+        const walletConnect = MyWallet.wallet.walletConnect;
+        const sessions = walletConnect.v1Sessions;
+        return sessions ? JSON.stringify(sessions) : null;
+    }
+}
+
 MyWalletPhone.xlm = {
     saveAccount: function(publicKey, label) {
         let error = function (e) {

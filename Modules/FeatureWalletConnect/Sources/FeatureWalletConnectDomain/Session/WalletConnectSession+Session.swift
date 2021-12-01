@@ -4,7 +4,7 @@ import Foundation
 import WalletConnectSwift
 
 extension WalletConnectSession {
-    var session: Session? {
+    public var session: Session? {
         guard let wcURL = WCURL(url) else {
             return nil
         }
@@ -46,7 +46,7 @@ extension WalletConnectSession.DAppInfo {
 }
 
 extension Session.ClientMeta {
-    static var blockchain: Session.ClientMeta {
+    public static var blockchain: Session.ClientMeta {
         Session.ClientMeta(
             name: "Blockchain.com",
             description: nil,

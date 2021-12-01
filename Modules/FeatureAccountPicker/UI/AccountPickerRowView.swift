@@ -9,7 +9,8 @@ import UIComponentsKit
 struct AccountPickerRowView<
     BadgeView: View,
     IconView: View,
-    MultiBadgeView: View
+    MultiBadgeView: View,
+    WithdrawalLocksView: View
 >: View {
 
     // MARK: - Internal properties
@@ -19,6 +20,7 @@ struct AccountPickerRowView<
     let badgeView: (AnyHashable) -> BadgeView
     let iconView: (AnyHashable) -> IconView
     let multiBadgeView: (AnyHashable) -> MultiBadgeView
+    let withdrawalLocksView: () -> WithdrawalLocksView
     let fiatBalance: String?
     let cryptoBalance: String?
     let currencyCode: String?
@@ -63,6 +65,8 @@ struct AccountPickerRowView<
                     fiatBalance: fiatBalance,
                     cryptoBalance: cryptoBalance
                 )
+            case .withdrawalLocks:
+                withdrawalLocksView()
             }
         }
         .onTapGesture {
@@ -333,6 +337,7 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 badgeView: { _ in EmptyView() },
                 iconView: { _ in EmptyView() },
                 multiBadgeView: { _ in EmptyView() },
+                withdrawalLocksView: { EmptyView() },
                 fiatBalance: "$2,302.39",
                 cryptoBalance: "0.21204887 BTC",
                 currencyCode: "USD"
@@ -347,6 +352,7 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 badgeView: { _ in EmptyView() },
                 iconView: { _ in EmptyView() },
                 multiBadgeView: { _ in EmptyView() },
+                withdrawalLocksView: { EmptyView() },
                 fiatBalance: nil,
                 cryptoBalance: nil,
                 currencyCode: nil
@@ -361,6 +367,7 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 badgeView: { _ in EmptyView() },
                 iconView: { _ in EmptyView() },
                 multiBadgeView: { _ in EmptyView() },
+                withdrawalLocksView: { EmptyView() },
                 fiatBalance: nil,
                 cryptoBalance: nil,
                 currencyCode: nil
@@ -375,6 +382,7 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 badgeView: { _ in EmptyView() },
                 iconView: { _ in EmptyView() },
                 multiBadgeView: { _ in EmptyView() },
+                withdrawalLocksView: { EmptyView() },
                 fiatBalance: nil,
                 cryptoBalance: nil,
                 currencyCode: nil
@@ -389,6 +397,7 @@ struct AccountPickerRowView_Previews: PreviewProvider {
                 badgeView: { _ in EmptyView() },
                 iconView: { _ in EmptyView() },
                 multiBadgeView: { _ in EmptyView() },
+                withdrawalLocksView: { EmptyView() },
                 fiatBalance: "$2,302.39",
                 cryptoBalance: "0.21204887 BTC",
                 currencyCode: nil

@@ -243,7 +243,7 @@ extension LoggedInHostingController {
     private func didCompleteQRCodeScanner(
         result: Result<QRCodeScannerResultType, QRCodeScannerResultError>
     ) {
-        featureFlagService.isEnabled(.local(.walletConnect))
+        featureFlagService.isEnabled(.remote(.walletConnectEnabled))
             .sink { [weak self] isWalletConnectEnabled in
                 switch result {
                 case .success(.secureChannel(let message)):

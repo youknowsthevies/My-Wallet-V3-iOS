@@ -185,6 +185,7 @@ extension PendingTransaction {
 
     public var normalizedLimits: TransactionLimits {
         TransactionLimits(
+            currencyType: minLimit.currencyType,
             minimum: minLimit,
             maximum: maxLimit,
             maximumDaily: maxDailyLimit,

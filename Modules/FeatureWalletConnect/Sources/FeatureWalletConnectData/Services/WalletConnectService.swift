@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import DIKit
 import FeatureWalletConnectDomain
@@ -17,23 +18,30 @@ final class WalletConnectService {
     private var sessionLinks = Atomic<[WCURL: Session]>([:])
 
     private let didConnectSubject = PassthroughSubject<Session, Never>()
-    private let didFailSubject = PassthroughSubject<Session.ClientMeta, Never>()
+    private let didFailSubject = PassthroughSubject<Session, Never>()
     private let shouldStartSubject = PassthroughSubject<(Session, (Session.WalletInfo) -> Void), Never>()
     private let didDisconnectSubject = PassthroughSubject<Session, Never>()
     private let didUpdateSubject = PassthroughSubject<Session, Never>()
     private let userEventsSubject = PassthroughSubject<WalletConnectUserEvent, Never>()
 
+    private let analyticsEventRecorder: AnalyticsEventRecorderAPI
     private let sessionRepository: SessionRepositoryAPI
     private let publicKeyProvider: WalletConnectPublicKeyProviderAPI
+
+    private let featureFlagService: FeatureFlagsServiceAPI
 
     // MARK: - Init
 
     init(
+        analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
         publicKeyProvider: WalletConnectPublicKeyProviderAPI = resolve(),
-        sessionRepository: SessionRepositoryAPI = SessionRepository()
+        sessionRepository: SessionRepositoryAPI = resolve(),
+        featureFlagService: FeatureFlagsServiceAPI = resolve()
     ) {
-        self.sessionRepository = sessionRepository
+        self.analyticsEventRecorder = analyticsEventRecorder
         self.publicKeyProvider = publicKeyProvider
+        self.sessionRepository = sessionRepository
+        self.featureFlagService = featureFlagService
         server = Server(delegate: self)
         configureServer()
     }
@@ -92,7 +100,6 @@ final class WalletConnectService {
 
         sessionRepository
             .retrieve()
-            .publisher
             .sink { [server, sessionLinks] sessions in
                 sessions
                     .compactMap(\.session)
@@ -115,7 +122,7 @@ extension WalletConnectService: ServerDelegate {
         guard let session = sessionLinks.value[url] else {
             return
         }
-        didFailSubject.send(session.dAppInfo.peerMeta)
+        didFailSubject.send(session)
     }
 
     func server(_ server: Server, shouldStart session: Session, completion: @escaping (Session.WalletInfo) -> Void) {
@@ -128,11 +135,9 @@ extension WalletConnectService: ServerDelegate {
     func server(_ server: Server, didConnect session: Session) {
         sessionRepository
             .contains(session: session)
-            .publisher
             .flatMap { [sessionRepository] containsSession in
                 sessionRepository
                     .store(session: session)
-                    .publisher
                     .map { containsSession }
             }
             .sink { [didConnectSubject] containsSession in
@@ -146,7 +151,6 @@ extension WalletConnectService: ServerDelegate {
     func server(_ server: Server, didDisconnect session: Session) {
         sessionRepository
             .remove(session: session)
-            .publisher
             .sink { [didDisconnectSubject] _ in
                 didDisconnectSubject.send(session)
             }
@@ -156,7 +160,6 @@ extension WalletConnectService: ServerDelegate {
     func server(_ server: Server, didUpdate session: Session) {
         sessionRepository
             .store(session: session)
-            .publisher
             .sink { [didUpdateSubject] _ in
                 didUpdateSubject.send(session)
             }
@@ -224,10 +227,20 @@ extension WalletConnectService: WalletConnectServiceAPI {
     }
 
     func connect(_ url: String) {
-        guard let wcUrl = WCURL(url) else {
-            return
-        }
-        try? server.connect(to: wcUrl)
+        featureFlagService.isEnabled(.remote(.walletConnectEnabled))
+            .sink { [weak self] isEnabled in
+                guard isEnabled,
+                      let wcUrl = WCURL(url)
+                else {
+                    return
+                }
+                try? self?.server.connect(to: wcUrl)
+            }
+            .store(in: &cancellables)
+    }
+
+    func disconnect(_ session: Session) {
+        try? server.disconnect(from: session)
     }
 }
 

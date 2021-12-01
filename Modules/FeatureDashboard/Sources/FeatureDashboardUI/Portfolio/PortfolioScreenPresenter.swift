@@ -135,7 +135,7 @@ public final class PortfolioScreenPresenter {
     var screenNavigationModel: ScreenNavigationModel {
         ScreenNavigationModel(
             leadingButton: .drawer,
-            trailingButton: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none,
+            trailingButton: .qrCode,
             titleViewStyle: .text(value: LocalizationConstants.DashboardScreen.title),
             barStyle: .lightContent()
         )
@@ -148,7 +148,6 @@ public final class PortfolioScreenPresenter {
     private let disposeBag = DisposeBag()
     private let drawerRouter: DrawerRouting
     private let interactor: PortfolioScreenInteractor
-    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let reloadRelay: PublishRelay<Void> = .init()
     private let sectionsRelay: BehaviorRelay<[PortfolioViewModel]> = .init(value: [])
     private let coincore: CoincoreAPI
@@ -182,15 +181,13 @@ public final class PortfolioScreenPresenter {
         drawerRouter: DrawerRouting = resolve(),
         announcementPresenter: AnnouncementPresenting = resolve(),
         coincore: CoincoreAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve()
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.accountFetcher = accountFetcher
         self.announcementPresenter = announcementPresenter
         self.coincore = coincore
         self.drawerRouter = drawerRouter
         self.interactor = interactor
-        self.internalFeatureFlagService = internalFeatureFlagService
         fiatBalancePresenter = DashboardFiatBalancesPresenter(
             interactor: interactor.fiatBalancesInteractor
         )

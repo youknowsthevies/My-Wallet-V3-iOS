@@ -24,6 +24,7 @@ import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
 import FeatureTransactionUI
+import FeatureWalletConnectData
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -300,6 +301,11 @@ extension DependencyContainer {
             return walletManager.wallet as WalletRecoveryVerifing
         }
 
+        factory { () -> WalletConnectMetadataAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager.wallet.walletConnect as WalletConnectMetadataAPI
+        }
+
         // MARK: - BlockchainSettings.App
 
         single { KeychainItemSwiftWrapper() as KeychainItemWrapping }
@@ -498,12 +504,9 @@ extension DependencyContainer {
         }
 
         factory { () -> GuidServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return GuidService(
-                sessionTokenRepository: manager.repository,
-                client: DIKit.resolve(),
-                walletRepo: DIKit.resolve(),
-                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+            GuidService(
+                sessionTokenRepository: DIKit.resolve(),
+                client: DIKit.resolve()
             )
         }
 
@@ -514,12 +517,10 @@ extension DependencyContainer {
         }
 
         factory { () -> SMSServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return SMSService(
+            SMSService(
                 client: DIKit.resolve(),
-                repository: manager.repository,
-                walletRepo: DIKit.resolve(),
-                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+                credentialsRepository: DIKit.resolve(),
+                sessionTokenRepository: DIKit.resolve()
             )
         }
 
@@ -544,13 +545,10 @@ extension DependencyContainer {
         }
 
         factory { () -> LoginServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return LoginService(
+            LoginService(
                 payloadService: DIKit.resolve(),
                 twoFAPayloadService: DIKit.resolve(),
-                repository: manager.repository,
-                walletRepo: DIKit.resolve(),
-                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+                repository: DIKit.resolve()
             )
         }
 
@@ -606,17 +604,9 @@ extension DependencyContainer {
             let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
             let client = OpenBankingClient(
                 requestBuilder: builder,
-                network: adapter
+                network: adapter.network
             )
             return OpenBanking(banking: client)
         }
-
-        factory { () -> FeatureOpenBankingUI.FiatCurrencyFormatter in
-            FiatCurrencyFormatter()
-        }
-
-        factory { OpenBankingViewController.self as StartOpenBanking.Type }
-
-        factory { AccountLinkingFlowPresenter() as AccountLinkingFlowPresenterAPI }
     }
 }

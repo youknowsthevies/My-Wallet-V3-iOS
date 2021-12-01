@@ -121,7 +121,8 @@ class AccountPickerViewTests: XCTestCase {
             ),
             badgeView: { _ in EmptyView() },
             iconView: { _ in EmptyView() },
-            multiBadgeView: { _ in EmptyView() }
+            multiBadgeView: { _ in EmptyView() },
+            withdrawalLocksView: { EmptyView() }
         )
 
         assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))

@@ -41,6 +41,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         effectRelay
             .asObservable()
             .distinctUntilChanged()
+            .subscribeOn(MainScheduler.asyncInstance)
     }
 
     /// The active input relay
@@ -62,6 +63,7 @@ public final class AmountTranslationInteractor: AmountViewInteracting {
         activeInputRelay
             .asObservable()
             .distinctUntilChanged()
+            .subscribeOn(MainScheduler.asyncInstance)
     }
 
     /// Input injection relay - allow any client of the component to inject number as a `Decimal` type

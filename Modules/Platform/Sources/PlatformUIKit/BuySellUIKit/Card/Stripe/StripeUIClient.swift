@@ -21,7 +21,7 @@ class StripeUIClient: NSObject, StripeUIClientAPI {
     ) {
         guard case .required(let params) = data.state,
               params.cardAcquirer == .stripe,
-              let publishableKey = params.publishableKey,
+              let publishableApiKey = params.publishableApiKey,
               let clientSecret = params.clientSecret,
               let presentingVC = UIApplication.shared.topMostViewController
         else {
@@ -30,17 +30,15 @@ class StripeUIClient: NSObject, StripeUIClientAPI {
         }
 
         var configuration = PaymentSheet.Configuration()
-        configuration.apiClient = STPAPIClient(publishableKey: publishableKey)
+        configuration.apiClient = STPAPIClient(publishableKey: publishableApiKey)
         configuration.allowsDelayedPaymentMethods = true
 
         self.presentingVC = presentingVC
 
         let handler = STPPaymentHandler.shared()
-        handler.apiClient = STPAPIClient(publishableKey: publishableKey)
+        handler.apiClient = STPAPIClient(publishableKey: publishableApiKey)
         handler.confirmPayment(STPPaymentIntentParams(clientSecret: clientSecret), with: self) { _, _, _ in
-            presentingVC.presentedViewController?.dismiss(animated: true) {
-                presenter.redirect()
-            }
+            presenter.redirect()
         }
     }
 }

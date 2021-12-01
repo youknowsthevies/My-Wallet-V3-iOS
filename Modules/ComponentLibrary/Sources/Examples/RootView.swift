@@ -22,14 +22,17 @@ public struct RootView: View {
             NavigationLinkProvider(view: TagExamples(), title: "🏷 Tag"),
             NavigationLinkProvider(view: CheckboxExamples(), title: "✅ Checkbox"),
             NavigationLinkProvider(view: RichTextExamples(), title: "🤑 Rich Text"),
-            NavigationLinkProvider(view: SegmentedControlExamples(), title: "🚥 SegmentedControl")
+            NavigationLinkProvider(view: SegmentedControlExamples(), title: "🚥 SegmentedControl"),
+            NavigationLinkProvider(view: InputExamples(), title: "⌨️ Input"),
+            NavigationLinkProvider(view: PrimaryPickerExamples(), title: "⛏ Picker")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
             NavigationLinkProvider(view: CalloutCardExamples(), title: "💬 CalloutCard"),
             NavigationLinkProvider(view: SectionHeadersExamples(), title: "🪖 SectionHeaders"),
             NavigationLinkProvider(view: RowExamplesView(), title: "🚣‍♀️ Rows"),
-            NavigationLinkProvider(view: BottomSheetExamples(), title: "📄 BottomSheet")
+            NavigationLinkProvider(view: BottomSheetExamples(), title: "📄 BottomSheet"),
+            NavigationLinkProvider(view: SearchBarExamples(), title: "🔎 SearchBar")
         ]
     ]
 

@@ -143,6 +143,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                                     .updateOrder(identifier: sellOrder.identifier, success: false)
                                     .asObservable()
                                     .ignoreElements()
+                                    .asCompletable()
                                     .catchError { _ in .empty() }
                                     .andThen(.error(error))
                             }
@@ -151,6 +152,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                                     .updateOrder(identifier: sellOrder.identifier, success: true)
                                     .asObservable()
                                     .ignoreElements()
+                                    .asCompletable()
                                     .catchError { _ in .empty() }
                                     .andThen(.just(result))
                             }

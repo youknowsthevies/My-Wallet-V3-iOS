@@ -1,8 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import ComposableArchitecture
 import DIKit
 import FeatureAccountPickerUI
+import FeatureWithdrawalLocksUI
 import Foundation
 import PlatformUIKit
 import RxCocoa
@@ -95,6 +97,8 @@ class LoadableAccountPickerControllable: LoadableEitherViewController<
             shouldOverrideNavigationEffects = controllable.shouldOverrideNavigationEffects
         }
 
+        disposeBag = DisposeBag()
+
         connectChildIfPossible()
 
         super.updateChild(to: newValue)
@@ -118,7 +122,6 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
     fileprivate lazy var environment = AccountPickerEnvironment(
         rowSelected: { [unowned self] (identifier: AnyHashable) -> Void in
             let viewModel = self.model(for: identifier)
-
             if let viewModel = viewModel {
                 self.modelSelectedRelay.accept(viewModel)
             }
@@ -216,7 +219,6 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
 
     init() {
         super.init(nibName: nil, bundle: nil)
-
         let child = UIHostingController(
             rootView: AccountPickerView(
                 environment: environment,
@@ -228,6 +230,9 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
                 },
                 multiBadgeView: { [unowned self] identity in
                     self.multiBadgeView(for: identity)
+                },
+                withdrawalLocksView: { [unowned self] in
+                    self.withdrawalLocksView()
                 }
             )
         )
@@ -241,7 +246,7 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        view.backgroundColor = .white
         children.forEach { child in
             view.addSubview(child.view)
             child.view.fillSuperview(usesSafeAreaLayoutGuide: true)
@@ -324,6 +329,15 @@ class FeatureAccountPickerControllableAdapter: BaseScreenViewController {
         default:
             EmptyView()
         }
+    }
+
+    @ViewBuilder func withdrawalLocksView() -> some View {
+        let store = Store<WithdrawalLocksState, WithdrawalLocksAction>(
+            initialState: .init(),
+            reducer: withdrawalLocksReducer,
+            environment: WithdrawalLocksEnvironment { _ in }
+        )
+        WithdrawalLocksView(store: store)
     }
 }
 
@@ -443,7 +457,7 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                                 )
                             )
                         case .withdrawalLocks:
-                            fatalError("Withdrawal Locks are only supported in Send.")
+                            return .withdrawalLocks
                         }
                     }
                 self.sections.send(sections)
@@ -453,6 +467,11 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
         let modelSelected = modelSelectedRelay
             .compactMap(\.account)
             .map { AccountPickerInteractor.Effects.select($0) }
+            .asDriver(onErrorJustReturn: .none)
+
+        let buttonSelected = modelSelectedRelay
+            .filter(\.isButton)
+            .map { _ in AccountPickerInteractor.Effects.button }
             .asDriver(onErrorJustReturn: .none)
 
         let backButtonEffect = backButtonRelay
@@ -467,6 +486,6 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
             .map { AccountPickerInteractor.Effects.filter($0) }
             .asDriverCatchError()
 
-        return .merge(modelSelected, backButtonEffect, closeButtonEffect, searchEffect)
+        return .merge(modelSelected, buttonSelected, backButtonEffect, closeButtonEffect, searchEffect)
     }
 }

@@ -6,7 +6,7 @@ import SwiftUI
 
 extension Color {
 
-    public static let semantic: Semantic.Type = Semantic.self
+    public static let semantic: WalletSemantic.Type = WalletSemantic.self
 
     /// Colors from the Figma Component Library.
     ///
@@ -20,7 +20,7 @@ extension Color {
     /// # Figma
     ///
     ///  [Colors](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=352%3A8610)
-    public enum Semantic {
+    public enum WalletSemantic {
 
         public static let title = Color(
             light: .palette.grey900,

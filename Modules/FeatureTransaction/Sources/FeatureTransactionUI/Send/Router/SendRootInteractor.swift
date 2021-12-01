@@ -13,8 +13,8 @@ public protocol SendRootRouting: ViewableRouting {
     /// can send from.
     func routeToSendLanding()
     func routeToSendLanding(navigationBarHidden: Bool)
-    func routeToSend(sourceAccount: CryptoAccount)
-    func routeToSend(sourceAccount: CryptoAccount, destination: TransactionTarget)
+    func routeToSend(sourceAccount: BlockchainAccount)
+    func routeToSend(sourceAccount: BlockchainAccount, destination: TransactionTarget)
     func dismissTransactionFlow()
 }
 

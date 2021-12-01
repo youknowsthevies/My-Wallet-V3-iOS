@@ -30,7 +30,7 @@ public struct ActivateCardResponse: Decodable {
     }
 
     public struct CardAcquirer: Decodable {
-        let cardAcquirerName: CardPayload.Partner
+        let cardAcquirerName: CardPayload.Acquirer
         let cardAcquirerAccountCode: String
         let apiUserID: String?
         let apiToken: String?
@@ -39,10 +39,10 @@ public struct ActivateCardResponse: Decodable {
         let paymentReference: String?
         let orderReference: String?
         let clientSecret: String?
-        let publishableKey: String?
+        let publishableApiKey: String?
 
         public init(
-            cardAcquirerName: CardPayload.Partner,
+            cardAcquirerName: CardPayload.Acquirer,
             cardAcquirerAccountCode: String,
             apiUserID: String?,
             apiToken: String?,
@@ -51,7 +51,7 @@ public struct ActivateCardResponse: Decodable {
             paymentReference: String?,
             orderReference: String?,
             clientSecret: String?,
-            publishableKey: String?
+            publishableApiKey: String?
         ) {
             self.cardAcquirerName = cardAcquirerName
             self.cardAcquirerAccountCode = cardAcquirerAccountCode
@@ -62,7 +62,7 @@ public struct ActivateCardResponse: Decodable {
             self.paymentReference = paymentReference
             self.orderReference = orderReference
             self.clientSecret = clientSecret
-            self.publishableKey = publishableKey
+            self.publishableApiKey = publishableApiKey
         }
     }
 

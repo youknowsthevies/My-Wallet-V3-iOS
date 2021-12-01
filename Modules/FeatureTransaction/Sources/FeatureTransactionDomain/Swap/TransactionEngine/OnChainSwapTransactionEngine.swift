@@ -167,6 +167,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                                     .updateOrder(identifier: swapOrder.identifier, success: false)
                                     .asObservable()
                                     .ignoreElements()
+                                    .asCompletable()
                                     .catchError { _ in .empty() }
                                     .andThen(.error(error))
                             }
@@ -175,6 +176,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                                     .updateOrder(identifier: swapOrder.identifier, success: true)
                                     .asObservable()
                                     .ignoreElements()
+                                    .asCompletable()
                                     .catchError { _ in .empty() }
                                     .andThen(.just(result))
                             }

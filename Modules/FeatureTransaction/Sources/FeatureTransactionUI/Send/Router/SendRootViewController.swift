@@ -33,13 +33,19 @@ final class SendRootViewController: UINavigationController, SendRootViewControll
 
     private let topMostViewControllerProvider: TopMostViewControllerProviding
 
+    @LazyInject var featureFlagsService: InternalFeatureFlagServiceAPI
+
     // MARK: - Init
 
     init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         super.init(nibName: nil, bundle: nil)
         view.backgroundColor = .white
-        setNavigationBarHidden(true, animated: false)
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        setNavigationBarHidden(featureFlagsService.isEnabled(.redesign), animated: false)
     }
 
     @available(*, unavailable)

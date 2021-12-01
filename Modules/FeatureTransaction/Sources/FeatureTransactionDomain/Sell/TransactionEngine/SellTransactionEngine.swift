@@ -149,8 +149,10 @@ extension SellTransactionEngine {
 extension TransactionLimits {
 
     func update(with quote: PricedQuote) throws -> TransactionLimits {
-        TransactionLimits(
-            minimum: try calculateMinimumLimit(for: quote),
+        let minimum = try calculateMinimumLimit(for: quote)
+        return TransactionLimits(
+            currencyType: minimum.currencyType,
+            minimum: minimum,
             maximum: maximum,
             maximumDaily: maximumDaily,
             maximumAnnual: maximumAnnual,
@@ -163,7 +165,8 @@ extension TransactionLimits {
         let destinationCurrency = quote.networkFee.currencyType
         let price = MoneyValue(amount: quote.price, currency: destinationCurrency)
         let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destinationCurrency)
-        let convertedFees = totalFees.convert(usingInverse: price, currencyType: minimum.currencyType)
+        let convertedFees = totalFees.convert(usingInverse: price, currencyType: currencyType)
+        let minimum = minimum ?? .zero(currency: destinationCurrency)
         return (try? minimum + convertedFees) ?? MoneyValue.zero(currency: destinationCurrency)
     }
 }

@@ -13,7 +13,7 @@ import SwiftUI
 ///
 /// `PrimarySegmentedControl(
 ///     items: [
-///         PrimarySegmentedControlItem(title: "Live", variant: .dot),
+///         PrimarySegmentedControlItem(title: "Live", variant: .dot, identifier: "live"),
 ///         PrimarySegmentedControlItem(title: "1D", identifier: "1d"),
 ///         PrimarySegmentedControlItem(title: "1W", identifier: "1w"),
 ///         PrimarySegmentedControlItem(title: "1M", identifier: "1m"),
@@ -28,18 +28,18 @@ import SwiftUI
 /// # Figma
 ///
 ///  [Controls](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=6%3A544)
-public struct PrimarySegmentedControl: View {
+public struct PrimarySegmentedControl<Selection: Hashable>: View {
 
     private var items: [Item]
 
-    @Binding private var selection: AnyHashable
+    @Binding private var selection: Selection
 
     /// Create a PrimarySegmentedControl view with any number of items and a selection state.
     /// - Parameter items: Items who represents the buttons inside the segmented control
     /// - Parameter selection: Binding for `selection` from `items` for the currently selected item.
     public init(
         items: [Item],
-        selection: Binding<AnyHashable>
+        selection: Binding<Selection>
     ) {
         self.items = items
         _selection = selection
@@ -122,9 +122,9 @@ extension PrimarySegmentedControl {
 
         let title: String
         let variant: Variant
-        let identifier: AnyHashable
+        let identifier: Selection
 
-        public var id: AnyHashable { identifier }
+        public var id: Selection { identifier }
 
         /// Create an Item which is the element to pass into the PrimarySegmentedControl,
         /// as a representation for the buttons to be shown on the control.
@@ -135,7 +135,7 @@ extension PrimarySegmentedControl {
         public init(
             title: String,
             variant: Variant = .standard,
-            identifier: AnyHashable
+            identifier: Selection
         ) {
             self.title = title
             self.variant = variant
@@ -224,13 +224,13 @@ struct PrimarySegmentedControl_Previews: PreviewProvider {
         .padding()
     }
 
-    struct PreviewController: View {
-        let items: [PrimarySegmentedControl.Item]
-        @State var selection: AnyHashable
+    struct PreviewController<Selection: Hashable>: View {
+        let items: [PrimarySegmentedControl<Selection>.Item]
+        @State var selection: Selection
 
         init(
-            items: [PrimarySegmentedControl.Item],
-            selection: AnyHashable
+            items: [PrimarySegmentedControl<Selection>.Item],
+            selection: Selection
         ) {
             self.items = items
             _selection = State(initialValue: selection)

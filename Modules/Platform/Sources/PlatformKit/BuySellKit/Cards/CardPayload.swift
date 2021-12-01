@@ -2,11 +2,21 @@
 
 public struct CardPayload {
 
+    public enum Partner: String {
+        case everypay = "EVERYPAY"
+        case cardProvider = "CARDPROVIDER"
+        case unknown
+
+        var isKnown: Bool {
+            self != .unknown
+        }
+    }
+
     /// The id of the card
     let identifier: String
 
-    /// The partner of the card (e.g: EVERYPAY)
-    let partner: Partner
+    /// The partner of the card
+    let partner: CardPayload.Partner
 
     /// The billing address
     let address: BillingAddress!
@@ -25,7 +35,7 @@ public struct CardPayload {
 
     public init(
         identifier: String,
-        partner: Partner,
+        partner: String,
         address: BillingAddress!,
         currency: String,
         state: State,
@@ -33,7 +43,7 @@ public struct CardPayload {
         additionDate: String
     ) {
         self.identifier = identifier
-        self.partner = partner
+        self.partner = Partner(rawValue: partner) ?? .unknown
         self.address = address
         self.currency = currency
         self.state = state
@@ -60,8 +70,8 @@ extension CardPayload: Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         identifier = try values.decode(String.self, forKey: .identifier)
 
-        let partner = try values.decode(String.self, forKey: .partner)
-        self.partner = Partner(partner: partner)
+        let partnerString = try values.decode(String.self, forKey: .partner)
+        partner = Partner(rawValue: partnerString) ?? .unknown
 
         address = try values.decodeIfPresent(BillingAddress.self, forKey: .address)
         currency = try values.decode(String.self, forKey: .currency)
@@ -98,7 +108,7 @@ extension CardPayload {
     }
 
     /// The partner for the card
-    public enum Partner: String, Codable {
+    public enum Acquirer: String, Codable {
 
         /// EveryPay partner
         case everyPay = "EVERYPAY"
@@ -121,8 +131,8 @@ extension CardPayload {
             }
         }
 
-        public init(partner: String) {
-            self = Partner(rawValue: partner) ?? .unknown
+        public init(acquirer: String) {
+            self = Acquirer(rawValue: acquirer) ?? .unknown
         }
     }
 

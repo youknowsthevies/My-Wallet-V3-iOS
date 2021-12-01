@@ -1,16 +1,24 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
 import ComponentLibrary
+#endif
 import DIKit
+import FeatureQRCodeScannerDomain
 import FeatureQRCodeScannerUI
 import FeatureTransactionUI
+import FeatureWalletConnectDomain
 import Localization
 import PlatformUIKit
 import SwiftUI
+import ToolKit
 
 struct QRCodeScannerView: UIViewControllerRepresentable {
 
     var secureChannelRouter: SecureChannelRouting = resolve()
+    var walletConnectService: WalletConnectServiceAPI = resolve()
 
     private var send: (router: SendRootRouting, p2: UIViewController) = {
         let router = SendRootBuilder().build()
@@ -38,8 +46,8 @@ struct QRCodeScannerView: UIViewControllerRepresentable {
                     case .bitpay:
                         break
                     }
-                case .walletConnect:
-                    break
+                case .walletConnect(let url):
+                    self.walletConnectService.connect(url)
                 case .deepLink:
                     break
                 }

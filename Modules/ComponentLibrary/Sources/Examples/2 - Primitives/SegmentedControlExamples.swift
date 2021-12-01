@@ -7,7 +7,8 @@ struct SegmentedControlExamples: View {
 
     private let data: NavigationLinkProviderList = [
         "Segmented Controls": [
-            NavigationLinkProvider(view: PrimarySegmentedControlExamples(), title: " PrimarySegmentedControl")
+            NavigationLinkProvider(view: PrimarySegmentedControlExamples(), title: "PrimarySegmentedControl"),
+            NavigationLinkProvider(view: LargeSegmentedControlExamples(), title: "LargeSegmentedControl")
         ]
     ]
 

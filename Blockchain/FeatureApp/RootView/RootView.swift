@@ -1,6 +1,10 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
 import ComponentLibrary
+#endif
 import ComposableArchitecture
 import ComposableNavigation
 import Localization
@@ -69,15 +73,15 @@ struct RootView: View {
                     PricesView()
                 }
                 fab()
-                tab(.buyAndSell, state: \.buyAndSell) { context in
-                    BuySellView(selectedSegment: context.segment)
+                tab(.buyAndSell) {
+                    BuySellView(selectedSegment: viewStore.binding(\.$buyAndSell.segment))
                 }
                 tab(.activity) {
                     ActivityView()
                 }
             }
             .overlay(
-                FloatingActionButton(isOn: viewStore.binding(\.fab.$isOn))
+                FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn))
                     .identity(blockchain.ux.user.fab)
                     .pulse(enabled: viewStore.fab.animate, inset: 8)
                     .padding([.leading, .trailing], 24.pt)
@@ -87,7 +91,7 @@ struct RootView: View {
                 alignment: .bottom
             )
             .ignoresSafeArea(.keyboard, edges: .bottom)
-            .bottomSheet(isPresented: viewStore.binding(\.fab.$isOn)) {
+            .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn)) {
                 FrequentActionView { action in
                     viewStore.send(.frequentAction(action))
                 }

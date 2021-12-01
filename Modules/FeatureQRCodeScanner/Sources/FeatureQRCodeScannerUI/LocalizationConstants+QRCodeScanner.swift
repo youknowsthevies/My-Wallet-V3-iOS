@@ -8,5 +8,10 @@ extension LocalizationConstants {
             "%@ Connected Apps",
             comment: "Number of connected dApps with WalletConnect"
         )
+
+        static let connectedDApp = NSLocalizedString(
+            "1 Connected App",
+            comment: "When only 1 connected dApp with WalletConnect"
+        )
     }
 }

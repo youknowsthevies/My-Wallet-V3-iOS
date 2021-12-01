@@ -195,6 +195,7 @@ final class BitPayTransactionEngine: TransactionEngine {
             )
             .asObservable()
             .ignoreElements()
+            .asCompletable()
             .delay(.seconds(3), scheduler: MainScheduler.instance)
             .andThen(
                 bitpayRepository

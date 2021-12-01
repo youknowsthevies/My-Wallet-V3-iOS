@@ -23,6 +23,10 @@ public enum AppFeature: Int, CaseIterable {
     /// Sift Science SDK is enabled
     case siftScienceEnabled
 
+    // MARK: Wallet Connect
+
+    case walletConnectEnabled
+
     // MARK: Onboarding (After Login)
 
     /// Shows Email Verification insted of Simple Buy at Login
@@ -125,6 +129,8 @@ extension AppFeature {
             return "ios_use_new_limits_ui"
         case .swiftUIAccountPicker:
             return "ios_swiftui_account_picker"
+        case .walletConnectEnabled:
+            return "ios_ff_wallet_connect"
         }
     }
 
@@ -171,6 +177,8 @@ extension AppFeature {
         case .newLimitsUIEnabled:
             return true
         case .swiftUIAccountPicker:
+            return true
+        case .walletConnectEnabled:
             return true
         }
     }

@@ -130,18 +130,12 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             }
             .catchErrorJustReturn([:])
 
-        let ffNewAcquirers = Publishers.Zip(
-            featureFlagsService.isEnabled(.local(.newCardAcquirers)),
-            featureFlagsService.isEnabled(.remote(.newCardAcquirers))
-        )
-        .map { isLocalEnabled, isRemoteEnabled in
-            isLocalEnabled && isRemoteEnabled
-        }
-        .asSingle()
-
-        let ffCardAcquirerTokens = ffNewAcquirers.flatMap { enabled -> Single<[String: String]> in
-            enabled ? cardAcquirerTokens : .just([:])
-        }
+        let ffCardAcquirerTokens = featureFlagsService
+            .isEnabled(.remote(.newCardAcquirers))
+            .asSingle()
+            .flatMap { enabled -> Single<[String: String]> in
+                enabled ? cardAcquirerTokens : .just([:])
+            }
 
         return Single.zip(
             fiatCurrencyService.fiatCurrency,
@@ -165,14 +159,8 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                     self.analyticsRecorder.record(event: CardUpdateEvent.sbAddCardFailure)
                 })
         }
-        // 2. Make sure the card partner is supported
-        .map { payload -> CardPayload in
-            guard payload.partner.isKnown else {
-                throw ServiceError.unknownPartner
-            }
-            return payload
-        }
-        // 3. Activate the card
+
+        // 2. Activate the card
         .flatMap(weak: self) { (self, payload) -> Single<(cardId: String, partner: ActivateCardResponse.Partner)> in
             self.cardClient.activateCard(
                 by: payload.identifier,
@@ -186,7 +174,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                 self.analyticsRecorder.record(event: CardUpdateEvent.sbCardActivationFailure)
             })
         }
-        // 4. Partner
+        // 3. Partner
         .flatMap(weak: self) { (self, payload) -> Single<PartnerAuthorizationData> in
             self
                 .add(

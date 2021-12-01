@@ -1,7 +1,11 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
 import ComponentLibrary
+#endif
 import ComposableArchitecture
 import ComposableArchitectureExtensions
 import ComposableNavigation
@@ -16,17 +20,18 @@ struct RootViewState: Equatable, NavigationState {
     @BindableState var tab: Tab = .home
     @BindableState var fab: FrequentAction
 
-    var buyAndSell: BuyAndSell = .init()
+    @BindableState var buyAndSell: BuyAndSell = .init()
 }
 
 extension RootViewState {
 
     struct BuyAndSell: Equatable {
+
         var segment: Int = 0
     }
 
     struct FrequentAction: Equatable {
-        @BindableState var isOn: Bool = false
+        var isOn: Bool = false
         var animate: Bool
     }
 }
@@ -83,7 +88,7 @@ let rootViewReducer = Reducer<
             break
         }
         return .none
-    case .binding(.set(\.fab.$isOn, true)):
+    case .binding(.set(\.$fab.isOn, true)):
         state.fab.animate = false
         return .none
     case .route, .binding:

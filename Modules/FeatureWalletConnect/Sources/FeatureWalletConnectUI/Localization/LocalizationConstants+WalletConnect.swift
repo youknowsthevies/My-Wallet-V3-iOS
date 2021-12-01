@@ -31,6 +31,11 @@ extension LocalizationConstants {
             comment: "WalletConnect: number of connected dApps"
         )
 
+        static let connectedAppCount = NSLocalizedString(
+            "1 Connected App",
+            comment: "WalletConnect: 1 connected dApp"
+        )
+
         static let disconnect = NSLocalizedString(
             "Disconnect",
             comment: "WalletConnect: disconnect button title"

@@ -79,7 +79,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 ),
                 selectedFiatCurrency: fiatCurrency,
                 minimumLimit: feeAndLimit.minLimit.moneyValue,
-                maximumLimit: feeAndLimit.maxLimit.moneyValue
+                maximumLimit: feeAndLimit.maxLimit?.moneyValue ?? actionableBalance
             )
         }
     }
@@ -116,6 +116,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                     .createWithdrawOrder(id: address, amount: pendingTransaction.amount)
                     .asObservable()
                     .ignoreElements()
+                    .asCompletable()
             }
             .flatMapSingle {
                 .just(TransactionResult.unHashed(amount: pendingTransaction.amount))

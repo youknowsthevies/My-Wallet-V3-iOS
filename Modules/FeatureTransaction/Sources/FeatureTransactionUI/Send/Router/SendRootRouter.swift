@@ -43,7 +43,6 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
     }
 
     func routeToSendLanding(navigationBarHidden: Bool) {
-        let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
         let header = AccountPickerHeaderModel(
             imageContent: .init(
                 imageResource: ImageAsset.iconSend.imageResource,
@@ -57,7 +56,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
         if !navigationBarHidden {
             navigationModel = ScreenNavigationModel(
                 leadingButton: .drawer,
-                trailingButton: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none,
+                trailingButton: .qrCode,
                 titleViewStyle: .text(value: LocalizedSend.Text.send),
                 barStyle: .lightContent()
             )
@@ -88,7 +87,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
         )
     }
 
-    func routeToSend(sourceAccount: CryptoAccount) {
+    func routeToSend(sourceAccount: BlockchainAccount) {
         let builder = TransactionFlowBuilder()
         transactionRouter = builder.build(
             withListener: interactor,
@@ -103,7 +102,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
         }
     }
 
-    func routeToSend(sourceAccount: CryptoAccount, destination: TransactionTarget) {
+    func routeToSend(sourceAccount: BlockchainAccount, destination: TransactionTarget) {
         let builder = TransactionFlowBuilder()
         transactionRouter = builder.build(
             withListener: interactor,

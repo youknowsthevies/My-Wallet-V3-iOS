@@ -1,30 +1,31 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Foundation
 import WalletConnectSwift
 
-struct WalletConnectSession: Codable {
+public struct WalletConnectSession: Codable, Equatable {
 
-    let url: String
-    let dAppInfo: DAppInfo
-    let walletInfo: WalletInfo
+    public let url: String
+    public let dAppInfo: DAppInfo
+    public let walletInfo: WalletInfo
 
-    struct WalletInfo: Codable {
-        let clientId: String
-        let sourcePlatform: String
+    public struct WalletInfo: Codable, Equatable {
+        public let clientId: String
+        public let sourcePlatform: String
     }
 
-    struct DAppInfo: Codable {
-        let peerId: String
-        let peerMeta: ClientMeta
-        let chainId: Int?
+    public struct DAppInfo: Codable, Equatable {
+        public let peerId: String
+        public let peerMeta: ClientMeta
+        public let chainId: Int?
     }
 
-    struct ClientMeta: Codable {
-        let description: String
-        let url: String
-        let icons: [String]
-        let name: String
+    public struct ClientMeta: Codable, Equatable {
+        public let description: String
+        public let url: String
+        public let icons: [String]
+        public let name: String
     }
 
     init(session: Session) {
@@ -47,7 +48,8 @@ struct WalletConnectSession: Codable {
 }
 
 extension WalletConnectSession {
-    func isEqual(_ rhs: Self) -> Bool {
+    /// Compares two WalletConnectSession based solely on its unique identifier (url).
+    public func isEqual(_ rhs: Self) -> Bool {
         url == rhs.url
     }
 }

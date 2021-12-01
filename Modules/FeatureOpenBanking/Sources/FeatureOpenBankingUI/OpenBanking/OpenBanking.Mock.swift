@@ -5,7 +5,11 @@
 import CombineSchedulers
 import FeatureOpenBankingData
 import Foundation
+#if canImport(WalletNetworkKit)
+import WalletNetworkKit
+#else
 import NetworkKit
+#endif
 import ToolKit
 
 extension OpenBankingEnvironment {
@@ -13,7 +17,8 @@ extension OpenBankingEnvironment {
     public static let mock = OpenBankingEnvironment(
         openBanking: .mock,
         openURL: PrintAppOpen(),
-        fiatCurrencyFormatter: NoFormatFiatCurrencyFormatter(),
+        fiatCurrencyFormatter: NoFormatCurrencyFormatter(),
+        cryptoCurrencyFormatter: NoFormatCurrencyFormatter(),
         currency: "GBP"
     )
 }
@@ -40,7 +45,7 @@ extension OpenBankingClient {
         ),
         network: NetworkAdapter(
             communicator: EphemeralNetworkCommunicator()
-        )
+        ).network
     )
 }
 

@@ -40,14 +40,14 @@ public class StripeClient: CardAcquirerClientAPI {
     ) -> PartnerAuthorizationData.State {
         guard acquirer.paymentState == .waitingFor3DS,
               let clientSecret = acquirer.clientSecret,
-              let publishableKey = acquirer.publishableKey
+              let publishableApiKey = acquirer.publishableApiKey
         else {
             return .confirmed
         }
         return .required(.init(
             cardAcquirer: .stripe,
             clientSecret: clientSecret,
-            publishableKey: publishableKey
+            publishableApiKey: publishableApiKey
         ))
     }
 }

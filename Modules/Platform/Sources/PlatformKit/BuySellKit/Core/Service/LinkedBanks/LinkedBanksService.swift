@@ -27,6 +27,8 @@ public protocol LinkedBanksServiceAPI {
     /// Deletes a linked bank by its id
     /// - Parameter id: A `String` representing the bank id.
     func deleteBank(by id: String) -> Completable
+
+    func invalidate()
 }
 
 final class LinkedBanksService: LinkedBanksServiceAPI {
@@ -94,6 +96,10 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
     }
 
     func deleteBank(by id: String) -> Completable {
-        client.deleteLinkedBank(for: id).asObservable().ignoreElements()
+        client.deleteLinkedBank(for: id).asObservable().ignoreElements().asCompletable()
+    }
+
+    func invalidate() {
+        cachedValue.invalidate()
     }
 }

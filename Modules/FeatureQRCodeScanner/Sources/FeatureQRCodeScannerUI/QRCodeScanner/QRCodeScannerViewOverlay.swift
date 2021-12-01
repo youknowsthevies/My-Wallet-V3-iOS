@@ -66,6 +66,7 @@ final class QRCodeScannerViewOverlay: UIView {
 
     private let cameraRollButtonSubject = PassthroughSubject<Void, Never>()
     private let flashButtonSubject = PassthroughSubject<Void, Never>()
+    private let connectedDAppsButtonSubject = PassthroughSubject<Void, Never>()
 
     private let targetImageView = UIImageView(image: Images.target.image)
 
@@ -164,6 +165,14 @@ final class QRCodeScannerViewOverlay: UIView {
             }
             .store(in: &cancellables)
 
+        viewModel
+            .dAppsButtonTitle
+            .receive(on: RunLoop.main)
+            .sink { [weak self] in
+                self?.connectedDappsButton.setTitle($0, for: .normal)
+            }
+            .store(in: &cancellables)
+
         cameraRollButtonSubject
             .eraseToAnyPublisher()
             .throttle(
@@ -192,19 +201,27 @@ final class QRCodeScannerViewOverlay: UIView {
             .sink { [weak self] in self?.viewModel.flashTapRelay.send($0) }
             .store(in: &cancellables)
 
+        connectedDAppsButtonSubject
+            .eraseToAnyPublisher()
+            .throttle(
+                for: .milliseconds(200),
+                scheduler: DispatchQueue.global(qos: .background),
+                latest: false
+            )
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in self?.viewModel.connectedDAppsTapped?() }
+            .store(in: &cancellables)
+
         cameraRollButton.setImage(Images.cameraRoll.image, for: .normal)
 
         connectedDappsButton.setImage(Images.connectedDapps.image, for: .normal)
-        connectedDappsButton.setTitle(
-            String(format: LocalizationConstants.QRCodeScanner.connectedDapps, "0"),
-            for: .normal
-        )
         connectedDappsButton.titleLabel?.font = UIFont.main(.medium, 16)
         connectedDappsButton.setTitleColor(.tertiaryButton, for: .normal)
         connectedDappsButton.layer.cornerRadius = 24
         connectedDappsButton.backgroundColor = .mediumBackground
         connectedDappsButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 34)
         connectedDappsButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: -10)
+        connectedDappsButton.addTarget(self, action: #selector(onConnectedDAppsButtonTap), for: .touchUpInside)
 
         flashButton.setImage(Images.flashDisabled.image, for: .normal)
         flashButton.setImage(Images.flashEnabled.image, for: .selected)
@@ -246,5 +263,9 @@ final class QRCodeScannerViewOverlay: UIView {
 
     @objc private func onFlashButtonTap() {
         flashButtonSubject.send()
+    }
+
+    @objc private func onConnectedDAppsButtonTap() {
+        connectedDAppsButtonSubject.send()
     }
 }

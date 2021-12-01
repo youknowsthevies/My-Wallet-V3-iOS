@@ -99,9 +99,14 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         return buttons
     }
 
+    // swiftlint:disable:next type_body_length
     private func createCells(state: TransactionState) -> [DetailsScreen.CellType] {
+        guard let pendingTransaction = state.pendingTransaction else {
+            return []
+        }
+
         let amount = state.amount
-        let fee = state.pendingTransaction?.feeAmount ?? .zero(currency: amount.currency)
+        let fee = pendingTransaction.feeAmount
         let value = (try? amount + fee) ?? .zero(currency: amount.currency)
 
         let sourceLabel = state.source?.label ?? ""
@@ -124,10 +129,6 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                     )
                 ]
             )
-        }
-
-        guard let pendingTransaction = state.pendingTransaction else {
-            return []
         }
 
         let interactors: [DefaultLineItemCellPresenter] = pendingTransaction

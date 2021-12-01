@@ -5,4 +5,6 @@ import Foundation
 public enum WalletConnectEventAction: Equatable {
     case accept
     case close
+    case disconnect
+    case openWebsite
 }

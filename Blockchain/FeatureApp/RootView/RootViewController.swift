@@ -8,6 +8,7 @@ import FeatureAuthenticationDomain
 import FeatureDashboardUI
 import FeatureOnboardingUI
 import FeatureTransactionUI
+import FeatureWalletConnectDomain
 import PlatformKit
 import PlatformUIKit
 import SwiftUI
@@ -78,6 +79,8 @@ final class RootViewController: UIHostingController<RootView> {
     @LazyInject var tiersService: KYCTiersServiceAPI
     @LazyInject var transactionsRouter: TransactionsRouterAPI
     @LazyInject var airdropRouter: AirdropRouterAPI
+    @Inject var walletConnectService: WalletConnectServiceAPI
+    @Inject var walletConnectRouter: WalletConnectRouterAPI
 
     var pinRouter: PinRouter?
     weak var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController?
@@ -91,17 +94,6 @@ final class RootViewController: UIHostingController<RootView> {
         let stateService = PlatformUIKit.StateService()
         let builder = PlatformUIKit.Builder(stateService: stateService)
         return (PlatformUIKit.Router(builder: builder, currency: .coin(.bitcoin)), stateService)
-    }()
-
-    var sendRoot: (
-        router: SendRootRouting,
-        viewController: UIViewController
-    ) = {
-        let router = SendRootBuilder().build()
-        let viewController = router.viewControllable.uiviewController
-        router.interactable.activate()
-        router.load()
-        return (router, viewController)
     }()
 }
 

@@ -42,6 +42,7 @@ enum TransactionAction: MviAction {
     case validateSourceAccount // e.g. Give an opportunity to link a payment method
     case prepareTransaction // When continue button is tapped on enter amount screen
     case executeTransaction
+    case authorizedOpenBanking
     case performSecurityChecksForTransaction(TransactionResult)
     case securityChecksCompleted
     case updateTransactionPending
@@ -323,10 +324,23 @@ extension TransactionAction {
             newState.nextEnabled = false
             if (oldState.source as? LinkedBankAccount)?.partner == .yapily {
                 newState.step = .authorizeOpenBanking
+            } else if let paymentMethod = oldState.source as? PaymentMethodAccount {
+                switch paymentMethod.paymentMethodType {
+                case .linkedBank(let data) where data.partner == .yapily:
+                    newState.step = .authorizeOpenBanking
+                default:
+                    newState.step = .inProgress
+                }
             } else {
                 newState.step = .inProgress
             }
             newState.executionStatus = .inProgress
+            return newState.withUpdatedBackstack(oldState: oldState)
+
+        case .authorizedOpenBanking:
+            var newState = oldState
+            newState.nextEnabled = false
+            newState.executionStatus = .pending
             return newState.withUpdatedBackstack(oldState: oldState)
 
         case .performSecurityChecksForTransaction(let transactionResult):

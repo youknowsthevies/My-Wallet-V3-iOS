@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformUIKit
 import RIBs
@@ -28,9 +29,17 @@ final class SwapRootViewController: UINavigationController, SwapRootViewControll
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     weak var listener: SwapRootListener?
 
+    @LazyInject var featureFlagsService: InternalFeatureFlagServiceAPI
+
     init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         super.init(nibName: nil, bundle: nil)
+        view.backgroundColor = .white
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        setNavigationBarHidden(featureFlagsService.isEnabled(.redesign), animated: false)
     }
 
     @available(*, unavailable)

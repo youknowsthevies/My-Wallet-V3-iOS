@@ -2,6 +2,7 @@
 
 import PlatformKit
 import RxSwift
+import SwiftUI
 import ToolKit
 
 /// `SegmentedViewController` is a easy to used ViewController containing a `SegmentedView`
@@ -11,11 +12,16 @@ public final class SegmentedViewController: BaseScreenViewController {
     private lazy var segmentedView = SegmentedView()
     private let presenter: SegmentedViewScreenPresenting
     private let rootViewController: SegmentedTabViewController
+    @Binding private var selectedSegmentBinding: Int
     private let disposeBag = DisposeBag()
 
     required init?(coder: NSCoder) { unimplemented() }
-    public init(presenter: SegmentedViewScreenPresenting) {
+    public init(
+        presenter: SegmentedViewScreenPresenting,
+        selectedSegmentBinding: Binding<Int>
+    ) {
         self.presenter = presenter
+        _selectedSegmentBinding = selectedSegmentBinding
         rootViewController = SegmentedTabViewController(items: presenter.items)
         super.init(nibName: nil, bundle: nil)
     }
@@ -26,9 +32,26 @@ public final class SegmentedViewController: BaseScreenViewController {
         segmentedView.viewModel = presenter.segmentedViewModel
         add(child: rootViewController)
         presenter.itemIndexSelected
+            .bindAndCatch(to: rootViewController.itemIndexSelectedRelay)
+            .disposed(by: disposeBag)
+
+        presenter.itemIndexSelected
+            .map(\.index)
+            .distinctUntilChanged()
+            .bind(to: segmentedView.rx.selectedSegmentIndex)
+            .disposed(by: disposeBag)
+
+        presenter.itemIndexSelected
             .compactMap { $0 }
             .bindAndCatch(to: rootViewController.itemIndexSelectedRelay)
             .disposed(by: disposeBag)
+
+        presenter.itemIndexSelected
+            .subscribe(onNext: { [weak self] index, _ in
+                self?.selectedSegmentBinding = index
+            })
+            .disposed(by: disposeBag)
+
         set(
             barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
@@ -65,7 +88,6 @@ public final class SegmentedViewController: BaseScreenViewController {
     }
 
     public func selectSegment(_ index: Int) {
-        segmentedView.selectedSegmentIndex = index
-        presenter.itemIndexSelectedRelay.accept(index)
+        presenter.itemIndexSelectedRelay.accept((index: index, animated: false))
     }
 }

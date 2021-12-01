@@ -18,6 +18,10 @@ enum OrderPayload {
 
     struct ConfirmOrder: Encodable {
 
+        enum Callback {
+            static let url = "https://blockchainwallet.page.link/obapproval"
+        }
+
         enum Partner {
             case card(redirectURL: String)
             case bank
@@ -29,12 +33,14 @@ enum OrderPayload {
                 let customerUrl: String
             }
 
-            let redirectURL: String
+            let redirectURL: String?
             let everypay: EveryPay?
+            let callback: String?
 
-            init(redirectURL: String) {
-                everypay = .init(customerUrl: redirectURL)
+            init(redirectURL: String?, callback: String?) {
+                everypay = redirectURL.map(EveryPay.init)
                 self.redirectURL = redirectURL
+                self.callback = callback
             }
         }
 
@@ -45,8 +51,16 @@ enum OrderPayload {
         init(partner: Partner, action: CreateActionType, paymentMethodId: String?) {
             switch partner {
             case .card(redirectURL: let url):
-                attributes = Attributes(redirectURL: url)
-            case .bank, .funds:
+                attributes = Attributes(
+                    redirectURL: url,
+                    callback: nil
+                )
+            case .bank:
+                attributes = Attributes(
+                    redirectURL: nil,
+                    callback: Callback.url
+                )
+            case .funds:
                 attributes = nil
             }
             self.action = action
@@ -143,12 +157,12 @@ enum OrderPayload {
             }
 
             struct CardProvider: Decodable {
-                let cardAcquirerName: CardPayload.Partner
+                let cardAcquirerName: CardPayload.Acquirer
                 let cardAcquirerAccountCode: String?
                 let paymentLink: String?
                 let paymentState: PaymentState
                 let clientSecret: String?
-                let publishableKey: String?
+                let publishableApiKey: String?
             }
 
             let everypay: EveryPay?
@@ -203,7 +217,7 @@ extension OrderPayload.Response.Attributes.CardProvider {
         case paymentLink
         case paymentState
         case clientSecret
-        case publishableKey
+        case publishableApiKey
     }
 
     init(from decoder: Decoder) throws {
@@ -211,11 +225,11 @@ extension OrderPayload.Response.Attributes.CardProvider {
         paymentLink = try container.decodeIfPresent(String.self, forKey: .paymentLink)
         let paymentState = try container.decode(String.self, forKey: .paymentState)
         self.paymentState = OrderPayload.Response.Attributes.PaymentState(rawValue: paymentState) ?? .unknown
-        let partnerName = try container.decode(String.self, forKey: .cardAcquirerName)
-        cardAcquirerName = CardPayload.Partner(partner: partnerName)
+        let acquirerName = try container.decode(String.self, forKey: .cardAcquirerName)
+        cardAcquirerName = CardPayload.Acquirer(acquirer: acquirerName)
         cardAcquirerAccountCode = try container.decode(String.self, forKey: .cardAcquirerAccountCode)
         clientSecret = try container.decode(String.self, forKey: .clientSecret)
-        publishableKey = try container.decode(String.self, forKey: .publishableKey)
+        publishableApiKey = try container.decode(String.self, forKey: .publishableApiKey)
     }
 }
 
@@ -252,13 +266,13 @@ extension OrderPayload.Response {
                     return .required(.init(
                         cardAcquirer: .checkout,
                         paymentLink: URL(string: paymentLink),
-                        publishableKey: cardAcquirer.publishableKey
+                        publishableApiKey: cardAcquirer.publishableApiKey
                     ))
                 case .stripe:
                     return .required(.init(
                         cardAcquirer: .stripe,
                         clientSecret: cardAcquirer.clientSecret,
-                        publishableKey: cardAcquirer.publishableKey
+                        publishableApiKey: cardAcquirer.publishableApiKey
                     ))
                 case .unknown:
                     return .none

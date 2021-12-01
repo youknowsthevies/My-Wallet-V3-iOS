@@ -57,12 +57,6 @@ final class ActivityScreenInteractor {
             }
     }
 
-    var isUnifiedQRCodeScannerEnabled: Bool {
-        serviceContainer
-            .internalFeatureFlagService
-            .isEnabled(.unifiedQRCodeScanner)
-    }
-
     // MARK: - Private Properties
 
     private let refreshRelay: PublishRelay<Void> = .init()
