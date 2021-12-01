@@ -27,6 +27,7 @@ public struct BuySellActivityItemEvent {
 
     public let isBuy: Bool
     public let isCancellable: Bool
+    public let paymentProcessorErrorOccurred: Bool
     public let status: EventStatus
     public let paymentMethod: PaymentMethod
 
@@ -47,7 +48,8 @@ public struct BuySellActivityItemEvent {
         fee: MoneyValue,
         isBuy: Bool,
         isCancellable: Bool,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
+        paymentProcessorErrorOccurred: Bool = false
     ) {
         self.isBuy = isBuy
         self.isCancellable = isCancellable
@@ -58,6 +60,7 @@ public struct BuySellActivityItemEvent {
         self.outputValue = outputValue
         self.fee = fee
         self.paymentMethod = paymentMethod
+        self.paymentProcessorErrorOccurred = paymentProcessorErrorOccurred
     }
 }
 
@@ -90,6 +93,7 @@ extension BuySellActivityItemEvent {
         outputValue = swapActivityItemEvent.amounts.deposit
         fee = swapActivityItemEvent.amounts.withdrawalFee
         paymentMethod = .funds
+        paymentProcessorErrorOccurred = false
 
         switch swapActivityItemEvent.status {
         case .complete:
