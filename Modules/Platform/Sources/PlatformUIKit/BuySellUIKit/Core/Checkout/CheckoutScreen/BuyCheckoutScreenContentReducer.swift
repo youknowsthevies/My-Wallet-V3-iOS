@@ -147,8 +147,8 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
 
     func setupDidSucceed(with data: CheckoutInteractionData) {
         var formattedTime = ""
-        if let time = data.time {
-            formattedTime = DateFormatter.elegantDateFormatter.string(from: time)
+        if let creationDate = data.creationDate {
+            formattedTime = DateFormatter.elegantDateFormatter.string(from: creationDate)
         }
         dateLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: formattedTime))

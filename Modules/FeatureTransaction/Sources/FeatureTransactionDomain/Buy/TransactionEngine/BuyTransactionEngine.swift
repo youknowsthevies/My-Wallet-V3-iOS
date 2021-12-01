@@ -301,14 +301,14 @@ extension BuyTransactionEngine {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
         return convertAmountIntoWalletFiatCurrency(amount)
-            .flatMap { [orderQuoteService] fiatValue in
+            .flatMap { [sourceAccount, orderQuoteService] fiatValue in
                 orderQuoteService.getQuote(
                     for: .simpleBuy,
                     from: source.fiatCurrency,
                     to: destination.asset,
                     amount: fiatValue,
-                    paymentMethod: (self.sourceAccount as? PaymentMethodAccount)?.paymentMethodType.method.rawType,
-                    paymentMethodId: (self.sourceAccount as? PaymentMethodAccount)?.paymentMethodType.id
+                    paymentMethod: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.method.rawType,
+                    paymentMethodId: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.id
                 )
             }
     }

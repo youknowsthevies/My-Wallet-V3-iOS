@@ -88,7 +88,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
             )
             .map { (payload: (quote: Quote, checkoutData: CheckoutData)) in
                 let interactionData = CheckoutInteractionData(
-                    time: payload.quote.quoteCreatedAt,
+                    creationDate: payload.quote.quoteCreatedAt,
                     fee: payload.checkoutData.order.fee ?? MoneyValue(fiatValue: payload.quote.fee),
                     amount: MoneyValue(cryptoValue: payload.quote.estimatedCryptoAmount),
                     exchangeRate: MoneyValue(fiatValue: payload.quote.rate),
@@ -113,7 +113,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
 
         return .just(
             CheckoutInteractionData(
-                time: order.creationDate,
+                creationDate: order.creationDate,
                 fee: fee,
                 amount: order.outputValue,
                 exchangeRate: nil,

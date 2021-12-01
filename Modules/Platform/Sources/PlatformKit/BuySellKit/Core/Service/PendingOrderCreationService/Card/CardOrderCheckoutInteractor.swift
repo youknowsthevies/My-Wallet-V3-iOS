@@ -77,7 +77,7 @@ public final class CardOrderCheckoutInteractor {
                     .card(by: paymentMethodId)
                     .map { card in
                         let interactionData = CheckoutInteractionData(
-                            time: quote.quoteCreatedAt,
+                            creationDate: quote.quoteCreatedAt,
                             fee: checkoutData.order.fee ?? MoneyValue(fiatValue: quote.fee),
                             amount: MoneyValue(cryptoValue: quote.estimatedCryptoAmount),
                             exchangeRate: MoneyValue(fiatValue: quote.rate),
@@ -118,7 +118,7 @@ public final class CardOrderCheckoutInteractor {
             .card(by: paymentMethodId)
             .map { card in
                 CheckoutInteractionData(
-                    time: order.creationDate,
+                    creationDate: order.creationDate,
                     fee: fee,
                     amount: order.outputValue,
                     exchangeRate: price,

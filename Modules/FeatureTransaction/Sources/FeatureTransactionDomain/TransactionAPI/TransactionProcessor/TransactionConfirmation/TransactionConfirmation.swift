@@ -22,6 +22,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case network(TransactionConfirmation.Model.Network)
     case networkFee(TransactionConfirmation.Model.NetworkFee)
     case notice(TransactionConfirmation.Model.Notice)
+    case purchase(TransactionConfirmation.Model.Purchase)
     case rawTransaction(TransactionConfirmation.Model.RawTransaction)
     case sellDestinationValue(TransactionConfirmation.Model.SellDestinationValue)
     case sellExchangeRateValue(TransactionConfirmation.Model.SellExchangeRateValue)
@@ -34,7 +35,6 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case termsOfService(TransactionConfirmation.Model.AnyBoolOption<Bool>)
     case total(TransactionConfirmation.Model.Total)
     case totalCost(TransactionConfirmation.Model.TotalCost)
-    case purchase(TransactionConfirmation.Model.Purchase)
     case transactionFee(TransactionConfirmation.Model.FiatTransactionFee)
     case transferAgreement(TransactionConfirmation.Model.AnyBoolOption<Bool>)
 
