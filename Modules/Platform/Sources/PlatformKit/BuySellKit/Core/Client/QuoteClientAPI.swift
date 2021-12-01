@@ -4,15 +4,7 @@ import Combine
 import MoneyKit
 import NabuNetworkError
 
-public enum Profile: String, Encodable {
-    case simpleBuy = "SIMPLEBUY"
-    case simpleTrade = "SIMPLETRADE"
-    case swapFromUserKey = "SWAP_FROM_USERKEY"
-    case swapInternal = "SWAP_INTERNAL"
-    case swapOnChain = "SWAP_ON_CHAIN"
-}
-
-public struct QuoteRequest: Encodable {
+public struct QuoteQueryRequest: Encodable {
 
     /// Profile for the quote
     let profile: String
@@ -28,17 +20,20 @@ public struct QuoteRequest: Encodable {
 
     /// The payment method Id for the quote
     let paymentMethodId: String?
+
+    init(from query: QuoteQuery) {
+        self.profile = query.profile.rawValue
+        self.pair = "\(query.sourceCurrency)-\(query.destinationCurrency)"
+        self.inputValue = query.amount.minorString
+        self.paymentMethod = query.paymentMethod?.rawValue
+        self.paymentMethodId = query.paymentMethodId
+    }
 }
 
 protocol QuoteClientAPI: AnyObject {
 
     /// Get a quote from a simple-buy order. In the future, it will support all sorts of order (buy, sell, swap)
     func getQuote(
-        for profile: Profile,
-        sourceCurrency: Currency,
-        destinationCurrency: Currency,
-        amount: MoneyValue,
-        paymentMethod: PaymentMethodPayloadType?,
-        paymentMethodId: String?
+        queryRequest: QuoteQueryRequest
     ) -> AnyPublisher<QuoteResponse, NabuNetworkError>
 }

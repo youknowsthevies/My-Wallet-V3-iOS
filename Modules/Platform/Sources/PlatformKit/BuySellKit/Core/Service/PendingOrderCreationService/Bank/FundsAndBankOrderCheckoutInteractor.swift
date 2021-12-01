@@ -55,12 +55,14 @@ public final class FundsAndBankOrderCheckoutInteractor {
         }
         let quote = orderQuoteService
             .getQuote(
-                for: .simpleBuy,
-                sourceCurrency: fiatCurrency,
-                destinationCurrency: cryptoCurrency,
-                amount: MoneyValue(fiatValue: fiat),
-                paymentMethod: checkoutData.order.paymentMethod.rawType,
-                paymentMethodId: checkoutData.order.paymentMethodId
+                query: QuoteQuery(
+                    profile: .simpleBuy,
+                    sourceCurrency: fiatCurrency,
+                    destinationCurrency: cryptoCurrency,
+                    amount: MoneyValue(fiatValue: fiat),
+                    paymentMethod: checkoutData.order.paymentMethod.rawType,
+                    paymentMethodId: checkoutData.order.paymentMethodId
+                )
             )
 
         let finalCheckoutData: Single<CheckoutData>

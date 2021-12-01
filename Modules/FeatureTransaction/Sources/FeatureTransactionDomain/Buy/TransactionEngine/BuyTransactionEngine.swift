@@ -308,12 +308,14 @@ extension BuyTransactionEngine {
         return convertAmountIntoWalletFiatCurrency(amount)
             .flatMap { [sourceAccount, orderQuoteService] fiatValue in
                 orderQuoteService.getQuote(
-                    for: .simpleBuy,
-                    sourceCurrency: source.fiatCurrency,
-                    destinationCurrency: destination.asset,
-                    amount: MoneyValue(fiatValue: fiatValue),
-                    paymentMethod: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.method.rawType,
-                    paymentMethodId: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.id
+                    query: QuoteQuery(
+                        profile: .simpleBuy,
+                        sourceCurrency: source.fiatCurrency,
+                        destinationCurrency: destination.asset,
+                        amount: MoneyValue(fiatValue: fiatValue),
+                        paymentMethod: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.method.rawType,
+                        paymentMethodId: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.id
+                    )
                 )
             }
     }

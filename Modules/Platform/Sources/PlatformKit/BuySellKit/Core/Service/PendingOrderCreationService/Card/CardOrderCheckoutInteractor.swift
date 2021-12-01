@@ -65,12 +65,14 @@ public final class CardOrderCheckoutInteractor {
         }
         return orderQuoteService
             .getQuote(
-                for: .simpleBuy,
-                sourceCurrency: fiatCurrency,
-                destinationCurrency: cryptoCurrency,
-                amount: MoneyValue(fiatValue: fiat),
-                paymentMethod: checkoutData.order.paymentMethod.rawType,
-                paymentMethodId: paymentMethodId
+                query: QuoteQuery(
+                    profile: .simpleBuy,
+                    sourceCurrency: fiatCurrency,
+                    destinationCurrency: cryptoCurrency,
+                    amount: MoneyValue(fiatValue: fiat),
+                    paymentMethod: checkoutData.order.paymentMethod.rawType,
+                    paymentMethodId: paymentMethodId
+                )
             )
             .flatMap(weak: self) { (self, quote) in
                 self.cardListService
