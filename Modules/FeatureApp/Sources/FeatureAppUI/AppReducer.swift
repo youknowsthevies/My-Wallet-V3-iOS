@@ -2,6 +2,7 @@
 
 import ComposableArchitecture
 import DIKit
+import FeatureOpenBankingDomain
 import FeatureSettingsDomain
 import ToolKit
 import WalletPayloadKit
@@ -56,6 +57,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     blurEffectHandler: $0.blurEffectHandler,
                     backgroundAppHandler: $0.backgroundAppHandler,
                     supportedAssetsRemoteService: $0.supportedAssetsRemoteService,
+                    featureFlagService: $0.featureFlagsService,
                     mainQueue: $0.mainQueue
                 )
             }
@@ -73,9 +75,9 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     mobileAuthSyncService: $0.mobileAuthSyncService,
                     resetPasswordService: $0.resetPasswordService,
                     accountRecoveryService: $0.accountRecoveryService,
+                    deviceVerificationService: $0.deviceVerificationService,
                     featureFlagsService: $0.featureFlagsService,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
-                    internalFeatureService: $0.internalFeatureService,
                     fiatCurrencySettingsService: $0.fiatCurrencySettingsService,
                     blockchainSettings: $0.blockchainSettings,
                     credentialsStore: $0.credentialsStore,
@@ -112,6 +114,9 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
     case .appDelegate(.willEnterForeground):
         return Effect(value: .core(.appForegrounded))
     case .appDelegate(.handleDelayedEnterBackground):
+        if environment.openBanking.isAuthorising {
+            return .none
+        }
         return .merge(
             .fireAndForget {
                 if environment.walletManager.walletIsInitialized() {

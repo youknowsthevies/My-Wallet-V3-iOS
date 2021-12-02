@@ -11,8 +11,9 @@ final class FiatDepositTransactionEngine: TransactionEngine {
         .empty()
     }
 
-    let fiatCurrencyService: FiatCurrencyServiceAPI
-    let priceService: PriceServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
+
     let requireSecondPassword: Bool = false
     let canTransactFiat: Bool = true
     var askForRefreshConfirmation: ((Bool) -> Completable)!
@@ -29,20 +30,23 @@ final class FiatDepositTransactionEngine: TransactionEngine {
 
     // MARK: - Private Properties
 
-    private let linkedBanksFactory: LinkedBanksFactoryAPI
+    private let paymentMethodsService: PaymentMethodTypesServiceAPI
+    private let transactionLimitsService: TransactionLimitsServiceAPI
     private let bankTransferRepository: BankTransferRepositoryAPI
 
     // MARK: - Init
 
     init(
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
-        linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
+        paymentMethodsService: PaymentMethodTypesServiceAPI = resolve(),
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
         bankTransferRepository: BankTransferRepositoryAPI = resolve()
     ) {
-        self.linkedBanksFactory = linkedBanksFactory
-        self.fiatCurrencyService = fiatCurrencyService
-        self.priceService = priceService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
+        self.transactionLimitsService = transactionLimitsService
+        self.paymentMethodsService = paymentMethodsService
         self.bankTransferRepository = bankTransferRepository
     }
 
@@ -54,23 +58,16 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        Single
-            .just(target.fiatCurrency)
-            .flatMap(weak: self) { (self, fiatCurrecy) -> Single<PaymentLimits> in
-                self.fetchBankTransferLimits(fiatCurrency: fiatCurrecy)
-            }
-            .map(weak: self) { (self, paymentLimits) -> PendingTransaction in
+        fetchBankTransferLimits(fiatCurrency: target.fiatCurrency)
+            .map { [sourceAsset, target] paymentLimits -> PendingTransaction in
                 PendingTransaction(
-                    amount: .zero(currency: self.sourceAsset),
-                    available: paymentLimits.max.transactional.moneyValue,
-                    feeAmount: .zero(currency: self.sourceAsset),
-                    feeForFullAvailable: .zero(currency: self.sourceAsset),
+                    amount: .zero(currency: sourceAsset),
+                    available: paymentLimits.maximum ?? .zero(currency: sourceAsset),
+                    feeAmount: .zero(currency: sourceAsset),
+                    feeForFullAvailable: .zero(currency: sourceAsset),
                     feeSelection: .init(selectedLevel: .none, availableLevels: []),
-                    selectedFiatCurrency: paymentLimits.min.currency,
-                    minimumLimit: paymentLimits.min.moneyValue,
-                    maximumLimit: paymentLimits.max.transactional.moneyValue,
-                    maximumDailyLimit: paymentLimits.max.daily.moneyValue,
-                    maximumAnnualLimit: paymentLimits.max.annual.moneyValue
+                    selectedFiatCurrency: target.fiatCurrency,
+                    limits: paymentLimits
                 )
             }
     }
@@ -93,15 +90,6 @@ final class FiatDepositTransactionEngine: TransactionEngine {
         .just(pendingTransaction.update(amount: amount))
     }
 
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        if pendingTransaction.validationState == .uninitialized, pendingTransaction.amount.isZero {
-            return .just(pendingTransaction)
-        } else {
-            return validateAmountCompletable(pendingTransaction: pendingTransaction)
-                .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-        }
-    }
-
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmount(pendingTransaction: pendingTransaction)
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
@@ -112,7 +100,6 @@ final class FiatDepositTransactionEngine: TransactionEngine {
             .receiveAddress
             .map(\.address)
             .flatMap(weak: self) { (self, identifier) -> Single<String> in
-                // TODO: Handle OB
                 self.bankTransferRepository
                     .startBankTransfer(
                         id: identifier,
@@ -126,38 +113,39 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     }
 
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        // TODO: Handle OB
         .just(event: .completed)
     }
 
-    func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+    func doUpdateFeeLevel(
+        pendingTransaction: PendingTransaction,
+        level: FeeLevel,
+        customFeeAmount: MoneyValue
+    ) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         return .just(pendingTransaction)
     }
 
     // MARK: - Private Functions
 
-    private func fetchBankTransferLimits(fiatCurrency: FiatCurrency) -> Single<PaymentLimits> {
-        linkedBanksFactory
-            .bankTransferLimits(for: fiatCurrency)
-    }
-
-    private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.fromCallable {
-            guard let maxLimit = pendingTransaction.maximumLimit,
-                  let minLimit = pendingTransaction.minimumLimit
-            else {
-                throw TransactionValidationFailure(state: .unknownError)
+    private func fetchBankTransferLimits(fiatCurrency: FiatCurrency) -> Single<TransactionLimits> {
+        paymentMethodsService
+            .eligiblePaymentMethods(for: fiatCurrency)
+            .map { paymentMethodTypes -> PaymentMethodType? in
+                paymentMethodTypes.first(where: {
+                    $0.isSuggested && $0.method == .bankAccount(fiatCurrency.currencyType)
+                        || $0.isSuggested && $0.method == .bankTransfer(fiatCurrency.currencyType)
+                })
             }
-            guard !pendingTransaction.amount.isZero else {
-                throw TransactionValidationFailure(state: .invalidAmount)
+            .flatMap { [transactionLimitsService] paymentMethodType -> Single<TransactionLimits> in
+                guard case .suggested(let paymentMethod) = paymentMethodType else {
+                    return .just(TransactionLimits.zero(for: fiatCurrency.currencyType))
+                }
+                return transactionLimitsService.fetchLimits(
+                    for: paymentMethod,
+                    targetCurrency: fiatCurrency.currencyType,
+                    limitsCurrency: fiatCurrency.currencyType
+                )
+                .asSingle()
             }
-            guard try pendingTransaction.amount >= minLimit else {
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
-            }
-            guard try pendingTransaction.amount <= maxLimit else {
-                throw TransactionValidationFailure(state: .overMaximumLimit)
-            }
-        }
     }
 }

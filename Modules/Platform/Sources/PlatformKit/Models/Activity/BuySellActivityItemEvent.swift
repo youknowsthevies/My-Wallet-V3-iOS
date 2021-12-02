@@ -6,6 +6,7 @@ public struct BuySellActivityItemEvent {
 
     public enum EventStatus {
         case pending
+        case pendingConfirmation
         case cancelled
         case failed
         case expired
@@ -24,6 +25,8 @@ public struct BuySellActivityItemEvent {
     }
 
     public let isBuy: Bool
+    public let isCancellable: Bool
+    public let paymentProcessorErrorOccurred: Bool
     public let status: EventStatus
     public let paymentMethod: PaymentMethod
 
@@ -43,9 +46,12 @@ public struct BuySellActivityItemEvent {
         outputValue: MoneyValue,
         fee: MoneyValue,
         isBuy: Bool,
-        paymentMethod: PaymentMethod
+        isCancellable: Bool,
+        paymentMethod: PaymentMethod,
+        paymentProcessorErrorOccurred: Bool = false
     ) {
         self.isBuy = isBuy
+        self.isCancellable = isCancellable
         self.creationDate = creationDate
         self.identifier = identifier
         self.status = status
@@ -53,6 +59,7 @@ public struct BuySellActivityItemEvent {
         self.outputValue = outputValue
         self.fee = fee
         self.paymentMethod = paymentMethod
+        self.paymentProcessorErrorOccurred = paymentProcessorErrorOccurred
     }
 }
 
@@ -78,12 +85,14 @@ extension BuySellActivityItemEvent {
     /// - Parameter swapActivityItemEvent: A swap activity item event.
     public init(swapActivityItemEvent: SwapActivityItemEvent) {
         isBuy = false
+        isCancellable = false
         creationDate = swapActivityItemEvent.date
         identifier = swapActivityItemEvent.identifier
         inputValue = swapActivityItemEvent.amounts.withdrawal
         outputValue = swapActivityItemEvent.amounts.deposit
         fee = swapActivityItemEvent.amounts.withdrawalFee
         paymentMethod = .funds
+        paymentProcessorErrorOccurred = false
 
         switch swapActivityItemEvent.status {
         case .complete:

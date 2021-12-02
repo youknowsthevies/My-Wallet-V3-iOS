@@ -58,7 +58,8 @@ final class CeloEURAnnouncement: OneTimeAnnouncement, ActionableAnnouncement {
     }
 
     var shouldShow: Bool {
-        celoEURCurrencyExists
+        !isDismissed
+            && celoEURCurrencyExists
             && validKYCTier
             && validCountry
     }

@@ -25,8 +25,36 @@ extension MoneyOperating {
     ///   - y: Another value to compare.
     ///
     /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the currencies do not match.
+    public static func max(_ x: Self?, _ y: Self?) throws -> Self? {
+        guard let x = x, let y = y else {
+            return x ?? y
+        }
+        return try x > y ? x : y
+    }
+
+    /// Returns the greater of two money.
+    ///
+    /// - Parameters:
+    ///   - x: A value to compare.
+    ///   - y: Another value to compare.
+    ///
+    /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the currencies do not match.
     public static func max(_ x: Self, _ y: Self) throws -> Self {
         try x > y ? x : y
+    }
+
+    /// Returns the lesser of two money.
+    ///
+    /// - Parameters:
+    ///   - x: A value to compare.
+    ///   - y: Another value to compare.
+    ///
+    /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the currencies do not match.
+    public static func min(_ x: Self?, _ y: Self?) throws -> Self? {
+        guard let x = x, let y = y else {
+            return x ?? y
+        }
+        return try x < y ? x : y
     }
 
     /// Returns the lesser of two money.

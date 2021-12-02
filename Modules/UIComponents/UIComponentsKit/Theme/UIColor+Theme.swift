@@ -17,6 +17,7 @@ extension UIColor {
     static let greyFade400 = UIColor(paletteColor: .greyFade400)
     static let greyFade600 = UIColor(paletteColor: .greyFade600)
     static let greyFade800 = UIColor(paletteColor: .greyFade800)
+    static let greyFade900 = UIColor(paletteColor: .greyFade900)
 
     // MARK: White Fade
 
@@ -183,12 +184,15 @@ extension UIColor {
     public static let lightBorder = grey000
     public static let mediumBorder = grey100
     public static let successBorder = green500
+    public static let idleBorder = blue400
+    public static let errorBorder = red400
 
     public static let destructiveBackground = red100
     public static let affirmativeBackground = green000
     public static let defaultBadgeBackground = blue100
     public static let lightBadgeBackground = blue000
     public static let badgeBackgroundWarning = orange000
+    public static let darkFadeBackground = greyFade900
 
     public static let lightShimmering = grey000
     public static let darkShimmering = grey200

@@ -9,6 +9,9 @@ import ToolKit
 
 final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTransactionEngine, BitPayClientEngine {
 
+    let currencyConversionService: CurrencyConversionServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
+
     var sourceAccount: BlockchainAccount!
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var transactionTarget: TransactionTarget!
@@ -30,8 +33,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
 
     private let feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>>
     private let feeCache: CachedValue<BitcoinChainTransactionFee<Token>>
-    private let fiatCurrencyService: FiatCurrencyServiceAPI
-    private let priceService: PriceServiceAPI
     private let bridge: BitcoinChainSendBridgeAPI
     private var target: BitcoinChainReceiveAddress<Token> {
         switch transactionTarget {
@@ -53,14 +54,14 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
 
     init(
         requireSecondPassword: Bool,
-        priceService: PriceServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         bridge: BitcoinChainSendBridgeAPI = resolve(),
         feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin)
     ) {
         self.requireSecondPassword = requireSecondPassword
-        self.fiatCurrencyService = fiatCurrencyService
-        self.priceService = priceService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
         self.bridge = bridge
         self.feeService = feeService
         feeCache = CachedValue(
@@ -102,22 +103,25 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        fiatCurrencyService
-            .fiatCurrency
-            .map { fiatCurrency -> PendingTransaction in
-                .init(
-                    amount: .zero(currency: Token.coin.cryptoCurrency),
-                    available: .zero(currency: Token.coin.cryptoCurrency),
-                    feeAmount: .zero(currency: Token.coin.cryptoCurrency),
-                    feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
-                    feeSelection: .init(
-                        selectedLevel: .regular,
-                        availableLevels: [.regular, .priority],
-                        asset: Token.coin.cryptoCurrency.currencyType
-                    ),
-                    selectedFiatCurrency: fiatCurrency
-                )
-            }
+        Single.zip(
+            walletCurrencyService
+                .fiatCurrency,
+            availableBalance
+        )
+        .map { fiatCurrency, availableBalance -> PendingTransaction in
+            .init(
+                amount: .zero(currency: Token.coin.cryptoCurrency),
+                available: availableBalance,
+                feeAmount: .zero(currency: Token.coin.cryptoCurrency),
+                feeForFullAvailable: .zero(currency: Token.coin.cryptoCurrency),
+                feeSelection: .init(
+                    selectedLevel: .regular,
+                    availableLevels: [.regular, .priority],
+                    asset: Token.coin.cryptoCurrency.currencyType
+                ),
+                selectedFiatCurrency: fiatCurrency
+            )
+        }
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -228,12 +232,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
         }
     }
 
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAmounts(pendingTransaction: pendingTransaction)
-            .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-    }
-
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmounts(pendingTransaction: pendingTransaction)
             .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
@@ -279,8 +277,9 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
         // though may not be necessary for iOS
         Logger.shared.error("BitPay transaction failed: \(error)")
     }
+}
 
-    // MARK: - Private Functions
+extension BitcoinOnChainTransactionEngine {
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         guard transactionTarget != nil else {
@@ -289,28 +288,45 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
         guard sourceAccount != nil else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
+        let sourceAccountLabel = sourceAccount.label
         return Completable.fromCallable { [pendingTransaction] in
             guard pendingTransaction.amount.amount > 0 else {
-                throw TransactionValidationFailure(state: .invalidAmount)
-            }
-            guard pendingTransaction.amount.amount <= Token.coin.maximumSupply else {
-                throw TransactionValidationFailure(state: .invalidAmount)
+                throw TransactionValidationFailure(state: .belowMinimumLimit(pendingTransaction.minSpendable))
             }
             guard pendingTransaction.amount.amount >= Token.coin.dust else {
-                throw TransactionValidationFailure(state: .invalidAmount)
+                throw TransactionValidationFailure(state: .belowMinimumLimit(pendingTransaction.minSpendable))
+            }
+            guard pendingTransaction.amount.amount <= Token.coin.maximumSupply else {
+                throw TransactionValidationFailure(
+                    state: .overMaximumSourceLimit(
+                        MoneyValue(amount: Token.coin.maximumSupply, currency: Token.coin.cryptoCurrency.currencyType),
+                        sourceAccountLabel,
+                        pendingTransaction.amount
+                    )
+                )
             }
         }
     }
 
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.fromCallable {
-            guard (try? pendingTransaction.amount <= pendingTransaction.maxSpendable) == true else {
-                throw TransactionValidationFailure(state: .insufficientFunds)
+        sourceAccount.balance.map { [sourceAccount, transactionTarget] sourceBalance -> Void in
+            guard (try? pendingTransaction.amount > pendingTransaction.feeAmount) == true else {
+                throw TransactionValidationFailure(
+                    state: .belowFees(pendingTransaction.feeAmount, sourceBalance)
+                )
             }
-            guard try pendingTransaction.available >= pendingTransaction.amount else {
-                throw TransactionValidationFailure(state: .insufficientFunds)
+            guard (try? pendingTransaction.amount <= pendingTransaction.maxSpendable) == true else {
+                throw TransactionValidationFailure(
+                    state: .insufficientFunds(
+                        pendingTransaction.maxSpendable,
+                        pendingTransaction.amount,
+                        sourceAccount!.currencyType,
+                        transactionTarget!.currencyType
+                    )
+                )
             }
         }
+        .asCompletable()
     }
 
     private func validateOptions(pendingTransaction: PendingTransaction) -> Completable {
@@ -371,14 +387,13 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     }
 
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: self.sourceCryptoAccount.currencyType, in: fiatCurrency)
+            .flatMap { [currencyConversionService, sourceCryptoAccount] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: sourceCryptoAccount.currencyType, to: fiatCurrency.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceCryptoAccount.currencyType), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: sourceCryptoAccount.currencyType), quote: $0) }
             }
     }
 }

@@ -19,6 +19,8 @@ enum TransactionType: Equatable {
     /// Performs an interest withdraw.
     case interestWithdraw(CryptoInterestAccount)
 
+    case sign(sourceAccount: CryptoAccount, destination: TransactionTarget)
+
     static func == (lhs: TransactionType, rhs: TransactionType) -> Bool {
         switch (lhs, rhs) {
         case (.buy(let lhsAccount), .buy(let rhsAccount)):
@@ -31,6 +33,9 @@ enum TransactionType: Equatable {
             return lhsAccount.identifier == rhsAccount.identifier
         case (.interestWithdraw(let lhsAccount), .interestWithdraw(let rhsAccount)):
             return lhsAccount.identifier == rhsAccount.identifier
+        case (.sign(let lhsSourceAccount, let lhsDestination), .sign(let rhsSourceAccount, let rhsDestination)):
+            return lhsSourceAccount.identifier == rhsSourceAccount.identifier
+                && lhsDestination.label == rhsDestination.label
         default:
             return false
         }
@@ -85,6 +90,8 @@ extension TransactionType {
             return .interestTransfer(cryptoInterestAccount)
         case .interestWithdraw(let cryptoInterestAccount):
             return .interestWithdraw(cryptoInterestAccount)
+        case .sign(let sourceAccount, let destination):
+            return .sign(sourceAccount: sourceAccount, destination: destination)
         }
     }
 }

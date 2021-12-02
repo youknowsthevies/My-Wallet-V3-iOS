@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import ComponentLibrary
 import DIKit
+import FeatureOpenBankingUI
 import FeatureTransactionDomain
 import Localization
 import PlatformKit
@@ -44,11 +46,15 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
 
-    private let bottomSheetPresenter = BottomSheetPresenting(ignoresBackgroundTouches: true)
-    private let disposeBag = DisposeBag()
-
     private var linkBankFlowRouter: LinkBankFlowStarter?
     private var securityRouter: PaymentSecurityRouter?
+    private let kycRouter: PlatformUIKit.KYCRouting
+    private let transactionsRouter: TransactionsRouterAPI
+
+    private let bottomSheetPresenter = BottomSheetPresenting(ignoresBackgroundTouches: true)
+
+    private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
 
     var isDisplayingRootViewController: Bool {
         viewController.uiviewController.presentedViewController == nil
@@ -60,12 +66,16 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         paymentMethodLinker: PaymentMethodLinkerAPI = resolve(),
         bankWireLinker: BankWireLinkerAPI = resolve(),
         cardLinker: CardLinkerAPI = resolve(),
+        kycRouter: PlatformUIKit.KYCRouting = resolve(),
+        transactionsRouter: TransactionsRouterAPI = resolve(),
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve()
     ) {
         self.paymentMethodLinker = paymentMethodLinker
         self.bankWireLinker = bankWireLinker
         self.cardLinker = cardLinker
+        self.kycRouter = kycRouter
+        self.transactionsRouter = transactionsRouter
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
         super.init(interactor: interactor, viewController: viewController)
@@ -104,34 +114,26 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         }
     }
 
-    func showErrorRecoverySuggestion(errorState: TransactionErrorState, transactionModel: TransactionModel) {
+    func showErrorRecoverySuggestion(
+        action: AssetAction,
+        errorState: TransactionErrorState,
+        transactionModel: TransactionModel,
+        handleCalloutTapped: @escaping (ErrorRecoveryState.Callout) -> Void
+    ) {
         // NOTE: this will be fixed in IOS-5576
         let view = ErrorRecoveryView(
             store: .init(
                 initialState: ErrorRecoveryState(
-                    title: "Not Enough ETH",
-                    // swiftlint:disable:next line_length
-                    message: "The max you can send from this wallet is **0.14391831 ETH**. Buy **0.14381931 ETH** now to send this amount.",
-                    callouts: [
-                        ErrorRecoveryState.Callout(
-                            image: ImageResource.local(
-                                name: "crypto-eth",
-                                bundle: .platformUIKit
-                            ).image!,
-                            title: "Get More ETH",
-                            message: "Buy 0.14381931 ETH",
-                            callToAction: "BUY"
-                        )
-                    ]
+                    title: errorState.recoveryWarningTitle(for: action),
+                    message: errorState.recoveryWarningMessage(for: action),
+                    callouts: errorState.recoveryWarningCallouts(for: action)
                 ),
                 reducer: errorRecoveryReducer,
                 environment: ErrorRecoveryEnvironment(
                     close: {
                         transactionModel.process(action: .returnToPreviousStep)
                     },
-                    calloutTapped: { _ in
-                        print("Callout Tapped")
-                    }
+                    calloutTapped: handleCalloutTapped
                 )
             )
         )
@@ -303,6 +305,45 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         }
     }
 
+    func presentOpenBanking(
+        transactionModel: TransactionModel,
+        account: LinkedBankAccount,
+        order: PendingTransaction
+    ) {
+        let presenter = viewController.uiviewController.topMostViewController ?? viewController.uiviewController
+        let viewController = OpenBankingViewController(
+            deposit: order.amount.minorString,
+            product: "SIMPLEBUY",
+            from: .init(account.data),
+            environment: .init(
+                dismiss: { [weak presenter] in
+                    presenter?.dismiss(animated: true)
+                },
+                currency: order.amount.currency.code
+            )
+        )
+        viewController.eventPublisher.sink { [weak presenter] result in
+            switch result {
+            case .success:
+                transactionModel.process(action: .updateTransactionComplete)
+                presenter?.dismiss(animated: true)
+            case .failure:
+                break
+            }
+        }
+        .store(withLifetimeOf: viewController)
+
+        guard let presenter = presenter as? TransactionFlowViewControllable else {
+            fatalError(
+                """
+                Unable to present OpenBanking
+                expected TransactionFlowViewControllable but got \(type(of: presenter))
+                """
+            )
+        }
+        presenter.push(viewController: viewController)
+    }
+
     func routeToPriceInput(
         source: BlockchainAccount,
         destination: TransactionTarget,
@@ -338,7 +379,11 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
 
     func presentKYCUpgradeFlow(completion: @escaping (Bool) -> Void) {
         let presenter = topMostViewControllerProvider.topMostViewController ?? viewController.uiviewController
-        interactor.listener?.presentKYCUpgradeFlow(from: presenter, completion: completion)
+        kycRouter
+            .presentKYCUpgradeFlow(from: presenter)
+            .map { result -> Bool in result == .completed }
+            .sink(receiveValue: completion)
+            .store(in: &cancellables)
     }
 
     func routeToSecurityChecks(transactionModel: TransactionModel) {
@@ -378,7 +423,20 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             .disposed(by: disposeBag)
     }
 
-    // MARK: - Private Functions
+    func presentNewTransactionFlow(
+        to action: TransactionFlowAction,
+        completion: @escaping (Bool) -> Void
+    ) {
+        let presenter = topMostViewControllerProvider.topMostViewController ?? viewController.uiviewController
+        transactionsRouter
+            .presentTransactionFlow(to: action, from: presenter)
+            .map { $0 == .completed }
+            .sink(receiveValue: completion)
+            .store(in: &cancellables)
+    }
+}
+
+extension TransactionFlowRouter {
 
     private func present(_ viewControllerToPresent: UIViewController, transitionType: TransitionType) {
         switch transitionType {
@@ -395,6 +453,9 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         attachChild(router)
         present(router.viewControllable.uiviewController, transitionType: transitionType)
     }
+}
+
+extension TransactionFlowRouter {
 
     private func sourceAccountPickerRouter(
         with transactionModel: TransactionModel,
@@ -458,6 +519,7 @@ extension AssetAction {
              .withdraw,
              .receive,
              .send,
+             .sign,
              .swap,
              .viewActivity,
              .interestWithdraw,

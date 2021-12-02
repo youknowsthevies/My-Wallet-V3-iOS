@@ -4,28 +4,44 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import FeatureAppUI
+import FeatureAuthenticationDomain
+import FeatureAuthenticationUI
 import PlatformUIKit
+import SwiftUI
+import ToolKit
 import UIKit
+
+protocol LoggedInViewController: UIViewController, LoggedInBridge {
+    init(store: Store<LoggedIn.State, LoggedIn.Action>)
+    func clear()
+}
+
+extension LoggedInHostingController: LoggedInViewController {}
+extension LoggedInRootViewController: LoggedInViewController {}
 
 /// Acts as the main controller for onboarding and logged in states
 final class AppHostingController: UIViewController {
     let store: Store<CoreAppState, CoreAppAction>
     let viewStore: ViewStore<CoreAppState, CoreAppAction>
-    private var cancellables: Set<AnyCancellable> = []
 
     @LazyInject var alertViewPresenter: AlertViewPresenterAPI
 
     private var onboardingController: OnboardingHostingController?
-    private var loggedInController: LoggedInHostingController?
+    private var loggedInController: LoggedInViewController?
     private var loggedInDependencyBridge: LoggedInDependencyBridgeAPI
+    private var featureFlagsService: FeatureFlagsServiceAPI
+
+    private var cancellables: Set<AnyCancellable> = []
 
     init(
         store: Store<CoreAppState, CoreAppAction>,
-        loggedInDependencyBridge: LoggedInDependencyBridgeAPI = resolve()
+        loggedInDependencyBridge: LoggedInDependencyBridgeAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.store = store
         viewStore = ViewStore(store)
         self.loggedInDependencyBridge = loggedInDependencyBridge
+        self.featureFlagsService = featureFlagsService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -38,7 +54,8 @@ final class AppHostingController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.1019607843, blue: 0.2784313725, alpha: 1)
 
-        viewStore.publisher
+        viewStore
+            .publisher
             .alertContent
             .compactMap { $0 }
             .removeDuplicates()
@@ -71,23 +88,50 @@ final class AppHostingController: UIViewController {
 
         store
             .scope(state: \.loggedIn, action: CoreAppAction.loggedIn)
-            .ifLet(then: { [weak self] loggedInScope in
+            .ifLet(then: { [weak self] store in
                 guard let self = self else { return }
-                let loggedInController = LoggedInHostingController(store: loggedInScope)
-                // this is important, register the controller as a bridge
-                // for many places throughout the app
-                self.loggedInDependencyBridge.register(bridge: loggedInController)
-                if let onboardingController = self.onboardingController {
-                    self.transition(
-                        from: onboardingController,
-                        to: loggedInController,
-                        animate: true
-                    )
-                } else {
-                    self.add(child: loggedInController)
+
+                func load(_ loggedInController: LoggedInViewController) {
+                    // this is important, register the controller as a bridge
+                    // for many places throughout the app
+                    self.loggedInDependencyBridge.register(bridge: loggedInController)
+                    loggedInController.view.frame = self.view.bounds
+                    if let onboardingController = self.onboardingController {
+                        self.transition(
+                            from: onboardingController,
+                            to: loggedInController,
+                            animate: true
+                        )
+                    } else {
+                        self.add(child: loggedInController)
+                    }
+                    self.loggedInController = loggedInController
+                    self.onboardingController = nil
                 }
-                self.loggedInController = loggedInController
-                self.onboardingController = nil
+
+                self.featureFlagsService.isEnabled(.local(.redesign))
+                    .sink { isEnabled in
+                        if isEnabled {
+                            load(LoggedInRootViewController(store: store))
+                        } else {
+                            load(LoggedInHostingController(store: store))
+                        }
+                    }
+                    .store(in: &self.cancellables)
+            })
+            .store(in: &cancellables)
+
+        store
+            .scope(state: \.deviceAuthorization, action: CoreAppAction.authorizeDevice)
+            .ifLet(then: { [weak self] authorizeDeviceScope in
+                guard let self = self else { return }
+                let nav = AuthorizeDeviceViewController(
+                    store: authorizeDeviceScope,
+                    viewDismissed: { [weak self] in
+                        self?.viewStore.send(.deviceAuthorizationFinished)
+                    }
+                )
+                self.topMostViewController?.present(nav, animated: true, completion: nil)
             })
             .store(in: &cancellables)
     }

@@ -1,16 +1,28 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RxSwift
 
+public enum CryptoTargetQRCodeParserTarget {
+    case address(CryptoReceiveAddress)
+    case bitpay(String)
+}
+
+public protocol CryptoTargetPayloadFactoryAPI {
+    func create(
+        fromString string: String?,
+        asset: CryptoCurrency
+    ) -> AnyPublisher<CryptoTargetQRCodeParserTarget, CryptoTargetPayloadError>
+}
+
+public enum CryptoTargetPayloadError: Error {
+    case invalidStringData
+    case bitPay(Error)
+}
+
 final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
-
-    // MARK: - Enums
-
-    private enum CryptoTargetPayloadError: Error {
-        case invalidStringData
-    }
 
     // MARK: - Private Properties
 
@@ -24,9 +36,12 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
 
     // MARK: - CryptoTargetPayloadFactoryAPI
 
-    func create(fromString string: String?, asset: CryptoCurrency) -> Single<CryptoTargetQRCodeParser.Target> {
+    func create(
+        fromString string: String?,
+        asset: CryptoCurrency
+    ) -> AnyPublisher<CryptoTargetQRCodeParserTarget, CryptoTargetPayloadError> {
         guard let data = string else {
-            return .error(CryptoTargetPayloadError.invalidStringData)
+            return .failure(CryptoTargetPayloadError.invalidStringData)
         }
         let metadata = makeCryptoQRMetaData(fromString: data, asset: asset)
         return BitPayInvoiceTarget
@@ -36,8 +51,11 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
             .andThen(BitPayInvoiceTarget.isSupportedAsset(asset))
             // Return the BitPay data
             .andThen(Single.just(.bitpay(data)))
-            .catchError { error in
-                guard let bitpayError = error as? BitPayError else { return .error(error) }
+            .asPublisher()
+            .catch { error -> AnyPublisher<CryptoTargetQRCodeParserTarget, CryptoTargetPayloadError> in
+                guard let bitpayError = error as? BitPayError else {
+                    return .failure(.invalidStringData)
+                }
                 switch bitpayError {
                 // If the BitPay URL is valid but
                 // is invalid for either BTC or BCH
@@ -46,7 +64,7 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
                      .invalidBitcoinURL,
                      .invalidBitcoinCashURL,
                      .invoiceError:
-                    return .error(bitpayError)
+                    return .failure(.bitPay(bitpayError))
                 // If the BitPay URL is invalid,
                 // we return the data, as it's likely a regular
                 // receive address.
@@ -54,11 +72,15 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
                     return metadata
                 }
             }
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Functions
 
-    private func makeCryptoQRMetaData(fromString string: String, asset: CryptoCurrency) -> Single<CryptoTargetQRCodeParser.Target> {
+    private func makeCryptoQRMetaData(
+        fromString string: String,
+        asset: CryptoCurrency
+    ) -> AnyPublisher<CryptoTargetQRCodeParserTarget, CryptoTargetPayloadError> {
         receiveAddressService
             .makeExternalAssetAddress(
                 asset: asset,
@@ -66,8 +88,9 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
                 label: string,
                 onTxCompleted: { _ in .empty() }
             )
-            .map(CryptoTargetQRCodeParser.Target.address)
+            .map(CryptoTargetQRCodeParserTarget.address)
             .replaceError(with: CryptoTargetPayloadError.invalidStringData)
-            .single
+            .publisher
+            .eraseToAnyPublisher()
     }
 }

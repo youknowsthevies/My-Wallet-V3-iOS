@@ -70,8 +70,15 @@ final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplash
         case .closeFlow(let isInteractive):
             listener?.closeFlow(isInteractive: isInteractive)
         case .continueTapped:
-            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbBankLinkSplashCTA(partner: partnerForAnalytics()))
-            listener?.route(to: .yodlee(data: bankLinkageData))
+            analyticsRecorder.record(
+                event: AnalyticsEvents.SimpleBuy.sbBankLinkSplashCTA(partner: partnerForAnalytics())
+            )
+            switch bankLinkageData.partner {
+            case .yapily:
+                listener?.route(to: .yapily(data: bankLinkageData))
+            case .yodlee:
+                listener?.route(to: .yodlee(data: bankLinkageData))
+            }
         case .linkTapped(let link):
             router?.route(to: .link(url: link.url))
         }

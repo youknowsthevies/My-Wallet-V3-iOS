@@ -25,7 +25,9 @@ extension BuySellActivityItemEvent {
             outputValue: orderDetails.outputValue,
             fee: orderDetails.fee ?? .zero(currency: orderDetails.inputValue.currency),
             isBuy: orderDetails.isBuy,
-            paymentMethod: paymentMethod
+            isCancellable: orderDetails.isCancellable,
+            paymentMethod: paymentMethod,
+            paymentProcessorErrorOccurred: orderDetails.paymentProccessorErrorOccurred
         )
     }
 }
@@ -34,9 +36,10 @@ extension OrderDetails {
     fileprivate var eventStatus: BuySellActivityItemEvent.EventStatus {
         switch state {
         case .pendingDeposit,
-             .pendingConfirmation,
              .depositMatched:
             return .pending
+        case .pendingConfirmation:
+            return .pendingConfirmation
         case .cancelled:
             return .cancelled
         case .expired:

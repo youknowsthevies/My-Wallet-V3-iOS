@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComposableArchitecture
+import FeatureWithdrawalLocksUI
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -8,26 +10,11 @@ import RxSwift
 import SwiftUI
 import UIKit
 
+// swiftlint:disable:next type_body_length
 final class EnterAmountViewController: BaseScreenViewController,
     EnterAmountViewControllable,
     EnterAmountPagePresentable
 {
-
-    // MARK: - Types
-
-    private enum Constant {
-        enum SuperCompact {
-            static let digitPadHeight: CGFloat = 216
-            static let continueButtonViewBottomOffset: CGFloat = 16
-            static let topSelectionViewHeight: CGFloat = 48
-            static let bottomAuxiliaryViewOffset: CGFloat = 8
-        }
-
-        enum Standard {
-            static let topSelectionViewHeight: CGFloat = 78
-            static let bottomSelectionViewHeight: CGFloat = 78
-        }
-    }
 
     // MARK: - Auxiliary Views
 
@@ -43,22 +30,34 @@ final class EnterAmountViewController: BaseScreenViewController,
     private let topAuxiliaryItemSeparatorView = TitledSeparatorView()
     private let bottomAuxiliaryItemSeparatorView = TitledSeparatorView()
 
+    private lazy var withdrawalLocksHostingController: UIHostingController<WithdrawalLocksView> = {
+        let store = Store<WithdrawalLocksState, WithdrawalLocksAction>(
+            initialState: .init(),
+            reducer: withdrawalLocksReducer,
+            environment: WithdrawalLocksEnvironment { [weak self] isVisible in
+                self?.withdrawalLocksSeparatorView.isHidden = !isVisible
+            }
+        )
+        return UIHostingController(rootView: WithdrawalLocksView(store: store))
+    }()
+
+    private let withdrawalLocksSeparatorView = TitledSeparatorView()
+
     // MARK: - Main CTA
 
     private let continueButtonView = ButtonView()
-    internal let continueButtonTapped: Signal<Void>
+    let continueButtonTapped: Signal<Void>
 
     private var ctaContainerView = UIView()
-    private var ctaTopConstraint: NSLayoutConstraint!
 
     private var errorRecoveryCTAModel: ErrorRecoveryCTAModel
     private let errorRecoveryViewController: UIViewController
 
     // MARK: - Other Properties
 
+    private let bottomSheetPresenting = BottomSheetPresenting(ignoresBackgroundTouches: true)
     private let amountViewable: AmountViewable
     private let digitPadView = DigitPadView()
-    private var digitPadHeightConstraint: NSLayoutConstraint!
 
     private let closeTriggerred = PublishSubject<Void>()
     private let backTriggered = PublishSubject<Void>()
@@ -100,6 +99,7 @@ final class EnterAmountViewController: BaseScreenViewController,
 
         topAuxiliaryItemSeparatorView.viewModel = TitledSeparatorViewModel(separatorColor: .lightBorder)
         bottomAuxiliaryItemSeparatorView.viewModel = TitledSeparatorViewModel(separatorColor: .lightBorder)
+        withdrawalLocksSeparatorView.viewModel = TitledSeparatorViewModel(separatorColor: .lightBorder)
     }
 
     @available(*, unavailable)
@@ -112,6 +112,12 @@ final class EnterAmountViewController: BaseScreenViewController,
         let amountView = amountViewable.view
         view.addSubview(topAuxiliaryViewContainer)
         view.addSubview(topAuxiliaryItemSeparatorView)
+        view.addSubview(withdrawalLocksHostingController.view)
+        withdrawalLocksHostingController.view.invalidateIntrinsicContentSize()
+        if withdrawalLocksHostingController.parent != parent {
+            withdrawalLocksHostingController.didMove(toParent: self)
+        }
+        view.addSubview(withdrawalLocksSeparatorView)
         view.addSubview(amountView)
         view.addSubview(bottomAuxiliaryItemSeparatorView)
         view.addSubview(bottomAuxiliaryViewContainer)
@@ -121,16 +127,22 @@ final class EnterAmountViewController: BaseScreenViewController,
         topAuxiliaryViewContainer.layoutToSuperview(.top, usesSafeAreaLayoutGuide: true)
         topAuxiliaryViewHeightConstraint = topAuxiliaryViewContainer.layout(
             dimension: .height,
-            to: Constant.Standard.topSelectionViewHeight
+            to: Constant.topSelectionViewHeight(device: devicePresenterType)
         )
 
         topAuxiliaryItemSeparatorView.layout(edge: .top, to: .bottom, of: topAuxiliaryViewContainer)
-        topAuxiliaryItemSeparatorView.layoutToSuperview(.leading)
-        topAuxiliaryItemSeparatorView.layoutToSuperview(.trailing)
+        topAuxiliaryItemSeparatorView.layoutToSuperview(axis: .horizontal)
         topAuxiliaryItemSeparatorView.layout(dimension: .height, to: 1)
 
+        withdrawalLocksHostingController.view.layout(edge: .top, to: .bottom, of: topAuxiliaryItemSeparatorView)
+        withdrawalLocksHostingController.view.layoutToSuperview(axis: .horizontal)
+
+        withdrawalLocksSeparatorView.layout(edge: .top, to: .bottom, of: withdrawalLocksHostingController.view)
+        withdrawalLocksSeparatorView.layoutToSuperview(axis: .horizontal)
+        withdrawalLocksSeparatorView.layout(dimension: .height, to: 1)
+
         amountView.layoutToSuperview(axis: .horizontal)
-        amountView.layout(edge: .top, to: .bottom, of: topAuxiliaryItemSeparatorView)
+        amountView.layout(edge: .top, to: .bottom, of: withdrawalLocksSeparatorView)
 
         bottomAuxiliaryItemSeparatorView.layout(edge: .top, to: .bottom, of: amountView)
         bottomAuxiliaryItemSeparatorView.layoutToSuperview(.leading, priority: .defaultHigh)
@@ -139,7 +151,7 @@ final class EnterAmountViewController: BaseScreenViewController,
 
         bottomAuxiliaryViewHeightConstraint = bottomAuxiliaryViewContainer.layout(
             dimension: .height,
-            to: Constant.Standard.topSelectionViewHeight
+            to: Constant.topSelectionViewHeight(device: devicePresenterType)
         )
 
         let stackView = UIStackView(arrangedSubviews: [bottomAuxiliaryViewContainer, ctaContainerView])
@@ -163,41 +175,27 @@ final class EnterAmountViewController: BaseScreenViewController,
         digitPadView.layoutToSuperview(axis: .horizontal, priority: .penultimateHigh)
         digitPadView.layout(edge: .top, to: .bottom, of: stackView, offset: 16)
         digitPadView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
-        digitPadHeightConstraint = digitPadView.layout(dimension: .height, to: 260, priority: .penultimateHigh)
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-    }
-
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        // NOTE: This must be in `viewWillLayoutSubviews`
-        // This is a special treatment due to the manner view controllers
-        // are modally displayed on iOS 13 (with additional gap on the top that enable
-        // dismissal of the screen.
-        if view.bounds.height <= UIDevice.PhoneHeight.eight.rawValue {
-            digitPadHeightConstraint.constant = Constant.SuperCompact.digitPadHeight
-            if view.bounds.height <= UIDevice.PhoneHeight.se.rawValue {
-                ctaTopConstraint.constant = Constant.SuperCompact.bottomAuxiliaryViewOffset
-                topAuxiliaryViewHeightConstraint.constant = Constant.SuperCompact.topSelectionViewHeight
-            }
-        }
+        digitPadView.layout(
+            dimension: .height,
+            to: Constant.digitPadHeight(device: devicePresenterType),
+            priority: .penultimateHigh
+        )
     }
 
     func connect(
         state: Driver<EnterAmountPageInteractor.State>
     ) -> Driver<EnterAmountPageInteractor.NavigationEffects> {
-        state
+        let stateDriver = state
             .distinctUntilChanged()
+
+        stateDriver
             .map(\.topAuxiliaryViewPresenter)
             .drive(weak: self) { (self, presenter) in
                 self.topAuxiliaryViewModelStateDidChange(to: presenter)
             }
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.bottomAuxiliaryViewPresenter)
             .drive(weak: self) { (self, presenter) in
                 self.bottomAuxiliaryViewModelStateDidChange(to: presenter)
@@ -234,41 +232,46 @@ final class EnterAmountViewController: BaseScreenViewController,
             .drive()
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.canContinue)
             .drive(continueButtonView.viewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.showContinueAction)
             .map { !$0 } // flip the flag because we're modifying the hidden state
             .drive(continueButtonView.viewModel.isHiddenRelay)
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.showErrorRecoveryAction)
             .drive(onNext: { [weak errorRecoveryViewController] showError in
                 errorRecoveryViewController?.view.isHidden = !showError
             })
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map { $0.showContinueAction || $0.showErrorRecoveryAction }
             .drive(onNext: { [ctaContainerView] canShowAnyCTA in
                 ctaContainerView.isHidden = !canShowAnyCTA
             })
             .disposed(by: disposeBag)
 
-        state
-            .distinctUntilChanged()
+        stateDriver
             .map(\.errorState)
-            .map(\.shortDescription)
+            .map(\.recoveryWarningHint)
             .drive(onNext: { [errorRecoveryCTAModel] errorTitle in
                 errorRecoveryCTAModel.buttonTitle = errorTitle
+            })
+            .disposed(by: disposeBag)
+
+        stateDriver
+            .map(\.showWithdrawalLocks)
+            .drive(onNext: { [weak self] showWithdrawalLocks in
+                let heightAnchor = self?.withdrawalLocksHostingController.view.heightAnchor
+                heightAnchor?.constraint(equalToConstant: 1).isActive = !showWithdrawalLocks
+                self?.withdrawalLocksSeparatorView.isHidden = !showWithdrawalLocks
+                self?.withdrawalLocksHostingController.view.isHidden = !showWithdrawalLocks
             })
             .disposed(by: disposeBag)
 
@@ -300,7 +303,9 @@ final class EnterAmountViewController: BaseScreenViewController,
         topAuxiliaryViewController = presenter?.makeViewController()
 
         if let viewController = topAuxiliaryViewController {
-            topAuxiliaryViewHeightConstraint.constant = Constant.Standard.topSelectionViewHeight
+            topAuxiliaryViewHeightConstraint.constant = Constant
+                .topSelectionViewHeight(device: devicePresenterType)
+
             embed(viewController, in: topAuxiliaryViewContainer)
             topAuxiliaryItemSeparatorView.alpha = 1
         } else {
@@ -315,7 +320,8 @@ final class EnterAmountViewController: BaseScreenViewController,
         bottomAuxiliaryViewController = presenter?.makeViewController()
 
         if let viewController = bottomAuxiliaryViewController {
-            bottomAuxiliaryViewHeightConstraint.constant = Constant.Standard.bottomSelectionViewHeight
+            bottomAuxiliaryViewHeightConstraint.constant = Constant
+                .bottomSelectionViewHeight(device: devicePresenterType)
             embed(viewController, in: bottomAuxiliaryViewContainer)
             // NOTE: ATM this separator is unused as some auxiliary views already have one.
             bottomAuxiliaryItemSeparatorView.alpha = .zero
@@ -333,6 +339,66 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     override func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
+    }
+
+    // MARK: - Withdrawal Locks
+
+    func presentWithdrawalLocks(amountAvailable: String) {
+        let store = Store<WithdrawalLocksInfoState, WithdrawalLocksInfoAction>(
+            initialState: WithdrawalLocksInfoState(amountAvailable: amountAvailable),
+            reducer: withdrawalLockInfoReducer,
+            environment: WithdrawalLocksInfoEnvironment { [weak self] in
+                self?.dismiss(animated: true, completion: nil)
+            }
+        )
+        let rootView = WithdrawalLocksInfoView(store: store)
+        let viewController = UIHostingController(rootView: rootView)
+        viewController.transitioningDelegate = bottomSheetPresenting
+        viewController.modalPresentationStyle = .custom
+        present(viewController, animated: true, completion: nil)
+    }
+}
+
+extension EnterAmountViewController {
+
+    // MARK: - Types
+
+    private enum Constant {
+        private enum SuperCompact {
+            static let topSelectionViewHeight: CGFloat = 48
+        }
+
+        private enum Compact {
+            static let digitPadHeight: CGFloat = 216
+        }
+
+        private enum Standard {
+            static let digitPadHeight: CGFloat = 260
+            static let topSelectionViewHeight: CGFloat = 78
+            static let bottomSelectionViewHeight: CGFloat = 78
+        }
+
+        static func digitPadHeight(device: DevicePresenter.DeviceType) -> CGFloat {
+            switch device {
+            case .superCompact, .compact:
+                return Compact.digitPadHeight
+            case .max, .regular:
+                return Standard.digitPadHeight
+            }
+        }
+
+        static func topSelectionViewHeight(device: DevicePresenter.DeviceType) -> CGFloat {
+            switch device {
+            case .superCompact:
+                return SuperCompact.topSelectionViewHeight
+            case .compact, .max, .regular:
+                return Standard.topSelectionViewHeight
+            }
+        }
+
+        static func bottomSelectionViewHeight(device: DevicePresenter.DeviceType) -> CGFloat {
+            Standard.bottomSelectionViewHeight
+        }
     }
 }
 

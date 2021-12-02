@@ -19,6 +19,14 @@ extension LocalizationConstants {
             public enum KYC {}
         }
 
+        public enum Sign {
+            public enum Completion {
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
+            }
+        }
+
         public enum Send {
             public enum AmountPresenter {
                 public enum LimitView {}
@@ -311,6 +319,10 @@ extension LocalizationConstants.Transaction.Withdraw {
         comment: "Withdraw to..."
     )
     public static let account = NSLocalizedString("Account", comment: "Account")
+    public static let availableToWithdrawTitle = NSLocalizedString(
+        "Available to Withdraw",
+        comment: "Available to Withdraw"
+    )
 
     // swiftlint:disable line_length
     public static let confirmationDisclaimer = NSLocalizedString(
@@ -540,8 +552,8 @@ extension LocalizationConstants.Transaction.InterestWithdraw.Completion.Failure 
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
     )
 }
 
@@ -591,8 +603,8 @@ extension LocalizationConstants.Transaction.Transfer.Completion.Failure {
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
     )
 }
 
@@ -620,8 +632,8 @@ extension LocalizationConstants.Transaction.Withdraw.Completion.Failure {
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
     )
 }
 
@@ -649,8 +661,8 @@ extension LocalizationConstants.Transaction.Deposit.Completion.Failure {
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your funds are safe. Please try again or contact our Support Team for help."
     )
 }
 
@@ -688,8 +700,8 @@ extension LocalizationConstants.Transaction.Send.Completion.Failure {
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help."
     )
     public static let action = NSLocalizedString(
         "OK",
@@ -705,15 +717,55 @@ extension LocalizationConstants.Transaction.Send.Completion.Failure {
         "Minimum send of %@ required.",
         comment: ""
     )
+}
 
-    public static let overGoldTierLimit = NSLocalizedString(
-        "You can send up to %1$s today.",
-        comment: ""
+// MARK: - Sign
+
+extension LocalizationConstants.Transaction.Sign {
+    public static let dappRequestWarning = NSLocalizedString(
+        "This dapp is requesting an action, which could take money from your wallet. Make sure you trust this site.",
+        comment: "Dapp request warning."
     )
+}
 
-    public static let overSilverTierLimit = NSLocalizedString(
-        "Please upgrade your profile to send this amount.",
-        comment: ""
+extension LocalizationConstants.Transaction.Sign.Completion.Pending {
+    public static let title = NSLocalizedString(
+        "Signing",
+        comment: "Signing"
+    )
+    public static let description = NSLocalizedString(
+        "We're signing your transaction now.",
+        comment: "We're signing your transaction now."
+    )
+}
+
+extension LocalizationConstants.Transaction.Sign.Completion.Success {
+    public static let title = NSLocalizedString(
+        "Signed",
+        comment: "Signed"
+    )
+    public static let description = NSLocalizedString(
+        "The message has been successfully signed. Go back to the dApp.",
+        comment: "The message has been successfully signed. Go back to the dApp."
+    )
+    public static let action = NSLocalizedString(
+        "OK",
+        comment: "OK"
+    )
+}
+
+extension LocalizationConstants.Transaction.Sign.Completion.Failure {
+    public static let title = NSLocalizedString(
+        "Oops! Something Went Wrong.",
+        comment: "Oops! Something Went Wrong."
+    )
+    public static let description = NSLocalizedString(
+        "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help."
+    )
+    public static let action = NSLocalizedString(
+        "OK",
+        comment: "OK"
     )
 }
 
@@ -751,8 +803,8 @@ extension LocalizationConstants.Transaction.Swap.Completion.Failure {
         comment: "Oops! Something Went Wrong."
     )
     public static let description = NSLocalizedString(
-        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help."
     )
     public static let action = NSLocalizedString(
         "OK",
@@ -766,16 +818,6 @@ extension LocalizationConstants.Transaction.Swap.Completion.Failure {
 
     public static let underMinLimit = NSLocalizedString(
         "Minimum swap of %@ required.",
-        comment: ""
-    )
-
-    public static let overGoldTierLimit = NSLocalizedString(
-        "You can swap up to %1$s today.",
-        comment: ""
-    )
-
-    public static let overSilverTierLimit = NSLocalizedString(
-        "Please upgrade your profile to swap this amount.",
         comment: ""
     )
 }
@@ -838,8 +880,8 @@ extension LocalizationConstants.Transaction.Buy.Completion.Failure {
     )
 
     public static let description = NSLocalizedString(
-        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help."
     )
 
     public static let action = NSLocalizedString(
@@ -854,16 +896,6 @@ extension LocalizationConstants.Transaction.Buy.Completion.Failure {
 
     public static let underMinLimit = NSLocalizedString(
         "Minimum buy is %@.",
-        comment: ""
-    )
-
-    public static let overGoldTierLimit = NSLocalizedString(
-        "You can buy up to %1$s today.",
-        comment: ""
-    )
-
-    public static let overSilverTierLimit = NSLocalizedString(
-        "Please upgrade your profile to buy this amount.",
         comment: ""
     )
 }
@@ -903,8 +935,8 @@ extension LocalizationConstants.Transaction.Sell.Completion.Failure {
     )
 
     public static let description = NSLocalizedString(
-        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
-        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+        "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Support Team for help."
     )
 
     public static let action = NSLocalizedString(
@@ -919,16 +951,6 @@ extension LocalizationConstants.Transaction.Sell.Completion.Failure {
 
     public static let underMinLimit = NSLocalizedString(
         "Minimum sell of %@ required.",
-        comment: ""
-    )
-
-    public static let overGoldTierLimit = NSLocalizedString(
-        "You can sell up to %1$s today.",
-        comment: ""
-    )
-
-    public static let overSilverTierLimit = NSLocalizedString(
-        "Please upgrade your profile to sell this amount.",
         comment: ""
     )
 }
@@ -961,17 +983,13 @@ extension LocalizationConstants.Transaction.Confirmation.Error {
         "Minimum 1 sat/byte required",
         comment: ""
     )
-    public static let invalidAmount = NSLocalizedString(
-        "Invalid fee",
-        comment: ""
-    )
     public static let transactionInFlight = NSLocalizedString(
         "A transaction is already in progress",
         comment: ""
     )
     public static let pendingOrderLimitReached = NSLocalizedString(
-        "You have too many pending orders in-progress. Once those complete, try again. You can check your order status in 'Activity'.",
-        comment: "User has reached the maximum limit of unfullfilled pending orders and cannot create new orders at this time."
+        "You can start this transaction once one of the pending orders finish.",
+        comment: "User has reached the maximum limit of unfulfilled pending orders and cannot create new orders at this time."
     )
     public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",
@@ -1036,6 +1054,10 @@ extension LocalizationConstants.Transaction.Confirmation {
         "Confirm",
         comment: "Confirm"
     )
+    public static let signatureRequest = NSLocalizedString(
+        "Signature Request",
+        comment: "Confirm"
+    )
     public static let cancel = NSLocalizedString(
         "Cancel",
         comment: "Cancel"
@@ -1052,6 +1074,19 @@ extension LocalizationConstants.Transaction.Confirmation {
     public static let remainingTime = NSLocalizedString(
         "Remaining Time",
         comment: "Remaining Time"
+    )
+
+    public static let app = NSLocalizedString(
+        "App",
+        comment: "App"
+    )
+    public static let message = NSLocalizedString(
+        "Message from %@",
+        comment: "Message from %@"
+    )
+    public static let network = NSLocalizedString(
+        "Network",
+        comment: "Network"
     )
 }
 
@@ -1085,17 +1120,17 @@ extension LocalizationConstants.Transaction.Error {
         "Minimum 1 sat/byte required",
         comment: ""
     )
-    public static let invalidAmount = NSLocalizedString(
-        "Invalid fee",
-        comment: ""
-    )
     public static let transactionInFlight = NSLocalizedString(
         "A transaction is already in progress",
         comment: ""
     )
+    public static let maximumPendingOrderLimitReached = NSLocalizedString(
+        "Right now, we only allow up to %@ buys pending at a time.",
+        comment: "User has reached the maximum limit of unfulfilled pending orders and cannot create new orders at this time."
+    )
     public static let pendingOrderLimitReached = NSLocalizedString(
-        "You have too many pending orders in-progress. Once those complete, try again. You can check your order status in 'Activity'.",
-        comment: "User has reached the maximum limit of unfullfilled pending orders and cannot create new orders at this time."
+        "You can start this transaction once one of the pending orders finish.",
+        comment: "User has reached the maximum limit of unfulfilled pending orders and cannot create new orders at this time."
     )
     public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",
@@ -1122,10 +1157,250 @@ extension LocalizationConstants.Transaction.Error {
         comment: ""
     )
 
-    public static let insufficientFundsShort = NSLocalizedString(
-        "Insufficient funds",
-        comment: ""
+    // MARK: - Error Recovery Messages
+
+    public static let insufficientFundsRecoveryHint = NSLocalizedString(
+        "Not Enough %@",
+        comment: "Error CTA - insufficient funds to perform transaction"
     )
+    public static let insufficientFundsRecoveryTitle = NSLocalizedString(
+        "Not Enough %@",
+        comment: "Error recovery title - insufficient funds to perform transaction"
+    )
+    public static let insufficientFundsRecoveryTitle_swap = NSLocalizedString(
+        "%@ Maximum",
+        comment: "Error recovery title - insufficient funds to perform transaction - swap"
+    )
+    public static let insufficientFundsRecoveryMessage_buy = NSLocalizedString(
+        "The maximum amount of %@ you can buy with your %@ Account is **%@**.",
+        comment: "Error recovery message - insufficient funds to perform 'buy' transaction"
+    )
+    public static let insufficientFundsRecoveryMessage_sell = NSLocalizedString(
+        "The maximum amount of %@ you can sell from this account is **%@**.",
+        comment: "Error recovery message - insufficient funds to perform 'sell' transaction"
+    )
+    public static let insufficientFundsRecoveryMessage_swap = NSLocalizedString(
+        "The maximum amount of %@ you can swap for %@ is **%@**.",
+        comment: "Error recovery message - insufficient funds to perform 'swap' transaction"
+    )
+    public static let insufficientFundsRecoveryMessage_send = NSLocalizedString(
+        "The maximum amount of %@ you can send is **%@**.",
+        comment: "Error recovery message - insufficient funds to perform 'send' transaction"
+    )
+    public static let insufficientFundsRecoveryMessage_withdraw = NSLocalizedString(
+        "The maximum amount of %@ you can withdraw from this account is **%@**.",
+        comment: "Error recovery message - insufficient funds to perform 'swap' transaction"
+    )
+    public static let insuffientFundsToPayForFeesMessage = NSLocalizedString(
+        "You don't have enough %@ to pay for fees. The expected fee for this transaction is **%@**. Please note that **we don't set nor collect fees for transactions from Private Key Wallets**. Those fees go directly to the blockchain's node validators and are algoritmically set by the %@ network.",
+        comment: "Error recovery message - insufficient funds to pay for fees for transaction"
+    )
+    public static let belowFeeRecoveryHint = NSLocalizedString(
+        "%@ Minimum",
+        comment: "Error recovery hint - balance below fees required for transaction"
+    )
+    public static let belowFeeRecoveryTitle = NSLocalizedString(
+        "%@ Minimum",
+        comment: "Error recovery title - balance below fees required for transaction"
+    )
+    public static let belowFeeRecoveryMessage = NSLocalizedString(
+        "To execture this transaction the expected fee is %@ but your balance is only %@.",
+        comment: "Error recovery message - balance below fees required for transaction"
+    )
+    public static let belowMinimumLimitRecoveryHint = NSLocalizedString(
+        "%@ Minimum",
+        comment: "Error CTA - input below minimum amount valid for transaction"
+    )
+    public static let belowMinimumLimitRecoveryTitle = NSLocalizedString(
+        "%@ Minimum",
+        comment: "Error recovery title - input below minimum amount valid for transaction"
+    )
+    public static let belowMinimumLimitRecoveryMessage_buy = NSLocalizedString(
+        "To offset fees and market volatility, the minimum amount for any buy is **%@**.",
+        comment: "Error recovery message - input below minimum amount valid for 'buy' transaction"
+    )
+    public static let belowMinimumLimitRecoveryMessage_sell = NSLocalizedString(
+        "The minimum amount for you can sell is **%@**.",
+        comment: "Error recovery message - input below minimum amount valid for 'sell' transaction"
+    )
+    public static let belowMinimumLimitRecoveryMessage_swap = NSLocalizedString(
+        "To avoid uncesssary fees and network slipage, the minimum amount for this pair is **%@**.",
+        comment: "Error recovery message - input below minimum amount valid for 'swap' transaction"
+    )
+    public static let belowMinimumLimitRecoveryMessage_send = NSLocalizedString(
+        "The minimum amount for you can send is **%@**.",
+        comment: "Error recovery message - input below minimum amount valid for 'send' transaction"
+    )
+    public static let belowMinimumLimitRecoveryMessage_deposit = NSLocalizedString(
+        "The minimum amount for you can deposit is **%@**.",
+        comment: "Error recovery message - input below minimum amount valid for 'deposit' transaction"
+    )
+    public static let belowMinimumLimitRecoveryMessage_withdraw = NSLocalizedString(
+        "To offset fees, the minimum amount for any withdrawal is **%@**.",
+        comment: "Error recovery message - input below minimum amount valid for 'withdraw' transaction"
+    )
+    public static let overMaximumSourceLimitRecoveryHint = NSLocalizedString(
+        "%@ Maximum",
+        comment: "Error CTA - input over maximum limit for source account"
+    )
+    public static let overMaximumSourceLimitRecoveryTitle = NSLocalizedString(
+        "%@ Maximum",
+        comment: "Error recovery title - input over maximum limit for source account"
+    )
+    public static let overMaximumSourceLimitRecoveryMessage_buy_funds = NSLocalizedString(
+        "The maximum amount of %@ you can buy with your %@ Account is **%@**.",
+        comment: "Error recovery message - insufficient funds to perform 'buy' transaction"
+    )
+    public static let overMaximumSourceLimitRecoveryMessage_buy = NSLocalizedString(
+        "Looks like your **%@** only allows buys up to **%@ at at time**. To buy **%@**, split your buy into multiple transactions.",
+        comment: "Error recovery message - input over maximum limit for source account - buy"
+    )
+    public static let overMaximumSourceLimitRecoveryMessage_sell = NSLocalizedString(
+        "The maximum amount of %@ you can sell from this account is **%@**.",
+        comment: "Error recovery message - input over maximum limit for source account - sell"
+    )
+    public static let overMaximumSourceLimitRecoveryMessage_swap = NSLocalizedString(
+        "The maximum amount of %@ you can swap for %@ is **%@**.",
+        comment: "Error recovery message - input over maximum limit for source account - swap"
+    )
+    public static let overMaximumSourceLimitRecoveryMessage_deposit = NSLocalizedString(
+        "Looks like your **%@** only allows deposits up to **%@ at at time**. To deposit **%@**, split your deposit into multiple transactions.",
+        comment: "Error recovery message - input over maximum limit for source account - deposit"
+    )
+    public static let overMaximumSourceLimitRecoveryMessage_withdraw = NSLocalizedString(
+        "The maximum amount of %@ you can withdraw from this account is **%@**.",
+        comment: "Error recovery message - input over maximum limit for source account - withdraw"
+    )
+    public static let overMaximumSourceLimitRecoveryMessage_send = NSLocalizedString(
+        "The max you can send from this wallet is **%@**. Buy **%@** now to send this amount.",
+        comment: "Error recovery message - input over maximum limit for source account - send"
+    )
+    public static let belowFeesRecoveryCalloutTitle_send = NSLocalizedString(
+        "Get More %@",
+        comment: "Error recovery callout - title for callout asking the user to buy more crypto to perform a 'send' action."
+    )
+    public static let belowFeesRecoveryCalloutMessage_send = NSLocalizedString(
+        "Buy enough %@ to pay for fees plus any you want to send.",
+        comment: "Error recovery callout - message for callout asking the user to buy more crypto to perform a 'send' action."
+    )
+    public static let belowFeesRecoveryCalloutCTA_send = NSLocalizedString(
+        "BUY",
+        comment: "Error recovery callout - small CTA for callout asking the user to buy more crypto to perform a 'send' action."
+    )
+    public static let overMaximumSourceLimitRecoveryCalloutTitle_send = NSLocalizedString(
+        "Get More %@",
+        comment: "Error recovery callout - title for callout asking the user to buy more crypto to perform a 'send' action."
+    )
+    public static let overMaximumSourceLimitRecoveryCalloutMessage_send = NSLocalizedString(
+        "Buy %@",
+        comment: "Error recovery callout - message for callout asking the user to buy more crypto to perform a 'send' action."
+    )
+    public static let overMaximumSourceLimitRecoveryCalloutCTA_send = NSLocalizedString(
+        "BUY",
+        comment: "Error recovery callout - small CTA for callout asking the user to buy more crypto to perform a 'send' action."
+    )
+    public static let overMaximumPersonalLimitRecoveryHint = NSLocalizedString(
+        "Over your limit",
+        comment: "Error recovery message - input over the user's personal maximum limit"
+    )
+    public static let overMaximumPersonalLimitRecoveryTitle = NSLocalizedString(
+        "Over your limit",
+        comment: "Error recovery message - input over the user's personal maximum limit"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_buy_single = NSLocalizedString(
+        "You can buy up to **%@** per transaction. Upgrade to Gold & buy larger amounts with your bank or card.",
+        comment: "Error recovery message - input over the user's personal maximum limit - buy"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_buy_gold = NSLocalizedString(
+        "You can only buy **%@**. You have **%@ remaining**. Upgrade to Gold to buy more.",
+        comment: "Error recovery message - input over the user's personal maximum limit - buy"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_buy_other = NSLocalizedString(
+        "You can only buy **%@**. You have **%@ remaining**.",
+        comment: "Error recovery message - input over the user's personal maximum limit - buy"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_sell_single = NSLocalizedString(
+        "You can sell up to **%@** for this transaction.",
+        comment: "Error recovery message - input over the user's personal maximum limit - sell"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_sell_gold = NSLocalizedString(
+        "You can only sell **%@**. You have **%@ remaining**.",
+        comment: "Error recovery message - input over the user's personal maximum limit - sell"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_sell_other = NSLocalizedString(
+        "You can only sell **%@**. You have **%@ remaining**.",
+        comment: "Error recovery message - input over the user's personal maximum limit - sell"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_swap_single = NSLocalizedString(
+        "You can swap up to **%@** for this transaction.",
+        comment: "Error recovery message - input over the user's personal maximum limit - swap"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_swap_gold = NSLocalizedString(
+        "You can only swap **%@**. You have **%@ remaining**.",
+        comment: "Error recovery message - input over the user's personal maximum limit - swap"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_swap_other = NSLocalizedString(
+        "You can only swap **%@**. You have **%@ remaining**.",
+        comment: "Error recovery message - input over the user's personal maximum limit - swap"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_send_single = NSLocalizedString(
+        "You can send up to **%@** for this transaction.",
+        comment: "Error recovery message - input over the user's personal maximum limit - send"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_send_gold = NSLocalizedString(
+        "You can only send **%@**. You have **%@ remaining**.",
+        comment: "Error recovery message - input over the user's personal maximum limit - send"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_send_other = NSLocalizedString(
+        "You can only send **%@**. You have **%@ remaining**.",
+        comment: "Error recovery message - input over the user's personal maximum limit - send"
+    )
+    public static let overMaximumPersonalLimitRecoveryMessage_withdraw = NSLocalizedString(
+        "Withdrawing from Trade Accounts cannot exceed **%@**. You have **%@ remaining**.",
+        comment: "Error recovery message - input over the user's personal maximum limit - withdraw"
+    )
+    public static let overMaximumPersonalLimitRecoveryCalloutTitle_buy = NSLocalizedString(
+        "Buy More Crypto",
+        comment: "Error recovery callout - title for callout asking the user to upgrade their KYC info - buy"
+    )
+    public static let overMaximumPersonalLimitRecoveryCalloutTitle_swap = NSLocalizedString(
+        "Swap More Crypto",
+        comment: "Error recovery callout - title for callout asking the user to upgrade their KYC info - swap"
+    )
+    public static let overMaximumPersonalLimitRecoveryCalloutTitle_send = NSLocalizedString(
+        "Get Unlimited Sends",
+        comment: "Error recovery callout - title for callout asking the user to upgrade their KYC info - send"
+    )
+    public static let overMaximumPersonalLimitRecoveryCalloutTitle_other = NSLocalizedString(
+        "Get higher limits",
+        comment: "Error recovery callout - title for callout asking the user to upgrade their KYC info - other"
+    )
+    public static let overMaximumPersonalLimitRecoveryCalloutMessage = NSLocalizedString(
+        "Upgrade Your Wallet",
+        comment: "Error recovery callout - message for callout asking the user to upgrade their KYC info"
+    )
+    public static let overMaximumPersonalLimitRecoveryCalloutCTA = NSLocalizedString(
+        "GO",
+        comment: "Error recovery callout - small CTA for callout asking the user to upgrade their KYC info"
+    )
+
+    public static let overMaximumSourceLimitRecoveryValueTimeFrameDay = NSLocalizedString(
+        "%@ a day",
+        comment: "E.g. $10.00 a month"
+    )
+
+    public static let overMaximumSourceLimitRecoveryValueTimeFrameMonth = NSLocalizedString(
+        "%@ a month",
+        comment: "E.g. $10.00 a month"
+    )
+
+    public static let overMaximumSourceLimitRecoveryValueTimeFrameYear = NSLocalizedString(
+        "%@ a year",
+        comment: "E.g. $10.00 a year"
+    )
+
+    // MARK: Unchecked
+
     public static let insufficientGasShort = NSLocalizedString(
         "Insufficient gas",
         comment: ""
@@ -1142,20 +1417,8 @@ extension LocalizationConstants.Transaction.Error {
         "Invoice expired",
         comment: ""
     )
-    public static let belowMinimumLimitShort = NSLocalizedString(
-        "Below minimum",
-        comment: ""
-    )
-    public static let overMaximumLimitShort = NSLocalizedString(
-        "Over your limit",
-        comment: ""
-    )
     public static let underMinBitcoinFeeShort = NSLocalizedString(
         "Fee too low",
-        comment: ""
-    )
-    public static let invalidAmountShort = NSLocalizedString(
-        "Invalid fee",
         comment: ""
     )
     public static let transactionInFlightShort = NSLocalizedString(
@@ -1307,4 +1570,13 @@ extension LocalizationConstants.Transaction.Error {
         "Oops! Looks like that isn’t a valid amount, please try again.",
         comment: "Oops! Looks like that isn’t a valid amount, please try again."
     )
+
+    public static let pendingTransactionLimit = NSLocalizedString(
+        "Too Many Buys Pending",
+        comment: "Pending Transaction Limit Title"
+    )
+}
+
+extension LocalizationConstants.Transaction {
+    public static let ok = NSLocalizedString("OK", comment: "OK")
 }

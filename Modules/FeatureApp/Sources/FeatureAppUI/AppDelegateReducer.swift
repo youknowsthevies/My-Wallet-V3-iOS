@@ -44,6 +44,7 @@ public enum AppDelegateAction: Equatable {
         userInfo: [AnyHashable: Any],
         completionHandler: (UIBackgroundFetchResult) -> Void
     )
+    case setGlobalNavigationAppearance(Screen.Style.Bar)
 }
 
 extension AppDelegateAction {
@@ -73,6 +74,7 @@ struct AppDelegateEnvironment {
     var blurEffectHandler: BlurVisualEffectHandlerAPI
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
+    var featureFlagService: FeatureFlagsServiceAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
@@ -120,7 +122,10 @@ let appDelegateReducer = Reducer<
                 .eraseToEffect()
                 .fireAndForget(),
 
-            applyGlobalNavigationAppearance(using: .lightContent()),
+            environment.featureFlagService.isEnabled(.local(.redesign))
+                .filter(!)
+                .map(.setGlobalNavigationAppearance(.lightContent()))
+                .eraseToEffect(),
 
             initializeCustomerChatSupport(
                 using: environment.customerSupportChatService,
@@ -187,6 +192,15 @@ let appDelegateReducer = Reducer<
         }
     case .userActivity(let userActivity):
         return .none
+    case .setGlobalNavigationAppearance(let barStyle):
+        return .fireAndForget {
+            let navigationBarAppearance = UINavigationBar.appearance()
+            navigationBarAppearance.shadowImage = UIImage()
+            navigationBarAppearance.isTranslucent = barStyle.isTranslucent
+            navigationBarAppearance.titleTextAttributes = barStyle.titleTextAttributes
+            navigationBarAppearance.barTintColor = barStyle.backgroundColor
+            navigationBarAppearance.tintColor = barStyle.tintColor
+        }
     }
 }
 
@@ -238,18 +252,5 @@ private func enableSift(
 ) -> AppDelegateEffect {
     Effect.fireAndForget {
         service.enable()
-    }
-}
-
-private func applyGlobalNavigationAppearance(
-    using barStyle: Screen.Style.Bar
-) -> AppDelegateEffect {
-    Effect.fireAndForget {
-        let navigationBarAppearance = UINavigationBar.appearance()
-        navigationBarAppearance.shadowImage = UIImage()
-        navigationBarAppearance.isTranslucent = barStyle.isTranslucent
-        navigationBarAppearance.titleTextAttributes = barStyle.titleTextAttributes
-        navigationBarAppearance.barTintColor = barStyle.backgroundColor
-        navigationBarAppearance.tintColor = barStyle.tintColor
     }
 }

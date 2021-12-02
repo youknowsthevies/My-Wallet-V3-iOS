@@ -23,7 +23,10 @@ public struct RootView: View {
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
-            NavigationLinkProvider(view: CalloutCardExamples(), title: "💬 CalloutCard")
+            NavigationLinkProvider(view: CalloutCardExamples(), title: "💬 CalloutCard"),
+            NavigationLinkProvider(view: SectionHeaderExamplesView(), title: "🪖 SectionHeaders"),
+            NavigationLinkProvider(view: RowExamplesView(), title: "🚗🚙🚚 Rows"),
+            NavigationLinkProvider(view: BottomSheetExamples(), title: "📄 BottomSheet")
         ]
     ]
 

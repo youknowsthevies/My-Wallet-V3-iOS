@@ -5,7 +5,6 @@ import NetworkError
 @testable import NetworkKit
 import TestKit
 import ToolKit
-import UIKit
 
 final class NetworkAdapterMock: NetworkAdapterAPI {
 

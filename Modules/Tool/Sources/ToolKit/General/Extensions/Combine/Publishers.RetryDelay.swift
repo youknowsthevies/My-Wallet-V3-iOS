@@ -26,6 +26,47 @@ extension Publisher {
     }
 }
 
+public protocol TimeoutFailure: Error {
+    static var timeout: Self { get }
+}
+
+extension Publisher where Failure: TimeoutFailure {
+
+    /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
+    public func poll(
+        max attempts: Int = Int.max,
+        until: @escaping (Output) -> Bool,
+        delay: DispatchTimeInterval = .seconds(30)
+    ) -> AnyPublisher<Output, Failure> {
+        poll(max: attempts, until: until, delay: .constant(delay), scheduler: DispatchQueue.main)
+    }
+
+    /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
+    public func poll<S: Scheduler>(
+        max attempts: Int = Int.max,
+        until: @escaping (Output) -> Bool,
+        delay: DispatchTimeInterval = .seconds(30),
+        scheduler: S
+    ) -> AnyPublisher<Output, Failure> {
+        poll(max: attempts, until: until, delay: .constant(delay), scheduler: scheduler)
+    }
+
+    /// Keep re-subscribing to the upstream publisher until the `until` condition is met.
+    public func poll<S: Scheduler>(
+        max attempts: Int = Int.max,
+        until: @escaping (Output) -> Bool,
+        delay: IntervalDuration,
+        scheduler: S
+    ) -> AnyPublisher<Output, Failure> {
+        flatMap { output -> AnyPublisher<Output, Failure> in
+            guard until(output) else { return Fail(error: Failure.timeout).eraseToAnyPublisher() }
+            return Just(output).setFailureType(to: Failure.self).eraseToAnyPublisher()
+        }
+        .retry(attempts, delay: delay, scheduler: scheduler)
+        .eraseToAnyPublisher()
+    }
+}
+
 extension Publishers {
 
     public struct RetryDelay<Upstream: Publisher, S: Scheduler>: Publisher {

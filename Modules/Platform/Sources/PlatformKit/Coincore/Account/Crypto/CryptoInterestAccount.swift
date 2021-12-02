@@ -140,14 +140,15 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             return activity
                 .map(\.count)
                 .map { $0 > 0 }
-        case .send,
-             .swap,
+        case .buy,
              .deposit,
-             .buy,
-             .withdraw,
-             .sell,
+             .interestTransfer,
              .receive,
-             .interestTransfer:
+             .sell,
+             .send,
+             .sign,
+             .swap,
+             .withdraw:
             return .just(false)
         }
     }

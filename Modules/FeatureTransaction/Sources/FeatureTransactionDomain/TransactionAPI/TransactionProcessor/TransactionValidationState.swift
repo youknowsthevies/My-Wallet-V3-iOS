@@ -1,25 +1,40 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 import NabuNetworkError
+import PlatformKit
 
 public enum TransactionValidationState: Equatable {
+    /// The transaction has not been initialized yet
     case uninitialized
-    case noSourcesAvailable
-    case addressIsContract
-    case belowMinimumLimit
+    /// The transaction is valid and can be executed
     case canExecute
-    case insufficientFunds
-    case insufficientGas
-    case invalidAddress
-    case invalidAmount
-    case insufficientFundsForFees
-    case invoiceExpired
-    case optionInvalid
-    case overGoldTierLimit
-    case overMaximumLimit
-    case overSilverTierLimit
-    case pendingOrdersLimitReached
-    case transactionInFlight
+    /// Any other error
     case unknownError
     /// represents a raw error from backend
     case nabuError(NabuError)
+    /// The available balance of the source account is not sufficient to conver the input amount.
+    /// Takes the balance of the transaction's source in the input currency, the desired amount, the source currency and the target currency
+    case insufficientFunds(MoneyValue, MoneyValue, CurrencyType, CurrencyType)
+    /// The available balance of the source account is not sufficient to conver fees required to pay for the transaction.
+    /// Takes the total fees required for the transaction and the balance for the source account.
+    case belowFees(MoneyValue, MoneyValue)
+    /// The amount is below the minimum allowed for the transaction type.
+    /// Takes the minimum valid amount required to execute the transaction.
+    case belowMinimumLimit(MoneyValue)
+    /// The amount is above the maximum allowed for this transaction for the specific source.
+    /// Takes the maximum limit, the account name, and the desired amount.
+    case overMaximumSourceLimit(MoneyValue, String, MoneyValue)
+    /// The amount is over the user's maximum limit for the transaction.
+    /// Takes the applicable Periodic Limit that has been exceeded, the available limit, and an optional suggested upgrade.
+    case overMaximumPersonalLimit(EffectiveLimit, MoneyValue, SuggestedLimitsUpgrade?)
+
+    // MARK: - Not checked
+
+    case noSourcesAvailable
+    case addressIsContract
+    case invalidAddress
+    case invoiceExpired
+    case optionInvalid
+    case pendingOrdersLimitReached
+    case transactionInFlight
 }

@@ -161,6 +161,7 @@ extension LocalizationConstants.LineItem.Transactional {
     public static let total = NSLocalizedString("Total", comment: "Total")
     public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
     public static let tradingWallet = NSLocalizedString("Trading Wallet", comment: "Trading Wallet")
+    public static let cancel = NSLocalizedString("Cancel", comment: "Cancel")
 
     public static let instantly = NSLocalizedString("Instantly", comment: "Simple Buy: Available to Trade description")
 }

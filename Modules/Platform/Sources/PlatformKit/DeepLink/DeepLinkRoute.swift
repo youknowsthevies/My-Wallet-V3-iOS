@@ -7,6 +7,8 @@ public enum DeepLinkRoute: CaseIterable {
     case kycDocumentResubmission
     case exchangeVerifyEmail
     case exchangeLinking
+    case openBankingLink
+    case openBankingApprove
 }
 
 extension DeepLinkRoute {
@@ -15,26 +17,23 @@ extension DeepLinkRoute {
         from url: String,
         supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases
     ) -> DeepLinkRoute? {
-        guard let lastPathWithProperties = url.components(separatedBy: "/").last else {
+        guard let url = URL(string: url) else {
             return nil
         }
 
-        let pathToParametersComponents = lastPathWithProperties.components(separatedBy: "?")
-        guard let path = pathToParametersComponents.first else {
-            return nil
+        let fragment = url.fragment.flatMap { fragment in
+            URL(string: fragment)
         }
 
-        // Get parameters
-        var parameters = [String: String]()
-        let parameterPairs = pathToParametersComponents.last?.components(separatedBy: "&")
-        parameterPairs?.forEach { pair in
-            let paramComponents = pair.components(separatedBy: "=")
-            guard let key = paramComponents.first,
-                  let value = paramComponents.last?.removingPercentEncoding
-            else {
-                return
-            }
-            parameters[key] = value
+        let path: String
+        let parameters: [String: String]
+
+        if let fragment = fragment {
+            path = fragment.path
+            parameters = url.queryArgs.merging(fragment.queryArgs, uniquingKeysWith: { $1 })
+        } else {
+            path = url.path
+            parameters = url.queryArgs
         }
 
         return DeepLinkRoute.route(
@@ -50,7 +49,7 @@ extension DeepLinkRoute {
         supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases
     ) -> DeepLinkRoute? {
         supportedRoutes.first { route -> Bool in
-            if route.supportedPath == path {
+            if path.hasSuffix(route.supportedPath) {
                 if let key = route.requiredKeyParam,
                    let value = route.requiredValueParam,
                    let routeParameters = parameters
@@ -83,6 +82,10 @@ extension DeepLinkRoute {
             return "kyc"
         case .exchangeLinking:
             return "link-account"
+        case .openBankingLink:
+            return "ob-bank-link"
+        case .openBankingApprove:
+            return "ob-bank-approval"
         }
     }
 
@@ -96,6 +99,8 @@ extension DeepLinkRoute {
              .exchangeVerifyEmail:
             return "deep_link_path"
         case .exchangeLinking:
+            return nil
+        case .openBankingLink, .openBankingApprove:
             return nil
         }
     }
@@ -113,6 +118,8 @@ extension DeepLinkRoute {
             return "kyc"
         case .exchangeLinking:
             return nil
+        case .openBankingLink, .openBankingApprove:
+            return nil
         }
     }
 
@@ -124,7 +131,9 @@ extension DeepLinkRoute {
         case .kyc,
              .kycDocumentResubmission,
              .xlmAirdop,
-             .exchangeLinking:
+             .exchangeLinking,
+             .openBankingLink,
+             .openBankingApprove:
             return nil
         }
     }

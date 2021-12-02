@@ -1,0 +1,6 @@
+{
+  "id": "449b3786-74aa-47d4-8cf6-6b46e55b2048",
+  "code": 1,
+  "type": "INTERNAL_SERVER_ERROR",
+  "description": "Internal Server Error: %s"
+}

@@ -265,8 +265,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         case .interestTransfer:
             return canPerformInterestTransfer()
         case .deposit,
-             .withdraw,
-             .interestWithdraw:
+             .interestWithdraw,
+             .sign,
+             .withdraw:
             return .just(false)
         }
     }

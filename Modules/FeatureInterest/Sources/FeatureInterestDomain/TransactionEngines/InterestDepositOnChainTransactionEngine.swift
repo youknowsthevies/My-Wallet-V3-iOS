@@ -11,7 +11,7 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
     // MARK: - InterestTransactionEngine
 
     public var minimumDepositLimits: Single<FiatValue> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
             .flatMap { [sourceCryptoCurrency, accountLimitsRepository] fiatCurrency in
                 accountLimitsRepository
@@ -28,24 +28,24 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
 
     // MARK: - OnChainTransactionEngine
 
+    public let walletCurrencyService: FiatCurrencyServiceAPI
+    public let currencyConversionService: CurrencyConversionServiceAPI
+
     public var askForRefreshConfirmation: (AskForRefreshConfirmation)!
 
     public var requireSecondPassword: Bool
 
     public var transactionTarget: TransactionTarget!
     public var sourceAccount: BlockchainAccount!
-    public let priceService: PriceServiceAPI
-    public let fiatCurrencyService: FiatCurrencyServiceAPI
 
     // MARK: - Private Properties
 
     private var minimumDepositCryptoLimits: Single<CryptoValue> {
         minimumDepositLimits
-            .flatMap { [priceService, sourceAsset] fiatValue -> Single<(FiatValue, FiatValue)> in
-                let quote = priceService
-                    .price(of: sourceAsset, in: fiatValue.currency)
+            .flatMap { [currencyConversionService, sourceAsset] fiatValue -> Single<(FiatValue, FiatValue)> in
+                let quote = currencyConversionService
+                    .conversionRate(from: sourceAsset, to: fiatValue.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
                     .map { $0.fiatValue ?? .zero(currency: fiatValue.currency) }
                 return Single.zip(quote, .just(fiatValue))
             }
@@ -69,14 +69,14 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
 
     init(
         requireSecondPassword: Bool,
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         accountLimitsRepository: InterestAccountLimitsRepositoryAPI = resolve(),
         onChainEngine: OnChainTransactionEngine
     ) {
-        self.fiatCurrencyService = fiatCurrencyService
+        self.walletCurrencyService = walletCurrencyService
         self.requireSecondPassword = requireSecondPassword
-        self.priceService = priceService
+        self.currencyConversionService = currencyConversionService
         self.accountLimitsRepository = accountLimitsRepository
         self.onChainEngine = onChainEngine
     }
@@ -116,7 +116,15 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
             }
             .map { minimum, pendingTransaction in
                 var tx = pendingTransaction
-                tx.minimumLimit = minimum
+                tx.limits = TransactionLimits(
+                    currencyType: minimum.currencyType,
+                    minimum: minimum,
+                    maximum: tx.maxLimit,
+                    maximumDaily: tx.maxDailyLimit,
+                    maximumAnnual: tx.maxAnnualLimit,
+                    effectiveLimit: tx.limits?.effectiveLimit,
+                    suggestedUpgrade: tx.limits?.suggestedUpgrade
+                )
                 tx.feeSelection = pendingTransaction
                     .feeSelection
                     .update(availableFeeLevels: [.regular])
@@ -161,11 +169,9 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
         onChainEngine
             .validateAmount(pendingTransaction: pendingTransaction)
             .map { pendingTransaction in
-                guard let minimum = pendingTransaction.minimumLimit else {
-                    return pendingTransaction.update(validationState: .uninitialized)
-                }
+                let minimum = pendingTransaction.minLimit
                 guard try pendingTransaction.amount >= minimum else {
-                    return pendingTransaction.update(validationState: .belowMinimumLimit)
+                    return pendingTransaction.update(validationState: .belowMinimumLimit(minimum))
                 }
                 return pendingTransaction
             }

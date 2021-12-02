@@ -9,8 +9,11 @@ import ToolKit
 final class BitPayTransactionEngine: TransactionEngine {
 
     var sourceAccount: BlockchainAccount!
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
     var transactionTarget: TransactionTarget!
+    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+
+    let currencyConversionService: CurrencyConversionServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         onChainEngine
@@ -49,11 +52,15 @@ final class BitPayTransactionEngine: TransactionEngine {
     init(
         onChainEngine: OnChainTransactionEngine,
         bitpayRepository: BitPayRepositoryAPI = resolve(),
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.onChainEngine = onChainEngine
         self.bitpayRepository = bitpayRepository
         self.analyticsRecorder = analyticsRecorder
+        self.currencyConversionService = currencyConversionService
+        self.walletCurrencyService = walletCurrencyService
     }
 
     func start(

@@ -1,4 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+// swiftlint:disable file_length
 
 import AnalyticsKit
 import BitcoinCashKit
@@ -15,6 +16,10 @@ import FeatureDebugUI
 import FeatureKYCDomain
 import FeatureKYCUI
 import FeatureOnboardingUI
+import FeatureOpenBankingData
+import FeatureOpenBankingDomain
+import FeatureOpenBankingUI
+import FeatureQRCodeScannerDomain
 import FeatureSettingsDomain
 import FeatureSettingsUI
 import FeatureTransactionDomain
@@ -88,7 +93,7 @@ extension DependencyContainer {
 
         factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
 
-        single { TradeLimitsService() as TradeLimitsAPI }
+        single { TradeLimitsMetadataService() as TradeLimitsMetadataServiceAPI }
 
         factory { SiftService() }
 
@@ -171,7 +176,10 @@ extension DependencyContainer {
         factory { UIApplication.shared as AppStoreOpening }
 
         factory {
-            BackupFundsRouter(entry: .custody, navigationRouter: NavigationRouter()) as FeatureDashboardUI.BackupRouterAPI
+            BackupFundsRouter(
+                entry: .custody,
+                navigationRouter: NavigationRouter()
+            ) as FeatureDashboardUI.BackupRouterAPI
         }
 
         factory { AnalyticsUserPropertyInteractor() as FeatureDashboardUI.AnalyticsUserPropertyInteracting }
@@ -250,6 +258,19 @@ extension DependencyContainer {
             EmptyClearOnLogout()
         }
 
+        factory { () -> QRCodeScannerRouting in
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveQRCodeScannerRouting() as QRCodeScannerRouting
+        }
+
+        factory { () -> QRCodeScannerLinkerAPI in
+            QRCodeScannerAdapter()
+        }
+
+        factory { () -> CryptoTargetQRCodeParserAdapter in
+            QRCodeScannerAdapter()
+        }
+
         // MARK: - WalletManager
 
         single { WalletManager() }
@@ -277,21 +298,6 @@ extension DependencyContainer {
         factory { () -> WalletRecoveryVerifing in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as WalletRecoveryVerifing
-        }
-
-        factory { () -> SharedKeyRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as SharedKeyRepositoryAPI
-        }
-
-        factory { () -> FeatureAuthenticationDomain.GuidRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as FeatureAuthenticationDomain.GuidRepositoryAPI
-        }
-
-        factory { () -> PasswordRepositoryAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as PasswordRepositoryAPI
         }
 
         // MARK: - BlockchainSettings.App
@@ -435,6 +441,7 @@ extension DependencyContainer {
         // MARK: Helpers
 
         factory { UIApplication.shared as ExternalAppOpener }
+        factory { UIApplication.shared as URLOpener }
 
         // MARK: KYC Module
 
@@ -501,27 +508,48 @@ extension DependencyContainer {
 
         factory { () -> GuidServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return GuidService(sessionTokenRepository: manager.repository, client: DIKit.resolve())
+            return GuidService(
+                sessionTokenRepository: manager.repository,
+                client: DIKit.resolve(),
+                walletRepo: DIKit.resolve(),
+                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+            )
         }
 
         factory { () -> SessionTokenServiceAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return sessionTokenServiceFactory(walletRepository: manager.repository)
+            sessionTokenServiceFactory(
+                sessionRepository: DIKit.resolve()
+            )
         }
 
         factory { () -> SMSServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return SMSService(client: DIKit.resolve(), repository: manager.repository)
+            return SMSService(
+                client: DIKit.resolve(),
+                repository: manager.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+            )
         }
 
         factory { () -> TwoFAWalletServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return TwoFAWalletService(client: DIKit.resolve(), repository: manager.repository)
+            return TwoFAWalletService(
+                client: DIKit.resolve(),
+                repository: manager.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
+            )
         }
 
         factory { () -> WalletPayloadServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return WalletPayloadService(client: DIKit.resolve(), repository: manager.repository)
+            return WalletPayloadService(
+                client: DIKit.resolve(),
+                repository: manager.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletEnabledUse: nativeWalletEnabledUseImpl
+            )
         }
 
         factory { () -> LoginServiceAPI in
@@ -529,7 +557,9 @@ extension DependencyContainer {
             return LoginService(
                 payloadService: DIKit.resolve(),
                 twoFAPayloadService: DIKit.resolve(),
-                repository: manager.repository
+                repository: manager.repository,
+                walletRepo: DIKit.resolve(),
+                nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
             )
         }
 
@@ -581,5 +611,25 @@ extension DependencyContainer {
             }
             return AccountPickerViewController() as AccountPickerViewControllable
         }
+
+        // MARK: Open Banking
+
+        single { () -> OpenBanking in
+            let builder: NetworkKit.RequestBuilder = DIKit.resolve(tag: DIKitContext.retail)
+            let adapter: NetworkKit.NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail)
+            let client = OpenBankingClient(
+                requestBuilder: builder,
+                network: adapter
+            )
+            return OpenBanking(banking: client)
+        }
+
+        factory { () -> FeatureOpenBankingUI.FiatCurrencyFormatter in
+            FiatCurrencyFormatter()
+        }
+
+        factory { OpenBankingViewController.self as StartOpenBanking.Type }
+
+        factory { AccountLinkingFlowPresenter() as AccountLinkingFlowPresenterAPI }
     }
 }

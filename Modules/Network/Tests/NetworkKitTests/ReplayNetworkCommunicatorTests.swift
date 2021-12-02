@@ -12,8 +12,8 @@ final class ReplayNetworkCommunicatorTests: XCTestCase {
 
         let comunicator = try ReplayNetworkCommunicator(
             [
-                URLRequest(url: "https://api.blockchain.info/example-request-true"): ["success": true].data(),
-                URLRequest(url: "https://api.blockchain.info/example-request-false"): ["success": false].data()
+                URLRequest(url: "https://api.blockchain.info/example-request-true").json(): ["success": true].data(),
+                URLRequest(url: "https://api.blockchain.info/example-request-false").json(): ["success": false].data()
             ]
         )
 
@@ -34,5 +34,13 @@ final class ReplayNetworkCommunicatorTests: XCTestCase {
         )
 
         XCTAssertThrowsError(try errorResult.wait())
+    }
+}
+
+extension URLRequest {
+    func json() -> Self {
+        var copy = self
+        copy.addValue("application/json", forHTTPHeaderField: "Accept")
+        return copy
     }
 }

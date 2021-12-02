@@ -5,13 +5,15 @@ import PlatformKit
 import PlatformUIKit
 import UIKit
 
-enum PaymentMethodLinkingFlowResult {
+public enum PaymentMethodLinkingFlowResult {
     case abandoned
     case completed(PlatformKit.PaymentMethod)
 }
 
 /// Use this protocol to present the flow to link a payment method to a user's account.
-protocol PaymentMethodLinkerAPI {
+public protocol PaymentMethodLinkerAPI {
+
+    init(selectPaymentMethodService: SelectPaymentMethodService)
 
     /// Presents an account linking flow modally on top of the passed-in `presenter`
     /// NOTE: This flow doesn't actually link a payment method at the moment, but only asks the user which payment method type they want to link and calls back with that.
@@ -20,8 +22,19 @@ protocol PaymentMethodLinkerAPI {
     ///   - completion: A closure called when the flow is completed or dismissed.
     func presentAccountLinkingFlow(
         from presenter: UIViewController,
+        filter: @escaping (PaymentMethodType) -> Bool,
         completion: @escaping (PaymentMethodLinkingFlowResult) -> Void
     )
+}
+
+extension PaymentMethodLinkerAPI {
+
+    func presentAccountLinkingFlow(
+        from presenter: UIViewController,
+        completion: @escaping (PaymentMethodLinkingFlowResult) -> Void
+    ) {
+        presentAccountLinkingFlow(from: presenter, filter: { _ in true }, completion: completion)
+    }
 }
 
 final class PaymentMethodLinker: PaymentMethodLinkerAPI {
@@ -38,6 +51,7 @@ final class PaymentMethodLinker: PaymentMethodLinkerAPI {
 
     func presentAccountLinkingFlow(
         from presenter: UIViewController,
+        filter: @escaping (PaymentMethodType) -> Bool,
         completion: @escaping (PaymentMethodLinkingFlowResult) -> Void
     ) {
         precondition(
@@ -55,7 +69,7 @@ final class PaymentMethodLinker: PaymentMethodLinkerAPI {
             )
             .store(in: &cancellables)
 
-        let router = builder.build(listener: listener)
+        let router = builder.build(listener: listener, filter: filter)
         let navController = UINavigationController(rootViewController: router.viewControllable.uiviewController)
         presenter.present(navController, animated: true, completion: nil)
         addMethodsRouter = router

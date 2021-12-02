@@ -44,6 +44,8 @@ extension StateService.State: CustomDebugStringConvertible {
             suffix = "funds-transfer-details"
         case .authorizeCard:
             suffix = "authorize-card"
+        case .authorizeOpenBanking:
+            suffix = "authorize-open-banking"
         case .transferCancellation:
             suffix = "order-cancellation"
         case .pendingOrderDetails:

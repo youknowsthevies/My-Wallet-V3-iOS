@@ -30,22 +30,30 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
-    /// Enables the new Limits UI in Transaction Flow
-    case newTxFlowLimitsUIEnabled
+    /// Enables unified QR code scanner
+    case unifiedQRCodeScanner
+
+    /// OpenBanking
+    case openBanking
+
+    /// Redesign
+    case redesign
 
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
         case .newAccountPicker,
              .newOnboardingTour,
-             .pollingForEmailLogin:
+             .openBanking,
+             .pollingForEmailLogin,
+             .unifiedQRCodeScanner:
             return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
-             .newTxFlowLimitsUIEnabled,
              .secureChannel,
              .unifiedSignIn,
-             .nativeWalletPayload:
+             .nativeWalletPayload,
+             .redesign:
             return false
         }
     }
@@ -76,8 +84,12 @@ extension InternalFeature {
             return "Polling (Email Login)"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
-        case .newTxFlowLimitsUIEnabled:
-            return "New Limits UI"
+        case .openBanking:
+            return "Open Banking"
+        case .unifiedQRCodeScanner:
+            return "Unified QR Code Scanner"
+        case .redesign:
+            return "Redesign"
         }
     }
 }

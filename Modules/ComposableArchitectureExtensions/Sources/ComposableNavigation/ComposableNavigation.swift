@@ -18,6 +18,11 @@ public struct RouteIntent<R: NavigationRoute>: Hashable {
 
     public var route: R
     public var action: Action
+
+    public init(route: R, action: RouteIntent<R>.Action) {
+        self.route = route
+        self.action = action
+    }
 }
 
 public struct EnterIntoContext: OptionSet, Hashable {
@@ -219,5 +224,21 @@ extension Binding where Value == Bool {
             get: { source.wrappedValue == element.value && ready.wrappedValue == element },
             set: { source.wrappedValue = $0 ? element.value : nil }
         )
+    }
+}
+
+extension Reducer where Action: NavigationAction, State: NavigationState {
+    /// Returns a reducer that applies ``NavigationAction`` mutations to `NavigationState` after running this
+    /// reducer's logic.
+    public func routable() -> Self {
+        Self { state, action, environment in
+            guard let route = (/Action.route).extract(from: action)
+            else {
+                return self.run(&state, action, environment)
+            }
+
+            defer { state.route = route as? RouteIntent<State.RouteType> }
+            return self.run(&state, action, environment)
+        }
     }
 }

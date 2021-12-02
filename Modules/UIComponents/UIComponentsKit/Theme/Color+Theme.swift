@@ -82,5 +82,5 @@ extension Color {
     public static let positiveTrend = Color(paletteColor: .green600)
     public static let negativeTrend = Color(paletteColor: .red600)
     public static let neutralTrend = Color(paletteColor: .grey600)
-    public static let disclosureIndicator = Color(paletteColor: .grey400)
+    public static let disclosureIndicator = Color(paletteColor: .grey600)
 }

@@ -1,0 +1,13 @@
+{
+  "id": "b039317d-df85-413f-932d-2719346a839a",
+  "amount": {
+    "symbol": "GBP",
+    "value": "10.00"
+  },
+  "amountMinor": "1000",
+  "state": "PRE_CHARGE_APPROVED",
+  "type": "CHARGE",
+  "extraAttributes": {},
+  "insertedAt": "2021-10-18T12:44:44.011Z",
+  "beneficiaryId": "a44d7d14-15f0-4ceb-bf32-bdcb6c6b393c"
+}

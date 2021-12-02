@@ -68,7 +68,8 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     guard sddEligible else {
                         return paymentMethods
                     }
-                    return paymentMethods.filter(\.isVisible) // only visible payment methods should be shown to the user
+                    // only visible payment methods should be shown to the user
+                    return paymentMethods.filter(\.isVisible)
                 }
                 .map { paymentMethods in
                     paymentMethods.filter { paymentMethod in

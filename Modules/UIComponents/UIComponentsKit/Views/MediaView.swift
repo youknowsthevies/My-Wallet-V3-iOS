@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AVKit
+import ComponentLibrary
 import SwiftUI
 import ToolKit
 
@@ -105,19 +106,24 @@ public struct MediaView<Failure: View>: View {
             if let name = image.placeholder?.name, UniversalImage(named: name, in: bundle, with: nil) != nil {
                 ImageResourceView(url: url, placeholder: SwiftUI.Image(name, bundle: bundle))
                     .resizable()
+                    .scaledToFit()
             } else if let systemName = image.placeholder?.systemName {
                 ImageResourceView(url: url, placeholder: SwiftUI.Image(systemName: systemName))
                     .resizable()
+                    .scaledToFit()
             } else {
                 ImageResourceView(url: url, placeholder: failure())
                     .resizable()
+                    .scaledToFit()
             }
         } else if let name = image.name {
-            ImageResourceView(named: name, in: bundle, placeholder: failure)?
+            ImageResourceView(named: name, in: bundle, placeholder: failure)
                 .resizable()
+                .scaledToFit()
         } else if let systemName = image.systemName {
-            ImageResourceView(systemName: systemName, placeholder: failure)?
+            ImageResourceView(systemName: systemName, placeholder: failure)
                 .resizable()
+                .scaledToFit()
         } else {
             failure()
         }
@@ -141,3 +147,17 @@ extension MediaView where Failure == EmptyView {
         self.init(media, in: bundle, failure: EmptyView.init)
     }
 }
+
+#if DEBUG
+struct MediaView_Previews: PreviewProvider {
+
+    static var previews: some View {
+        Image(Icon.chartBubble.name, bundle: .componentLibrary)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .imageScale(.small)
+            .scaledToFit()
+            .frame(width: 300, height: 300)
+    }
+}
+#endif

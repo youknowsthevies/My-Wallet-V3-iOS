@@ -15,6 +15,7 @@ protocol ConfirmationPageContentReducing {
     var title: String { get }
     /// The `Cells` on the `ConfirmationPage`
     var cells: [DetailsScreen.CellType] { get }
+    var buttons: [ButtonViewModel] { get }
     var continueButtonViewModel: ButtonViewModel { get }
     var cancelButtonViewModel: ButtonViewModel { get }
 }
@@ -31,10 +32,19 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
     // MARK: - CheckoutScreenContentReducing
 
-    let title: String
-    var cells: [DetailsScreen.CellType]
+    var title: String = ""
+    var cells: [DetailsScreen.CellType] = []
+    var navigationBarAppearance: DetailsScreen.NavigationBarAppearance = .hidden
+
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
+
+    /// Buttons that should be displayed on the confirmation screen.
+    /// Wallet connect transactions will require a `Cancel` button so
+    /// we will have to introspect the `TransactionState` to determine
+    /// what buttons to show. This is the only time the `Cancel` button
+    /// should be visible.
+    var buttons: [ButtonViewModel] = []
 
     let termsCheckboxViewModel: CheckboxViewModel = .termsCheckboxViewModel
 
@@ -56,10 +66,9 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
     init(messageRecorder: MessageRecording = resolve()) {
         self.messageRecorder = messageRecorder
-        title = LocalizedString.Confirmation.confirm
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
         continueButtonViewModel = .primary(with: "")
-        cells = []
+        buttons.append(continueButtonViewModel)
         memoModel = TextFieldViewModel(
             with: .memo,
             validator: TextValidationFactory.General.alwaysValid,
@@ -69,7 +78,21 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
     func setup(for state: TransactionState) {
         disposeBag = DisposeBag()
+        title = Self.screenTitle(state: state)
         continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
+        navigationBarAppearance = .custom(
+            leading: state.stepsBackStack.isEmpty ? .none : .back,
+            trailing: .none,
+            barStyle: .darkContent(ignoresStatusBar: false, background: .white)
+        )
+        cells = createCells(state: state)
+    }
+
+    private func createCells(state: TransactionState) -> [DetailsScreen.CellType] {
+        if state.action == .sign {
+            buttons.insert(cancelButtonViewModel, at: 0)
+        }
+
         let amount = state.amount
         let fee = state.pendingTransaction?.feeAmount ?? .zero(currency: amount.currency)
         let value = (try? amount + fee) ?? .zero(currency: amount.currency)
@@ -97,8 +120,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         }
 
         guard let pendingTransaction = state.pendingTransaction else {
-            cells = []
-            return
+            return []
         }
 
         let interactors: [DefaultLineItemCellPresenter] = pendingTransaction
@@ -151,13 +173,33 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         let errorModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
             .filter(\.isErrorNotice)
             .compactMap(\.formatted)
-            .map { (_: String, subtitle: String) -> DefaultLabelContentPresenter in
+            .map(\.subtitle)
+            .map { subtitle -> DefaultLabelContentPresenter in
                 DefaultLabelContentPresenter(
                     knownValue: subtitle,
                     descriptors: .init(
                         fontWeight: .semibold,
                         contentColor: .destructive,
                         fontSize: 14.0,
+                        accessibility: .none
+                    )
+                )
+            }
+            .map { presenter -> DetailsScreen.CellType in
+                .label(presenter)
+            }
+
+        let noticeModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
+            .filter(\.isNotice)
+            .compactMap(\.formatted)
+            .map(\.subtitle)
+            .map { subtitle -> DefaultLabelContentPresenter in
+                DefaultLabelContentPresenter(
+                    knownValue: subtitle,
+                    descriptors: .init(
+                        fontWeight: .medium,
+                        contentColor: .darkTitleText,
+                        fontSize: 14,
                         accessibility: .none
                     )
                 )
@@ -218,9 +260,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         }
 
         var checkboxModels: [DetailsScreen.CellType] = []
-        if let _ = terms,
-           let _ = transferAgreement
-        {
+        if terms != nil, transferAgreement != nil {
+
             termsCheckboxViewModel
                 .selectedRelay
                 .distinctUntilChanged()
@@ -266,10 +307,20 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
         let restItems: [DetailsScreen.CellType] = memoModels +
             errorModels + disclaimer + checkboxModels
-        cells = [.separator] +
+        return noticeModels +
+            [.separator] +
             bitpayItemIfNeeded +
             confirmationLineItems +
             restItems
+    }
+
+    static func screenTitle(state: TransactionState) -> String {
+        switch state.action {
+        case .sign:
+            return LocalizedString.Confirmation.signatureRequest
+        default:
+            return LocalizedString.Confirmation.confirm
+        }
     }
 
     static func confirmCtaText(state: TransactionState) -> String {
@@ -282,6 +333,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             return LocalizedString.Swap.buyNow
         case .sell:
             return LocalizedString.Swap.sellNow
+        case .sign:
+            return LocalizedString.Confirmation.confirm
         case .deposit:
             return LocalizedString.Deposit.depositNow
         case .interestTransfer:
@@ -307,7 +360,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
 extension TransactionConfirmation {
     var isCustom: Bool {
-        isErrorNotice || isMemo || isBitPay || isCheckbox
+        isErrorNotice || isNotice || isMemo || isBitPay || isCheckbox
     }
 
     var isCheckbox: Bool {
@@ -323,6 +376,15 @@ extension TransactionConfirmation {
     var isBitPay: Bool {
         switch self {
         case .bitpayCountdown:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isNotice: Bool {
+        switch self {
+        case .notice:
             return true
         default:
             return false

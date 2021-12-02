@@ -21,7 +21,10 @@ struct ButtonExamplesView: View {
             NavigationLinkProvider(view: ExchangeSellButtonExamplesView(), title: "ExchangeSellButton"),
             NavigationLinkProvider(view: AlertButtonExamplesView(), title: "AlertButton")
         ],
-        "Multi Buttons": []
+        "Multi Buttons": [
+            NavigationLinkProvider(view: PrimaryDoubleButtonExamplesView(), title: "PrimaryDoubleButton"),
+            NavigationLinkProvider(view: MinimalDoubleButtonExamplesView(), title: "MinimalDoubleButton")
+        ]
     ]
 
     var body: some View {

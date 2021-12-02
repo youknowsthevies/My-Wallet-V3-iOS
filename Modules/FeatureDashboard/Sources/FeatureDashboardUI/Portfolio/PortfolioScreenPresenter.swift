@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitectureExtensions
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -53,8 +54,8 @@ final class PortfolioScreenPresenter {
             interactor: (CryptoCurrency) -> HistoricalBalanceCellInteractor?
         ) -> [PortfolioCellType] {
             var items: [PortfolioCellType] = [
-                .totalBalance(totalBalancePresenter)
-                // .withdrawalLock
+                .totalBalance(totalBalancePresenter),
+                .withdrawalLock
             ]
             if let fiatBalanceCollectionViewPresenter = fiatBalanceCollectionViewPresenter {
                 items.append(.fiatCustodialBalances(fiatBalanceCollectionViewPresenter))
@@ -111,6 +112,32 @@ final class PortfolioScreenPresenter {
     private(set) lazy var router: PortfolioRouter = .init()
     var sections: Observable<[PortfolioViewModel]> {
         sectionsRelay.asObservable()
+    }
+
+    var isEmptyState: Observable<Bool> {
+        sections
+            .compactMap { portfolioViewModels in portfolioViewModels.first }
+            .map(\.items)
+            .map { items in
+                let hasCrypto = items.filter { cellType in
+                    switch cellType {
+                    case .crypto:
+                        return true
+                    default:
+                        return false
+                    }
+                }
+                return hasCrypto.isEmpty
+            }
+    }
+
+    var screenNavigationModel: ScreenNavigationModel {
+        ScreenNavigationModel(
+            leadingButton: .drawer,
+            trailingButton: internalFeatureFlagService.isEnabled(.unifiedQRCodeScanner) ? .qrCode : .none,
+            titleViewStyle: .text(value: LocalizationConstants.DashboardScreen.title),
+            barStyle: .lightContent()
+        )
     }
 
     // MARK: - Private Properties

@@ -43,13 +43,18 @@ class StellarTransactionDispatcherTests: XCTestCase {
         }
     }
 
-    private func dryRunInvalidTransaction(_ sendDetails: SendDetails, with expectedError: SendFailureReason) {
+    private func dryRunInvalidTransaction(
+        _ sendDetails: SendDetails,
+        with expectedError: SendFailureReason,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) {
         do {
             _ = try sut.dryRunTransaction(sendDetails: sendDetails).toBlocking().first()
-            XCTFail("Should have failed")
+            XCTFail("Should have failed", file: file, line: line)
         } catch {
             if (error as? SendFailureReason) != expectedError {
-                XCTFail("Unexpected error \(String(describing: error))")
+                XCTFail("Unexpected error \(String(describing: error))", file: file, line: line)
             }
         }
     }
@@ -61,7 +66,11 @@ class StellarTransactionDispatcherTests: XCTestCase {
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.toAddress] = toJSON
 
-        dryRunInvalidTransaction(sendDetails, with: .insufficientFunds)
+        let desiredAmount = try sendDetails.value.moneyValue + sendDetails.fee.moneyValue
+        dryRunInvalidTransaction(
+            sendDetails,
+            with: .insufficientFunds(.create(major: 51, currency: .crypto(.coin(.stellar))), desiredAmount)
+        )
     }
 
     func testDryRunTransaction_BelowMinimumSend_NewAccount() throws {
@@ -70,7 +79,10 @@ class StellarTransactionDispatcherTests: XCTestCase {
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
 
-        dryRunInvalidTransaction(sendDetails, with: .belowMinimumSendNewAccount)
+        dryRunInvalidTransaction(
+            sendDetails,
+            with: .belowMinimumSendNewAccount(.create(major: 5, currency: .crypto(.coin(.stellar))))
+        )
     }
 
     func testDryRunTransaction_BelowMinimumSend() throws {

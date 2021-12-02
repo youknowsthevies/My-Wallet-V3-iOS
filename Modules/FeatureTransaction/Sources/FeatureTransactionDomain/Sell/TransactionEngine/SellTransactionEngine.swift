@@ -1,23 +1,21 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Foundation
 import PlatformKit
 import RxSwift
 
 protocol SellTransactionEngine: TransactionEngine {
+
     var orderDirection: OrderDirection { get }
-
     var quotesEngine: SwapQuotesEngine { get }
-
-    var kycTiersService: KYCTiersServiceAPI { get }
-    var fiatCurrencyService: FiatCurrencyServiceAPI { get }
-    var tradeLimitsRepository: TransactionLimitsRepositoryAPI { get }
+    var transactionLimitsService: TransactionLimitsServiceAPI { get }
     var orderQuoteRepository: OrderQuoteRepositoryAPI { get }
-    var priceService: PriceServiceAPI { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
 }
 
 extension SellTransactionEngine {
+
     var target: FiatAccount {
         transactionTarget as! FiatAccount
     }
@@ -34,11 +32,12 @@ extension SellTransactionEngine {
 
     // MARK: - TransactionEngine
 
+    func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        validateAmount(pendingTransaction: pendingTransaction)
+    }
+
     func validateUpdateAmount(_ amount: MoneyValue) -> Single<MoneyValue> {
-        guard canTransactFiat == amount.isFiat else {
-            preconditionFailure("Engine.canTransactFiat \(canTransactFiat) but amount.isFiat: \(amount.isFiat)")
-        }
-        return .just(amount)
+        .just(amount)
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -84,52 +83,24 @@ extension SellTransactionEngine {
 
     func updateLimits(
         pendingTransaction: PendingTransaction,
-        pricedQuote: PricedQuote,
-        fiatCurrency: FiatCurrency
+        pricedQuote: PricedQuote
     ) -> Single<PendingTransaction> {
-        Single
-            .zip(
-                kycTiersService.tiers.asSingle(),
-                tradeLimitsRepository.fetchTransactionLimits(
-                    currency: fiatCurrency.currencyType,
-                    networkFee: targetAsset.currencyType,
-                    product: .sell(orderDirection)
-                )
-                .asObservable()
-                .asSingle()
-            )
-            .map { tiers, limits -> (tiers: KYC.UserTiers, min: FiatValue, max: FiatValue) in
-                (tiers, limits.minOrder, limits.maxOrder)
-            }
-            .flatMap { [weak self] values -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
-                guard let self = self else { return .never() }
-                let (tiers, min, max) = values
-                return self.priceService
-                    .price(
-                        of: self.sourceAsset,
-                        in: fiatCurrency
-                    )
-                    .asSingle()
-                    .map(\.moneyValue)
-                    .map { $0.fiatValue ?? .zero(currency: fiatCurrency) }
-                    .map { quote -> (KYC.UserTiers, MoneyValue, MoneyValue) in
-                        let minCrypto = min.convertToCryptoValue(
-                            exchangeRate: quote,
-                            cryptoCurrency: self.sourceCryptoCurrency
-                        )
-                        let maxCrypto = max.convertToCryptoValue(
-                            exchangeRate: quote,
-                            cryptoCurrency: self.sourceCryptoCurrency
-                        )
-                        return (tiers, .init(cryptoValue: minCrypto), .init(cryptoValue: maxCrypto))
-                    }
-            }
-            .map { (tiers: KYC.UserTiers, min: MoneyValue, max: MoneyValue) -> PendingTransaction in
+        let limitsPublisher = transactionLimitsService.fetchLimits(
+            source: LimitsAccount(
+                currency: sourceAsset.currencyType,
+                accountType: orderDirection.isFromCustodial ? .custodial : .nonCustodial
+            ),
+            destination: LimitsAccount(
+                currency: targetAsset.currencyType,
+                accountType: orderDirection.isToCustodial ? .custodial : .nonCustodial
+            ),
+            product: .sell(orderDirection)
+        )
+        return limitsPublisher
+            .asSingle()
+            .map { transactionLimits -> PendingTransaction in
                 var pendingTransaction = pendingTransaction
-                pendingTransaction.minimumApiLimit = min
-                pendingTransaction.minimumLimit = try pendingTransaction.calculateMinimumLimit(for: pricedQuote)
-                pendingTransaction.maximumLimit = max
-                pendingTransaction.engineState[.userTiers] = tiers
+                pendingTransaction.limits = try transactionLimits.update(with: pricedQuote)
                 return pendingTransaction
             }
     }
@@ -143,8 +114,10 @@ extension SellTransactionEngine {
     }
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SellOrder> {
-        sourceAccount.receiveAddress
-            .flatMap(weak: self) { (self, _) -> Single<SellOrder> in
+        currencyConversionService
+            .convert(pendingTransaction.amount, to: sourceAsset)
+            .asSingle()
+            .flatMap(weak: self) { (self, convertedAmount) -> Single<SellOrder> in
                 self.orderQuoteRepository.fetchQuote(
                     direction: self.orderDirection,
                     sourceCurrencyType: self.sourceAsset.currencyType,
@@ -155,7 +128,7 @@ extension SellTransactionEngine {
                     self.orderCreationRepository.createOrder(
                         direction: self.orderDirection,
                         quoteIdentifier: quote.identifier,
-                        volume: pendingTransaction.amount,
+                        volume: convertedAmount,
                         ccy: self.target.currencyType.code
                     )
                     .asSingle()
@@ -172,18 +145,28 @@ extension SellTransactionEngine {
     }
 }
 
-extension PendingTransaction {
+extension TransactionLimits {
 
-    fileprivate func calculateMinimumLimit(for quote: PricedQuote) throws -> MoneyValue {
-        guard let minimumApiLimit = minimumApiLimit else {
-            return MoneyValue.zero(currency: quote.networkFee.currencyType)
-        }
-        let destination = quote.networkFee.currencyType
-        let source = amount.currencyType
-        let price = MoneyValue(amount: quote.price, currency: destination)
-        let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destination)
-        let convertedFees = totalFees.convert(usingInverse: price, currencyType: source)
-        return (try? minimumApiLimit + convertedFees) ?? MoneyValue.zero(currency: destination)
+    func update(with quote: PricedQuote) throws -> TransactionLimits {
+        let minimum = try calculateMinimumLimit(for: quote)
+        return TransactionLimits(
+            currencyType: minimum.currencyType,
+            minimum: minimum,
+            maximum: maximum,
+            maximumDaily: maximumDaily,
+            maximumAnnual: maximumAnnual,
+            effectiveLimit: effectiveLimit,
+            suggestedUpgrade: suggestedUpgrade
+        )
+    }
+
+    private func calculateMinimumLimit(for quote: PricedQuote) throws -> MoneyValue {
+        let destinationCurrency = quote.networkFee.currencyType
+        let price = MoneyValue(amount: quote.price, currency: destinationCurrency)
+        let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destinationCurrency)
+        let convertedFees = totalFees.convert(usingInverse: price, currencyType: currencyType)
+        let minimum = minimum ?? .zero(currency: destinationCurrency)
+        return (try? minimum + convertedFees) ?? MoneyValue.zero(currency: destinationCurrency)
     }
 }
 

@@ -59,6 +59,8 @@ let package = Package(
                 "2 - Primitives/__Snapshots__",
                 "2 - Primitives/Buttons/__Snapshots__",
                 "3 - Compositions/__Snapshots__",
+                "3 - Compositions/Rows/__Snapshots__",
+                "3 - Compositions/SectionHeaders/__Snapshots__",
                 "Utilities/__Snapshots__"
             ]
         ),

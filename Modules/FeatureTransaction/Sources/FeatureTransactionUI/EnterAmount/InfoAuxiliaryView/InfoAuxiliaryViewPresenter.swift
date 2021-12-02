@@ -2,14 +2,19 @@
 
 import PlatformKit
 import PlatformUIKit
+import RxSwift
 import UIKit
 
 final class InfoAuxiliaryViewPresenter: AuxiliaryViewPresenting {
 
     private let transactionState: TransactionState
 
-    init(transactionState: TransactionState) {
+    private weak var delegate: AuxiliaryViewPresentingDelegate?
+    private let disposeBag = DisposeBag()
+
+    init(transactionState: TransactionState, delegate: AuxiliaryViewPresentingDelegate?) {
         self.transactionState = transactionState
+        self.delegate = delegate
     }
 
     func makeViewController() -> UIViewController {
@@ -38,7 +43,7 @@ final class InfoAuxiliaryViewPresenter: AuxiliaryViewPresenting {
             .id(Accessibility.Identifier.ContentLabelView.description)
                 .copy(label: topSelectionSubtitle)
         )
-        topInfoView.viewModel.isButtonEnabledRelay.accept(false)
+        topInfoView.viewModel.isButtonEnabledRelay.accept(transactionState.action == .withdraw)
         topInfoView.viewModel.leadingContentTypeRelay.accept(.none)
 
         let transactionImageViewModel = TransactionDescriptorViewModel(
@@ -63,6 +68,17 @@ final class InfoAuxiliaryViewPresenter: AuxiliaryViewPresenting {
         topInfoView.viewModel.subtitleFontRelay.accept(subtitleDescriptor.font)
         topInfoView.viewModel.subtitleFontColor.accept(subtitleDescriptor.textColor)
 
+        topInfoView.viewModel.tap
+            .asObservable()
+            .subscribe(onNext: { [weak self] in
+                self?.handleTap()
+            })
+            .disposed(by: disposeBag)
+
         return topInfoView
+    }
+
+    private func handleTap() {
+        delegate?.auxiliaryViewTapped(self, state: transactionState)
     }
 }

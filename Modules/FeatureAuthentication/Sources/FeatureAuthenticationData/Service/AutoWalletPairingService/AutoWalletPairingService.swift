@@ -33,12 +33,15 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
         repository: WalletRepositoryAPI,
         walletPayloadClient: WalletPayloadClientAPI = resolve(),
         walletPairingClient: AutoWalletPairingClientAPI = resolve(),
-        walletCryptoService: WalletCryptoServiceAPI = resolve()
+        walletCryptoService: WalletCryptoServiceAPI = resolve(),
+        walletRepo: WalletRepo = resolve()
     ) {
         self.walletPairingClient = walletPairingClient
         walletPayloadService = WalletPayloadService(
             client: walletPayloadClient,
-            repository: repository
+            repository: repository,
+            walletRepo: walletRepo,
+            nativeWalletEnabledUse: nativeWalletEnabledUseImpl
         )
         self.walletCryptoService = walletCryptoService
     }

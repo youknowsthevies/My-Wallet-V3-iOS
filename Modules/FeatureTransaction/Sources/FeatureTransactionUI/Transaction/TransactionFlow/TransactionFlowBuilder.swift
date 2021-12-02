@@ -11,8 +11,27 @@ public protocol TransactionFlowBuildable: RIBs.Buildable {
         withListener listener: TransactionFlowListener,
         action: AssetAction,
         sourceAccount: BlockchainAccount?,
-        target: TransactionTarget?
+        target: TransactionTarget?,
+        order: OrderDetails?
     ) -> ViewableRouting
+}
+
+extension TransactionFlowBuildable {
+
+    public func build(
+        withListener listener: TransactionFlowListener,
+        action: AssetAction,
+        sourceAccount: BlockchainAccount?,
+        target: TransactionTarget?
+    ) -> ViewableRouting {
+        build(
+            withListener: listener,
+            action: action,
+            sourceAccount: sourceAccount,
+            target: target,
+            order: nil
+        )
+    }
 }
 
 public final class TransactionFlowBuilder: TransactionFlowBuildable {
@@ -23,7 +42,8 @@ public final class TransactionFlowBuilder: TransactionFlowBuildable {
         withListener listener: TransactionFlowListener,
         action: AssetAction,
         sourceAccount: BlockchainAccount?,
-        target: TransactionTarget?
+        target: TransactionTarget?,
+        order: OrderDetails?
     ) -> ViewableRouting {
 
         // MARK: TransactionModel
@@ -33,7 +53,8 @@ public final class TransactionFlowBuilder: TransactionFlowBuildable {
             initialState: TransactionState(
                 action: action,
                 source: sourceAccount,
-                destination: target
+                destination: target,
+                order: order
             ),
             transactionInteractor: transactionInteractor
         )

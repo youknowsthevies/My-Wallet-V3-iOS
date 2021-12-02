@@ -33,18 +33,20 @@ public struct FuzzyAlgorithm: StringDistanceAlgorithm {
         if caseInsensitive {
             (a, b) = (a.lowercased(), b.lowercased())
         }
+
+        if !a.isEmpty, b.starts(with: a[...a.index(a.startIndex, offsetBy: floor(a.count.d / 1.5).i)]) {
+            return 0
+        }
+
         if a.isEmpty { return b.isEmpty ? 0 : 1 }
         var remainder = a[...]
         for char in b {
             guard char == remainder[remainder.startIndex] else { continue }
             remainder.removeFirst()
             guard remainder.isEmpty else { continue }
-            return 0
+            return 0.1
         }
-        guard b.count > 1 else { return 0 }
-        return a.starts(
-            with: b[...b.index(b.startIndex, offsetBy: b.count / 2)]
-        ) ? 0 : 1
+        return b.count > 1 ? 1 : 0
     }
 }
 

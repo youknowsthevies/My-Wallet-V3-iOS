@@ -33,10 +33,17 @@ final class OrdersActivityService: OrdersActivityServiceAPI {
                     cache.set(response, forKey: fiatCurrency.currencyType)
                 })
                 .map { response in
-                    response.items.compactMap(CustodialActivityEvent.Fiat.init)
+                    response
+                        .items
+                        .compactMap(CustodialActivityEvent.Fiat.init)
+                        .filter { $0.paymentError == nil }
                 }
         }
-        return .just(response.items.compactMap(CustodialActivityEvent.Fiat.init))
+        let items = response
+            .items
+            .compactMap(CustodialActivityEvent.Fiat.init)
+            .filter { $0.paymentError == nil }
+        return .just(items)
     }
 
     func activity(cryptoCurrency: CryptoCurrency) -> Single<[CustodialActivityEvent.Crypto]> {

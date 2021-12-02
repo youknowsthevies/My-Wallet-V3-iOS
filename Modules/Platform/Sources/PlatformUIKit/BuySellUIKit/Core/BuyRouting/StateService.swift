@@ -8,6 +8,8 @@ import RxSwift
 import ToolKit
 import UIKit
 
+// swiftlint:disable file_length
+
 public protocol TierUpgradeRouterAPI {
 
     /// Presents a `UIViewController` prompting the user to upgrade to a higher tier. Usually Tier 2 (Gold).
@@ -106,6 +108,9 @@ public final class StateService: StateServiceAPI {
 
         /// The user authorized his card payment and should now be referred to partner
         case authorizeCard(order: OrderDetails)
+
+        /// The user authorized open banking payment and should now be referred to partner
+        case authorizeOpenBanking(CheckoutData)
 
         /// The user may cancel their transfer
         case transferCancellation(CheckoutData)
@@ -269,6 +274,7 @@ public final class StateService: StateServiceAPI {
              .selectFiat,
              .addCard,
              .authorizeCard,
+             .authorizeOpenBanking,
              .pendingOrderCompleted,
              .ineligible:
             fatalError("\(#function) was called with unhandled state: \(states.debugDescription).")
@@ -313,7 +319,7 @@ public final class StateService: StateServiceAPI {
 
         Single
             .zip(
-                pendingOrderDetailsService.pendingOrderDetails,
+                pendingOrderDetailsService.pendingOrderDetails.map(\.first),
                 isFiatCurrencySupported
             ) { (pendingOrderDetails: $0, isFiatCurrencySupported: $1) }
             .observeOn(MainScheduler.asyncInstance)
@@ -679,6 +685,10 @@ extension StateService {
                 )
             case (.bankAccount, true):
                 state = .bankTransferDetails(checkoutData)
+            case (.bankTransfer, _) where checkoutData.linkedBankData?.partner == .yapily:
+                state = .authorizeOpenBanking(
+                    checkoutData
+                )
             case (.bankTransfer, true):
                 state = .pendingOrderCompleted(
                     orderDetails: checkoutData.order
@@ -755,6 +765,25 @@ extension StateService {
     public func promptTierUpgrade() {
         tierUpgradeRouter.presentPromptToUpgradeTier(from: nil) { [weak self] in
             self?.orderCompleted()
+        }
+    }
+}
+
+extension StateService {
+
+    public func authorizedOpenBanking() {
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [self] in
+            guard case .authorizeOpenBanking(let data) = statesRelay.value.current else {
+                return assertionFailure("Got authorizedOpenBanking when state was not equal to authorizeOpenBanking")
+            }
+
+            let states = states(
+                byAppending: .pendingOrderCompleted(
+                    orderDetails: data.order
+                )
+            )
+            apply(action: .next(to: states.current), states: states)
         }
     }
 }

@@ -13,23 +13,18 @@ protocol SwapTransactionEngine: TransactionEngine {
     var quotesEngine: SwapQuotesEngine { get }
     var orderCreationRepository: OrderCreationRepositoryAPI { get }
     var orderQuoteRepository: OrderQuoteRepositoryAPI { get }
-    var tradeLimitsRepository: TransactionLimitsRepositoryAPI { get }
-    var fiatCurrencyService: FiatCurrencyServiceAPI { get }
-    var kycTiersService: KYCTiersServiceAPI { get }
-    var priceService: PriceServiceAPI { get }
+    var transactionLimitsService: TransactionLimitsServiceAPI { get }
 }
 
 extension PendingTransaction {
+
     fileprivate var quoteSubscription: Disposable? {
         engineState[.quoteSubscription] as? Disposable
-    }
-
-    fileprivate var userTiers: KYC.UserTiers? {
-        engineState[.userTiers] as? KYC.UserTiers
     }
 }
 
 extension SwapTransactionEngine {
+
     var target: CryptoAccount { transactionTarget as! CryptoAccount }
     var targetAsset: CryptoCurrency { target.asset }
     var sourceAsset: CryptoCurrency { sourceCryptoCurrency }
@@ -44,14 +39,7 @@ extension SwapTransactionEngine {
     // MARK: - TransactionEngine
 
     func validateUpdateAmount(_ amount: MoneyValue) -> Single<MoneyValue> {
-        switch (canTransactFiat, amount.isFiat) {
-        case (true, true), (false, false):
-            return .just(amount)
-        default:
-            // Error: canTransactFiat and amount.isFiat doesn't match.
-            // This is an implementation error.
-            preconditionFailure("Engine.canTransactFiat \(canTransactFiat) but amount.isFiat: \(amount.isFiat)")
-        }
+        .just(amount)
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -102,47 +90,24 @@ extension SwapTransactionEngine {
 
     func updateLimits(
         pendingTransaction: PendingTransaction,
-        pricedQuote: PricedQuote,
-        fiatCurrency: FiatCurrency
+        pricedQuote: PricedQuote
     ) -> Single<PendingTransaction> {
-        Single
-            .zip(
-                kycTiersService.tiers.asSingle(),
-                tradeLimitsRepository.fetchTransactionLimits(
-                    currency: fiatCurrency.currencyType,
-                    networkFee: targetAsset.currencyType,
-                    product: .swap(orderDirection)
-                )
-                .asObservable()
-                .asSingle()
-            )
-            .map { tiers, limits -> (tiers: KYC.UserTiers, min: FiatValue, max: FiatValue) in
-                // TODO: Convert to `MoneyValuePair` so that
-                // we can show crypto or fiat min/max values.
-                (tiers, limits.minOrder, limits.maxOrder)
-            }
-            .flatMap(weak: self) { (self, values) -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
-                let (tiers, min, max) = values
-                return self.priceService
-                    .price(
-                        of: self.sourceAsset,
-                        in: fiatCurrency
-                    )
-                    .asSingle()
-                    .map(\.moneyValue)
-                    .map { $0.fiatValue ?? .zero(currency: fiatCurrency) }
-                    .map { quote -> (KYC.UserTiers, MoneyValue, MoneyValue) in
-                        let minCrypto = min.convertToCryptoValue(exchangeRate: quote, cryptoCurrency: self.sourceCryptoCurrency)
-                        let maxCrypto = max.convertToCryptoValue(exchangeRate: quote, cryptoCurrency: self.sourceCryptoCurrency)
-                        return (tiers, .init(cryptoValue: minCrypto), .init(cryptoValue: maxCrypto))
-                    }
-            }
-            .map { (tiers: KYC.UserTiers, min: MoneyValue, max: MoneyValue) -> PendingTransaction in
+        let limitsPublisher = transactionLimitsService.fetchLimits(
+            source: LimitsAccount(
+                currency: sourceAsset.currencyType,
+                accountType: orderDirection.isFromCustodial ? .custodial : .nonCustodial
+            ),
+            destination: LimitsAccount(
+                currency: targetAsset.currencyType,
+                accountType: orderDirection.isToCustodial ? .custodial : .nonCustodial
+            ),
+            product: .swap(orderDirection)
+        )
+        return limitsPublisher
+            .asSingle()
+            .map { transactionLimits -> PendingTransaction in
                 var pendingTransaction = pendingTransaction
-                pendingTransaction.minimumApiLimit = min
-                pendingTransaction.minimumLimit = try pendingTransaction.calculateMinimumLimit(for: pricedQuote)
-                pendingTransaction.maximumLimit = max
-                pendingTransaction.engineState[.userTiers] = tiers
+                pendingTransaction.limits = try transactionLimits.update(with: pricedQuote)
                 return pendingTransaction
             }
     }
@@ -155,35 +120,29 @@ extension SwapTransactionEngine {
         validateAmount(pendingTransaction: pendingTransaction)
     }
 
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        defaultValidateAmount(pendingTransaction: pendingTransaction)
-    }
-
-    func defaultValidateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        doValidateAmount(pendingTransaction: pendingTransaction)
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-    }
-
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
         target.onTxCompleted(transactionResult)
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        quotesEngine.getRate(direction: orderDirection, pair: pair)
-            .first()
-            .map(weak: self) { [sourceAsset, targetAsset] (self, pricedQuote) -> PendingTransaction in
-                guard let pricedQuote = pricedQuote else {
-                    return pendingTransaction // TODO: maybe throw .error()?
-                }
-
+        let quote = quotesEngine.getRate(direction: orderDirection, pair: pair)
+            .take(1)
+            .asSingle()
+        let amountInSourceCurrency = currencyConversionService
+            .convert(pendingTransaction.amount, to: sourceAsset.currencyType)
+            .asSingle()
+        let sourceAsset = sourceAsset, targetAsset = targetAsset
+        return Single
+            .zip(quote, amountInSourceCurrency)
+            .map { [sourceAccount, target] pricedQuote, convertedAmount -> (PendingTransaction, PricedQuote) in
                 let resultValue = CryptoValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
-                let swapDestinationValue: MoneyValue = pendingTransaction.amount.convert(using: resultValue)
+                let swapDestinationValue: MoneyValue = convertedAmount.convert(using: resultValue)
                 let confirmations: [TransactionConfirmation] = [
-                    .swapSourceValue(.init(cryptoValue: pendingTransaction.amount.cryptoValue!)),
+                    .swapSourceValue(.init(cryptoValue: convertedAmount.cryptoValue!)),
                     .swapDestinationValue(.init(cryptoValue: swapDestinationValue.cryptoValue!)),
                     .swapExchangeRate(.init(baseValue: .one(currency: sourceAsset), resultValue: resultValue)),
-                    .source(.init(value: self.sourceAccount.label)),
-                    .destination(.init(value: self.target.label)),
+                    .source(.init(value: sourceAccount!.label)),
+                    .destination(.init(value: target.label)),
                     .networkFee(.init(
                         primaryCurrencyFee: pricedQuote.networkFee,
                         feeType: .withdrawalFee
@@ -194,9 +153,12 @@ extension SwapTransactionEngine {
                     ))
                 ]
 
-                var pendingTransaction = pendingTransaction.update(confirmations: confirmations)
-                pendingTransaction.minimumLimit = try pendingTransaction.calculateMinimumLimit(for: pricedQuote)
-                return pendingTransaction
+                let updatedTransaction = pendingTransaction.update(confirmations: confirmations)
+                return (updatedTransaction, pricedQuote)
+            }
+            .flatMap(weak: self) { (self, tuple) in
+                let (pendingTransaction, pricedQuote) = tuple
+                return self.updateLimits(pendingTransaction: pendingTransaction, pricedQuote: pricedQuote)
             }
     }
 
@@ -204,7 +166,9 @@ extension SwapTransactionEngine {
         startQuotesFetchingIfNotStarted(pendingTransaction: pendingTransaction)
     }
 
-    private func startQuotesFetchingIfNotStarted(pendingTransaction oldValue: PendingTransaction) -> Single<PendingTransaction> {
+    private func startQuotesFetchingIfNotStarted(
+        pendingTransaction oldValue: PendingTransaction
+    ) -> Single<PendingTransaction> {
         guard oldValue.quoteSubscription == nil else {
             return .just(oldValue)
         }
@@ -223,63 +187,46 @@ extension SwapTransactionEngine {
     }
 
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        quotesEngine
-            .getRate(direction: orderDirection, pair: pair)
-            .take(1)
-            .asSingle()
-            .map { [targetAsset, sourceAsset] pricedQuote -> PendingTransaction in
-                let networkFee = TransactionConfirmation.Model.NetworkFee(
-                    primaryCurrencyFee: pricedQuote.networkFee,
-                    feeType: .withdrawalFee
-                )
-                let resultValue = CryptoValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
-                let swapExchangeRate = TransactionConfirmation.Model.SwapExchangeRate(
-                    baseValue: .one(currency: sourceAsset),
-                    resultValue: resultValue
-                )
-                let swapDestinationValue = TransactionConfirmation.Model.SwapDestinationValue(
-                    cryptoValue: pendingTransaction.amount.convert(using: resultValue).cryptoValue!
-                )
-
-                var pendingTransaction = pendingTransaction
-                    .insert(confirmation: .networkFee(networkFee))
-                    .insert(confirmation: .swapExchangeRate(swapExchangeRate))
-                    .insert(confirmation: .swapDestinationValue(swapDestinationValue))
-                pendingTransaction.minimumLimit = try pendingTransaction.calculateMinimumLimit(for: pricedQuote)
-                return pendingTransaction
-            }
+        doBuildConfirmations(pendingTransaction: pendingTransaction)
     }
 
     // MARK: - SwapTransactionEngine
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SwapOrder> {
-        Single.zip(
+        let orderDirection = orderDirection, sourceAsset = sourceAsset, target = target
+        let amountInSourceCurrency = currencyConversionService
+            .convert(pendingTransaction.amount, to: sourceAsset.currencyType)
+            .asSingle()
+        let addresses = Single.zip(
             target.receiveAddress,
             sourceAccount.receiveAddress
         )
         .map { ($0.0.address, $0.1.address) }
-        .flatMap(weak: self) { (self, addresses) -> Single<SwapOrder> in
+
+        return Single.zip(
+            addresses,
+            amountInSourceCurrency
+        )
+        .flatMap { [orderQuoteRepository, orderCreationRepository] addresses, convertedAmount -> Single<SwapOrder> in
             let (destinationAddress, refundAddress) = addresses
-            return self.orderQuoteRepository
+            return orderQuoteRepository
                 .fetchQuote(
-                    direction: self.orderDirection,
-                    sourceCurrencyType: self.sourceAsset,
-                    destinationCurrencyType: self.target.currencyType
+                    direction: orderDirection,
+                    sourceCurrencyType: sourceAsset.currencyType,
+                    destinationCurrencyType: target.currencyType
                 )
-                .asObservable()
                 .asSingle()
-                .flatMap(weak: self) { (self, quote) -> Single<SwapOrder> in
-                    let destination = self.orderDirection.requiresDestinationAddress ? destinationAddress : nil
-                    let refund = self.orderDirection.requiresRefundAddress ? refundAddress : nil
-                    return self.orderCreationRepository
+                .flatMap { quote -> Single<SwapOrder> in
+                    let destination = orderDirection.requiresDestinationAddress ? destinationAddress : nil
+                    let refund = orderDirection.requiresRefundAddress ? refundAddress : nil
+                    return orderCreationRepository
                         .createOrder(
-                            direction: self.orderDirection,
+                            direction: orderDirection,
                             quoteIdentifier: quote.identifier,
-                            volume: pendingTransaction.amount,
+                            volume: convertedAmount,
                             destinationAddress: destination,
                             refundAddress: refund
                         )
-                        .asObservable()
                         .asSingle()
                 }
         }
@@ -291,77 +238,25 @@ extension SwapTransactionEngine {
     // MARK: - Private Functions
 
     var sourceExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: self.sourceAsset, in: fiatCurrency)
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: sourceAsset.currencyType, to: fiatCurrency.currencyType)
+                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
                     .asSingle()
-                    .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
             }
     }
 
     private var destinationExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: self.target.currencyType, in: fiatCurrency)
+            .flatMap { [currencyConversionService, target] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: target.currencyType, to: fiatCurrency.currencyType)
+                    .map { MoneyValuePair(base: .one(currency: target.currencyType), quote: $0) }
                     .asSingle()
-                    .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.target.currencyType), quote: $0) }
             }
-    }
-
-    private func doValidateAmount(pendingTransaction: PendingTransaction) -> Completable {
-        sourceAccount
-            .actionableBalance
-            .map(weak: self) { (self, balance) -> Void in
-                guard try pendingTransaction.amount <= balance else {
-                    throw TransactionValidationFailure(state: .insufficientFunds)
-                }
-                guard let minimumLimit = pendingTransaction.minimumLimit else {
-                    Logger.shared.error("Minimum Limit is nil: \(pendingTransaction)")
-                    throw TransactionValidationFailure(state: .unknownError)
-                }
-                guard let maximumLimit = pendingTransaction.maximumLimit else {
-                    Logger.shared.error("Maximum Limit is nil: \(pendingTransaction)")
-                    throw TransactionValidationFailure(state: .unknownError)
-                }
-                guard try pendingTransaction.amount >= minimumLimit else {
-                    throw TransactionValidationFailure(state: .belowMinimumLimit)
-                }
-                guard try pendingTransaction.amount <= maximumLimit else {
-                    throw self.validationFailureForTier(pendingTransaction: pendingTransaction)
-                }
-            }
-            .asCompletable()
-    }
-
-    private func validationFailureForTier(pendingTransaction: PendingTransaction) -> TransactionValidationFailure {
-        guard let userTiers = pendingTransaction.userTiers else {
-            return TransactionValidationFailure(state: .unknownError)
-        }
-        if userTiers.isTier2Approved {
-            return TransactionValidationFailure(state: .overGoldTierLimit)
-        }
-        return TransactionValidationFailure(state: .overSilverTierLimit)
-    }
-}
-
-extension PendingTransaction {
-
-    fileprivate func calculateMinimumLimit(for quote: PricedQuote) throws -> MoneyValue {
-        guard let minimumApiLimit = minimumApiLimit else {
-            return .zero(currency: quote.networkFee.currency)
-        }
-        let destination = quote.networkFee.currency
-        let source = amount.currency
-        let price = MoneyValue(amount: quote.price, currency: destination)
-        let totalFees = (try? quote.networkFee + quote.staticFee) ?? .zero(currency: destination)
-        let convertedFees = totalFees.convert(usingInverse: price, currencyType: source)
-        return (try? minimumApiLimit + convertedFees) ?? .zero(currency: destination)
     }
 }
 

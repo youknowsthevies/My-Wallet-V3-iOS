@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Foundation
 
 /// A money value.
 public struct MoneyValue: Money, Hashable {
@@ -229,6 +230,27 @@ public struct MoneyValue: Money, Hashable {
 }
 
 extension MoneyValue: MoneyOperating {}
+
+extension MoneyValue {
+
+    public var shortDisplayString: String {
+        let formattedMinimum: String
+        if let fiatValue = fiatValue?.displayableRounding(decimalPlaces: 0, roundingMode: .bankers) {
+            formattedMinimum = fiatValue.toDisplayString(includeSymbol: true, format: .shortened, locale: .current)
+        } else {
+            formattedMinimum = displayString
+        }
+        return formattedMinimum
+    }
+
+    /// Used for analytics purposes only, for other things use `displayString` instead.
+    public var displayMajorValue: Decimal {
+        amount.toDecimalMajor(
+            baseDecimalPlaces: currencyType.precision,
+            roundingDecimalPlaces: currencyType.precision
+        )
+    }
+}
 
 extension CryptoValue {
 

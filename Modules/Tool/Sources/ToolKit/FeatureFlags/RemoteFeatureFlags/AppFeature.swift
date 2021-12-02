@@ -23,9 +23,6 @@ public enum AppFeature: Int, CaseIterable {
     /// Sift Science SDK is enabled
     case siftScienceEnabled
 
-    /// Enable Secure Channel
-    case secureChannel
-
     // MARK: Onboarding (After Login)
 
     /// Shows Email Verification insted of Simple Buy at Login
@@ -40,6 +37,8 @@ public enum AppFeature: Int, CaseIterable {
     // MARK: - SSO
 
     case unifiedSignIn
+
+    case pollingForEmailLogin
 
     // MARK: - SDD
 
@@ -58,10 +57,16 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable new Sell Transaction flow
     case sellUsingTransactionFlowEnabled
 
+    /// Enable Open Banking
+    case openBanking
+
     // MARK: - Transactions Flow
 
     /// Uses the Transactions Flow implementation of Buy when enabled
     case useTransactionsFlowToBuyCrypto
+
+    /// Enables the new Limits UI in Transaction Flow
+    case newLimitsUIEnabled
 }
 
 extension AppFeature {
@@ -78,8 +83,6 @@ extension AppFeature {
             return "rename_asset_announcement_ticker"
         case .siftScienceEnabled:
             return "sift_science_enabled"
-        case .secureChannel:
-            return "secure_channel_ios"
         case .withdrawAndDepositACH:
             return "ach_withdraw_deposit_enabled"
         case .biometry:
@@ -92,14 +95,20 @@ extension AppFeature {
             return "show_email_verification_in_buy_flow_ios"
         case .unifiedSignIn:
             return "sso_unified_sign_in_enabled_ios"
+        case .pollingForEmailLogin:
+            return "ios_ff_sso_polling"
         case .sddEnabled:
             return "sdd_enabled_ios"
         case .customerSupportChat:
             return "customer_support_chat_ios"
         case .sellUsingTransactionFlowEnabled:
             return "sell_using_transaction_flow_enabled_ios"
+        case .openBanking:
+            return "ios_open_banking"
         case .useTransactionsFlowToBuyCrypto:
             return "ios_use_transaction_flow_buy"
+        case .newLimitsUIEnabled:
+            return "ios_use_new_limits_ui"
         }
     }
 
@@ -116,8 +125,6 @@ extension AppFeature {
             return false
         case .siftScienceEnabled:
             return false
-        case .secureChannel:
-            return false
         case .withdrawAndDepositACH:
             return false
         case .biometry:
@@ -130,12 +137,18 @@ extension AppFeature {
             return false
         case .unifiedSignIn:
             return false
+        case .pollingForEmailLogin:
+            return true
         case .sddEnabled:
             return false
         case .customerSupportChat:
             return false
         case .sellUsingTransactionFlowEnabled,
              .useTransactionsFlowToBuyCrypto:
+            return true
+        case .openBanking:
+            return true
+        case .newLimitsUIEnabled:
             return true
         }
     }

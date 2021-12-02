@@ -3,6 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import FeatureOpenBankingUI
 import Localization
 import PlatformKit
 import RxSwift
@@ -48,6 +49,7 @@ public final class Router: RouterAPI {
     private let cryptoSelectionService: CryptoCurrencySelectionServiceAPI
     private let navigationRouter: NavigationRouterAPI
     private let alertViewPresenter: AlertViewPresenterAPI
+    private let paymentAccountService: PaymentAccountServiceAPI
 
     private var cardRouter: CardRouter!
 
@@ -56,6 +58,7 @@ public final class Router: RouterAPI {
 
     /// A general dispose bag
     private let disposeBag = DisposeBag()
+    private var bag: Set<AnyCancellable> = []
 
     private let builder: Buildable
 
@@ -79,7 +82,8 @@ public final class Router: RouterAPI {
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         kycRouter: KYCRouterAPI = resolve(), // TODO: merge with the following or remove (IOS-4471)
         newKYCRouter: KYCRouting = resolve(),
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        paymentAccountService: PaymentAccountServiceAPI = resolve()
     ) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
@@ -91,6 +95,7 @@ public final class Router: RouterAPI {
         self.newKYCRouter = newKYCRouter
         self.builder = builder
         self.analyticsRecorder = analyticsRecorder
+        self.paymentAccountService = paymentAccountService
 
         let cryptoSelectionService = CryptoCurrencySelectionService(
             service: supportedPairsInteractor,
@@ -182,6 +187,8 @@ public final class Router: RouterAPI {
             showCheckoutScreen(with: data)
         case .authorizeCard(let data):
             showCardAuthorization(with: data)
+        case .authorizeOpenBanking(let data):
+            showOpenBankingAuthorization(with: data)
         case .pendingOrderCompleted(orderDetails: let orderDetails):
             showPendingOrderCompletionScreen(for: orderDetails)
         case .paymentMethods:
@@ -227,7 +234,7 @@ public final class Router: RouterAPI {
         case .paymentMethods, .bankTransferDetails, .fundsTransferDetails:
             navigationRouter.topMostViewControllerProvider
                 .topMostViewController?
-                .dismiss(animated: true, completion: nil)
+                .dismiss(animated: true)
         default:
             navigationRouter.dismiss()
         }
@@ -585,6 +592,60 @@ public final class Router: RouterAPI {
             presenter: presenter
         )
         navigationRouter.present(viewController: viewController)
+    }
+
+    private func showOpenBankingAuthorization(with data: CheckoutData) {
+
+        guard let linkedBank = data.linkedBankData else {
+            fatalError("[impossible] Tried to authorise via OpenBanking without a selected bank")
+        }
+
+        guard let fiatValue = data.fiatValue else {
+            fatalError("[impossible] Tried to authorise via OpenBanking without a fiat currency")
+        }
+
+        let viewController = OpenBankingViewController(
+            order: .init(data.order),
+            from: OpenBanking.BankAccount(linkedBank),
+            environment: .init(
+                showTransferDetails: { [weak stateService] in
+                    stateService?.showFundsTransferDetails(for: fiatValue.currency, isOriginDeposit: false)
+                },
+                dismiss: { [weak navigationRouter] in
+                    navigationRouter?.dismiss(using: .modalOverTopMost)
+                },
+                cancel: { [weak navigationRouter] in
+                    navigationRouter?.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+                },
+                currency: fiatValue.code
+            )
+        )
+
+        viewController.eventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                self?.handleOpenBanking(
+                    order: data.order,
+                    currency: fiatValue.currency,
+                    event: event
+                )
+            }
+            .store(withLifetimeOf: viewController)
+
+        navigationRouter.present(viewController: viewController)
+    }
+
+    private func handleOpenBanking(
+        order: OrderDetails,
+        currency: FiatCurrency,
+        event: Result<Void, OpenBanking.Error>
+    ) {
+        switch event {
+        case .success:
+            stateService.authorizedOpenBanking()
+        case .failure:
+            break
+        }
     }
 
     /// Show the pending kyc screen

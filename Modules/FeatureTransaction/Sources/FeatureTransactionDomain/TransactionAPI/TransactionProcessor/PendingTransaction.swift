@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
+import ToolKit
 
 public struct PendingTransaction: Equatable {
 
@@ -9,50 +10,6 @@ public struct PendingTransaction: Equatable {
         case userTiers
         case xlmMemo
         case bitpayTimer
-    }
-
-    /// The maximum amount the user can spend. We compare the amount entered to the
-    /// `maximumLimit` as `CryptoValues` and return whichever is smaller.
-    public var maxSpendable: MoneyValue {
-        guard let maximumLimit = maximumLimit else {
-            return available
-        }
-        guard let availableMaximumLimit = try? maximumLimit - feeAmount else {
-            return available
-        }
-        return (try? .min(available, availableMaximumLimit)) ?? .zero(currency: amount.currency)
-    }
-
-    public var termsOptionValue: Bool {
-        guard let confirmation = confirmations
-            .first(where: { $0.type == .agreementInterestTandC })
-        else {
-            return false
-        }
-        guard case .termsOfService(let option) = confirmation else { return false }
-        return option.value
-    }
-
-    public var agreementOptionValue: Bool {
-        guard let confirmation = confirmations
-            .first(where: { $0.type == .agreementInterestTransfer })
-        else {
-            return false
-        }
-        guard case .transferAgreement(let option) = confirmation else { return false }
-        return option.value
-    }
-
-    public var feeLevel: FeeLevel {
-        feeSelection.selectedLevel
-    }
-
-    public var availableFeeLevels: Set<FeeLevel> {
-        feeSelection.availableLevels
-    }
-
-    public var customFeeAmount: MoneyValue? {
-        feeSelection.customAmount
     }
 
     public var amount: MoneyValue
@@ -65,13 +22,25 @@ public struct PendingTransaction: Equatable {
     /// The list of `TransactionConfirmation`.
     /// To update this value, use methods `update(confirmations:)` and `insert(confirmations:)`
     public private(set) var confirmations: [TransactionConfirmation] = []
-    public var minimumLimit: MoneyValue?
-    public var maximumLimit: MoneyValue?
-    public var maximumDailyLimit: MoneyValue?
-    public var maximumAnnualLimit: MoneyValue?
-    public var minimumApiLimit: MoneyValue?
+
     public var validationState: TransactionValidationState = .uninitialized
     public var engineState: [EngineStateKey: Any] = [:]
+
+    private var _limits: Reference<TransactionLimits?> // this struct has become too big for Swift to handle :(
+    public var limits: TransactionLimits? {
+        get {
+            _limits.value
+        }
+        set {
+            _limits = Reference(newValue)
+        }
+    }
+
+    // TODO: remove limits below in favour of limits struct above
+    private var minimumLimit: MoneyValue?
+    private var maximumLimit: MoneyValue?
+    private var maximumDailyLimit: MoneyValue?
+    private var maximumAnnualLimit: MoneyValue?
 
     public init(
         amount: MoneyValue,
@@ -80,6 +49,7 @@ public struct PendingTransaction: Equatable {
         feeForFullAvailable: MoneyValue,
         feeSelection: FeeSelection,
         selectedFiatCurrency: FiatCurrency,
+        limits: TransactionLimits? = nil,
         minimumLimit: MoneyValue? = nil,
         maximumLimit: MoneyValue? = nil,
         maximumDailyLimit: MoneyValue? = nil,
@@ -91,6 +61,7 @@ public struct PendingTransaction: Equatable {
         self.feeForFullAvailable = feeForFullAvailable
         self.feeSelection = feeSelection
         self.selectedFiatCurrency = selectedFiatCurrency
+        _limits = Reference(limits)
         self.minimumLimit = minimumLimit
         self.maximumLimit = maximumLimit
         self.maximumDailyLimit = maximumDailyLimit
@@ -196,8 +167,8 @@ public struct PendingTransaction: Equatable {
             && lhs.selectedFiatCurrency == rhs.selectedFiatCurrency
             && lhs.feeLevel == rhs.feeLevel
             && lhs.confirmations == rhs.confirmations
+            && lhs.limits == rhs.limits
             && lhs.minimumLimit == rhs.minimumLimit
-            && lhs.minimumApiLimit == rhs.minimumApiLimit
             && lhs.maximumLimit == rhs.maximumLimit
             && lhs.validationState == rhs.validationState
             && lhs.maximumDailyLimit == rhs.maximumDailyLimit
@@ -205,7 +176,108 @@ public struct PendingTransaction: Equatable {
     }
 }
 
+// MARK: - Limtis
+
 extension PendingTransaction {
+
+    public var normalizedLimits: TransactionLimits {
+        TransactionLimits(
+            currencyType: minLimit.currencyType,
+            minimum: minLimit,
+            maximum: maxLimit,
+            maximumDaily: maxDailyLimit,
+            maximumAnnual: maxAnnualLimit,
+            effectiveLimit: limits?.effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maxLimit),
+            suggestedUpgrade: limits?.suggestedUpgrade
+        )
+    }
+
+    public var minLimit: MoneyValue {
+        limits?.minimum ?? minimumLimit ?? .zero(currency: amount.currency)
+    }
+
+    public var maxLimit: MoneyValue {
+        limits?.maximum ?? maximumLimit ?? available
+    }
+
+    public var maxDailyLimit: MoneyValue {
+        limits?.maximumDaily ?? maximumDailyLimit ?? maxLimit
+    }
+
+    public var maxAnnualLimit: MoneyValue {
+        limits?.maximumAnnual ?? maximumAnnualLimit ?? maxDailyLimit
+    }
+
+    /// The minimum spending limit
+    public var minSpendable: MoneyValue {
+        limits?.minimum ?? minimumLimit ?? .zero(currency: amount.currency)
+    }
+
+    /// The maximum amount the user can spend. We compare the amount entered to the
+    /// `limits.minimum` or `maximumLimit` as `CryptoValues` and return whichever is smaller.
+    public var maxSpendable: MoneyValue {
+        guard let availableMaximumLimit = try? maxLimit - feeAmount else {
+            return available
+        }
+        let minAvailable: MoneyValue = (try? .min(available, availableMaximumLimit)) ?? available
+        return (try? .max(.zero(currency: amount.currency), minAvailable)) ?? available // ensure the value is >= 0
+    }
+
+    public var maxSpendableDaily: MoneyValue {
+        (try? .min(maxDailyLimit, maxSpendable)) ?? .zero(currency: amount.currency)
+    }
+
+    public var maxSpendableAnnually: MoneyValue {
+        (try? .min(maxAnnualLimit, maxSpendable)) ?? .zero(currency: amount.currency)
+    }
+}
+
+// MARK: - Fees
+
+extension PendingTransaction {
+
+    public var feeLevel: FeeLevel {
+        feeSelection.selectedLevel
+    }
+
+    public var availableFeeLevels: Set<FeeLevel> {
+        feeSelection.availableLevels
+    }
+
+    public var customFeeAmount: MoneyValue? {
+        feeSelection.customAmount
+    }
+}
+
+// MARK: - Term Options
+
+extension PendingTransaction {
+
+    public var termsOptionValue: Bool {
+        guard let confirmation = confirmations
+            .first(where: { $0.type == .agreementInterestTandC })
+        else {
+            return false
+        }
+        guard case .termsOfService(let option) = confirmation else { return false }
+        return option.value
+    }
+
+    public var agreementOptionValue: Bool {
+        guard let confirmation = confirmations
+            .first(where: { $0.type == .agreementInterestTransfer })
+        else {
+            return false
+        }
+        guard case .transferAgreement(let option) = confirmation else { return false }
+        return option.value
+    }
+}
+
+// MARK: - Init Conveniences
+
+extension PendingTransaction {
+
     public static func zero(currencyType: CurrencyType) -> PendingTransaction {
         .init(
             amount: .zero(currency: currencyType),

@@ -79,7 +79,7 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
     // MARK: - Connect API
 
     func connect(stream: Observable<BlockchainAccount>, tapEnabled: Observable<Bool>) -> Disposable {
-        Observable.zip(
+        Observable.combineLatest(
             stream,
             tapEnabled
         )

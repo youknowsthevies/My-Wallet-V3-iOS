@@ -34,8 +34,6 @@ public enum NabuAuthenticationExecutorError: Error {
 // swiftlint:disable type_body_length
 struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
 
-    typealias CredentialsRepository = CredentialsRepositoryAPI & NabuOfflineTokenRepositoryAPI
-
     private struct Token {
         let sessionToken: NabuSessionToken
         let offlineToken: NabuOfflineToken
@@ -43,7 +41,8 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
 
     private let store: NabuTokenRepositoryAPI
     private let errorBroadcaster: UserAlreadyRestoredHandlerAPI
-    private let credentialsRepository: CredentialsRepository
+    private let credentialsRepository: CredentialsRepositoryAPI
+    private let nabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI
     private let nabuRepository: NabuRepositoryAPI
     private let nabuUserEmailProvider: NabuUserEmailProvider
     private let deviceInfo: DeviceInfo
@@ -62,7 +61,8 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
         siftService: SiftServiceAPI = resolve(),
         checkAuthenticated: @escaping CheckAuthenticated = resolve(),
         jwtService: JWTServiceAPI = resolve(),
-        credentialsRepository: NabuAuthenticationExecutor.CredentialsRepository = resolve(),
+        credentialsRepository: CredentialsRepositoryAPI = resolve(),
+        nabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI = resolve(),
         deviceInfo: DeviceInfo = resolve(),
         queue: DispatchQueue = DispatchQueue(
             label: "com.blockchain.NabuAuthenticationExecutor",
@@ -76,6 +76,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
         self.siftService = siftService
         self.checkAuthenticated = checkAuthenticated
         self.credentialsRepository = credentialsRepository
+        self.nabuOfflineTokenRepository = nabuOfflineTokenRepository
         self.jwtService = jwtService
         self.deviceInfo = deviceInfo
         self.queue = queue
@@ -297,7 +298,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     // MARK: - User Creation
 
     private func createUserIfNeeded() -> AnyPublisher<NabuOfflineToken, NabuAuthenticationExecutorError> {
-        credentialsRepository
+        nabuOfflineTokenRepository
             .offlineToken
             .catch { _ -> AnyPublisher<NabuOfflineToken, NabuAuthenticationExecutorError> in
                 createUser()
@@ -315,7 +316,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
             }
             .flatMap { offlineToken
                 -> AnyPublisher<NabuOfflineToken, NabuAuthenticationExecutorError> in
-                credentialsRepository
+                nabuOfflineTokenRepository
                     .set(offlineToken: offlineToken)
                     .replaceOutput(with: offlineToken)
                     .mapError(NabuAuthenticationExecutorError.failedToSaveOfflineToken)
@@ -336,7 +337,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     private func retrieveOfflineTokenResponse()
         -> AnyPublisher<NabuOfflineToken, NabuAuthenticationExecutorError>
     {
-        credentialsRepository
+        nabuOfflineTokenRepository
             .offlineToken
             .mapError(NabuAuthenticationExecutorError.missingCredentials)
             .eraseToAnyPublisher()

@@ -8,6 +8,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+// swiftlint:disable type_body_length
 final class TransactionModel {
 
     // MARK: - Private Properties
@@ -145,6 +146,7 @@ final class TransactionModel {
             return nil
         case .executeTransaction:
             return processExecuteTransaction(
+                source: previousState.source,
                 order: previousState.order,
                 secondPassword: previousState.secondPassword
             )
@@ -182,15 +184,23 @@ final class TransactionModel {
             return nil
         case .returnToPreviousStep:
             let isAmountScreen = previousState.step == .enterAmount
-            let isBitPay = previousState.step == .confirmDetail && previousState.destination is BitPayInvoiceTarget
-            let shouldInvalidateTransaction = isAmountScreen || isBitPay
-            guard !shouldInvalidateTransaction else {
+            let isConfirmDetail = previousState.step == .confirmDetail
+            let isStaticTarget = previousState.destination is StaticTransactionTarget
+            // We should invalidate the transaction if
+            // - we are on the amount screen; or
+            // - we are on the Confirmation screen and the target is StaticTransactionTarget (a target that can't be modified).
+            let shouldInvalidateTransaction = isAmountScreen || (isConfirmDetail && isStaticTarget)
+            if shouldInvalidateTransaction {
                 return processTransactionInvalidation(state: previousState)
             }
-            let shouldCancelOrder = previousState.step == .confirmDetail
-            guard !shouldCancelOrder else {
+
+            // We should cancel the order if we are on the Confirmation screen.
+            let shouldCancelOrder = isConfirmDetail
+            if shouldCancelOrder {
                 return processCancelOrder(state: previousState)
             }
+
+            // If no check passed, we stop here (no further actions required).
             return nil
         case .sourceAccountSelected(let sourceAccount):
             if let target = previousState.destination, !previousState.availableTargets.isEmpty {
@@ -330,8 +340,18 @@ final class TransactionModel {
             }
     }
 
-    private func processExecuteTransaction(order: TransactionOrder?, secondPassword: String) -> Disposable {
-        interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
+    private func processExecuteTransaction(
+        source: BlockchainAccount?,
+        order: TransactionOrder?,
+        secondPassword: String
+    ) -> Disposable {
+        // If we are processing an OpenBanking transaction we do not want to execute the transaction
+        // as this is done by the backend once the customer has authorised the payment via open banking
+        // and we have submitted the consent token from the deep link
+        if (source as? LinkedBankAccount)?.partner == .yapily {
+            return Disposables.create()
+        }
+        return interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
             .subscribe(onSuccess: { [weak self] result in
                 switch result {
                 case .hashed(_, _, let order) where order?.isPending3DSCardOrder == true:

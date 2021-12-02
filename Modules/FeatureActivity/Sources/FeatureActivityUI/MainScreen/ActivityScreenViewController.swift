@@ -83,12 +83,13 @@ public final class ActivityScreenViewController: BaseScreenViewController {
     // MARK: - Setup
 
     private func setupNavigationBar() {
+        let model = presenter.screenNavigationModel
         set(
-            barStyle: .lightContent(),
-            leadingButtonStyle: .drawer,
-            trailingButtonStyle: .none
+            barStyle: model.barStyle,
+            leadingButtonStyle: model.leadingButton,
+            trailingButtonStyle: model.trailingButton
         )
-        titleViewStyle = .text(value: presenter.title)
+        titleViewStyle = model.titleViewStyle
     }
 
     private func setupEmptyState() {

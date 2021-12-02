@@ -70,7 +70,6 @@ enum TransactionAction: MviAction {
 
 extension TransactionAction {
 
-    // TODO: Clean up this function
     // swiftlint:disable function_body_length
     // swiftlint:disable cyclomatic_complexity
     func reduce(oldState: TransactionState) -> TransactionState {
@@ -136,9 +135,10 @@ extension TransactionAction {
             return oldState.stateForMovingForward(to: .linkBankViaWire)
 
         case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, let passwordRequired):
-            // If the user scans a BitPay QR code, the account will be a BitPayInvoiceTarget.
-            // This means we do not proceed to the enter amount screen but rather the confirmation detail screen.
-            let next: TransactionFlowStep = target is BitPayInvoiceTarget ? .confirmDetail : .enterAmount
+            // Some targets (eg a BitPay invoice, or a WalletConnect payload) do not allow the
+            // amount to be modified, thus when the target is 'StaticTransactionTarget' we should
+            // go directly to the confirmation detail screen.
+            let next: TransactionFlowStep = target is StaticTransactionTarget ? .confirmDetail : .enterAmount
             let step = passwordRequired ? .enterPassword : next
             return TransactionState(
                 action: action,
@@ -226,10 +226,10 @@ extension TransactionAction {
                 .withUpdatedBackstack(oldState: oldState)
 
         case .targetAccountSelected(let destinationAccount):
-            // If the user scans a BitPay QR code, the account will be a
-            // BitPayInvoiceTarget. This means we do not proceed to the enter amount
-            // screen but rather the confirmation detail screen.
-            let step: TransactionFlowStep = destinationAccount is BitPayInvoiceTarget ? .confirmDetail : .enterAmount
+            // Some targets (eg a BitPay invoice, or a WalletConnect payload) do not allow the
+            // amount to be modified, thus when the target is 'StaticTransactionTarget' we should
+            // go directly to the confirmation detail screen.
+            let step: TransactionFlowStep = destinationAccount is StaticTransactionTarget ? .confirmDetail : .enterAmount
             var newState = oldState
             newState.errorState = .none
             newState.destination = destinationAccount
@@ -320,7 +320,11 @@ extension TransactionAction {
         case .executeTransaction:
             var newState = oldState
             newState.nextEnabled = false
-            newState.step = .inProgress
+            if (oldState.source as? LinkedBankAccount)?.partner == .yapily {
+                newState.step = .authorizeOpenBanking
+            } else {
+                newState.step = .inProgress
+            }
             newState.executionStatus = .inProgress
             return newState.withUpdatedBackstack(oldState: oldState)
 
@@ -369,7 +373,17 @@ extension TransactionAction {
             return newState
 
         case .returnToPreviousStep:
-            return oldState.stateForMovingOneStepBack()
+            var newState = oldState.stateForMovingOneStepBack()
+            // HOTFIX: this check fixes a problem when navigating back using a navigation controller's pop mechanism
+            if oldState.step == .selectTarget, newState.step == .selectSource {
+                // Fixes a crash with precondition in some TransactionEngines like Swap.
+                // The issue was caused by the fact we don't clear state when moving back from step to step.
+                // This caused the destination never to be removed, so when popping from enter amount to destination picker to source picker,
+                // selecting a new source would cause us to move directly to the enter amount screen with the old destination selected.
+                // Some transaction engines like swap check for the source and destination currency to match or not not match as a precondition.
+                newState.destination = nil
+            }
+            return newState
 
         case .modifyTransactionConfirmation:
             return oldState
@@ -482,42 +496,37 @@ extension TransactionValidationState {
 
     var mapToTransactionErrorState: TransactionErrorState {
         switch self {
+        case .uninitialized, .canExecute:
+            return .none
+        case .unknownError:
+            return .unknownError
+        case .nabuError(let error):
+            return .nabuError(error)
+        case .insufficientFunds(let balance, let desired, let sourceCurrency, let targetCurrency):
+            return .insufficientFunds(balance, desired, sourceCurrency, targetCurrency)
+        case .belowFees(let fees, let balance):
+            return .belowFees(fees, balance)
+        case .belowMinimumLimit(let minimumLimit):
+            return .belowMinimumLimit(minimumLimit)
+        case .overMaximumSourceLimit(let maxLimit, let label, let desiredAmount):
+            return .overMaximumSourceLimit(maxLimit, label, desiredAmount)
+        case .overMaximumPersonalLimit(let effectiveLimit, let available, let suggestedUpgrade):
+            return .overMaximumPersonalLimit(effectiveLimit, available, suggestedUpgrade)
+
+        // MARK: Unchecked
+
         case .addressIsContract:
             return .addressIsContract
-        case .belowMinimumLimit:
-            return .belowMinimumLimit
-        case .canExecute:
-            return .none
-        case .insufficientFundsForFees:
-            return .insufficientFundsForFees
-        case .insufficientFunds:
-            return .insufficientFunds
-        case .insufficientGas:
-            return .insufficientGas
         case .invalidAddress:
             return .invalidAddress
-        case .invalidAmount:
-            return .invalidAmount
         case .invoiceExpired:
             return .unknownError
         case .optionInvalid:
             return .optionInvalid
-        case .overMaximumLimit:
-            return .overMaximumLimit
         case .transactionInFlight:
             return .transactionInFlight
-        case .uninitialized:
-            return .none
-        case .unknownError:
-            return .unknownError
-        case .overGoldTierLimit:
-            return .overGoldTierLimit
-        case .overSilverTierLimit:
-            return .overSilverTierLimit
         case .pendingOrdersLimitReached:
             return .pendingOrdersLimitReached
-        case .nabuError(let error):
-            return .nabuError(error)
         case .noSourcesAvailable:
             return .unknownError
         }

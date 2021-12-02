@@ -8,11 +8,6 @@ import ToolKit
 
 public protocol InterestTransactionEngine: TransactionEngine {
 
-    // MARK: - Services
-
-    var fiatCurrencyService: FiatCurrencyServiceAPI { get }
-    var priceService: PriceServiceAPI { get }
-
     // MARK: - Properties
 
     var minimumDepositLimits: Single<FiatValue> { get }
@@ -48,11 +43,9 @@ extension InterestTransactionEngine {
 
     public func checkIfAmountIsBelowMinimumLimit(_ pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
-            guard let minimum = pendingTransaction.minimumLimit else {
-                throw TransactionValidationFailure(state: .uninitialized)
-            }
+            let minimum = pendingTransaction.minLimit
             guard try pendingTransaction.amount >= minimum else {
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
+                throw TransactionValidationFailure(state: .belowMinimumLimit(minimum))
             }
         }
     }
@@ -61,9 +54,16 @@ extension InterestTransactionEngine {
         _ pendingTransaction: PendingTransaction,
         balance: MoneyValue
     ) -> Completable {
-        Completable.fromCallable {
+        Completable.fromCallable { [sourceAccount, transactionTarget] in
             guard try pendingTransaction.amount <= balance else {
-                throw TransactionValidationFailure(state: .insufficientFunds)
+                throw TransactionValidationFailure(
+                    state: .insufficientFunds(
+                        balance,
+                        pendingTransaction.amount,
+                        sourceAccount!.currencyType,
+                        transactionTarget!.currencyType
+                    )
+                )
             }
         }
     }
@@ -102,19 +102,18 @@ extension InterestTransactionEngine {
     // MARK: - Internal
 
     var sourceExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: self.sourceAsset, in: fiatCurrency)
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
     }
 }
 
-extension InterestTransactionEngine where Self: TransactionEngine {
+extension InterestTransactionEngine {
 
     public var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         sourceExchangeRatePair

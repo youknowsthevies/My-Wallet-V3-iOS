@@ -36,9 +36,15 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransa
              .uninitialized:
             return pendingTransaction.remove(optionType: .errorNotice)
         default:
+            let isBelowMinimumState: Bool
+            if case .belowMinimumLimit = pendingTransaction.validationState {
+                isBelowMinimumState = true
+            } else {
+                isBelowMinimumState = false
+            }
             let error = TransactionConfirmation.Model.ErrorNotice(
                 validationState: pendingTransaction.validationState,
-                moneyValue: pendingTransaction.validationState == .belowMinimumLimit ? pendingTransaction.minimumLimit : nil
+                moneyValue: isBelowMinimumState ? pendingTransaction.minLimit : nil
             )
             return pendingTransaction.insert(confirmation: .errorNotice(error))
         }

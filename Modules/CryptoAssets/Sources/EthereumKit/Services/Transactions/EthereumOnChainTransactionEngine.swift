@@ -14,6 +14,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     // MARK: - OnChainTransactionEngine
 
+    let currencyConversionService: CurrencyConversionServiceAPI
+    let walletCurrencyService: FiatCurrencyServiceAPI
+
     var askForRefreshConfirmation: (AskForRefreshConfirmations)!
 
     var sourceAccount: BlockchainAccount!
@@ -34,8 +37,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     private let feeCache: CachedValue<EthereumTransactionFee>
     private let feeService: EthereumFeeServiceAPI
-    private let fiatCurrencyService: FiatCurrencyServiceAPI
-    private let priceService: PriceServiceAPI
     private let ethereumAccountService: EthereumAccountServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let transactionsService: EthereumHistoricalTransactionServiceAPI
@@ -48,7 +49,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         case is CryptoAccount:
             return (transactionTarget as! CryptoAccount).receiveAddress
         default:
-            fatalError("Impossible State for Ethereum On Chain Engine: transactionTarget is \(type(of: transactionTarget))")
+            fatalError(
+                "Impossible State for Ethereum On Chain Engine: transactionTarget is \(type(of: transactionTarget))"
+            )
         }
     }
 
@@ -56,18 +59,18 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     init(
         requireSecondPassword: Bool,
-        priceService: PriceServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         feeService: EthereumFeeServiceAPI = resolve(),
         ethereumAccountService: EthereumAccountServiceAPI = resolve(),
         transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve()
     ) {
-        self.fiatCurrencyService = fiatCurrencyService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
         self.feeService = feeService
         self.requireSecondPassword = requireSecondPassword
-        self.priceService = priceService
         self.ethereumAccountService = ethereumAccountService
         self.transactionBuildingService = transactionBuildingService
         self.transactionsService = transactionsService
@@ -89,22 +92,25 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        fiatCurrencyService
-            .fiatCurrency
-            .map { fiatCurrency -> PendingTransaction in
-                .init(
-                    amount: .zero(currency: .coin(.ethereum)),
-                    available: .zero(currency: .coin(.ethereum)),
-                    feeAmount: .zero(currency: .coin(.ethereum)),
-                    feeForFullAvailable: .zero(currency: .coin(.ethereum)),
-                    feeSelection: .init(
-                        selectedLevel: .regular,
-                        availableLevels: [.regular, .priority],
-                        asset: .crypto(.coin(.ethereum))
-                    ),
-                    selectedFiatCurrency: fiatCurrency
-                )
-            }
+        Single.zip(
+            walletCurrencyService
+                .fiatCurrency,
+            availableBalance
+        )
+        .map { fiatCurrency, availableBalance -> PendingTransaction in
+            .init(
+                amount: .zero(currency: .coin(.ethereum)),
+                available: availableBalance,
+                feeAmount: .zero(currency: .coin(.ethereum)),
+                feeForFullAvailable: .zero(currency: .coin(.ethereum)),
+                feeSelection: .init(
+                    selectedLevel: .regular,
+                    availableLevels: [.regular, .priority],
+                    asset: .crypto(.coin(.ethereum))
+                ),
+                selectedFiatCurrency: fiatCurrency
+            )
+        }
     }
 
     func start(
@@ -117,7 +123,10 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.askForRefreshConfirmation = askForRefreshConfirmation
     }
 
-    func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+    func restart(
+        transactionTarget: TransactionTarget,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
         defaultRestart(
             transactionTarget: transactionTarget,
             pendingTransaction: pendingTransaction
@@ -131,7 +140,11 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 makeFeeSelectionOption(pendingTransaction: pendingTransaction)
             )
             .map { fiatAmountAndFees, feeSelectionOption ->
-                (amountInFiat: MoneyValue, feesInFiat: MoneyValue, feeSelectionOption: TransactionConfirmation.Model.FeeSelection) in
+                (
+                    amountInFiat: MoneyValue,
+                    feesInFiat: MoneyValue,
+                    feeSelectionOption: TransactionConfirmation.Model.FeeSelection
+                ) in
                 let (amountInFiat, feesInFiat) = fiatAmountAndFees
                 return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
             }
@@ -179,7 +192,10 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         }
     }
 
-    func doOptionUpdateRequest(pendingTransaction: PendingTransaction, newConfirmation: TransactionConfirmation) -> Single<PendingTransaction> {
+    func doOptionUpdateRequest(
+        pendingTransaction: PendingTransaction,
+        newConfirmation: TransactionConfirmation
+    ) -> Single<PendingTransaction> {
         switch newConfirmation {
         case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
             return updateFeeSelection(
@@ -195,22 +211,15 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         }
     }
 
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        sourceAccount.actionableBalance
-            .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
-                self.validateAmounts(pendingTransaction: pendingTransaction)
-                    .andThen(self.validateSufficientFunds(pendingTransaction: pendingTransaction, actionableBalance: actionableBalance))
-                    .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-            }
-    }
-
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         sourceAccount.actionableBalance
             .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
-                self.validateAmounts(pendingTransaction: pendingTransaction)
-                    .andThen(self.validateSufficientFunds(pendingTransaction: pendingTransaction, actionableBalance: actionableBalance))
-                    .andThen(self.validateNoPendingTransaction())
-                    .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
+                self.validateSufficientFunds(
+                    pendingTransaction: pendingTransaction,
+                    actionableBalance: actionableBalance
+                )
+                .andThen(self.validateNoPendingTransaction())
+                .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
             }
     }
 
@@ -246,8 +255,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         unimplemented()
     }
+}
 
-    // MARK: - Private Functions
+extension EthereumOnChainTransactionEngine {
 
     private func validateNoPendingTransaction() -> Completable {
         transactionsService
@@ -260,25 +270,35 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             .asCompletable()
     }
 
-    private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.fromCallable {
-            guard pendingTransaction.amount.isPositive else {
-                throw TransactionValidationFailure(state: .invalidAmount)
-            }
-        }
-    }
-
-    private func validateSufficientFunds(pendingTransaction: PendingTransaction, actionableBalance: MoneyValue) -> Completable {
+    private func validateSufficientFunds(
+        pendingTransaction: PendingTransaction,
+        actionableBalance: MoneyValue
+    ) -> Completable {
         absoluteFee(with: pendingTransaction.feeLevel)
-            .map { fee -> Void in
-                if try (try fee.moneyValue + pendingTransaction.amount) > actionableBalance {
-                    throw TransactionValidationFailure(state: .insufficientFunds)
+            .map { [sourceAccount, transactionTarget] fee -> Void in
+                guard try pendingTransaction.amount >= pendingTransaction.minSpendable else {
+                    throw TransactionValidationFailure(state: .belowMinimumLimit(pendingTransaction.minLimit))
+                }
+                guard try actionableBalance > fee.moneyValue else {
+                    throw TransactionValidationFailure(state: .belowFees(fee.moneyValue, actionableBalance))
+                }
+                guard try (fee.moneyValue + pendingTransaction.amount) <= actionableBalance else {
+                    throw TransactionValidationFailure(
+                        state: .insufficientFunds(
+                            pendingTransaction.available,
+                            pendingTransaction.amount,
+                            sourceAccount!.currencyType,
+                            transactionTarget!.currencyType
+                        )
+                    )
                 }
             }
             .asCompletable()
     }
 
-    private func makeFeeSelectionOption(pendingTransaction: PendingTransaction) -> Single<TransactionConfirmation.Model.FeeSelection> {
+    private func makeFeeSelectionOption(
+        pendingTransaction: PendingTransaction
+    ) -> Single<TransactionConfirmation.Model.FeeSelection> {
         Single
             .just(pendingTransaction)
             .map(weak: self) { (self, pendingTransaction) -> FeeState in
@@ -319,7 +339,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
+    private func fiatAmountAndFees(
+        from pendingTransaction: PendingTransaction
+    ) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
             .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .coin(.ethereum))),
@@ -335,14 +357,13 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
-        fiatCurrencyService
+        walletCurrencyService
             .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: self.sourceAsset, in: fiatCurrency)
+            .flatMap { [sourceAsset, currencyConversionService] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
     }
 }

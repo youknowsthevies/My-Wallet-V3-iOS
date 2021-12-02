@@ -60,21 +60,6 @@ extension DependencyContainer {
 
         factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }
 
-        factory { () -> CredentialsRepositoryAPI in
-            let repository: WalletRepositoryAPI = DIKit.resolve()
-            return repository as CredentialsRepositoryAPI
-        }
-
-        factory { () -> NabuOfflineTokenRepositoryAPI in
-            let repository: WalletRepositoryAPI = DIKit.resolve()
-            return repository as NabuOfflineTokenRepositoryAPI
-        }
-
-        factory { () -> CredentialsRepositoryAPI & NabuOfflineTokenRepositoryAPI in
-            let repository: WalletRepositoryAPI = DIKit.resolve()
-            return repository as CredentialsRepositoryAPI & NabuOfflineTokenRepositoryAPI
-        }
-
         // MARK: - Secure Channel
 
         single { SecureChannelService() as SecureChannelAPI }
@@ -264,8 +249,6 @@ extension DependencyContainer {
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as OrdersActivityClientAPI
         }
-
-        factory { WithdrawalService() as WithdrawalServiceAPI }
 
         // MARK: - Clients - Cards
 

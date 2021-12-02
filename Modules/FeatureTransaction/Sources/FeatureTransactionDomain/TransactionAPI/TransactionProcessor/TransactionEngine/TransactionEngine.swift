@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -11,6 +12,11 @@ public protocol TransactionOrder {
 public protocol TransactionEngine: AnyObject {
 
     typealias AskForRefreshConfirmation = (_ revalidate: Bool) -> Completable
+
+    /// Used for fetching the wallet's default currency
+    var walletCurrencyService: FiatCurrencyServiceAPI { get }
+    /// Used to convert amounts in different currencies
+    var currencyConversionService: CurrencyConversionServiceAPI { get }
 
     /// Does this engine accept fiat input amounts
     var canTransactFiat: Bool { get }
@@ -201,5 +207,141 @@ extension TransactionEngine {
         secondPassword: String
     ) -> Single<TransactionResult> {
         execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
+    }
+}
+
+private struct TransactionValidationConversionRates {
+    let amountToWalletRate: MoneyValue
+    let feeToWalletRate: MoneyValue
+    let sourceToWalletRate: MoneyValue
+    let limitsToAmountRate: MoneyValue
+}
+
+extension TransactionEngine {
+
+    public func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        guard let sourceAccount = sourceAccount, transactionTarget != nil else {
+            return .error(TransactionValidationFailure(state: .uninitialized))
+        }
+        // NOTE: Convert amounts for comparison from fiat to crypto or vice versa, but never crypto -> crypto as this is not fully supported yet.
+        return fetchAmountConversionRates(for: pendingTransaction)
+            .mapError { error -> Error in
+                error // map to generic Error for zipping with balance
+            }
+            .zip(sourceAccount.balancePublisher)
+            .asSingle()
+            .map { [weak self] conversionRates, sourceBalance -> Void in
+                let convertedBalance = sourceBalance.convert(using: conversionRates.sourceToWalletRate)
+                let convertedFee = pendingTransaction.feeAmount.convert(using: conversionRates.feeToWalletRate)
+                guard try convertedBalance >= convertedFee else {
+                    throw TransactionValidationFailure(state: .belowFees(convertedFee, convertedBalance))
+                }
+
+                let amount = pendingTransaction.amount
+                let limits = pendingTransaction.normalizedLimits.convert(using: conversionRates.limitsToAmountRate)
+                let availableBalanceInWalletCurrency = try convertedBalance - convertedFee
+                let availableBalance = availableBalanceInWalletCurrency.convert(
+                    usingInverse: conversionRates.amountToWalletRate,
+                    currencyType: amount.currencyType
+                )
+                try self?.validate(amount, hasAmountUpToSourceLimit: availableBalance)
+                try self?.validate(amount, isWithin: limits, amountToWalletRate: conversionRates.amountToWalletRate)
+            }
+            .asCompletable()
+            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
+    }
+
+    private func fetchAmountConversionRates(
+        for pendingTransaction: PendingTransaction
+    ) -> AnyPublisher<TransactionValidationConversionRates, PriceServiceError> {
+        walletCurrencyService
+            .fiatCurrencyPublisher
+            .setFailureType(to: PriceServiceError.self)
+            .flatMap { [currencyConversionService, sourceAsset] walletCurrency in
+                currencyConversionService.conversionRate(
+                    from: pendingTransaction.amount.currencyType,
+                    to: walletCurrency.currencyType
+                )
+                .zip(
+                    currencyConversionService.conversionRate(
+                        from: pendingTransaction.feeAmount.currencyType,
+                        to: walletCurrency.currencyType
+                    ),
+                    currencyConversionService.conversionRate(
+                        from: sourceAsset,
+                        to: walletCurrency.currencyType
+                    ),
+                    currencyConversionService.conversionRate(
+                        from: pendingTransaction.normalizedLimits.currencyType,
+                        to: pendingTransaction.amount.currencyType
+                    )
+                )
+            }
+            .map { conversionRates in
+                let (amountToWalletRate, feeToWalletRate, sourceToWallet, limitsToAmountRate) = conversionRates
+                return TransactionValidationConversionRates(
+                    amountToWalletRate: amountToWalletRate,
+                    feeToWalletRate: feeToWalletRate,
+                    sourceToWalletRate: sourceToWallet,
+                    limitsToAmountRate: limitsToAmountRate
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private func validate(
+        _ amount: MoneyValue,
+        isWithin limits: TransactionLimits,
+        amountToWalletRate: MoneyValue
+    ) throws {
+        let minLimit = limits.minimum ?? .zero(currency: limits.currencyType)
+        guard try amount >= minLimit else {
+            throw TransactionValidationFailure(state: .belowMinimumLimit(minLimit))
+        }
+
+        guard let maxLimit = limits.maximum else {
+            return
+        }
+
+        guard try amount <= maxLimit else {
+            if sourceAccount is LinkedBankAccount {
+                throw TransactionValidationFailure(
+                    state: .overMaximumSourceLimit(
+                        maxLimit.convert(using: amountToWalletRate),
+                        sourceAccount.label,
+                        amount
+                    )
+                )
+            }
+            throw TransactionValidationFailure(
+                state: .overMaximumPersonalLimit(
+                    limits.effectiveLimit ?? EffectiveLimit(timeframe: .single, value: maxLimit),
+                    maxLimit.convert(using: amountToWalletRate),
+                    limits.suggestedUpgrade
+                )
+            )
+        }
+    }
+
+    private func validate(_ amount: MoneyValue, hasAmountUpToSourceLimit limit: MoneyValue) throws {
+        guard (sourceAccount is LinkedBankAccount) == false else {
+            // bank accounts have no balance to us, so nothing to there's validate against
+            return
+        }
+        guard try amount <= limit else {
+            if let source = sourceAccount as? PaymentMethodAccount, !source.paymentMethod.type.isFunds {
+                throw TransactionValidationFailure(
+                    state: .overMaximumSourceLimit(limit, sourceAccount.label, amount)
+                )
+            }
+            throw TransactionValidationFailure(
+                state: .insufficientFunds(
+                    limit,
+                    amount,
+                    sourceAccount.currencyType,
+                    transactionTarget.currencyType
+                )
+            )
+        }
     }
 }

@@ -7,9 +7,10 @@ import ToolKit
 
 final class OnChainSwapTransactionEngine: SwapTransactionEngine {
 
+    let walletCurrencyService: FiatCurrencyServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
+
     let receiveAddressFactory: ExternalAssetAddressServiceAPI
-    let fiatCurrencyService: FiatCurrencyServiceAPI
-    let kycTiersService: KYCTiersServiceAPI
     let onChainEngine: OnChainTransactionEngine
     let orderCreationRepository: OrderCreationRepositoryAPI
     var orderDirection: OrderDirection {
@@ -18,10 +19,9 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
 
     let orderQuoteRepository: OrderQuoteRepositoryAPI
     let orderUpdateRepository: OrderUpdateRepositoryAPI
-    let priceService: PriceServiceAPI
     let quotesEngine: SwapQuotesEngine
     let requireSecondPassword: Bool
-    let tradeLimitsRepository: TransactionLimitsRepositoryAPI
+    let transactionLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
@@ -33,10 +33,9 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
         orderUpdateRepository: OrderUpdateRepositoryAPI = resolve(),
-        tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         receiveAddressFactory: ExternalAssetAddressServiceAPI = resolve()
     ) {
         self.quotesEngine = quotesEngine
@@ -44,10 +43,9 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         self.orderQuoteRepository = orderQuoteRepository
         self.orderCreationRepository = orderCreationRepository
         self.orderUpdateRepository = orderUpdateRepository
-        self.tradeLimitsRepository = tradeLimitsRepository
-        self.fiatCurrencyService = fiatCurrencyService
-        self.kycTiersService = kycTiersService
-        self.priceService = priceService
+        self.transactionLimitsService = transactionLimitsService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
         self.onChainEngine = onChainEngine
         self.receiveAddressFactory = receiveAddressFactory
     }
@@ -91,19 +89,6 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         return pendingTransaction.feeSelection.selectedLevel
     }
 
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        onChainEngine.validateAmount(pendingTransaction: pendingTransaction)
-            .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
-                switch pendingTransaction.validationState {
-                case .canExecute, .invalidAmount:
-                    return self.defaultValidateAmount(pendingTransaction: pendingTransaction)
-                default:
-                    return .just(pendingTransaction)
-                }
-            }
-            .updateTxValiditySingle(pendingTransaction: pendingTransaction)
-    }
-
     func initializeTransaction() -> Single<PendingTransaction> {
         quotesEngine
             .getRate(direction: orderDirection, pair: pair)
@@ -113,7 +98,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                 self.startOnChainEngine(pricedQuote: pricedQuote)
                     .andThen(
                         Single.zip(
-                            self.fiatCurrencyService.fiatCurrency,
+                            self.walletCurrencyService.fiatCurrency,
                             self.onChainEngine.initializeTransaction()
                         )
                     )
@@ -130,8 +115,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                         )
                         return self.updateLimits(
                             pendingTransaction: pendingTransaction,
-                            pricedQuote: pricedQuote,
-                            fiatCurrency: fiatCurrency
+                            pricedQuote: pricedQuote
                         )
                         .map(weak: self) { (self, pendingTx) -> PendingTransaction in
                             pendingTx
@@ -147,7 +131,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
             .doValidateAll(pendingTransaction: pendingTransaction)
             .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
                 switch pendingTransaction.validationState {
-                case .canExecute, .invalidAmount:
+                case .canExecute:
                     return self.defaultDoValidateAll(pendingTransaction: pendingTransaction)
                 default:
                     return .just(pendingTransaction)

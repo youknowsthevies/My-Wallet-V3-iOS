@@ -30,7 +30,7 @@ public struct PrimaryButtonStyle: ButtonStyle {
  This is equivalent to writing:
  ```
  LoadingButton(...)
-    .buttonStyle(PrimaryButtonStyle())
+ .buttonStyle(PrimaryButtonStyle())
  ```
  */
 public struct PrimaryButton: View {
@@ -50,6 +50,13 @@ public struct PrimaryButton: View {
         LoadingButton(title: title, action: action, loading: $loading)
             .buttonStyle(PrimaryButtonStyle(isEnabled: isEnabled))
             .progressViewStyle(CircularProgressViewStyle(tint: .buttonPrimaryText))
+    }
+}
+
+extension PrimaryButton {
+
+    public init<S>(_ title: S, action: @escaping () -> Void) where S: StringProtocol {
+        self.init(title: String(title), action: action)
     }
 }
 

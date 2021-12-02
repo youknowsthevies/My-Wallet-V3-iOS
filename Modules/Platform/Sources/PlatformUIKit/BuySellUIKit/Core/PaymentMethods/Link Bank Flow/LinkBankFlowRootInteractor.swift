@@ -1,10 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RIBs
 import RxCocoa
 import RxSwift
+import ToolKit
 
 enum LinkBankFlow {
     enum FailureReason: Error {
@@ -14,6 +16,7 @@ enum LinkBankFlow {
     enum Screen {
         case splash(data: BankLinkageData)
         case yodlee(data: BankLinkageData)
+        case yapily(data: BankLinkageData)
         case failure(FailureReason)
     }
 
@@ -43,22 +46,26 @@ final class LinkBankFlowRootInteractor: Interactor,
 
     private let bankFlowEffectRelay = PublishRelay<LinkBankFlowEffect>()
     internal let retryAction = PublishRelay<LinkBankFlow.Action>()
-    private let supportedParters: Set<BankLinkageData.Partner> = [.yodlee]
 
     // MARK: - Injected
 
     private let linkedBankService: LinkedBanksServiceAPI
     private let loadingViewPresenter: LoadingViewPresenting
     private let beneficiariesService: BeneficiariesServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
+
+    private var bag: Set<AnyCancellable> = []
 
     init(
         linkedBankService: LinkedBanksServiceAPI = resolve(),
         loadingViewPresenter: LoadingViewPresenting = resolve(),
-        beneficiariesService: BeneficiariesServiceAPI = resolve()
+        beneficiariesService: BeneficiariesServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.linkedBankService = linkedBankService
         self.loadingViewPresenter = loadingViewPresenter
         self.beneficiariesService = beneficiariesService
+        self.featureFlagsService = featureFlagsService
         linkBankFlowEffect = bankFlowEffectRelay
             .asObservable()
             .share(replay: 1, scope: .whileConnected)
@@ -127,13 +134,20 @@ final class LinkBankFlowRootInteractor: Interactor,
                 router?.route(to: .failure(.generic))
                 return
             }
-            guard supportedParters.contains(data.partner) else {
-                router?.route(to: .failure(.generic))
-                return
+            switch data.partner {
+            case .yapily:
+                featureFlagsService
+                    .isEnabled(.remote(.openBanking))
+                    .if(
+                        then: { [weak self] in self?.route(to: .yapily(data: data)) },
+                        else: { [weak self] in self?.route(to: .failure(.generic)) }
+                    )
+                    .store(in: &bag)
+            case .yodlee:
+                route(to: .splash(data: data))
             }
-            router?.route(to: .splash(data: data))
         case .failure:
-            router?.route(to: .failure(.generic))
+            route(to: .failure(.generic))
         }
     }
 }

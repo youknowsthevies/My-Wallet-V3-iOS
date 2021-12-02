@@ -2,40 +2,28 @@
 
 import Combine
 import DIKit
-import RxCombine
+import RxToolKit
 
 final class SessionTokenService: SessionTokenServiceAPI {
 
     // MARK: - Injected
 
     private let repository: RemoteSessionTokenRepositoryAPI
-    private let walletRepository: SessionTokenRepositoryAPI
+    private let sessionRepository: SessionTokenRepositoryAPI
 
     // MARK: - Setup
 
     init(
         repository: RemoteSessionTokenRepositoryAPI = resolve(),
-        walletRepository: SessionTokenRepositoryAPI
+        sessionRepository: SessionTokenRepositoryAPI
     ) {
         self.repository = repository
-        self.walletRepository = walletRepository
+        self.sessionRepository = sessionRepository
     }
 
     func setupSessionToken() -> AnyPublisher<Void, SessionTokenServiceError> {
-        walletRepository
-            .hasSessionTokenPublisher
-            .flatMap { [repository, walletRepository] hasSessionToken
-                -> AnyPublisher<String?, SessionTokenServiceError> in
-                guard !hasSessionToken else {
-                    return walletRepository
-                        .sessionToken
-                        .asPublisher()
-                        .ignoreFailure(setFailureType: SessionTokenServiceError.self)
-                }
-                return repository
-                    .token
-                    .eraseToAnyPublisher()
-            }
+        repository
+            .token
             .flatMap { sessionTokenOrNil
                 -> AnyPublisher<String, SessionTokenServiceError> in
                 guard let sessionToken = sessionTokenOrNil else {
@@ -43,9 +31,9 @@ final class SessionTokenService: SessionTokenServiceAPI {
                 }
                 return .just(sessionToken)
             }
-            .flatMap { [walletRepository] sessionToken
+            .flatMap { [sessionRepository] sessionToken
                 -> AnyPublisher<Void, SessionTokenServiceError> in
-                walletRepository.setPublisher(sessionToken: sessionToken)
+                sessionRepository.setPublisher(sessionToken: sessionToken)
                     .mapError()
             }
             .eraseToAnyPublisher()

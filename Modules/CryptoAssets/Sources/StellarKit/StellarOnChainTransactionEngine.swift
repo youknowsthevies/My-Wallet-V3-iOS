@@ -24,12 +24,12 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             .asObservable()
     }
 
+    let walletCurrencyService: FiatCurrencyServiceAPI
+    let currencyConversionService: CurrencyConversionServiceAPI
     var askForRefreshConfirmation: (AskForRefreshConfirmation)!
     var requireSecondPassword: Bool
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
-    var fiatCurrencyService: FiatCurrencyServiceAPI
-    var priceService: PriceServiceAPI
     var transactionDispatcher: StellarTransactionDispatcher
     var feeService: AnyCryptoFeeService<StellarTransactionFee>
 
@@ -40,17 +40,16 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private var userFiatCurrency: Single<FiatCurrency> {
-        fiatCurrencyService.fiatCurrency
+        walletCurrencyService.fiatCurrency
     }
 
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         userFiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: self.sourceAsset, in: fiatCurrency)
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
+                currencyConversionService
+                    .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
                     .asSingle()
-                    .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
     }
 
@@ -66,14 +65,14 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     init(
         requireSecondPassword: Bool,
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-        priceService: PriceServiceAPI = resolve(),
+        walletCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        currencyConversionService: CurrencyConversionServiceAPI = resolve(),
         feeService: AnyCryptoFeeService<StellarTransactionFee> = resolve(),
         transactionDispatcher: StellarTransactionDispatcher = resolve()
     ) {
         self.requireSecondPassword = requireSecondPassword
-        self.fiatCurrencyService = fiatCurrencyService
-        self.priceService = priceService
+        self.walletCurrencyService = walletCurrencyService
+        self.currencyConversionService = currencyConversionService
         self.transactionDispatcher = transactionDispatcher
         self.feeService = feeService
     }
@@ -85,8 +84,18 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
         precondition(sourceCryptoCurrency == .coin(.stellar))
     }
 
-    func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        Single.zip(defaultRestart(transactionTarget: transactionTarget, pendingTransaction: pendingTransaction), isMemoRequired)
+    func restart(
+        transactionTarget: TransactionTarget,
+        pendingTransaction: PendingTransaction
+    ) -> Single<PendingTransaction> {
+        Single
+            .zip(
+                defaultRestart(
+                    transactionTarget: transactionTarget,
+                    pendingTransaction: pendingTransaction
+                ),
+                isMemoRequired
+            )
             .map { [receiveAddress] pendingTransaction, isMemoRequired -> PendingTransaction in
                 guard let stellarReceive = receiveAddress as? StellarReceiveAddress else {
                     return pendingTransaction
@@ -135,34 +144,38 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        Single.zip(userFiatCurrency, isMemoRequired)
-            .map { [receiveAddress] fiatCurrency, isMemoRequired -> PendingTransaction in
-                var memo: String?
-                if let stellarReceive = receiveAddress as? StellarReceiveAddress {
-                    memo = stellarReceive.memo
-                }
-                let memoModel = TransactionConfirmation.Model.Memo(
-                    textMemo: memo,
-                    required: isMemoRequired
-                )
-                let zeroStellar: MoneyValue = .zero(currency: .coin(.stellar))
-                var transaction = PendingTransaction(
-                    amount: zeroStellar,
-                    available: zeroStellar,
-                    feeAmount: zeroStellar,
-                    feeForFullAvailable: zeroStellar,
-                    feeSelection: .init(
-                        selectedLevel: .regular,
-                        availableLevels: [.regular],
-                        asset: .crypto(.coin(.stellar))
-                    ),
-                    selectedFiatCurrency: fiatCurrency,
-                    minimumLimit: nil,
-                    maximumLimit: nil
-                )
-                transaction.setMemo(memo: memoModel)
-                return transaction
+        Single.zip(
+            userFiatCurrency,
+            isMemoRequired,
+            availableBalance
+        )
+        .map { [receiveAddress] fiatCurrency, isMemoRequired, availableBalance -> PendingTransaction in
+            var memo: String?
+            if let stellarReceive = receiveAddress as? StellarReceiveAddress {
+                memo = stellarReceive.memo
             }
+            let memoModel = TransactionConfirmation.Model.Memo(
+                textMemo: memo,
+                required: isMemoRequired
+            )
+            let zeroStellar: MoneyValue = .zero(currency: .coin(.stellar))
+            var transaction = PendingTransaction(
+                amount: zeroStellar,
+                available: availableBalance,
+                feeAmount: zeroStellar,
+                feeForFullAvailable: zeroStellar,
+                feeSelection: .init(
+                    selectedLevel: .regular,
+                    availableLevels: [.regular],
+                    asset: .crypto(.coin(.stellar))
+                ),
+                selectedFiatCurrency: fiatCurrency,
+                minimumLimit: nil,
+                maximumLimit: nil
+            )
+            transaction.setMemo(memo: memoModel)
+            return transaction
+        }
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -186,7 +199,10 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    func doOptionUpdateRequest(pendingTransaction: PendingTransaction, newConfirmation: TransactionConfirmation) -> Single<PendingTransaction> {
+    func doOptionUpdateRequest(
+        pendingTransaction: PendingTransaction,
+        newConfirmation: TransactionConfirmation
+    ) -> Single<PendingTransaction> {
         defaultDoOptionUpdateRequest(pendingTransaction: pendingTransaction, newConfirmation: newConfirmation)
             .map { pendingTransaction -> PendingTransaction in
                 var pendingTransaction = pendingTransaction
@@ -200,15 +216,8 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             }
     }
 
-    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        validateAmounts(pendingTransaction: pendingTransaction)
-            .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
-            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
-    }
-
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateTargetAddress()
-            .andThen(validateAmounts(pendingTransaction: pendingTransaction))
             .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
             .andThen(validateOptions(pendingTransaction: pendingTransaction))
             .andThen(validateDryRun(pendingTransaction: pendingTransaction))
@@ -224,22 +233,22 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                 TransactionResult.hashed(txHash: result.transactionHash, amount: pendingTransaction.amount)
             }
     }
+}
 
-    // MARK: - Private methods
-
-    private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
-        Completable.fromCallable {
-            guard pendingTransaction.amount.isPositive else {
-                throw TransactionValidationFailure(state: .invalidAmount)
-            }
-        }
-    }
+extension StellarOnChainTransactionEngine {
 
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
         Single.zip(sourceAccount.actionableBalance, absoluteFee)
-            .map { balance, fee -> Void in
+            .map { [sourceAccount, transactionTarget] balance, fee -> Void in
                 if try (try fee.moneyValue + pendingTransaction.amount) > balance {
-                    throw TransactionValidationFailure(state: .insufficientFunds)
+                    throw TransactionValidationFailure(
+                        state: .insufficientFunds(
+                            balance,
+                            pendingTransaction.amount,
+                            sourceAccount!.currencyType,
+                            transactionTarget!.currencyType
+                        )
+                    )
                 }
             }
             .asCompletable()
@@ -356,12 +365,19 @@ extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
             switch error {
             case SendFailureReason.unknown:
                 throw TransactionValidationFailure(state: .unknownError)
-            case SendFailureReason.belowMinimumSend:
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
-            case SendFailureReason.belowMinimumSendNewAccount:
-                throw TransactionValidationFailure(state: .belowMinimumLimit)
-            case SendFailureReason.insufficientFunds:
-                throw TransactionValidationFailure(state: .insufficientFunds)
+            case SendFailureReason.belowMinimumSend(let minimum):
+                throw TransactionValidationFailure(state: .belowMinimumLimit(minimum))
+            case SendFailureReason.belowMinimumSendNewAccount(let minimum):
+                throw TransactionValidationFailure(state: .belowMinimumLimit(minimum))
+            case SendFailureReason.insufficientFunds(let balance, let desiredAmount):
+                throw TransactionValidationFailure(
+                    state: .insufficientFunds(
+                        balance,
+                        desiredAmount,
+                        balance.currencyType,
+                        balance.currencyType
+                    )
+                )
             case SendFailureReason.badDestinationAccountID:
                 throw TransactionValidationFailure(state: .invalidAddress)
             default:

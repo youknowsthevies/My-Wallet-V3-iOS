@@ -36,6 +36,15 @@ schemeTemplates:
       config: ${releaseConfig}
     run:
       config: ${debugConfig}
+      environmentVariables:
+        - variable: BLOCKCHAIN_DEBUG_NETWORK_REQUEST
+          value: TRUE
+          isEnabled: false
+        - variable: OS_ACTIVITY_MODE
+          value: disable
+          isEnabled: true
+      commandLineArguments:
+        "-_UIConstraintBasedLayoutLogUnsatisfiable NO": false
     test:
       config: ${debugConfig}
       gatherCoverageData: true
@@ -236,9 +245,6 @@ packages:
   RxSwift:
     url: https://github.com/ReactiveX/RxSwift.git
     version: 5.1.3
-  RxCombine:
-    url: https://github.com/paulo-bc/RxCombine.git
-    version: 1.6.2
   RIBs:
     url: https://github.com/paulo-bc/RIBs.git
     version: 0.10.2
@@ -268,8 +274,12 @@ packages:
     path: Modules/FeatureInterest
   FeatureKYC:
     path: Modules/FeatureKYC
+  FeatureOpenBanking:
+    path: Modules/FeatureOpenBanking
   FeatureOnboarding:
     path: Modules/FeatureOnboarding
+  FeatureQRCodeScanner:
+    path: Modules/FeatureQRCodeScanner
   FeatureSettings:
     path: Modules/FeatureSettings
   FeatureTour:
@@ -359,15 +369,17 @@ targets:
       - embed: false
         framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
 
-      - package: FeatureApp
       - package: FeatureAccountPicker
       - package: FeatureActivity
+      - package: FeatureApp
       - package: FeatureAuthentication
       - package: FeatureDashboard
       - package: FeatureDebug
       - package: FeatureInterest
       - package: FeatureKYC
+      - package: FeatureQRCodeScanner
       - package: FeatureOnboarding
+      - package: FeatureOpenBanking
       - package: FeatureSettings
       - package: FeatureTour
       - package: FeatureTransaction
@@ -377,7 +389,6 @@ targets:
       - package: ComposableArchitecture
       - package: DIKit
       - package: RIBs
-      - package: RxCombine
       - package: RxSwift
         product: RxCocoa
       - package: RxSwift
@@ -604,8 +615,6 @@ targets:
       - sdk: NotificationCenter.framework
 
       - package: DIKit
-      - package: RxCombine
-        product: RxCombine
       - package: RxSwift
         product: RxCocoa
       - package: RxSwift

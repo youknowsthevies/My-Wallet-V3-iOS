@@ -56,7 +56,7 @@ public enum LocalizationConstants {
         "Your local currency to store funds in that currency as funds in your Blockchain Wallet.",
         comment: "Your local currency to store funds in that currency as funds in your Blockchain Wallet."
     )
-    public static let scanQRCode = NSLocalizedString("Scan QR Code", comment: "")
+    public static let scanQRCode = NSLocalizedString("Scan a QR Code", comment: "")
     public static let scanPairingCode = NSLocalizedString("Scan Pairing Code", comment: " ")
     public static let parsingPairingCode = NSLocalizedString("Parsing Pairing Code", comment: " ")
     public static let invalidPairingCode = NSLocalizedString("Invalid Pairing Code", comment: " ")
@@ -478,6 +478,93 @@ public enum LocalizationConstants {
         public static let request = NSLocalizedString(
             "Request",
             comment: "Tab item: request"
+        )
+        public static let prices = NSLocalizedString(
+            "Prices",
+            comment: "Tab item: prices"
+        )
+        public static let buyAndSell = NSLocalizedString(
+            "Buy & Sell",
+            comment: "Tab item: buy and sell"
+        )
+    }
+
+    public enum FrequentActionItem {
+
+        public static let swap = (
+            name: NSLocalizedString(
+                "Swap",
+                comment: "fequent action item: Swap"
+            ),
+            description: NSLocalizedString(
+                "Exchange for Another Crypto",
+                comment: "fequent action description: Swap"
+            )
+        )
+
+        public static let send = (
+            name: NSLocalizedString(
+                "Send",
+                comment: "fequent action item: Send"
+            ),
+            description: NSLocalizedString(
+                "Send to Any Wallet",
+                comment: "fequent action description: Send"
+            )
+        )
+
+        public static let receive = (
+            name: NSLocalizedString(
+                "Receive",
+                comment: "fequent action item: Receive"
+            ),
+            description: NSLocalizedString(
+                "Copy Your Addresses & QR Codes",
+                comment: "fequent action description: Receive"
+            )
+        )
+
+        public static let rewards = (
+            name: NSLocalizedString(
+                "Rewards",
+                comment: "fequent action item: Rewards"
+            ),
+            description: NSLocalizedString(
+                "Earn Rewards on Your Crypto",
+                comment: "fequent action description: Rewards"
+            )
+        )
+
+        public static let deposit = (
+            name: NSLocalizedString(
+                "Add Cash",
+                comment: "fequent action item: Add Cash"
+            ),
+            description: NSLocalizedString(
+                "Add Cash from Your Bank",
+                comment: "fequent action description: Add Cash"
+            )
+        )
+
+        public static let withdraw = (
+            name: NSLocalizedString(
+                "Cash Out",
+                comment: "fequent action item: Cash Out"
+            ),
+            description: NSLocalizedString(
+                "Cash Out from Your Bank",
+                comment: "fequent action description: Cash Out"
+            )
+        )
+
+        public static let buy = NSLocalizedString(
+            "Buy",
+            comment: "fequent action description: Buy"
+        )
+
+        public static let sell = NSLocalizedString(
+            "Sell",
+            comment: "fequent action description: Sell"
         )
     }
 

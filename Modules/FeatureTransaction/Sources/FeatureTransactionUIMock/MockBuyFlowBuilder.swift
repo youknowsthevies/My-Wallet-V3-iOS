@@ -5,16 +5,18 @@ import PlatformKit
 import RIBs
 import UIKit
 
+// swiftlint:disable large_tuple
+
 public final class MockBuyFlowRouter: RIBs.Router<BuyFlowInteractor>, BuyFlowRouting {
 
     public struct RecordedInvocations {
-        public var start: [(cryptoAccount: CryptoAccount?, presenter: UIViewController)] = []
+        public var start: [(cryptoAccount: CryptoAccount?, order: OrderDetails?, presenter: UIViewController)] = []
     }
 
     public private(set) var recordedInvocations = RecordedInvocations()
 
-    public func start(with cryptoAccount: CryptoAccount?, from presenter: UIViewController) {
-        recordedInvocations.start.append((cryptoAccount, presenter))
+    public func start(with cryptoAccount: CryptoAccount?, order: OrderDetails?, from presenter: UIViewController) {
+        recordedInvocations.start.append((cryptoAccount, order, presenter))
     }
 }
 
