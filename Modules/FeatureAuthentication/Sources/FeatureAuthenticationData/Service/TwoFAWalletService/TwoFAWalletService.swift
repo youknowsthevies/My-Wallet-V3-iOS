@@ -97,6 +97,7 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
 
     private func new_send(code: String) -> AnyPublisher<Void, TwoFAWalletServiceError> {
         walletRepo.credentials
+            .first()
             .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), TwoFAWalletServiceError> in
                 guard !credentials.guid.isEmpty else {
                     return .failure(.missingCredentials(.guid))

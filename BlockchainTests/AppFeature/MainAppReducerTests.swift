@@ -15,6 +15,7 @@ import XCTest
 
 @testable import Blockchain
 @testable import ComposableNavigation
+@testable import FeatureAppDomain
 @testable import FeatureAppUI
 @testable import FeatureAuthenticationMock
 @testable import FeatureAuthenticationUI
@@ -49,6 +50,8 @@ final class MainAppReducerTests: XCTestCase {
     var mockFiatCurrencySettingsService: FiatCurrencySettingsServiceMock!
     var mockAppStoreOpener: MockAppStoreOpener!
     var mockERC20CryptoAssetService: ERC20CryptoAssetServiceMock!
+
+    var mockWalletService: WalletService!
 
     var testStore: TestStore<
         CoreAppState,
@@ -96,6 +99,11 @@ final class MainAppReducerTests: XCTestCase {
         mockAppStoreOpener = MockAppStoreOpener()
         mockERC20CryptoAssetService = ERC20CryptoAssetServiceMock()
 
+        mockWalletService = WalletService(
+            fetch: { _ in .empty() },
+            refetch: { _, _ in .empty() }
+        )
+
         testStore = TestStore(
             initialState: CoreAppState(),
             reducer: mainAppReducer,
@@ -126,6 +134,7 @@ final class MainAppReducerTests: XCTestCase {
                 onboardingSettings: onboardingSettings,
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 appStoreOpener: mockAppStoreOpener,
+                walletService: mockWalletService,
                 buildVersionProvider: { "" }
             )
         )
@@ -154,7 +163,7 @@ final class MainAppReducerTests: XCTestCase {
         mockDeepLinkRouter = nil
         mockFeatureFlagsService = nil
         mockFiatCurrencySettingsService = nil
-
+        mockWalletService = nil
         testStore = nil
 
         try super.tearDownWithError()

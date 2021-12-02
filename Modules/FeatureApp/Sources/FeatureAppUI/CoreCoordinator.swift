@@ -5,6 +5,7 @@ import Combine
 import ComposableArchitecture
 import DIKit
 import ERC20Kit
+import FeatureAppDomain
 import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
 import FeatureSettingsDomain
@@ -135,6 +136,7 @@ struct CoreAppEnvironment {
     var onboardingSettings: OnboardingSettingsAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var appStoreOpener: AppStoreOpening
+    var walletService: WalletService
     var buildVersionProvider: () -> String
 }
 
@@ -297,21 +299,43 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
 
     case .fetchWallet(let password):
         environment.loadingViewPresenter.showCircular()
-        // As much as I (Dimitris) hate delay-ing work this is one of those method
-        // that I'm going to make an exception, mainly because it's going to be replaced soon.
-        // This is to give a change for the circular loader to appear before
-        // we call `fetch(with: _password_)` which will call the evil that is JS.
-        return .merge(
-            Effect(value: .doFetchWallet(password: password))
-                .delay(for: .milliseconds(200), scheduler: environment.mainQueue)
-                .eraseToEffect()
-                .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true),
-            Effect(value: .authenticate)
-        )
+        return nativeWalletFlagEnabled()
+            .flatMap { nativeWalletEnabled -> Effect<CoreAppAction, Never> in
+                guard nativeWalletEnabled else {
+                    // As much as I (Dimitris) hate delay-ing work this is one of those method
+                    // that I'm going to make an exception, mainly because it's going to be replaced soon.
+                    // This is to give a change for the circular loader to appear before
+                    // we call `fetch(with: _password_)` which will call the evil that is JS.
+                    return .merge(
+                        Effect(value: .doFetchWallet(password: password))
+                            .delay(for: .milliseconds(200), scheduler: environment.mainQueue)
+                            .eraseToEffect()
+                            .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true),
+                        Effect(value: .authenticate)
+                    )
+                }
+                return Effect(value: .doFetchWallet(password: password))
+            }
+            .eraseToEffect()
 
     case .doFetchWallet(let password):
-        environment.walletManager.fetch(with: password)
-        return .cancel(id: WalletCancelations.FetchId())
+        let walletManager = environment.walletManager
+        let walletService = environment.walletService
+        let mainQueue = environment.mainQueue
+        return nativeWalletFlagEnabled()
+            .flatMap { nativeWalletEnabled -> Effect<CoreAppAction, Never> in
+                guard nativeWalletEnabled else {
+                    walletManager.fetch(with: password)
+                    return .cancel(id: WalletCancelations.FetchId())
+                }
+                // Runs the native wallet fetching
+                return walletService.fetch(password)
+                    .receive(on: mainQueue)
+                    .catchToEffect()
+                    .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true)
+                    .map { _ in CoreAppAction.walletInitialized }
+            }
+            .eraseToEffect()
 
     case .authenticate:
         return .merge(

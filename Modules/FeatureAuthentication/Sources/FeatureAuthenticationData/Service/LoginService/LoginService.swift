@@ -38,6 +38,7 @@ public final class LoginService: LoginServiceAPI {
     public func login(walletIdentifier: String) -> AnyPublisher<Void, LoginServiceError> {
         guidRepository
             .setPublisher(guid: walletIdentifier)
+            .first()
             .flatMap { [payloadService] _ -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
                 payloadService.requestUsingSessionToken()
             }

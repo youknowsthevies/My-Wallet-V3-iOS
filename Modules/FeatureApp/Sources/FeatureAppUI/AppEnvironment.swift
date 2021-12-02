@@ -4,6 +4,7 @@ import AnalyticsKit
 import ComposableArchitecture
 import DIKit
 import ERC20Kit
+import FeatureAppDomain
 import FeatureAuthenticationDomain
 import FeatureAuthenticationUI
 import FeatureDebugUI
@@ -46,6 +47,8 @@ public struct AppEnvironment {
 
     var coincore: CoincoreAPI
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
+
+    var walletService: WalletService
 
     var walletManager: WalletManagerAPI
     var walletUpgradeService: WalletUpgradeServicing
@@ -95,6 +98,7 @@ public struct AppEnvironment {
         openBanking: OpenBanking,
         coincore: CoincoreAPI,
         erc20CryptoAssetService: ERC20CryptoAssetServiceAPI,
+        walletService: WalletService,
         walletManager: WalletManagerAPI,
         walletUpgradeService: WalletUpgradeServicing,
         walletRepoPersistence: WalletRepoPersistenceAPI,
@@ -136,6 +140,7 @@ public struct AppEnvironment {
         self.openBanking = openBanking
         self.coincore = coincore
         self.erc20CryptoAssetService = erc20CryptoAssetService
+        self.walletService = walletService
         self.walletManager = walletManager
         self.walletUpgradeService = walletUpgradeService
         self.exchangeRepository = exchangeRepository

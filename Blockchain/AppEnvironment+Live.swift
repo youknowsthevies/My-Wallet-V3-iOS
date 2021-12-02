@@ -7,6 +7,7 @@ import FeatureAppUI
 import FeatureDebugUI
 import PlatformKit
 import ToolKit
+import WalletPayloadKit
 
 extension AppEnvironment {
 
@@ -41,6 +42,7 @@ extension AppEnvironment {
             openBanking: resolve(),
             coincore: resolve(),
             erc20CryptoAssetService: resolve(),
+            walletService: .live(fetcher: DIKit.resolve()),
             walletManager: resolve(),
             walletUpgradeService: resolve(),
             walletRepoPersistence: resolve(),

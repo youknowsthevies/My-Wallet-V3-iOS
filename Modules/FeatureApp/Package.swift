@@ -44,6 +44,7 @@ let package = Package(
         .target(
             name: "FeatureAppUI",
             dependencies: [
+                .target(name: "FeatureAppDomain"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "BitcoinChainKit", package: "CryptoAssets"),
                 .product(name: "ERC20Kit", package: "CryptoAssets"),
@@ -62,13 +63,15 @@ let package = Package(
                 .product(name: "RxCocoa", package: "RxSwift"),
                 .product(name: "RxRelay", package: "RxSwift"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),
         .target(
             name: "FeatureAppDomain",
             dependencies: [
                 .product(name: "PlatformKit", package: "Platform"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "FeatureAuthenticationDomain", package: "FeatureAuthentication"),
                 .product(name: "FeatureWithdrawalLocksData", package: "FeatureWithdrawalLocks"),
                 .product(name: "FeatureWithdrawalLocksDomain", package: "FeatureWithdrawalLocks")

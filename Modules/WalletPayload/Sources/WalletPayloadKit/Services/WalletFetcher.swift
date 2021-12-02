@@ -68,10 +68,7 @@ final class WalletFetcher: WalletFetcherAPI {
             .eraseToAnyPublisher()
         // 2. save the guid to metadata (metadata can get this from WalletRepo)
         // 3. load the metadata (lazy)
-        // 4. fetch and store:
-        //    a) wallet options
-        //    b) account info
-        // 5. Success (or failure)
+        // 4. Success (or failure)
     }
 
     // MARK: - Private
