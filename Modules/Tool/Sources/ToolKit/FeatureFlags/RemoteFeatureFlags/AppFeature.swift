@@ -23,6 +23,10 @@ public enum AppFeature: Int, CaseIterable {
     /// Sift Science SDK is enabled
     case siftScienceEnabled
 
+    // MARK: Wallet Connect
+
+    case walletConnectEnabled
+
     // MARK: Onboarding (After Login)
 
     /// Shows Email Verification insted of Simple Buy at Login
@@ -60,6 +64,9 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Open Banking
     case openBanking
 
+    /// Enable New Card Acquirers (Stripe & Checkout)
+    case newCardAcquirers
+
     // MARK: - Transactions Flow
 
     /// Uses the Transactions Flow implementation of Buy when enabled
@@ -67,6 +74,11 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
+
+    // MARK: - Account Picker
+
+    /// New SwiftUI account picker from `FeatureAccountPicker`
+    case swiftUIAccountPicker
 }
 
 extension AppFeature {
@@ -107,8 +119,14 @@ extension AppFeature {
             return "ios_open_banking"
         case .useTransactionsFlowToBuyCrypto:
             return "ios_use_transaction_flow_buy"
+        case .newCardAcquirers:
+            return "ios_ff_new_card_acquirers"
         case .newLimitsUIEnabled:
             return "ios_use_new_limits_ui"
+        case .swiftUIAccountPicker:
+            return "ios_swiftui_account_picker"
+        case .walletConnectEnabled:
+            return "ios_ff_wallet_connect"
         }
     }
 
@@ -146,9 +164,15 @@ extension AppFeature {
         case .sellUsingTransactionFlowEnabled,
              .useTransactionsFlowToBuyCrypto:
             return true
+        case .newCardAcquirers:
+            return true
         case .openBanking:
             return true
         case .newLimitsUIEnabled:
+            return true
+        case .swiftUIAccountPicker:
+            return true
+        case .walletConnectEnabled:
             return true
         }
     }

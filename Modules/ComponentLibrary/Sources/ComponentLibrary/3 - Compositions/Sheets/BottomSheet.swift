@@ -25,7 +25,7 @@ extension View {
             )
             Color.black
                 .opacity(isPresented.wrappedValue ? 0.4 : 0)
-                .frame(width: .infinity, height: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
                 .animation(.linear)
                 .onTapGesture {
@@ -62,6 +62,8 @@ public struct BottomSheetView<Content: View>: View {
         _isPresented = isPresented
     }
 
+    @State private var height: CGFloat = 0
+
     public var body: some View {
         GeometryReader { geometry in
             let maximumHeight = maximumHeight.in(geometry)
@@ -71,15 +73,21 @@ public struct BottomSheetView<Content: View>: View {
                 content()
             }
             .padding(.bottom, 20.pt)
+            .background(
+                GeometryReader { geometry in
+                    Color.clear
+                        .onAppear { height = min(geometry.size.height, maximumHeight) }
+                }
+            )
             .frame(
                 width: geometry.size.width,
-                height: maximumHeight,
+                height: height,
                 alignment: .top
             )
             .background(Color.semantic.background)
             .cornerRadius(16)
             .frame(height: geometry.size.height, alignment: .bottom)
-            .offset(y: max((isPresented ? 0 : maximumHeight) + translation, 0))
+            .offset(y: max((isPresented ? 0 : height) + translation, 0))
             .animation(.interactiveSpring())
             .gesture(
                 DragGesture()
@@ -116,7 +124,7 @@ struct BottomSheetView_Previews: PreviewProvider {
                     maximumHeight: 70.vh
                 ) {
                     ForEach(0..<10) { i in
-                        DefaultRow(title: "\(i)", accessoryView: { Icon.chevronRight })
+                        PrimaryRow(title: "\(i)")
                             .accentColor(.semantic.muted)
                         if i != 9 {
                             Divider()

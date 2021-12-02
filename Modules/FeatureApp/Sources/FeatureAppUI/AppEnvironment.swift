@@ -33,9 +33,9 @@ public struct AppEnvironment {
     var mobileAuthSyncService: MobileAuthSyncServiceAPI
     var resetPasswordService: ResetPasswordServiceAPI
     var accountRecoveryService: AccountRecoveryServiceAPI
+    var userService: NabuUserServiceAPI
     var deviceVerificationService: DeviceVerificationServiceAPI
     var featureFlagsService: FeatureFlagsServiceAPI
-    var internalFeatureService: InternalFeatureFlagServiceAPI // TODO: deprecated, use featureFlagsService instead
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     var supportedAssetsRemoteService: SupportedAssetsRemoteServiceAPI
     var customerSupportChatService: CustomerSupportChatServiceAPI
@@ -52,7 +52,6 @@ public struct AppEnvironment {
     var walletRepoPersistence: WalletRepoPersistenceAPI
     var exchangeRepository: ExchangeAccountRepositoryAPI
 
-    var appFeatureConfigurator: FeatureConfiguratorAPI // TODO: deprecated, use featureFlagsService instead
     var blockchainSettings: BlockchainSettings.App
     var credentialsStore: CredentialsStoreAPI
 
@@ -60,6 +59,11 @@ public struct AppEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var appStoreOpener: AppStoreOpening
     var buildVersionProvider: () -> String
+
+    @available(*, deprecated, message: "Use featureFlagsService instead")
+    var internalFeatureService: InternalFeatureFlagServiceAPI
+    @available(*, deprecated, message: "Use featureFlagsService instead")
+    var appFeatureConfigurator: FeatureConfiguratorAPI
 
     public init(
         loadingViewPresenter: LoadingViewPresenting,
@@ -78,6 +82,7 @@ public struct AppEnvironment {
         mobileAuthSyncService: MobileAuthSyncServiceAPI,
         resetPasswordService: ResetPasswordServiceAPI,
         accountRecoveryService: AccountRecoveryServiceAPI,
+        userService: NabuUserServiceAPI,
         deviceVerificationService: DeviceVerificationServiceAPI,
         featureFlagsService: FeatureFlagsServiceAPI,
         internalFeatureService: InternalFeatureFlagServiceAPI,
@@ -118,6 +123,7 @@ public struct AppEnvironment {
         self.mobileAuthSyncService = mobileAuthSyncService
         self.resetPasswordService = resetPasswordService
         self.accountRecoveryService = accountRecoveryService
+        self.userService = userService
         self.deviceVerificationService = deviceVerificationService
         self.featureFlagsService = featureFlagsService
         self.internalFeatureService = internalFeatureService

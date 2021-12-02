@@ -110,6 +110,10 @@ extension KYCPageType {
             return .country
         }
 
+        if user.address?.postalCode == nil {
+            return .profile
+        }
+
         if let mobile = user.mobile, mobile.verified {
             if tiersResponse.canCompleteTier2 {
                 if isSDDVerified {

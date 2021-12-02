@@ -3,6 +3,7 @@
 import BigInt
 import DIKit
 import FeatureAuthenticationDomain
+import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit

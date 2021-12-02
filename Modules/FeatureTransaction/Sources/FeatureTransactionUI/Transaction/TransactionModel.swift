@@ -2,6 +2,7 @@
 
 import FeatureTransactionDomain
 import Localization
+import MoneyKit
 import PlatformKit
 import RxCocoa
 import RxRelay
@@ -94,7 +95,7 @@ final class TransactionModel {
             )
 
         case .bankAccountLinked(let action):
-            return processSourceAccountsListUpdate(action: action, targetAccount: nil)
+            return processSourceAccountsListUpdate(action: action, targetAccount: nil, preferredMethod: .bankTransfer)
 
         case .bankAccountLinkedFromSource(let source, let action):
             switch action {
@@ -150,6 +151,8 @@ final class TransactionModel {
                 order: previousState.order,
                 secondPassword: previousState.secondPassword
             )
+        case .authorizedOpenBanking:
+            return nil
         case .updateTransactionPending:
             return nil
         case .updateTransactionComplete:
@@ -278,7 +281,8 @@ final class TransactionModel {
 
     private func processSourceAccountsListUpdate(
         action: AssetAction,
-        targetAccount: TransactionTarget?
+        targetAccount: TransactionTarget?,
+        preferredMethod: PaymentMethodPayloadType? = nil
     ) -> Disposable {
         interactor
             .getAvailableSourceAccounts(
@@ -296,7 +300,9 @@ final class TransactionModel {
                         return
                     }
                     self?.process(action: .availableSourceAccountsListUpdated(sourceAccounts))
-                    if action == .buy, let first = sourceAccounts.first {
+                    if action == .buy, let first = sourceAccounts.first(
+                        where: { ($0 as? PaymentMethodAccount)?.paymentMethodType.method.rawType == preferredMethod }
+                    ) ?? sourceAccounts.first {
                         // For buy, we don't want to display the list of possible sources straight away.
                         // Instead, we want to select the default payment method returned by the API.
                         // Therefore, once we know what payment methods the user has avaialble, we should select the top one.
@@ -311,8 +317,11 @@ final class TransactionModel {
             )
     }
 
-    private func processValidateTransaction() -> Disposable {
-        interactor.validateTransaction
+    private func processValidateTransaction() -> Disposable? {
+        guard hasInitializedTransaction else {
+            return nil
+        }
+        return interactor.validateTransaction
             .subscribe(onCompleted: {
                 Logger.shared.debug("!TRANSACTION!> Tx validation complete")
             }, onError: { [weak self] error in
@@ -350,6 +359,14 @@ final class TransactionModel {
         // and we have submitted the consent token from the deep link
         if (source as? LinkedBankAccount)?.partner == .yapily {
             return Disposables.create()
+        }
+        if let paymentMethod = source as? PaymentMethodAccount {
+            switch paymentMethod.paymentMethodType {
+            case .linkedBank(let data) where data.partner == .yapily:
+                return Disposables.create()
+            default:
+                break
+            }
         }
         return interactor.verifyAndExecute(order: order, secondPassword: secondPassword)
             .subscribe(onSuccess: { [weak self] result in

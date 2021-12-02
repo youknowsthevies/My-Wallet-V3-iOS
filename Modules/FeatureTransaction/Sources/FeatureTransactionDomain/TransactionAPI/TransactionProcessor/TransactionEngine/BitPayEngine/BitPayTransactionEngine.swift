@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -10,7 +11,7 @@ final class BitPayTransactionEngine: TransactionEngine {
 
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
 
     let currencyConversionService: CurrencyConversionServiceAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
@@ -194,6 +195,7 @@ final class BitPayTransactionEngine: TransactionEngine {
             )
             .asObservable()
             .ignoreElements()
+            .asCompletable()
             .delay(.seconds(3), scheduler: MainScheduler.instance)
             .andThen(
                 bitpayRepository

@@ -5,22 +5,76 @@ import SwiftUI
 
 struct BottomSheetExamples: View {
 
+    @State var isPresented: Bool = true
+
     var body: some View {
-        Color.gray
-            .overlay(
-                BottomSheetView(
-                    isPresented: Binding(get: { true }, set: { _ in }),
-                    maximumHeight: 70.vh
-                ) {
-                    ForEach(0..<10) { i in
-                        DefaultRow(title: "\(i)", accessoryView: { Icon.chevronRight })
-                            .accentColor(.semantic.muted)
-                        if i != 9 {
-                            Divider()
-                        }
-                    }
-                }
+        Button("Tap to open") {
+            isPresented.toggle()
+        }
+        .bottomSheet(isPresented: $isPresented) {
+            Group {
+                PrimaryRow(
+                    title: "Swap",
+                    subtitle: "Exchange for Another Crypto"
+                )
+
+                PrimaryDivider()
+            }
+
+            Group {
+                PrimaryRow(
+                    title: "Send",
+                    subtitle: "Send to Any Wallet"
+                )
+
+                PrimaryDivider()
+            }
+
+            Group {
+                PrimaryRow(
+                    title: "Receive",
+                    subtitle: "Copy Your Address & QR Codes"
+                )
+
+                PrimaryDivider()
+            }
+
+            Group {
+                PrimaryRow(
+                    title: "Rewards",
+                    subtitle: "Earn Rewards on Your Crypto"
+                )
+
+                PrimaryDivider()
+            }
+
+            Group {
+                PrimaryRow(
+                    title: "Add Cash",
+                    subtitle: "Add Cash from Your Bank"
+                )
+
+                PrimaryDivider()
+            }
+
+            PrimaryRow(
+                title: "Cash Out",
+                subtitle: "Withdraw Cash to Your Bank"
             )
-            .ignoresSafeArea()
+
+            HStack {
+                PrimaryButton(title: "Buy", action: {})
+
+                SecondaryButton(title: "Sell", action: {})
+            }
+            .padding(Spacing.padding())
+        }
+        .ignoresSafeArea()
+    }
+}
+
+struct BottomSheetExamples_Previews: PreviewProvider {
+    static var previews: some View {
+        BottomSheetExamples()
     }
 }

@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import FeatureActivityDomain
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -54,12 +55,6 @@ final class ActivityScreenInteractor {
                     return false
                 }
             }
-    }
-
-    var isUnifiedQRCodeScannerEnabled: Bool {
-        serviceContainer
-            .internalFeatureFlagService
-            .isEnabled(.unifiedQRCodeScanner)
     }
 
     // MARK: - Private Properties

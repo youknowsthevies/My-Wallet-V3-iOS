@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
+import MoneyKit
 import PlatformKit
 
 extension TransactionConfirmation {
@@ -108,22 +109,21 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct App: TransactionConfirmationModelable {
+    public struct ImageNotice: TransactionConfirmationModelable {
 
         public let type: TransactionConfirmation.Kind = .readOnly
         public var formatted: (title: String, subtitle: String)? {
-            (
-                LocalizedString.app,
-                "\(dAppName) (\(dAppAddress))"
-            )
+            nil
         }
 
-        private let dAppAddress: String
-        private let dAppName: String
+        public let imageURL: String
+        public let title: String
+        public let subtitle: String
 
-        public init(dAppAddress: String, dAppName: String) {
-            self.dAppName = dAppName
-            self.dAppAddress = dAppAddress
+        public init(imageURL: String, title: String, subtitle: String) {
+            self.imageURL = imageURL
+            self.title = title
+            self.subtitle = subtitle
         }
     }
 
@@ -157,6 +157,25 @@ extension TransactionConfirmation.Model {
         public init(dAppName: String, message: String) {
             self.dAppName = dAppName
             self.message = message
+        }
+    }
+
+    public struct RawTransaction: TransactionConfirmationModelable {
+
+        public let type: TransactionConfirmation.Kind = .readOnly
+        public var formatted: (title: String, subtitle: String)? {
+            (title: title, subtitle: rawTransaction)
+        }
+
+        private let dAppName: String
+        private let rawTransaction: String
+        private var title: String {
+            String(format: LocalizedString.rawTransaction, dAppName)
+        }
+
+        public init(dAppName: String, rawTransaction: String) {
+            self.dAppName = dAppName
+            self.rawTransaction = rawTransaction
         }
     }
 

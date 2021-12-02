@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -143,7 +144,8 @@ final class FiatDepositTransactionEngine: TransactionEngine {
                 return transactionLimitsService.fetchLimits(
                     for: paymentMethod,
                     targetCurrency: fiatCurrency.currencyType,
-                    limitsCurrency: fiatCurrency.currencyType
+                    limitsCurrency: fiatCurrency.currencyType,
+                    product: .simplebuy
                 )
                 .asSingle()
             }

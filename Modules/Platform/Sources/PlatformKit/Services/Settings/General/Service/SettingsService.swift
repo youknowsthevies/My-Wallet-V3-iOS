@@ -3,8 +3,10 @@
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
+import MoneyKit
 import RxRelay
 import RxSwift
+import RxToolKit
 import ToolKit
 
 final class SettingsService: SettingsServiceAPI {
@@ -75,7 +77,7 @@ final class SettingsService: SettingsServiceAPI {
                     switch event {
                     case .success(let settings):
                         observer(.success(settings))
-                    case .error(let error):
+                    case .failure(let error):
                         observer(.error(error))
                     }
                 }
@@ -197,6 +199,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
                 )
                 .asObservable()
                 .ignoreElements()
+                .asCompletable()
             }
             .flatMapSingle(weak: self) { (self) in
                 self.fetch(force: true)
@@ -257,6 +260,7 @@ extension SettingsService: EmailSettingsServiceAPI {
                 )
                 .asObservable()
                 .ignoreElements()
+                .asCompletable()
             }
     }
 
@@ -288,6 +292,7 @@ extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
                 )
                 .asObservable()
                 .ignoreElements()
+                .asCompletable()
             }
             .flatMapSingle(weak: self) { (self) in
                 self.fetch(force: true)
@@ -309,6 +314,7 @@ extension SettingsService: EmailNotificationSettingsServiceAPI {
                 )
                 .asObservable()
                 .ignoreElements()
+                .asCompletable()
             }
             .flatMapSingle(weak: self) { (self) in
                 self.fetch(force: true)
@@ -331,6 +337,7 @@ extension SettingsService: UpdateMobileSettingsServiceAPI {
                 )
                 .asObservable()
                 .ignoreElements()
+                .asCompletable()
             }
             .flatMapSingle(weak: self) { (self) in
                 self.fetch(force: true)
@@ -352,6 +359,7 @@ extension SettingsService: VerifyMobileSettingsServiceAPI {
                 )
                 .asObservable()
                 .ignoreElements()
+                .asCompletable()
             }
             .flatMapSingle(weak: self) { (self) in
                 self.fetch(force: true)
@@ -373,6 +381,7 @@ extension SettingsService: SMSTwoFactorSettingsServiceAPI {
                 )
                 .asObservable()
                 .ignoreElements()
+                .asCompletable()
             }
             .flatMapSingle(weak: self) { (self) in
                 self.fetch(force: true)

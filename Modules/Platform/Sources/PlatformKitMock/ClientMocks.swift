@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import MoneyKit
 @testable import PlatformKit
 
 extension APIClient {
@@ -51,7 +52,7 @@ extension APIClient {
         [
             CardPayload(
                 identifier: "a4e4c08d-b9e4-443d-b54e-47a3d2886dcf",
-                partner: .everyPay,
+                partner: "EVERYPAY",
                 address: .init(
                     line1: "18 Golders Green Circle",
                     line2: "Flat 1",

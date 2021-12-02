@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -142,6 +143,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                                     .updateOrder(identifier: sellOrder.identifier, success: false)
                                     .asObservable()
                                     .ignoreElements()
+                                    .asCompletable()
                                     .catchError { _ in .empty() }
                                     .andThen(.error(error))
                             }
@@ -150,6 +152,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                                     .updateOrder(identifier: sellOrder.identifier, success: true)
                                     .asObservable()
                                     .ignoreElements()
+                                    .asCompletable()
                                     .catchError { _ in .empty() }
                                     .andThen(.just(result))
                             }

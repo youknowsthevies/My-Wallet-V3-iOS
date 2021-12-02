@@ -2,6 +2,7 @@
 
 import BigInt
 import DIKit
+import MoneyKit
 import NetworkKit
 import PlatformKit
 import RxSwift
@@ -37,7 +38,7 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
 
     // MARK: - Transaction Engine
 
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
 
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!

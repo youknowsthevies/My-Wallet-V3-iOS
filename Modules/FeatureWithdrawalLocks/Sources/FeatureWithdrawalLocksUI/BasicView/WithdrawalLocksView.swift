@@ -1,7 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
 import ComponentLibrary
+#endif
 import ComposableArchitecture
 import ComposableNavigation
 import DIKit
@@ -117,7 +121,8 @@ public struct WithdrawalLocksView: View {
                     }
                     .navigationRoute(in: store)
                 }
-            }.onAppear {
+            }
+            .onAppear {
                 viewStore.send(.loadWithdrawalLocks)
             }
         }

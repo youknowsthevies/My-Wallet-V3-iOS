@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import MoneyKit
 import RxRelay
 import RxSwift
 import RxToolKit
@@ -543,7 +544,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 paymentMethodsService.paymentMethods,
                 cardListService.cards,
                 tradingBalanceService.balances.asObservable(),
-                linkedBankService.linkedBanks.asObservable(),
+                linkedBankService.fetchLinkedBanks().asObservable(),
                 featureFetching.fetchBool(for: .withdrawAndDepositACH).asObservable()
             )
             .map {

@@ -4,6 +4,7 @@ import BigInt
 import Combine
 import DIKit
 import FeatureTransactionDomain
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RIBs

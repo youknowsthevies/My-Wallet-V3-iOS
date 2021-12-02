@@ -262,6 +262,11 @@ extension Publisher {
     public func filter(_ keyPath: KeyPath<Output, Bool>) -> Publishers.Filter<Self> {
         filter { $0[keyPath: keyPath] }
     }
+
+    /// Find the first where the keyPath predicate is true. Allowing usage of \.self syntax.
+    public func first(where keyPath: KeyPath<Output, Bool>) -> Publishers.FirstWhere<Self> {
+        first { $0[keyPath: keyPath] }
+    }
 }
 
 extension Publisher where Output == Bool, Failure == Never {

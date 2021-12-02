@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -9,7 +10,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-public protocol WithdrawRootRouting: AnyObject {
+public protocol WithdrawRootRouting: Routing {
     /// Routes to the wire details flow.
     /// Does not execute dismissal of top most screen (Payment Method Selector)
     func startWithWireInstructions(currency: FiatCurrency)

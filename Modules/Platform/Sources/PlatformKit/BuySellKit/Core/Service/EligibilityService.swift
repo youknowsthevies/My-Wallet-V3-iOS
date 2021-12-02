@@ -3,6 +3,7 @@
 
 import Combine
 import DIKit
+import MoneyKit
 import RxRelay
 import RxSwift
 import RxToolKit

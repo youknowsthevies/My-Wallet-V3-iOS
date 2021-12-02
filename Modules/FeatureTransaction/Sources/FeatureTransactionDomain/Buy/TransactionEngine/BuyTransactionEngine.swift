@@ -2,6 +2,7 @@
 
 import Combine
 import DIKit
+import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit
@@ -89,7 +90,7 @@ final class BuyTransactionEngine: TransactionEngine {
     }
 
     // Unused but required by `TransactionEngine` protocol
-    var askForRefreshConfirmation: (AskForRefreshConfirmation)!
+    var askForRefreshConfirmation: AskForRefreshConfirmation!
 
     func assertInputsValid() {
         assert(sourceAccount is PaymentMethodAccount)
@@ -334,7 +335,8 @@ extension BuyTransactionEngine {
             .fetchLimits(
                 for: paymentMethod,
                 targetCurrency: transactionTarget.currencyType,
-                limitsCurrency: inputCurrency
+                limitsCurrency: inputCurrency,
+                product: .simplebuy
             )
             .mapError(MakeTransactionError.limitsError)
             .eraseToAnyPublisher()

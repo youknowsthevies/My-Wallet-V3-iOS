@@ -2,6 +2,7 @@
 
 import BigInt
 import DIKit
+import MoneyKit
 import PlatformKit
 import RxSwift
 

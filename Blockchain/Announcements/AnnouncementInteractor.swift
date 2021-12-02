@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import ERC20Kit
 import FeatureAuthenticationDomain
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -168,7 +169,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     // MARK: - Setup
 
     init(
-        repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
+        repository: AuthenticatorRepositoryAPI = resolve(),
         wallet: WalletProtocol = WalletManager.shared.wallet,
         userService: NabuUserServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),

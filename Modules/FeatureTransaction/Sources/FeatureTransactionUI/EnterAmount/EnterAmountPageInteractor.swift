@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import FeatureTransactionDomain
 import Localization
+import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import RIBs

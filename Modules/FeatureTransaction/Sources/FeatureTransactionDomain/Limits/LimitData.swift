@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import MoneyKit
 import PlatformKit
 
 public struct TradeLimit {
@@ -56,6 +57,18 @@ public struct SuggestedLimitsUpgrade: Decodable, Equatable {
 // MARK: - Currency Conversion
 
 extension PeriodicLimit {
+
+    public static func max(
+        _ x: PeriodicLimit,
+        _ y: PeriodicLimit
+    ) throws -> PeriodicLimit {
+        let value: MoneyValue = try .max(x.limit, y.limit)
+        let effective: Bool? = try x.limit > y.limit ? x.effective : y.effective
+        return .init(
+            limit: value,
+            effective: effective
+        )
+    }
 
     func convert(using exchangeRate: MoneyValue) -> PeriodicLimit {
         PeriodicLimit(

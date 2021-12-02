@@ -165,7 +165,7 @@ let interestAccountListReducer = Reducer.combine(
             case .startBuyTapped:
                 return .none
             case .dismissNoEligibleWalletsScreen:
-                return .enter(into: nil)
+                return .dismiss()
             case .startBuyAfterDismissal(let cryptoCurrency):
                 state.loadingStatus = .fetchingRewardsAccounts
                 return Effect(value: .dismissAndLaunchBuy(cryptoCurrency))
@@ -215,7 +215,7 @@ let interestReducerCore = Reducer<
 > { _, action, environment in
     switch action {
     case .interestAccountDetails(.dismissInterestDetailsScreen):
-        return .enter(into: nil)
+        return .dismiss()
     case .interestAccountDetails(.loadCryptoInterestAccount(isTransfer: let isTransfer, let currency)):
         return environment
             .blockchainAccountRepository
