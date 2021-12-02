@@ -28,8 +28,6 @@ public enum WelcomeAction: Equatable, NavigationAction {
 
     // MARK: - Navigation
 
-    case openCreateWalletScreen // TODO: remove this with the feature flag when it's ready
-    case enterOldCreateWalletScreen // TODO: remove this with the feature flag when it's ready
     case route(RouteIntent<WelcomeRoute>?)
 
     // MARK: - Local Action
@@ -183,22 +181,6 @@ public let welcomeReducer = Reducer.combine(
             // swiftlint:disable closure_body_length
     > { state, action, environment in
         switch action {
-        case .openCreateWalletScreen:
-            return environment
-                .featureFlagsService
-                .isEnabled(.remote(.newCreateWalletScreen))
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .map { result -> WelcomeAction in
-                    guard case .success(let isEnabled) = result,
-                          isEnabled
-                    else {
-                        return .enterOldCreateWalletScreen
-                    }
-                    return .enter(into: .createWallet)
-                }
-        case .enterOldCreateWalletScreen:
-            return .none
         case .route(let route):
             guard let routeValue = route?.route else {
                 state.createWalletState = nil
@@ -259,7 +241,11 @@ public let welcomeReducer = Reducer.combine(
             // handled in core coordinator
             return .none
 
-        case .createWallet(.createButtonTapped(let email, let password)):
+        case .createWallet(.createAccount):
+            let signUpState = state.createWalletState
+            guard let email = signUpState?.emailAddress, let password = signUpState?.password else {
+                return .none
+            }
             return Effect(value: .requestedToCreateWallet(email, password))
 
         case .createWallet(.closeButtonTapped),
@@ -267,7 +253,7 @@ public let welcomeReducer = Reducer.combine(
              .restoreWallet(.closeButtonTapped),
              .manualPairing(.closeButtonTapped),
              .secondPasswordNotice(.closeButtonTapped):
-            return .dismiss()
+            return Effect(value: .dismiss())
 
         // TODO: refactor this by not relying on access lower level reducers
         case .emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))),

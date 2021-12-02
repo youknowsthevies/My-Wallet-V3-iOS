@@ -9,6 +9,7 @@ import PlatformKit
 import ToolKit
 
 extension AppEnvironment {
+
     static var live: AppEnvironment {
         AppEnvironment(
             loadingViewPresenter: resolve(),
@@ -27,6 +28,7 @@ extension AppEnvironment {
             mobileAuthSyncService: resolve(),
             resetPasswordService: resolve(),
             accountRecoveryService: resolve(),
+            userService: resolve(),
             deviceVerificationService: resolve(),
             featureFlagsService: resolve(),
             internalFeatureService: resolve(),

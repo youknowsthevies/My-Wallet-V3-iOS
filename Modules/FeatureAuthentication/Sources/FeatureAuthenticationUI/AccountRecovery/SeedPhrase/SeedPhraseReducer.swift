@@ -9,8 +9,11 @@ import ToolKit
 // MARK: - Type
 
 public enum SeedPhraseAction: Equatable {
+
     public enum URLContent {
+
         case contactSupport
+
         var url: URL? {
             switch self {
             case .contactSupport:
@@ -80,16 +83,19 @@ struct SeedPhraseEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let validator: SeedPhraseValidatorAPI
     let externalAppOpener: ExternalAppOpener
+    let passwordValidator: PasswordValidatorAPI
     let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue>,
         validator: SeedPhraseValidatorAPI = resolve(),
+        passwordValidator: PasswordValidatorAPI = resolve(),
         externalAppOpener: ExternalAppOpener,
         analyticsRecorder: AnalyticsEventRecorderAPI
     ) {
         self.mainQueue = mainQueue
         self.validator = validator
+        self.passwordValidator = passwordValidator
         self.externalAppOpener = externalAppOpener
         self.analyticsRecorder = analyticsRecorder
     }
@@ -103,6 +109,9 @@ let seedPhraseReducer = Reducer.combine(
             action: /SeedPhraseAction.importWallet,
             environment: {
                 ImportWalletEnvironment(
+                    mainQueue: $0.mainQueue,
+                    passwordValidator: $0.passwordValidator,
+                    externalAppOpener: $0.externalAppOpener,
                     analyticsRecorder: $0.analyticsRecorder
                 )
             }
@@ -240,7 +249,7 @@ let seedPhraseReducer = Reducer.combine(
         case .importWallet(.importWalletButtonTapped):
             return .none
 
-        case .importWallet(.createAccount(.createButtonTapped)):
+        case .importWallet(.createAccount(.createAccount)):
             guard let createAccountState = state.importWalletState?.createAccountState else {
                 return .none
             }

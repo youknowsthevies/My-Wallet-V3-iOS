@@ -129,22 +129,21 @@ extension TransactionConfirmation.Model {
         }
     }
 
-    public struct App: TransactionConfirmationModelable {
+    public struct ImageNotice: TransactionConfirmationModelable {
 
         public let type: TransactionConfirmation.Kind = .readOnly
         public var formatted: (title: String, subtitle: String)? {
-            (
-                LocalizedString.app,
-                "\(dAppName) (\(dAppAddress))"
-            )
+            nil
         }
 
-        private let dAppAddress: String
-        private let dAppName: String
+        public let imageURL: String
+        public let title: String
+        public let subtitle: String
 
-        public init(dAppAddress: String, dAppName: String) {
-            self.dAppName = dAppName
-            self.dAppAddress = dAppAddress
+        public init(imageURL: String, title: String, subtitle: String) {
+            self.imageURL = imageURL
+            self.title = title
+            self.subtitle = subtitle
         }
     }
 

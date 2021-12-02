@@ -18,6 +18,7 @@ public struct EthereumRawTransactionTarget: WalletConnectTarget {
 
     let dAppAddress: String
     let dAppName: String
+    let dAppLogoURL: String
     let rawTransaction: Data
 
     // MARK: - Init
@@ -25,12 +26,14 @@ public struct EthereumRawTransactionTarget: WalletConnectTarget {
     public init(
         dAppAddress: String,
         dAppName: String,
+        dAppLogoURL: String,
         rawTransaction: Data,
         onTxCompleted: @escaping TxCompleted
     ) {
         self.onTxCompleted = onTxCompleted
         self.dAppAddress = dAppAddress
         self.dAppName = dAppName
+        self.dAppLogoURL = dAppLogoURL
         self.rawTransaction = rawTransaction
     }
 }

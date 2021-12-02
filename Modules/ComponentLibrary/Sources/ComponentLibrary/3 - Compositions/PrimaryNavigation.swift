@@ -34,7 +34,7 @@ extension View {
     /// - Parameter title: Title displayed in the navigation bar
     /// - Returns: `self`, otherwise unmodified.
     public func primaryNavigation(
-        title: String
+        title: String? = nil
     ) -> some View {
         modifier(
             PrimaryNavigationModifier<EmptyView>(

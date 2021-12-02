@@ -40,10 +40,5 @@ extension LocalizationConstants {
             "Disconnect",
             comment: "WalletConnect: disconnect button title"
         )
-
-        static let launchApp = NSLocalizedString(
-            "Launch App",
-            comment: "WalletConnect: launch app button title"
-        )
     }
 }

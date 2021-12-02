@@ -24,6 +24,7 @@ public struct EthereumSendTransactionTarget: WalletConnectTarget {
     let method: Method
     let dAppAddress: String
     let dAppName: String
+    let dAppLogoURL: String
     let transaction: EthereumJsonRpcTransaction
 
     // MARK: - Init
@@ -31,6 +32,7 @@ public struct EthereumSendTransactionTarget: WalletConnectTarget {
     public init(
         dAppAddress: String,
         dAppName: String,
+        dAppLogoURL: String,
         transaction: EthereumJsonRpcTransaction,
         method: Method,
         onTxCompleted: @escaping TxCompleted
@@ -38,6 +40,7 @@ public struct EthereumSendTransactionTarget: WalletConnectTarget {
         self.onTxCompleted = onTxCompleted
         self.dAppAddress = dAppAddress
         self.dAppName = dAppName
+        self.dAppLogoURL = dAppLogoURL
         self.transaction = transaction
         self.method = method
     }

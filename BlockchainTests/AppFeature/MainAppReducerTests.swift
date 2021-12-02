@@ -107,6 +107,7 @@ final class MainAppReducerTests: XCTestCase {
                 mobileAuthSyncService: mockMobileAuthSyncService,
                 resetPasswordService: mockResetPasswordService,
                 accountRecoveryService: mockAccountRecoveryService,
+                userService: MockNabuUserService(),
                 deviceVerificationService: mockDeviceVerificationService,
                 featureFlagsService: mockFeatureFlagsService,
                 appFeatureConfigurator: mockFeatureConfigurator,
@@ -440,6 +441,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.welcomeScreen(.enter(into: .createWallet)))) { state in
             state.onboarding?.welcomeState?.route = RouteIntent(route: .createWallet, action: .enterInto())
             state.onboarding?.welcomeState?.createWalletState = .init(context: .createWallet)
+            state.onboarding?.walletCreationContext = .new
         }
         testStore.send(.onboarding(.welcomeScreen(.requestedToCreateWallet("", "a-password"))))
         testStore.receive(.createWallet(email: "", newPassword: "a-password"))
@@ -458,6 +460,7 @@ final class MainAppReducerTests: XCTestCase {
             password: "a-password"
         )
         testStore.receive(.authenticate)
+        testStore.receive(.setInitialResidentialAddress(country: "US", state: "AK"))
         testStore.receive(.created(.success(walletCreation)))
 
         mockWallet.load(withGuid: guid, sharedKey: sharedKey, password: "a-password")
@@ -476,13 +479,10 @@ final class MainAppReducerTests: XCTestCase {
                 sharedKey: walletDecryption.sharedKey
             )
         )
-        testStore.receive(.authenticated(.success(true))) { state in
-            state.onboarding?.showLegacyCreateWalletScreen = false
-        }
+        testStore.receive(.authenticated(.success(true)))
         testStore.receive(.onboarding(.welcomeScreen(.dismiss()))) { state in
             state.onboarding?.welcomeState?.route = nil
             state.onboarding?.welcomeState?.createWalletState = nil
-            state.onboarding?.walletCreationContext = nil
         }
         testStore.receive(.setupPin) { state in
             state.onboarding?.pinState = .init()

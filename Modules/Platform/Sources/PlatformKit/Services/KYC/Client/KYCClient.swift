@@ -30,6 +30,11 @@ public protocol KYCClientAPI: AnyObject {
         in country: String
     ) -> AnyPublisher<[KYCState], NabuNetworkError>
 
+    func setInitialResidentialInfo(
+        country: String,
+        state: String?
+    ) -> AnyPublisher<Void, NabuNetworkError>
+
     func selectCountry(
         country: String,
         state: String?,
@@ -91,6 +96,7 @@ final class KYCClient: KYCClientAPI {
 
         // POST
 
+        static let initialAddress = ["users", "current", "address", "initial"]
         static let country = ["users", "current", "country"]
         static let verifications = ["verifications"]
         static let submitVerification = ["kyc", "verifications"]
@@ -183,6 +189,34 @@ final class KYCClient: KYCClientAPI {
 
         let request = requestBuilder.post(
             path: Path.submitVerification,
+            body: try? payload.encode(),
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    func setInitialResidentialInfo(
+        country: String,
+        state: String?
+    ) -> AnyPublisher<Void, NabuNetworkError> {
+        struct Payload: Encodable {
+            let country: String
+            let state: String?
+        }
+
+        func normalizedState() -> String? {
+            guard let state = state else {
+                return nil
+            }
+            return "\(country)-\(state)".uppercased()
+        }
+
+        let payload = Payload(
+            country: country.uppercased(),
+            state: normalizedState()
+        )
+        let request = requestBuilder.put(
+            path: Path.initialAddress,
             body: try? payload.encode(),
             authenticated: true
         )!

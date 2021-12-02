@@ -4,7 +4,6 @@ import MoneyKit
 
 public enum TransactionConfirmation: TransactionConfirmationModelable {
 
-    case app(TransactionConfirmation.Model.App)
     case arrivalDate(TransactionConfirmation.Model.FundsArrivalDate)
     case bitpayCountdown(TransactionConfirmation.Model.BitPayCountdown)
     case buyCryptoValue(TransactionConfirmation.Model.BuyCryptoValue)
@@ -16,6 +15,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case exchangePrice(TransactionConfirmation.Model.ExchangePriceOption)
     case feedTotal(TransactionConfirmation.Model.FeedTotal)
     case feeSelection(TransactionConfirmation.Model.FeeSelection)
+    case imageNotice(TransactionConfirmation.Model.ImageNotice)
     case largeTransactionWarning(TransactionConfirmation.Model.AnyBoolOption<MoneyValue>)
     case memo(TransactionConfirmation.Model.Memo)
     case message(TransactionConfirmation.Model.Message)
@@ -40,8 +40,6 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
 
     public var type: TransactionConfirmation.Kind {
         switch self {
-        case .app(let model):
-            return model.type
         case .arrivalDate(let model):
             return model.type
         case .bitpayCountdown(let model):
@@ -63,6 +61,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .feedTotal(let model):
             return model.type
         case .feeSelection(let model):
+            return model.type
+        case .imageNotice(let model):
             return model.type
         case .largeTransactionWarning(let model):
             return model.type
@@ -111,8 +111,6 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
 
     public var formatted: (title: String, subtitle: String)? {
         switch self {
-        case .app(let model):
-            return model.formatted
         case .arrivalDate(let model):
             return model.formatted
         case .bitpayCountdown(let model):
@@ -134,6 +132,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         case .feedTotal(let model):
             return model.formatted
         case .feeSelection(let model):
+            return model.formatted
+        case .imageNotice(let model):
             return model.formatted
         case .largeTransactionWarning(let model):
             return model.formatted
@@ -183,8 +183,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     /// Is equal ignoring associated value.
     public func bareCompare(to rhs: Self) -> Bool {
         switch (self, rhs) {
-        case (.app, .app),
-             (.arrivalDate, .arrivalDate),
+        case (.arrivalDate, .arrivalDate),
              (.bitpayCountdown, .bitpayCountdown),
              (.buyCryptoValue, .buyCryptoValue),
              (.buyExchangeRateValue, .buyExchangeRateValue),
@@ -195,6 +194,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
              (.exchangePrice, .exchangePrice),
              (.feedTotal, .feedTotal),
              (.feeSelection, .feeSelection),
+             (.imageNotice, .imageNotice),
              (.largeTransactionWarning, .largeTransactionWarning),
              (.memo, .memo),
              (.message, .message),

@@ -28,10 +28,14 @@ public enum WelcomeRoute: NavigationRoute {
                     action: WelcomeAction.createWallet
                 ),
                 then: { store in
-                    CreateAccountView(store: store)
-                        .trailingNavigationButton(.close) {
-                            viewStore.send(.createWallet(.closeButtonTapped))
-                        }
+                    if viewStore.route?.action == .navigateTo {
+                        CreateAccountView(store: store)
+                    } else {
+                        CreateAccountView(store: store)
+                            .trailingNavigationButton(.close) {
+                                viewStore.send(.createWallet(.closeButtonTapped))
+                            }
+                    }
                 }
             )
         case .emailLogin:
@@ -186,7 +190,7 @@ public struct WelcomeView: View {
     private var buttonSection: some View {
         VStack(spacing: Layout.buttonSpacing) {
             PrimaryButton(title: LocalizedString.Button.buyCryptoNow) {
-                viewStore.send(.openCreateWalletScreen)
+                viewStore.send(.navigate(to: .createWallet))
             }
             .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.createWalletButton)
             SecondaryButton(title: LocalizedString.Button.login) {

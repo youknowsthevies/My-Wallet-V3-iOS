@@ -29,6 +29,7 @@ final class SeedPhraseReducerTests: XCTestCase {
             environment: SeedPhraseEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 validator: SeedPhraseValidator(words: Set(WordList.default.words)),
+                passwordValidator: PasswordValidator(),
                 externalAppOpener: MockExternalAppOpener(),
                 analyticsRecorder: MockAnalyticsRecorder()
             )

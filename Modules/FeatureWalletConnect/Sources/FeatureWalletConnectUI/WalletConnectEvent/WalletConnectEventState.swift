@@ -21,9 +21,9 @@ public struct WalletConnectEventState: Equatable {
     let imageResource: ImageResource?
     let title: String
     var subtitle: String?
-    let primaryButtonTitle: String
+    var primaryButtonTitle: String?
     var secondaryButtonTitle: String?
-    let primaryAction: WalletConnectEventAction
+    var primaryAction: WalletConnectEventAction?
     var secondaryAction: WalletConnectEventAction?
     var decorationImage: UIImage?
     var secondaryButtonColor: Color = .buttonSecondaryText
@@ -63,8 +63,6 @@ public struct WalletConnectEventState: Equatable {
             title = meta.name
             subtitle = meta.description
             secondaryButtonTitle = LocalizationConstants.WalletConnect.disconnect
-            primaryButtonTitle = LocalizationConstants.WalletConnect.launchApp
-            primaryAction = .openWebsite
             secondaryAction = .disconnect
             secondaryButtonColor = .textError
         }

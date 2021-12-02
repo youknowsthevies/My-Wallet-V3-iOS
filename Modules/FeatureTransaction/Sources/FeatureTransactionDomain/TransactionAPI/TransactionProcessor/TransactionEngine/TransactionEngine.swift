@@ -213,8 +213,8 @@ extension TransactionEngine {
 
 private struct TransactionValidationConversionRates {
     let amountToWalletRate: MoneyValue
-    let feeToAmountRate: MoneyValue
-    let sourceToAmountRate: MoneyValue
+    let feeToWalletRate: MoneyValue
+    let sourceToWalletRate: MoneyValue
     let limitsToAmountRate: MoneyValue
 }
 
@@ -224,6 +224,7 @@ extension TransactionEngine {
         guard let sourceAccount = sourceAccount, transactionTarget != nil else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
+        // NOTE: Convert amounts for comparison from fiat to crypto or vice versa, but never crypto -> crypto as this is not fully supported yet.
         return fetchAmountConversionRates(for: pendingTransaction)
             .mapError { error -> Error in
                 error // map to generic Error for zipping with balance
@@ -231,15 +232,19 @@ extension TransactionEngine {
             .zip(sourceAccount.balancePublisher)
             .asSingle()
             .map { [weak self] conversionRates, sourceBalance -> Void in
-                let convertedBalance = sourceBalance.convert(using: conversionRates.sourceToAmountRate)
-                let convertedFee = pendingTransaction.feeAmount.convert(using: conversionRates.feeToAmountRate)
+                let convertedBalance = sourceBalance.convert(using: conversionRates.sourceToWalletRate)
+                let convertedFee = pendingTransaction.feeAmount.convert(using: conversionRates.feeToWalletRate)
                 guard try convertedBalance >= convertedFee else {
                     throw TransactionValidationFailure(state: .belowFees(convertedFee, convertedBalance))
                 }
 
                 let amount = pendingTransaction.amount
                 let limits = pendingTransaction.normalizedLimits.convert(using: conversionRates.limitsToAmountRate)
-                let availableBalance = try convertedBalance - convertedFee
+                let availableBalanceInWalletCurrency = try convertedBalance - convertedFee
+                let availableBalance = availableBalanceInWalletCurrency.convert(
+                    usingInverse: conversionRates.amountToWalletRate,
+                    currencyType: amount.currencyType
+                )
                 try self?.validate(amount, hasAmountUpToSourceLimit: availableBalance)
                 try self?.validate(amount, isWithin: limits, amountToWalletRate: conversionRates.amountToWalletRate)
             }
@@ -253,32 +258,32 @@ extension TransactionEngine {
         walletCurrencyService
             .fiatCurrencyPublisher
             .setFailureType(to: PriceServiceError.self)
-            .flatMap { [currencyConversionService] walletCurrency in
+            .flatMap { [currencyConversionService, sourceAsset] walletCurrency in
                 currencyConversionService.conversionRate(
                     from: pendingTransaction.amount.currencyType,
                     to: walletCurrency.currencyType
                 )
-            }
-            .zip(
-                currencyConversionService.conversionRate(
-                    from: pendingTransaction.feeAmount.currencyType,
-                    to: pendingTransaction.amount.currencyType
-                ),
-                currencyConversionService.conversionRate(
-                    from: sourceAccount.currencyType,
-                    to: pendingTransaction.amount.currencyType
-                ),
-                currencyConversionService.conversionRate(
-                    from: pendingTransaction.normalizedLimits.currencyType,
-                    to: pendingTransaction.amount.currencyType
+                .zip(
+                    currencyConversionService.conversionRate(
+                        from: pendingTransaction.feeAmount.currencyType,
+                        to: walletCurrency.currencyType
+                    ),
+                    currencyConversionService.conversionRate(
+                        from: sourceAsset,
+                        to: walletCurrency.currencyType
+                    ),
+                    currencyConversionService.conversionRate(
+                        from: pendingTransaction.normalizedLimits.currencyType,
+                        to: pendingTransaction.amount.currencyType
+                    )
                 )
-            )
+            }
             .map { conversionRates in
-                let (amountToWalletRate, feeToAmountRate, sourceToAmountRate, limitsToAmountRate) = conversionRates
+                let (amountToWalletRate, feeToWalletRate, sourceToWallet, limitsToAmountRate) = conversionRates
                 return TransactionValidationConversionRates(
                     amountToWalletRate: amountToWalletRate,
-                    feeToAmountRate: feeToAmountRate,
-                    sourceToAmountRate: sourceToAmountRate,
+                    feeToWalletRate: feeToWalletRate,
+                    sourceToWalletRate: sourceToWallet,
                     limitsToAmountRate: limitsToAmountRate
                 )
             }

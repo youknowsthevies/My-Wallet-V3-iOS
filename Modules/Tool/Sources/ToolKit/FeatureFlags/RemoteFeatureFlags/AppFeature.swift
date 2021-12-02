@@ -44,8 +44,6 @@ public enum AppFeature: Int, CaseIterable {
 
     case pollingForEmailLogin
 
-    case newCreateWalletScreen
-
     // MARK: - SDD
 
     /// Enables SDD checks. If `false`, all checks immediately fail
@@ -111,8 +109,6 @@ extension AppFeature {
             return "sso_unified_sign_in_enabled_ios"
         case .pollingForEmailLogin:
             return "ios_ff_sso_polling"
-        case .newCreateWalletScreen:
-            return "ios_ff_new_create_wallet_screen"
         case .sddEnabled:
             return "sdd_enabled_ios"
         case .customerSupportChat:
@@ -160,8 +156,6 @@ extension AppFeature {
         case .unifiedSignIn:
             return false
         case .pollingForEmailLogin:
-            return true
-        case .newCreateWalletScreen:
             return true
         case .sddEnabled:
             return false

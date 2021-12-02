@@ -4,24 +4,24 @@ import Combine
 import Foundation
 import WalletConnectSwift
 
-public struct WalletConnectSession: Codable, Equatable {
+public struct WalletConnectSession: Codable, Equatable, Hashable {
 
     public let url: String
     public let dAppInfo: DAppInfo
     public let walletInfo: WalletInfo
 
-    public struct WalletInfo: Codable, Equatable {
+    public struct WalletInfo: Codable, Equatable, Hashable {
         public let clientId: String
         public let sourcePlatform: String
     }
 
-    public struct DAppInfo: Codable, Equatable {
+    public struct DAppInfo: Codable, Equatable, Hashable {
         public let peerId: String
         public let peerMeta: ClientMeta
         public let chainId: Int?
     }
 
-    public struct ClientMeta: Codable, Equatable {
+    public struct ClientMeta: Codable, Equatable, Hashable {
         public let description: String
         public let url: String
         public let icons: [String]

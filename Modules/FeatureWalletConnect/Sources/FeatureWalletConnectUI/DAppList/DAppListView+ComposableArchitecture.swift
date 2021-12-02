@@ -6,10 +6,10 @@ import ComposableArchitecture
 import FeatureWalletConnectDomain
 import Localization
 import UIComponentsKit
+import UIKit
 import WalletConnectSwift
 
 struct DAppListEnvironment {
-
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let onComplete: (_ validate: Bool) -> Void
     let sessionRepository: SessionRepositoryAPI
@@ -29,6 +29,53 @@ struct DAppListEnvironment {
         self.router = router
         self.analyticsEventRecorder = analyticsEventRecorder
     }
+}
+
+public struct DAppListState: Equatable {
+    struct DAppViewState: Equatable, Identifiable {
+        var id: String
+        let imageResource: ImageResource?
+        let name: String
+        let domain: String
+    }
+
+    var sessions: [WalletConnectSession] = []
+    var title = String(format: LocalizationConstants.WalletConnect.connectedAppsCount, "0")
+}
+
+extension DAppListState.DAppViewState {
+    init(session: WalletConnectSession) {
+        let image: ImageResource?
+        if let icon = session.dAppInfo.peerMeta.icons.first,
+           let url = URL(string: icon)
+        {
+            image = .remote(url: url)
+        } else {
+            image = nil
+        }
+
+        id = session.dAppInfo.peerId
+        imageResource = image
+        name = session.dAppInfo.peerMeta.name
+
+        if let url = URL(string: session.dAppInfo.peerMeta.url) {
+            domain = url.host ?? ""
+        } else {
+            domain = session.dAppInfo.peerMeta.url
+        }
+    }
+}
+
+extension WalletConnectSession: Identifiable {
+    public var id: String { url }
+}
+
+public enum DAppListAction: Equatable {
+    case onAppear
+    case loadSessions
+    case showSessionDetails(WalletConnectSession)
+    case close
+    case didReceiveSessions(Result<[WalletConnectSession], Never>)
 }
 
 let dAppListReducer = Reducer.combine(

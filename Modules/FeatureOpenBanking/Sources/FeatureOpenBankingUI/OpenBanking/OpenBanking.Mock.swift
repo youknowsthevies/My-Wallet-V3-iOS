@@ -16,7 +16,7 @@ extension OpenBankingEnvironment {
 
     public static let mock = OpenBankingEnvironment(
         openBanking: .mock,
-        openURL: PrintAppOpen(),
+        openURL: ToLogAppOpener(),
         fiatCurrencyFormatter: NoFormatCurrencyFormatter(),
         cryptoCurrencyFormatter: NoFormatCurrencyFormatter(),
         currency: "GBP"

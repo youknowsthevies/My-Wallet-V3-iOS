@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Localization
 import PlatformKit
 import SwiftUI
+import UIComponentsKit
 
 private typealias LocalizedStrings = LocalizationConstants.KYC
 private typealias LimitsFeatureStrings = LocalizedStrings.LimitsOverview.Feature

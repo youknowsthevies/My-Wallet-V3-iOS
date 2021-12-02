@@ -247,7 +247,15 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
             fee: pendingTransaction.feeAmount
         )
         let notice = TransactionConfirmation.Model.Notice(
-            value: LocalizationConstants.Transaction.Sign.dappRequestWarning
+            value: String(
+                format: LocalizationConstants.Transaction.Sign.dappRequestWarning,
+                walletConnectTarget.dAppName
+            )
+        )
+        let imageNotice = TransactionConfirmation.Model.ImageNotice(
+            imageURL: walletConnectTarget.dAppLogoURL,
+            title: walletConnectTarget.dAppName,
+            subtitle: walletConnectTarget.dAppAddress
         )
         let sendDestinationValue = TransactionConfirmation.Model.SendDestinationValue(
             value: pendingTransaction.amount
@@ -266,6 +274,7 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
         )
         return pendingTransaction.update(
             confirmations: [
+                .imageNotice(imageNotice),
                 .notice(notice),
                 .sendDestinationValue(sendDestinationValue),
                 .source(source),

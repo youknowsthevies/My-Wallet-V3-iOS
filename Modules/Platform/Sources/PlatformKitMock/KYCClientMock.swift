@@ -57,6 +57,17 @@ final class KYCClientMock: KYCClientAPI {
         expectedListOfStates.publisher.eraseToAnyPublisher()
     }
 
+    var expectedSetInitialAddress: AnyPublisher<Void, NabuNetworkError> = {
+        .failure(NabuNetworkError.mockError)
+    }()
+
+    func setInitialResidentialInfo(
+        country: String,
+        state: String?
+    ) -> AnyPublisher<Void, NabuNetworkError> {
+        expectedSetInitialAddress
+    }
+
     var expectedSelectCountry: AnyPublisher<Void, NabuNetworkError>!
 
     func selectCountry(
