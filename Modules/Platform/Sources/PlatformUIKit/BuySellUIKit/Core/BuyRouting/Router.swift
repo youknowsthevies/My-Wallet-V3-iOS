@@ -544,11 +544,7 @@ public final class Router: RouterAPI {
             orderInteractor = BuyOrderCardCheckoutInteractor(
                 cardInteractor: CardOrderCheckoutInteractor()
             )
-        case .funds, .bankAccount:
-            orderInteractor = BuyOrderFundsCheckoutInteractor(
-                fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor()
-            )
-        case .bankTransfer:
+        case .funds, .bankAccount, .bankTransfer:
             orderInteractor = BuyOrderFundsCheckoutInteractor(
                 fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor()
             )

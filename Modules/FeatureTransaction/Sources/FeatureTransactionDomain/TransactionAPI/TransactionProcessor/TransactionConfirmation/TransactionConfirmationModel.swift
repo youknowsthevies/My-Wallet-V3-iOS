@@ -109,6 +109,26 @@ extension TransactionConfirmation.Model {
         }
     }
 
+    public struct Purchase: TransactionConfirmationModelable {
+
+        public let purchase: MoneyValue
+        public let exchange: MoneyValue?
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public init(purchase: MoneyValue, exchange: MoneyValue? = nil) {
+            self.purchase = purchase
+            self.exchange = exchange
+        }
+
+        public var formatted: (title: String, subtitle: String)? {
+            var value: String = purchase.displayString
+            if let exchange = exchange {
+                value = purchase.convert(using: exchange).displayString
+            }
+            return (LocalizedString.purchase, value)
+        }
+    }
+
     public struct ImageNotice: TransactionConfirmationModelable {
 
         public let type: TransactionConfirmation.Kind = .readOnly
@@ -293,7 +313,9 @@ extension TransactionConfirmation.Model {
                 return (LocalizedString.Error.title, LocalizedString.Error.pendingOrderLimitReached)
             case .nabuError(let error):
                 return (LocalizedString.Error.title, error.description)
-            case .noSourcesAvailable:
+            case .noSourcesAvailable,
+                 .incorrectSourceCurrency,
+                 .incorrectDestinationCurrency:
                 return (LocalizedString.Error.title, LocalizedString.Error.generic)
             }
         }
@@ -485,7 +507,7 @@ extension TransactionConfirmation.Model {
 
         public var formatted: (title: String, subtitle: String)? {
             (
-                String(format: LocalizedString.transactionFee, fee.displayCode),
+                String(format: LocalizedString.blockchainFee, fee.displayCode),
                 fee.displayString
             )
         }

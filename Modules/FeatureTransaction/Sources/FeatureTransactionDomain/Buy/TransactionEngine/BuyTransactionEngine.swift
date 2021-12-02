@@ -145,11 +145,12 @@ final class BuyTransactionEngine: TransactionEngine {
 
                 let totalCost = order.inputValue
                 let fee = order.fee ?? .zero(currency: fiatAmount.currency)
+                let purchase = try totalCost - fee
 
                 var confirmations: [TransactionConfirmation] = [
                     .buyCryptoValue(.init(baseValue: cryptoAmount)),
                     .buyExchangeRateValue(.init(baseValue: moneyPair.source.quote, code: moneyPair.source.base.code)),
-                    .buyPaymentMethod(.init(name: sourceAccountLabel)),
+                    .purchase(.init(purchase: purchase)),
                     .transactionFee(.init(fee: fee))
                 ]
 
@@ -157,7 +158,10 @@ final class BuyTransactionEngine: TransactionEngine {
                     confirmations.append(.transactionFee(.init(fee: customFeeAmount)))
                 }
 
-                confirmations.append(.total(.init(total: totalCost)))
+                confirmations += [
+                    .total(.init(total: totalCost)),
+                    .buyPaymentMethod(.init(name: sourceAccountLabel))
+                ]
 
                 return pendingTransaction.update(confirmations: confirmations)
             }
@@ -174,6 +178,12 @@ final class BuyTransactionEngine: TransactionEngine {
         return fetchQuote(for: pendingTransaction.amount)
             // STEP 2: Create an Order for the transaction
             .flatMap { [orderCreationService] refreshedQuote -> Single<CheckoutData> in
+                guard let fiatValue = refreshedQuote.estimatedSourceAmount.fiatValue else {
+                    return .error(TransactionValidationFailure(state: .incorrectSourceCurrency))
+                }
+                guard let cryptoValue = refreshedQuote.estimatedDestinationAmount.cryptoValue else {
+                    return .error(TransactionValidationFailure(state: .incorrectDestinationCurrency))
+                }
                 let paymentMethodId: String?
                 if sourceAccount.paymentMethod.type.isFunds {
                     // NOTE: This fixes IOS-5389
@@ -182,9 +192,10 @@ final class BuyTransactionEngine: TransactionEngine {
                     paymentMethodId = sourceAccount.paymentMethodType.id
                 }
                 let orderDetails = CandidateOrderDetails.buy(
+                    quoteId: refreshedQuote.quoteId,
                     paymentMethod: sourceAccount.paymentMethodType,
-                    fiatValue: refreshedQuote.estimatedFiatAmount,
-                    cryptoValue: refreshedQuote.estimatedCryptoAmount,
+                    fiatValue: fiatValue,
+                    cryptoValue: cryptoValue,
                     paymentMethodId: paymentMethodId
                 )
                 return orderCreationService.create(using: orderDetails)
@@ -290,15 +301,23 @@ extension BuyTransactionEngine {
     }
 
     private func fetchQuote(for amount: MoneyValue) -> Single<Quote> {
+        guard let source = sourceAccount as? FiatAccount else {
+            return .error(TransactionValidationFailure(state: .uninitialized))
+        }
         guard let destination = transactionTarget as? CryptoAccount else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
         return convertAmountIntoWalletFiatCurrency(amount)
-            .flatMap { [orderQuoteService] fiatValue in
+            .flatMap { [sourceAccount, orderQuoteService] fiatValue in
                 orderQuoteService.getQuote(
-                    for: .buy,
-                    cryptoCurrency: destination.asset,
-                    fiatValue: fiatValue
+                    query: QuoteQuery(
+                        profile: .simpleBuy,
+                        sourceCurrency: source.fiatCurrency,
+                        destinationCurrency: destination.asset,
+                        amount: MoneyValue(fiatValue: fiatValue),
+                        paymentMethod: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.method.rawType,
+                        paymentMethodId: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.id
+                    )
                 )
             }
     }

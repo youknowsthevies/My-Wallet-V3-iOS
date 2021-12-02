@@ -22,6 +22,7 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
     LinkedBanksClientAPI
 
 /// Simple-Buy network client
+// swiftlint:disable type_body_length
 final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - Types
@@ -30,7 +31,6 @@ final class APIClient: SimpleBuyClientAPI {
         static let product = "product"
         static let currency = "currency"
         static let fiatCurrency = "fiatCurrency"
-        static let currencyPair = "currencyPair"
         static let pendingOnly = "pendingOnly"
         static let action = "action"
         static let amount = "amount"
@@ -55,7 +55,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let suggestedAmounts = ["simple-buy", "amounts"]
         static let trades = ["simple-buy", "trades"]
         static let paymentAccount = ["payments", "accounts", "simplebuy"]
-        static let quote = ["simple-buy", "quote"]
+        static let quote = ["brokerage", "quote"]
         static let eligible = ["simple-buy", "eligible"]
         static let withdrawalLocks = ["payments", "withdrawals", "locks"]
         static let withdrawalLocksCheck = ["payments", "withdrawals", "locks", "check"]
@@ -313,29 +313,12 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - QuoteClientAPI
 
-    func getQuote(
-        for action: Order.Action,
-        to cryptoCurrency: CryptoCurrency,
-        amount: FiatValue
-    ) -> AnyPublisher<QuoteResponse, NabuNetworkError> {
-        let parameters = [
-            URLQueryItem(
-                name: Parameter.currencyPair,
-                value: "\(cryptoCurrency.code)-\(amount.code)"
-            ),
-            URLQueryItem(
-                name: Parameter.action,
-                value: action.rawValue
-            ),
-            URLQueryItem(
-                name: Parameter.amount,
-                value: amount.minorString
-            )
-        ]
+    // swiftlint:disable function_parameter_count
+    func getQuote(queryRequest: QuoteQueryRequest) -> AnyPublisher<QuoteResponse, NabuNetworkError> {
         let path = Path.quote
-        let request = requestBuilder.get(
+        let request = requestBuilder.post(
             path: path,
-            parameters: parameters,
+            body: try? queryRequest.encode(),
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

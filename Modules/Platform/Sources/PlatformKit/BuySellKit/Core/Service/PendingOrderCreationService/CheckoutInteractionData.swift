@@ -3,7 +3,7 @@
 import MoneyKit
 
 public struct CheckoutInteractionData {
-    public let time: Date?
+    public let creationDate: Date?
     public let fee: MoneyValue
     public let amount: MoneyValue
     public let exchangeRate: MoneyValue?
@@ -13,7 +13,7 @@ public struct CheckoutInteractionData {
     public let paymentMethod: PaymentMethod.MethodType
 
     public init(
-        time: Date?,
+        creationDate: Date?,
         fee: MoneyValue,
         amount: MoneyValue,
         exchangeRate: MoneyValue?,
@@ -22,7 +22,7 @@ public struct CheckoutInteractionData {
         orderId: String,
         paymentMethod: PaymentMethod.MethodType
     ) {
-        self.time = time
+        self.creationDate = creationDate
         self.fee = fee
         self.amount = amount
         self.exchangeRate = exchangeRate

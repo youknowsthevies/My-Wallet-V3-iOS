@@ -1014,6 +1014,10 @@ extension LocalizationConstants.Transaction.Confirmation {
         "%@ Price",
         comment: "%@ Price"
     )
+    public static let purchase = NSLocalizedString(
+        "Purchase",
+        comment: "Total - Blockchain.com Fee"
+    )
     public static let total = NSLocalizedString(
         "Total",
         comment: "Total"
@@ -1029,6 +1033,10 @@ extension LocalizationConstants.Transaction.Confirmation {
     public static let transactionFee = NSLocalizedString(
         "Transaction Fee",
         comment: "Network Fee"
+    )
+    public static let blockchainFee = NSLocalizedString(
+        "Blockchain.com Fee",
+        comment: "Blockchain.com Fee"
     )
     public static let networkFee = NSLocalizedString(
         "%@ Network Fee",

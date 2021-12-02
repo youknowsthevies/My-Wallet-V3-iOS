@@ -78,6 +78,7 @@ enum OrderPayload {
             let symbol: String
         }
 
+        let quoteId: String?
         let pair: String
         let action: Order.Action
         let input: Input
@@ -86,6 +87,7 @@ enum OrderPayload {
         let paymentMethodId: String?
 
         init(
+            quoteId: String?,
             action: Order.Action,
             fiatValue: FiatValue,
             fiatCurrency: FiatCurrency,
@@ -93,6 +95,7 @@ enum OrderPayload {
             paymentType: PaymentMethod.MethodType? = nil,
             paymentMethodId: String? = nil
         ) {
+            self.quoteId = quoteId
             self.action = action
             self.paymentMethodId = paymentMethodId
             self.paymentType = paymentType?.rawType

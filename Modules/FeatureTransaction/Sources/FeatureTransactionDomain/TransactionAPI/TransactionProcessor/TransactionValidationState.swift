@@ -35,6 +35,8 @@ public enum TransactionValidationState: Equatable {
     case addressIsContract
     case invalidAddress
     case invoiceExpired
+    case incorrectSourceCurrency
+    case incorrectDestinationCurrency
     case optionInvalid
     case pendingOrdersLimitReached
     case transactionInFlight

@@ -4,6 +4,9 @@ import MoneyKit
 
 public struct CandidateOrderDetails {
 
+    /// The quote ID
+    public let quoteId: String?
+
     /// The payment method
     public let paymentMethod: PaymentMethodType?
 
@@ -26,6 +29,7 @@ public struct CandidateOrderDetails {
     public let paymentMethodId: String?
 
     private init(
+        quoteId: String?,
         paymentMethod: PaymentMethodType?,
         action: Order.Action,
         fiatValue: FiatValue,
@@ -34,6 +38,7 @@ public struct CandidateOrderDetails {
         cryptoCurrency: CryptoCurrency,
         paymentMethodId: String?
     ) {
+        self.quoteId = quoteId
         self.action = action
         self.paymentMethod = paymentMethod
         self.fiatValue = fiatValue
@@ -44,12 +49,14 @@ public struct CandidateOrderDetails {
     }
 
     public static func buy(
+        quoteId: String? = nil,
         paymentMethod: PaymentMethodType? = nil,
         fiatValue: FiatValue,
         cryptoValue: CryptoValue,
         paymentMethodId: String? = nil
     ) -> CandidateOrderDetails {
         CandidateOrderDetails(
+            quoteId: quoteId,
             paymentMethod: paymentMethod,
             action: .buy,
             fiatValue: fiatValue,
@@ -61,6 +68,7 @@ public struct CandidateOrderDetails {
     }
 
     public static func sell(
+        quoteId: String? = nil,
         paymentMethod: PaymentMethodType? = nil,
         fiatValue: FiatValue,
         destinationFiatCurrency: FiatCurrency,
@@ -68,6 +76,7 @@ public struct CandidateOrderDetails {
         paymentMethodId: String? = nil
     ) -> CandidateOrderDetails {
         CandidateOrderDetails(
+            quoteId: quoteId,
             paymentMethod: paymentMethod,
             action: .sell,
             fiatValue: fiatValue,

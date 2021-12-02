@@ -23,6 +23,7 @@ protocol ConfirmationPageContentReducing {
     var cancelButtonViewModel: ButtonViewModel { get }
 }
 
+// swiftlint:disable type_body_length
 final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 
     // MARK: - Types
