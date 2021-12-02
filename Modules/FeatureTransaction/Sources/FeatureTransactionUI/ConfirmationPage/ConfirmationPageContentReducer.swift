@@ -10,6 +10,8 @@ import RxCocoa
 import RxRelay
 import RxSwift
 import ToolKit
+import UIComponentsKit
+import UIKit
 
 protocol ConfirmationPageContentReducing {
     /// The title of the checkout screen
@@ -98,7 +100,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         return buttons
     }
 
-    // swiftlint:disable:next type_body_length
+    // swiftlint:disable:next function_body_length
     private func createCells(state: TransactionState) -> [DetailsScreen.CellType] {
         guard let pendingTransaction = state.pendingTransaction else {
             return []
@@ -194,6 +196,38 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             }
             .map { presenter -> DetailsScreen.CellType in
                 .label(presenter)
+            }
+
+        let imageNoticeModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
+            .filter(\.isImageNotice)
+            .compactMap { confirmation -> TransactionConfirmation.Model.ImageNotice? in
+                switch confirmation {
+                case .imageNotice(let model):
+                    return model
+                default:
+                    return nil
+                }
+            }
+            .map { model -> NoticeViewModel in
+                let imageResource = URL(string: model.imageURL)
+                    .flatMap(ImageResource.remote)
+                let imageViewContent = ImageViewContent(
+                    imageResource: imageResource,
+                    accessibility: .none,
+                    renderingMode: .normal
+                )
+                let title = LabelContent(text: model.title, font: .main(.semibold, 16), color: .darkTitleText)
+                let subtitle = LabelContent(text: model.subtitle, font: .main(.medium, 12), color: .descriptionText)
+
+                return NoticeViewModel(
+                    imageViewContent: imageViewContent,
+                    imageViewSize: .edge(40),
+                    labelContents: [title, subtitle],
+                    verticalAlignment: .center
+                )
+            }
+            .map { model -> DetailsScreen.CellType in
+                .notice(model)
             }
 
         let noticeModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
@@ -312,19 +346,18 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             disclaimer.append(.staticLabel(content))
         }
 
-        let restItems: [DetailsScreen.CellType] = memoModels +
-            errorModels + disclaimer + checkboxModels
-        return noticeModels +
-            [.separator] +
-            bitpayItemIfNeeded +
-            confirmationLineItems +
-            restItems
+        let topCells: [DetailsScreen.CellType] = imageNoticeModels + noticeModels
+        let midCells: [DetailsScreen.CellType] = bitpayItemIfNeeded + confirmationLineItems + memoModels
+        let bottomCells: [DetailsScreen.CellType] = errorModels + disclaimer + checkboxModels
+        return topCells + [.separator] + midCells + bottomCells
     }
 
     static func screenTitle(state: TransactionState) -> String {
         switch state.action {
         case .sign:
             return LocalizedString.Confirmation.signatureRequest
+        case .send:
+            return LocalizedString.Confirmation.sendRequest
         default:
             return LocalizedString.Confirmation.confirm
         }
@@ -335,7 +368,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         case .swap:
             return LocalizedString.Swap.swapNow
         case .send:
-            return LocalizedString.Swap.sendNow
+            return LocalizedString.Confirmation.confirm
         case .buy:
             return LocalizedString.Swap.buyNow
         case .sell:
@@ -374,6 +407,15 @@ extension TransactionConfirmation {
         switch self {
         case .termsOfService,
              .transferAgreement:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isImageNotice: Bool {
+        switch self {
+        case .imageNotice:
             return true
         default:
             return false

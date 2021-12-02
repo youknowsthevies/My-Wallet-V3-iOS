@@ -79,11 +79,15 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         let notice = TransactionConfirmation.Model.Notice(
-            value: LocalizationConstants.Transaction.Sign.dappRequestWarning
+            value: String(
+                format: LocalizationConstants.Transaction.Sign.dappRequestWarning,
+                walletConnectTarget.dAppName
+            )
         )
-        let app = TransactionConfirmation.Model.App(
-            dAppAddress: walletConnectTarget.dAppAddress,
-            dAppName: walletConnectTarget.dAppName
+        let imageNotice = TransactionConfirmation.Model.ImageNotice(
+            imageURL: walletConnectTarget.dAppLogoURL,
+            title: walletConnectTarget.dAppName,
+            subtitle: walletConnectTarget.dAppAddress
         )
         let network = TransactionConfirmation.Model.Network(
             network: AssetModel.ethereum.name
@@ -95,8 +99,8 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
         return .just(
             pendingTransaction.update(
                 confirmations: [
+                    .imageNotice(imageNotice),
                     .notice(notice),
-                    .app(app),
                     .network(network),
                     .message(message)
                 ]

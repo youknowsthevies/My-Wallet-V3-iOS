@@ -723,7 +723,7 @@ extension LocalizationConstants.Transaction.Send.Completion.Failure {
 
 extension LocalizationConstants.Transaction.Sign {
     public static let dappRequestWarning = NSLocalizedString(
-        "This dapp is requesting an action, which could take money from your wallet. Make sure you trust this site.",
+        "%@ is requesting an action, which could take money from your wallet. Make sure you trust this site.",
         comment: "Dapp request warning."
     )
 }
@@ -1056,7 +1056,11 @@ extension LocalizationConstants.Transaction.Confirmation {
     )
     public static let signatureRequest = NSLocalizedString(
         "Signature Request",
-        comment: "Confirm"
+        comment: "Signature Request title"
+    )
+    public static let sendRequest = NSLocalizedString(
+        "Send",
+        comment: "Send Request title"
     )
     public static let cancel = NSLocalizedString(
         "Cancel",

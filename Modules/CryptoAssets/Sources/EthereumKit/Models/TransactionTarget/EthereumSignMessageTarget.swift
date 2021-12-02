@@ -20,6 +20,7 @@ public struct EthereumSignMessageTarget: WalletConnectTarget {
     public let onTxCompleted: TxCompleted
     public let dAppAddress: String
     public let dAppName: String
+    public let dAppLogoURL: String
     public let currencyType: CurrencyType = .crypto(.coin(.ethereum))
     public let account: String
     public let message: Message
@@ -50,6 +51,7 @@ public struct EthereumSignMessageTarget: WalletConnectTarget {
     public init(
         dAppAddress: String,
         dAppName: String,
+        dAppLogoURL: String,
         account: String,
         message: Message,
         onTxCompleted: @escaping TxCompleted
@@ -57,6 +59,7 @@ public struct EthereumSignMessageTarget: WalletConnectTarget {
         self.onTxCompleted = onTxCompleted
         self.dAppAddress = dAppAddress
         self.dAppName = dAppName
+        self.dAppLogoURL = dAppLogoURL
         self.account = account
         self.message = message
     }
