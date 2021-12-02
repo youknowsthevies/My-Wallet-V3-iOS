@@ -162,9 +162,11 @@ extension Color {
         static let green400: Color = Asset.green400.color()
         static let green600: Color = Asset.green600.color()
         // red
+        static let red000: Color = Asset.red000.color()
         static let red100: Color = Asset.red100.color()
         static let red400: Color = Asset.red400.color()
         static let red600: Color = Asset.red600.color()
+        static let red900: Color = Asset.red900.color()
         // orange
         static let orange100: Color = Asset.orange100.color()
         static let orange400: Color = Asset.orange400.color()
@@ -219,9 +221,11 @@ extension Color {
         case green400
         case green600
         // red
+        case red000
         case red100
         case red400
         case red600
+        case red900
         // orange
         case orange100
         case orange400

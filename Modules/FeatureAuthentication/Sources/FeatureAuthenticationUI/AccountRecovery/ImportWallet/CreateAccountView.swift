@@ -188,7 +188,7 @@ private struct CreateAccountForm: View {
             let showCheckboxError = viewStore.inputValidationState == .invalid(.termsNotAccepted)
             Checkbox(
                 isOn: viewStore.binding(\.$termsAccepted),
-                variant: showCheckboxError ? .error : .standard
+                variant: showCheckboxError ? .error : .default
             )
             .accessibility(identifier: AccessibilityIdentifiers.CreateAccountScreen.termsOfServiceButton)
 

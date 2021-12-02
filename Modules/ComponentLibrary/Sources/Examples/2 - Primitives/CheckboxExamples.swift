@@ -9,6 +9,8 @@ struct CheckboxExamples: View {
     var body: some View {
         VStack(spacing: Spacing.baseline) {
             Checkbox(isOn: $isOn)
+
+            Checkbox(isOn: $isOn, variant: .error)
         }
         .padding(Spacing.padding())
     }
