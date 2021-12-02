@@ -15,9 +15,7 @@ final class WalletConnectSignMessageEngine: TransactionEngine {
     let currencyConversionService: CurrencyConversionServiceAPI
     let walletCurrencyService: FiatCurrencyServiceAPI
 
-
     var askForRefreshConfirmation: AskForRefreshConfirmation!
-
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
