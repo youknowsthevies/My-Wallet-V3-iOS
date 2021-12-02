@@ -24,7 +24,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: RichTextExamples(), title: "🤑 Rich Text"),
             NavigationLinkProvider(view: SegmentedControlExamples(), title: "🚥 SegmentedControl"),
             NavigationLinkProvider(view: InputExamples(), title: "⌨️ Input"),
-            NavigationLinkProvider(view: PrimaryPickerExamples(), title: "⛏ Picker")
+            NavigationLinkProvider(view: PrimaryPickerExamples(), title: "⛏ Picker"),
+            NavigationLinkProvider(view: AlertToastExamples(), title: " 🚨 AlertToast")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
