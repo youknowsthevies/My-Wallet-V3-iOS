@@ -208,6 +208,9 @@ public enum InputSubTextStyle {
     /// Default subtext style, grey text.
     case `default`
 
+    /// Primary styles the text using Color.semantic.primary
+    case primary
+
     /// Success subtext style, green text
     case success
 
@@ -218,6 +221,8 @@ public enum InputSubTextStyle {
         switch self {
         case .default:
             return Color(light: .palette.grey600, dark: .palette.grey300)
+        case .primary:
+            return .semantic.primary
         case .success:
             return .semantic.success
         case .error:

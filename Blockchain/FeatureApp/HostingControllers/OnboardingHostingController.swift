@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import ComponentLibrary
 import ComposableArchitecture
 import DIKit
 import FeatureAppUI
@@ -12,12 +13,14 @@ import UIKit
 
 /// Acts as a container for Pin screen and Login screen
 final class OnboardingHostingController: UIViewController {
+
     let store: Store<Onboarding.State, Onboarding.Action>
     let viewStore: ViewStore<Onboarding.State, Onboarding.Action>
 
     private let alertViewPresenter: AlertViewPresenterAPI
     private let webViewService: WebViewServiceAPI
 
+    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private var currentController: UIViewController?
     private var cancellables: Set<AnyCancellable> = []
 
@@ -27,12 +30,14 @@ final class OnboardingHostingController: UIViewController {
     init(
         store: Store<Onboarding.State, Onboarding.Action>,
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
-        webViewService: WebViewServiceAPI = resolve()
+        webViewService: WebViewServiceAPI = resolve(),
+        internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
     ) {
         self.store = store
         viewStore = ViewStore(store)
         self.alertViewPresenter = alertViewPresenter
         self.webViewService = webViewService
+        self.internalFeatureFlagService = internalFeatureFlagService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -51,19 +56,6 @@ final class OnboardingHostingController: UIViewController {
             .sink { [weak self] alert in
                 guard let self = self else { return }
                 self.showAlert(type: alert)
-            }
-            .store(in: &cancellables)
-
-        viewStore.publisher
-            .showLegacyCreateWalletScreen
-            .removeDuplicates()
-            .sink { [weak self] shouldPresent in
-                guard let self = self else { return }
-                guard shouldPresent else {
-                    self.dismiss(animated: true, completion: nil)
-                    return
-                }
-                self.presentCreateWallet()
             }
             .store(in: &cancellables)
 
@@ -132,11 +124,18 @@ final class OnboardingHostingController: UIViewController {
 
     @ViewBuilder
     private func makeWelcomeView(store: Store<WelcomeState, WelcomeAction>) -> some View {
-        let internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
         if internalFeatureFlagService.isEnabled(.newOnboardingTour) {
-            TourViewAdapter(store: store)
+            PrimaryNavigationView {
+                TourViewAdapter(store: store)
+                    .primaryNavigation()
+                    .navigationBarHidden(true)
+            }
         } else {
-            WelcomeView(store: store)
+            PrimaryNavigationView {
+                WelcomeView(store: store)
+                    .primaryNavigation()
+                    .navigationBarHidden(true)
+            }
         }
     }
 

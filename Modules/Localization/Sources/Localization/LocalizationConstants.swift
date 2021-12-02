@@ -6,6 +6,15 @@ import Foundation
 
 public enum LocalizationConstants {
 
+    public static let searchPlaceholder = NSLocalizedString(
+        "Search",
+        comment: "Search bar: generic placeholder"
+    )
+    public static let searchCancelButtonTitle = NSLocalizedString(
+        "Cancel",
+        comment: "Search bar: cancel button"
+    )
+
     public static let no = NSLocalizedString("No", comment: "No")
     public static let yes = NSLocalizedString("Yes", comment: "Yes")
     public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
@@ -134,6 +143,35 @@ public enum LocalizationConstants {
     }
 
     public enum Authentication {
+
+        public enum CountryAndStatePickers {
+            public static let countriesPickerTitle = NSLocalizedString(
+                "Select Your Country",
+                comment: "Country Picker: Page Title"
+            )
+            public static let countriesPickerSubtitle = NSLocalizedString(
+                "What country do you live in?",
+                comment: "Country Picker: Page Subtitle"
+            )
+            public static let countriesSectionTitle = NSLocalizedString(
+                "Countries",
+                comment: "Country Picker: Countries Section Title"
+            )
+
+            public static let statesPickerTitle = NSLocalizedString(
+                "Select Your State",
+                comment: "State Picker: Page Title"
+            )
+            public static let statesPickerSubtitle = NSLocalizedString(
+                "What State do you live in?",
+                comment: "State Picker: Page Subtitle"
+            )
+            public static let statesSectionTitle = NSLocalizedString(
+                "States",
+                comment: "State Picker: States Section Title"
+            )
+        }
+
         public enum DefaultPasswordScreen {
             public static let title = NSLocalizedString(
                 "Second Password Required",

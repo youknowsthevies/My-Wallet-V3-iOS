@@ -11,6 +11,7 @@ import ComposableNavigation
 import Localization
 import PlatformKit
 import SwiftUI
+import UIComponentsKit
 
 struct TradingLimitsState: Equatable {
     var loading: Bool = false

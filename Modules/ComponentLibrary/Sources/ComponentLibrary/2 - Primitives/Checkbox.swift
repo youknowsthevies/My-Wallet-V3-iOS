@@ -10,26 +10,40 @@ import SwiftUI
 /// [Checkbox](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=6%3A1267)
 public struct Checkbox: View {
 
+    public enum Variant {
+        case standard
+        case error
+    }
+
     @Binding private var isOn: Bool
+    private let variant: Variant
 
     /// Create a checkbox view
     /// - Parameters:
     ///   - isOn: Binding for the checkbox's on/off state
-    public init(isOn: Binding<Bool>) {
+    public init(isOn: Binding<Bool>, variant: Variant = .standard) {
         _isOn = isOn
+        self.variant = variant
     }
 
     public var body: some View {
-        Toggle(isOn: $isOn) {
-            EmptyView()
+        if variant == .standard {
+            Toggle(isOn: $isOn) {
+                EmptyView()
+            }
+            .toggleStyle(CheckboxToggleStandardStyle())
+        } else {
+            Toggle(isOn: $isOn) {
+                EmptyView()
+            }
+            .toggleStyle(CheckboxToggleErrorStyle())
         }
-        .toggleStyle(CheckboxToggleStyle())
     }
 }
 
 // MARK: - Private
 
-private struct CheckboxToggleStyle: ToggleStyle {
+private struct CheckboxToggleStandardStyle: ToggleStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         Icon.check
@@ -48,6 +62,30 @@ private struct CheckboxToggleStyle: ToggleStyle {
                 RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
                     .stroke(
                         configuration.isOn ? Color.semantic.primary : .semantic.medium
+                    )
+            )
+    }
+}
+
+private struct CheckboxToggleErrorStyle: ToggleStyle {
+
+    func makeBody(configuration: Configuration) -> some View {
+        Icon.check
+            .accentColor(
+                configuration.isOn ? .semantic.background : .clear
+            )
+            .frame(width: 24, height: 24)
+            .onTapGesture { configuration.isOn.toggle() }
+            .background(
+                RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
+                    .fill(
+                        configuration.isOn ? Color.semantic.primary : .semantic.redBG
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
+                    .stroke(
+                        configuration.isOn ? Color.semantic.primary : .semantic.error
                     )
             )
     }

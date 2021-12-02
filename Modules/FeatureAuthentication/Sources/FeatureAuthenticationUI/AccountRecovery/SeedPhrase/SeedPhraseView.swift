@@ -273,7 +273,7 @@ struct SeedPhraseView_Previews: PreviewProvider {
                 reducer: seedPhraseReducer,
                 environment: .init(
                     mainQueue: .main,
-                    externalAppOpener: PrintAppOpen(),
+                    externalAppOpener: ToLogAppOpener(),
                     analyticsRecorder: NoOpAnalyticsRecorder()
                 )
             )

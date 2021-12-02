@@ -249,7 +249,7 @@ extension PrimaryPicker.Row {
                     label: {
                         HStack(spacing: 0) {
                             Text(title)
-                                .typography(.body2)
+                                .typography(.body1)
                                 .foregroundColor(.semantic.title)
                                 .padding(.vertical, 12)
 
