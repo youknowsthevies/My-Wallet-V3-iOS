@@ -210,6 +210,13 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         }
     }
 
+    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        validateAmounts(pendingTransaction: pendingTransaction)
+            .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
+            .andThen(validateSufficientGas(pendingTransaction: pendingTransaction))
+            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
+    }
+
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmounts(pendingTransaction: pendingTransaction)
             .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
