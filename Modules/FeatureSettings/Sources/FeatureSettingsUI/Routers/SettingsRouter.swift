@@ -275,7 +275,7 @@ final class SettingsRouter: SettingsRouterAPI {
             viewController.modalPresentationStyle = .overFullScreen
             navigationRouter.present(viewController: viewController)
         case .promptGuidCopy:
-            guidRepositoryAPI.guid
+            guidRepositoryAPI.guid.asSingle()
                 .map(weak: self) { _, value -> String in
                     value ?? ""
                 }

@@ -26,8 +26,8 @@ public final class SMSService: SMSServiceAPI {
     // MARK: - API
 
     public func request() -> AnyPublisher<Void, SMSServiceError> {
-        credentialsRepository.guidPublisher
-            .zip(sessionTokenRepository.sessionTokenPublisher) {
+        credentialsRepository.guid
+            .zip(sessionTokenRepository.sessionToken) {
                 (guid: $0, sessionToken: $1)
             }
             .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), SMSServiceError> in

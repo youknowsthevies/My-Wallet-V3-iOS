@@ -33,7 +33,7 @@ public class SendEmailNotificationService: SendEmailNotificationServiceAPI {
     public func postSendEmailNotificationTrigger(
         _ moneyValue: MoneyValue
     ) -> AnyPublisher<Void, Never> {
-        credentialsRepository.credentialsPublisher
+        credentialsRepository.credentials
             .ignoreFailure()
             .map { guid, sharedKey in
                 SendEmailNotificationClient.Payload(

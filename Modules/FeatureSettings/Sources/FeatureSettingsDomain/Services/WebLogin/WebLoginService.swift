@@ -55,6 +55,7 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
     private var guid: Single<String> {
         credentialsRepository
             .guid
+            .asSingle()
             .map {
                 guard let guid = $0 else {
                     throw MissingCredentialsError.guid
@@ -77,8 +78,8 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
     private func encrypteWalletData(with encryptionPhrase: String) -> Single<String> {
         Single
             .zip(
-                passwordRepository.password,
-                credentialsRepository.sharedKey
+                passwordRepository.password.asSingle(),
+                credentialsRepository.sharedKey.asSingle()
             )
             .map { password, sharedKey -> (String, String) in
                 guard let password = password else {

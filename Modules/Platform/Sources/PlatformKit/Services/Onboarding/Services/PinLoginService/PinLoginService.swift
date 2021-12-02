@@ -67,8 +67,8 @@ public final class PinLoginService: PinLoginServiceAPI {
     private func passcodePayload(from pinDecryptionKey: String) -> Single<PasscodePayload> {
         Single
             .zip(
-                guidRepository.guid,
-                sharedKeyRepository.sharedKey,
+                guidRepository.guid.asSingle(),
+                sharedKeyRepository.sharedKey.asSingle(),
                 decrypt(pinDecryptionKey: pinDecryptionKey)
             )
             .map { payload -> PasscodePayload in
@@ -90,9 +90,9 @@ public final class PinLoginService: PinLoginServiceAPI {
     private func cache(passcodePayload: PasscodePayload) -> Completable {
         Completable
             .zip(
-                sharedKeyRepository.set(sharedKey: passcodePayload.sharedKey),
-                passwordRepository.set(password: passcodePayload.password),
-                guidRepository.set(guid: passcodePayload.guid)
+                sharedKeyRepository.set(sharedKey: passcodePayload.sharedKey).asCompletable(),
+                passwordRepository.set(password: passcodePayload.password).asCompletable(),
+                guidRepository.set(guid: passcodePayload.guid).asCompletable()
             )
     }
 

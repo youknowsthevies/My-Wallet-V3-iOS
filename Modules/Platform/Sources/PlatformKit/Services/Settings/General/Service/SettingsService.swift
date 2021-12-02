@@ -87,12 +87,12 @@ final class SettingsService: SettingsServiceAPI {
                 self.semaphore.signal()
             }
         }
-        .subscribeOn(scheduler)
+        .subscribe(on: scheduler)
     }
 
     private func fetchSettings(settings: WalletSettings?, force: Bool) -> Single<WalletSettings> {
         guard force || settings == nil else { return Single.just(settings!) }
-        return credentialsRepository.credentials
+        return credentialsRepository.credentials.asSingle()
             .flatMap(weak: self) { (self, credentials) in
                 self.client.settings(
                     by: credentials.guid,
@@ -175,7 +175,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
     }
 
     func update(currency: FiatCurrency, context: FlowContext) -> Completable {
-        credentialsRepository.credentials
+        credentialsRepository.credentials.asSingle()
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.update(
                     currency: currency.code,
@@ -195,7 +195,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
 
     func update(currency: FiatCurrency, context: FlowContext) -> AnyPublisher<Void, CurrencyUpdateError> {
         let fetch = fetchPublisher(force: true)
-        return credentialsRepository.credentialsPublisher
+        return credentialsRepository.credentials
             .mapError(CurrencyUpdateError.credentialsError)
             .flatMap { [client] (guid: String, sharedKey: String) in
                 client.updatePublisher(
@@ -231,7 +231,7 @@ extension SettingsService: EmailSettingsServiceAPI {
     }
 
     func update(email: String, context: FlowContext?) -> Completable {
-        credentialsRepository.credentials
+        credentialsRepository.credentials.asSingle()
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.update(
                     email: email,
@@ -246,7 +246,7 @@ extension SettingsService: EmailSettingsServiceAPI {
     }
 
     func update(email: String) -> AnyPublisher<String, EmailSettingsServiceError> {
-        credentialsRepository.credentialsPublisher
+        credentialsRepository.credentials
             .mapError(EmailSettingsServiceError.credentialsError)
             .flatMap { [client] guid, sharedKey in
                 client.update(
@@ -265,7 +265,7 @@ extension SettingsService: EmailSettingsServiceAPI {
 
 extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
     func updateLastTransaction() -> Completable {
-        credentialsRepository.credentials
+        credentialsRepository.credentials.asSingle()
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.updateLastTransactionTime(
                     guid: payload.guid,
@@ -286,7 +286,7 @@ extension SettingsService: LastTransactionSettingsUpdateServiceAPI {
 
 extension SettingsService: EmailNotificationSettingsServiceAPI {
     func emailNotifications(enabled: Bool) -> Completable {
-        credentialsRepository.credentials
+        credentialsRepository.credentials.asSingle()
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.emailNotifications(
                     enabled: enabled,
@@ -308,7 +308,7 @@ extension SettingsService: EmailNotificationSettingsServiceAPI {
 
 extension SettingsService: UpdateMobileSettingsServiceAPI {
     func update(mobileNumber: String) -> Completable {
-        credentialsRepository.credentials
+        credentialsRepository.credentials.asSingle()
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.update(
                     smsNumber: mobileNumber,
@@ -331,7 +331,7 @@ extension SettingsService: UpdateMobileSettingsServiceAPI {
 
 extension SettingsService: VerifyMobileSettingsServiceAPI {
     func verify(with code: String) -> Completable {
-        credentialsRepository.credentials
+        credentialsRepository.credentials.asSingle()
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.verifySMS(
                     code: code,
@@ -353,7 +353,7 @@ extension SettingsService: VerifyMobileSettingsServiceAPI {
 
 extension SettingsService: SMSTwoFactorSettingsServiceAPI {
     func smsTwoFactorAuthentication(enabled: Bool) -> Completable {
-        credentialsRepository.credentials
+        credentialsRepository.credentials.asSingle()
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
                 self.client.smsTwoFactorAuthentication(
                     enabled: enabled,

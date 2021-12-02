@@ -50,7 +50,7 @@ final class AnalyticsUserPropertyInteractor {
                     }
                     .asSingle()
                     .optional()
-                    .catchErrorJustReturn(nil)
+                    .catchAndReturn(nil)
                     .map { (asset: asset.asset, moneyValue: $0) }
             }
         return Single.zip(balances)
@@ -68,8 +68,8 @@ final class AnalyticsUserPropertyInteractor {
             .zip(
                 nabuUserService.user.asSingle(),
                 tiersService.tiers.asSingle(),
-                walletRepository.authenticatorType,
-                walletRepository.guid,
+                walletRepository.authenticatorType.asSingle(),
+                walletRepository.guid.asSingle(),
                 fiatBalances()
             )
             .subscribe(
