@@ -92,7 +92,7 @@ public struct Quote {
 
         switch (sourceCurrency, destinationCurrency) {
         // buy flow
-        case let (source as FiatCurrency, destination as CryptoCurrency):
+        case (let source as FiatCurrency, let destination as CryptoCurrency):
             guard let fiatAmount = value.fiatValue else {
                 fatalError("Amount must be in fiat for a buy quote")
             }
@@ -112,7 +112,7 @@ public struct Quote {
             fee = MoneyValue.create(minor: feeMinor, currency: .fiat(source))
 
         // sell flow
-        case let (source as CryptoCurrency, destination as FiatCurrency):
+        case (let source as CryptoCurrency, let destination as FiatCurrency):
             guard let cryptoAmount = value.cryptoValue else {
                 fatalError("Amount must be in crypto for a sell quote")
             }
@@ -132,7 +132,7 @@ public struct Quote {
             fee = MoneyValue.create(minor: feeMinor, currency: .crypto(source))
 
         // swap flow
-        case let (source as CryptoCurrency, destination as CryptoCurrency):
+        case (let source as CryptoCurrency, let destination as CryptoCurrency):
             guard let cryptoAmount = value.cryptoValue else {
                 fatalError("Amount must be in crypto for a sell quote")
             }

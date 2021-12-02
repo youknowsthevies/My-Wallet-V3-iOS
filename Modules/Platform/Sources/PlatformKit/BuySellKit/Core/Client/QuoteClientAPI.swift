@@ -22,11 +22,11 @@ public struct QuoteQueryRequest: Encodable {
     let paymentMethodId: String?
 
     init(from query: QuoteQuery) {
-        self.profile = query.profile.rawValue
-        self.pair = "\(query.sourceCurrency)-\(query.destinationCurrency)"
-        self.inputValue = query.amount.minorString
-        self.paymentMethod = query.paymentMethod?.rawValue
-        self.paymentMethodId = query.paymentMethodId
+        profile = query.profile.rawValue
+        pair = "\(query.sourceCurrency)-\(query.destinationCurrency)"
+        inputValue = query.amount.minorString
+        paymentMethod = query.paymentMethod?.rawValue
+        paymentMethodId = query.paymentMethodId
     }
 }
 
