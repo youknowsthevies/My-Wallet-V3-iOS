@@ -69,12 +69,12 @@ public final class CardAuthorizationScreenViewController: BaseScreenViewControll
         super.viewDidAppear(animated)
         switch presenter.authorizationState {
         case .none, .confirmed:
-            presenter.redirect()
+            close()
         case .required(let params):
             guard params.paymentLink == nil else {
                 return
             }
-            presenter.redirect()
+            close()
         }
     }
 
@@ -86,6 +86,12 @@ public final class CardAuthorizationScreenViewController: BaseScreenViewControll
     private func setupNavigationBar() {
         set(barStyle: .darkContent())
         titleViewStyle = .text(value: presenter.title)
+    }
+
+    private func close() {
+        dismiss(animated: true) { [presenter] in
+            presenter.redirect()
+        }
     }
 }
 
@@ -99,7 +105,7 @@ extension CardAuthorizationScreenViewController: WKNavigationDelegate {
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void
     ) {
         if navigationAction.request.url?.host == exitUrl.host {
-            presenter.redirect()
+            close()
         }
         decisionHandler(.allow)
     }

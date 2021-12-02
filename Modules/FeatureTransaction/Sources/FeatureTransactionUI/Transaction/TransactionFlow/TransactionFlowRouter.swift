@@ -426,13 +426,11 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         let presenter = topMostViewControllerProvider.topMostViewController ?? viewController.uiviewController
         securityRouter = PaymentSecurityRouter { result in
             Logger.shared.debug(String(describing: result))
-            presenter.dismiss(animated: true) {
-                switch result {
-                case .abandoned, .failed:
-                    transactionModel.process(action: .returnToPreviousStep)
-                case .pending, .completed:
-                    transactionModel.process(action: .securityChecksCompleted)
-                }
+            switch result {
+            case .abandoned, .failed:
+                transactionModel.process(action: .returnToPreviousStep)
+            case .pending, .completed:
+                transactionModel.process(action: .securityChecksCompleted)
             }
         }
         transactionModel
