@@ -195,40 +195,34 @@ extension Input where Trailing == EmptyView {
 }
 
 /// Override for the border color of `Input`
-public enum InputState {
+public struct InputState {
+    let borderColor: Color?
+
     /// Default border colors, changing based on focus
-    case `default`
+    public static let `default` = Self(borderColor: nil)
 
     /// A red border color in all focus states
-    case error
+    public static let error = Self(borderColor: .semantic.error)
+
+    /// A green border color in all focus states
+    public static let success = Self(borderColor: .semantic.success)
 }
 
 /// Text style of the subtext below the text field in `Input`
-public enum InputSubTextStyle {
+public struct InputSubTextStyle {
+    let foregroundColor: Color
+
     /// Default subtext style, grey text.
-    case `default`
+    public static let `default` = Self(foregroundColor: Color(light: .palette.grey600, dark: .palette.grey300))
 
     /// Primary styles the text using Color.semantic.primary
-    case primary
+    public static let primary = Self(foregroundColor: .semantic.primary)
 
     /// Success subtext style, green text
-    case success
+    public static let success = Self(foregroundColor: .semantic.success)
 
     /// Error subtext style, red text
-    case error
-
-    var foregroundColor: Color {
-        switch self {
-        case .default:
-            return Color(light: .palette.grey600, dark: .palette.grey300)
-        case .primary:
-            return .semantic.primary
-        case .success:
-            return .semantic.success
-        case .error:
-            return .semantic.error
-        }
-    }
+    public static let error = Self(foregroundColor: .semantic.error)
 }
 
 extension Input {
@@ -243,8 +237,8 @@ extension Input {
     }
 
     private var borderColor: Color {
-        if state == .error {
-            return .semantic.error
+        if let color = state.borderColor {
+            return color
         } else if !isEnabled {
             return .semantic.medium
         } else if isFirstResponder {
@@ -328,6 +322,22 @@ struct Input_Previews: PreviewProvider {
         )
         .previewLayout(.sizeThatFits)
         .previewDisplayName("Error Focused")
+
+        PreviewContainer(
+            text: .constant("Blockchain"),
+            isFirstResponder: .constant(false),
+            state: .success
+        )
+        .previewLayout(.sizeThatFits)
+        .previewDisplayName("Success")
+
+        PreviewContainer(
+            text: .constant("Blockchain"),
+            isFirstResponder: .constant(true),
+            state: .success
+        )
+        .previewLayout(.sizeThatFits)
+        .previewDisplayName("Success Focused")
 
         PreviewContainer(
             text: .constant("Blockchain"),
