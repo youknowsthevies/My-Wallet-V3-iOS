@@ -118,7 +118,7 @@ extension UIDevice {
         case "iPhone13,4":
             return "iPhone 12 Pro Max"
 
-        // iPhone 12 Line
+        // iPhone 13 Line
         case "iPhone14,2":
             return "iPhone 13 Pro"
         case "iPhone14,3":
