@@ -93,7 +93,8 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
 
     func initializeTransaction() -> Single<PendingTransaction> {
         walletCurrencyService
-            .fiatCurrency
+            .displayCurrency
+            .asSingle()
             .map { [walletConnectTarget] fiatCurrency -> PendingTransaction in
                 walletConnectTarget.pendingTransacation(fiatCurrency: fiatCurrency)
             }
@@ -399,14 +400,14 @@ final class WalletConnectTransactionEngine: OnChainTransactionEngine {
 
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         walletCurrencyService
-            .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
-                self.priceService
-                    .price(of: self.sourceAsset, in: fiatCurrency)
+            .displayCurrency
+            .flatMap { [priceService, sourceAsset] fiatCurrency in
+                priceService
+                    .price(of: sourceAsset, in: fiatCurrency)
                     .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
-                    .asSingle()
+                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
+            .asSingle()
     }
 }
 

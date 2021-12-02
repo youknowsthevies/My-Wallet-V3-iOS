@@ -17,7 +17,7 @@ public final class AccountBalanceViewInteractor: AssetBalanceViewInteracting {
     public var state: Observable<InteractionState> {
         Observable
             .combineLatest(
-                fiatCurrencyService.fiatCurrencyObservable,
+                fiatCurrencyService.displayCurrencyPublisher.asObservable(),
                 refreshRelay.asObservable()
             )
             .map(\.0)

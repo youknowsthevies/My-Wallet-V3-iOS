@@ -106,7 +106,8 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     func initializeTransaction() -> Single<PendingTransaction> {
         Single.zip(
             walletCurrencyService
-                .fiatCurrency,
+                .displayCurrency
+                .asSingle(),
             availableBalance
         )
         .map { fiatCurrency, availableBalance -> PendingTransaction in
@@ -385,12 +386,12 @@ extension BitcoinOnChainTransactionEngine {
 
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         walletCurrencyService
-            .fiatCurrency
-            .flatMap { [currencyConversionService, sourceCryptoAccount] fiatCurrency -> Single<MoneyValuePair> in
+            .displayCurrency
+            .flatMap { [currencyConversionService, sourceCryptoAccount] fiatCurrency in
                 currencyConversionService
                     .conversionRate(from: sourceCryptoAccount.currencyType, to: fiatCurrency.currencyType)
-                    .asSingle()
                     .map { MoneyValuePair(base: .one(currency: sourceCryptoAccount.currencyType), quote: $0) }
             }
+            .asSingle()
     }
 }

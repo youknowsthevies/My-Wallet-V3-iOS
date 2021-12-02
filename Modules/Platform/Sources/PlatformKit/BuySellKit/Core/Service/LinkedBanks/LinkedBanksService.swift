@@ -72,7 +72,8 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
                 .asSingle()
         }
 
-        bankLinkageStartup = fiatCurrencyService.fiatCurrency
+        bankLinkageStartup = fiatCurrencyService.displayCurrency
+            .asSingle()
             .flatMap { currency -> Single<(CreateBankLinkageResponse, FiatCurrency)> in
                 client.createBankLinkage(for: currency)
                     .map { ($0, currency) }

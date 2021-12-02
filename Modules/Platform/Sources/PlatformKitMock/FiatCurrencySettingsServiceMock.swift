@@ -11,23 +11,16 @@ final class FiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceAPI {
 
     private let fiatCurrencyRelay: BehaviorRelay<FiatCurrency>
 
-    var fiatCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
-        fiatCurrency
+    var displayCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
+        fiatCurrencyRelay
+            .asObservable()
             .asPublisher()
             .replaceError(with: .USD)
             .eraseToAnyPublisher()
     }
 
-    var fiatCurrencyObservable: Observable<FiatCurrency> {
-        fiatCurrencyRelay.asObservable()
-    }
-
-    var fiatCurrency: Single<FiatCurrency> {
-        fiatCurrencyRelay.take(1).asSingle()
-    }
-
-    var legacyCurrency: FiatCurrency? {
-        fiatCurrencyRelay.value
+    var displayCurrencyObservable: Observable<FiatCurrency> {
+        displayCurrencyPublisher.asObservable()
     }
 
     func update(currency: FiatCurrency, context: FlowContext) -> Completable {

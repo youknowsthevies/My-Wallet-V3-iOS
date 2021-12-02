@@ -26,7 +26,8 @@ final class KYCTiersPageModelFactory: KYCTiersPageModelFactoryAPI {
     }
 
     func tiersPageModel(suppressCTA: Bool) -> Single<KYCTiersPageModel> {
-        currencyService.fiatCurrency
+        currencyService.displayCurrency
+            .asSingle()
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<(TradeLimitsMetadata?, KYC.UserTiers, FiatCurrency)> in
                 let tradeLimits = self.limitsAPI
                     .getTradeLimits(withFiatCurrency: fiatCurrency.code, ignoringCache: true)

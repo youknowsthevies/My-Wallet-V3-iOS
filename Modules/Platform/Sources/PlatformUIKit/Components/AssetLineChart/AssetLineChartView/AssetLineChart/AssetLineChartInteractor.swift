@@ -55,11 +55,10 @@ public final class AssetLineChartInteractor: AssetLineChartInteracting {
 
     private func loadHistoricalPrices(within window: PriceWindow) {
         fiatCurrencyService
-            .fiatCurrencyObservable
+            .displayCurrencyPublisher
             .flatMap { [priceService, cryptoCurrency] fiatCurrency in
                 priceService
                     .priceSeries(of: cryptoCurrency, in: fiatCurrency, within: window)
-                    .asObservable()
             }
             .map { [cryptoCurrency] priceSeries in
                 AssetLineChart.Value.Interaction(
@@ -69,6 +68,7 @@ public final class AssetLineChartInteractor: AssetLineChartInteracting {
                 )
             }
             .map(AssetLineChart.State.Interaction.loaded)
+            .asObservable()
             .startWith(.loading)
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: stateRelay)

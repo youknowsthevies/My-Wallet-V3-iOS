@@ -39,8 +39,7 @@ final class PaymentAccountsService: PaymentAccountsServiceAPI {
     ) -> AnyPublisher<[PaymentMethodAccount], NetworkError> {
         // STEP 1: Fetch the user's preferred currency. We'll need that to fetch payment methods with correct limits.
         fiatCurrencyService
-            .fiatCurrency
-            .asPublisher()
+            .displayCurrency
             // fiatCurrency should never fail, but better be safe than sorry
             .replaceError(with: amount.fiatValue?.currency ?? .locale)
             .setFailureType(to: NetworkError.self)

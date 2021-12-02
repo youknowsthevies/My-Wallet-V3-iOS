@@ -109,7 +109,7 @@ final class WithdrawRootInteractor: Interactor,
             paymentMethodTypes,
             .just(sourceAccount.fiatCurrency)
         )
-        .observeOn(MainScheduler.asyncInstance)
+        .observe(on: MainScheduler.asyncInstance)
         .subscribe(onSuccess: { [weak self] values in
             guard let self = self else { return }
             let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
@@ -138,7 +138,7 @@ final class WithdrawRootInteractor: Interactor,
         linkedBanksFactory
             .linkedBanks
             .compactMap(\.first)
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onSuccess: { [weak self] linkedBankAccount in
                 guard let self = self else { return }
                 self.router?.routeToWithdraw(
@@ -163,8 +163,9 @@ final class WithdrawRootInteractor: Interactor,
 
     func routeToWireTransfer() {
         fiatCurrencyService
-            .fiatCurrency
-            .observeOn(MainScheduler.asyncInstance)
+            .displayCurrency
+            .asSingle()
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onSuccess: { [weak self] fiatCurrency in
                 self?.router?.routeToWireInstructions(currency: fiatCurrency)
             })

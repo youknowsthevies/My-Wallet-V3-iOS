@@ -32,7 +32,7 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
     private lazy var setup: Void = {
         Observable
             .combineLatest(
-                fiatCurrencyService.fiatCurrencyObservable,
+                fiatCurrencyService.displayCurrencyPublisher.asObservable(),
                 refreshRelay
             )
             .map(\.0)
@@ -40,9 +40,9 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
                 Self.fetch(coincore: coincore, fiatCurrency: fiatCurrency)
                     .asObservable()
                     .map { .value($0) }
-                    .catchErrorJustReturn(.calculating)
+                    .catchAndReturn(.calculating)
             }
-            .catchErrorJustReturn(.calculating)
+            .catchAndReturn(.calculating)
             .bindAndCatch(to: changeRelay)
             .disposed(by: disposeBag)
     }()

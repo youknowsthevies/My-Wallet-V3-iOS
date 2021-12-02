@@ -44,16 +44,14 @@ final class InterestAccountService: InterestAccountServiceAPI {
         _ currency: CryptoCurrency
     ) -> Single<InterestAccountLimits?> {
         fiatCurrencyService
-            .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) in
-                self.interestAccountLimitsRepository
+            .displayCurrency
+            .flatMap { [interestAccountLimitsRepository] fiatCurrency in
+                interestAccountLimitsRepository
                     .fetchInterestAccountLimitsForAllAssets(fiatCurrency)
-                    .asObservable()
-                    .take(1)
-                    .asSingle()
             }
             .map { $0.filter { $0.cryptoCurrency == currency } }
             .map(\.first)
+            .asSingle()
     }
 
     func fetchInterestAccountDetailsForCryptoCurrency(
@@ -93,7 +91,7 @@ final class InterestAccountService: InterestAccountServiceAPI {
         Single
             .zip(
                 kycTiersService.tiers.map(\.isTier2Approved).asSingle(),
-                fiatCurrencyService.fiatCurrency
+                fiatCurrencyService.displayCurrency.asSingle()
             )
             .flatMap { [interestAccountBalanceRepository] tier2Approved, fiatCurrency
                 -> Single<InterestAccountBalances> in

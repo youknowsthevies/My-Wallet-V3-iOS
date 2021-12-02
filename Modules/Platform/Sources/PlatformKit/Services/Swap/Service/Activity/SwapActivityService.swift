@@ -32,7 +32,8 @@ final class SwapActivityService: SwapActivityServiceAPI {
             )
         )
         cache.setFetch {
-            fiatCurrencyProvider.fiatCurrency
+            fiatCurrencyProvider.displayCurrency
+                .asSingle()
                 .flatMap { fiatCurrency -> Single<[SwapActivityItemEvent]> in
                     client.fetchActivity(
                         from: Date(),

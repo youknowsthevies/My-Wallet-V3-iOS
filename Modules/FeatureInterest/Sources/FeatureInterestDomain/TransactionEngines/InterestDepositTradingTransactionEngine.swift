@@ -13,16 +13,16 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
 
     public var minimumDepositLimits: Single<FiatValue> {
         walletCurrencyService
-            .fiatCurrency
+            .displayCurrency
             .flatMap { [sourceCryptoCurrency, accountLimitsRepository] fiatCurrency in
                 accountLimitsRepository
                     .fetchInterestAccountLimitsForCryptoCurrency(
                         sourceCryptoCurrency,
                         fiatCurrency: fiatCurrency
                     )
-                    .asSingle()
             }
             .map(\.minDepositAmount)
+            .asSingle()
     }
 
     // MARK: - TransactionEngine
@@ -65,15 +65,15 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
 
     private var interestAccountLimits: Single<InterestAccountLimits> {
         walletCurrencyService
-            .fiatCurrency
+            .displayCurrency
             .flatMap { [accountLimitsRepository, sourceAsset] fiatCurrency in
                 accountLimitsRepository
                     .fetchInterestAccountLimitsForCryptoCurrency(
                         sourceAsset.cryptoCurrency!,
                         fiatCurrency: fiatCurrency
                     )
-                    .asSingle()
             }
+            .asSingle()
     }
 
     private let accountTransferRepository: InterestAccountTransferRepositoryAPI
@@ -110,7 +110,8 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
                 minimumDepositCryptoLimits,
                 availableBalance,
                 walletCurrencyService
-                    .fiatCurrency
+                    .displayCurrency
+                    .asSingle()
             )
             .map { limits, balance, fiatCurrency -> PendingTransaction in
                 let asset = limits.currency

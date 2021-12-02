@@ -191,7 +191,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     var paymentMethodTypesValidForBuy: Single<[PaymentMethodType]> {
         Observable
             .combineLatest(
-                fiatCurrencyService.fiatCurrencyObservable,
+                fiatCurrencyService.displayCurrencyPublisher.asObservable(),
                 kycTiersService.tiers.map(\.isTier2Approved).asObservable(),
                 featureFlagsService
                     .isEnabled(.remote(.openBanking))

@@ -41,7 +41,8 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private var userFiatCurrency: Single<FiatCurrency> {
-        walletCurrencyService.fiatCurrency
+        walletCurrencyService.displayCurrency
+            .asSingle()
     }
 
     private var sourceExchangeRatePair: Single<MoneyValuePair> {

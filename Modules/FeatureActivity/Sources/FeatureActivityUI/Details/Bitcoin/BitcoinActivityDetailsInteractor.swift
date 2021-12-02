@@ -35,7 +35,8 @@ final class BitcoinActivityDetailsInteractor {
 
     private func price(at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
-            .fiatCurrency
+            .displayCurrency
+            .asSingle()
             .flatMap(weak: self) { (self, fiatCurrency) in
                 self.price(at: date, in: fiatCurrency)
             }
@@ -54,10 +55,10 @@ final class BitcoinActivityDetailsInteractor {
         let transaction = detailsService
             .details(for: identifier)
         let note = note(for: identifier)
-            .catchErrorJustReturn(nil)
+            .catchAndReturn(nil)
         let price = price(at: createdAt)
             .optional()
-            .catchErrorJustReturn(nil)
+            .catchAndReturn(nil)
 
         return Observable
             .combineLatest(

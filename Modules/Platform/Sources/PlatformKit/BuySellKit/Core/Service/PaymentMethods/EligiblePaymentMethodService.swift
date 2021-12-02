@@ -40,7 +40,8 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         self.enabledCurrenciesService = enabledCurrenciesService
 
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
-        let fetch = fiatCurrencyService.fiatCurrencyObservable
+        let fetch = fiatCurrencyService.displayCurrencyPublisher
+            .asObservable()
             .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Observable<[PaymentMethod]> in
                 let fetchTiers = tiersService.fetchTiers().asSingle()
                 return fetchTiers.flatMap { tiersResult -> Single<(KYC.UserTiers, SimplifiedDueDiligenceResponse)> in
@@ -130,7 +131,6 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                 let fetchTiers = tiersService.fetchTiers().asSingle()
                 return fetchTiers.flatMap { tiersResult -> Single<(KYC.UserTiers, SimplifiedDueDiligenceResponse)> in
                     tiersService.simplifiedDueDiligenceEligibility(for: tiersResult.latestApprovedTier)
-                        .asObservable()
                         .asSingle()
                         .map { sddEligibiliy in (tiersResult, sddEligibiliy) }
                 }

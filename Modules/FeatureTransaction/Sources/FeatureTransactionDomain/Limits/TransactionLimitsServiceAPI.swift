@@ -66,7 +66,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         source: LimitsAccount,
         destination: LimitsAccount
     ) -> TransactionLimitsServicePublisher {
-        walletCurrencyService.fiatCurrencyPublisher
+        walletCurrencyService.displayCurrencyPublisher
             .setFailureType(to: TransactionLimitsServiceError.self)
             .flatMap { [unowned self] walletCurrency -> TransactionLimitsServicePublisher in
                 self.fetchLimits(source: source, destination: destination, limitsCurrency: walletCurrency)
@@ -105,7 +105,7 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
         destination: LimitsAccount,
         product: TransactionLimitsProduct
     ) -> TransactionLimitsServicePublisher {
-        walletCurrencyService.fiatCurrencyPublisher
+        walletCurrencyService.displayCurrencyPublisher
             .zip(featureFlagService.isEnabled(.remote(.newLimitsUIEnabled)))
             .flatMap { [unowned self] walletCurrency, newLimitsEnabled -> TransactionLimitsServicePublisher in
                 let convertedTradeLimits = self

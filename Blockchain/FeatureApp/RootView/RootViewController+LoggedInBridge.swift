@@ -208,7 +208,7 @@ extension RootViewController: LoggedInBridge {
     }
 
     private func currentFiatAccount() -> AnyPublisher<FiatAccount, CoincoreError> {
-        fiatCurrencyService.fiatCurrencyPublisher
+        fiatCurrencyService.displayCurrencyPublisher
             .flatMap { [coincore] currency in
                 coincore.allAccounts
                     .map { group in

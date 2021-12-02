@@ -53,7 +53,8 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
 
     func fetch() -> Observable<SupportedPairs> {
         fiatCurrencySettingsService
-            .fiatCurrencyObservable
+            .displayCurrencyPublisher
+            .asObservable()
             .map { .only(fiatCurrency: $0) }
             .flatMapLatest(weak: self) { (self, value) in
                 self.pairsService.fetchPairs(for: value).asObservable()

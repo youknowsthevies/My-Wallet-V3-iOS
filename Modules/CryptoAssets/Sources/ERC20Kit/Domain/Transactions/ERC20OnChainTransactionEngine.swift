@@ -91,7 +91,8 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     func initializeTransaction() -> Single<PendingTransaction> {
         Single.zip(
             walletCurrencyService
-                .fiatCurrency,
+                .displayCurrency
+                .asSingle(),
             availableBalance
         )
 
@@ -352,24 +353,24 @@ extension ERC20OnChainTransactionEngine {
     /// Streams `MoneyValuePair` for the exchange rate of the source ERC20 Asset in the current fiat currency.
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         walletCurrencyService
-            .fiatCurrency
-            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
+            .displayCurrency
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency in
                 currencyConversionService
                     .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
-                    .asSingle()
                     .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
+            .asSingle()
     }
 
     /// Streams `MoneyValuePair` for the exchange rate of Ethereum in the current fiat currency.
     private var ethereumExchangeRatePair: Single<MoneyValuePair> {
         walletCurrencyService
-            .fiatCurrency
-            .flatMap { [currencyConversionService] fiatCurrency -> Single<MoneyValuePair> in
+            .displayCurrency
+            .flatMap { [currencyConversionService] fiatCurrency in
                 currencyConversionService
                     .conversionRate(from: .crypto(.coin(.ethereum)), to: fiatCurrency.currencyType)
-                    .asSingle()
                     .map { MoneyValuePair(base: .one(currency: .crypto(.coin(.ethereum))), quote: $0) }
             }
+            .asSingle()
     }
 }

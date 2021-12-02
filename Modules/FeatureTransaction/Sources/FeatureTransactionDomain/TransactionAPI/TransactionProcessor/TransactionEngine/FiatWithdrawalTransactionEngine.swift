@@ -63,7 +63,8 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 paymentMethodType: target.paymentType
             ),
             walletCurrencyService
-                .fiatCurrency
+                .displayCurrency
+                .asSingle()
         )
         .map { [sourceAsset] values -> PendingTransaction in
             let (actionableBalance, feeAndLimit, fiatCurrency) = values

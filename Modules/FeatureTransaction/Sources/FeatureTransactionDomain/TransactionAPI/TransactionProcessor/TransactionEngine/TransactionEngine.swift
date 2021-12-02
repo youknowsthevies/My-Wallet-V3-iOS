@@ -256,7 +256,7 @@ extension TransactionEngine {
         for pendingTransaction: PendingTransaction
     ) -> AnyPublisher<TransactionValidationConversionRates, PriceServiceError> {
         walletCurrencyService
-            .fiatCurrencyPublisher
+            .displayCurrencyPublisher
             .setFailureType(to: PriceServiceError.self)
             .flatMap { [currencyConversionService, sourceAsset] walletCurrency in
                 currencyConversionService.conversionRate(

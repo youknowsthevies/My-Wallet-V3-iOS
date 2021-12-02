@@ -240,7 +240,8 @@ extension SwapTransactionEngine {
 
     var sourceExchangeRatePair: Single<MoneyValuePair> {
         walletCurrencyService
-            .fiatCurrency
+            .displayCurrency
+            .asSingle()
             .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
                 currencyConversionService
                     .conversionRate(from: sourceAsset.currencyType, to: fiatCurrency.currencyType)
@@ -251,7 +252,8 @@ extension SwapTransactionEngine {
 
     private var destinationExchangeRatePair: Single<MoneyValuePair> {
         walletCurrencyService
-            .fiatCurrency
+            .displayCurrency
+            .asSingle()
             .flatMap { [currencyConversionService, target] fiatCurrency -> Single<MoneyValuePair> in
                 currencyConversionService
                     .conversionRate(from: target.currencyType, to: fiatCurrency.currencyType)

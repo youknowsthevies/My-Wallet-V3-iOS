@@ -82,7 +82,7 @@ let interestAccountListReducer = Reducer.combine(
             state.loadingStatus = .fetchingRewardsAccounts
             return environment
                 .fiatCurrencyService
-                .fiatCurrencyPublisher
+                .displayCurrencyPublisher
                 .flatMap { [environment] fiatCurrency in
                     environment
                         .accountOverviewRepository

@@ -262,8 +262,9 @@ final class SettingsRouter: SettingsRouterAPI {
         case .showCurrencySelectionScreen:
             let settingsService: FiatCurrencySettingsServiceAPI = resolve()
             settingsService
-                .fiatCurrency
-                .observeOn(MainScheduler.instance)
+                .displayCurrency
+                .asSingle()
+                .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] currency in
                     self?.showFiatCurrencySelectionScreen(selectedCurrency: currency)
                 })
@@ -278,7 +279,7 @@ final class SettingsRouter: SettingsRouterAPI {
                 .map(weak: self) { _, value -> String in
                     value ?? ""
                 }
-                .observeOn(MainScheduler.instance)
+                .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] guid in
                     guard let self = self else { return }
                     let alert = UIAlertController(
@@ -417,7 +418,7 @@ final class SettingsRouter: SettingsRouterAPI {
         analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .settings))
         router.startFlow()
             .takeUntil(.inclusive, predicate: { $0.isCloseEffect })
-            .skipWhile { $0.shouldSkipEffect }
+            .skip { $0.shouldSkipEffect }
             .subscribe(onNext: { [weak self] effect in
                 guard case .closeFlow(let isInteractive) = effect, !isInteractive else {
                     flowDismissed()
@@ -451,7 +452,7 @@ final class SettingsRouter: SettingsRouterAPI {
                     )
                     .andThen(Single.just(currency))
             }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] currency in
                     guard let self = self else { return }
@@ -463,7 +464,7 @@ final class SettingsRouter: SettingsRouterAPI {
                         AnalyticsEvents.New.Settings.settingsCurrencyClicked(currency: currency.code)
                     ])
                 },
-                onError: { [weak self] _ in
+                onFailure: { [weak self] _ in
                     guard let self = self else { return }
                     self.alertPresenter.standardError(
                         message: LocalizationConstants.GeneralError.loadingData

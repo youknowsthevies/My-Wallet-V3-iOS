@@ -152,7 +152,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         let amountTranslationInteractor = amountTranslationInteractor
 
         let balance: Observable<MoneyValuePair> = fiatCurrencyService
-            .fiatCurrencyObservable
+            .displayCurrencyPublisher.asObservable()
             .flatMap(weak: self) { (self, fiatCurrency) -> Observable<MoneyValuePair> in
                 self.data.source.balancePair(fiatCurrency: fiatCurrency).asObservable()
             }

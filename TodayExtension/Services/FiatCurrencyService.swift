@@ -3,23 +3,10 @@
 import Combine
 import MoneyKit
 import PlatformKit
-import RxSwift
 
 final class FiatCurrencyService: FiatCurrencyServiceAPI {
 
-    var legacyCurrency: FiatCurrency? {
-        localeCurrency
-    }
-
-    var fiatCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
-        fatalError("unimplemented")
-    }
-
-    var fiatCurrencyObservable: Observable<FiatCurrency> {
-        .just(localeCurrency)
-    }
-
-    var fiatCurrency: Single<FiatCurrency> {
+    var displayCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
         .just(localeCurrency)
     }
 

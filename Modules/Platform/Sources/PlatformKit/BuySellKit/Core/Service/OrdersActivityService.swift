@@ -86,11 +86,11 @@ final class OrdersActivityService: OrdersActivityServiceAPI {
         let date: Date = DateFormatter.sessionDateFormat.date(from: insertedAt)
             ?? DateFormatter.iso8601Format.date(from: insertedAt)
             ?? Date()
-        return fiatCurrencyService.fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) in
-                self.priceService.price(of: cryptoCurrency, in: fiatCurrency, at: .time(date))
+        return fiatCurrencyService.displayCurrency
+            .flatMap { [priceService] fiatCurrency in
+                priceService.price(of: cryptoCurrency, in: fiatCurrency, at: .time(date))
                     .map(\.moneyValue.fiatValue!)
-                    .asSingle()
             }
+            .asSingle()
     }
 }

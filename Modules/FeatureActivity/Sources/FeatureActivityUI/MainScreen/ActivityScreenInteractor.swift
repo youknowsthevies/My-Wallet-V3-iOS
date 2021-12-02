@@ -19,7 +19,8 @@ final class ActivityScreenInteractor {
     var fiatCurrency: Observable<FiatCurrency> {
         serviceContainer
             .fiatCurrency
-            .fiatCurrencyObservable
+            .displayCurrencyPublisher
+            .asObservable()
     }
 
     var selectedData: Observable<BlockchainAccount> {

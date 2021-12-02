@@ -160,14 +160,7 @@ extension SettingsService {
 
 extension SettingsService: FiatCurrencySettingsServiceAPI {
 
-    var fiatCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
-        fiatCurrency
-            .asPublisher()
-            .replaceError(with: .USD)
-            .eraseToAnyPublisher()
-    }
-
-    var fiatCurrencyObservable: Observable<FiatCurrency> {
+    var displayCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
         valueObservable
             .map { settings -> FiatCurrency in
                 guard let currency = FiatCurrency(rawValue: settings.fiatCurrency) else {
@@ -176,16 +169,9 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
                 return currency
             }
             .distinctUntilChanged()
-    }
-
-    var fiatCurrency: Single<FiatCurrency> {
-        valueSingle
-            .map { settings -> FiatCurrency in
-                guard let currency = settings.currency else {
-                    throw PlatformKitError.default
-                }
-                return currency
-            }
+            .asPublisher()
+            .replaceError(with: .USD)
+            .eraseToAnyPublisher()
     }
 
     func update(currency: FiatCurrency, context: FlowContext) -> Completable {
@@ -225,11 +211,6 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
                     .mapError(CurrencyUpdateError.fetchError)
             }
             .eraseToAnyPublisher()
-    }
-
-    @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencyServiceAPI`")
-    var legacyCurrency: FiatCurrency? {
-        settingsRelay.value?.currency
     }
 }
 

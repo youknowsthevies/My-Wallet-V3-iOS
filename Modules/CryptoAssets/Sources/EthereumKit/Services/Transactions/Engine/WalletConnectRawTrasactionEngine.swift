@@ -21,7 +21,7 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         walletCurrencyService
-            .fiatCurrencyPublisher
+            .displayCurrencyPublisher
             .map { fiatCurrency -> MoneyValuePair in
                 MoneyValuePair(
                     base: .one(currency: .crypto(.coin(.ethereum))),
@@ -107,7 +107,7 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
 
     func initializeTransaction() -> Single<PendingTransaction> {
         walletCurrencyService
-            .fiatCurrency
+            .displayCurrency
             .map { fiatCurrency -> PendingTransaction in
                 .init(
                     amount: MoneyValue(amount: 1, currency: .crypto(.coin(.ethereum))),
@@ -122,6 +122,7 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
                     selectedFiatCurrency: fiatCurrency
                 )
             }
+            .asSingle()
     }
 
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

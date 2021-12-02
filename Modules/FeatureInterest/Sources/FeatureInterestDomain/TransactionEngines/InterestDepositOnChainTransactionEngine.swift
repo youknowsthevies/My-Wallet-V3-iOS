@@ -13,18 +13,16 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
 
     public var minimumDepositLimits: Single<FiatValue> {
         walletCurrencyService
-            .fiatCurrency
+            .displayCurrency
             .flatMap { [sourceCryptoCurrency, accountLimitsRepository] fiatCurrency in
                 accountLimitsRepository
                     .fetchInterestAccountLimitsForCryptoCurrency(
                         sourceCryptoCurrency,
                         fiatCurrency: fiatCurrency
                     )
-                    .asObservable()
-                    .take(1)
-                    .asSingle()
             }
             .map(\.minDepositAmount)
+            .asSingle()
     }
 
     // MARK: - OnChainTransactionEngine

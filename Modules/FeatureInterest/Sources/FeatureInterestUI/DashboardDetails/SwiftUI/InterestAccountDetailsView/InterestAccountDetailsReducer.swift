@@ -22,7 +22,7 @@ let interestAccountDetailsReducer = InterestAccountDetailsReducer { state, actio
         let currency = overview.currency
         return environment
             .fiatCurrencyService
-            .fiatCurrencyPublisher
+            .displayCurrencyPublisher
             .flatMap { [priceService] fiatCurrency -> AnyPublisher<PriceQuoteAtTime, Error> in
                 priceService
                     .price(

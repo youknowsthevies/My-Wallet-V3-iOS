@@ -93,7 +93,8 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     func initializeTransaction() -> Single<PendingTransaction> {
         Single.zip(
             walletCurrencyService
-                .fiatCurrency,
+                .displayCurrency
+                .asSingle(),
             availableBalance
         )
         .map { fiatCurrency, availableBalance -> PendingTransaction in
@@ -371,12 +372,12 @@ extension EthereumOnChainTransactionEngine {
 
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         walletCurrencyService
-            .fiatCurrency
-            .flatMap { [sourceAsset, currencyConversionService] fiatCurrency -> Single<MoneyValuePair> in
+            .displayCurrency
+            .flatMap { [sourceAsset, currencyConversionService] fiatCurrency in
                 currencyConversionService
                     .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
-                    .asSingle()
                     .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
+            .asSingle()
     }
 }

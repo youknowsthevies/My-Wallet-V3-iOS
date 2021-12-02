@@ -48,17 +48,15 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
 
     private var interestAccountLimits: Single<InterestAccountLimits> {
         walletCurrencyService
-            .fiatCurrency
+            .displayCurrency
             .flatMap { [accountLimitsRepository, sourceAsset] fiatCurrency in
                 accountLimitsRepository
                     .fetchInterestAccountLimitsForCryptoCurrency(
                         sourceAsset.cryptoCurrency!,
                         fiatCurrency: fiatCurrency
                     )
-                    .asObservable()
-                    .take(1)
-                    .asSingle()
             }
+            .asSingle()
     }
 
     private let feeCache: CachedValue<CustodialTransferFee>
@@ -106,7 +104,8 @@ public final class InterestWithdrawOnChainTransactionEngine: OnChainTransactionE
     {
         Single.zip(
             walletCurrencyService
-                .fiatCurrency,
+                .displayCurrency
+                .asSingle(),
             fee,
             availableBalance,
             minimumLimit,

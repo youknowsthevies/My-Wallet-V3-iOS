@@ -39,7 +39,7 @@ public final class PortfolioProvider: PortfolioProviding {
             .combineLatest(
                 balancesObservable,
                 change,
-                fiatCurrencyService.fiatCurrencyObservable
+                fiatCurrencyService.displayCurrencyPublisher.asObservable()
             )
             .map { accounts, change, fiatCurrency -> Portfolio in
                 let (ethereum, stellar, bitcoin, bitcoinCash) = accounts

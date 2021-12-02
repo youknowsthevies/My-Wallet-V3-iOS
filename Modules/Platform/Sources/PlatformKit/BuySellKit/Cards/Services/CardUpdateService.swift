@@ -128,7 +128,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                         $0.merge($1)
                     }
             }
-            .catchErrorJustReturn([:])
+            .catchAndReturn([:])
 
         let ffCardAcquirerTokens = featureFlagsService
             .isEnabled(.remote(.newCardAcquirers))
@@ -138,7 +138,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             }
 
         return Single.zip(
-            fiatCurrencyService.fiatCurrency,
+            fiatCurrencyService.displayCurrency.asSingle(),
             email,
             ffCardAcquirerTokens
         )

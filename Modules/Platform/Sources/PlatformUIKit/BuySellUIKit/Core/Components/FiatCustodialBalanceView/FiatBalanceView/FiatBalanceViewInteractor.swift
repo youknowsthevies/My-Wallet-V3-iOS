@@ -28,7 +28,8 @@ public final class FiatBalanceViewInteractor {
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         fiatCurrencyService
-            .fiatCurrencyObservable
+            .displayCurrencyPublisher
+            .asObservable()
             .flatMapLatest { fiatCurrency in
                 account.balancePair(fiatCurrency: fiatCurrency).asObservable()
             }

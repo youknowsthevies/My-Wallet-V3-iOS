@@ -167,16 +167,18 @@ public final class Router: RouterAPI {
             showIntroScreen()
         case .changeFiat:
             settingsService
-                .fiatCurrency
-                .observeOn(MainScheduler.instance)
+                .displayCurrency
+                .asSingle()
+                .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] currency in
                     self?.showFiatCurrencyChangeScreen(selectedCurrency: currency)
                 })
                 .disposed(by: disposeBag)
         case .selectFiat:
             settingsService
-                .fiatCurrency
-                .observeOn(MainScheduler.instance)
+                .displayCurrency
+                .asSingle()
+                .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] currency in
                     self?.showFiatCurrencySelectionScreen(selectedCurrency: currency)
                 })

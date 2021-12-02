@@ -89,7 +89,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                 self.startOnChainEngine(pricedQuote: pricedQuote)
                     .andThen(
                         Single.zip(
-                            self.walletCurrencyService.fiatCurrency,
+                            self.walletCurrencyService.displayCurrency.asSingle(),
                             self.onChainEngine.initializeTransaction()
                         )
                     )
@@ -144,7 +144,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                                     .asObservable()
                                     .ignoreElements()
                                     .asCompletable()
-                                    .catchError { _ in .empty() }
+                                    .catch { _ in .empty() }
                                     .andThen(.error(error))
                             }
                             .flatMap(weak: self) { (self, result) -> Single<TransactionResult> in
@@ -153,7 +153,7 @@ final class NonCustodialSellTransactionEngine: SellTransactionEngine {
                                     .asObservable()
                                     .ignoreElements()
                                     .asCompletable()
-                                    .catchError { _ in .empty() }
+                                    .catch { _ in .empty() }
                                     .andThen(.just(result))
                             }
                     }

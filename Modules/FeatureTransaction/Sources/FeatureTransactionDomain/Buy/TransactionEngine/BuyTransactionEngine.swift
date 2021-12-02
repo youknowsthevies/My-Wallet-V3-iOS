@@ -73,7 +73,7 @@ final class BuyTransactionEngine: TransactionEngine {
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
         let cryptoCurrency = transactionTarget.currencyType
         return walletCurrencyService
-            .fiatCurrencyObservable
+            .displayCurrencyPublisher
             .map(\.currencyType)
             .flatMap { [currencyConversionService] walletCurrency in
                 currencyConversionService
@@ -84,8 +84,8 @@ final class BuyTransactionEngine: TransactionEngine {
                             quote: quote
                         )
                     }
-                    .asObservable()
             }
+            .asObservable()
             .share(replay: 1, scope: .whileConnected)
     }
 

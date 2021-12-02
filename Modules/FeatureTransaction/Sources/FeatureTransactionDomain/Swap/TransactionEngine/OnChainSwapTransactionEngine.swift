@@ -99,7 +99,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                 self.startOnChainEngine(pricedQuote: pricedQuote)
                     .andThen(
                         Single.zip(
-                            self.walletCurrencyService.fiatCurrency,
+                            self.walletCurrencyService.displayCurrency.asSingle(),
                             self.onChainEngine.initializeTransaction()
                         )
                     )

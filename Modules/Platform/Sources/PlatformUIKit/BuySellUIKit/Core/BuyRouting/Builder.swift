@@ -38,7 +38,8 @@ public final class Builder: Buildable {
     /// The screen matches the wallet's currency
     /// - Returns: `Single<UIViewController>`
     public func fundsTransferDetailsViewController() -> Single<UIViewController> {
-        fiatCurrencyService.fiatCurrency
+        fiatCurrencyService.displayCurrency
+            .asSingle()
             .map(weak: self) { (self, fiatCurrency) in
                 self.fundsTransferDetailsViewController(for: fiatCurrency, isOriginDeposit: false)
             }

@@ -121,7 +121,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             )
 
         return transactionLimits.eraseError()
-            .zip(walletCurrencyService.fiatCurrencyPublisher.eraseError())
+            .zip(walletCurrencyService.displayCurrencyPublisher.eraseError())
             .map { [sourceTradingAccount, sourceAsset] transactionLimits, walletCurrency -> PendingTransaction in
                 var pendingTransaction = PendingTransaction(
                     amount: .zero(currency: sourceAsset),
@@ -270,13 +270,13 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
 
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         walletCurrencyService
-            .fiatCurrency
-            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency -> Single<MoneyValuePair> in
+            .displayCurrency
+            .flatMap { [currencyConversionService, sourceAsset] fiatCurrency in
                 currencyConversionService
                     .conversionRate(from: sourceAsset, to: fiatCurrency.currencyType)
-                    .asSingle()
                     .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
+            .asSingle()
     }
 }
 

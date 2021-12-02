@@ -61,7 +61,8 @@ final class EthereumActivityDetailsInteractor {
 
     private func price(at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
-            .fiatCurrency
+            .displayCurrency
+            .asSingle()
             .flatMap(weak: self) { (self, fiatCurrency) in
                 self.price(at: date, in: fiatCurrency)
             }
