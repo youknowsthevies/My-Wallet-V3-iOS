@@ -26,7 +26,8 @@ extension BuySellActivityItemEvent {
             fee: orderDetails.fee ?? .zero(currency: orderDetails.inputValue.currency),
             isBuy: orderDetails.isBuy,
             isCancellable: orderDetails.isCancellable,
-            paymentMethod: paymentMethod
+            paymentMethod: paymentMethod,
+            paymentProcessorErrorOccurred: orderDetails.paymentProccessorErrorOccurred
         )
     }
 }

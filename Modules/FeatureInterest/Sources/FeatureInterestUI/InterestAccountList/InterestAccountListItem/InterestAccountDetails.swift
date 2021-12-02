@@ -13,7 +13,7 @@ struct InterestAccountDetails: Equatable, Identifiable {
     private typealias LocalizationId = LocalizationConstants.Interest.Screen.Overview
 
     var id: String {
-        currency.displayCode
+        currency.code
     }
 
     var actionDisplayString: String {

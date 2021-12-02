@@ -23,6 +23,7 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../CommonCrypto"),
         .package(path: "../Keychain"),
+        .package(path: "../Metadata"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
         .package(path: "../RxTool")
@@ -34,6 +35,7 @@ let package = Package(
                 .product(name: "Localization", package: "Localization"),
                 .product(name: "CommonCryptoKit", package: "CommonCrypto"),
                 .product(name: "KeychainKit", package: "Keychain"),
+                .product(name: "MetadataKit", package: "Metadata"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "RxToolKit", package: "RxTool"),
                 .product(name: "DIKit", package: "DIKit")
