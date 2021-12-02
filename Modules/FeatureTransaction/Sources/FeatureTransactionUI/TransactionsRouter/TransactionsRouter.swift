@@ -35,8 +35,6 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let loadingViewPresenter: LoadingViewPresenting
-    private let legacyBuyRouter: LegacyBuyFlowRouting
-    private var legacySellRouter: LegacySellRouter?
     private var transactionFlowBuilder: TransactionFlowBuildable
     private let buyFlowBuilder: BuyFlowBuildable
     private let sellFlowBuilder: SellFlowBuildable
@@ -58,7 +56,6 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         loadingViewPresenter: LoadingViewPresenting = LoadingViewPresenter(),
-        legacyBuyRouter: LegacyBuyFlowRouting = LegacyBuyFlowRouter(),
         transactionFlowBuilder: TransactionFlowBuildable = TransactionFlowBuilder(),
         buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder(analyticsRecorder: resolve()),
         sellFlowBuilder: SellFlowBuildable = SellFlowBuilder(),
@@ -76,7 +73,6 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         self.alertViewPresenter = alertViewPresenter
         self.loadingViewPresenter = loadingViewPresenter
         self.pendingOrdersService = pendingOrdersService
-        self.legacyBuyRouter = legacyBuyRouter
         self.transactionFlowBuilder = transactionFlowBuilder
         self.buyFlowBuilder = buyFlowBuilder
         self.sellFlowBuilder = sellFlowBuilder
@@ -105,21 +101,10 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         switch action {
         case .buy:
             return presentBuyTransactionFlow(to: action, from: presenter)
-        case .sell, .order:
-            return featureFlagsService.isEnabled(.remote(.sellUsingTransactionFlowEnabled))
-                .receive(on: DispatchQueue.main)
-                .handleLoaderForLifecycle(loader: loadingViewPresenter)
-                .flatMap { [weak self] isEnabled -> AnyPublisher<TransactionFlowResult, Never> in
-                    guard let self = self else { return .empty() }
-                    if isEnabled {
-                        return self.presentNewTransactionFlow(action, from: presenter)
-                    } else {
-                        return self.presentLegacyTransactionFlow(action, from: presenter)
-                    }
-                }
-                .eraseToAnyPublisher()
 
-        case .swap,
+        case .sell,
+             .order,
+             .swap,
              .interestTransfer,
              .interestWithdraw,
              .sign,
@@ -141,17 +126,11 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
             .flatMap { [weak self, loadingViewPresenter] eligibility -> AnyPublisher<TransactionFlowResult, Error> in
                 guard let self = self else { return .empty() }
                 if eligibility.simpleBuyPendingTradesEligible {
-                    let checkPendingOrders = self.pendingOrdersService.pendingOrderDetails
+                    return self.pendingOrdersService.pendingOrderDetails
                         .asPublisher()
-                    return self.featureFlagsService.isEnabled(.remote(.useTransactionsFlowToBuyCrypto))
-                        .setFailureType(to: Error.self)
-                        .zip(checkPendingOrders)
                         .receive(on: DispatchQueue.main)
-                        .flatMap { [weak self] isEnabled, orders -> AnyPublisher<TransactionFlowResult, Never> in
+                        .flatMap { [weak self] orders -> AnyPublisher<TransactionFlowResult, Never> in
                             guard let self = self else { return .empty() }
-                            guard isEnabled else {
-                                return self.presentLegacyTransactionFlow(action, from: presenter)
-                            }
                             let isAwaitingAction = orders.filter(\.isAwaitingAction)
                             if let order = isAwaitingAction.first {
                                 return self.pendingOrdersService.cancel(order)
@@ -201,6 +180,7 @@ extension TransactionsRouter {
 }
 
 extension TransactionsRouter {
+
     // swiftlint:disable:next cyclomatic_complexity
     private func presentNewTransactionFlow(
         _ action: TransactionFlowAction,
@@ -364,52 +344,5 @@ extension TransactionsRouter {
             }
         )
         return subject.eraseToAnyPublisher()
-    }
-
-    private func presentLegacyTransactionFlow(
-        _ action: TransactionFlowAction,
-        from presenter: UIViewController
-    ) -> AnyPublisher<TransactionFlowResult, Never> {
-        switch action {
-        case .buy(let cryptoAccount):
-            guard let cryptoAccount = cryptoAccount else {
-                return legacyBuyRouter.presentBuyFlowWithTargetCurrencySelectionIfNecessary(
-                    from: presenter
-                )
-            }
-            return legacyBuyRouter.presentBuyScreen(
-                from: presenter,
-                targetCurrency: cryptoAccount.asset,
-                isSDDEligible: true
-            )
-
-        case .order:
-            return legacyBuyRouter.presentBuyFlowWithTargetCurrencySelectionIfNecessary(
-                from: presenter
-            )
-
-        case .sell:
-            let accountSelectionService = AccountSelectionService()
-            let interactor = SellRouterInteractor(
-                accountSelectionService: accountSelectionService
-            )
-            let builder = PlatformUIKit.SellBuilder(
-                accountSelectionService: accountSelectionService,
-                routerInteractor: interactor
-            )
-            legacySellRouter = PlatformUIKit.LegacySellRouter(builder: builder)
-            legacySellRouter?.load()
-            return .just(.abandoned)
-
-        case .swap,
-             .interestTransfer,
-             .interestWithdraw,
-             .sign,
-             .send,
-             .receive,
-             .withdraw,
-             .deposit:
-            unimplemented("There is no legacy for those flows.")
-        }
     }
 }

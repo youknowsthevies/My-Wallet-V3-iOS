@@ -58,19 +58,11 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Zen-Desk Messaging for Gold Verified Users
     case customerSupportChat
 
-    /// Enable new Sell Transaction flow
-    case sellUsingTransactionFlowEnabled
-
     /// Enable Open Banking
     case openBanking
 
     /// Enable New Card Acquirers (Stripe & Checkout)
     case newCardAcquirers
-
-    // MARK: - Transactions Flow
-
-    /// Uses the Transactions Flow implementation of Buy when enabled
-    case useTransactionsFlowToBuyCrypto
 
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
@@ -113,12 +105,8 @@ extension AppFeature {
             return "sdd_enabled_ios"
         case .customerSupportChat:
             return "customer_support_chat_ios"
-        case .sellUsingTransactionFlowEnabled:
-            return "sell_using_transaction_flow_enabled_ios"
         case .openBanking:
             return "ios_open_banking"
-        case .useTransactionsFlowToBuyCrypto:
-            return "ios_use_transaction_flow_buy"
         case .newCardAcquirers:
             return "ios_ff_new_card_acquirers"
         case .newLimitsUIEnabled:
@@ -161,9 +149,6 @@ extension AppFeature {
             return false
         case .customerSupportChat:
             return false
-        case .sellUsingTransactionFlowEnabled,
-             .useTransactionsFlowToBuyCrypto:
-            return true
         case .newCardAcquirers:
             return true
         case .openBanking:
