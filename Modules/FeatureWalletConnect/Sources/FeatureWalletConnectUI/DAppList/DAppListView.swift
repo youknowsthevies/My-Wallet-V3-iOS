@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import ComposableArchitecture
 import FeatureWalletConnectDomain
 import SwiftUI
@@ -14,62 +15,60 @@ struct DAppListView: View {
     }
 
     var body: some View {
-        WithViewStore(store) { viewStore in
+        WithViewStore(store.stateless) { viewStore in
             VStack {
                 Spacer()
-                VStack(spacing: 16) {
-                    VStack {
-                        HStack(alignment: .top) {
-                            Spacer()
-                            RoundedRectangle(cornerRadius: 100)
-                                .frame(width: 32, height: 4)
-                                .foregroundColor(.borderPrimary)
-                                .offset(x: 16, y: -6)
-                            Spacer()
-                            Button(action: {
-                                viewStore.send(.close)
-                            }, label: {
-                                Image(uiImage: UIImage(named: "close-button", in: .featureWalletConnectUI, with: nil)!)
-                                    .resizable()
-                                    .frame(width: 32, height: 32)
-                            })
-                        }
-                        .padding([.horizontal], 24)
-                        HStack {
-                            Text(viewStore.title)
-                                .typography(.body2)
-                                .multilineTextAlignment(.leading)
-                            Spacer()
-                        }
-                        .padding([.horizontal], 24)
-                        .offset(y: -12)
-                        Divider()
-                        DAppList()
+                HStack(alignment: .top) {
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 100)
+                        .frame(width: 32, height: 4)
+                        .foregroundColor(.borderPrimary)
+                        .offset(x: 16, y: -6)
+                    Spacer()
+                    IconButton(icon: .closev2.circle()) {
+                        viewStore.send(.close)
                     }
-                    .padding([.vertical], 24)
+                    .frame(width: 32, height: 32)
                 }
-                .gesture(
-                    DragGesture(minimumDistance: 20, coordinateSpace: .global)
-                        .onEnded { drag in
-                            if drag.translation.height >= 20 {
-                                viewStore.send(.close)
-                            }
-                        }
-                )
-                .onAppear { viewStore.send(.onAppear) }
+                .padding([.horizontal], 24)
+                HStack {
+                    WithViewStore(store.scope(state: \.title)) { viewStore in
+                        Text(viewStore.state)
+                            .typography(.body2)
+                            .multilineTextAlignment(.leading)
+                    }
+                    Spacer()
+                }
+                .padding([.horizontal], 24)
+                .offset(y: -12)
+                Divider()
+                DAppList()
             }
+            .padding([.vertical], 24)
+            .frame(minHeight: 50.vh, alignment: .top)
+            .gesture(
+                DragGesture(minimumDistance: 20, coordinateSpace: .global)
+                    .onEnded { drag in
+                        if drag.translation.height >= 20 {
+                            viewStore.send(.close)
+                        }
+                    }
+            )
+            .onAppear { viewStore.send(.onAppear) }
         }
     }
 
     @ViewBuilder func DAppList() -> some View {
-        WithViewStore(store) { viewStore in
-            VStack {
-                ForEach(viewStore.sessions) { session in
-                    DAppItem(session: .init(session: session)).onTapGesture {
-                        viewStore.send(.showSessionDetails(session))
-                    }
-                    if viewStore.sessions.firstIndex(of: session) != viewStore.sessions.count - 1 {
-                        Divider()
+        WithViewStore(store.scope(state: \.sessions)) { viewStore in
+            ScrollView {
+                LazyVStack {
+                    ForEach(viewStore.state.indexed(), id: \.element) { index, session in
+                        if index != viewStore.state.startIndex {
+                            Divider()
+                        }
+                        DAppItem(session: .init(session: session)).onTapGesture {
+                            viewStore.send(.showSessionDetails(session))
+                        }
                     }
                 }
             }
