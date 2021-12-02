@@ -145,11 +145,12 @@ final class BuyTransactionEngine: TransactionEngine {
 
                 let totalCost = order.inputValue
                 let fee = order.fee ?? .zero(currency: fiatAmount.currency)
+                let purchase = try totalCost - fee
 
                 var confirmations: [TransactionConfirmation] = [
                     .buyCryptoValue(.init(baseValue: cryptoAmount)),
                     .buyExchangeRateValue(.init(baseValue: moneyPair.source.quote, code: moneyPair.source.base.code)),
-                    .purchase(.init(purchase: try totalCost - fee)),
+                    .purchase(.init(purchase: purchase)),
                     .transactionFee(.init(fee: fee))
                 ]
 
@@ -177,10 +178,11 @@ final class BuyTransactionEngine: TransactionEngine {
         return fetchQuote(for: pendingTransaction.amount)
             // STEP 2: Create an Order for the transaction
             .flatMap { [orderCreationService] refreshedQuote -> Single<CheckoutData> in
-                guard let fiatValue = refreshedQuote.estimatedSourceAmount.fiatValue,
-                      let cryptoValue = refreshedQuote.estimatedDestinationAmount.cryptoValue
-                else {
-                    return .error(TransactionValidationFailure(state: .incorrectCurrencies))
+                guard let fiatValue = refreshedQuote.estimatedSourceAmount.fiatValue else {
+                    return .error(TransactionValidationFailure(state: .incorrectSourceCurrency))
+                }
+                guard let cryptoValue = refreshedQuote.estimatedDestinationAmount.cryptoValue else {
+                    return .error(TransactionValidationFailure(state: .incorrectDestinationCurrency))
                 }
                 let paymentMethodId: String?
                 if sourceAccount.paymentMethod.type.isFunds {

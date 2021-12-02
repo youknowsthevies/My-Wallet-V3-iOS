@@ -106,9 +106,9 @@ public struct Quote {
                 major: estimatedFiatAmount.amount.decimalDivision(divisor: fiatRate.amount),
                 currency: destination
             )
-            estimatedSourceAmount = MoneyValue(fiatValue: estimatedFiatAmount)
-            estimatedDestinationAmount = MoneyValue(cryptoValue: estimatedCryptoAmount)
-            rate = MoneyValue(fiatValue: fiatRate)
+            estimatedSourceAmount = estimatedFiatAmount.moneyValue
+            estimatedDestinationAmount = estimatedCryptoAmount.moneyValue
+            rate = fiatRate.moneyValue
             fee = MoneyValue.create(minor: feeMinor, currency: .fiat(source))
 
         // sell flow
@@ -126,9 +126,9 @@ public struct Quote {
                 major: estimatedCryptoAmount.amount.decimalDivision(divisor: cryptoRate.amount),
                 currency: destination
             )
-            estimatedSourceAmount = MoneyValue(cryptoValue: estimatedCryptoAmount)
-            estimatedDestinationAmount = MoneyValue(fiatValue: estimatedFiatAmount)
-            rate = MoneyValue(cryptoValue: cryptoRate)
+            estimatedSourceAmount = estimatedCryptoAmount.moneyValue
+            estimatedDestinationAmount = estimatedFiatAmount.moneyValue
+            rate = cryptoRate.moneyValue
             fee = MoneyValue.create(minor: feeMinor, currency: .crypto(source))
 
         // swap flow
@@ -146,9 +146,9 @@ public struct Quote {
                 major: fromTokenAmount.amount.decimalDivision(divisor: fromTokenRate.amount),
                 currency: destination
             )
-            estimatedSourceAmount = MoneyValue(cryptoValue: fromTokenAmount)
-            estimatedDestinationAmount = MoneyValue(cryptoValue: toTokenAmount)
-            rate = MoneyValue(cryptoValue: fromTokenRate)
+            estimatedSourceAmount = fromTokenAmount.moneyValue
+            estimatedDestinationAmount = toTokenAmount.moneyValue
+            rate = fromTokenRate.moneyValue
             fee = MoneyValue.create(minor: feeMinor, currency: .crypto(source))
 
         default:
