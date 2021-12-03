@@ -83,6 +83,11 @@ struct RootView: View {
             .overlay(
                 FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn))
                     .identity(blockchain.ux.user.fab)
+                    .background(
+                        Circle()
+                            .fill(Color.semantic.background)
+                            .padding(8)
+                    )
                     .pulse(enabled: viewStore.fab.animate, inset: 8)
                     .padding([.leading, .trailing], 24.pt)
                     .offset(y: 6.pt)
