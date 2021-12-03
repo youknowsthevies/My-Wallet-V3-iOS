@@ -121,7 +121,10 @@ public final class OpenBanking {
         }
     }
 
-    private func link(_ institution: OpenBanking.Institution, data: Data) -> AnyPublisher<Action, Never> {
+    private func link(
+        _ institution: OpenBanking.Institution,
+        data: Data
+    ) -> AnyPublisher<Action, Never> {
         banking.activate(bankAccount: data.account, with: institution.id)
             .flatMap { [banking] output -> AnyPublisher<Action, Never> in
                 banking.poll(account: output, until: \.hasAuthorizationURL)
