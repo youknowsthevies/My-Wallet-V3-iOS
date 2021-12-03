@@ -31,6 +31,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let product = "product"
         static let currency = "currency"
         static let fiatCurrency = "fiatCurrency"
+        static let currencyPair = "currencyPair"
         static let pendingOnly = "pendingOnly"
         static let action = "action"
         static let amount = "amount"
@@ -55,6 +56,8 @@ final class APIClient: SimpleBuyClientAPI {
         static let suggestedAmounts = ["simple-buy", "amounts"]
         static let trades = ["simple-buy", "trades"]
         static let paymentAccount = ["payments", "accounts", "simplebuy"]
+        // TODO: remove old quote endpoint when the new pricing model becomes stable
+        static let oldQuote = ["simple-buy", "quote"]
         static let quote = ["brokerage", "quote"]
         static let eligible = ["simple-buy", "eligible"]
         static let withdrawalLocks = ["payments", "withdrawals", "locks"]
@@ -313,7 +316,34 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - QuoteClientAPI
 
-    // swiftlint:disable function_parameter_count
+    @available(*, deprecated, message: "This should not be used when new quote model becomes stable")
+    func getOldQuote(
+        for action: Order.Action,
+        to currency: Currency,
+        amount: MoneyValue
+    ) -> AnyPublisher<OldQuoteResponse, NabuNetworkError> {
+        let parameters = [
+            URLQueryItem(
+                name: Parameter.currencyPair,
+                value: "\(currency.code)-\(amount.code)"
+            ),
+            URLQueryItem(
+                name: Parameter.action,
+                value: action.rawValue
+            ),
+            URLQueryItem(
+                name: Parameter.amount,
+                value: amount.minorString
+            )
+        ]
+        let request = requestBuilder.get(
+            path: Path.oldQuote,
+            parameters: parameters,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
     func getQuote(queryRequest: QuoteQueryRequest) -> AnyPublisher<QuoteResponse, NabuNetworkError> {
         let path = Path.quote
         let request = requestBuilder.post(

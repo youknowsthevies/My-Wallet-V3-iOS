@@ -32,6 +32,13 @@ public struct QuoteQueryRequest: Encodable {
 
 protocol QuoteClientAPI: AnyObject {
 
+    @available(*, deprecated, message: "This should not be used when new quote model becomes stable")
+    func getOldQuote(
+        for action: Order.Action,
+        to currency: Currency,
+        amount: MoneyValue
+    ) -> AnyPublisher<OldQuoteResponse, NabuNetworkError>
+
     /// Get a quote from a simple-buy order. In the future, it will support all sorts of order (buy, sell, swap)
     func getQuote(
         queryRequest: QuoteQueryRequest

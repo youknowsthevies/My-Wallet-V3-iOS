@@ -1,8 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import MoneyKit
+import NabuNetworkError
 import RxSwift
+import ToolKit
 
 public enum Profile: String, Encodable {
     case simpleBuy = "SIMPLEBUY"
@@ -62,11 +65,16 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
     // MARK: - Properties
 
     private let client: QuoteClientAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     // MARK: - Setup
 
-    init(client: QuoteClientAPI = resolve()) {
+    init(
+        client: QuoteClientAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
+    ) {
         self.client = client
+        self.featureFlagsService = featureFlagsService
     }
 
     // MARK: - API
@@ -74,17 +82,47 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
     func getQuote(
         query: QuoteQuery
     ) -> Single<Quote> {
-        client.getQuote(
-            queryRequest: QuoteQueryRequest(from: query)
-        )
-        .asSingle()
-        .map {
-            try Quote(
-                sourceCurrency: query.sourceCurrency,
-                destinationCurrency: query.destinationCurrency,
-                value: query.amount,
-                response: $0
-            )
-        }
+        featureFlagsService
+            .isEnabled(.local(.newQuoteModelForBuy))
+            .asSingle()
+            .flatMap { [getOldQuote, getNewQuote] isEnabled in
+                guard isEnabled else {
+                    return getOldQuote(query)
+                }
+                return getNewQuote(query)
+            }
+    }
+
+    @available(*, deprecated, message: "This should not be used when new quote model becomes stable")
+    private func getOldQuote(
+        query: QuoteQuery
+    ) -> Single<Quote> {
+        client
+            .getOldQuote(for: .buy, to: query.destinationCurrency, amount: query.amount)
+            .asSingle()
+            .map {
+                try Quote(
+                    sourceCurrency: query.sourceCurrency,
+                    destinationCurrency: query.destinationCurrency,
+                    value: query.amount,
+                    response: $0
+                )
+            }
+    }
+
+    private func getNewQuote(
+        query: QuoteQuery
+    ) -> Single<Quote> {
+        client
+            .getQuote(queryRequest: QuoteQueryRequest(from: query))
+            .asSingle()
+            .map {
+                try Quote(
+                    sourceCurrency: query.sourceCurrency,
+                    destinationCurrency: query.destinationCurrency,
+                    value: query.amount,
+                    response: $0
+                )
+            }
     }
 }

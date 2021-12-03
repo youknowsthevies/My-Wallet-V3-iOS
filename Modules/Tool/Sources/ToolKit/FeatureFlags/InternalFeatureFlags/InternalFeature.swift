@@ -24,6 +24,9 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
+    /// New Quote Endpoint
+    case newQuoteModelForBuy
+
     /// OpenBanking
     case openBanking
 
@@ -41,7 +44,8 @@ public enum InternalFeature: String, CaseIterable {
              .requestConsoleLogging,
              .secureChannel,
              .unifiedSignIn,
-             .nativeWalletPayload:
+             .nativeWalletPayload,
+             .newQuoteModelForBuy:
             return false
         }
     }
@@ -68,6 +72,8 @@ extension InternalFeature {
             return "Unified Sign In"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
+        case .newQuoteModelForBuy:
+            return "New Quote Model for Buy"
         case .openBanking:
             return "Open Banking"
         case .redesign:

@@ -4,6 +4,14 @@ import BigInt
 import MoneyKit
 import ToolKit
 
+@available(*, deprecated, message: "This should not be used when new quote model becomes stable")
+struct OldQuoteResponse: Decodable {
+    let time: String
+    let rate: String
+    let rateWithoutFee: String
+    let fee: String
+}
+
 struct QuoteResponse: Decodable {
     struct FeeDetails: Decodable {
         enum FeeFlag: String, Decodable {
@@ -48,6 +56,7 @@ public struct Quote {
         case dateFormatting
         case feeParsing
         case priceParsing
+        case wrongCurrenciesPair
     }
 
     // MARK: - Properties
@@ -63,6 +72,44 @@ public struct Quote {
     private let dateFormatter = DateFormatter.sessionDateFormat
 
     // MARK: - Setup
+
+    @available(*, deprecated, message: "This should not be used when new quote model becomes stable")
+    init(
+        sourceCurrency: Currency,
+        destinationCurrency: Currency,
+        value: MoneyValue,
+        response: OldQuoteResponse
+    ) throws {
+        guard let quoteCreated = dateFormatter.date(from: response.time) else {
+            throw SetupError.dateFormatting
+        }
+        guard let rate = BigInt(response.rate) else {
+            throw SetupError.priceParsing
+        }
+        guard let feeRateMinor = Decimal(string: response.fee) else {
+            throw SetupError.feeParsing
+        }
+        guard let source = sourceCurrency as? FiatCurrency,
+              let destination = destinationCurrency as? CryptoCurrency
+        else {
+            throw SetupError.wrongCurrenciesPair
+        }
+        let majorEstimatedAmount: Decimal = value.amount.decimalDivision(divisor: rate)
+        // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
+        let estimatedCryptoAmount = CryptoValue.create(major: majorEstimatedAmount, currency: destination)
+        estimatedDestinationAmount = estimatedCryptoAmount.moneyValue
+        let feeAmountMinor = feeRateMinor * estimatedDestinationAmount.displayMajorValue
+        // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
+        fee = FiatValue.create(minor: feeAmountMinor, currency: source).moneyValue
+        quoteCreatedAt = quoteCreated
+        let fiatRate = FiatValue.create(minor: rate, currency: source)
+        self.rate = fiatRate.moneyValue
+        estimatedSourceAmount = estimatedCryptoAmount.convertToFiatValue(exchangeRate: fiatRate).moneyValue
+
+        // Unused
+        quoteId = ""
+        quoteExpiresAt = quoteCreatedAt
+    }
 
     init(
         sourceCurrency: Currency,
