@@ -6,7 +6,6 @@ import SharedComponentLibrary
 import ComponentLibrary
 #endif
 import Foundation
-import Localization
 import SwiftUI
 import ToolKit
 

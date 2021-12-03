@@ -22,7 +22,7 @@ public class OpenBankingClient {
     public var scheduler: AnySchedulerOf<DispatchQueue>
     private var bag: Set<AnyCancellable> = []
 
-    var callbackBaseURL: URL = Bundle.main.plist?.BLOCKCHAIN_WALLET_PAGE_LINK[]
+    public var callbackBaseURL: URL = Bundle.main.plist?.BLOCKCHAIN_WALLET_PAGE_LINK[]
         .flatMap(URL.https) ?? "https://blockchainwallet.page.link"
 
     let requestBuilder: RequestBuilder

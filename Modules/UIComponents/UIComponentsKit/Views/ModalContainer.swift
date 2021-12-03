@@ -2,8 +2,10 @@
 
 #if canImport(SharedComponentLibrary)
 import SharedComponentLibrary
+typealias IconButtonFromComponentLibrary = SharedComponentLibrary.IconButton
 #else
 import ComponentLibrary
+typealias IconButtonFromComponentLibrary = ComponentLibrary.IconButton
 #endif
 import SwiftUI
 
@@ -62,7 +64,7 @@ public struct ModalContainer<Content: View>: View {
 
             Spacer()
 
-            ComponentLibrary.IconButton(
+            IconButtonFromComponentLibrary(
                 icon: .closev2.circle(),
                 action: closeAction
             )
@@ -76,7 +78,7 @@ public struct ModalContainer<Content: View>: View {
         VStack(spacing: Spacing.padding1) {
             HStack {
                 Spacer()
-                ComponentLibrary.IconButton(
+                IconButtonFromComponentLibrary(
                     icon: .closev2.circle(),
                     action: closeAction
                 )
