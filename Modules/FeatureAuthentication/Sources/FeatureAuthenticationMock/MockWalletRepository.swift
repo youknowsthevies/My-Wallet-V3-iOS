@@ -2,7 +2,6 @@
 
 import Combine
 @testable import FeatureAuthenticationDomain
-import RxSwift
 import ToolKit
 import WalletPayloadKit
 

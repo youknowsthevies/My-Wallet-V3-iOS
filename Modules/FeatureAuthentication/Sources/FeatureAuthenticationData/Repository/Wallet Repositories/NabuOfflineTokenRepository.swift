@@ -2,7 +2,6 @@
 
 import Combine
 import FeatureAuthenticationDomain
-import RxSwift
 import WalletPayloadKit
 
 final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {

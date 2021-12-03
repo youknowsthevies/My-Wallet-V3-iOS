@@ -3,7 +3,6 @@
 @testable import FeatureAuthenticationData
 @testable import FeatureAuthenticationDomain
 import Foundation
-import RxSwift
 import WalletPayloadKit
 
 extension WalletPayloadClient.Response {
