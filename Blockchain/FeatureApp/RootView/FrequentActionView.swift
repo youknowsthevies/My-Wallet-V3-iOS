@@ -93,25 +93,22 @@ struct FrequentActionView: View {
                     PrimaryDivider()
                         .padding(.leading, 72.pt)
                 }
-                Button(
-                    action: { action(item) },
-                    label: {
-                        PrimaryRow(
-                            title: item.name,
-                            subtitle: item.description,
-                            leading: {
-                                item.icon.circle()
-                                    .accentColor(.semantic.primary)
-                                    .frame(width: 32.pt)
-                            }
-                        )
+                PrimaryRow(
+                    title: item.name,
+                    subtitle: item.description,
+                    leading: {
+                        item.icon.circle()
+                            .accentColor(.semantic.primary)
+                            .frame(width: 32.pt)
                     }
                 )
+                .onTapGesture {
+                    action(item)
+                }
                 .identity(item.tag)
-                .buttonStyle(PlainButtonStyle())
             }
         }
-        HStack {
+        HStack(spacing: 8.pt) {
             ForEach(buttons.indexed(), id: \.element) { index, button in
                 switch index {
                 case buttons.startIndex:
@@ -127,6 +124,7 @@ struct FrequentActionView: View {
                 }
             }
         }
-        .padding()
+        .padding([.top, .bottom])
+        .padding([.leading, .trailing], 24.pt)
     }
 }

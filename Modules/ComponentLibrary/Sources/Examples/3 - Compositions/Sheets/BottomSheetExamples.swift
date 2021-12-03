@@ -15,7 +15,10 @@ struct BottomSheetExamples: View {
             Group {
                 PrimaryRow(
                     title: "Swap",
-                    subtitle: "Exchange for Another Crypto"
+                    subtitle: "Exchange for Another Crypto",
+                    leading: {
+                        Icon.send.frame(width: 30, height: 30)
+                    }
                 )
 
                 PrimaryDivider()
@@ -24,7 +27,10 @@ struct BottomSheetExamples: View {
             Group {
                 PrimaryRow(
                     title: "Send",
-                    subtitle: "Send to Any Wallet"
+                    subtitle: "Send to Any Wallet",
+                    leading: {
+                        Icon.send.frame(width: 30, height: 30)
+                    }
                 )
 
                 PrimaryDivider()
@@ -33,7 +39,10 @@ struct BottomSheetExamples: View {
             Group {
                 PrimaryRow(
                     title: "Receive",
-                    subtitle: "Copy Your Address & QR Codes"
+                    subtitle: "Copy Your Address & QR Codes",
+                    leading: {
+                        Icon.send.frame(width: 30, height: 30)
+                    }
                 )
 
                 PrimaryDivider()
@@ -42,7 +51,10 @@ struct BottomSheetExamples: View {
             Group {
                 PrimaryRow(
                     title: "Rewards",
-                    subtitle: "Earn Rewards on Your Crypto"
+                    subtitle: "Earn Rewards on Your Crypto",
+                    leading: {
+                        Icon.send.frame(width: 30, height: 30)
+                    }
                 )
 
                 PrimaryDivider()
@@ -51,7 +63,10 @@ struct BottomSheetExamples: View {
             Group {
                 PrimaryRow(
                     title: "Add Cash",
-                    subtitle: "Add Cash from Your Bank"
+                    subtitle: "Add Cash from Your Bank",
+                    leading: {
+                        Icon.send.frame(width: 30, height: 30)
+                    }
                 )
 
                 PrimaryDivider()
@@ -59,7 +74,10 @@ struct BottomSheetExamples: View {
 
             PrimaryRow(
                 title: "Cash Out",
-                subtitle: "Withdraw Cash to Your Bank"
+                subtitle: "Withdraw Cash to Your Bank",
+                leading: {
+                    Icon.send.frame(width: 30, height: 30)
+                }
             )
 
             HStack {
