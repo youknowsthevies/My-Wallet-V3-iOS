@@ -19,14 +19,7 @@ struct QRCodeScannerView: UIViewControllerRepresentable {
 
     var secureChannelRouter: SecureChannelRouting = resolve()
     var walletConnectService: WalletConnectServiceAPI = resolve()
-
-    private var send: (router: SendRootRouting, p2: UIViewController) = {
-        let router = SendRootBuilder().build()
-        let viewController = router.viewControllable.uiviewController
-        router.interactable.activate()
-        router.load()
-        return (router, viewController)
-    }()
+    var tabSwapping: TabSwapping = resolve()
 
     func makeUIViewController(context: Context) -> some UIViewController {
 
@@ -42,7 +35,7 @@ struct QRCodeScannerView: UIViewControllerRepresentable {
                 case .cryptoTarget(let target):
                     switch target {
                     case .address(let account, let address):
-                        self.send.router.routeToSend(sourceAccount: account, destination: address)
+                        self.tabSwapping.send(from: account, target: address)
                     case .bitpay:
                         break
                     }
