@@ -12,3 +12,10 @@ extension URL: ExpressibleByStringLiteral {
         )!
     }
 }
+
+extension URL {
+
+    public static func https(_ domain: String) -> URL? {
+        .init(string: "https://\(domain)")
+    }
+}

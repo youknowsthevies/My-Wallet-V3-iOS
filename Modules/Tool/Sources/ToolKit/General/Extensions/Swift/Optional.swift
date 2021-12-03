@@ -29,6 +29,14 @@ extension Optional {
         guard let value = self else { return defaultValue() }
         return value
     }
+
+    public func `as`<T>(_ type: T.Type) -> T? {
+        wrapped as? T
+    }
+
+    public subscript<T>(_: T.Type = T.self) -> T? {
+        wrapped as? T
+    }
 }
 
 // Optional Assignment
