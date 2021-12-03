@@ -25,7 +25,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: SegmentedControlExamples(), title: "🚥 SegmentedControl"),
             NavigationLinkProvider(view: InputExamples(), title: "⌨️ Input"),
             NavigationLinkProvider(view: PrimaryPickerExamples(), title: "⛏ Picker"),
-            NavigationLinkProvider(view: AlertToastExamples(), title: " 🚨 AlertToast")
+            NavigationLinkProvider(view: AlertToastExamples(), title: " 🚨 AlertToast"),
+            NavigationLinkProvider(view: PageControlExamples(), title: "📑 PageControl")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
