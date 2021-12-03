@@ -77,11 +77,11 @@ private struct MinimalDoubleButtonStyle: ButtonStyle {
             foreground: .semantic.primary,
             background: Color(
                 light: .palette.white,
-                dark: .palette.white.opacity(0)
+                dark: .clear
             ),
             border: Color(
                 light: .palette.white,
-                dark: .palette.white.opacity(0)
+                dark: .clear
             )
         ),
         pressed: PillButtonStyle.ColorSet(

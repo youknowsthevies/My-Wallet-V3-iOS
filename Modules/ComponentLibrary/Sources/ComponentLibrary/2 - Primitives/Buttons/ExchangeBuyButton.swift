@@ -34,8 +34,8 @@ public struct ExchangeBuyButton: View {
         ),
         pressed: PillButtonStyle.ColorSet(
             foreground: .palette.white,
-            background: .palette.green600,
-            border: .palette.green600
+            background: .palette.green700,
+            border: .palette.green700
         ),
         disabled: PillButtonStyle.ColorSet(
             foreground: Color(
