@@ -23,7 +23,7 @@ public struct QuoteQueryRequest: Encodable {
 
     init(from query: QuoteQuery) {
         profile = query.profile.rawValue
-        pair = "\(query.sourceCurrency)-\(query.destinationCurrency)"
+        pair = "\(query.sourceCurrency.code)-\(query.destinationCurrency.code)"
         inputValue = query.amount.minorString
         paymentMethod = query.paymentMethod?.rawValue
         paymentMethodId = query.paymentMethodId

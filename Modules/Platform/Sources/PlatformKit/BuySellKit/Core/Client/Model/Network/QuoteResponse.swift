@@ -61,7 +61,7 @@ public struct Quote {
 
     // MARK: - Properties
 
-    public let quoteId: String
+    public let quoteId: String?
     public let quoteCreatedAt: Date
     public let quoteExpiresAt: Date
     public let fee: MoneyValue
@@ -107,7 +107,7 @@ public struct Quote {
         estimatedSourceAmount = estimatedCryptoAmount.convertToFiatValue(exchangeRate: fiatRate).moneyValue
 
         // Unused
-        quoteId = ""
+        quoteId = nil
         quoteExpiresAt = quoteCreatedAt
     }
 
