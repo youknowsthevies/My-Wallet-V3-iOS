@@ -328,3 +328,15 @@ extension Publisher {
         map { _ -> T in action() }
     }
 }
+
+extension Publisher where Failure == Never {
+
+    @inlinable public func assign<Root>(
+        to keyPath: ReferenceWritableKeyPath<Root, Output>,
+        on root: Root
+    ) -> AnyCancellable where Root: AnyObject {
+        sink { [weak root] in
+            root?[keyPath: keyPath] = $0
+        }
+    }
+}
