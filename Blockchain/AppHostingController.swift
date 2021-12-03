@@ -109,7 +109,7 @@ final class AppHostingController: UIViewController {
                     self.onboardingController = nil
                 }
 
-                self.featureFlagsService.isEnabled(.local(.redesign))
+                self.featureFlagsService.isEnabled(.remote(.redesign))
                     .sink { isEnabled in
                         if isEnabled {
                             load(RootViewController(store: store))

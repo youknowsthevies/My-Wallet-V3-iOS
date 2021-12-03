@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformUIKit
 import RIBs
@@ -32,8 +33,10 @@ final class SendRootViewController: UINavigationController, SendRootViewControll
     // MARK: - Private Properties
 
     private let topMostViewControllerProvider: TopMostViewControllerProviding
+    private var hideNavigationBar: Bool = false
+    private var hideNavigationBarSubscription: AnyCancellable?
 
-    @LazyInject var featureFlagsService: InternalFeatureFlagServiceAPI
+    @LazyInject var featureFlagsService: FeatureFlagsServiceAPI
 
     // MARK: - Init
 
@@ -41,11 +44,13 @@ final class SendRootViewController: UINavigationController, SendRootViewControll
         self.topMostViewControllerProvider = topMostViewControllerProvider
         super.init(nibName: nil, bundle: nil)
         view.backgroundColor = .white
+        hideNavigationBarSubscription = featureFlagsService.isEnabled(.remote(.redesign))
+            .assign(to: \.hideNavigationBar, on: self)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        setNavigationBarHidden(featureFlagsService.isEnabled(.redesign), animated: false)
+        setNavigationBarHidden(hideNavigationBar, animated: false)
     }
 
     @available(*, unavailable)
