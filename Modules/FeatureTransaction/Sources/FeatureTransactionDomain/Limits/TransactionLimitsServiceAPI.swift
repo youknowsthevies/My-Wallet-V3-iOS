@@ -158,8 +158,14 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
             ),
             product: product
         )
-        .map { tradeLimits in
-            TransactionLimits(tradeLimits).merge(with: TransactionLimits(paymentMethod))
+        .flatMap { [conversionService] tradeLimits -> TransactionLimitsServicePublisher in
+            let limits = TransactionLimits(tradeLimits).merge(with: TransactionLimits(paymentMethod))
+            return .just(limits)
+                .convertAmounts(
+                    from: tradeLimits.currency,
+                    to: limitsCurrency,
+                    using: conversionService
+                )
         }
         .flatMap { [featureFlagService] transactionLimits in
             featureFlagService
