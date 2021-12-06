@@ -112,11 +112,25 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     }
 
     private func triggerSendEmailNotification(_ transactionState: TransactionState) {
-        if transactionState.action == .send, transactionState.source is NonCustodialAccount {
-            sendEmailNotificationService
-                .postSendEmailNotificationTrigger(transactionState.amount)
-                .subscribe()
-                .store(in: &cancellables)
+        switch transactionState.action {
+        case .interestTransfer,
+             .send:
+            if transactionState.source is NonCustodialAccount {
+                sendEmailNotificationService
+                    .postSendEmailNotificationTrigger(transactionState.amount)
+                    .subscribe()
+                    .store(in: &cancellables)
+            }
+        case .deposit,
+             .receive,
+             .interestWithdraw,
+             .buy,
+             .sell,
+             .swap,
+             .withdraw,
+             .viewActivity,
+             .sign:
+            break
         }
     }
 
