@@ -213,6 +213,7 @@ public struct ChevronRight: View {
                     dark: .palette.grey400
                 )
             )
+            .flipsForRightToLeftLayoutDirection(true)
     }
 }
 

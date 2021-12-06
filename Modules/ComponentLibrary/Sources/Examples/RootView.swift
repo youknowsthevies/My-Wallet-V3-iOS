@@ -6,6 +6,7 @@ import SwiftUI
 public struct RootView: View {
 
     @State var colorScheme: ColorScheme
+    @State var layoutDirection: LayoutDirection
 
     private let data: NavigationLinkProviderList = [
         "1 - Base": [
@@ -40,20 +41,26 @@ public struct RootView: View {
         ]
     ]
 
-    public init(colorScheme: ColorScheme = .light) {
+    public init(colorScheme: ColorScheme = .light, layoutDirection: LayoutDirection = .leftToRight) {
         _colorScheme = State(initialValue: colorScheme)
+        _layoutDirection = State(initialValue: layoutDirection)
     }
 
     public var body: some View {
         PrimaryNavigationView {
             NavigationLinkProviderView(data: data)
                 .primaryNavigation(title: "📚 Component Library") {
-                    Button("⚫️ / ⚪️") {
+                    Button(colorScheme == .light ? "🌗" : "🌓") {
                         colorScheme = colorScheme == .light ? .dark : .light
+                    }
+
+                    Button(layoutDirection == .leftToRight ? "➡️" : "⬅️") {
+                        layoutDirection = layoutDirection == .leftToRight ? .rightToLeft : .leftToRight
                     }
                 }
         }
         .colorScheme(colorScheme)
+        .environment(\.layoutDirection, layoutDirection)
     }
 }
 
@@ -61,8 +68,9 @@ struct RootView_Previews: PreviewProvider {
     static var previews: some View {
         ForEach(
             ColorScheme.allCases,
-            id: \.self,
-            content: RootView.init(colorScheme:)
-        )
+            id: \.self
+        ) { colorScheme in
+            RootView(colorScheme: colorScheme)
+        }
     }
 }
