@@ -89,7 +89,7 @@ public enum FiatBalanceViewAsset {
                 if showsQuoteValue {
                     quoteBalanceLabelContent = .visible(
                         LabelContent(
-                            text: value.quote.toDisplayString(includeSymbol: true),
+                            text: value.quote.displayString,
                             font: descriptors.quoteFiatFont,
                             color: descriptors.quoteFiatTextColor,
                             alignment: .right,
@@ -106,7 +106,7 @@ public enum FiatBalanceViewAsset {
                 }
 
                 baseBalanceLabelContent = LabelContent(
-                    text: value.base.toDisplayString(includeSymbol: true),
+                    text: value.base.displayString,
                     font: baseFont,
                     color: baseColor,
                     alignment: .right,

@@ -21,4 +21,13 @@ extension Decimal {
             .rounding(accordingToBehavior: roundingBehaviour)
         return rounded as Decimal
     }
+
+    /// Returns a string representation of the current value, in the user's current locale.
+    ///
+    /// - Parameters:
+    ///   - decimalPrecision: A number of decimal places.
+    ///   - locale:           A locale.
+    public func string(with decimalPrecision: Int, locale: Locale = .current) -> String {
+        String(format: "%.\(decimalPrecision)f", locale: locale, doubleValue)
+    }
 }

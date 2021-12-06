@@ -64,7 +64,7 @@ extension PortfolioBalanceChangeProvider: AssetPriceViewInteracting {
                         next: .init(
                             currentPrice: change.balance,
                             time: .hours(24),
-                            changePercentage: change.changePercentage,
+                            changePercentage: change.changePercentage.doubleValue,
                             priceChange: change.change
                         )
                     )

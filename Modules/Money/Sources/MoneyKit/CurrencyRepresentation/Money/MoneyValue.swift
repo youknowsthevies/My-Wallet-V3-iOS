@@ -110,20 +110,6 @@ public struct MoneyValue: Money, Hashable {
         }
     }
 
-    /// Creates a money value.
-    ///
-    /// - Parameters:
-    ///   - amount:   An amount in major units.
-    ///   - currency: A currency.
-    private init(major amount: Decimal, currency: CurrencyType) {
-        switch currency {
-        case .crypto(let cryptoCurrency):
-            _value = .crypto(CryptoValue.create(major: amount, currency: cryptoCurrency))
-        case .fiat(let fiatCurrency):
-            _value = .fiat(FiatValue.create(major: amount, currency: fiatCurrency))
-        }
-    }
-
     // MARK: - Public methods
 
     /// Creates a displayable string, representing the currency amount in major units, in the given locale, optionally including the currency symbol.
@@ -150,6 +136,22 @@ public struct MoneyValue: Money, Hashable {
         case .fiat(let fiatValue):
             return MoneyValue(fiatValue: fiatValue.value(before: percentageChange))
         }
+    }
+
+    /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate pair from `A` to `B`.
+    ///
+    /// - Parameter exchangeRate: An exchange rate, representing a money value pair with the base in currency `A`, and the quote in currency `B`.
+    ///
+    /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the current currency and the `exchangeRate`'s base currency do not match.
+    public func convert(using exchangeRate: MoneyValuePair) throws -> MoneyValue {
+        guard currency != exchangeRate.quote.currency else {
+            // Converting to the same currency.
+            return self
+        }
+        guard currency == exchangeRate.base.currency else {
+            throw MoneyOperatingError.mismatchingCurrencies(currency, exchangeRate.base.currency)
+        }
+        return convert(using: exchangeRate.quote)
     }
 
     // MARK: - Public factory methods
@@ -180,52 +182,6 @@ public struct MoneyValue: Money, Hashable {
     /// - Parameter currency: A fiat currency.
     public static func one(currency: FiatCurrency) -> MoneyValue {
         MoneyValue(fiatValue: .one(currency: currency))
-    }
-
-    // MARK: - Public Methods
-
-    /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate from `A` to `B`.
-    ///
-    /// - Parameter exchangeRate: An exchange rate, representing one major unit of currency `A` in currency `B`.
-    public func convert(using exchangeRate: MoneyValue) -> MoneyValue {
-        guard currency != exchangeRate.currency else {
-            // Converting to the same currency.
-            return self
-        }
-        guard !isZero, !exchangeRate.isZero else {
-            return .zero(currency: exchangeRate.currency)
-        }
-        let conversionAmount = displayMajorValue * exchangeRate.displayMajorValue
-        return MoneyValue(major: conversionAmount, currency: exchangeRate.currency)
-    }
-
-    /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate from `B` to `A`.
-    ///
-    /// - Parameters:
-    ///   - exchangeRate: An exchange rate, representing one major unit of currency `B` in currency `A`.
-    ///   - currencyType: The destination currency `B`.
-    public func convert(usingInverse exchangeRate: MoneyValue, currencyType: CurrencyType) -> MoneyValue {
-        guard !isZero, !exchangeRate.isZero else {
-            return .zero(currency: currencyType)
-        }
-        let conversionAmount = displayMajorValue / exchangeRate.displayMajorValue
-        return MoneyValue(major: conversionAmount, currency: currencyType)
-    }
-
-    /// Converts the current money value with currency `A` into another money value with currency `B`, using a given exchange rate pair from `A` to `B`.
-    ///
-    /// - Parameter exchangeRate: An exchange rate, representing a money value pair with the base in currency `A`, and the quote in currency `B`.
-    ///
-    /// - Throws: A `MoneyOperatingError.mismatchingCurrencies` if the current currency and the `exchangeRate`'s base currency do not match.
-    public func convert(using exchangeRate: MoneyValuePair) throws -> MoneyValue {
-        guard currency != exchangeRate.quote.currency else {
-            // Converting to the same currency.
-            return self
-        }
-        guard currency == exchangeRate.base.currency else {
-            throw MoneyOperatingError.mismatchingCurrencies(currency, exchangeRate.base.currency)
-        }
-        return convert(using: exchangeRate.quote)
     }
 }
 

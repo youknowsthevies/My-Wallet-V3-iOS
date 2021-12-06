@@ -30,7 +30,7 @@ struct PriceView: View {
                             .textStyle(.subheading)
                         Spacer()
                         Text(viewStore.formattedDelta)
-                            .foregroundColor(Color.trend(for: viewStore.deltaPercentage.value ?? 0))
+                            .foregroundColor(Color.trend(for: Decimal(viewStore.deltaPercentage.value ?? 0)))
                             .textStyle(.subheading)
                             .shimmer(enabled: viewStore.deltaPercentage.isLoading)
                     }

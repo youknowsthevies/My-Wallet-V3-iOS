@@ -12,7 +12,7 @@ public struct CryptoCurrencyQuote: Equatable {
     public let fiatCurrency: FiatCurrency
     public let quote: BigInt
     public let formattedQuote: String
-    public let priceChange: Double
+    public let priceChange: Decimal
     public let formattedPriceChange: String
     public let timestamp: Date
 
@@ -21,7 +21,7 @@ public struct CryptoCurrencyQuote: Equatable {
         fiatCurrency: FiatCurrency,
         quote: BigInt,
         formattedQuote: String,
-        priceChange: Double,
+        priceChange: Decimal,
         formattedPriceChange: String,
         timestamp: Date
     ) {

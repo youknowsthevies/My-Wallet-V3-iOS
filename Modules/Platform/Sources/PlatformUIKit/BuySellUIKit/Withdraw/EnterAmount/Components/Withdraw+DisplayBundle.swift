@@ -127,7 +127,7 @@ extension DisplayBundle {
             confirmTapped: { currencyType, amount, additionalParameters in
                 AnalyticsEvent.sbBuyFormConfirmClick(
                     currencyCode: currencyType.code,
-                    amount: amount.toDisplayString(includeSymbol: true),
+                    amount: amount.displayString,
                     additionalParameters: additionalParameters
                 )
             },

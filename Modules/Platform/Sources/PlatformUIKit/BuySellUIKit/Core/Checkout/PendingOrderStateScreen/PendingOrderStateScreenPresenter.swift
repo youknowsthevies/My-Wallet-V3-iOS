@@ -32,7 +32,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
     private let disposeBag = DisposeBag()
 
     private var amount: String {
-        interactor.amount.toDisplayString(includeSymbol: true)
+        interactor.amount.displayString
     }
 
     private var currencyType: CurrencyType {

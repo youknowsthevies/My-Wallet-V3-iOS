@@ -195,7 +195,7 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
             /// just show the localized string.
             var message = ""
             if displayBundle.strings.useMax.contains("%@") {
-                message = String(format: displayBundle.strings.useMax, maxValue.toDisplayString(includeSymbol: true))
+                message = String(format: displayBundle.strings.useMax, maxValue.displayString)
             } else {
                 message = displayBundle.strings.useMax
             }
@@ -222,7 +222,7 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
             /// just show the localized string.
             var message = ""
             if displayBundle.strings.useMin.contains("%@") {
-                message = String(format: displayBundle.strings.useMin, minValue.toDisplayString(includeSymbol: true))
+                message = String(format: displayBundle.strings.useMin, minValue.displayString)
             } else {
                 message = displayBundle.strings.useMin
             }

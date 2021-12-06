@@ -49,9 +49,9 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
             }
             .map { [sourceAsset] (quote: FiatValue, deposit: FiatValue) -> CryptoValue in
                 deposit
-                    .convertToCryptoValue(
-                        exchangeRate: quote,
-                        cryptoCurrency: sourceAsset.cryptoCurrency!
+                    .convert(
+                        usingInverse: quote,
+                        currency: sourceAsset.cryptoCurrency!
                     )
             }
     }

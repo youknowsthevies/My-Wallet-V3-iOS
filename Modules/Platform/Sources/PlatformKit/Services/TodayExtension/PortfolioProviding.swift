@@ -51,9 +51,9 @@ public final class PortfolioProvider: PortfolioProviding {
                         .coin(.bitcoinCash): bitcoinCash
                     ],
                     balanceChange: .init(
-                        balance: change.balance.displayMajorValue,
+                        balance: change.balance.amount,
                         changePercentage: change.changePercentage,
-                        change: change.change.displayMajorValue
+                        change: change.change.amount
                     ),
                     fiatCurrency: fiatCurrency
                 )

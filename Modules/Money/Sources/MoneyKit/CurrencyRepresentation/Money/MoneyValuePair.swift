@@ -33,7 +33,7 @@ public struct MoneyValuePair: Equatable {
     public init(base: CryptoValue, exchangeRate: FiatValue) {
         self.init(
             base: base.moneyValue,
-            quote: base.convertToFiatValue(exchangeRate: exchangeRate).moneyValue
+            quote: base.convert(using: exchangeRate).moneyValue
         )
     }
 
@@ -45,7 +45,7 @@ public struct MoneyValuePair: Equatable {
     ///   - cryptoCurrency: A crypto currency.
     ///   - usesFiatAsBase: Whether to use the fiat value or the crypto value as the base.
     public init(fiatValue: FiatValue, exchangeRate: FiatValue, cryptoCurrency: CryptoCurrency, usesFiatAsBase: Bool) {
-        let cryptoValue = fiatValue.convertToCryptoValue(exchangeRate: exchangeRate, cryptoCurrency: cryptoCurrency)
+        let cryptoValue: CryptoValue = fiatValue.convert(usingInverse: exchangeRate, currency: cryptoCurrency)
 
         if usesFiatAsBase {
             self.init(base: fiatValue.moneyValue, quote: cryptoValue.moneyValue)
@@ -120,8 +120,8 @@ extension MoneyValuePair: CustomDebugStringConvertible {
     public var debugDescription: String {
         """
         MoneyValuePair: \
-        base \(base.toDisplayString(includeSymbol: true)), \
-        quote \(quote.toDisplayString(includeSymbol: true))
+        base \(base.displayString), \
+        quote \(quote.displayString)
         """
     }
 }

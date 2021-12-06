@@ -50,11 +50,7 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
                 return Single.zip(quote, .just(fiatCurrency))
             }
             .map { [sourceAsset] (quote: FiatValue, deposit: FiatValue) -> CryptoValue in
-                deposit
-                    .convertToCryptoValue(
-                        exchangeRate: quote,
-                        cryptoCurrency: sourceAsset.cryptoCurrency!
-                    )
+                deposit.convert(usingInverse: quote, currency: sourceAsset.cryptoCurrency!)
             }
     }
 

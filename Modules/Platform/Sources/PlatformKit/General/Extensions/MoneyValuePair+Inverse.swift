@@ -15,9 +15,12 @@ extension MoneyValuePair {
             )
         }
 
+        let newBase: MoneyValue = .one(currency: quote.currency)
+
         return MoneyValuePair(
-            base: .one(currency: quote.currency),
-            quote: base.convert(usingInverse: quote, currencyType: base.currency)
+            base: newBase,
+            // Convert base to quote currency first, and then perform conversion with inverse quote.
+            quote: base.convert(using: newBase).convert(usingInverse: quote, currency: base.currency)
         )
     }
 }

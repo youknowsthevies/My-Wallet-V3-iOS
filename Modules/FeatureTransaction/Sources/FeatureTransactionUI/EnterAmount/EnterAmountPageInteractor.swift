@@ -634,7 +634,7 @@ extension TransactionErrorState {
                 return source
             }
             // Convert fiat max amount into crypto amount.
-            return source.convert(usingInverse: exchangeRate.quote, currencyType: source.currency)
+            return source.convert(usingInverse: exchangeRate.quote, currency: source.currency)
         }
     }
 }

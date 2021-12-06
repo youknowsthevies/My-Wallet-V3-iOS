@@ -25,7 +25,10 @@ let priceReducer = Reducer<Price, PriceAction, PriceEnvironment> { state, action
             else {
                 return .none
             }
-            return .priceValuesDidLoad(price: priceQuote.moneyValue.displayString, delta: seriesValue.deltaPercentage)
+            return .priceValuesDidLoad(
+                price: priceQuote.moneyValue.displayString,
+                delta: seriesValue.deltaPercentage.doubleValue
+            )
         }
     case .priceValuesDidLoad(let price, let delta):
         state.value = .loaded(next: price)

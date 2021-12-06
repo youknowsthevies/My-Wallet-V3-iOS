@@ -4,7 +4,7 @@ import SwiftUI
 
 extension Color {
 
-    public static func trend(for percentage: Double) -> Color {
+    public static func trend(for percentage: Decimal) -> Color {
         let color: Color
         if percentage > .zero {
             color = .positiveTrend
@@ -19,14 +19,14 @@ extension Color {
 
 extension View {
 
-    public func foregroundColorBasedOnPercentageChange(_ percentage: Double) -> some View {
+    public func foregroundColorBasedOnPercentageChange(_ percentage: Decimal) -> some View {
         foregroundColor(.trend(for: percentage))
     }
 }
 
 extension Text {
 
-    public func foregroundColorBasedOnPercentageChange(_ percentage: Double) -> Text {
+    public func foregroundColorBasedOnPercentageChange(_ percentage: Decimal) -> Text {
         foregroundColor(.trend(for: percentage))
     }
 }

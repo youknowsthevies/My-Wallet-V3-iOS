@@ -94,7 +94,7 @@ public struct Quote {
         else {
             throw SetupError.wrongCurrenciesPair
         }
-        let majorEstimatedAmount: Decimal = value.amount.decimalDivision(divisor: rate)
+        let majorEstimatedAmount: Decimal = value.amount.decimalDivision(by: rate)
         // Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         let estimatedCryptoAmount = CryptoValue.create(major: majorEstimatedAmount, currency: destination)
         estimatedDestinationAmount = estimatedCryptoAmount.moneyValue
@@ -104,7 +104,7 @@ public struct Quote {
         quoteCreatedAt = quoteCreated
         let fiatRate = FiatValue.create(minor: rate, currency: source)
         self.rate = fiatRate.moneyValue
-        estimatedSourceAmount = estimatedCryptoAmount.convertToFiatValue(exchangeRate: fiatRate).moneyValue
+        estimatedSourceAmount = estimatedCryptoAmount.convert(using: fiatRate).moneyValue
 
         // Unused
         quoteId = nil
@@ -150,7 +150,7 @@ public struct Quote {
             }
             let fiatRate = FiatValue.create(major: 1 / cryptoMajorAmount, currency: source)
             let estimatedCryptoAmount = CryptoValue.create(
-                major: estimatedFiatAmount.amount.decimalDivision(divisor: fiatRate.amount),
+                major: estimatedFiatAmount.amount.decimalDivision(by: fiatRate.amount),
                 currency: destination
             )
             estimatedSourceAmount = estimatedFiatAmount.moneyValue
@@ -170,7 +170,7 @@ public struct Quote {
             }
             let cryptoRate = CryptoValue.create(major: 1 / fiatMajorAmount, currency: source)
             let estimatedFiatAmount = FiatValue.create(
-                major: estimatedCryptoAmount.amount.decimalDivision(divisor: cryptoRate.amount),
+                major: estimatedCryptoAmount.amount.decimalDivision(by: cryptoRate.amount),
                 currency: destination
             )
             estimatedSourceAmount = estimatedCryptoAmount.moneyValue
@@ -190,7 +190,7 @@ public struct Quote {
             }
             let fromTokenRate = CryptoValue.create(major: 1 / toTokenMajorAmount, currency: source)
             let toTokenAmount = CryptoValue.create(
-                major: fromTokenAmount.amount.decimalDivision(divisor: fromTokenRate.amount),
+                major: fromTokenAmount.amount.decimalDivision(by: fromTokenRate.amount),
                 currency: destination
             )
             estimatedSourceAmount = fromTokenAmount.moneyValue

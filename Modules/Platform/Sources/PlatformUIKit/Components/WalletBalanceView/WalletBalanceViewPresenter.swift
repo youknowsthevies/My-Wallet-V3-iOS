@@ -45,7 +45,7 @@ public final class WalletBalanceViewPresenter {
             descriptors: Descriptors = .default
         ) {
             fiatBalance = LabelContent(
-                text: value.fiatValue.toDisplayString(includeSymbol: true, locale: .current),
+                text: value.fiatValue.displayString,
                 font: descriptors.fiatFont,
                 color: descriptors.fiatTextColor,
                 accessibility: .id(AccessibilityId.fiatBalance)
