@@ -120,11 +120,12 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
             analyticsEventRecorder: analyticsEventRecorder
         )
 
+        /// List of parsers in the correct priority.
         let parsers: [QRCodeScannerParsing] = [
-            cryptoTargetParser,
-            deepLinkParser,
+            walletConnectParser,
             secureChannelParser,
-            walletConnectParser
+            cryptoTargetParser,
+            deepLinkParser
         ]
 
         scanner.qrCodePublisher
