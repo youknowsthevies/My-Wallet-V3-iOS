@@ -22,7 +22,7 @@ echo "Generating project"
 sh ./scripts/generate_projects.sh
 
 echo "Resolve Package Dependencies"
-xcodebuild -resolvePackageDependencies -clonedSourcePackagesDirPath ./SourcePackages -packageCachePath ${PWD}/PackageCache -disableAutomaticPackageResolution
+xcodebuild -resolvePackageDependencies -clonedSourcePackagesDirPath ./SourcePackages -packageCachePath ${PWD}/PackageCache
 
 echo "Install Mockingbird"
 sh ./scripts/install-mockingbird.sh
