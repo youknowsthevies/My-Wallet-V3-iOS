@@ -226,7 +226,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             .transfer(
                 moneyValue: pendingTransaction.amount,
                 destination: target.address,
-                memo: pendingTransaction.memo.value?.string
+                memo: pendingTransaction.memo?.value?.string
             )
             .map { identifier -> TransactionResult in
                 .hashed(txHash: identifier, amount: pendingTransaction.amount)
@@ -293,8 +293,8 @@ extension CryptoTradingAccount {
 
 extension PendingTransaction {
 
-    fileprivate var memo: TransactionConfirmation.Model.Memo {
-        engineState[.xlmMemo] as! TransactionConfirmation.Model.Memo
+    fileprivate var memo: TransactionConfirmation.Model.Memo? {
+        engineState[.xlmMemo] as? TransactionConfirmation.Model.Memo
     }
 
     fileprivate mutating func setMemo(memo: TransactionConfirmation.Model.Memo) {
