@@ -7,6 +7,10 @@ import Foundation
 import NetworkError
 import ToolKit
 
+#if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+import PulseCore
+#endif
+
 public protocol NetworkCommunicatorAPI {
 
     /// Performs network requests
@@ -65,6 +69,33 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     ) -> AnyPublisher<ServerResponse, NetworkError> {
         session.erasedDataTaskPublisher(
             for: request.peek("🌎", \.urlRequest.cURLCommand, if: \.isDebugging.request).urlRequest
+        )
+        .handleEvents(
+            receiveOutput: { data, response in
+                #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+                LoggerStore.default.storeRequest(
+                    request.urlRequest,
+                    response: response,
+                    error: nil,
+                    data: data,
+                    metrics: nil
+                )
+                #endif
+            },
+            receiveCompletion: { completion in
+                #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+                guard case .failure(let error) = completion else {
+                    return
+                }
+                LoggerStore.default.storeRequest(
+                    request.urlRequest,
+                    response: nil,
+                    error: error,
+                    data: nil,
+                    metrics: nil
+                )
+                #endif
+            }
         )
         .mapError(NetworkError.urlError)
         .flatMap { elements -> AnyPublisher<ServerResponse, NetworkError> in

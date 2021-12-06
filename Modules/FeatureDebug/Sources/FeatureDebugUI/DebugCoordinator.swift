@@ -8,6 +8,10 @@ import SwiftUI
 import ToolKit
 import UIKit
 
+#if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+import PulseUI
+#endif
+
 public enum DebugScreenContext: String, Hashable {
     case tag
 }
@@ -63,7 +67,12 @@ final class DebugCoordinator: NSObject, DebugCoordinating {
     private func showMenu(in rootController: UIViewController) {
         let viewModel = DebugViewModel(itemsProvider: DebugItemType.provideAllItems)
         let debugViewController = DebugViewController(viewModel: viewModel)
-        debugViewController.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        debugViewController.navigationItem.backBarButtonItem = UIBarButtonItem(
+            title: "",
+            style: .plain,
+            target: nil,
+            action: nil
+        )
         let navigationController = UINavigationController(rootViewController: debugViewController)
         navigationController.presentationController?.delegate = self
         self.navigationController = navigationController
@@ -111,6 +120,11 @@ final class DebugCoordinator: NSObject, DebugCoordinating {
             default:
                 window.overrideUserInterfaceStyle = .dark
             }
+        case .pulse:
+            #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+            UITabBar.appearance().backgroundColor = .white
+            navigationController?.present(MainViewController(), animated: true, completion: nil)
+            #endif
         }
     }
 }

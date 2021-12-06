@@ -20,6 +20,11 @@ let package = Package(
             url: "https://github.com/RxSwiftCommunity/RxDataSources.git",
             from: "5.0.2"
         ),
+        .package(
+            name: "Pulse",
+            url: "https://github.com/kean/Pulse.git",
+            from: "0.20.0"
+        ),
         .package(path: "../FeatureTransaction"),
         .package(path: "../Platform"),
         .package(path: "../Tool"),
@@ -36,7 +41,8 @@ let package = Package(
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxDataSources", package: "RxDataSources"),
                 .product(name: "ToolKit", package: "Tool"),
-                .product(name: "Examples", package: "ComponentLibrary")
+                .product(name: "Examples", package: "ComponentLibrary"),
+                .product(name: "PulseUI", package: "Pulse")
             ]
         ),
         .testTarget(

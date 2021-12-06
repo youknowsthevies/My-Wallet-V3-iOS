@@ -6,6 +6,7 @@ enum DebugItemType: CaseIterable {
     case interalFeatureFlags
     case componentLibraryExamples
     case colorScheme
+    case pulse
 }
 
 extension DebugItemType {
@@ -17,6 +18,8 @@ extension DebugItemType {
             return "Component Library Examples"
         case .colorScheme:
             return "Switch Color Scheme (Light/Dark)"
+        case .pulse:
+            return "Network Debug Console"
         }
     }
 
