@@ -26,7 +26,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: InputExamples(), title: "⌨️ Input"),
             NavigationLinkProvider(view: PrimaryPickerExamples(), title: "⛏ Picker"),
             NavigationLinkProvider(view: AlertToastExamples(), title: " 🚨 AlertToast"),
-            NavigationLinkProvider(view: PageControlExamples(), title: "📑 PageControl")
+            NavigationLinkProvider(view: PageControlExamples(), title: "📑 PageControl"),
+            NavigationLinkProvider(view: PrimarySliderExamples(), title: "🎚 Slider")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
