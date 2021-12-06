@@ -4,7 +4,9 @@ import PackageDescription
 
 let package = Package(
     name: "WalletPayload",
-    platforms: [.iOS(.v14)],
+    platforms: [
+        .iOS(.v14), .macOS(.v11)
+    ],
     products: [
         .library(name: "WalletPayloadKit", targets: ["WalletPayloadKit"]),
         .library(name: "WalletPayloadKitMock", targets: ["WalletPayloadKitMock"])

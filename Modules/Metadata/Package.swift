@@ -24,14 +24,14 @@ let package = Package(
             .branch("safe-property-wrappers")
         ),
         .package(
-            name: "secp256k1",
-            url: "https://github.com/Boilertalk/secp256k1.swift.git",
-            from: "0.1.0"
-        ),
-        .package(
             name: "CryptoSwift",
             url: "https://github.com/krzyzanowskim/CryptoSwift.git",
             from: "1.4.2"
+        ),
+        .package(
+            name: "MetadataHDWalletKit",
+            url: "https://github.com/jackpooleybc/MetadataHDWalletKit",
+            .revision("f96abeee64dec17dc5a90769ff1393965bd827b7")
         ),
         .package(path: "../Analytics"),
         .package(path: "../Network"),
@@ -43,6 +43,7 @@ let package = Package(
         .target(
             name: "MetadataKit",
             dependencies: [
+                .product(name: "MetadataHDWalletKit", package: "MetadataHDWalletKit"),
                 .product(name: "CryptoSwift", package: "CryptoSwift"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "DIKit", package: "DIKit"),
@@ -54,7 +55,11 @@ let package = Package(
             name: "MetadataKitTests",
             dependencies: [
                 "MetadataKit",
-                .product(name: "TestKit", package: "Test")
+                .product(name: "MetadataHDWalletKit", package: "MetadataHDWalletKit"),
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "TestKit", package: "Test"),
+                .product(name: "DIKit", package: "DIKit"),
+                .product(name: "NetworkError", package: "NetworkErrors")
             ],
             resources: [
                 .copy("Fixtures/Entries/Ethereum/ethereum_entry.json")
