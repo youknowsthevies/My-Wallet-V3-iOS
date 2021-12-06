@@ -396,6 +396,7 @@ extension RootViewController: LoggedInBridge {
                         title: LocalizationConstants.okString,
                         style: .default
                     ) { [weak self] _ in
+                        self?.viewStore.send(.dismiss())
                         self?.send(.logout)
                     },
                     UIAlertAction(
