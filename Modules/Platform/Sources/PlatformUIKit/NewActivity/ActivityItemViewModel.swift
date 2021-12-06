@@ -228,12 +228,11 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             case .failed,
                  .rejected:
                 return .destructive
-            case .complete:
-                return interest.cryptoCurrency.brandUIColor
             case .refunded,
                  .cleared,
-                 .unknown:
-                unimplemented()
+                 .unknown,
+                 .complete:
+                return interest.cryptoCurrency.brandUIColor
             }
         case .fiat(let event):
             switch event.state {
@@ -289,12 +288,16 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 case .interestEarned:
                     return .local(name: Icon.interest.name, bundle: .componentLibrary)
                 case .unknown:
-                    unimplemented()
+                    // NOTE: `.unknown` is filtered out in
+                    // the `ActivityScreenInteractor`
+                    assertionFailure("Unexpected case for interest \(interest.state)")
+                    return .local(name: Icon.question.name, bundle: .componentLibrary)
                 }
             case .refunded,
                  .cleared,
                  .unknown:
-                unimplemented()
+                assertionFailure("Unexpected case for interest \(interest.state)")
+                return .local(name: Icon.question.name, bundle: .componentLibrary)
             }
         case .buySell(let value):
             if value.status == .failed {
