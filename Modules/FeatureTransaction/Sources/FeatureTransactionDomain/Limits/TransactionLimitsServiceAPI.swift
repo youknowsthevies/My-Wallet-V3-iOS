@@ -173,11 +173,6 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
                 .flatMap { [unowned self] newLimitsEnabled -> TransactionLimitsServicePublisher in
                     guard newLimitsEnabled else {
                         return .just(transactionLimits)
-                            .convertAmounts(
-                                from: paymentMethod.fiatCurrency.currencyType,
-                                to: limitsCurrency,
-                                using: conversionService
-                            )
                     }
                     return self.fetchCrossBorderLimits(
                         for: paymentMethod,

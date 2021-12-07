@@ -16,7 +16,7 @@ final class PreferredCurrencyBadgeInteractor: DefaultBadgeAssetInteractor {
     ) {
         super.init()
         let settingsFiatCurrency = settingsService.valueObservable
-            .map(\.currency)
+            .map(\.displayCurrency)
         let fiatCurrency = fiatCurrencyService.displayCurrencyPublisher
             .asObservable()
 

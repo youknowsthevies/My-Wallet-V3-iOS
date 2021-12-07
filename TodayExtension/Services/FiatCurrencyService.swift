@@ -10,6 +10,10 @@ final class FiatCurrencyService: FiatCurrencyServiceAPI {
         .just(localeCurrency)
     }
 
+    var tradingCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
+        .just(localeCurrency)
+    }
+
     private var localeCurrency: FiatCurrency {
         guard let code = Locale.current.currencyCode,
               let fiatCurrency = FiatCurrency(code: code)

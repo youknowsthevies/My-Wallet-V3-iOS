@@ -209,7 +209,9 @@ final class SettingsRouter: SettingsRouterAPI {
     private func handle(action: SettingsScreenAction) {
         switch action {
         case .showURL(let url):
-            navigationRouter.navigationControllerAPI?.present(SFSafariViewController(url: url), animated: true, completion: nil)
+            navigationRouter
+                .navigationControllerAPI?
+                .present(SFSafariViewController(url: url), animated: true, completion: nil)
         case .launchChangePassword:
             let interactor = ChangePasswordScreenInteractor(passwordAPI: passwordRepository)
             let presenter = ChangePasswordScreenPresenter(previousAPI: self, interactor: interactor)
@@ -447,9 +449,11 @@ final class SettingsRouter: SettingsRouterAPI {
                 let settings: FiatCurrencySettingsServiceAPI = resolve()
                 return settings
                     .update(
-                        currency: currency,
+                        displayCurrency: currency,
                         context: .settings
                     )
+                    .asSingle()
+                    .asCompletable()
                     .andThen(Single.just(currency))
             }
             .observe(on: MainScheduler.instance)
@@ -457,7 +461,7 @@ final class SettingsRouter: SettingsRouterAPI {
                 onSuccess: { [weak self] currency in
                     guard let self = self else { return }
                     // TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
-                    /// `SendBTC` are replaced with Swift implementations.
+                    // `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
                     self.analyticsRecording.record(events: [
                         AnalyticsEvents.Settings.settingsCurrencySelected(currency: currency.code),

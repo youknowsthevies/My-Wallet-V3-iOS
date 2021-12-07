@@ -49,11 +49,15 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
         NotificationCenter.when(.logout) { [weak pairsRelay] _ in
             pairsRelay?.accept(nil)
         }
+
+        NotificationCenter.when(.tradingCurrencyChanged) { [weak pairsRelay] _ in
+            pairsRelay?.accept(nil)
+        }
     }
 
     func fetch() -> Observable<SupportedPairs> {
         fiatCurrencySettingsService
-            .displayCurrencyPublisher
+            .tradingCurrencyPublisher
             .asObservable()
             .map { .only(fiatCurrency: $0) }
             .flatMapLatest(weak: self) { (self, value) in

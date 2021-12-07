@@ -191,7 +191,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     var paymentMethodTypesValidForBuy: Single<[PaymentMethodType]> {
         Observable
             .combineLatest(
-                fiatCurrencyService.displayCurrencyPublisher.asObservable(),
+                fiatCurrencyService.tradingCurrencyPublisher.asObservable(),
                 kycTiersService.tiers.map(\.isTier2Approved).asObservable(),
                 featureFlagsService
                     .isEnabled(.remote(.openBanking))
@@ -254,7 +254,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         paymentMethodTypesValidForBuy
             .map(\.first)
             .asObservable()
-            .catchErrorJustReturn(.none)
+            .catchAndReturn(.none)
     }
 
     // MARK: - Injected
@@ -337,9 +337,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         paymentMethodsService
             .supportedPaymentMethods(for: currency)
             .map { paymentMethods in
-                paymentMethods.map { paymentMethod in
-                    .suggested(paymentMethod)
-                }
+                paymentMethods.map(PaymentMethodType.suggested)
             }
     }
 

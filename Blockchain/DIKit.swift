@@ -382,6 +382,11 @@ extension DependencyContainer {
             return completeSettingsService
         }
 
+        factory { () -> SupportedFiatCurrenciesServiceAPI in
+            let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
+            return completeSettingsService
+        }
+
         factory { () -> MobileSettingsServiceAPI in
             let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettingsService
