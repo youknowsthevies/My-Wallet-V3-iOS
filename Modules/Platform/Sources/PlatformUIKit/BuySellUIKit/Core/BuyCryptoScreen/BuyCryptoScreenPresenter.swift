@@ -55,7 +55,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         super.viewDidLoad()
 
         interactor.effect
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] effect in
                 switch effect {
                 case .failure(let error):
@@ -79,11 +79,11 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 interactor.preferredPaymentMethodType,
                 interactor.paymentMethodTypes.map(\.count)
             )
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .do(onError: { [weak self] error in
                 self?.handle(error)
             })
-            .catchError { _ -> Observable<(PaymentMethodType?, Int)> in
+            .catch { _ -> Observable<(PaymentMethodType?, Int)> in
                 .empty()
             }
             .bindAndCatch(weak: self) { (self, payload) in
@@ -130,16 +130,16 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                                     return performKYCChecks()
                                 }
                             }
-                            .catchError { error in
+                            .catch { error in
                                 .just(.failure(error))
                             }
                     }
             }
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .do(onError: { [weak self] error in
                 self?.handle(error)
             })
-            .catchError { error -> Observable<Result<CTAData, Error>> in
+            .catch { error -> Observable<Result<CTAData, Error>> in
                 .just(.failure(error))
             }
             .share()
@@ -176,7 +176,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .disposed(by: disposeBag)
 
         ctaObservable
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, result) in
                 switch result {
                 case .success(let data):
@@ -207,11 +207,11 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .flatMap(weak: self) { (self, cryptoCurrency) -> Observable<String?> in
                 self.subtitleForCryptoCurrencyPicker(cryptoCurrency: cryptoCurrency)
             }
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .do(onError: { [weak self] error in
                 self?.handle(error)
             })
-            .catchError { _ -> Observable<String?> in
+            .catch { _ -> Observable<String?> in
                 .just(nil)
             }
             .bindAndCatch(to: topSelectionButtonViewModel.subtitleRelay)
@@ -221,7 +221,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
 
         interactor.pairsCalculationState
             .handle(loadingViewPresenter: loader)
-            .catchError { _ -> Observable<ValueCalculationState<SupportedPairs>> in
+            .catch { _ -> Observable<ValueCalculationState<SupportedPairs>> in
                 .just(.invalid(ValueCalculationState<SupportedPairs>.CalculationError.valueCouldNotBeCalculated))
             }
             .bindAndCatch(weak: self) { (self, state) in
@@ -271,7 +271,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 let tuple: (fiat: FiatValue, crypto: CryptoCurrency) = payload
                 return "1 \(tuple.crypto.displayCode) = \(tuple.fiat.displayString) \(tuple.fiat.displayCode)"
             }
-            .catchError { _ -> Observable<String?> in
+            .catch { _ -> Observable<String?> in
                 .just(nil)
             }
     }

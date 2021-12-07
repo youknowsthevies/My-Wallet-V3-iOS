@@ -182,7 +182,7 @@ public final class SellRouterInteractor: Interactor {
         super.didBecomeActive()
 
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
 

@@ -119,7 +119,7 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
 
     var action: Observable<Action> {
         actionRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     let nextRelay = PublishRelay<Void>()
@@ -151,17 +151,17 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
         self.cacheSuite = cacheSuite
 
         nextRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
 
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
 
         activityRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 let nextStates = self.statesRelay.value.states(byAppending: .activity)
                 self.apply(action: .next(.activity), states: nextStates)
@@ -169,7 +169,7 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .disposed(by: disposeBag)
 
         swapRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 let nextStates = self.statesRelay.value.states(byAppending: .swap)
                 self.apply(action: .next(.swap), states: nextStates)
@@ -177,14 +177,14 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .disposed(by: disposeBag)
 
         depositRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .flatMap {
                 kycTiersService
                     .fetchTiers()
                     .asObservable()
             }
             .map(\.isTier2Approved)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
             .bindAndCatch(weak: self) { (self, isKYCApproved) in
                 let nextStates = self.statesRelay.value.states(byAppending: .deposit(isKYCApproved: isKYCApproved))
                 self.apply(action: .next(.deposit(isKYCApproved: isKYCApproved)), states: nextStates)
@@ -192,7 +192,7 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .disposed(by: disposeBag)
 
         buyRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 let nextStates = self.statesRelay.value.states(byAppending: .buy)
                 self.apply(action: .next(.buy), states: nextStates)
@@ -200,7 +200,7 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .disposed(by: disposeBag)
 
         sellRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 let nextStates = self.statesRelay.value.states(byAppending: .sell)
                 self.apply(action: .next(.sell), states: nextStates)
@@ -208,7 +208,7 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .disposed(by: disposeBag)
 
         sendRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 let nextStates = self.statesRelay.value.states(byAppending: .send)
                 self.apply(action: .next(.send), states: nextStates)
@@ -216,7 +216,7 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .disposed(by: disposeBag)
 
         receiveRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 let nextStates = self.statesRelay.value.states(byAppending: .receive)
                 self.apply(action: .next(.receive), states: nextStates)
@@ -224,14 +224,14 @@ final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .disposed(by: disposeBag)
 
         withdrawRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .flatMap {
                 kycTiersService
                     .fetchTiers()
                     .asObservable()
             }
             .map(\.isTier2Approved)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
             .bindAndCatch(weak: self) { (self, isKYCApproved) in
                 let nextStates = self.statesRelay.value.states(byAppending: .withdrawalFiat(isKYCApproved: isKYCApproved))
                 self.apply(action: .next(.withdrawalFiat(isKYCApproved: isKYCApproved)), states: nextStates)

@@ -26,7 +26,7 @@ final class StellarTransactionDispatcher {
         walletOptions.walletOptions
             .map(\.xlmMetadata?.sendTimeOutSeconds)
             .map { $0 ?? 10 }
-            .catchErrorJustReturn(10)
+            .catchAndReturn(10)
     }
 
     init(
@@ -138,7 +138,7 @@ final class StellarTransactionDispatcher {
         let minBalance = horizonProxy.minimumBalance(subentryCount: 0)
         return horizonProxy.accountResponse(for: sendDetails.toAddress)
             .asCompletable()
-            .catchError { error -> Completable in
+            .catch { error -> Completable in
                 switch error {
                 case StellarAccountError.noDefaultAccount:
                     if try sendDetails.value < minBalance {
@@ -222,7 +222,7 @@ final class StellarTransactionDispatcher {
                     amount: sendDetails.value.displayMajorValue
                 )
             }
-            .catchError { error -> Single<stellarsdk.Operation> in
+            .catch { error -> Single<stellarsdk.Operation> in
                 // Build operation
                 switch error {
                 case StellarAccountError.noDefaultAccount:

@@ -49,11 +49,11 @@ final class TradeLimitsMetadataService: TradeLimitsMetadataServiceAPI {
     /// user is pre-fetched and cached
     func initialize(withFiatCurrency currency: String) {
         let disposable = getTradeLimits(withFiatCurrency: currency, ignoringCache: false)
-            .subscribeOn(MainScheduler.asyncInstance)
-            .observeOn(MainScheduler.instance)
+            .subscribe(on: MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { _ in
                 Logger.shared.debug("Successfully initialized TradeLimitsMetadataService.")
-            }, onError: { error in
+            }, onFailure: { error in
                 Logger.shared.error("Failed to initialize TradeLimitsMetadataService: \(error)")
             })
         _ = disposables.insert(disposable)
@@ -64,11 +64,11 @@ final class TradeLimitsMetadataService: TradeLimitsMetadataServiceAPI {
         withCompletion: @escaping ((Result<TradeLimitsMetadata, Error>) -> Void)
     ) {
         let disposable = getTradeLimits(withFiatCurrency: currency, ignoringCache: false)
-            .subscribeOn(MainScheduler.asyncInstance)
-            .observeOn(MainScheduler.instance)
+            .subscribe(on: MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { payload in
                 withCompletion(.success(payload))
-            }, onError: { error in
+            }, onFailure: { error in
                 withCompletion(.failure(error))
             })
         _ = disposables.insert(disposable)

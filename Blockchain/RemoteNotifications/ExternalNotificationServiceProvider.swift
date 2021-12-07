@@ -18,7 +18,7 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
                 }
                 return Disposables.create()
             }
-            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
     }
 
     private let messagingService: FirebaseCloudMessagingServiceAPI

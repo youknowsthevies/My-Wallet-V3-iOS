@@ -89,7 +89,7 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
 
     var action: Observable<Action> {
         actionRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     let nextRelay = PublishRelay<Void>()
@@ -106,12 +106,12 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
     init(entry: BackupRouterEntry) {
         self.entry = entry
         nextRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
 
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
     }

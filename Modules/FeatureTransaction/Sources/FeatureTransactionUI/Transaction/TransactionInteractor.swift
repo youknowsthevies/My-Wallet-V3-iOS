@@ -77,7 +77,7 @@ final class TransactionInteractor {
             })
             .asObservable()
             .flatMap(\.initializeTransaction)
-            .takeUntil(invalidate)
+            .take(until: invalidate)
     }
 
     deinit {
@@ -127,7 +127,7 @@ final class TransactionInteractor {
             .flatMapFilter(
                 action: action,
                 failSequence: false,
-                onError: { [errorRecorder] account, error in
+                onFailure: { [errorRecorder] account, error in
                     let error: Error = .loadingFailed(
                         account: account,
                         action: action,

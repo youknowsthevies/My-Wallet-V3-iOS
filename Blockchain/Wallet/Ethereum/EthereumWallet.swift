@@ -139,7 +139,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 )
                 return Disposables.create()
             }
-            .subscribeOn(MainScheduler.instance)
+            .subscribe(on: MainScheduler.instance)
     }
 }
 

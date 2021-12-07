@@ -26,7 +26,7 @@ final class EthereumHistoricalTransactionService: EthereumHistoricalTransactionS
     var isWaitingOnTransaction: Single<Bool> {
         fetchTransactions()
             .map { $0.contains(where: { $0.state == .pending }) }
-            .catchErrorJustReturn(true)
+            .catchAndReturn(true)
     }
 
     // MARK: - Private properties

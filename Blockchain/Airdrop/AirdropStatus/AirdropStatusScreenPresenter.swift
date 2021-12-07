@@ -35,7 +35,7 @@ final class AirdropStatusScreenPresenter {
 
     var cellPresenters: Observable<[AirdropStatusCellPresenter]> {
         cellPresentersRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     var cellPresentersValue: [AirdropStatusCellPresenter] {

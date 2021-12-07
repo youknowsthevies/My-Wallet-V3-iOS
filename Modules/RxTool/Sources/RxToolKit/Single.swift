@@ -148,7 +148,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
 
 extension PrimitiveSequence where Trait == SingleTrait {
     public func catchError<A: AnyObject>(weak object: A, _ selector: @escaping (A, Swift.Error) throws -> Single<Element>) -> Single<Element> {
-        catchError { [weak object] error -> Single<Element> in
+        `catch` { [weak object] error -> Single<Element> in
             guard let object = object else {
                 throw ToolKitError.nullReference(A.self)
             }
@@ -164,7 +164,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
     /// Directly maps to `Result<Element, Error>` type.
     public func mapToResult() -> PrimitiveSequence<SingleTrait, Result<Element, Error>> {
         map { .success($0) }
-            .catchError { .just(.failure($0)) }
+            .catch { .just(.failure($0)) }
     }
 
     /// Map with success and failure mappers.
@@ -174,7 +174,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
         errorMap: @escaping (Error) -> OutputError
     ) -> PrimitiveSequence<SingleTrait, Result<ResultElement, OutputError>> {
         map { .success(successMap($0)) }
-            .catchError { .just(.failure(errorMap($0))) }
+            .catch { .just(.failure(errorMap($0))) }
     }
 
     /// Map with success mapper only.
@@ -182,7 +182,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
         successMap: @escaping (Element) -> ResultElement) -> PrimitiveSequence<SingleTrait, Result<ResultElement, Error>>
     {
         map { .success(successMap($0)) }
-            .catchError { .just(.failure($0)) }
+            .catch { .just(.failure($0)) }
     }
 }
 

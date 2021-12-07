@@ -87,7 +87,7 @@ final class MnemonicValidator: MnemonicValidating {
 
                 return .invalid(ranges)
             }
-            .catchErrorJustReturn(.none)
+            .catchAndReturn(.none)
             .bindAndCatch(to: scoreRelay)
             .disposed(by: disposeBag)
 

@@ -84,12 +84,12 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             .disposed(by: disposeBag)
 
         interactor.startPolling()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] state in
                     self?.handle(state: state)
                 },
-                onError: { [weak self] error in
+                onFailure: { [weak self] error in
                     /// In the event of an `RxError` we don't have a completion
                     /// state that indicates success or failure. Sometimes we get an
                     /// RxError of type `.noElements`. So far, in all instances of this
@@ -282,7 +282,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
                 interactor.fetchTierUpgradeEligility()
                     .subscribe { [handleSuccess] canUpgradeTier in
                         handleSuccess(canUpgradeTier)
-                    } onError: { [handleSuccess] error in
+                    } onFailure: { [handleSuccess] error in
                         Logger.shared.error(String(describing: error))
                         handleSuccess(false)
                     }
@@ -298,7 +298,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             interactor.fetchTierUpgradeEligility()
                 .subscribe { [handleTimeout] canUpgradeTier in
                     handleTimeout(order, canUpgradeTier)
-                } onError: { [handleTimeout] error in
+                } onFailure: { [handleTimeout] error in
                     Logger.shared.error(String(describing: error))
                     handleTimeout(order, false)
                 }

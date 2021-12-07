@@ -127,7 +127,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
                 return self.yodleeActivationService
                     .startPolling(for: self.bankLinkageData.id, providerAccountId: data.providerAccountId, accountId: data.accountId)
             }
-            .catchErrorJustReturn(.inactive(.unknown))
+            .catchAndReturn(.inactive(.unknown))
             .share(replay: 1, scope: .whileConnected)
 
         activationResult
@@ -169,7 +169,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             .asObservable()
             .withLatestFrom(activationResult)
             .filter(\.isActive)
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { _ in
                 self.listener?.closeFlow(isInteractive: false)
             })

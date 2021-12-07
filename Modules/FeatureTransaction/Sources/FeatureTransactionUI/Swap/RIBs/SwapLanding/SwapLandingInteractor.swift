@@ -56,7 +56,7 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
                 accounts.filter { $0 is CryptoAccount }
             }
             .map { $0.map { $0 as! CryptoAccount } }
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
 
         let nonCustodialAccounts = accountProviding
             .accounts(accountType: .nonCustodial)
@@ -64,11 +64,11 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
                 accounts.filter { $0 is CryptoAccount }
             }
             .map { $0.map { $0 as! CryptoAccount } }
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
 
         return eligibilityService.isEligible
             .flatMap { $0 ? custodialAccounts : nonCustodialAccounts }
-            .catchError { _ in nonCustodialAccounts }
+            .catch { _ in nonCustodialAccounts }
             .map { [pax] accounts -> [SwapTrendingPairViewModel] in
                 var pairs: [(CryptoCurrency, CryptoCurrency)] = [
                     (.coin(.bitcoin), .coin(.ethereum)),
@@ -135,7 +135,7 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
             .map { SwapLandingSelectionAction.items([$0]) }
             // TODO: implement empty state for trending pairs:
             // TICKET: IOS-4268
-            .catchErrorJustReturn(SwapLandingSelectionAction.items([]))
+            .catchAndReturn(SwapLandingSelectionAction.items([]))
             .asDriverCatchError()
 
         let header = initialState

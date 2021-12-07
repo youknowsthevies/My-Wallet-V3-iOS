@@ -18,7 +18,7 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
     public var state: Observable<InteractionState> {
         _ = setup
         return stateRelay.asObservable()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     public func refresh() {}

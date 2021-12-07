@@ -137,7 +137,7 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
 
     var action: Observable<Action> {
         actionRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     let nextRelay = PublishRelay<Void>()
@@ -152,18 +152,18 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
 
     init() {
         completionRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .filter { $0 != .unknown }
             .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
 
         nextRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
 
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
     }

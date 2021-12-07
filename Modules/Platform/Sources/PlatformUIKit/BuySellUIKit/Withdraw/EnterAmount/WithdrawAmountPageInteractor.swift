@@ -122,13 +122,13 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
                 guard let data = data else { return .empty() }
                 return self.withdrawalFeeService.withdrawCheckoutData(data: data)
                     .asObservable()
-                    .catchError { _ -> Observable<WithdrawalCheckoutData> in
+                    .catch { _ -> Observable<WithdrawalCheckoutData> in
                         self.loadingViewPresenter.hide()
                         self.router?.showError()
                         return .empty()
                     }
             }
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] checkoutData in
                 self?.loadingViewPresenter.hide()
                 let event = AnalyticsEvent.confirm(

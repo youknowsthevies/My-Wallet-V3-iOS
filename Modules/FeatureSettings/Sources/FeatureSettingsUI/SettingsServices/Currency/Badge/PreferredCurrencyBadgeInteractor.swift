@@ -50,7 +50,7 @@ final class PreferredCurrencyBadgeInteractor: DefaultBadgeAssetInteractor {
                 }
                 return .loaded(next: badgeItem)
             }
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }

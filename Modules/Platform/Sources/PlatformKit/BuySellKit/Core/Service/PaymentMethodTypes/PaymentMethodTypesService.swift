@@ -254,7 +254,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         paymentMethodTypesValidForBuy
             .map(\.first)
             .asObservable()
-            .catchErrorJustReturn(.none)
+            .catchAndReturn(.none)
     }
 
     // MARK: - Injected

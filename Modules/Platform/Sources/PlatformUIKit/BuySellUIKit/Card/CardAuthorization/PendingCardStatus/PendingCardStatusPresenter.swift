@@ -52,12 +52,12 @@ final class PendingCardStatusPresenter: RibBridgePresenter, PendingStatePresente
         )
 
         interactor.startPolling()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] state in
                     self?.handle(state: state)
                 },
-                onError: { [weak self] _ in
+                onFailure: { [weak self] _ in
                     self?.handle(state: .inactive)
                 }
             )

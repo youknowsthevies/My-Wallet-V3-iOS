@@ -45,7 +45,7 @@ final class KYCPendingInteractor: Interactor {
                 return self.eligibilityService.fetch()
                     .map { $0 ? .completed : .ineligible }
             }
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(
                 onSuccess: { [weak self] newState in
                     self?.verificationStateRelay.accept(newState)
@@ -55,7 +55,7 @@ final class KYCPendingInteractor: Interactor {
                         self?.eligiblePaymentMethodsService.refresh()
                     }
                 },
-                onError: { [weak verificationStateRelay] _ in
+                onFailure: { [weak verificationStateRelay] _ in
                     verificationStateRelay?.accept(.pending)
                 }
             )

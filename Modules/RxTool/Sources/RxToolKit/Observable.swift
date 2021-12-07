@@ -186,7 +186,7 @@ extension ObservableType {
         weak object: A,
         _ selector: @escaping (A, Swift.Error) throws -> Observable<Element>
     ) -> Observable<Element> {
-        catchError { [weak object] error -> Observable<Element> in
+        `catch` { [weak object] error -> Observable<Element> in
             guard let object = object else {
                 throw ToolKitError.nullReference(A.self)
             }
@@ -202,7 +202,7 @@ extension ObservableType {
     /// Directly maps to `Result<Element, Error>` type.
     public func mapToResult() -> Observable<Result<Element, Error>> {
         map(Result.success)
-            .catchError { .just(.failure($0)) }
+            .catch { .just(.failure($0)) }
     }
 
     /// Map with success and failure mappers.
@@ -212,7 +212,7 @@ extension ObservableType {
         errorMap: @escaping (Error) -> OutputError
     ) -> Observable<Result<ResultElement, OutputError>> {
         map { .success(successMap($0)) }
-            .catchError { .just(.failure(errorMap($0))) }
+            .catch { .just(.failure(errorMap($0))) }
     }
 
     /// Map with success mapper only.
@@ -220,7 +220,7 @@ extension ObservableType {
         successMap: @escaping (Element) -> ResultElement
     ) -> Observable<Result<ResultElement, Error>> {
         map { .success(successMap($0)) }
-            .catchError { .just(.failure($0)) }
+            .catch { .just(.failure($0)) }
     }
 }
 

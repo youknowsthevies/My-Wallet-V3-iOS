@@ -161,6 +161,6 @@ extension AppFeatureConfigurator: RxFeatureVariantFetching {
     ) -> Single<FeatureTestingVariant> {
         fetchString(for: key)
             .map { FeatureTestingVariant(rawValue: $0) ?? defaultVariant }
-            .catchErrorJustReturn(defaultVariant)
+            .catchAndReturn(defaultVariant)
     }
 }

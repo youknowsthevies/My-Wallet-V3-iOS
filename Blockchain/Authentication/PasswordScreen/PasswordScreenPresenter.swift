@@ -95,7 +95,7 @@ final class PasswordScreenPresenter {
                 try self.stateReducer.reduce(states: [payload])
             }
             /// Should never get to `catchErrorJustReturn`.
-            .catchErrorJustReturn(.invalid(.invalidTextField))
+            .catchAndReturn(.invalid(.invalidTextField))
             .share(replay: 1)
 
         stateObservable

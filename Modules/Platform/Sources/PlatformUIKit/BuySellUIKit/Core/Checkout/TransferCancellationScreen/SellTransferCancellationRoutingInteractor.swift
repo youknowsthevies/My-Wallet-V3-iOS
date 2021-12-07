@@ -12,14 +12,14 @@ public final class SellTransferCancellationRoutingInteractor: TransferOrderRouti
 
     private lazy var setup: Void = {
         nextRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 self.routingInteractor.orderCompleted()
             }
             .disposed(by: disposeBag)
 
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 self.routingInteractor.previousRelay.accept(())
                 self.analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderGoBack)

@@ -9,19 +9,19 @@ public final class BuyPendingOrderRoutingInteractor: PendingOrderRoutingInteract
 
     private lazy var setup: Void = {
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(to: stateService.previousRelay)
             .disposed(by: disposeBag)
 
         tapRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, tap) in
                 self.handle(tap: tap)
             }
             .disposed(by: disposeBag)
 
         stateRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, state) in
                 self.handle(state: state)
             }

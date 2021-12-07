@@ -82,7 +82,7 @@ final class AnalyticsUserPropertyInteractor {
                         balances: balances
                     )
                 },
-                onError: { error in
+                onFailure: { error in
                     Logger.shared.error(error)
                 }
             )

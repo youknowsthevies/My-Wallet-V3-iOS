@@ -132,7 +132,7 @@ public final class Router: RouterAPI {
     /// Should be called once
     public func setup(startImmediately: Bool) {
         stateService.action
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .previous(let state):
@@ -315,7 +315,7 @@ public final class Router: RouterAPI {
                     )
                     .andThen(Single.just(currency))
             }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] currency in
                     guard let self = self else { return }
@@ -376,7 +376,7 @@ public final class Router: RouterAPI {
                         isCurrencySupported
                     ))
             }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] value in
                     guard let self = self else { return }
@@ -444,8 +444,8 @@ public final class Router: RouterAPI {
         }
         analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .buy))
         router.startFlow()
-            .takeUntil(.inclusive, predicate: { $0.isCloseEffect })
-            .skipWhile { $0.shouldSkipEffect }
+            .take(until: { $0.isCloseEffect }, behavior: .inclusive)
+            .skip { $0.shouldSkipEffect }
             .subscribe(onNext: { [weak self] effect in
                 guard let self = self else { return }
                 guard case .closeFlow(let isInteractive) = effect, !isInteractive else {
@@ -688,13 +688,13 @@ public final class Router: RouterAPI {
         kycDisposeBag = DisposeBag()
         kycRouter.kycStopped
             .take(1)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(to: stateService.previousRelay)
             .disposed(by: kycDisposeBag)
 
         let finished = kycRouter.kycFinished
             .take(1)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .share()
 
         // tier 2, silver +, etc. can buy. Only tier 0 and 1 can't.
@@ -750,7 +750,7 @@ public final class Router: RouterAPI {
                         parentFlow: .simpleBuy,
                         from: kycRootViewController
                     )
-                } onError: { [kycRouter] error in
+                } onFailure: { [kycRouter] error in
                     Logger.shared.error(String(describing: error))
                     kycRouter.start(
                         tier: .tier0,

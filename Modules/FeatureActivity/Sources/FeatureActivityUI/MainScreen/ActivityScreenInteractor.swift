@@ -34,7 +34,7 @@ final class ActivityScreenInteractor {
                 account.fiatBalance(fiatCurrency: fiatCurrency)
                     .asObservable()
                     .compactMap(\.fiatValue)
-                    .catchErrorJustReturn(.zero(currency: fiatCurrency))
+                    .catchAndReturn(.zero(currency: fiatCurrency))
             }
     }
 
@@ -81,7 +81,7 @@ final class ActivityScreenInteractor {
                 State(with: items, exchangeProviding: serviceContainer.exchangeProviding)
             }
             .startWith(.calculating)
-            .catchErrorJustReturn(.invalid(.empty))
+            .catchAndReturn(.invalid(.empty))
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }

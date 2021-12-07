@@ -29,7 +29,7 @@ final class NonCustodialActionStateService: NonCustodialActionStateServiceAPI {
 
     var action: Observable<Action> {
         actionRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     let nextRelay = PublishRelay<Void>()
@@ -42,14 +42,14 @@ final class NonCustodialActionStateService: NonCustodialActionStateServiceAPI {
 
     init() {
         nextRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 self.apply(action: .next(.actions))
             }
             .disposed(by: disposeBag)
 
         selectionRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, action) in
                 self.apply(action: action)
             }

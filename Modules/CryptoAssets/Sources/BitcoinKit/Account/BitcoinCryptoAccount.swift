@@ -103,13 +103,13 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
                 response
                     .map(\.activityItemEvent)
             }
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     private var swapActivity: Single<[SwapActivityItemEvent]> {
         swapTransactionsService
             .fetchActivity(cryptoCurrency: asset, directions: custodialDirections)
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     private let featureFlagsService: FeatureFlagsServiceAPI

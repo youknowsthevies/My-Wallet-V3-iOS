@@ -60,7 +60,7 @@ final class UpdateMobileScreenSetupInteractor {
                 )
             }
             .map { .loaded(next: $0) }
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .startWith(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)

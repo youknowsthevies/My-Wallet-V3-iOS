@@ -106,7 +106,7 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
 
         locationUpdateService
             .update(address: address)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .do(onSubscribe: onSubscribe)
             .subscribe(
                 onCompleted: {

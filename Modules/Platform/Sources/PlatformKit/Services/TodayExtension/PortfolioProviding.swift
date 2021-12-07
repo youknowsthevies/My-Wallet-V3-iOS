@@ -76,7 +76,7 @@ public final class PortfolioProvider: PortfolioProviding {
             .asObservable()
             .flatMap(\.balance)
             .map(\.amount)
-            .catchErrorJustReturn(.zero)
+            .catchAndReturn(.zero)
             .map(\.description)
             .map { Portfolio.Account(currency: currency, balance: $0) }
     }

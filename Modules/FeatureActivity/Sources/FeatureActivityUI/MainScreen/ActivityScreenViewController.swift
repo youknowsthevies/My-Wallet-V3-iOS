@@ -152,7 +152,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
         )
 
         presenter.sectionsObservable
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
 

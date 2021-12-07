@@ -48,7 +48,7 @@ class PaymentAccountServiceTests: XCTestCase {
 //            .paymentAccount(for: .GBP)
 //            .subscribe(onSuccess: { _ in
 //                finishes.fulfill()
-//            }, onError: { _ in
+//            }, onFailure: { _ in
 //                XCTFail("action should not have errored")
 //            })
 //            .disposed(by: disposeBag)
@@ -62,7 +62,7 @@ class PaymentAccountServiceTests: XCTestCase {
 //            .paymentAccount(for: .GBP)
 //            .subscribe(onSuccess: { _ in
 //                XCTFail("action should not have succeeded")
-//            }, onError: { _ in
+//            }, onFailure: { _ in
 //                fails.fulfill()
 //            })
 //            .disposed(by: disposeBag)

@@ -152,9 +152,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         Single
             .zip(
                 buySellActivity.buySellActivityEvents(cryptoCurrency: asset),
-                ordersActivity.activity(cryptoCurrency: asset).catchErrorJustReturn([]),
+                ordersActivity.activity(cryptoCurrency: asset).catchAndReturn([]),
                 swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal])
-                    .catchErrorJustReturn([])
+                    .catchAndReturn([])
             )
             .map { buySellActivity, ordersActivity, swapActivity -> [ActivityItemEvent] in
                 let swapAndSellActivityItemsEvents: [ActivityItemEvent] = swapActivity
@@ -244,7 +244,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .map { [asset] pairs in
                 pairs.cryptoCurrencySet.contains(asset)
             }
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
@@ -298,7 +298,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 }
                 return self.eligibilityService.isEligible
             }
-            .catchError { [label, asset] error in
+            .catch { [label, asset] error in
                 throw Error.loadingFailed(
                     asset: asset.code,
                     label: label,
@@ -307,7 +307,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 )
             }
             .recordErrors(on: errorRecorder)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
     }
 
     private func canPerformInterestTransfer() -> Single<Bool> {
@@ -321,7 +321,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         return Single
             .zip(isEligible, balanceAvailable, isFeatureFlagEnabled)
             .map { $0 && $1 && $2 }
-            .catchError { [label, asset] error in
+            .catch { [label, asset] error in
                 throw Error.loadingFailed(
                     asset: asset.code,
                     label: label,
@@ -330,13 +330,13 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 )
             }
             .recordErrors(on: errorRecorder)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
     }
 
     private func canPerformSend() -> Single<Bool> {
         balance
             .map(\.isPositive)
-            .catchError { [label, asset] error in
+            .catch { [label, asset] error in
                 throw Error.loadingFailed(
                     asset: asset.code,
                     label: label,
@@ -345,6 +345,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 )
             }
             .recordErrors(on: errorRecorder)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
     }
 }

@@ -11,7 +11,7 @@ public final class AssetLineChartUserInteractor: AssetLineChartUserInteracting, 
     public var state: Observable<AssetLineChartInteractionState> {
         _ = setup
         return stateRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .asObservable()
     }
 

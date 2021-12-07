@@ -186,7 +186,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
                 self.bridge
                     .buildCandidate(with: proposal)
-                    .catchError { error -> Single<BitcoinChainTransactionCandidate<Token>> in
+                    .catch { error -> Single<BitcoinChainTransactionCandidate<Token>> in
                         let candidate: BitcoinChainTransactionCandidate<Token>
                         switch error {
                         case BitcoinChainTransactionError.noUnspentOutputs(let finalFee, let sweepAmount, let sweepFee),

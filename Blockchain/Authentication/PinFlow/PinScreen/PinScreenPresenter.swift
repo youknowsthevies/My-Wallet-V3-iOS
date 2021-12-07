@@ -116,7 +116,7 @@ final class PinScreenPresenter {
     /// When `true`, the the presenter is pending for an update from the interactor
     var isProcessing: Observable<Bool> {
         isProcessingRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     var serverStatusRelay = PublishRelay<ServerStatusViewModel>()
@@ -138,14 +138,14 @@ final class PinScreenPresenter {
     private let digitPadIsEnabledRelay = BehaviorRelay<Bool>(value: true)
     var digitPadIsEnabled: Observable<Bool> {
         digitPadIsEnabledRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .distinctUntilChanged()
     }
 
     private let remainingLockTimeMessageRelay = BehaviorRelay<String>(value: "")
     var remainingLockTimeMessage: Observable<String> {
         remainingLockTimeMessageRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     // MARK: Routing
@@ -422,7 +422,7 @@ extension PinScreenPresenter {
         }
 
         biometryProvider.authenticate(reason: .enterWallet)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak digitPadViewModel] _ in
                     // We reset the pin to the value kept by the app settings.
@@ -501,7 +501,7 @@ extension PinScreenPresenter {
             // Create the pin in the remote store
             self.interactor
                 .create(using: payload)
-                .observeOn(MainScheduler.instance)
+                .observe(on: MainScheduler.instance)
                 .do(onDispose: { [weak self] in
                     self?.isProcessingRelay.accept(false)
                 })
@@ -553,7 +553,7 @@ extension PinScreenPresenter {
     /// Invoked when user is authenticating himself using pin or biometrics.
     func authenticatePin() -> Completable {
         verify()
-            .observeOn(verificationQueue)
+            .observe(on: verificationQueue)
             .flatMap(weak: self) { (self, pinDecryptionKey) -> Single<String> in
                 self.backupOrRestoreCredentials(pinDecryptionKey: pinDecryptionKey)
                     .andThen(.just(pinDecryptionKey))
@@ -561,7 +561,7 @@ extension PinScreenPresenter {
             .flatMapCompletable(weak: self) { (self, pinDecryptionKey) -> Completable in
                 self.authenticatePin(pinDecryptionKey: pinDecryptionKey)
             }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     /// Invoked during Pin Authentication.
@@ -601,7 +601,7 @@ extension PinScreenPresenter {
                 )
                 .asCompletable()
                 // Ignore any error regading restoring from iCloud
-                .catchError { _ in .empty() }
+                .catch { _ in .empty() }
         }
     }
 
@@ -666,7 +666,7 @@ extension PinScreenPresenter {
 
         // Ask the interactor to validate the payload
         return interactor.validate(using: payload)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 }
 

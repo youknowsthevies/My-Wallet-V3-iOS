@@ -44,7 +44,7 @@ extension CryptoNonCustodialAccount {
         return Single
             .zip(isEligible, isFunded)
             .map { $0 && $1 }
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
     }
 
     /// The `OrderDirection` for which an `CryptoNonCustodialAccount` could have custodial events.

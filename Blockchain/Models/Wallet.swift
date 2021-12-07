@@ -38,7 +38,7 @@ extension Wallet {
             observer(.completed)
             return Disposables.create()
         }
-        .subscribeOn(MainScheduler.asyncInstance)
+        .subscribe(on: MainScheduler.asyncInstance)
     }
 
     /// Updates an account label.

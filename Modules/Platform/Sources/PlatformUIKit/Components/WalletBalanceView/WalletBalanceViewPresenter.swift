@@ -66,7 +66,7 @@ public final class WalletBalanceViewPresenter {
 
     public var state: Observable<PresentationState> {
         stateRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     var alignment: Driver<UIStackView.Alignment> {

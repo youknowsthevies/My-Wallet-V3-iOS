@@ -75,7 +75,7 @@ final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentabl
             .flatMapLatest(weak: self) { (self, _) -> Observable<Result<FiatValue, Error>> in
                 self.withdrawalService.withdrawal(for: self.checkoutData)
                     .asObservable()
-                    .observeOn(MainScheduler.asyncInstance)
+                    .observe(on: MainScheduler.asyncInstance)
                     .do(onSubscribe: {
                         self.router?.route(to: .loading(amount: self.checkoutData.amount))
                     })

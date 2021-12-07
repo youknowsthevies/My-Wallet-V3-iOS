@@ -78,7 +78,7 @@ class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletA
                 }
                 return Disposables.create()
             }
-            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
     }
 
     private func loadDefaultAccount() -> Maybe<WalletAccount> {
@@ -120,6 +120,6 @@ class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletA
             )
             return Disposables.create()
         }
-        .subscribeOn(MainScheduler.asyncInstance)
+        .subscribe(on: MainScheduler.asyncInstance)
     }
 }

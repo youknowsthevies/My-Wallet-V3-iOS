@@ -194,7 +194,7 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
             fees: proposal.fees.toDisplayString(includeSymbol: false)
         )
         return Single.just(())
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .flatMap { _ -> Single<BitcoinChainTransactionCandidate<Token>> in
                 buildCandidate(with: legacyOrderCandidate)
             }
@@ -368,8 +368,8 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .flatMap(weak: self) { (self, secondPassword) -> Single<[BitcoinWalletAccount]> in
                 self.bitcoinWallets(secondPassword: secondPassword)
             }
-            .subscribeOn(MainScheduler.asyncInstance)
-            .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+            .subscribe(on: MainScheduler.asyncInstance)
+            .observe(on: ConcurrentDispatchQueueScheduler(qos: .background))
     }
 
     private func bitcoinWallets(secondPassword: String?) -> Single<[BitcoinWalletAccount]> {

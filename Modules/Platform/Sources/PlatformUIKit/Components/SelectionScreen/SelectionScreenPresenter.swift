@@ -25,14 +25,14 @@ public final class SelectionScreenPresenter {
         Observable.combineLatest(selectionRelay, preselectionSupportedRelay)
             .filter(\.1)
             .compactMap(\.0)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     var selection: Observable<Int> {
         Observable.combineLatest(selectionRelay, preselectionSupportedRelay)
             .filter { !$0.1 }
             .compactMap(\.0)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     let dismissRelay = PublishRelay<Void>()

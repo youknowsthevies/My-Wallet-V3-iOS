@@ -24,7 +24,7 @@ extension Wallet: MnemonicAccessAPI {
 
     public func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
         Single.just(())
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .flatMap(weak: self) { (self, _) -> Single<Mnemonic> in
                 var secondPassword = secondPassword
                 if secondPassword?.isEmpty == true {
@@ -42,7 +42,7 @@ extension Wallet: MnemonicAccessAPI {
 
     public var mnemonic: Maybe<Mnemonic> {
         Maybe.just(())
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .flatMap(weak: self) { (self, _) -> Maybe<Mnemonic> in
                 guard !self.needsSecondPassword() else {
                     return Maybe.empty()

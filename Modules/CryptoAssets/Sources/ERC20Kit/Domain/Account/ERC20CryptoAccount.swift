@@ -100,13 +100,13 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                 response
                     .map(\.activityItemEvent)
             }
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     private var swapActivity: Single<[SwapActivityItemEvent]> {
         swapTransactionsService
             .fetchActivity(cryptoCurrency: asset, directions: custodialDirections)
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     /// Stream a boolean indicating if this ERC20 token has ever been transacted,
@@ -165,7 +165,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             .map { [asset] pairs in
                 pairs.cryptoCurrencySet.contains(asset)
             }
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {

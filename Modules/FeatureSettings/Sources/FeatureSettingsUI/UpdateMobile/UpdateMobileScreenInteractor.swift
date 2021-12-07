@@ -49,7 +49,7 @@ final class UpdateMobileScreenInteractor {
                     .andThen(Observable.just(()))
             }
             .map { _ in .complete }
-            .catchErrorJustReturn(.failed)
+            .catchAndReturn(.failed)
             .bindAndCatch(to: interactionStateRelay)
             .disposed(by: disposeBag)
     }

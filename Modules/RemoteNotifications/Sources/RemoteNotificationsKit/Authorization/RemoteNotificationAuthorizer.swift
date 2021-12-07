@@ -106,7 +106,7 @@ extension RemoteNotificationAuthorizer: RemoteNotificationRegistering {
                 }
                 return ()
             }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .do(
                 onSuccess: { [unowned application] _ in
                     application.registerForRemoteNotifications()
@@ -130,11 +130,11 @@ extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequestin
                 }
                 return ()
             }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .flatMap(weak: self) { (self, _) -> Single<Void> in
                 self.requestAuthorization()
             }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .do(
                 onSuccess: { [unowned application] _ in
                     application.registerForRemoteNotifications()

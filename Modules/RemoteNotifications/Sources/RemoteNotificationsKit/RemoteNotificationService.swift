@@ -101,7 +101,7 @@ extension RemoteNotificationService: RemoteNotificationDeviceTokenReceiving {
         // Send the token
         sendTokenIfNeeded()
             .subscribe(
-                onError: { error in
+                onFailure: { error in
                     Logger.shared.error("Remote notification token could not be sent to the backend. received error: \(error)")
                 }
             )

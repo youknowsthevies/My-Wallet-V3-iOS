@@ -16,7 +16,7 @@ final class StellarAsset: CryptoAsset {
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
         Single.just(())
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .flatMap(weak: self) { (self, _) -> Maybe<StellarWalletAccount> in
                 self.accountRepository.initializeMetadataMaybe()
             }

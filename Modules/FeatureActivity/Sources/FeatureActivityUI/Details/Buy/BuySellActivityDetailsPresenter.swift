@@ -210,7 +210,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             interactor
                 .fetchCardDetails(for: paymentMethodId)
                 .asObservable()
-                .catchErrorJustReturn(nil)
+                .catchAndReturn(nil)
                 .bindAndCatch(to: cardDataRelay)
                 .disposed(by: disposeBag)
         }

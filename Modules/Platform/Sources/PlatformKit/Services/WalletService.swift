@@ -49,7 +49,7 @@ class WalletService: WalletOptionsAPI {
                 return nil
             }
         }
-        .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+        .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
     }
 
     // TODO: Re-enable this once we have isolated the source of the crash

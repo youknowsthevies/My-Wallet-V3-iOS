@@ -15,7 +15,7 @@ final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI 
             .tiers
             .asSingle()
             .map(\.isTier2Approved)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
     }
 
     init(

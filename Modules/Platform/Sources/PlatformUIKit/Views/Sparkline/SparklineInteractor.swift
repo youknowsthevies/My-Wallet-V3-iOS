@@ -28,7 +28,7 @@ public class SparklineInteractor: SparklineInteracting {
                     return .value(prices)
                 }
             }
-            .catchErrorJustReturn(.calculating)
+            .catchAndReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }()

@@ -72,7 +72,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
                     beneficiariesRelay?.accept(beneficiaries)
                 }
             )
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
 
         beneficiaries = beneficiariesRelay
             .withLatestFrom(beneficiariesServiceUpdater.shouldRefresh) { ($0, $1) }
@@ -128,7 +128,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
                 linkedBankService.fetchLinkedBanks().asObservable()
             )
             .map(concat(beneficiaries:methodTypes:linkedBanks:))
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     private func deleteBank(by id: String, for accountType: Beneficiary.AccountType) -> Completable {

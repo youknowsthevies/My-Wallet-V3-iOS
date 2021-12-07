@@ -12,6 +12,8 @@ if [ ! -f ".env" ]; then
 	cp .env.default .env
 fi
 
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+
 echo "Running Carthage"
 sh ./scripts/carthage.sh bootstrap --use-ssh --cache-builds --platform iOS --use-xcframeworks --no-use-binaries
 

@@ -56,7 +56,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                         return .loaded(next: states)
                     }
             }
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
