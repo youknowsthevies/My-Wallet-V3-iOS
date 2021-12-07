@@ -9,7 +9,7 @@ final class Wallet {
     var sharedKey: String
     var doubleEncrypted: Bool
     var doublePasswordHash: String?
-    var metadataHDNode: String
+    var metadataHDNode: String?
 
     var options: Options
     var hdWallets: [HDWallet]

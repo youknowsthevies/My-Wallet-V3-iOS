@@ -63,8 +63,8 @@ extension Reducer where State == CoreAppState, Action == CoreAppAction, Environm
                             }
                         }
 
-                case .wallet(.walletFetched(.failure)):
-                    unimplemented("TODO: Provide correct error handling")
+                case .wallet(.walletFetched(.failure(let error))):
+                    unimplemented("TODO: Provide correct error handling: \(error)")
 
                 case .wallet(.fetchWithSecondPassword(let password, let secondPassword)):
                     return environment.walletService

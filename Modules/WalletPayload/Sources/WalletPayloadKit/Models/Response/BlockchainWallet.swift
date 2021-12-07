@@ -7,7 +7,7 @@ struct BlockchainWallet: Equatable, Codable {
     let sharedKey: String
     let doubleEncryption: Bool
     let doublePasswordHash: String?
-    let metadataHDNode: String
+    let metadataHDNode: String?
     let options: Options
     let addresses: [Address]
     let hdWallets: [HDWallet]
