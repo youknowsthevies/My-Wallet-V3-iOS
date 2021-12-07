@@ -65,8 +65,6 @@ extension DependencyContainer {
 
         single { OnboardingSettings() }
 
-        single { InternetReachability() as InternetReachabilityAPI }
-
         factory { () -> OnboardingSettingsAPI in
             let settings: OnboardingSettings = DIKit.resolve()
             return settings as OnboardingSettingsAPI

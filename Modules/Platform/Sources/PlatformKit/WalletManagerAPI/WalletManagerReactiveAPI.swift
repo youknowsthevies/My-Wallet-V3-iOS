@@ -7,9 +7,6 @@ public protocol WalletManagerReactiveAPI {
     /// Reactive method for creating a new wallet account
     var didCreateNewAccount: AnyPublisher<Result<WalletCreation, WalletCreationError>, Never> { get }
 
-    /// Reactive method to notify
-    var walletJSisReady: AnyPublisher<Void, Error> { get }
-
     // MARK: WalletAuthDelegate
 
     /// Reactive wrapper for delegate method `walletDidDecrypt(withSharedKey:guid:)`

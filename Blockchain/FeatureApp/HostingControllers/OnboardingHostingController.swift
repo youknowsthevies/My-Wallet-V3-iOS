@@ -161,35 +161,6 @@ final class OnboardingHostingController: UIViewController {
         return WalletUpgradeViewController(presenter: presenter)
     }
 
-    // MARK: Create Wallet
-
-    private func presentCreateWallet() {
-        let interactor = CreateWalletInteractor()
-        let presenter = RegisterWalletScreenPresenter(
-            interactor: interactor,
-            navBarStyle: .darkContent(),
-            leadingButton: .none,
-            trailingButton: .close
-        )
-        let navigationController = UINavigationController()
-        let cancellable = presenter.webViewLaunchRelay
-            .asObservable()
-            .asPublisher()
-            .ignoreFailure()
-            .sink { [weak webViewService] url in
-                webViewService?.openSafari(url: url, from: navigationController)
-            }
-        let dismissHandler = { [weak viewStore] in
-            viewStore?.send(.createAccountScreenClosed)
-            cancellable.cancel()
-        }
-        let viewController = RegisterWalletViewController(presenter: presenter, dismissHandler: dismissHandler)
-        // disallow swipe down to dismiss
-        viewController.isModalInPresentation = true
-        navigationController.setViewControllers([viewController], animated: false)
-        present(navigationController, animated: true, completion: nil)
-    }
-
     // MARK: Alerts
 
     private func showAlert(type: Onboarding.Alert) {

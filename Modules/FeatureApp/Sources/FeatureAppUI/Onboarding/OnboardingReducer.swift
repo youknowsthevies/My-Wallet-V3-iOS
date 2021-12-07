@@ -25,7 +25,6 @@ public enum Onboarding {
         case welcomeScreen(WelcomeAction)
         case informSecondPasswordDetected
         case forgetWallet
-        case createAccountScreenClosed
     }
 
     public struct State: Equatable {
@@ -122,9 +121,6 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 appSettings: environment.appSettings
             )
         case .pin:
-            return .none
-        case .createAccountScreenClosed:
-            state.walletCreationContext = nil
             return .none
 
         case .welcomeScreen(.route(nil)):

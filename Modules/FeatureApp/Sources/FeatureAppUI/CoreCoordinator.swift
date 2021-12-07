@@ -839,14 +839,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
          .onboarding(.welcomeScreen(.restoreWallet(.resetPassword(.reset(let password))))):
         return Effect(value: .resetPassword(newPassword: password))
 
-    case .onboarding(.createAccountScreenClosed):
-        // cancel any authentication publishers in case the create wallet is closed
-        environment.loadingViewPresenter.hide()
-        return .merge(
-            .cancel(id: WalletCancelations.DecryptId()),
-            .cancel(id: WalletCancelations.AuthenticationId())
-        )
-
     case .onboarding(.walletUpgrade(.completed)):
         return Effect(
             value: CoreAppAction.prepareForLoggedIn
