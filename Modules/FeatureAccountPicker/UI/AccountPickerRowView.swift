@@ -116,10 +116,6 @@ private struct AccountGroupRow<BadgeView: View>: View {
                 }
             }
             .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
-
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(Color(UIColor.lightBorder))
         }
     }
 }
@@ -169,10 +165,6 @@ private struct LinkedBankAccountRow<BadgeView: View, MultiBadgeView: View>: View
                     .padding(.top, 8)
             }
             .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
-
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(Color(UIColor.lightBorder))
         }
     }
 }
@@ -210,10 +202,6 @@ private struct PaymentMethodRow: View {
                 }
             }
             .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
-
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(Color(UIColor.lightBorder))
         }
     }
 }
@@ -275,10 +263,6 @@ private struct SingleAccountRow<
                 multiBadgeView
             }
             .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
-
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(Color(UIColor.lightBorder))
         }
     }
 }

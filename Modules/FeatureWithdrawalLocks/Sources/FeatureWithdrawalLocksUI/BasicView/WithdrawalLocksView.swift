@@ -120,6 +120,8 @@ public struct WithdrawalLocksView: View {
                         .padding()
                     }
                     .navigationRoute(in: store)
+                } else {
+                    EmptyView()
                 }
             }
             .onAppear {
