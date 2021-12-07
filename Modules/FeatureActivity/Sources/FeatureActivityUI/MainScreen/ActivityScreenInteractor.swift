@@ -104,6 +104,8 @@ extension ActivityScreenInteractor.State {
                 switch item {
                 case .buySell(let item):
                     return item.status != .pendingConfirmation && !item.paymentProcessorErrorOccurred
+                case .interest(let item):
+                    return item.type != .unknown
                 default:
                     return true
                 }
