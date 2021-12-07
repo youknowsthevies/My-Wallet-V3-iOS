@@ -74,7 +74,7 @@ final class SwapQuotesEngine {
                 }
                 .startWith(quote)
             }
-            .takeUntil(stopSubject)
+            .take(until: stopSubject)
     }
 
     private func fetchQuote(direction: OrderDirection, pair: OrderPair) -> Single<OrderQuotePayload> {
