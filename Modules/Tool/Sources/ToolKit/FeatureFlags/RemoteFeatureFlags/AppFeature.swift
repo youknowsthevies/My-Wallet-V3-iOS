@@ -78,6 +78,8 @@ public enum AppFeature: Int, CaseIterable {
     // MARK: - Redesign
 
     case redesign
+
+    case fab
 }
 
 extension AppFeature {
@@ -126,6 +128,8 @@ extension AppFeature {
             return "ios_ff_wallet_connect"
         case .redesign:
             return "ios_ff_redesign"
+        case .fab:
+            return "ios_fab_data"
         }
     }
 
@@ -173,6 +177,8 @@ extension AppFeature {
         case .walletConnectEnabled:
             return true
         case .redesign:
+            return true
+        case .fab:
             return true
         }
     }

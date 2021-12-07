@@ -1,6 +1,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import DIKit
 #if canImport(SharedComponentLibrary)
 import SharedComponentLibrary
 #else
@@ -31,8 +32,25 @@ extension RootViewState {
     }
 
     struct FrequentAction: Equatable {
+
         var isOn: Bool = false
         var animate: Bool
+        var data: Data = .init()
+
+        struct Data: Codable, Equatable {
+
+            var list: [Tag.Meme] = [
+                blockchain.ux.user.fab.swap[],
+                blockchain.ux.user.fab.send[],
+                blockchain.ux.user.fab.receive[],
+                blockchain.ux.user.fab.rewards[]
+            ]
+
+            var buttons: [Tag.Meme] = [
+                blockchain.ux.user.fab.sell[],
+                blockchain.ux.user.fab.buy[]
+            ]
+        }
     }
 }
 
@@ -41,6 +59,7 @@ enum RootViewAction: Equatable, NavigationAction, BindableAction {
     case tab(Tab)
     case frequentAction(FrequentAction)
     case binding(BindingAction<RootViewState>)
+    case onAppear
 }
 
 enum RootViewRoute: NavigationRoute {
@@ -64,13 +83,14 @@ enum RootViewRoute: NavigationRoute {
 
 struct RootViewEnvironment: PublishedEnvironment {
     var subject: PassthroughSubject<(state: RootViewState, action: RootViewAction), Never> = .init()
+    var featureFlagsService: FeatureFlagsServiceAPI = resolve()
 }
 
 let rootViewReducer = Reducer<
     RootViewState,
     RootViewAction,
     RootViewEnvironment
-> { state, action, _ in
+> { state, action, environment in
     switch action {
     case .tab(let tab):
         state.tab = tab
@@ -81,6 +101,15 @@ let rootViewReducer = Reducer<
     case .binding(.set(\.$fab.isOn, true)):
         state.fab.animate = false
         return .none
+    case .onAppear:
+        return environment.featureFlagsService.object(
+            for: .remote(.fab),
+            type: RootViewState.FrequentAction.Data.self
+        )
+        .replaceError(with: nil)
+        .compactMap(\.wrapped)
+        .eraseToEffect()
+        .map { .binding(.set(\.$fab.data, $0)) }
     case .route, .binding:
         return .none
     }

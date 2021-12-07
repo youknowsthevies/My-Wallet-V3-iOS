@@ -44,6 +44,11 @@ class Tag: Hashable {
     static func == (lhs: Tag, rhs: Tag) -> Bool {
         lhs._id == rhs._id
     }
+
+    subscript() -> Tag.Meme {
+        // swiftlint:disable force_try
+        try! .init(id: _id)
+    }
 }
 
 extension Tag: CustomStringConvertible {
@@ -71,5 +76,37 @@ extension String {
         split(separator: "_")
             .dropFirst()
             .joined(separator: ".")
+    }
+}
+
+extension Tag {
+
+    class Meme: Equatable, Hashable, Codable {
+
+        public var id: String
+        public var name: String
+
+        public init(id _id: String) throws {
+            id = _id
+            name = _id.split(separator: ".")
+                .last.or(default: "")
+                .string
+        }
+
+        required convenience init(from decoder: Decoder) throws {
+            try self.init(id: String(from: decoder))
+        }
+
+        func encode(to encoder: Encoder) throws {
+            try id.encode(to: encoder)
+        }
+
+        static func == (lhs: Meme, rhs: Meme) -> Bool {
+            lhs.id == rhs.id
+        }
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
     }
 }
