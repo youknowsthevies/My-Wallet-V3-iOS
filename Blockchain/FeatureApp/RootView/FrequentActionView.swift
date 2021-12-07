@@ -7,6 +7,7 @@ import ComponentLibrary
 #endif
 import Localization
 import SwiftUI
+import ToolKit
 
 struct FrequentAction: Hashable, Identifiable {
     var id: Tag { tag }
@@ -72,19 +73,28 @@ extension FrequentAction {
 
 struct FrequentActionView: View {
 
-    private let list: [FrequentAction] = [
-        .swap,
-        .send,
-        .receive,
-        .rewards
-    ]
-
-    private let buttons: [FrequentAction] = [
-        .buy,
-        .sell
-    ]
+    var list: [FrequentAction]
+    var buttons: [FrequentAction]
 
     var action: (FrequentAction) -> Void
+
+    init(
+        list: [FrequentAction] = [
+            .swap,
+            .send,
+            .receive,
+            .rewards
+        ],
+        buttons: [FrequentAction] = [
+            .buy,
+            .sell
+        ],
+        action: @escaping (FrequentAction) -> Void
+    ) {
+        self.list = list
+        self.buttons = buttons
+        self.action = action
+    }
 
     var body: some View {
         ForEach(list.indexed(), id: \.element) { index, item in
@@ -109,9 +119,9 @@ struct FrequentActionView: View {
             }
         }
         HStack(spacing: 8.pt) {
-            ForEach(buttons.indexed(), id: \.element) { index, button in
-                switch index {
-                case buttons.startIndex:
+            ForEach(buttons) { button in
+                switch button.tag {
+                case blockchain.ux.user.fab.buy:
                     PrimaryButton(
                         title: button.name,
                         action: { action(button) }
@@ -126,5 +136,39 @@ struct FrequentActionView: View {
         }
         .padding([.top, .bottom])
         .padding([.leading, .trailing], 24.pt)
+    }
+}
+
+extension FrequentActionView {
+
+    init(
+        list: [Tag.Meme],
+        buttons: [Tag.Meme],
+        action: @escaping (FrequentAction) -> Void
+    ) {
+        self.init(
+            list: list.compactMap(My.data),
+            buttons: buttons.compactMap(My.data),
+            action: action
+        )
+    }
+
+    private static func data(_ tag: Tag.Meme) -> FrequentAction? {
+        switch tag {
+        case blockchain.ux.user.fab.buy[]:
+            return .buy
+        case blockchain.ux.user.fab.sell[]:
+            return .sell
+        case blockchain.ux.user.fab.swap[]:
+            return .swap
+        case blockchain.ux.user.fab.send[]:
+            return .send
+        case blockchain.ux.user.fab.receive[]:
+            return .receive
+        case blockchain.ux.user.fab.rewards[]:
+            return .rewards
+        default:
+            return nil
+        }
     }
 }

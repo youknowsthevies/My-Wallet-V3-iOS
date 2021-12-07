@@ -80,6 +80,9 @@ struct RootView: View {
                     ActivityView()
                 }
             }
+            .onAppear {
+                viewStore.send(.onAppear)
+            }
             .overlay(
                 FloatingActionButton(isOn: viewStore.binding(\.$fab.isOn))
                     .identity(blockchain.ux.user.fab)
@@ -97,7 +100,10 @@ struct RootView: View {
             )
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .bottomSheet(isPresented: viewStore.binding(\.$fab.isOn)) {
-                FrequentActionView { action in
+                FrequentActionView(
+                    list: viewStore.fab.data.list,
+                    buttons: viewStore.fab.data.buttons
+                ) { action in
                     viewStore.send(.frequentAction(action))
                 }
             }
