@@ -69,7 +69,10 @@ extension AppFeatureConfigurator: FeatureConfiguratorAPI {
 
 extension AppFeatureConfigurator: FeatureFetching {
 
-    func fetch<Feature: Decodable>(for key: AppFeature) -> AnyPublisher<Feature, FeatureFlagError> {
+    func fetch<Feature: Decodable>(
+        for key: AppFeature,
+        as type: Feature.Type
+    ) -> AnyPublisher<Feature, FeatureFlagError> {
         fetch(for: key).publisher.mapError(FeatureFlagError.decodingError).eraseToAnyPublisher()
     }
 }

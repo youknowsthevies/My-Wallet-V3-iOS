@@ -11,22 +11,10 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            name: "RxSwift",
-            url: "https://github.com/ReactiveX/RxSwift.git",
-            from: "6.2.0"
-        ),
-        .package(
-            name: "RxDataSources",
-            url: "https://github.com/RxSwiftCommunity/RxDataSources.git",
-            from: "5.0.2"
-        ),
-        .package(
             name: "Pulse",
             url: "https://github.com/kean/Pulse.git",
             from: "0.20.0"
         ),
-        .package(path: "../FeatureTransaction"),
-        .package(path: "../Platform"),
         .package(path: "../Tool"),
         .package(path: "../ComponentLibrary")
     ],
@@ -34,12 +22,6 @@ let package = Package(
         .target(
             name: "FeatureDebugUI",
             dependencies: [
-                .product(name: "FeatureTransactionUI", package: "FeatureTransaction"),
-                .product(name: "PlatformKit", package: "Platform"),
-                .product(name: "PlatformUIKit", package: "Platform"),
-                .product(name: "RxCocoa", package: "RxSwift"),
-                .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "RxDataSources", package: "RxDataSources"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "Examples", package: "ComponentLibrary"),
                 .product(name: "PulseUI", package: "Pulse")

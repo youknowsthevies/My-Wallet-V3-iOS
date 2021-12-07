@@ -8,7 +8,7 @@ public struct RootView: View {
     @State var colorScheme: ColorScheme
     @State var layoutDirection: LayoutDirection
 
-    private let data: NavigationLinkProviderList = [
+    private static let data: NavigationLinkProviderList = [
         "1 - Base": [
             NavigationLinkProvider(view: ColorsExamplesView(), title: "🌈 Colors"),
             NavigationLinkProvider(view: TypographyExamplesView(), title: "🔠 Typography"),
@@ -47,9 +47,13 @@ public struct RootView: View {
         _layoutDirection = State(initialValue: layoutDirection)
     }
 
+    public static var content: some View {
+        NavigationLinkProviderView(data: data)
+    }
+
     public var body: some View {
         PrimaryNavigationView {
-            NavigationLinkProviderView(data: data)
+            NavigationLinkProviderView(data: RootView.data)
                 .primaryNavigation(
                     title: "📚 Component Library",
                     isLargeTitle: true
