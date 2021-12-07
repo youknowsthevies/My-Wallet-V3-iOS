@@ -9,4 +9,8 @@ final class NoOpFiatCurrencyPublisher: FiatCurrencyServiceAPI {
     var displayCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
         .just(.USD)
     }
+
+    var tradingCurrencyPublisher: AnyPublisher<FiatCurrency, Never> {
+        .just(.USD)
+    }
 }

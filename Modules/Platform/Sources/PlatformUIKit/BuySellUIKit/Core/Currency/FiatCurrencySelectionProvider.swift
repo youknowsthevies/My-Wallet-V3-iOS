@@ -6,15 +6,17 @@ import PlatformKit
 import RxSwift
 
 public final class FiatCurrencySelectionProvider: FiatCurrencySelectionProviderAPI {
+
     public var currencies: Observable<[FiatCurrency]> {
-        supportedCurrencies.supportedCurrencies
+        supportedCurrencies
+            .supportedFiatCurrencies
             .map { Array($0) }
             .asObservable()
     }
 
-    private let supportedCurrencies: SupportedCurrenciesServiceAPI
+    private let supportedCurrencies: SupportedFiatCurrenciesServiceAPI
 
-    public init(supportedCurrencies: SupportedCurrenciesServiceAPI = resolve()) {
+    public init(supportedCurrencies: SupportedFiatCurrenciesServiceAPI = resolve()) {
         self.supportedCurrencies = supportedCurrencies
     }
 }

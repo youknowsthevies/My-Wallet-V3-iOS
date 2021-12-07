@@ -40,7 +40,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         self.enabledCurrenciesService = enabledCurrenciesService
 
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
-        let fetch = fiatCurrencyService.displayCurrencyPublisher
+        let fetch = fiatCurrencyService.tradingCurrencyPublisher
             .asObservable()
             .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Observable<[PaymentMethod]> in
                 let fetchTiers = tiersService.fetchTiers().asSingle()

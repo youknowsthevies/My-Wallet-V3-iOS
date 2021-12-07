@@ -92,7 +92,6 @@ internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
     ) -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError> {
         // Step 1: Fetch all Crypto Currencies that can be purchased using the passed-in Fiat Currency
         pairsService.fetchPairs(for: .only(fiatCurrency: fiatCurrency))
-            .asPublisher()
             .mapError(CryptoCurrenciesServiceError.other)
             .flatMap { [priceService] data -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError> in
                 // Step 2: Combine each purchasable Crypto Currency with its price data from the last 24h and merge results into a single value

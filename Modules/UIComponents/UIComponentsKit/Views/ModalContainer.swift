@@ -11,13 +11,13 @@ import SwiftUI
 
 public struct ModalContainer<Content: View>: View {
 
-    private let title: String
+    private let title: String?
     private let subtitle: String?
     private let closeAction: () -> Void
     @ViewBuilder private let content: () -> Content
 
     public init(
-        title: String,
+        title: String? = nil,
         subtitle: String? = nil,
         onClose closeAction: @autoclosure @escaping () -> Void,
         @ViewBuilder content: @escaping () -> Content
@@ -30,12 +30,15 @@ public struct ModalContainer<Content: View>: View {
 
     public var body: some View {
         VStack(spacing: .zero) {
-            if subtitle == nil {
-                titleOnlyHeader
-                    .padding(.top, Spacing.padding3)
-            } else {
+            // This is a hack, until we update the few screens we have using the new style of header
+            // Doing this instead of something else not to update anything more than I have to, right now.
+            // TODO: clean up header logic
+            if title == nil || subtitle != nil {
                 closeHandle
                 titleAndSubtitleHeader
+            } else {
+                titleOnlyHeader
+                    .padding(.top, Spacing.padding3)
             }
 
             content()
@@ -57,10 +60,12 @@ public struct ModalContainer<Content: View>: View {
 
     private var titleOnlyHeader: some View {
         HStack(alignment: .top) {
-            Text(title)
-                .typography(.title3)
-                // pad top with the close button size
-                .padding([.top], 12)
+            if let title = title {
+                Text(title)
+                    .typography(.title3)
+                    // pad top with the close button size
+                    .padding([.top], 12)
+            }
 
             Spacer()
 
@@ -85,8 +90,11 @@ public struct ModalContainer<Content: View>: View {
                 .frame(width: 24, height: 24)
             }
             VStack(spacing: Spacing.baseline) {
-                Text(title)
-                    .typography(.title2)
+                if let title = title {
+                    Text(title)
+                        .typography(.title2)
+                }
+
                 if let subtitle = subtitle {
                     Text(subtitle)
                         .typography(.paragraph1)

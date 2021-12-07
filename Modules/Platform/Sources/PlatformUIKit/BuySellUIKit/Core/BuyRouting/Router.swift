@@ -310,9 +310,11 @@ public final class Router: RouterAPI {
                 // TICKET: IOS-3144
                 self.settingsService
                     .update(
-                        currency: currency,
+                        displayCurrency: currency,
                         context: .simpleBuy
                     )
+                    .asSingle()
+                    .asCompletable()
                     .andThen(Single.just(currency))
             }
             .observe(on: MainScheduler.instance)
@@ -368,9 +370,11 @@ public final class Router: RouterAPI {
                 // TICKET: IOS-3144
                 return self.settingsService
                     .update(
-                        currency: currency,
+                        displayCurrency: currency,
                         context: .simpleBuy
                     )
+                    .asSingle()
+                    .asCompletable()
                     .andThen(Single.zip(
                         Single.just(currency),
                         isCurrencySupported
@@ -758,6 +762,7 @@ public final class Router: RouterAPI {
                         from: kycRootViewController
                     )
                 }
+                .disposed(by: kycDisposeBag)
         }
     }
 

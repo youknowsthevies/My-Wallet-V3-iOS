@@ -18,7 +18,7 @@ final class BuyTransactionEngine: TransactionEngine {
 
     // Used to convert fiat <-> crypto when user types an amount (mainly crypto -> fiat)
     let currencyConversionService: CurrencyConversionServiceAPI
-    // Used to convert payment method currencies into the wallet's default currency
+    // Used to convert payment method currencies into the wallet's trading currency
     let walletCurrencyService: FiatCurrencyServiceAPI
 
     // Used to convert the user input into an actual quote with fee (takes a fiat amount)
@@ -73,11 +73,11 @@ final class BuyTransactionEngine: TransactionEngine {
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
         let cryptoCurrency = transactionTarget.currencyType
         return walletCurrencyService
-            .displayCurrencyPublisher
+            .tradingCurrencyPublisher
             .map(\.currencyType)
-            .flatMap { [currencyConversionService] walletCurrency in
+            .flatMap { [currencyConversionService] tradingCurrency in
                 currencyConversionService
-                    .conversionRate(from: cryptoCurrency, to: walletCurrency)
+                    .conversionRate(from: cryptoCurrency, to: tradingCurrency)
                     .map { quote in
                         MoneyValuePair(
                             base: .one(currency: cryptoCurrency),
@@ -307,7 +307,7 @@ extension BuyTransactionEngine {
         guard let destination = transactionTarget as? CryptoAccount else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
-        return convertAmountIntoWalletFiatCurrency(amount)
+        return convertAmountIntoTradingCurrency(amount)
             .flatMap { [sourceAccount, orderQuoteService] fiatValue in
                 orderQuoteService.getQuote(
                     query: QuoteQuery(
@@ -322,7 +322,7 @@ extension BuyTransactionEngine {
             }
     }
 
-    private func convertAmountIntoWalletFiatCurrency(_ amount: MoneyValue) -> Single<FiatValue> {
+    private func convertAmountIntoTradingCurrency(_ amount: MoneyValue) -> Single<FiatValue> {
         fiatExchangeRatePairsSingle
             .map { moneyPair in
                 guard !amount.isFiat else {
