@@ -27,18 +27,10 @@ public enum InternalFeature: String, CaseIterable {
     /// New Quote Endpoint
     case newQuoteModelForBuy
 
-    /// OpenBanking
-    case openBanking
-
-    /// Redesign
-    case redesign
-
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .newOnboardingTour,
-             .openBanking,
-             .redesign:
+        case .newOnboardingTour:
             return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
@@ -74,10 +66,6 @@ extension InternalFeature {
             return "Native Wallet Payload"
         case .newQuoteModelForBuy:
             return "New Quote Model for Buy"
-        case .openBanking:
-            return "Open Banking"
-        case .redesign:
-            return "Redesign"
         }
     }
 }
