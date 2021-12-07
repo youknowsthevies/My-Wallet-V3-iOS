@@ -3,6 +3,7 @@
 import BitcoinChainKit
 import BitcoinKit
 import DIKit
+import FeatureAppUI
 import FeatureTransactionDomain
 import JavaScriptCore
 import MoneyKit

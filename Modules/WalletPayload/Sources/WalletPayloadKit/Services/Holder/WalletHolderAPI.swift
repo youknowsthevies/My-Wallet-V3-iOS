@@ -20,7 +20,7 @@ protocol WalletHolderAPI {
 protocol InMemoryWalletProviderAPI {
 
     /// Returns a `Wallet` object if it exists, otherwise `nil`
-    func provideWallet() -> WalletState?
+    func provideWalletState() -> WalletState?
 }
 
 /// Types adopting `ReleasableWalletAPI` should be able to release a previous initialized `Wallet` object

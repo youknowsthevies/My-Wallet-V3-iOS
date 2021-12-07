@@ -126,7 +126,14 @@ extension DependencyContainer {
 
         factory { CustomerSupportChatRouter() as CustomerSupportChatRouterAPI }
 
-        single { SecondPasswordPrompter() as SecondPasswordPromptable }
+        single { () -> SecondPasswordPromptable in
+            SecondPasswordPrompter(
+                secondPasswordStore: DIKit.resolve(),
+                secondPasswordPrompterHelper: DIKit.resolve(),
+                secondPasswordService: DIKit.resolve(),
+                nativeWalletEnabled: { nativeWalletFlagEnabled() }
+            )
+        }
 
         single { SecondPasswordStore() as SecondPasswordStorable }
 

@@ -3,7 +3,7 @@
 import Foundation
 
 /// A type of password screen
-enum PasswordScreenType {
+public enum PasswordScreenType {
     case login
     case importPrivateKey
     case actionRequiresPassword

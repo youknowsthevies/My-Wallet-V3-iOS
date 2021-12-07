@@ -5,6 +5,7 @@ import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
+import FeatureAppUI
 import Foundation
 import JavaScriptCore
 import PlatformKit

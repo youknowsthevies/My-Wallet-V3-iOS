@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import PlatformUIKit
 import RxRelay
@@ -48,6 +49,7 @@ final class PasswordScreenPresenter {
     private let stateReducer = FormPresentationStateReducer()
     private let stateRelay = BehaviorRelay<FormPresentationState>(value: .invalid(.emptyTextField))
     private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Setup
 
@@ -107,20 +109,27 @@ final class PasswordScreenPresenter {
 
         textFieldViewModel.state
             .compactMap(\.value)
-            .bindAndCatch(to: interactor.passwordRelay)
-            .disposed(by: disposeBag)
+            .asPublisher()
+            .sink(receiveValue: { [interactor] value in
+                interactor.passwordRelay.value = value
+            })
+            .store(in: &cancellables)
 
         buttonViewModel.tapRelay
-            .bind { [unowned self] in
-                if self.interactor.isValid {
+            .asPublisher()
+            .flatMap { [interactor] _ -> AnyPublisher<Bool, Never> in
+                interactor.isValid
+            }
+            .sink(receiveValue: { [alertPresenter] isValid in
+                if isValid {
                     confirmHandler(interactor.passwordRelay.value)
                 } else {
-                    self.alertPresenter.standardError(
+                    alertPresenter.standardError(
                         message: LocalizationConstants.Authentication.secondPasswordIncorrect
                     )
                 }
-            }
-            .disposed(by: disposeBag)
+            })
+            .store(in: &cancellables)
     }
 
     func navigationBarLeadingButtonPressed() {

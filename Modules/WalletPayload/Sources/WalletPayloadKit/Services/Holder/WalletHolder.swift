@@ -48,7 +48,7 @@ final class WalletHolder: WalletHolderAPI, InMemoryWalletProviderAPI, Releasable
 
     private(set) var walletState = Atomic<WalletState?>(nil)
 
-    func provideWallet() -> WalletState? {
+    func provideWalletState() -> WalletState? {
         walletState.value
     }
 

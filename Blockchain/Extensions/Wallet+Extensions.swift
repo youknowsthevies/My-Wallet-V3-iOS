@@ -5,6 +5,8 @@ import PlatformKit
 import RxSwift
 import StellarKit
 
+import FeatureAppUI
+
 /// `MnemonicAccessAPI` is part of the `bridge` that is used when injecting the `wallet` into
 /// a `WalletAccountRepository`. This is how we check if the user needs to enter their
 /// secondary password if their wallet is double encrypted.

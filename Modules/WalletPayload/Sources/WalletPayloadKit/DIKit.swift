@@ -47,6 +47,10 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> SecondPasswordServiceAPI in
+            SecondPasswordService(walletHolder: DIKit.resolve())
+        }
+
         factory { () -> ReleasableWalletAPI in
             let holder: WalletHolder = DIKit.resolve()
             return holder as ReleasableWalletAPI

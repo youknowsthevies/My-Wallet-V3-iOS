@@ -101,7 +101,7 @@ final class MainAppReducerTests: XCTestCase {
 
         mockWalletService = WalletService(
             fetch: { _ in .empty() },
-            refetch: { _, _ in .empty() }
+            fetchUsingSecPassword: { _, _ in .empty() }
         )
 
         testStore = TestStore(
@@ -135,6 +135,7 @@ final class MainAppReducerTests: XCTestCase {
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 appStoreOpener: mockAppStoreOpener,
                 walletService: mockWalletService,
+                secondPasswordPrompter: SecondPasswordPromptableMock(),
                 buildVersionProvider: { "" }
             )
         )
