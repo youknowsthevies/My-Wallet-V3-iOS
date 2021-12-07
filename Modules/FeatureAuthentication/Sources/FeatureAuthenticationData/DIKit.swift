@@ -54,6 +54,16 @@ extension DependencyContainer {
 
         factory { RemoteSessionTokenRepository() as RemoteSessionTokenRepositoryAPI }
 
+        factory { RemoteGuidRepository() as RemoteGuidRepositoryAPI }
+
+        factory { AutoWalletPairingRepository() as AutoWalletPairingRepositoryAPI }
+
+        factory { TwoFAWalletRepository() as TwoFAWalletRepositoryAPI }
+
+        factory { WalletPayloadRepository() as WalletPayloadRepositoryAPI }
+
+        factory { SMSRepository() as SMSRepositoryAPI }
+
         factory { MobileAuthSyncRepository() as MobileAuthSyncRepositoryAPI }
 
         factory { PushNotificationsRepository() as PushNotificationsRepositoryAPI }

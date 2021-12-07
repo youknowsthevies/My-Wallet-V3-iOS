@@ -389,6 +389,30 @@ extension LocalizationConstants.FeatureAuthentication {
         }
     }
 
+    // MARK: - Second Password
+
+    public enum SecondPasswordScreen {
+        public static let title = NSLocalizedString(
+            "Second Password Detected",
+            comment: "Second Password Screen main title"
+        )
+
+        public static let description = NSLocalizedString(
+            "We’re moving away from 2nd passwords.\nTo use the mobile app, log in on web to enable 2FA.",
+            comment: "Second Password Screen description"
+        )
+
+        public static let learnMore = NSLocalizedString(
+            "Learn More",
+            comment: "Second Password Screen learn more text link"
+        )
+
+        public static let loginOnWebButtonTitle = NSLocalizedString(
+            "Log In with Browser",
+            comment: "Second Password Screen button link"
+        )
+    }
+
     // MARK: - Import Wallet
 
     public enum ImportWallet {

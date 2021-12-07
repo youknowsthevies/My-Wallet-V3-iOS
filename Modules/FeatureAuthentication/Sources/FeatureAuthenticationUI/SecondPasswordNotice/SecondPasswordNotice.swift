@@ -53,7 +53,7 @@ let secondPasswordNoticeReducer = Reducer<
 
 public struct SecondPasswordNoticeView: View {
 
-    private typealias LocalizedConstants = LocalizationConstants.SecondPasswordScreen
+    private typealias LocalizedConstants = LocalizationConstants.FeatureAuthentication.SecondPasswordScreen
     private typealias AccessibilityIdentifier = AccessibilityIdentifiers.SecondPasswordScreen
 
     private enum Layout {

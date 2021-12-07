@@ -505,13 +505,18 @@ extension DependencyContainer {
 
         factory { () -> AutoWalletPairingServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return AutoWalletPairingService(repository: manager.repository) as AutoWalletPairingServiceAPI
+            return AutoWalletPairingService(
+                walletPayloadService: DIKit.resolve(),
+                walletPairingRepository: DIKit.resolve(),
+                walletCryptoService: DIKit.resolve(),
+                parsingService: DIKit.resolve()
+            ) as AutoWalletPairingServiceAPI
         }
 
         factory { () -> GuidServiceAPI in
             GuidService(
                 sessionTokenRepository: DIKit.resolve(),
-                client: DIKit.resolve()
+                guidRepository: DIKit.resolve()
             )
         }
 
@@ -523,7 +528,7 @@ extension DependencyContainer {
 
         factory { () -> SMSServiceAPI in
             SMSService(
-                client: DIKit.resolve(),
+                smsRepository: DIKit.resolve(),
                 credentialsRepository: DIKit.resolve(),
                 sessionTokenRepository: DIKit.resolve()
             )
@@ -532,8 +537,8 @@ extension DependencyContainer {
         factory { () -> TwoFAWalletServiceAPI in
             let manager: WalletManager = DIKit.resolve()
             return TwoFAWalletService(
-                client: DIKit.resolve(),
-                repository: manager.repository,
+                repository: DIKit.resolve(),
+                walletRepository: manager.repository,
                 walletRepo: DIKit.resolve(),
                 nativeWalletFlagEnabled: { nativeWalletFlagEnabled() }
             )
@@ -542,8 +547,8 @@ extension DependencyContainer {
         factory { () -> WalletPayloadServiceAPI in
             let manager: WalletManager = DIKit.resolve()
             return WalletPayloadService(
-                client: DIKit.resolve(),
-                repository: manager.repository,
+                repository: DIKit.resolve(),
+                walletRepository: manager.repository,
                 walletRepo: DIKit.resolve(),
                 nativeWalletEnabledUse: nativeWalletEnabledUseImpl
             )
