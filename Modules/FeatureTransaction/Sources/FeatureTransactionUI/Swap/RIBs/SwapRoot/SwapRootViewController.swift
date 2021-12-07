@@ -26,20 +26,25 @@ extension SwapRootViewControllable {
 
 final class SwapRootViewController: UINavigationController, SwapRootViewControllable {
 
-    private let topMostViewControllerProvider: TopMostViewControllerProviding
     weak var listener: SwapRootListener?
 
-    @LazyInject var featureFlagsService: InternalFeatureFlagServiceAPI
+    private let topMostViewControllerProvider: TopMostViewControllerProviding
+    private var hideNavigationBar: Bool = false
+    private var hideNavigationBarSubscription: AnyCancellable?
+
+    @LazyInject var featureFlagsService: FeatureFlagsServiceAPI
 
     init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         super.init(nibName: nil, bundle: nil)
         view.backgroundColor = .white
+        hideNavigationBarSubscription = featureFlagsService.isEnabled(.remote(.redesign))
+            .assign(to: \.hideNavigationBar, on: self)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        setNavigationBarHidden(featureFlagsService.isEnabled(.redesign), animated: false)
+        setNavigationBarHidden(hideNavigationBar, animated: false)
     }
 
     @available(*, unavailable)

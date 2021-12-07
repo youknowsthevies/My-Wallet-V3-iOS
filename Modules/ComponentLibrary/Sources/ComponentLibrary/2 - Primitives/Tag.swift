@@ -9,11 +9,6 @@ import SwiftUI
 /// [Tag](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=212%3A5974)
 public struct Tag: View {
 
-    public enum Size: Equatable {
-        case small
-        case large
-    }
-
     private let text: String
     private let variant: Variant
     private let size: Size
@@ -30,10 +25,9 @@ public struct Tag: View {
 
     public var body: some View {
         Text(text)
-            .typography(.caption2)
+            .typography(size.typography)
             .foregroundColor(variant.textColor)
-            .padding(.horizontal, size == .small ? 6 : 12)
-            .padding(.vertical, size == .small ? 4 : 6)
+            .padding(size.padding)
             .background(
                 RoundedRectangle(cornerRadius: 4)
                     .fill(variant.backgroundColor)
@@ -45,33 +39,56 @@ public struct Tag: View {
         fileprivate let backgroundColor: Color
         fileprivate let textColor: Color
     }
+
+    /// Size variant for Tag
+    public struct Size {
+        fileprivate let typography: Typography
+        fileprivate let padding: EdgeInsets
+    }
+}
+
+extension Tag.Size {
+
+    /// .caption2, padding 8x4
+    public static let small = Self(
+        typography: .caption2,
+        padding: EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
+    )
+
+    /// .paragraph2, padding 12x6
+    public static let large = Self(
+        typography: .paragraph2,
+        padding: EdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12)
+    )
 }
 
 extension Tag.Variant {
+
+    /// default
     public static let `default` = Tag.Variant(
         backgroundColor: .init(light: .semantic.light, dark: .palette.dark600),
         textColor: .init(light: .semantic.title, dark: .semantic.title)
     )
 
-    // infoalt
+    /// infoalt
     public static let infoAlt = Tag.Variant(
         backgroundColor: .init(light: .palette.blue000, dark: .palette.dark600),
         textColor: .init(light: .semantic.primary, dark: .semantic.primary)
     )
 
-    // success
+    /// success
     public static let success = Tag.Variant(
         backgroundColor: .init(light: .palette.green100, dark: .semantic.success),
         textColor: .init(light: .semantic.success, dark: .palette.dark900)
     )
 
-    // warning
+    /// warning
     public static let warning = Tag.Variant(
         backgroundColor: .init(light: .palette.orange100, dark: .semantic.warning),
         textColor: .init(light: .palette.orange600, dark: .palette.dark900)
     )
 
-    // error
+    /// error
     public static let error = Tag.Variant(
         backgroundColor: .init(light: .palette.red100, dark: .semantic.error),
         textColor: .init(light: .semantic.error, dark: .palette.dark900)
