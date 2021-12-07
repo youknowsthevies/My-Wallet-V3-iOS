@@ -278,3 +278,11 @@ extension OnboardingHostingController {
         present(alertController, animated: true)
     }
 }
+
+extension OnboardingHostingController {
+    override public var childForStatusBarStyle: UIViewController? { currentController }
+    override public var childForStatusBarHidden: UIViewController? { currentController }
+    override public var childForHomeIndicatorAutoHidden: UIViewController? { currentController }
+    override public var childForScreenEdgesDeferringSystemGestures: UIViewController? { currentController }
+    override public var childViewControllerForPointerLock: UIViewController? { currentController }
+}

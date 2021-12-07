@@ -140,3 +140,14 @@ final class AppHostingController: UIViewController {
         alertViewPresenter.notify(content: content, in: self)
     }
 }
+
+extension AppHostingController {
+
+    private var currentController: UIViewController? { loggedInController ?? onboardingController }
+
+    override public var childForStatusBarStyle: UIViewController? { currentController }
+    override public var childForStatusBarHidden: UIViewController? { currentController }
+    override public var childForHomeIndicatorAutoHidden: UIViewController? { currentController }
+    override public var childForScreenEdgesDeferringSystemGestures: UIViewController? { currentController }
+    override public var childViewControllerForPointerLock: UIViewController? { currentController }
+}

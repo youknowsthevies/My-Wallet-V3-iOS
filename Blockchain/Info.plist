@@ -103,10 +103,8 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<true/>
 	<key>siftAccountId</key>
 	<string>$(SIFT_ACCOUNT_ID)</string>
 	<key>siftKey</key>
