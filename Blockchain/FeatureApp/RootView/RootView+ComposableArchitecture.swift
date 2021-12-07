@@ -75,18 +75,8 @@ let rootViewReducer = Reducer<
     case .tab(let tab):
         state.tab = tab
         return .none
-    case .frequentAction(let action):
+    case .frequentAction:
         state.fab.isOn = false
-        switch action {
-        case .buy:
-            state.buyAndSell.segment = 0
-            state.tab = .buyAndSell
-        case .sell:
-            state.buyAndSell.segment = 1
-            state.tab = .buyAndSell
-        default:
-            break
-        }
         return .none
     case .binding(.set(\.$fab.isOn, true)):
         state.fab.animate = false
