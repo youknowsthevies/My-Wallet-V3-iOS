@@ -131,14 +131,18 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
                 let baseValue = MoneyValue.one(currency: sellSourceValue.currency)
                 let sellDestinationValue: MoneyValue = sellSourceValue.convert(using: resultValue)
 
-                let confirmations: [TransactionConfirmation] = [
-                    .sellSourceValue(.init(cryptoValue: sellSourceValue.cryptoValue!)),
-                    .sellDestinationValue(.init(fiatValue: sellDestinationValue.fiatValue!)),
+                var confirmations = [TransactionConfirmation]()
+                if let sellSourceCryptoValue = sellSourceValue.cryptoValue {
+                    confirmations.append(.sellSourceValue(.init(cryptoValue: sellSourceCryptoValue)))
+                }
+                if let sellDestinationFiatValue = sellDestinationValue.fiatValue {
+                    confirmations.append(.sellDestinationValue(.init(fiatValue: sellDestinationFiatValue)))
+                }
+                confirmations += [
                     .sellExchangeRateValue(.init(baseValue: baseValue, resultValue: resultValue)),
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label))
                 ]
-
                 let updatedTransaction = pendingTransaction.update(confirmations: confirmations)
                 return (updatedTransaction, pricedQuote)
             }
