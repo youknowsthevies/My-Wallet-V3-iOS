@@ -1,0 +1,45 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
+import Combine
+import Foundation
+import NetworkError
+
+typealias LoadRemoteMetadata =
+    (MetadataNode) -> AnyPublisher<String, LoadRemoteMetadataError>
+
+public enum LoadRemoteMetadataError: Error {
+    case notYetCreated
+    case networkError(NetworkError)
+    case decryptionFailed(DecryptMetadataError)
+}
+
+func loadRemoteMetadata(
+    fetchMetadataEntry: @escaping FetchMetadataEntry
+) -> LoadRemoteMetadata {
+    { metadataNode in
+        loadRemoteMetadata(
+            metadataNode: metadataNode,
+            fetchMetadataEntry: fetchMetadataEntry
+        )
+    }
+}
+
+private func loadRemoteMetadata(
+    metadataNode: MetadataNode,
+    fetchMetadataEntry: FetchMetadataEntry
+) -> AnyPublisher<String, LoadRemoteMetadataError> {
+    fetchMetadataEntry(metadataNode.address)
+        .catch { networkError -> AnyPublisher<MetadataPayload, LoadRemoteMetadataError> in
+            guard networkError.is404 else {
+                return .failure(.networkError(networkError))
+            }
+            return .failure(.notYetCreated)
+        }
+        .flatMap { metadataPayload -> AnyPublisher<String, LoadRemoteMetadataError> in
+            decryptMetadata(metadata: metadataNode, payload: metadataPayload.payload)
+                .publisher
+                .mapError(LoadRemoteMetadataError.decryptionFailed)
+                .eraseToAnyPublisher()
+        }
+        .eraseToAnyPublisher()
+}

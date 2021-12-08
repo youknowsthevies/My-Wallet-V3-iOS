@@ -11,6 +11,10 @@ let package = Package(
         .library(
             name: "MetadataKit",
             targets: ["MetadataKit"]
+        ),
+        .library(
+            name: "MetadataDataKit",
+            targets: ["MetadataDataKit"]
         )
     ],
     dependencies: [
@@ -55,6 +59,7 @@ let package = Package(
             name: "MetadataKitTests",
             dependencies: [
                 "MetadataKit",
+                "MetadataDataKit",
                 .product(name: "MetadataHDWalletKit", package: "MetadataHDWalletKit"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "TestKit", package: "Test"),
@@ -62,7 +67,16 @@ let package = Package(
                 .product(name: "NetworkError", package: "NetworkErrors")
             ],
             resources: [
-                .copy("Fixtures/Entries/Ethereum/ethereum_entry.json")
+                .copy("Fixtures/Entries/Ethereum/ethereum_entry.json"),
+                .copy("Fixtures/MetadataResponse/root_metadata_response.json")
+            ]
+        ),
+        .target(
+            name: "MetadataDataKit",
+            dependencies: [
+                "MetadataKit",
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "NetworkKit", package: "Network")
             ]
         )
     ]

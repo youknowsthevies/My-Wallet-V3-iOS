@@ -10,7 +10,13 @@ extension DependencyContainer {
     public static var metadataKit = module {
 
         factory { () -> MetadataServiceAPI in
-            MetadataService()
+            let repository: MetadataRepositoryAPI = DIKit.resolve()
+            let fetch = repository.fetch(at:)
+            return MetadataService(
+                loadMetadata: loadRemoteMetadata(
+                    fetchMetadataEntry: fetch
+                )
+            )
         }
     }
 }

@@ -2,4 +2,7 @@
 
 import Foundation
 
-struct Metadata {}
+public struct SecondPasswordNode: Equatable {
+
+    var metadataNode: MetadataNode
+}

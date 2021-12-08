@@ -447,6 +447,8 @@ targets:
         product: Localization
       - package: Metadata
         product: MetadataKit
+      - package: Metadata
+        product: MetadataDataKit
       - package: Network
         product: NetworkKit
       - package: NetworkErrors
