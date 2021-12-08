@@ -138,7 +138,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             }
 
         return Single.zip(
-            fiatCurrencyService.displayCurrency.asSingle(),
+            fiatCurrencyService.tradingCurrency.asSingle(),
             email,
             ffCardAcquirerTokens
         )
