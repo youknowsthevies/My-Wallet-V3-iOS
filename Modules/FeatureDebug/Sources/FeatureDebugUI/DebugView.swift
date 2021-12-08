@@ -4,12 +4,9 @@ import Algorithms
 import ComponentLibrary
 import DIKit
 import Examples
+import PulseUI
 import SwiftUI
 import ToolKit
-
-#if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-import PulseUI
-#endif
 
 struct DebugView: View {
 
@@ -40,24 +37,20 @@ struct DebugView: View {
                     ) {
                         PrimaryRow(title: "📚 Component Library")
                     }
-                    #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
                     PrimaryDivider()
                     PrimaryRow(title: "🤖 Pulse")
                         .onTapGesture {
                             pulse = true
                         }
-                    #endif
                 }
                 .background(Color.semantic.background)
             }
             .sheet(isPresented: $pulse) {
-                #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
                 Pulse()
                     .ignoresSafeArea()
                     .onDisappear {
                         pulse = false
                     }
-                #endif
             }
             .primaryNavigation(title: "Debug") {
                 Button(window?.overrideUserInterfaceStyle == .dark ? "☀️" : "🌑") {
@@ -179,7 +172,6 @@ extension DebugView {
         }
     }
 
-    #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
     struct Pulse: UIViewControllerRepresentable {
 
         func makeUIViewController(context: Context) -> some UIViewController {
@@ -189,7 +181,6 @@ extension DebugView {
 
         func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
     }
-    #endif
 }
 
 enum JSON: Codable, Equatable, CustomStringConvertible {
