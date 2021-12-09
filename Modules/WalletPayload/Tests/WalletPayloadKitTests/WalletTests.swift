@@ -23,6 +23,47 @@ class WalletTests: XCTestCase {
         try super.setUpWithError()
     }
 
+    func test_getMnemonic_method_works() throws {
+        let wallet = Wallet(from: blockchainWalletV4)
+
+        let mnemonicResult = getMnemonic(from: wallet)
+
+        let expectedMnemonic = "heart hole empty popular divert win income cute green happy fork gather"
+        switch mnemonicResult {
+        case .success(let mnemonic):
+            XCTAssertEqual(mnemonic, expectedMnemonic)
+        case .failure:
+            XCTFail("should provide a mnemonic")
+        }
+    }
+
+    func test_getMnemonic_method_works_with_double_encrypted_wallets() throws {
+        let wallet = Wallet(from: doubleEncBlockchainWallet)
+
+        let mnemonicResult = getMnemonic(from: wallet, secondPassword: secondPassword)
+
+        let expectedMnemonic = "heart hole empty popular divert win income cute green happy fork gather"
+        switch mnemonicResult {
+        case .success(let mnemonic):
+            XCTAssertEqual(mnemonic, expectedMnemonic)
+        case .failure:
+            XCTFail("should provide a mnemonic")
+        }
+    }
+
+    func test_getMnemonic_method_works_with_double_encrypted_wallets_wrong_password_fails() throws {
+        let wallet = Wallet(from: doubleEncBlockchainWallet)
+
+        let mnemonicResult = getMnemonic(from: wallet, secondPassword: "wrong-pass")
+
+        switch mnemonicResult {
+        case .success:
+            XCTFail("should not success")
+        case .failure(let error):
+            XCTAssertEqual(error, .initialization(.invalidSecondPassword))
+        }
+    }
+
     func test_getSeedHex_method_works() throws {
         // given
         let encryptedWallet = Wallet(from: doubleEncBlockchainWallet)

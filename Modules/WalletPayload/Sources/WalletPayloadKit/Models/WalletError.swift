@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
+import ToolKit
 
 public enum WalletError: LocalizedError, Equatable {
     case unknown
@@ -73,6 +74,7 @@ public enum WalletDecryptionError: LocalizedError, Equatable {
     case decryptionError
     case decodeError(Error)
     case genericDecodeError
+    case hdWalletCreation
 
     public var errorDescription: String? {
         switch self {
@@ -82,6 +84,8 @@ public enum WalletDecryptionError: LocalizedError, Equatable {
             return error.localizedDescription
         case .genericDecodeError:
             return LocalizationConstants.WalletPayloadKit.Error.unknown
+        case .hdWalletCreation:
+            unimplemented("WalletCore failure when creating HDWallet from seedHex")
         }
     }
 

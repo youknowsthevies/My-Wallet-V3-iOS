@@ -2,6 +2,7 @@
 
 import Foundation
 import ToolKit
+import WalletCore
 
 /// The derived Wallet from the response model, `BlockchainWallet`
 final class Wallet {
@@ -31,7 +32,22 @@ final class Wallet {
     }
 }
 
-/// Returns the seedHex from the given wallet
+/// Gets a mnemonic phrase from the given wallet
+/// - Parameters:
+///   - wallet: A `Wallet` value to retrieve the mnemonic from
+///   - secondPassword: A optional `String` representing the second password of the wallet
+/// - Returns: A `Mnemonic` phrase
+func getMnemonic(
+    from wallet: Wallet,
+    secondPassword: String? = nil
+) -> Result<String, WalletError> {
+    getSeedHex(from: wallet, secondPassword: secondPassword)
+        .map(Data.init(hex:))
+        .flatMap(getHDWallet(from:))
+        .map(\.mnemonic)
+}
+
+/// Returns  the seedHex from the given wallet
 /// - Parameters:
 ///   - wallet: A `Wallet` object to retrieve the seedHex
 ///   - secondPassword: An optional String representing the second password
@@ -113,4 +129,31 @@ func isValid(secondPassword: String, wallet: Wallet) -> Bool {
     let sharedKey = wallet.sharedKey
     let computedHash = hashNTimes(iterations: iterations, value: sharedKey + secondPassword)
     return wallet.doublePasswordHash == computedHash
+}
+
+// MARK: Private
+
+/// Gets an HDWallet from the given parameters
+/// - Parameters:
+///   - entropy: A `Data` value representing the entropy for the `HDWallet`
+/// - Returns: A `WalletCore.HDWallet` object
+private func getHDWallet(
+    from entropy: Data
+) -> Result<WalletCore.HDWallet, WalletError> {
+    getHDWallet(from: entropy, passphrase: "")
+}
+
+/// Gets an HDWallet from the given parameters
+/// - Parameters:
+///   - entropy: A `Data` value representing the entropy for the `HDWallet`
+///   - passphrase: An optional `String` if the HDWallet is encrypted
+/// - Returns: A `WalletCore.HDWallet` object
+private func getHDWallet(
+    from entropy: Data,
+    passphrase: String = ""
+) -> Result<WalletCore.HDWallet, WalletError> {
+    guard let hdWallet = WalletCore.HDWallet(entropy: entropy, passphrase: passphrase) else {
+        return .failure(.decryption(.hdWalletCreation))
+    }
+    return .success(hdWallet)
 }
