@@ -67,6 +67,9 @@ public enum AppFeature: Int, CaseIterable {
     /// Enables the new Limits UI in Transaction Flow
     case newLimitsUIEnabled
 
+    /// Enables the new pricing model
+    case newQuoteForSimpleBuy
+
     // MARK: - Account Picker
 
     /// New SwiftUI account picker from `FeatureAccountPicker`
@@ -117,6 +120,8 @@ extension AppFeature {
             return "ios_ff_new_card_acquirers"
         case .newLimitsUIEnabled:
             return "ios_use_new_limits_ui"
+        case .newQuoteForSimpleBuy:
+            return "ios_ff_new_pricing"
         case .swiftUIAccountPicker:
             return "ios_swiftui_account_picker"
         case .walletConnectEnabled:
@@ -164,6 +169,8 @@ extension AppFeature {
         case .openBanking:
             return true
         case .newLimitsUIEnabled:
+            return true
+        case .newQuoteForSimpleBuy:
             return true
         case .swiftUIAccountPicker:
             return true

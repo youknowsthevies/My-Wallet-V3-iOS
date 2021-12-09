@@ -24,9 +24,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables native wallet payload instead of JS
     case nativeWalletPayload
 
-    /// New Quote Endpoint
-    case newQuoteModelForBuy
-
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
@@ -36,8 +33,7 @@ public enum InternalFeature: String, CaseIterable {
              .requestConsoleLogging,
              .secureChannel,
              .unifiedSignIn,
-             .nativeWalletPayload,
-             .newQuoteModelForBuy:
+             .nativeWalletPayload:
             return false
         }
     }
@@ -64,8 +60,6 @@ extension InternalFeature {
             return "Unified Sign In"
         case .nativeWalletPayload:
             return "Native Wallet Payload"
-        case .newQuoteModelForBuy:
-            return "New Quote Model for Buy"
         }
     }
 }
