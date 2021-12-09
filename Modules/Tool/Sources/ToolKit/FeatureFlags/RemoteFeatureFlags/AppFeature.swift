@@ -75,6 +75,11 @@ public enum AppFeature: Int, CaseIterable {
     /// New SwiftUI account picker from `FeatureAccountPicker`
     case swiftUIAccountPicker
 
+    // MARK: - Onboarding
+
+    /// New tour view from `FeatureTour`
+    case newOnboardingTour
+
     // MARK: - Redesign
 
     case redesign
@@ -130,6 +135,8 @@ extension AppFeature {
             return "ios_ff_redesign"
         case .fab:
             return "ios_fab_data"
+        case .newOnboardingTour:
+            return "ios_ff_new_onboarding_tour"
         }
     }
 
@@ -179,6 +186,8 @@ extension AppFeature {
         case .redesign:
             return true
         case .fab:
+            return true
+        case .newOnboardingTour:
             return true
         }
     }
