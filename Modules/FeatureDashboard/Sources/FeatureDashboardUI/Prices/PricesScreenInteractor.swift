@@ -14,7 +14,7 @@ public final class PricesScreenInteractor {
 
     var enabledCryptoCurrencies: Observable<[CryptoCurrency]> {
         showSupportedPairsOnly
-            ? supportedPairsInteractorService.pairs.map(\.cryptoCurrencies)
+            ? supportedPairsInteractorService.fetchSupportedCryptoCurrenciesForTrading()
             : .just(enabledCurrenciesService.allEnabledCryptoCurrencies)
     }
 
