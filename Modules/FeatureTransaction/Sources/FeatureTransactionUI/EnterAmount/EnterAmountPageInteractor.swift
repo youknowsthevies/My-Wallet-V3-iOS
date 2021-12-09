@@ -78,7 +78,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         navigationModel: ScreenNavigationModel,
         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsHook: TransactionAnalyticsHook = resolve(),
-        eventsRecorder: Recording = resolve()
+        eventsRecorder: Recording = resolve(tag: "CrashlyticsRecorder")
     ) {
         self.action = action
         self.transactionModel = transactionModel
