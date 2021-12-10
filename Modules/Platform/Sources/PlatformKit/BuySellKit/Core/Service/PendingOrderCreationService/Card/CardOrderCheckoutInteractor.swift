@@ -63,6 +63,7 @@ public final class CardOrderCheckoutInteractor {
         else {
             return Single.error(InteractionError.outputMustBeCrypto(checkoutData.outputCurrency))
         }
+        let paymentMethod = checkoutData.order.paymentMethod
         return orderQuoteService
             .getQuote(
                 query: QuoteQuery(
@@ -71,7 +72,7 @@ public final class CardOrderCheckoutInteractor {
                     destinationCurrency: cryptoCurrency,
                     amount: MoneyValue(fiatValue: fiat),
                     paymentMethod: checkoutData.order.paymentMethod.rawType,
-                    paymentMethodId: paymentMethodId
+                    paymentMethodId: paymentMethod.isBankTransfer ? paymentMethodId : nil
                 )
             )
             .flatMap(weak: self) { (self, quote) in

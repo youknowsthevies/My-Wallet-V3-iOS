@@ -307,6 +307,8 @@ extension BuyTransactionEngine {
         guard let destination = transactionTarget as? CryptoAccount else {
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
+        let paymentMethod = (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.method
+        let paymentMethodId = (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.id
         return convertAmountIntoTradingCurrency(amount)
             .flatMap { [sourceAccount, orderQuoteService] fiatValue in
                 orderQuoteService.getQuote(
@@ -315,8 +317,10 @@ extension BuyTransactionEngine {
                         sourceCurrency: source.fiatCurrency,
                         destinationCurrency: destination.asset,
                         amount: MoneyValue(fiatValue: fiatValue),
-                        paymentMethod: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.method.rawType,
-                        paymentMethodId: (sourceAccount as? PaymentMethodAccount)?.paymentMethodType.id
+                        paymentMethod: paymentMethod?.rawType,
+                        // the endpoint only accepts paymentMethodId parameter if paymentMethod is bank transfer
+                        // refactor this by gracefully handle at the model level
+                        paymentMethodId: (paymentMethod?.isBankTransfer ?? false) ? paymentMethodId : nil
                     )
                 )
             }

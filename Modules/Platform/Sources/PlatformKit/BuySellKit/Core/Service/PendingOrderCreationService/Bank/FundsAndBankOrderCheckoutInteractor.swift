@@ -53,6 +53,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
         else {
             return Single.error(InteractionError.unsupportedQuoteParameters)
         }
+        let paymentMethod = checkoutData.order.paymentMethod
         let quote = orderQuoteService
             .getQuote(
                 query: QuoteQuery(
@@ -60,8 +61,8 @@ public final class FundsAndBankOrderCheckoutInteractor {
                     sourceCurrency: fiatCurrency,
                     destinationCurrency: cryptoCurrency,
                     amount: MoneyValue(fiatValue: fiat),
-                    paymentMethod: checkoutData.order.paymentMethod.rawType,
-                    paymentMethodId: checkoutData.order.paymentMethodId
+                    paymentMethod: paymentMethod.rawType,
+                    paymentMethodId: paymentMethod.isBankTransfer ? checkoutData.order.paymentMethodId : nil
                 )
             )
 
