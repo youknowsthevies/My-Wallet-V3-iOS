@@ -155,4 +155,9 @@ final class FiatCustodialAccount: FiatAccount {
             }
             .eraseToAnyPublisher()
     }
+
+    func invalidateAccountBalance() {
+        balanceService
+            .invalidateTradingAccountBalances()
+    }
 }

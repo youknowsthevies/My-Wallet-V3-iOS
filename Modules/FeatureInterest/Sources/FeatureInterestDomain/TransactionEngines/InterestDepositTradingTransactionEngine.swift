@@ -219,13 +219,6 @@ public final class InterestDepositTradingTransationEngine: InterestTransactionEn
             .asSingle()
     }
 
-    public func doPostExecute(
-        transactionResult: TransactionResult
-    ) -> Completable {
-        transactionTarget
-            .onTxCompleted(transactionResult)
-    }
-
     public func doUpdateFeeLevel(
         pendingTransaction: PendingTransaction,
         level: FeeLevel,

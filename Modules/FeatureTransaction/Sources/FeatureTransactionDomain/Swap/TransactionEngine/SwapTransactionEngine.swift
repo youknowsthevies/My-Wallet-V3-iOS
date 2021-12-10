@@ -121,10 +121,6 @@ extension SwapTransactionEngine {
         validateAmount(pendingTransaction: pendingTransaction)
     }
 
-    func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        target.onTxCompleted(transactionResult)
-    }
-
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         let quote = quotesEngine.getRate(direction: orderDirection, pair: pair)
             .take(1)

@@ -347,4 +347,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .recordErrors(on: errorRecorder)
             .catchAndReturn(false)
     }
+
+    public func invalidateAccountBalance() {
+        balanceService
+            .invalidateTradingAccountBalances()
+    }
 }

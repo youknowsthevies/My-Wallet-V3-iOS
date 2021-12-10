@@ -113,10 +113,6 @@ final class FiatDepositTransactionEngine: TransactionEngine {
             .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
     }
 
-    func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        .just(event: .completed)
-    }
-
     func doUpdateFeeLevel(
         pendingTransaction: PendingTransaction,
         level: FeeLevel,

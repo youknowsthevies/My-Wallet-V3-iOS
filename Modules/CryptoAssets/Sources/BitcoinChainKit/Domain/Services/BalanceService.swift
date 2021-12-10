@@ -8,6 +8,11 @@ import ToolKit
 
 public protocol BalanceServiceAPI {
 
+    /// Invalidates the balance cache for a given `XPub`.
+    /// After a transaction completes we want to invalidate the balance
+    /// cache to ensure all views show the latest balance.
+    func invalidateBalanceForWallet(_ wallet: XPub)
+
     func balance(for wallet: XPub) -> AnyPublisher<CryptoValue, Error>
 
     func balances(for wallets: [XPub]) -> AnyPublisher<CryptoValue, Error>
@@ -48,6 +53,10 @@ final class BalanceService: BalanceServiceAPI {
     }
 
     // MARK: - BalanceServiceAPI
+
+    func invalidateBalanceForWallet(_ wallet: XPub) {
+        cachedValue.invalidateCacheWithKey([wallet])
+    }
 
     func balance(for wallet: XPub) -> AnyPublisher<CryptoValue, Error> {
         balances(for: [wallet])

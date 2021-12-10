@@ -157,10 +157,6 @@ final class WalletConnectRawTrasactionEngine: TransactionEngine {
             .asSingle()
     }
 
-    func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        transactionTarget.onTxCompleted(transactionResult)
-    }
-
     func doUpdateFeeLevel(
         pendingTransaction: PendingTransaction,
         level: FeeLevel,

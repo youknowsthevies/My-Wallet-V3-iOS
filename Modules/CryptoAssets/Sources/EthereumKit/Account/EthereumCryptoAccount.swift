@@ -171,4 +171,8 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     func updateLabel(_ newLabel: String) -> Completable {
         bridge.update(accountIndex: hdAccountIndex, label: newLabel)
     }
+
+    func invalidateAccountBalance() {
+        accountDetailsService.invalidateEthereumAccountDetails()
+    }
 }

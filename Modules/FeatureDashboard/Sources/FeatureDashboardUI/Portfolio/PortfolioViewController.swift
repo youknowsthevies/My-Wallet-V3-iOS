@@ -58,6 +58,10 @@ public final class PortfolioViewController: BaseScreenViewController {
         presenter.setup()
         tableView.reloadData()
         presenter.refreshRelay.accept(())
+
+        NotificationCenter.when(.transaction) { [weak self] _ in
+            self?.presenter.refreshRelay.accept(())
+        }
     }
 
     override public func viewWillAppear(_ animated: Bool) {

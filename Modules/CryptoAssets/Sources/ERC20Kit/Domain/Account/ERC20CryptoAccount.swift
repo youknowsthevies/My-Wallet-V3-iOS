@@ -207,4 +207,10 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
             }
             .eraseToAnyPublisher()
     }
+
+    func invalidateAccountBalance() {
+        erc20TokenAccountsRepository.invalidateERC20TokenAccountsForAddress(
+            EthereumAddress(address: publicKey)!
+        )
+    }
 }

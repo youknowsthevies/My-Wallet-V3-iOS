@@ -65,4 +65,8 @@ final class ReceivePlaceholderCryptoAccount: CryptoAccount, NonCustodialAccount 
     ) {
         self.asset = asset
     }
+
+    func invalidateAccountBalance() {
+        // NO-OP
+    }
 }
