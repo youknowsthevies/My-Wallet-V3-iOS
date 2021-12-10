@@ -4,9 +4,12 @@ import Algorithms
 import ComponentLibrary
 import DIKit
 import Examples
-import PulseUI
 import SwiftUI
 import ToolKit
+
+public protocol NetworkDebugScreenProvider {
+    var viewController: UIViewController { get }
+}
 
 struct DebugView: View {
 
@@ -174,9 +177,10 @@ extension DebugView {
 
     struct Pulse: UIViewControllerRepresentable {
 
+        @Inject var networkDebugScreenProvider: NetworkDebugScreenProvider
+
         func makeUIViewController(context: Context) -> some UIViewController {
-            UITabBar.appearance(whenContainedInInstancesOf: [PulseUI.MainViewController.self]).backgroundColor = .white
-            return PulseUI.MainViewController()
+            networkDebugScreenProvider.viewController
         }
 
         func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}

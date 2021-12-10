@@ -7,10 +7,6 @@ import Foundation
 import NetworkError
 import ToolKit
 
-#if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-import PulseCore
-#endif
-
 public protocol NetworkCommunicatorAPI {
 
     /// Performs network requests
@@ -20,6 +16,17 @@ public protocol NetworkCommunicatorAPI {
     ) -> AnyPublisher<ServerResponse, NetworkError>
 }
 
+public protocol NetworkDebugLogger {
+    func storeRequest(
+        _ request: URLRequest,
+        response: URLResponse?,
+        error: Error?,
+        data: Data?,
+        metrics: URLSessionTaskMetrics?,
+        session: URLSession?
+    )
+}
+
 final class NetworkCommunicator: NetworkCommunicatorAPI {
 
     // MARK: - Private properties
@@ -27,6 +34,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     private let session: NetworkSession
     private let authenticator: AuthenticatorAPI?
     private let eventRecorder: AnalyticsEventRecorderAPI?
+    private let networkDebugLogger: NetworkDebugLogger
 
     // MARK: - Setup
 
@@ -35,11 +43,13 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
         sessionDelegate: SessionDelegateAPI = resolve(),
         sessionHandler: NetworkSessionDelegateAPI = resolve(),
         authenticator: AuthenticatorAPI? = nil,
-        eventRecorder: AnalyticsEventRecorderAPI? = nil
+        eventRecorder: AnalyticsEventRecorderAPI? = nil,
+        networkDebugLogger: NetworkDebugLogger = resolve()
     ) {
         self.session = session
         self.authenticator = authenticator
         self.eventRecorder = eventRecorder
+        self.networkDebugLogger = networkDebugLogger
 
         sessionDelegate.delegate = sessionHandler
     }
@@ -71,30 +81,28 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
             for: request.peek("🌎", \.urlRequest.cURLCommand, if: \.isDebugging.request).urlRequest
         )
         .handleEvents(
-            receiveOutput: { data, response in
-                #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
-                LoggerStore.default.storeRequest(
+            receiveOutput: { [networkDebugLogger, session] data, response in
+                networkDebugLogger.storeRequest(
                     request.urlRequest,
                     response: response,
                     error: nil,
                     data: data,
-                    metrics: nil
+                    metrics: nil,
+                    session: session as? URLSession
                 )
-                #endif
             },
-            receiveCompletion: { completion in
-                #if DEBUG || ALPHA_BUILD || INTERNAL_BUILD
+            receiveCompletion: { [networkDebugLogger, session] completion in
                 guard case .failure(let error) = completion else {
                     return
                 }
-                LoggerStore.default.storeRequest(
+                networkDebugLogger.storeRequest(
                     request.urlRequest,
                     response: nil,
                     error: error,
                     data: nil,
-                    metrics: nil
+                    metrics: nil,
+                    session: session as? URLSession
                 )
-                #endif
             }
         )
         .mapError(NetworkError.urlError)

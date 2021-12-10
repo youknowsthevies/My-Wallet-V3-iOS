@@ -263,6 +263,9 @@ packages:
   RIBs:
     url: https://github.com/uber/RIBs.git
     version: 0.12.1
+  Pulse:
+    url: https://github.com/kean/Pulse.git
+    version: 0.20.0
   Analytics:
     path: Modules/Analytics
   RxAnalytics:
@@ -417,6 +420,10 @@ targets:
         product: RxRelay
       - package: RxSwift
         product: RxSwift
+      - package: Pulse
+        product: PulseUI
+      - package: Pulse
+        product: PulseCore
       - package: ZendeskChatSDK
 
       - package: Analytics

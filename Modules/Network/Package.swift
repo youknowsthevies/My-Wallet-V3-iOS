@@ -21,11 +21,6 @@ let package = Package(
             url: "https://github.com/jackpooleybc/DIKit.git",
             .branch("safe-property-wrappers")
         ),
-        .package(
-            name: "Pulse",
-            url: "https://github.com/kean/Pulse.git",
-            from: "0.20.0"
-        ),
         .package(name: "Analytics", path: "../Analytics"),
         .package(name: "Test", path: "../Test"),
         .package(name: "Tool", path: "../Tool"),
@@ -38,8 +33,7 @@ let package = Package(
                 .product(name: "AnalyticsKit", package: "Analytics"),
                 .product(name: "ToolKit", package: "Tool"),
                 .product(name: "DIKit", package: "DIKit"),
-                .product(name: "NetworkError", package: "NetworkErrors"),
-                .product(name: "PulseCore", package: "Pulse")
+                .product(name: "NetworkError", package: "NetworkErrors")
             ]
         ),
         .target(
