@@ -88,6 +88,7 @@ extension MetadataNode {
     }
 }
 
+#if DEBUG
 extension MetadataNode: CustomDebugStringConvertible {
 
     public var debugDescription: String {
@@ -102,3 +103,4 @@ extension MetadataNode: CustomDebugStringConvertible {
         """
     }
 }
+#endif
