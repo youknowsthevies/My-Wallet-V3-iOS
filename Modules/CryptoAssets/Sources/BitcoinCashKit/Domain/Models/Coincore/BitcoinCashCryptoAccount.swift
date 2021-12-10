@@ -194,4 +194,9 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     func updateLabel(_ newLabel: String) -> Completable {
         bridge.update(accountIndex: hdAccountIndex, label: newLabel)
     }
+
+    func invalidateAccountBalance() {
+        balanceService
+            .invalidateBalanceForWallet(xPub)
+    }
 }

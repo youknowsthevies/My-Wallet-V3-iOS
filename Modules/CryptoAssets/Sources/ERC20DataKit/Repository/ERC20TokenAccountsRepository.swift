@@ -76,6 +76,14 @@ final class ERC20TokenAccountsRepository: ERC20TokenAccountsRepositoryAPI {
 
     // MARK: - Internal Methods
 
+    func invalidateERC20TokenAccountsForAddress(
+        _ address: EthereumAddress
+    ) {
+        cachedValue.invalidateCacheWithKey(
+            ERC20TokenAccountsKey(address: address.publicKey)
+        )
+    }
+
     func tokens(
         for address: EthereumAddress,
         forceFetch: Bool

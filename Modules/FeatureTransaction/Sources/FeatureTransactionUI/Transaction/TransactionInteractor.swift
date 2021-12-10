@@ -35,6 +35,7 @@ final class TransactionInteractor {
     private let userTiersService: KYCTiersServiceAPI
     private let ordersService: OrdersServiceAPI
     private let errorRecorder: ErrorRecording
+    private var cancellables: Set<AnyCancellable> = []
     private var transactionProcessor: TransactionProcessor?
 
     /// Used to invalidate the transaction processor chain.

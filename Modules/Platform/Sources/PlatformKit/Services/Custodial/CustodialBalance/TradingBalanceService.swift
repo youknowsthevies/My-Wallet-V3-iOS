@@ -9,6 +9,7 @@ import ToolKit
 public protocol TradingBalanceServiceAPI: AnyObject {
     var balances: AnyPublisher<CustodialAccountBalanceStates, Never> { get }
 
+    func invalidateTradingAccountBalances()
     func balance(for currencyType: CurrencyType) -> AnyPublisher<CustodialAccountBalanceState, Never>
     func fetchBalances() -> AnyPublisher<CustodialAccountBalanceStates, Never>
 }
@@ -61,6 +62,11 @@ class TradingBalanceService: TradingBalanceServiceAPI {
     }
 
     // MARK: - Methods
+
+    func invalidateTradingAccountBalances() {
+        cachedValue
+            .invalidateCacheWithKey(Key())
+    }
 
     func balance(for currencyType: CurrencyType) -> AnyPublisher<CustodialAccountBalanceState, Never> {
         balances

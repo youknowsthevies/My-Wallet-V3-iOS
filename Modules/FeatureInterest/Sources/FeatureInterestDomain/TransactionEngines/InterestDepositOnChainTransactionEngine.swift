@@ -203,13 +203,6 @@ public final class InterestDepositOnChainTransactionEngine: InterestTransactionE
             )
     }
 
-    public func doPostExecute(
-        transactionResult: TransactionResult
-    ) -> Completable {
-        transactionTarget
-            .onTxCompleted(transactionResult)
-    }
-
     public func doUpdateFeeLevel(
         pendingTransaction: PendingTransaction,
         level: FeeLevel,

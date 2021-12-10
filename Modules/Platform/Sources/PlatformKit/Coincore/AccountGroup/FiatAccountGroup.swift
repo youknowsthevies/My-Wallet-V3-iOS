@@ -39,6 +39,10 @@ public class FiatAccountGroup: AccountGroup {
         .error(AccountGroupError.noBalance)
     }
 
+    public func invalidateAccountBalance() {
+        accounts.forEach { $0.invalidateAccountBalance() }
+    }
+
     public init(accounts: [SingleAccount]) {
         label = "Fiat Accounts"
         self.accounts = accounts

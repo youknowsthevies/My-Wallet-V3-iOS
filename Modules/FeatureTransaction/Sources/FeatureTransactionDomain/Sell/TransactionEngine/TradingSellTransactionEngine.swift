@@ -151,8 +151,4 @@ final class TradingSellTransactionEngine: SellTransactionEngine {
                 return self.updateLimits(pendingTransaction: pendingTransaction, pricedQuote: pricedQuote)
             }
     }
-
-    func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        target.onTxCompleted(transactionResult)
-    }
 }

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import MoneyKit
 import PlatformKit
@@ -17,6 +18,7 @@ final class InterestAccountService: InterestAccountServiceAPI {
     private let interestAccountLimitsRepository: InterestAccountLimitsRepositoryAPI
     private let interestAccountEligibilityRepository: InterestAccountEligibilityRepositoryAPI
     private let interestAccountRateRepository: InterestAccountRateRepositoryAPI
+    private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - Setup
 
@@ -73,6 +75,17 @@ final class InterestAccountService: InterestAccountServiceAPI {
     }
 
     // MARK: - InterestAccountOverviewAPI
+
+    func invalidateInterestAccountBalances() {
+        fiatCurrencyService
+            .displayCurrency
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [interestAccountBalanceRepository] fiatCurrency in
+                interestAccountBalanceRepository
+                    .invalidateAccountBalanceCacheWithKey(fiatCurrency)
+            })
+            .store(in: &cancellables)
+    }
 
     func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState> {
         interestAccountsBalance

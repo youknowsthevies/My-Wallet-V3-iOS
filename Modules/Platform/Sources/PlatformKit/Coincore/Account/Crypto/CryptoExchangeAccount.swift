@@ -97,6 +97,10 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(false)
     }
 
+    public func invalidateAccountBalance() {
+        // NO-OP
+    }
+
     public let featureFlagsService: FeatureFlagsServiceAPI
 
     // MARK: - Private Properties

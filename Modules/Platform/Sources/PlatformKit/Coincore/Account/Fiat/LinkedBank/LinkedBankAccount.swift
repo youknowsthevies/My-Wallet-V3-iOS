@@ -54,6 +54,10 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         .just([])
     }
 
+    public func invalidateAccountBalance() {
+        // no-op
+    }
+
     public let fiatCurrency: FiatCurrency
     public private(set) lazy var identifier: AnyHashable = {
         "LinkedBankAccount.\(accountId).\(accountNumber).\(paymentType)"

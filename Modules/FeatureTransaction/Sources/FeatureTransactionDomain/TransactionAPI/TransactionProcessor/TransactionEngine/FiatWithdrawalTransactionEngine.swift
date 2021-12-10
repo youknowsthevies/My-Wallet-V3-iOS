@@ -124,10 +124,6 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
             }
     }
 
-    func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        .empty()
-    }
-
     func doUpdateFeeLevel(
         pendingTransaction: PendingTransaction,
         level: FeeLevel,

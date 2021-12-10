@@ -11,4 +11,8 @@ final class NoOpInterestAccountBalanceRepository: InterestAccountBalanceReposito
     ) -> AnyPublisher<InterestAccountBalances, InterestAccountBalanceRepositoryError> {
         Empty().eraseToAnyPublisher()
     }
+
+    func invalidateAccountBalanceCacheWithKey(_ fiatCurrency: FiatCurrency) {
+        // no-op
+    }
 }

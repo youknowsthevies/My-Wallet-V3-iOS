@@ -174,10 +174,6 @@ final class BitPayTransactionEngine: TransactionEngine {
             .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
     }
 
-    func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        transactionTarget.onTxCompleted(transactionResult)
-    }
-
     func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         return .just(pendingTransaction)

@@ -184,4 +184,9 @@ final class StellarCryptoAccount: CryptoNonCustodialAccount {
             }
             .eraseToAnyPublisher()
     }
+
+    func invalidateAccountBalance() {
+        accountCache
+            .invalidate()
+    }
 }

@@ -37,4 +37,10 @@ final class ERC20TokenAccountsRepositoryMock: ERC20TokenAccountsRepositoryAPI {
     ) -> StreamOf<ERC20TokenAccounts, ERC20TokenAccountsError> {
         .just(.success(tokenAccounts))
     }
+
+    func invalidateERC20TokenAccountsForAddress(
+        _ address: EthereumAddress
+    ) {
+        // no-op
+    }
 }

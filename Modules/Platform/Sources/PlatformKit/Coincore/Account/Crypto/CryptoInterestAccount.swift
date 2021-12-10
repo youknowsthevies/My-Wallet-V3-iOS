@@ -196,4 +196,9 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
             .recordErrors(on: errorRecorder)
             .catchErrorJustReturn(false)
     }
+
+    public func invalidateAccountBalance() {
+        balanceService
+            .invalidateInterestAccountBalances()
+    }
 }

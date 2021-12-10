@@ -28,10 +28,6 @@ extension OnChainTransactionEngine {
         precondition(sourceCryptoAccount.asset == target.asset)
     }
 
-    public func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        transactionTarget.onTxCompleted(transactionResult)
-    }
-
     public func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         if pendingTransaction.hasFeeLevelChanged(newLevel: level, newAmount: customFeeAmount) {

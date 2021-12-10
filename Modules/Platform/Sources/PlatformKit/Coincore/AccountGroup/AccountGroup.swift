@@ -109,6 +109,10 @@ extension AccountGroup {
         accounts.map(\.identifier).contains(account.identifier)
     }
 
+    public func invalidateAccountBalance() {
+        accounts.forEach { $0.invalidateAccountBalance() }
+    }
+
     public var actions: Single<AvailableActions> {
         Single.zip(accounts.map(\.actions))
             .map { actions -> AvailableActions in

@@ -209,6 +209,17 @@ extension TransactionEngine {
     ) -> Single<TransactionResult> {
         execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
     }
+
+    public func doPostExecute(
+        transactionResult: TransactionResult
+    ) -> Completable {
+        sourceAccount.invalidateAccountBalance()
+        if let target = transactionTarget as? BlockchainAccount {
+            target.invalidateAccountBalance()
+        }
+        return transactionTarget
+            .onTxCompleted(transactionResult)
+    }
 }
 
 private struct TransactionValidationConversionRates {

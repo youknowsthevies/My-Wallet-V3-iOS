@@ -234,10 +234,6 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             .asSingle()
     }
 
-    func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        target.onTxCompleted(transactionResult)
-    }
-
     func doUpdateFeeLevel(
         pendingTransaction: PendingTransaction,
         level: FeeLevel,

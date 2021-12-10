@@ -74,4 +74,8 @@ public final class PaymentMethodAccount: FiatAccount {
             }
             .eraseToAnyPublisher()
     }
+
+    public func invalidateAccountBalance() {
+        // NO-OP
+    }
 }
