@@ -32,7 +32,7 @@ public struct QuoteQuery {
     /// The payment method if relevant profile is chosen
     let paymentMethod: PaymentMethodPayloadType?
 
-    /// The payment method Id if there is a payment method
+    /// The payment method Id if the method is bank transfer
     let paymentMethodId: String?
 
     public init(

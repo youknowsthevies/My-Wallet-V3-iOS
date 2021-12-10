@@ -21,6 +21,7 @@ final class FundsAndBankOrderCreationService: PendingOrderCreationServiceAPI {
     }
 
     func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<PendingConfirmationCheckoutData> {
+        let paymentMethod = candidateOrderDetails.paymentMethod?.method
         let quote = orderQuoteService
             .getQuote(
                 query: QuoteQuery(
@@ -28,8 +29,8 @@ final class FundsAndBankOrderCreationService: PendingOrderCreationServiceAPI {
                     sourceCurrency: candidateOrderDetails.fiatCurrency,
                     destinationCurrency: candidateOrderDetails.cryptoCurrency,
                     amount: MoneyValue(fiatValue: candidateOrderDetails.fiatValue),
-                    paymentMethod: candidateOrderDetails.paymentMethod?.method.rawType,
-                    paymentMethodId: candidateOrderDetails.paymentMethodId
+                    paymentMethod: paymentMethod?.rawType,
+                    paymentMethodId: (paymentMethod?.isBankTransfer ?? false) ? candidateOrderDetails.paymentMethodId : nil
                 )
             )
 
