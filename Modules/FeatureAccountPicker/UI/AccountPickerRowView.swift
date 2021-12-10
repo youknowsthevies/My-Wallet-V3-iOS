@@ -175,34 +175,33 @@ private struct PaymentMethodRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            VStack(spacing: 0) {
-                HStack(alignment: .center, spacing: 0) {
-                    ZStack {
-                        model.badgeView
-                            .frame(width: 32, height: 32)
-                            .scaledToFit()
-                    }
-                    .frame(width: 32, height: 32)
-                    .padding(6)
-                    .background(model.badgeBackground)
-                    .clipShape(Circle())
-
-                    Spacer()
-                        .frame(width: 16)
-
-                    VStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(model.title)
-                                .textStyle(.heading)
-                            Text(model.description)
-                                .textStyle(.subheading)
-                        }
-                    }
-                    .offset(x: 0, y: -2) // visually align due to font padding
+            HStack(alignment: .center, spacing: 0) {
+                ZStack {
+                    model.badgeView
+                        .frame(width: 32, height: 32)
+                        .scaledToFit()
                 }
+                .frame(width: 32, height: 32)
+                .padding(6)
+                .background(model.badgeBackground)
+                .clipShape(Circle())
+
+                Spacer()
+                    .frame(width: 16)
+
+                VStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(model.title)
+                            .textStyle(.heading)
+                        Text(model.description)
+                            .textStyle(.subheading)
+                    }
+                }
+                .offset(x: 0, y: -2) // visually align due to font padding
+                Spacer()
             }
-            .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
         }
+        .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
     }
 }
 

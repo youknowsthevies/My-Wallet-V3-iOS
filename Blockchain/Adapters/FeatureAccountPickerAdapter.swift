@@ -94,7 +94,7 @@ class LoadableAccountPickerControllable: LoadableEitherViewController<
 
     override func updateChild(to newValue: Child) {
         if let controllable = newValue.viewController as? AccountPickerViewControllable {
-            shouldOverrideNavigationEffects = controllable.shouldOverrideNavigationEffects
+            controllable.shouldOverrideNavigationEffects = shouldOverrideNavigationEffects
         }
 
         disposeBag = DisposeBag()
