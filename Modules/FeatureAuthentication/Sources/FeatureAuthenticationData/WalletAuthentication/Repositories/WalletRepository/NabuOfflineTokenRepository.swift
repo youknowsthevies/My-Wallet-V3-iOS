@@ -10,16 +10,16 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
 
     // This is set to the older WalletRepository API, soon to be removed
     private let walletRepository: WalletRepositoryAPI
-    private let walletRepo: WalletRepo
+    private let credentialsFetcher: UserCredentialsFetcherAPI
     private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
 
     init(
         walletRepository: WalletRepositoryAPI,
-        walletRepo: WalletRepo,
+        credentialsFetcher: UserCredentialsFetcherAPI,
         nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never>
     ) {
         self.walletRepository = walletRepository
-        self.walletRepo = walletRepo
+        self.credentialsFetcher = credentialsFetcher
         self.nativeWalletEnabled = nativeWalletEnabled
 
         offlineToken = nativeWalletEnabled()
@@ -27,33 +27,34 @@ final class NabuOfflineTokenRepository: NabuOfflineTokenRepositoryAPI {
                 guard isEnabled else {
                     return walletRepository.offlineToken
                 }
-                guard let userId = walletRepo.userId,
-                      let offlineToken = walletRepo.lifetimeToken
-                else {
-                    return .failure(.offlineToken)
-                }
-                return .just(
-                    NabuOfflineToken(
-                        userId: userId,
-                        token: offlineToken,
-                        created: nil
-                    )
-                )
+                return credentialsFetcher.fetchUserCredentials()
+                    .map { credentials in
+                        NabuOfflineToken(
+                            userId: credentials.userId,
+                            token: credentials.lifetimeToken
+                        )
+                    }
+                    .mapError { _ in MissingCredentialsError.offlineToken }
+                    .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
 
     func set(offlineToken: NabuOfflineToken) -> AnyPublisher<Void, CredentialWritingError> {
         nativeWalletEnabled()
-            .flatMap { [walletRepository, walletRepo] isEnabled -> AnyPublisher<Void, CredentialWritingError> in
+            .flatMap { [walletRepository, credentialsFetcher] isEnabled -> AnyPublisher<Void, CredentialWritingError> in
                 guard isEnabled else {
                     return walletRepository.set(offlineToken: offlineToken)
                 }
-                return walletRepo
-                    .set(keyPath: \.lifetimeToken, value: offlineToken.token)
-                    .set(keyPath: \.userId, value: offlineToken.userId)
-                    .mapToVoid()
-                    .mapError()
+                return credentialsFetcher.store(
+                    credentials: UserCredentials(
+                        userId: offlineToken.userId,
+                        lifetimeToken: offlineToken.token
+                    )
+                )
+                .mapError { _ in CredentialWritingError.offlineToken }
+                .mapToVoid()
+                .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

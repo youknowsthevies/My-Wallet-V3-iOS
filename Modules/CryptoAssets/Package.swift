@@ -39,13 +39,15 @@ let package = Package(
             url: "https://github.com/Soneso/stellar-ios-mac-sdk.git",
             .exact("2.0.2")
         ),
+        .package(path: "../Metadata"),
         .package(path: "../Network"),
         .package(path: "../NetworkErrors"),
         .package(path: "../Money"),
         .package(path: "../Platform"),
         .package(path: "../FeatureTransaction"),
         .package(path: "../Test"),
-        .package(path: "../Tool")
+        .package(path: "../Tool"),
+        .package(path: "../WalletPayload")
     ],
     targets: [
         .target(
@@ -108,7 +110,9 @@ let package = Package(
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "MetadataKit", package: "Metadata")
             ]
         ),
         .target(

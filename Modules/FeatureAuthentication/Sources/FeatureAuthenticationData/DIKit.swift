@@ -128,7 +128,7 @@ extension DependencyContainer {
             let repository: WalletRepositoryAPI = DIKit.resolve()
             return NabuOfflineTokenRepository(
                 walletRepository: repository,
-                walletRepo: DIKit.resolve(),
+                credentialsFetcher: DIKit.resolve(),
                 nativeWalletEnabled: { nativeWalletFlagEnabled() }
             )
         }

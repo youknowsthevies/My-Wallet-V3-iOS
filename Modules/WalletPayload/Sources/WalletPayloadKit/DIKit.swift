@@ -3,6 +3,7 @@
 import DIKit
 import Foundation
 import KeychainKit
+import MetadataKit
 
 struct WalletRepoKeychain {
     static let repoTag: String = "repo.tag"
@@ -64,6 +65,22 @@ extension DependencyContainer {
         factory { () -> WalletHolderAPI in
             let holder: WalletHolder = DIKit.resolve()
             return holder as WalletHolderAPI
+        }
+
+        factory { () -> WalletMetadataEntryServiceAPI in
+            let holder: WalletHolderAPI = DIKit.resolve()
+            let metadata: MetadataServiceAPI = DIKit.resolve()
+            return WalletMetadataEntryService(
+                walletHolder: holder,
+                metadataService: metadata
+            )
+        }
+
+        factory { () -> UserCredentialsFetcherAPI in
+            let metadataEntryService: WalletMetadataEntryServiceAPI = DIKit.resolve()
+            return UserCredentialsFetcher(
+                metadataEntryService: metadataEntryService
+            )
         }
 
         single { WalletHolder() }
