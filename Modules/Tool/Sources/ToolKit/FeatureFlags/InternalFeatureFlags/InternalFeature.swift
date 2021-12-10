@@ -5,11 +5,11 @@ import Foundation
 /// Defines an internal feature as part of a FeatureFlag
 public enum InternalFeature: String, CaseIterable {
 
-    /// Enable secure channel
-    case secureChannel
-
     /// Enabled console logging of network requests for debug builds
     case requestConsoleLogging
+
+    /// Disable SSL pinning for seeing network request
+    case disableSSLPinning
 
     /// Disable the guid login at welcome screen, useful for demo purposes
     /// - Note: Old manual guid login screen is used only for internal builds
@@ -31,7 +31,7 @@ public enum InternalFeature: String, CaseIterable {
             return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
-             .secureChannel,
+             .disableSSLPinning,
              .unifiedSignIn,
              .nativeWalletPayload:
             return false
@@ -48,10 +48,10 @@ extension InternalFeature {
     /// The title displayed at the Debug menu.
     public var displayTitle: String {
         switch self {
-        case .secureChannel:
-            return "Secure Channel"
         case .requestConsoleLogging:
             return "Enable Network Request Console Logs"
+        case .disableSSLPinning:
+            return "Disable SSL Pinning (Requires Restart)"
         case .disableGUIDLogin:
             return "Disable manual (guid) login option"
         case .newOnboardingTour:
