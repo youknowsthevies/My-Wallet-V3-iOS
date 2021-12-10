@@ -67,7 +67,7 @@ func decryptMetadata(
     )
 }
 
-public enum JSONValidationError: Error {
+public enum JSONValidationError: Error, Equatable {
     case invalidJSON
 }
 

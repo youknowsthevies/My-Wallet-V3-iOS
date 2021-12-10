@@ -6,7 +6,6 @@ import Foundation
 import MetadataKit
 import NetworkKit
 import ToolKit
-import UIKit
 
 enum DIKitMetadataTags {
     static let metadata = "Metadata"

@@ -6,7 +6,7 @@ import TestKit
 
 extension EthereumEntryPayload {
 
-    static var fixture: EthereumEntryPayload {
+    static var entry: EthereumEntryPayload {
         Fixtures.load(name: "ethereum_entry", in: .module)!
     }
 }

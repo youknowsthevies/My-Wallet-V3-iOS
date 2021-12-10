@@ -14,12 +14,11 @@ final class MetadataServiceTests: XCTestCase {
 
     var cancellables: Set<AnyCancellable>!
 
-    private var subject: MetadataService!
+    private var subject: MetadataServiceAPI!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
 
-        // subject = ...
         cancellables = []
     }
 
@@ -31,6 +30,7 @@ final class MetadataServiceTests: XCTestCase {
     }
 
     func test_initialize() throws {
+
         let environment = TestEnvironment()
 
         let initializedExpecation = expectation(
@@ -43,18 +43,26 @@ final class MetadataServiceTests: XCTestCase {
 
         let expectedAddress = "12TMDMri1VSjbBw8WJvHmFpvpxzTJe7EhU"
 
-        let fetchMetadataEntry: FetchMetadataEntry = { address in
+        let fetch: FetchMetadataEntry = { address in
             XCTAssertEqual(address, expectedAddress)
             fetchCalledWithCorrectAddressExpectation.fulfill()
             return .just(MetadataPayload.rootMetadataPayload)
         }
 
+        let put: PutMetadataEntry = { _, _ in
+            XCTFail("Put should not be called")
+            return .just(())
+        }
+
         let expectedState = environment.metadataState
 
         subject = MetadataService(
-            loadMetadata: loadRemoteMetadata(
-                fetchMetadataEntry: fetchMetadataEntry
-            )
+            initialize: provideInitialize(
+                fetch: fetch,
+                put: put
+            ),
+            fetchEntry: provideFetchEntry(fetch: fetch),
+            saveEntry: provideSave(fetch: fetch, put: put)
         )
 
         subject
@@ -80,6 +88,68 @@ final class MetadataServiceTests: XCTestCase {
             for: [
                 initializedExpecation,
                 fetchCalledWithCorrectAddressExpectation
+            ],
+            timeout: 10.0
+        )
+    }
+
+    func test_fetch() throws {
+
+        let successfullyFetchedExpectation = expectation(
+            description: "The entry was successfully fetched"
+        )
+
+        let fetchCalledWithCorrectAddressExpectation = expectation(
+            description: "Fetch was called with the correct address"
+        )
+
+        let expectedAddress = "129GLwNB2EbNRrGMuNSRh9PM83xU2Mpn81"
+
+        let fetch: FetchMetadataEntry = { address in
+            XCTAssertEqual(address, expectedAddress)
+            fetchCalledWithCorrectAddressExpectation.fulfill()
+            return .just(MetadataPayload.ethereumMetadataEntryPayload)
+        }
+
+        let put: PutMetadataEntry = { _, _ in
+            XCTFail("Put should not be called")
+            return .just(())
+        }
+
+        let environment = TestEnvironment()
+
+        let metadataState = environment.metadataState
+
+        let expectedEntryPayload = EthereumEntryPayload.entry
+
+        subject = MetadataService(
+            initialize: provideInitialize(
+                fetch: fetch,
+                put: put
+            ),
+            fetchEntry: provideFetchEntry(fetch: fetch),
+            saveEntry: provideSave(fetch: fetch, put: put)
+        )
+
+        subject
+            .fetchEntry(with: metadataState)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    XCTFail(error.localizedDescription)
+                case .finished:
+                    break
+                }
+            }, receiveValue: { [successfullyFetchedExpectation] (entry: EthereumEntryPayload) in
+                XCTAssertEqual(entry, expectedEntryPayload)
+                successfullyFetchedExpectation.fulfill()
+            })
+            .store(in: &cancellables)
+
+        wait(
+            for: [
+                fetchCalledWithCorrectAddressExpectation,
+                successfullyFetchedExpectation
             ],
             timeout: 10.0
         )

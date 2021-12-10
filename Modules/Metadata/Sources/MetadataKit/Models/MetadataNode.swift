@@ -87,3 +87,18 @@ extension MetadataNode {
         return .success(metadata)
     }
 }
+
+extension MetadataNode: CustomDebugStringConvertible {
+
+    public var debugDescription: String {
+        """
+        MetadataNode(
+            address: \(address.debugDescription),
+            node: \(node.debugDescription),
+            encryptionKey: \(encryptionKey.hex),
+            unpaddedEncryptionKey: \(unpaddedEncryptionKey?.hex ?? "nil"),
+            type: \(type)
+        )
+        """
+    }
+}

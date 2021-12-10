@@ -12,10 +12,11 @@ extension DependencyContainer {
         factory { () -> MetadataServiceAPI in
             let repository: MetadataRepositoryAPI = DIKit.resolve()
             let fetch = repository.fetch(at:)
+            let put = repository.put(at:with:)
             return MetadataService(
-                loadMetadata: loadRemoteMetadata(
-                    fetchMetadataEntry: fetch
-                )
+                initialize: provideInitialize(fetch: fetch, put: put),
+                fetchEntry: provideFetchEntry(fetch: fetch),
+                saveEntry: provideSave(fetch: fetch, put: put)
             )
         }
     }

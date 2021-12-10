@@ -13,13 +13,13 @@ public enum LoadRemoteMetadataError: Error {
     case decryptionFailed(DecryptMetadataError)
 }
 
-func loadRemoteMetadata(
-    fetchMetadataEntry: @escaping FetchMetadataEntry
+func provideLoadRemoteMetadata(
+    fetch: @escaping FetchMetadataEntry
 ) -> LoadRemoteMetadata {
     { metadataNode in
         loadRemoteMetadata(
             metadataNode: metadataNode,
-            fetchMetadataEntry: fetchMetadataEntry
+            fetchMetadataEntry: fetch
         )
     }
 }

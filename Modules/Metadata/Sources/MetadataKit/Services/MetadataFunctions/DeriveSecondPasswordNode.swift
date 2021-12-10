@@ -4,6 +4,9 @@ import struct CryptoKit.SHA256
 import Foundation
 import MetadataHDWalletKit
 
+typealias DeriveSecondPasswordNode =
+    (Credentials) -> Result<SecondPasswordNode, DeriveSecondPasswordNodeError>
+
 public enum DeriveSecondPasswordNodeError: Error {
     case digestDataEncodingFailed
     case privateKeyInstantiationFailed
@@ -62,7 +65,7 @@ private func privateKeyFromEntropyHex(
     return .success(key)
 }
 
-internal func secondPasswordNodeFrom(
+private func secondPasswordNodeFrom(
     privateKey: PrivateKey
 ) -> Result<MetadataNode, DeriveSecondPasswordNodeError> {
     let node = MetadataNode(

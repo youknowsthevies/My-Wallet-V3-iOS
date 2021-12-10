@@ -68,6 +68,7 @@ let package = Package(
             ],
             resources: [
                 .copy("Fixtures/Entries/Ethereum/ethereum_entry.json"),
+                .copy("Fixtures/Entries/Ethereum/ethereum_entry_response.json"),
                 .copy("Fixtures/MetadataResponse/root_metadata_response.json")
             ]
         ),

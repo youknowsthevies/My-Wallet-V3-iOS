@@ -7,4 +7,5 @@ public enum MetadataInitialisationError: Error {
     case failedToLoadRemoteMetadataNode(LoadRemoteMetadataError)
     case failedToDecodeRemoteMetadataNode(DecodingError)
     case failedToDeriveRemoteMetadataNode(MetadataInitError)
+    case failedToGenerateNodes(Error)
 }
