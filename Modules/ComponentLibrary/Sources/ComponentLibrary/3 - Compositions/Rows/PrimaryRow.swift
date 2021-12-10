@@ -74,22 +74,33 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     }
 
     public var body: some View {
-        Button {
-            isSelected = true
-        } label: {
-            HStack(alignment: .customRowVerticalAlignment, spacing: 0) {
-                leading
-                    .padding(.trailing, Spacing.padding2)
-                mainContent
-                    .padding(.vertical, Spacing.padding2)
-                Spacer()
-                trailing
-                    .padding(.leading, Spacing.padding2)
+        if isSelectable {
+            Button {
+                isSelected = true
+            } label: {
+                horizontalContent
             }
+            .buttonStyle(
+                PrimaryRowStyle(isSelectable: isSelectable)
+            )
+        } else {
+            horizontalContent
+                .background(Color.semantic.background)
         }
-        .buttonStyle(
-            PrimaryRowStyle(isSelectable: isSelectable)
-        )
+    }
+
+    var horizontalContent: some View {
+        HStack(alignment: .customRowVerticalAlignment, spacing: 0) {
+            leading
+                .padding(.trailing, Spacing.padding2)
+            mainContent
+                .padding(.vertical, Spacing.padding2)
+            Spacer()
+            trailing
+                .padding(.leading, Spacing.padding2)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, Spacing.padding3)
     }
 
     @ViewBuilder var mainContent: some View {
@@ -141,8 +152,6 @@ private struct PrimaryRowStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, Spacing.padding3)
             .background(configuration.isPressed && isSelectable ? Color.semantic.light : Color.semantic.background)
     }
 }
@@ -281,16 +290,11 @@ struct PrimaryRow_Previews: PreviewProvider {
             Group {
                 PrimaryRow(
                     title: "Trading",
-                    subtitle: "Buy & Sell",
-                    isSelected: Binding(
-                        get: {
-                            selection == 0
-                        },
-                        set: { _ in
-                            selection = 0
-                        }
-                    )
+                    subtitle: "Buy & Sell"
                 )
+                .onTapGesture {
+                    selection = 0
+                }
                 PrimaryRow(
                     title: "Email Address",
                     subtitle: "satoshi@blockchain.com",
