@@ -76,18 +76,21 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
             eventRecorder: analyticsRecorder
         )
 
-        guard case .required(let params) = data.state,
-              params.cardAcquirer == .stripe
-        else {
+        guard case .required(let params) = data.state else {
+            presenter.redirect()
+            return nil
+        }
+
+        switch params.cardAcquirer {
+        case .stripe:
+            stripeClient.confirmPayment(data, with: presenter)
+            return nil
+        case .everyPay, .checkout, .unknown:
             let viewController = CardAuthorizationScreenViewController(
                 presenter: presenter
             )
             return viewController
         }
-
-        stripeClient.confirmPayment(data, with: presenter)
-
-        return nil
     }
 
     public func billingAddress(
