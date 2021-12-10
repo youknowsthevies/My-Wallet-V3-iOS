@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import MoneyKit
 import RxRelay
 import RxSwift
 import ToolKit
@@ -10,9 +11,11 @@ public typealias BuyCryptoSupportedPairsCalculationState = ValueCalculationState
 
 /// A Simple Buy Service that provides the supported pairs for the current Fiat Currency.
 public protocol SupportedPairsInteractorServiceAPI: AnyObject {
+
     var pairs: Observable<SupportedPairs> { get }
 
     func fetch() -> Observable<SupportedPairs>
+    func fetchSupportedCryptoCurrenciesForTrading() -> Observable<[CryptoCurrency]>
 }
 
 final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI {
@@ -66,5 +69,18 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
             .do(onNext: { [weak self] pairs in
                 self?.pairsRelay.accept(pairs)
             })
+    }
+
+    func fetchSupportedCryptoCurrenciesForTrading() -> Observable<[CryptoCurrency]> {
+        pairs
+            .map(\.cryptoCurrencies)
+            .flatMap { [pairsService] cryptoCurrencies -> Observable<[CryptoCurrency]> in
+                guard cryptoCurrencies.isEmpty else {
+                    return .just(cryptoCurrencies)
+                }
+                return pairsService
+                    .fetchSupportedTradingCryptoCurrencies()
+                    .asObservable()
+            }
     }
 }

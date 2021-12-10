@@ -12,6 +12,9 @@ public protocol SupportedPairsServiceAPI: AnyObject {
 
     /// Fetches a list of supported fiat currencies for trading
     func fetchSupportedTradingCurrencies() -> AnyPublisher<Set<FiatCurrency>, NabuNetworkError>
+
+    /// Fetches a list of supported crypto currencies for trading
+    func fetchSupportedTradingCryptoCurrencies() -> AnyPublisher<[CryptoCurrency], NabuNetworkError>
 }
 
 final class SupportedPairsService: SupportedPairsServiceAPI {
@@ -37,6 +40,12 @@ final class SupportedPairsService: SupportedPairsServiceAPI {
     func fetchSupportedTradingCurrencies() -> AnyPublisher<Set<FiatCurrency>, NabuNetworkError> {
         fetchPairs(for: .all)
             .map(\.fiatCurrencySet)
+            .eraseToAnyPublisher()
+    }
+
+    func fetchSupportedTradingCryptoCurrencies() -> AnyPublisher<[CryptoCurrency], NabuNetworkError> {
+        fetchPairs(for: .all)
+            .map(\.cryptoCurrencies)
             .eraseToAnyPublisher()
     }
 }

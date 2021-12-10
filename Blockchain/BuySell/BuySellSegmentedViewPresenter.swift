@@ -48,7 +48,7 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
             ),
             customSelectionActionClosure: { [weak self] currency in
                 guard let self = self else { return }
-                self.coincore.cryptoAccounts(for: currency, supporting: .buy, filter: .custodial)
+                self.coincore.cryptoAccounts(for: currency, filter: .custodial)
                     .ignoreFailure()
                     .receive(on: DispatchQueue.main)
                     .flatMap { [weak self] accounts -> AnyPublisher<TransactionFlowResult, Never> in
