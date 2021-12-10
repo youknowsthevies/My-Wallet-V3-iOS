@@ -149,7 +149,7 @@ let accountPickerReducer = Reducer<
             environment.sections()
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .cancellable(id: UpdateSubscriptionId(), cancelInFlight: true)
+                .cancellable(id: UpdateSubscriptionId())
                 .map { result in
                     switch result {
                     case .success(let rows):
