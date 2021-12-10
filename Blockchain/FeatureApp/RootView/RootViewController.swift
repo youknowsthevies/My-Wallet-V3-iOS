@@ -163,10 +163,9 @@ extension RootViewController {
                 handleDeposit()
             case .withdraw:
                 handleWithdraw()
-            case .buy:
-                handleBuyCrypto(account: nil)
-            case .sell:
-                handleSellCrypto(account: nil)
+            case .buy,
+                 .sell:
+                break // it switches the tab instead of running the flow
             default:
                 assertionFailure("Unhandled action \(action)")
             }

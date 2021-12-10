@@ -115,7 +115,8 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
         tableView.selfSizingBehaviour = .fill
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = UITableView.automaticDimension
-        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedSectionHeaderHeight = 156
+        tableView.sectionHeaderHeight = UITableView.automaticDimension
         tableView.register(SwapTrendingPairTableViewCell.self)
         tableView.register(SeparatorTableViewCell.self)
     }
@@ -148,10 +149,5 @@ extension SwapLandingViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard section == 0 else { return nil }
         return headerRelay.value?.view(fittingWidth: view.bounds.width, customHeight: nil)
-    }
-
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard section == 0 else { return 0 }
-        return headerRelay.value?.defaultHeight ?? 0
     }
 }
