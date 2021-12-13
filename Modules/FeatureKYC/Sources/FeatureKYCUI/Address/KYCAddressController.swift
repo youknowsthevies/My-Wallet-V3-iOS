@@ -35,6 +35,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     @IBOutlet fileprivate var postalCodeTextField: ValidationTextField!
     @IBOutlet fileprivate var primaryButtonContainer: PrimaryButtonContainer!
 
+    private let notificationCenter = NotificationCenter.default
     private let webViewService: WebViewServiceAPI = resolve()
     private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
@@ -106,6 +107,10 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
     // MARK: Lifecycle
 
+    deinit {
+        notificationCenter.removeObserver(self)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         locationCoordinator = LocationSuggestionCoordinator(self, interface: self)
@@ -150,10 +155,49 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
         bar.sizeToFit()
 
         validationFields.forEach { $0.accessoryView = bar }
+
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(adjustForKeyboard),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(adjustForKeyboard),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
     }
 
     @objc func dismissKeyboard() {
         view.endEditing(true)
+    }
+
+    @objc func adjustForKeyboard(notification: Notification) {
+        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey]
+        guard let keyboardValue = keyboardFrame as? NSValue else {
+            return
+        }
+
+        let keyboardScreenEndFrame = keyboardValue.cgRectValue
+        let keyboardViewEndFrame = view.convert(keyboardScreenEndFrame, from: view.window)
+
+        if notification.name == UIResponder.keyboardWillHideNotification {
+            scrollView.contentInset = .zero
+        } else {
+            scrollView.contentInset = UIEdgeInsets(
+                top: 0,
+                left: 0,
+                bottom: keyboardViewEndFrame.height - view.safeAreaInsets.bottom,
+                right: 0
+            )
+        }
+
+        scrollView.scrollIndicatorInsets = scrollView.contentInset
+
+        let selectedField = validationFields.first(where: \.isFirstResponder)
+        scrollView.scrollRectToVisible(selectedField?.frame ?? .zero, animated: true)
     }
 
     // MARK: IBActions
