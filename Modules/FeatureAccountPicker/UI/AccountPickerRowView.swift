@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import ComponentLibrary
 import ComposableArchitecture
 import FeatureAccountPickerDomain
 import Localization
@@ -28,10 +29,7 @@ struct AccountPickerRowView<
     // MARK: - Body
 
     var body: some View {
-        ZStack {
-            Rectangle()
-                .foregroundColor(.viewPrimaryBackground)
-                .contentShape(Rectangle())
+        VStack(spacing: 0) {
             switch model {
             case .label(let model):
                 Text(model.text)
@@ -68,6 +66,7 @@ struct AccountPickerRowView<
             case .withdrawalLocks:
                 withdrawalLocksView()
             }
+            PrimaryDivider()
         }
         .onTapGesture {
             send(.accountPickerRowDidTap(model.id))
@@ -127,7 +126,7 @@ private struct ButtonRow: View {
 
     var body: some View {
         VStack {
-            SecondaryButton(title: model.text) {
+            UIComponentsKit.SecondaryButton(title: model.text) {
                 action()
             }
             .frame(height: 48)
@@ -238,19 +237,31 @@ private struct SingleAccountRow<
                         VStack(alignment: .leading, spacing: 4) {
                             Text(model.title)
                                 .textStyle(.heading)
+                                .scaledToFill()
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
                             Text(model.description)
                                 .textStyle(.subheading)
+                                .scaledToFill()
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
                         }
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
                             Text(fiatBalance ?? " ")
                                 .textStyle(.heading)
+                                .scaledToFill()
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
                                 .shimmer(
                                     enabled: fiatBalance == nil,
                                     width: 90
                                 )
                             Text(cryptoBalance ?? " ")
                                 .textStyle(.subheading)
+                                .scaledToFill()
+                                .minimumScaleFactor(0.5)
+                                .lineLimit(1)
                                 .shimmer(
                                     enabled: cryptoBalance == nil,
                                     width: 100
@@ -258,7 +269,6 @@ private struct SingleAccountRow<
                         }
                     }
                 }
-
                 multiBadgeView
             }
             .padding(EdgeInsets(top: 16, leading: 18, bottom: 16, trailing: 24))
