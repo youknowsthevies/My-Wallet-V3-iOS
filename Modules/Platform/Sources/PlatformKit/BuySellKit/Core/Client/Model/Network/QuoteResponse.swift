@@ -145,7 +145,8 @@ public struct Quote {
             }
             let estimatedFiatAmount = FiatValue.create(minor: fiatAmount.amount, currency: source)
             let cryptoPriceValue = CryptoValue.create(minor: priceMinorBigInt, currency: destination)
-            guard let cryptoMajorAmount = Decimal(string: cryptoPriceValue.displayString) else {
+            let cryptoPriceDisplayString = cryptoPriceValue.toDisplayString(includeSymbol: false, locale: Locale.US)
+            guard let cryptoMajorAmount = Decimal(string: cryptoPriceDisplayString) else {
                 throw SetupError.priceParsing
             }
             let fiatRate = FiatValue.create(major: 1 / cryptoMajorAmount, currency: source)
