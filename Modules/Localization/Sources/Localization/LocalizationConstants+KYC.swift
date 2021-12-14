@@ -558,7 +558,7 @@ extension LocalizationConstants {
         public static let zipCode = NSLocalizedString("Zip Code", comment: "zip code")
         public static let required = NSLocalizedString("Required", comment: "required")
         public static let state = NSLocalizedString("State", comment: "state")
-        public static let stateRegionProvinceCountry = NSLocalizedString("State / Region / Province / Country", comment: "State / Region / Province / Country")
+        public static let country = NSLocalizedString("Country", comment: "Country")
         public static let postalCode = NSLocalizedString("Postal Code", comment: "postal code")
 
         public enum Errors {
