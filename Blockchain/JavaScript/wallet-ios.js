@@ -1403,10 +1403,11 @@ MyWalletPhone.tradeExecution = {
                 currentPayment
                     .build()
                     .sign()
-                    ._payment()
+                Promise.all([currentPayment._payment])
                     .then(function (payment) {
-                        let rawTx = payment.rawTx
-                        let vSize = payment.vSize
+                        let value = payment[0]
+                        let rawTx = value.rawTx
+                        let vSize = value.vSize
                         objc_on_btc_tx_signed(rawTx + ',' + vSize)
                     })
                     .catch(function(e) {
