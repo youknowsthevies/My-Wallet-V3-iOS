@@ -167,6 +167,16 @@ final class TransactionLimitsService: TransactionLimitsServiceAPI {
                     using: conversionService
                 )
         }
+        .catch { error -> AnyPublisher<TransactionLimits, TransactionLimitsServiceError> in
+            switch error {
+            case .network(.nabuError(let error)) where error.code == .userNotActive:
+                return Just(TransactionLimits.zero(for: limitsCurrency))
+                    .setFailureType(to: TransactionLimitsServiceError.self)
+                    .eraseToAnyPublisher()
+            default:
+                return Fail(error: error).eraseToAnyPublisher()
+            }
+        }
         .flatMap { [featureFlagService] transactionLimits in
             featureFlagService
                 .isEnabled(.remote(.newLimitsUIEnabled))
