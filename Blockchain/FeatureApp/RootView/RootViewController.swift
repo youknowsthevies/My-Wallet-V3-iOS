@@ -24,6 +24,14 @@ final class RootViewController: UIHostingController<RootView> {
 
     init(store global: Store<LoggedIn.State, LoggedIn.Action>) {
 
+        NotificationCenter.default.publisher(for: .transaction)
+            .prefix(1)
+            .receive(on: DispatchQueue.main)
+            .sink { _ in
+                StoreReviewController.requestReview()
+            }
+            .store(in: &bag)
+
         send = ViewStore(global).send
 
         let environment = RootViewEnvironment()
