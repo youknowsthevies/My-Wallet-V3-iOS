@@ -31,6 +31,8 @@ final class BuyTransactionEngine: TransactionEngine {
     private let orderCancellationService: OrderCancellationServiceAPI
     // Used to fetch limits for the transaction
     private let transactionLimitsService: TransactionLimitsServiceAPI
+    // Used to fetch the user KYC status and adjust limits for Tier 0 and Tier 1 users to let them enter a transaction irrespective of limits
+    private let kycTiersService: KYCTiersServiceAPI
 
     // Used as a workaround to show the correct total fee to the user during checkout.
     // This won't be needed anymore once we migrate the quotes API to v2
@@ -43,7 +45,8 @@ final class BuyTransactionEngine: TransactionEngine {
         orderCreationService: OrderCreationServiceAPI = resolve(),
         orderConfirmationService: OrderConfirmationServiceAPI = resolve(),
         orderCancellationService: OrderCancellationServiceAPI = resolve(),
-        transactionLimitsService: TransactionLimitsServiceAPI = resolve()
+        transactionLimitsService: TransactionLimitsServiceAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve()
     ) {
         self.currencyConversionService = currencyConversionService
         self.walletCurrencyService = walletCurrencyService
@@ -52,6 +55,7 @@ final class BuyTransactionEngine: TransactionEngine {
         self.orderConfirmationService = orderConfirmationService
         self.orderCancellationService = orderCancellationService
         self.transactionLimitsService = transactionLimitsService
+        self.kycTiersService = kycTiersService
     }
 
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -264,6 +268,7 @@ extension BuyTransactionEngine {
 
     enum MakeTransactionError: Error {
         case priceError(PriceServiceError)
+        case kycError(KYCTierServiceError)
         case limitsError(TransactionLimitsServiceError)
     }
 
@@ -350,14 +355,25 @@ extension BuyTransactionEngine {
         for paymentMethod: PaymentMethod,
         inputCurrency: CurrencyType
     ) -> AnyPublisher<TransactionLimits, MakeTransactionError> {
-        transactionLimitsService
-            .fetchLimits(
-                for: paymentMethod,
-                targetCurrency: transactionTarget.currencyType,
-                limitsCurrency: inputCurrency,
-                product: .simplebuy
-            )
-            .mapError(MakeTransactionError.limitsError)
+        let targetCurrency = transactionTarget.currencyType
+        return kycTiersService.canPurchaseCrypto
+            .setFailureType(to: MakeTransactionError.self)
+            .flatMap { [transactionLimitsService] canPurchaseCrypto -> AnyPublisher<TransactionLimits, MakeTransactionError> in
+                // if the user cannot purchase crypto, still just use the limits from the payment method to let them move on with the transaction
+                // this way, the logic of checking email verification and KYC status will kick-in when they attempt to navigate to the checkout screen.
+                guard canPurchaseCrypto else {
+                    return .just(TransactionLimits(paymentMethod))
+                }
+                return transactionLimitsService
+                    .fetchLimits(
+                        for: paymentMethod,
+                        targetCurrency: targetCurrency,
+                        limitsCurrency: inputCurrency,
+                        product: .simplebuy
+                    )
+                    .mapError(MakeTransactionError.limitsError)
+                    .eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
     }
 }

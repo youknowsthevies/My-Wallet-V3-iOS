@@ -175,6 +175,8 @@ final class TransactionModel {
             return nil
         case .validateTransaction:
             return processValidateTransaction()
+        case .validateTransactionAfterKYC:
+            return processValidateTransactionAfterKYC(oldState: previousState)
         case .createOrder:
             return processCreateOrder()
         case .orderCreated:
@@ -328,6 +330,28 @@ final class TransactionModel {
                 Logger.shared.error("!TRANSACTION!> Unable to processValidateTransaction: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))
             })
+    }
+
+    private func processValidateTransactionAfterKYC(oldState: TransactionState) -> Disposable {
+        Single.zip(
+            interactor.fetchUserKYCStatus().asSingle(),
+            interactor.getAvailableSourceAccounts(action: oldState.action, transactionTarget: oldState.destination)
+        )
+        .subscribe(on: MainScheduler.asyncInstance)
+        .subscribe { [weak self] kycStatus, sources in
+            guard let self = self else { return }
+            // refresh the sources so the accounts and limits get updated
+            self.process(action: .availableSourceAccountsListUpdated(sources))
+            // update the kyc status on the transaction
+            self.process(action: .userKYCInfoFetched(kycStatus))
+            // update the amount as a way force the validation of the pending transaction
+            self.process(action: .updateAmount(oldState.amount))
+            // finally, update the state so the user can move to checkout
+            self.process(action: .returnToPreviousStep) // clears the kycChecks step
+        } onFailure: { [weak self] error in
+            Logger.shared.debug("!TRANSACTION!> Invalid transaction: \(String(describing: error))")
+            self?.process(action: .fatalTransactionError(error))
+        }
     }
 
     private func processValidateTransactionForCheckout(oldState: TransactionState) -> Disposable {
@@ -503,9 +527,9 @@ final class TransactionModel {
         interactor
             .fetchUserKYCStatus()
             .asSingle()
-            .compactMap { $0 }
-            .subscribe { [weak self] userKYCTier in
-                self?.process(action: .userKYCInfoFetched(userKYCTier))
+            .subscribe(on: MainScheduler.asyncInstance)
+            .subscribe { [weak self] userKYCStatus in
+                self?.process(action: .userKYCInfoFetched(userKYCStatus))
             }
     }
 

@@ -282,11 +282,16 @@ final class TransactionInteractor {
         return transactionProcessor.validateAll()
     }
 
-    func fetchUserKYCStatus() -> AnyPublisher<KYC.UserTiers?, Never> {
-        userTiersService.tiers
-            .map { $0 } // make it optional
+    func fetchUserKYCStatus() -> AnyPublisher<TransactionState.KYCStatus?, Never> {
+        userTiersService.fetchTiers()
+            .zip(
+                userTiersService.checkSimplifiedDueDiligenceVerification(pollUntilComplete: false)
+                    .setFailureType(to: KYCTierServiceError.self)
+            )
+            .map { userTiers, isSDDVerified -> TransactionState.KYCStatus? in
+                TransactionState.KYCStatus(tiers: userTiers, isSDDVerified: isSDDVerified)
+            }
             .replaceError(with: nil)
-            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 

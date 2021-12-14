@@ -50,11 +50,12 @@ enum TransactionAction: MviAction {
     case fetchFiatRates
     case fetchTargetRates
     case fetchUserKYCInfo
-    case userKYCInfoFetched(KYC.UserTiers)
+    case userKYCInfoFetched(TransactionState.KYCStatus?)
     case updateFeeLevelAndAmount(FeeLevel, MoneyValue?)
     case sourceDestinationPair(MoneyValuePair)
     case transactionFiatRatePairs(TransactionMoneyValuePairs)
     case validateTransaction
+    case validateTransactionAfterKYC
     case createOrder
     case orderCreated(TransactionOrder?)
     case orderCancelled
@@ -199,8 +200,8 @@ extension TransactionAction {
         case .fetchUserKYCInfo:
             return oldState
 
-        case .userKYCInfoFetched(let tiers):
-            return oldState.update(keyPath: \.userKYCTiers, value: tiers)
+        case .userKYCInfoFetched(let kycStatus):
+            return oldState.update(keyPath: \.userKYCStatus, value: kycStatus)
 
         case .sourceDestinationPair(let pair):
             var newState = oldState
@@ -296,6 +297,8 @@ extension TransactionAction {
 
         case .performKYCChecks:
             return oldState.stateForMovingForward(to: .kycChecks)
+                // disable next until kyc checks are done
+                .update(keyPath: \.nextEnabled, value: false)
 
         case .validateSourceAccount:
             return oldState.stateForMovingForward(to: .validateSource)
@@ -379,7 +382,8 @@ extension TransactionAction {
             return oldState
                 .stateForMovingForward(to: .errorRecoveryInfo)
 
-        case .validateTransaction:
+        case .validateTransaction,
+             .validateTransactionAfterKYC:
             return oldState
 
         case .resetFlow:

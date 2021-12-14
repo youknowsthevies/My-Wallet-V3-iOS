@@ -503,7 +503,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .kycChecks:
             router?.presentKYCFlowIfNeeded { [transactionModel] didCompleteKYC in
                 if didCompleteKYC {
-                    transactionModel.process(action: .validateSourceAccount)
+                    transactionModel.process(action: .validateTransactionAfterKYC)
                 } else {
                     transactionModel.process(action: .returnToPreviousStep)
                 }
@@ -528,7 +528,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             )
 
         case .selectSource:
-            let canAddMoreSources = newState.userKYCTiers?.isTier2Approved ?? false
+            let canAddMoreSources = newState.userKYCStatus?.tiers.isTier2Approved ?? false
             switch action {
             case .buy where newState.stepsBackStack.contains(.enterAmount):
                 router?.routeToSourceAccountPicker(

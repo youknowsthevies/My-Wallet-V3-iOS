@@ -9,6 +9,15 @@ import ToolKit
 
 struct TransactionState: StateType {
 
+    struct KYCStatus: Equatable {
+        let tiers: KYC.UserTiers
+        let isSDDVerified: Bool
+
+        var canPurchaseCrypto: Bool {
+            tiers.canPurchaseCrypto(isSDDVerified: isSDDVerified)
+        }
+    }
+
     // MARK: Actual Transaction Data
 
     let action: AssetAction
@@ -43,7 +52,7 @@ struct TransactionState: StateType {
     var executionStatus: TransactionExecutionStatus = .notStarted
     var errorState: TransactionErrorState = .none // TODO: make it associated data of execution status, if related?
     var order: TransactionOrder?
-    var userKYCTiers: KYC.UserTiers?
+    var userKYCStatus: KYCStatus?
 
     // MARK: UI Supporting Data
 
@@ -111,7 +120,7 @@ extension TransactionState: Equatable {
             && lhs.stepsBackStack == rhs.stepsBackStack
             && lhs.availableSources.map(\.identifier) == rhs.availableSources.map(\.identifier)
             && lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
-            && lhs.userKYCTiers == rhs.userKYCTiers
+            && lhs.userKYCStatus == rhs.userKYCStatus
     }
 }
 
