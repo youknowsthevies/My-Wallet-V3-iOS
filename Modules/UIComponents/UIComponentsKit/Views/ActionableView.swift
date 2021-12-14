@@ -62,18 +62,18 @@ public struct ActionableView<Content: View>: View {
                 ForEach(buttons, id: \.title) { button in
                     switch button.style {
                     case .primary:
-                        UIComponentsKit.PrimaryButton(
+                        PrimaryButton(
                             title: button.title,
-                            action: button.action,
-                            loading: .constant(button.loading)
+                            isLoading: button.loading,
+                            action: button.action
                         )
                         .disabled(!button.enabled)
                         .frame(maxWidth: .infinity)
                     case .secondary:
-                        UIComponentsKit.SecondaryButton(
+                        MinimalButton(
                             title: button.title,
-                            action: button.action,
-                            loading: .constant(button.loading)
+                            isLoading: button.loading,
+                            action: button.action
                         )
                         .disabled(!button.enabled)
                         .frame(maxWidth: .infinity)

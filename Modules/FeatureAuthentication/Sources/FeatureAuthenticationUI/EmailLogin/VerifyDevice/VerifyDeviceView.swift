@@ -1,6 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -132,15 +137,15 @@ struct VerifyDeviceView: View {
     private var buttonSection: some View {
         WithViewStore(store) { viewStore in
             VStack(spacing: Layout.buttonSpacing) {
-                SecondaryButton(
+                MinimalButton(
                     title: LocalizedString.Button.sendAgain,
-                    action: {
-                        viewStore.send(.sendDeviceVerificationEmail)
-                    },
-                    loading: viewStore.binding(get: \.sendEmailButtonIsLoading, send: .none)
-                )
+                    isLoading: viewStore.sendEmailButtonIsLoading
+                ) {
+                    viewStore.send(.sendDeviceVerificationEmail)
+                }
                 .disabled(viewStore.sendEmailButtonIsLoading)
                 .accessibility(identifier: AccessibilityIdentifiers.VerifyDeviceScreen.sendAgainButton)
+
                 if showOpenMailAppButton {
                     PrimaryButton(title: LocalizedString.Button.openEmail) {
                         viewStore.send(.openMailApp)

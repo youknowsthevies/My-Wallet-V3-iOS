@@ -1,5 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import Localization
 import SwiftUI
 import UIComponentsKit
@@ -38,9 +43,9 @@ private struct TooManyAttemptsAlertView: View {
                 .padding(.bottom, 10)
             Text(LocalizationConstants.Pin.tooManyAttemptsWarningMessage)
             Spacer()
-            PrimaryButton(title: LocalizationConstants.okString, action: {
+            PrimaryButton(title: LocalizationConstants.okString) {
                 okPressed?()
-            })
+            }
             .padding(.bottom, 5)
         }
         .padding(EdgeInsets(top: 34, leading: 24, bottom: 0, trailing: 24))

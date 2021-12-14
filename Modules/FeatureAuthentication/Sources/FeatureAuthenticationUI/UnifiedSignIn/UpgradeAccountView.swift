@@ -1,6 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -97,7 +102,7 @@ struct UpgradeAccountView: View {
                     )
                     .accessibilityIdentifier(AccessibilityIdentifiers.UpgradeAccountScreen.upgradeButton)
 
-                    SecondaryButton(
+                    MinimalButton(
                         title: LocalizedString.skipButton,
                         action: {
                             viewStore.send(.navigate(to: .skipUpgrade))

@@ -1,12 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import FeatureAuthenticationDomain
 import Localization
 import SwiftUI
 import ToolKit
-import UIComponentsKit
 
 public struct SeedPhraseView: View {
 
