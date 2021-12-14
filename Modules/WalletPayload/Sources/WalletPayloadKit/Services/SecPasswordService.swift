@@ -23,9 +23,9 @@ final class SecondPasswordService: SecondPasswordServiceAPI {
         return state.wallet.doubleEncrypted
     }
 
-    private let walletHolder: InMemoryWalletProviderAPI
+    private let walletHolder: WalletHolderAPI
 
-    init(walletHolder: InMemoryWalletProviderAPI) {
+    init(walletHolder: WalletHolderAPI) {
         self.walletHolder = walletHolder
     }
 

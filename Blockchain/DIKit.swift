@@ -5,6 +5,7 @@ import AnalyticsKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
+import Combine
 import DIKit
 import ERC20Kit
 import EthereumKit
@@ -292,6 +293,18 @@ extension DependencyContainer {
         }
 
         factory { () -> MnemonicAccessAPI in
+            let internalFeatureFlags: InternalFeatureFlagServiceAPI = DIKit.resolve()
+            if internalFeatureFlags.isEnabled(.nativeWalletPayload) {
+                let secondPasswordPrompter: SecondPasswordPromptable = DIKit.resolve()
+                let secondPasswordIfNeeded = { () -> AnyPublisher<String?, MnemonicAccessError> in
+                    secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+                        .mapError { _ in MnemonicAccessError.wrongSecondPassword }
+                        .eraseToAnyPublisher()
+                }
+                return MnemonicAccessService(
+                    secondPasswordPrompter: secondPasswordIfNeeded
+                )
+            }
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as MnemonicAccessAPI
         }

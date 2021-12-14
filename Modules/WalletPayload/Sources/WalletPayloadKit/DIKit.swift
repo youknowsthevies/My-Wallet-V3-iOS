@@ -57,11 +57,6 @@ extension DependencyContainer {
             return holder as ReleasableWalletAPI
         }
 
-        factory { () -> InMemoryWalletProviderAPI in
-            let holder: WalletHolder = DIKit.resolve()
-            return holder as InMemoryWalletProviderAPI
-        }
-
         factory { () -> WalletHolderAPI in
             let holder: WalletHolder = DIKit.resolve()
             return holder as WalletHolderAPI
@@ -84,6 +79,8 @@ extension DependencyContainer {
         }
 
         single { WalletHolder() }
+
+        factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }
 
         single(tag: WalletRepoKeychain.repoTag) { () -> KeychainAccessAPI in
             KeychainAccess(service: "com.blockchain.wallet-repo")

@@ -7,6 +7,7 @@ import Localization
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import WalletPayloadKit
 
 final class RecoveryPhraseScreenPresenter {
 
@@ -85,7 +86,7 @@ final class RecoveryPhraseScreenPresenter {
         )
 
         nextViewModel.tapRelay
-            .withLatestFrom(mnemonicComponentsProviding.components)
+            .withLatestFrom(mnemonicComponentsProviding.components.asObservable())
             .bind { [weak self] components in
                 self?.recoveryPhraseVerifying.phraseComponents = components
                 self?.recoveryPhraseVerifying.selection = components.pick(3)

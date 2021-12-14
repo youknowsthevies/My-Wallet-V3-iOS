@@ -1,11 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
+import Combine
 import EthereumKit
 import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, MnemonicAccessAPI {
     func checkIfEthereumAccountExists() -> Bool {
@@ -102,15 +104,15 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         unimplemented()
     }
 
-    var mnemonic: Maybe<Mnemonic> {
+    var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
         unimplemented()
     }
 
-    func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
+    func mnemonic(with secondPassword: String?) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
         unimplemented()
     }
 
-    var mnemonicPromptingIfNeeded: Maybe<Mnemonic> {
+    var mnemonicPromptingIfNeeded: AnyPublisher<Mnemonic, MnemonicAccessError> {
         unimplemented()
     }
 }

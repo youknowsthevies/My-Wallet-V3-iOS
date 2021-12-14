@@ -7,7 +7,6 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
-import WalletPayloadKit
 
 enum WalletJavaScriptError: Error {
     case typeError(message: String, stack: String)

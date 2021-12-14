@@ -6,6 +6,7 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import WalletPayloadKit
 
 class RecoveryPhraseViewModel {
 
@@ -47,6 +48,7 @@ class RecoveryPhraseViewModel {
 
         mnemonicComponentsProviding
             .components
+            .asObservable()
             .bindAndCatch(to: wordsRelay)
             .disposed(by: disposeBag)
 

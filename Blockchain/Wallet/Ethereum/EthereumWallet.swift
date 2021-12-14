@@ -11,6 +11,7 @@ import JavaScriptCore
 import PlatformKit
 import RxRelay
 import RxSwift
+import WalletPayloadKit
 
 final class EthereumWallet: NSObject {
 

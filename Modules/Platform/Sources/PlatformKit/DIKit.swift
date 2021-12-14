@@ -59,8 +59,6 @@ extension DependencyContainer {
             return walletRepositoryProvider.repository as WalletRepositoryAPI
         }
 
-        factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }
-
         // MARK: - Secure Channel
 
         single { SecureChannelService() as SecureChannelAPI }

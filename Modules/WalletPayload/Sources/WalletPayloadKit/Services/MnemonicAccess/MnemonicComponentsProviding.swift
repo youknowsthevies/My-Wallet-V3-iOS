@@ -1,20 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
-import RxSwift
 
 public protocol MnemonicComponentsProviding {
 
     /// Provides 12 word components of mnemonic
-    var components: Observable<[String]> { get }
+    var components: AnyPublisher<[String], MnemonicAccessError> { get }
 }
 
 final class MnemonicComponentsProvider: MnemonicComponentsProviding {
 
-    var components: Observable<[String]> {
+    var components: AnyPublisher<[String], MnemonicAccessError> {
         mnemonicAccessAPI.mnemonic
             .map { $0.components(separatedBy: " ") }
-            .asObservable()
+            .eraseToAnyPublisher()
     }
 
     private let mnemonicAccessAPI: MnemonicAccessAPI
