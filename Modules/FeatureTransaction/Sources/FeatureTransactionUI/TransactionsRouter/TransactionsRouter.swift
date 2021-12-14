@@ -144,7 +144,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                         .flatMap { [weak self] orders -> AnyPublisher<TransactionFlowResult, Never> in
                             guard let self = self else { return .empty() }
                             let isAwaitingAction = orders.filter(\.isAwaitingAction)
-                            let trades = eligibility.pendingDepositSimpleBuyTrades + isAwaitingAction.count
+                            let trades = eligibility.pendingDepositSimpleBuyTrades + 1
                             let exceedsMaximumTrades = trades >= eligibility.maxPendingDepositSimpleBuyTrades
                             if let order = isAwaitingAction.first, exceedsMaximumTrades {
                                 return self.pendingOrdersService.cancel(order)
