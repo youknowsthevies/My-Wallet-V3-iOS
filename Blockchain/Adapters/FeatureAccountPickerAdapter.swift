@@ -452,8 +452,8 @@ extension FeatureAccountPickerControllableAdapter: AccountPickerViewControllable
                             return .singleAccount(
                                 .init(
                                     id: item.identity,
-                                    title: presenter.account.label,
-                                    description: presenter.account.currencyType.name
+                                    title: presenter.account.currencyType.name,
+                                    description: presenter.account.label
                                 )
                             )
                         case .withdrawalLocks:
