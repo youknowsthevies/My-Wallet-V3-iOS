@@ -6,6 +6,7 @@ import ToolKit
 public enum StoreReviewController {
 
     public static func requestReview() {
+        #if !DEBUG
         let disableRating = ProcessInfo.processInfo
             .environmentBoolean(for: .disableRatingPrompt) ?? false
         guard !disableRating else {
@@ -13,6 +14,7 @@ public enum StoreReviewController {
             return
         }
         SKStoreReviewController.requestReviewInCurrentScene()
+        #endif
     }
 }
 

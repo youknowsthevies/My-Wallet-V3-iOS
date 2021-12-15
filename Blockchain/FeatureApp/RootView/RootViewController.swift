@@ -26,6 +26,7 @@ final class RootViewController: UIHostingController<RootView> {
 
         NotificationCenter.default.publisher(for: .transaction)
             .prefix(1)
+            .delay(for: .seconds(1), scheduler: RunLoop.main, options: .none)
             .receive(on: DispatchQueue.main)
             .sink { _ in
                 StoreReviewController.requestReview()
