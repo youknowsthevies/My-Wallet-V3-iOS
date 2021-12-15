@@ -99,7 +99,8 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
         interactor: CardDetailsScreenInteractor,
         eventRecorder: AnalyticsEventRecorderAPI = resolve(),
         messageRecorder: MessageRecording = resolve(),
-        loadingViewPresenter: LoadingViewPresenting = resolve()
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        userDataRepository: DataRepositoryAPI = resolve()
     ) {
         self.interactor = interactor
         self.eventRecorder = eventRecorder
@@ -169,6 +170,12 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             ),
             verticalAlignment: .center
         )
+
+        userDataRepository.user
+            .map(\.personalDetails.fullName)
+            .asObservable()
+            .bindAndCatch(to: cardholderNameTextFieldViewModel.textRelay)
+            .disposed(by: disposeBag)
 
         super.init(interactable: interactor)
     }

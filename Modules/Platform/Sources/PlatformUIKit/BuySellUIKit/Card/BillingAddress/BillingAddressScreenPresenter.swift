@@ -98,19 +98,22 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
     private let loadingViewPresenter: LoadingViewPresenting
     private let eventRecorder: AnalyticsEventRecorderAPI
     private let messageRecorder: MessageRecording
+    private let userDataRepository: DataRepositoryAPI
 
     init(
         interactor: BillingAddressScreenInteractor,
         countrySelectionRouter: SelectionRouterAPI,
         loadingViewPresenter: LoadingViewPresenting = resolve(),
         eventRecorder: AnalyticsEventRecorderAPI,
-        messageRecorder: MessageRecording
+        messageRecorder: MessageRecording,
+        userDataRepository: DataRepositoryAPI = resolve()
     ) {
         self.interactor = interactor
         self.countrySelectionRouter = countrySelectionRouter
         self.loadingViewPresenter = loadingViewPresenter
         self.eventRecorder = eventRecorder
         self.messageRecorder = messageRecorder
+        self.userDataRepository = userDataRepository
 
         selectionButtonViewModel = SelectionButtonViewModel()
         selectionButtonViewModel.shouldShowSeparatorRelay.accept(true)
@@ -193,6 +196,17 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             .map { viewModels in
                 viewModels.compactMap { $0 }
             }
+
+        Observable.combineLatest(textFieldViewModelsMapRelay, userDataRepository.user.asObservable())
+            .subscribe(onNext: { textfields, user in
+                textfields[.personFullName]?.textRelay.accept(user.personalDetails.fullName)
+                textfields[.addressLine(1)]?.textRelay.accept(user.address?.lineOne ?? "")
+                textfields[.addressLine(2)]?.textRelay.accept(user.address?.lineTwo ?? "")
+                textfields[.city]?.textRelay.accept(user.address?.city ?? "")
+                textfields[.postcode]?.textRelay.accept(user.address?.postalCode ?? "")
+                textfields[.state]?.textRelay.accept(user.address?.state ?? "")
+            })
+            .disposed(by: disposeBag)
 
         let stateArrayObservable = viewModelsObservable
             .map { viewModels in
