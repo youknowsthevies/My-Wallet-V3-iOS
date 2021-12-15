@@ -148,10 +148,24 @@ extension RootViewController: LoggedInBridge {
     }
 
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
-        showFundTransferDetails.stateService.showFundsTransferDetails(
-            for: fiatCurrency,
+
+        let interactor = InteractiveFundsTransferDetailsInteractor(
+            fiatCurrency: fiatCurrency
+        )
+
+        let webViewRouter = WebViewRouter(
+            topMostViewControllerProvider: self
+        )
+
+        let presenter = FundsTransferDetailScreenPresenter(
+            webViewRouter: webViewRouter,
+            interactor: interactor,
             isOriginDeposit: isOriginDeposit
         )
+
+        let viewController = DetailsScreenViewController(presenter: presenter)
+
+        topMostViewController?.present(UINavigationController(rootViewController: viewController), animated: true)
     }
 
     func handleSwapCrypto(account: CryptoAccount?) {

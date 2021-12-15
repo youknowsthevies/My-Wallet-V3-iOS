@@ -95,15 +95,6 @@ final class RootViewController: UIHostingController<RootView> {
     weak var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController?
 
     lazy var bottomSheetPresenter = BottomSheetPresenting()
-
-    var showFundTransferDetails: (
-        router: PlatformUIKit.RouterAPI,
-        stateService: PlatformUIKit.StateService
-    ) = {
-        let stateService = PlatformUIKit.StateService()
-        let builder = PlatformUIKit.Builder(stateService: stateService)
-        return (PlatformUIKit.Router(builder: builder, currency: .coin(.bitcoin)), stateService)
-    }()
 }
 
 extension RootViewController {

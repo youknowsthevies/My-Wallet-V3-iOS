@@ -166,7 +166,7 @@ final class TransactionInteractor {
                 }
         case .sell:
             return allEligibleCryptoAccounts.map { $0 as [SingleAccount] }
-        case .deposit:
+        case .deposit, .withdraw:
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         default:
             preconditionFailure("Source account should be preselected for action \(action)")

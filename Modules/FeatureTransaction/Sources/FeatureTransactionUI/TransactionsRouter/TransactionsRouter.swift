@@ -135,7 +135,7 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
         eligibilityService.eligibility()
             .receive(on: DispatchQueue.main)
             .handleLoaderForLifecycle(loader: loadingViewPresenter)
-            .flatMap { [weak self, loadingViewPresenter] eligibility -> AnyPublisher<TransactionFlowResult, Error> in
+            .flatMap { [weak self] eligibility -> AnyPublisher<TransactionFlowResult, Error> in
                 guard let self = self else { return .empty() }
                 if eligibility.simpleBuyPendingTradesEligible {
                     return self.pendingOrdersService.pendingOrderDetails
@@ -144,21 +144,14 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
                         .flatMap { [weak self] orders -> AnyPublisher<TransactionFlowResult, Never> in
                             guard let self = self else { return .empty() }
                             let isAwaitingAction = orders.filter(\.isAwaitingAction)
-                            let trades = eligibility.pendingDepositSimpleBuyTrades + 1
-                            let exceedsMaximumTrades = trades >= eligibility.maxPendingDepositSimpleBuyTrades
-                            if let order = isAwaitingAction.first, exceedsMaximumTrades {
-                                return self.pendingOrdersService.cancel(order)
-                                    .receive(on: DispatchQueue.main)
-                                    .handleLoaderForLifecycle(loader: loadingViewPresenter)
-                                    .flatMap {
-                                        self.presentNewTransactionFlow(action, from: presenter)
-                                    }
-                                    .catch { _ in
-                                        self.presentTooManyPendingOrders(
-                                            count: eligibility.maxPendingDepositSimpleBuyTrades,
-                                            from: presenter
-                                        )
-                                    }
+                            if let order = isAwaitingAction.first {
+                                return self.presentNewTransactionFlow(action, from: presenter)
+                                    .zip(
+                                        self.pendingOrdersService.cancel(order)
+                                            .receive(on: DispatchQueue.main)
+                                            .ignoreFailure()
+                                    )
+                                    .map(\.0)
                                     .eraseToAnyPublisher()
                             } else {
                                 return self.presentNewTransactionFlow(action, from: presenter)
