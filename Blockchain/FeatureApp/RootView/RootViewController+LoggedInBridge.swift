@@ -164,8 +164,15 @@ extension RootViewController: LoggedInBridge {
         )
 
         let viewController = DetailsScreenViewController(presenter: presenter)
+        let navigationController = UINavigationController(rootViewController: viewController)
 
-        topMostViewController?.present(UINavigationController(rootViewController: viewController), animated: true)
+        presenter.backRelay.publisher
+            .sink { [weak navigationController] in
+                navigationController?.dismiss(animated: true)
+            }
+            .store(in: &bag)
+
+        topMostViewController?.present(navigationController, animated: true)
     }
 
     func handleSwapCrypto(account: CryptoAccount?) {
