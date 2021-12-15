@@ -58,7 +58,8 @@ let package = Package(
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),
         .target(

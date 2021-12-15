@@ -21,6 +21,14 @@ final class Wallet {
         hdWallets.first
     }
 
+    var addresses: [Address]
+
+    var spendableActiveAddresses: [String] {
+        addresses.lazy
+            .filter { !$0.isArchived && !$0.isWatchOnly }
+            .map(\.addr)
+    }
+
     init(from blockchainWallet: BlockchainWallet) {
         guid = blockchainWallet.guid
         sharedKey = blockchainWallet.sharedKey
@@ -28,7 +36,8 @@ final class Wallet {
         doublePasswordHash = blockchainWallet.doublePasswordHash
         metadataHDNode = blockchainWallet.metadataHDNode
         options = blockchainWallet.options
-        hdWallets = blockchainWallet.hdWallets
+        hdWallets = blockchainWallet.hdWallets.map(HDWallet.init(from:))
+        addresses = blockchainWallet.addresses.map(Address.init(from:))
     }
 }
 

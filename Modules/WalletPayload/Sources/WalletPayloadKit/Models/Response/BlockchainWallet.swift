@@ -2,6 +2,9 @@
 
 import Foundation
 
+#warning("TODO: temp solution, we should probably move the response models on a seperate module")
+enum WalletResponseModels {}
+
 struct BlockchainWallet: Equatable, Codable {
     let guid: String
     let sharedKey: String
@@ -9,8 +12,8 @@ struct BlockchainWallet: Equatable, Codable {
     let doublePasswordHash: String?
     let metadataHDNode: String?
     let options: Options
-    let addresses: [Address]
-    let hdWallets: [HDWallet]
+    let addresses: [WalletResponseModels.Address]
+    let hdWallets: [WalletResponseModels.HDWallet]
 
     enum CodingKeys: String, CodingKey {
         case guid
