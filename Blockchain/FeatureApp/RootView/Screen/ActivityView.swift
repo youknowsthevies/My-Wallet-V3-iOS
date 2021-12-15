@@ -8,7 +8,7 @@ struct ActivityView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 
     func makeUIViewController(context: Context) -> some UIViewController {
-        let viewController = ActivityScreenViewController()
+        let viewController = ActivityScreenViewController(drawerRouting: NoDrawer())
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController
     }
