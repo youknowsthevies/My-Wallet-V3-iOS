@@ -42,6 +42,7 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
         // Buy
         let buyListViewController = PricesViewController(
             presenter: PricesScreenPresenter(
+                drawerRouter: NoDrawer(),
                 interactor: PricesScreenInteractor(
                     showSupportedPairsOnly: true
                 )
