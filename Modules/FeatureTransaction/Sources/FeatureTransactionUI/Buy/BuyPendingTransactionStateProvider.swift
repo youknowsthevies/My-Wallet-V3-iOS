@@ -42,7 +42,7 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
         guard let destinationCurrency = state.destination?.currencyType else {
             impossible("Expected a destination to there for a transaction that has succeeded")
         }
-        let canUpgradeTier = canUpgradeTier(from: state.userKYCTiers)
+        let canUpgradeTier = canUpgradeTier(from: state.userKYCStatus?.tiers)
         return .init(
             title: String(
                 format: LocalizationIds.Success.title,
@@ -118,7 +118,7 @@ final class BuyPendingTransactionStateProvider: PendingTransactionStateProviding
     }
 
     private func pending(state: TransactionState) -> PendingTransactionPageState {
-        let canUpgradeTier = canUpgradeTier(from: state.userKYCTiers)
+        let canUpgradeTier = canUpgradeTier(from: state.userKYCStatus?.tiers)
         return PendingTransactionPageState(
             title: LocalizationIds.Pending.title,
             subtitle: LocalizationIds.Pending.description,

@@ -21,6 +21,9 @@ public protocol KYCVerificationServiceAPI: AnyObject {
 
     /// Returnes whether or not the user is Tier 2 approved.
     var isKYCVerified: AnyPublisher<Bool, Never> { get }
+
+    // Returns whether or not the user can make purchases
+    var canPurchaseCrypto: AnyPublisher<Bool, Never> { get }
 }
 
 public protocol KYCTiersServiceAPI: KYCVerificationServiceAPI {
@@ -57,6 +60,32 @@ public protocol KYCTiersServiceAPI: KYCVerificationServiceAPI {
 
     /// Fetches the KYC overview (features and limits) for the logged-in user
     func fetchOverview() -> AnyPublisher<KYCLimitsOverview, KYCTierServiceError>
+}
+
+extension KYCTiersServiceAPI {
+
+    /// Returnes whether or not the user is Tier 2 approved.
+    public var isKYCVerified: AnyPublisher<Bool, Never> {
+        fetchTiers()
+            .map(\.isTier2Approved)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
+
+    /// Returns whether or not the user can make purchases
+    public var canPurchaseCrypto: AnyPublisher<Bool, Never> {
+        fetchTiers()
+            .zip(
+                checkSimplifiedDueDiligenceVerification(pollUntilComplete: false)
+                    .setFailureType(to: KYCTierServiceError.self)
+            )
+            .map { userTiers, isSDDVerified -> Bool in
+                // users can make purchases if they are at least Tier 2 approved or Tier 3 (Tier 1 and SDD Verified)
+                userTiers.canPurchaseCrypto(isSDDVerified: isSDDVerified)
+            }
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
+    }
 }
 
 final class KYCTiersService: KYCTiersServiceAPI {
@@ -106,13 +135,6 @@ final class KYCTiersService: KYCTiersServiceAPI {
                     .mapErrorToKYCServiceError()
             }
         )
-    }
-
-    var isKYCVerified: AnyPublisher<Bool, Never> {
-        fetchTiers()
-            .map(\.isTier2Approved)
-            .replaceError(with: false)
-            .eraseToAnyPublisher()
     }
 
     func fetchTiers() -> AnyPublisher<KYC.UserTiers, KYCTierServiceError> {

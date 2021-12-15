@@ -234,8 +234,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             }
 
         let userKYCTier = transactionState
-            .map(\.userKYCTiers)
-            .map(\.?.latestApprovedTier)
+            .map(\.userKYCStatus)
+            .map(\.?.tiers.latestApprovedTier)
             .share(scope: .whileConnected)
 
         let bottomAuxiliaryViewEnabled = Observable
@@ -357,7 +357,11 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .subscribe(onNext: { [transactionModel, analyticsHook] state in
                 switch state.action {
                 case .buy:
-                    transactionModel.process(action: .performKYCChecks)
+                    if state.userKYCStatus?.canPurchaseCrypto == true {
+                        transactionModel.process(action: .validateSourceAccount)
+                    } else {
+                        transactionModel.process(action: .performKYCChecks)
+                    }
                 default:
                     transactionModel.process(action: .prepareTransaction)
                 }

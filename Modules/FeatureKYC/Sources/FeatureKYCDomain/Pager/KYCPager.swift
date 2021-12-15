@@ -28,9 +28,7 @@ public final class KYCPager: KYCPagerAPI {
             case .countrySelected(let country):
                 kycCountry = country
             case .sddVerification(let isVerified):
-                if isVerified {
-                    return .empty() // User is SDD verified, so we can exit KYC
-                }
+                return isVerified ? .empty() : .just(.verifyIdentity)
             case .stateSelected:
                 // no-op: handled in coordinator
                 break

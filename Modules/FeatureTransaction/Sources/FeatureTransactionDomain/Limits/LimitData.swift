@@ -92,6 +92,21 @@ extension PeriodicLimits {
 
 extension EffectiveLimit {
 
+    public static func min(
+        _ x: EffectiveLimit?,
+        _ y: EffectiveLimit?
+    ) throws -> EffectiveLimit? {
+        guard let x = x, let y = y else {
+            return x ?? y
+        }
+        let value: MoneyValue = try .min(x.value, y.value)
+        let timeframe: TimeFrame = try x.value < y.value ? x.timeframe : y.timeframe
+        return .init(
+            timeframe: timeframe,
+            value: value
+        )
+    }
+
     public static func max(
         _ x: EffectiveLimit?,
         _ y: EffectiveLimit?
