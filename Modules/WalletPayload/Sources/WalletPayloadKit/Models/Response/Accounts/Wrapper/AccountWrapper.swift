@@ -26,7 +26,7 @@ enum AccountWrapper {
         let label: String
         let archived: Bool
         let defaultDerivation: String
-        let derivations: [Derivation]
+        let derivations: [WalletResponseModels.Derivation]
 
         enum CodingKeys: String, CodingKey {
             case label

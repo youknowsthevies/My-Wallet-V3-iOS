@@ -251,7 +251,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         guard case .fiat(let fiatCurrency) = currency else { return }
         featureFetching
             .fetchBool(for: .withdrawAndDepositACH)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] withdrawAndDepositACHEnabled in
                 guard let self = self else { return }
                 switch withdrawAndDepositACHEnabled {
@@ -270,7 +270,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             self.accountProviding
                 .accounts(for: self.currency)
                 .compactMap(\.first)
-                .observeOn(MainScheduler.instance)
+                .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] account in
                     self?.tabSwapping.deposit(into: account)
                 })
@@ -315,7 +315,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     private func showWithdrawFiatScreen(currency: FiatCurrency) {
         featureFetching
             .fetchBool(for: .withdrawAndDepositACH)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] withdrawAndDepositACHEnabled in
                 guard let self = self else { return }
                 switch withdrawAndDepositACHEnabled {
@@ -334,7 +334,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             self.accountProviding
                 .accounts(for: .fiat(currency))
                 .compactMap(\.first)
-                .observeOn(MainScheduler.instance)
+                .observe(on: MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] account in
                     self?.tabSwapping.withdraw(from: account)
                 })

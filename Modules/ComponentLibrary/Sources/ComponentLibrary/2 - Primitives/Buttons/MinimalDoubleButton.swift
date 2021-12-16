@@ -21,29 +21,33 @@ import SwiftUI
 /// # Figma
 ///
 ///  [Buttons](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=3%3A367)
-public struct MinimalDoubleButton: View {
+public struct MinimalDoubleButton<LeadingLeadingView: View, TrailingLeadingView: View>: View {
 
-    private let leadingButton: ButtonData
-    private let trailingButton: ButtonData
+    private let leadingButton: ButtonData<LeadingLeadingView>
+    private let trailingButton: ButtonData<TrailingLeadingView>
 
     @Environment(\.isEnabled) private var isEnabled
 
     public init(
         leadingTitle: String,
         leadingIsLoading: Bool = false,
+        @ViewBuilder leadingLeadingView: @escaping () -> LeadingLeadingView,
         leadingAction: @escaping () -> Void,
         trailingTitle: String,
         trailingIsLoading: Bool = false,
+        @ViewBuilder trailingLeadingView: @escaping () -> TrailingLeadingView,
         trailingAction: @escaping () -> Void
     ) {
         leadingButton = ButtonData(
             title: leadingTitle,
             isLoading: leadingIsLoading,
+            leadingView: leadingLeadingView,
             action: leadingAction
         )
         trailingButton = ButtonData(
             title: trailingTitle,
             isLoading: trailingIsLoading,
+            leadingView: trailingLeadingView,
             action: trailingAction
         )
     }
@@ -60,28 +64,29 @@ public struct MinimalDoubleButton: View {
     }
 }
 
-private struct ButtonData {
+private struct ButtonData<LeadingView: View> {
     let title: String
     let isLoading: Bool
+    let leadingView: () -> LeadingView
     let action: () -> Void
 }
 
-private struct MinimalDoubleButtonStyle: ButtonStyle {
+private struct MinimalDoubleButtonStyle<LeadingLeadingView: View, TrailingLeadingView: View>: ButtonStyle {
 
     let isEnabled: Bool
-    let leadingButton: ButtonData
-    let trailingButton: ButtonData
+    let leadingButton: ButtonData<LeadingLeadingView>
+    let trailingButton: ButtonData<TrailingLeadingView>
 
     private let colorCombination = PillButtonStyle.ColorCombination(
         enabled: PillButtonStyle.ColorSet(
             foreground: .semantic.primary,
             background: Color(
                 light: .palette.white,
-                dark: .palette.white.opacity(0)
+                dark: .clear
             ),
             border: Color(
                 light: .palette.white,
-                dark: .palette.white.opacity(0)
+                dark: .clear
             )
         ),
         pressed: PillButtonStyle.ColorSet(
@@ -112,26 +117,40 @@ private struct MinimalDoubleButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: 0) {
-            Button(leadingButton.title, action: leadingButton.action)
-                .buttonStyle(
-                    PillButtonStyle(
-                        isLoading: leadingButton.isLoading,
-                        isEnabled: isEnabled,
-                        isRounded: false,
-                        colorCombination: colorCombination
-                    )
+            Button(action: leadingButton.action) {
+                HStack(spacing: Spacing.padding2) {
+                    leadingButton.leadingView()
+                        .frame(width: 24, height: 24)
+
+                    Text(leadingButton.title)
+                }
+            }
+            .buttonStyle(
+                PillButtonStyle(
+                    isLoading: leadingButton.isLoading,
+                    isEnabled: isEnabled,
+                    isRounded: false,
+                    colorCombination: colorCombination
                 )
+            )
             borderColor(for: configuration)
                 .frame(width: 1, height: 32)
-            Button(trailingButton.title, action: trailingButton.action)
-                .buttonStyle(
-                    PillButtonStyle(
-                        isLoading: trailingButton.isLoading,
-                        isEnabled: isEnabled,
-                        isRounded: false,
-                        colorCombination: colorCombination
-                    )
+            Button(action: trailingButton.action) {
+                HStack(spacing: Spacing.padding2) {
+                    trailingButton.leadingView()
+                        .frame(width: 24, height: 24)
+
+                    Text(trailingButton.title)
+                }
+            }
+            .buttonStyle(
+                PillButtonStyle(
+                    isLoading: trailingButton.isLoading,
+                    isEnabled: isEnabled,
+                    isRounded: false,
+                    colorCombination: colorCombination
                 )
+            )
         }
         .overlay(
             RoundedRectangle(cornerRadius: Spacing.buttonBorderRadius)
@@ -154,6 +173,28 @@ private struct MinimalDoubleButtonStyle: ButtonStyle {
                 dark: .palette.grey700
             )
         }
+    }
+}
+
+extension MinimalDoubleButton where LeadingLeadingView == EmptyView, TrailingLeadingView == EmptyView {
+    public init(
+        leadingTitle: String,
+        leadingIsLoading: Bool = false,
+        leadingAction: @escaping () -> Void,
+        trailingTitle: String,
+        trailingIsLoading: Bool = false,
+        trailingAction: @escaping () -> Void
+    ) {
+        self.init(
+            leadingTitle: leadingTitle,
+            leadingIsLoading: leadingIsLoading,
+            leadingLeadingView: EmptyView.init,
+            leadingAction: leadingAction,
+            trailingTitle: trailingTitle,
+            trailingIsLoading: trailingIsLoading,
+            trailingLeadingView: EmptyView.init,
+            trailingAction: trailingAction
+        )
     }
 }
 
@@ -200,6 +241,21 @@ struct MinimalDoubleButton_Previews: PreviewProvider {
             )
             .previewLayout(.sizeThatFits)
             .previewDisplayName("Loading")
+
+            MinimalDoubleButton(
+                leadingTitle: "Leading",
+                leadingLeadingView: {
+                    Icon.placeholder
+                },
+                leadingAction: {},
+                trailingTitle: "Trailing",
+                trailingLeadingView: {
+                    Icon.placeholder
+                },
+                trailingAction: {}
+            )
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("With Icon")
         }
         .padding()
     }

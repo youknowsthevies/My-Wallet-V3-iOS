@@ -50,7 +50,7 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
                 self.client.campaigns.asObservable()
             }
             .map { .value($0) }
-            .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
+            .catchAndReturn(.invalid(.valueCouldNotBeCalculated))
             .bindAndCatch(to: campaignsCalculationStateRelay)
             .disposed(by: disposeBag)
     }

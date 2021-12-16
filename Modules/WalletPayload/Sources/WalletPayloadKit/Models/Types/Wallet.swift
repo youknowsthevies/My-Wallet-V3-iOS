@@ -2,16 +2,32 @@
 
 import Foundation
 import ToolKit
+import WalletCore
 
 /// The derived Wallet from the response model, `BlockchainWallet`
 final class Wallet {
-
     var guid: String
     var sharedKey: String
     var doubleEncrypted: Bool
     var doublePasswordHash: String?
-    var metadataHDNode: String
-    let hdWallets: [HDWallet]
+    var metadataHDNode: String?
+
+    var options: Options
+    var hdWallets: [HDWallet]
+
+    /// Returns the default HDWallet from the list
+    /// - NOTE: We never add multiple HDWallet(s)
+    var defaultHDWallet: HDWallet? {
+        hdWallets.first
+    }
+
+    var addresses: [Address]
+
+    var spendableActiveAddresses: [String] {
+        addresses.lazy
+            .filter { !$0.isArchived && !$0.isWatchOnly }
+            .map(\.addr)
+    }
 
     init(from blockchainWallet: BlockchainWallet) {
         guid = blockchainWallet.guid
@@ -19,20 +35,134 @@ final class Wallet {
         doubleEncrypted = blockchainWallet.doubleEncryption
         doublePasswordHash = blockchainWallet.doublePasswordHash
         metadataHDNode = blockchainWallet.metadataHDNode
-        hdWallets = blockchainWallet.hdWallets
+        options = blockchainWallet.options
+        hdWallets = blockchainWallet.hdWallets.map(HDWallet.init(from:))
+        addresses = blockchainWallet.addresses.map(Address.init(from:))
     }
 }
 
-func getSeedHex(
-    wallet: Wallet,
-    secondPassword: String?
+/// Gets a mnemonic phrase from the given wallet
+/// - Parameters:
+///   - wallet: A `Wallet` value to retrieve the mnemonic from
+///   - secondPassword: A optional `String` representing the second password of the wallet
+/// - Returns: A `Mnemonic` phrase
+func getMnemonic(
+    from wallet: Wallet,
+    secondPassword: String? = nil
 ) -> Result<String, WalletError> {
-    guard !wallet.doubleEncrypted else {
-        // TODO: handle double password
-        unimplemented()
+    getSeedHex(from: wallet, secondPassword: secondPassword)
+        .map(Data.init(hex:))
+        .flatMap(getHDWallet(from:))
+        .map(\.mnemonic)
+}
+
+/// Returns  the seedHex from the given wallet
+/// - Parameters:
+///   - wallet: A `Wallet` object to retrieve the seedHex
+///   - secondPassword: An optional String representing the second password
+/// - Returns: `Result<String, WalletError>`
+func getSeedHex(
+    from wallet: Wallet,
+    secondPassword: String? = nil
+) -> Result<String, WalletError> {
+    guard let seedHex = wallet.defaultHDWallet?.seedHex else {
+        return .failure(.initialization(.missingSeedHex))
     }
-    guard let seedHex = wallet.hdWallets.first?.seedHex else {
-        return .failure(.initialization(.missingSeedHex)) // Should we crash?
+    if wallet.doubleEncrypted {
+        guard let secondPassword = secondPassword else {
+            return .failure(.initialization(.needsSecondPassword))
+        }
+        return decryptValue(
+            secondPassword: secondPassword,
+            wallet: wallet,
+            value: seedHex
+        )
     }
     return .success(seedHex)
+}
+
+// MARK: - Second Password
+
+/// Decrypts a value using a second password
+/// - Parameters:
+///   - secondPassword: A `String` value representing the user's second password
+///   - wallet: A `Wallet` object
+///   - value: A `String` encrypted value to be decrypted
+/// - Returns: A `Result<String, WalletError>` with a decrypted value or a failure
+func decryptValue(
+    secondPassword: String,
+    wallet: Wallet,
+    value: String
+) -> Result<String, WalletError> {
+    validateSecondPassword(
+        password: secondPassword,
+        wallet: wallet
+    ) { wallet in
+        decryptValue(
+            using: secondPassword,
+            sharedKey: wallet.sharedKey,
+            pbkdf2Iterations: wallet.options.pbkdf2Iterations,
+            value: value
+        )
+        .mapError(WalletError.map(from:))
+    }
+}
+
+/// Validates if a second password is correct or fails
+/// - Parameters:
+///   - password: A `String` value representing the user's second password
+///   - wallet: A `Wallet` value
+///   - perform: A closure to perform second password decryption
+/// - Returns: `Result<Value, WalletError>`
+func validateSecondPassword<Value>(
+    password: String,
+    wallet: Wallet,
+    perform: (Wallet) -> Result<Value, WalletError>
+) -> Result<Value, WalletError> {
+    guard isValid(secondPassword: password, wallet: wallet) else {
+        return .failure(.initialization(.invalidSecondPassword))
+    }
+    return perform(wallet)
+}
+
+/// Validates whether the given second password is valid
+/// - Parameters:
+///   - secondPassword: A `String` for the second password
+///   - wallet: A `Wallet` value
+/// - Returns: `true` if the given secondPassword matches the stored one, otherwise `false`
+func isValid(secondPassword: String, wallet: Wallet) -> Bool {
+    guard wallet.doubleEncrypted else {
+        return false
+    }
+    let iterations = wallet.options.pbkdf2Iterations
+    let sharedKey = wallet.sharedKey
+    let computedHash = hashNTimes(iterations: iterations, value: sharedKey + secondPassword)
+    return wallet.doublePasswordHash == computedHash
+}
+
+// MARK: Private
+
+/// Gets an HDWallet from the given parameters
+/// - Parameters:
+///   - entropy: A `Data` value representing the entropy for the `HDWallet`
+/// - Returns: A `WalletCore.HDWallet` object
+private func getHDWallet(
+    from entropy: Data
+) -> Result<WalletCore.HDWallet, WalletError> {
+    getHDWallet(from: entropy, passphrase: "")
+}
+
+/// Gets an HDWallet from the given parameters
+/// - Parameters:
+///   - entropy: A `Data` value representing the entropy for the `HDWallet`
+///   - passphrase: An optional `String` if the HDWallet is encrypted
+/// - Returns: A `WalletCore.HDWallet` object
+private func getHDWallet(
+    from entropy: Data,
+    passphrase: String = ""
+) -> Result<WalletCore.HDWallet, WalletError> {
+    guard let hdWallet = WalletCore.HDWallet(entropy: entropy, passphrase: passphrase) else {
+        return .failure(.decryption(.hdWalletCreation))
+    }
+    return .success(hdWallet)
 }

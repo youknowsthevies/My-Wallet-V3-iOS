@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import MoneyKit
+import ToolKit
 
 public enum Order {
     public enum Action: String, Codable {
@@ -19,7 +20,12 @@ enum OrderPayload {
     struct ConfirmOrder: Encodable {
 
         enum Callback {
-            static let url = "https://blockchainwallet.page.link/obapproval"
+            static var url: URL {
+                Bundle.main.plist.BLOCKCHAIN_WALLET_PAGE_LINK[]
+                    .flatMap(URL.https)
+                    .or(default: "https://blockchainwallet.page.link")
+                    .appendingPathComponent("obapproval")
+            }
         }
 
         enum Partner {
@@ -58,7 +64,7 @@ enum OrderPayload {
             case .bank:
                 attributes = Attributes(
                     redirectURL: nil,
-                    callback: Callback.url
+                    callback: Callback.url.absoluteString
                 )
             case .funds:
                 attributes = nil

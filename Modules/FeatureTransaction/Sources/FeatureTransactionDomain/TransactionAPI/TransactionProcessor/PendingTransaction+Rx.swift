@@ -15,7 +15,7 @@ extension Completable {
 extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransaction {
 
     public func updateTxValiditySingle(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        catchError { error -> Single<PendingTransaction> in
+        `catch` { error -> Single<PendingTransaction> in
             guard let validationError = error as? TransactionValidationFailure else {
                 throw error
             }

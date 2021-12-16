@@ -44,7 +44,7 @@ final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListe
     func presentKYCFlowIfNeeded(from viewController: UIViewController, completion: @escaping (Bool) -> Void) {
         kycTiersPageModelFactory
             .tiersPageModel(suppressCTA: true)
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe { [weak router] model in
                 router?.routeToSwapTiers(model: model, present: true)
             }

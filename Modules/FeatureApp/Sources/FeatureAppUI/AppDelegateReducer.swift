@@ -44,6 +44,7 @@ public enum AppDelegateAction: Equatable {
         userInfo: [AnyHashable: Any],
         completionHandler: (UIBackgroundFetchResult) -> Void
     )
+    case applyCertificatePinning
     case setGlobalNavigationAppearance(Screen.Style.Bar)
 }
 
@@ -132,7 +133,10 @@ let appDelegateReducer = Reducer<
                 apiKey: context.zendeskKey
             ),
 
-            applyCertificatePinning(using: environment.certificatePinner),
+            environment.featureFlagService.isEnabled(.local(.disableSSLPinning))
+                .filter { $0 }
+                .map(.applyCertificatePinning)
+                .eraseToEffect(),
 
             enableSift(using: environment.siftService)
         )
@@ -192,6 +196,10 @@ let appDelegateReducer = Reducer<
         }
     case .userActivity(let userActivity):
         return .none
+    case .applyCertificatePinning:
+        return .fireAndForget {
+            environment.certificatePinner.pinCertificateIfNeeded()
+        }
     case .setGlobalNavigationAppearance(let barStyle):
         return .fireAndForget {
             let navigationBarAppearance = UINavigationBar.appearance()
@@ -236,14 +244,6 @@ private func removeBlurFilter(
     }
     return Effect.fireAndForget {
         handler.removeEffect(from: view)
-    }
-}
-
-private func applyCertificatePinning(
-    using service: CertificatePinnerAPI
-) -> AppDelegateEffect {
-    Effect.fireAndForget {
-        service.pinCertificateIfNeeded()
     }
 }
 

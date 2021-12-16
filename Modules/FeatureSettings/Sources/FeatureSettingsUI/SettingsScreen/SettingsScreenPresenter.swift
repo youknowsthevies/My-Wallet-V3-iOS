@@ -122,7 +122,7 @@ public final class SettingsScreenPresenter {
 
         sectionsProvider
             .sections
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .map { $0.map(\.sectionType) }
             .bindAndCatch(to: sectionRelay)
             .disposed(by: disposeBag)

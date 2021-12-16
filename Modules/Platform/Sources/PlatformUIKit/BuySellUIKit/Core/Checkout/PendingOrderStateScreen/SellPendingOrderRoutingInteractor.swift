@@ -9,12 +9,12 @@ public final class SellPendingOrderRoutingInteractor: PendingOrderRoutingInterac
 
     private lazy var setup: Void = {
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(to: interactor.previousRelay)
             .disposed(by: disposeBag)
 
         stateRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, state) in
                 self.handle(state: state)
             }

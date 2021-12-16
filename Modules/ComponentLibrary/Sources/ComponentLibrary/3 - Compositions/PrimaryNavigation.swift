@@ -11,17 +11,50 @@ extension View {
 
     /// Replacement for setting navigation items using component library styling.
     /// - Parameters:
-    ///   - title: Title displayed in the navigation bar
+    ///   - icon: Optional leading icon displayed in the navigation bar
+    ///   - title: Optional title displayed in the navigation bar
+    ///   - byline: Optional byline displayed under the title
     ///   - trailing: Trailing views in navigation bar. Commonly `IconButton`, or `TextButton`.
     ///               Multiple views are auto distributed along an HStack.
     /// - Returns: `self`, otherwise unmodified.
-    public func primaryNavigation<Trailing: View>(
-        title: String,
+    public func primaryNavigation<LeadingIcon: View, Trailing: View>(
+        @ViewBuilder icon: @escaping () -> LeadingIcon,
+        title: String? = nil,
+        isLargeTitle: Bool = false,
+        byline: String? = nil,
         @ViewBuilder trailing: @escaping () -> Trailing
     ) -> some View {
         modifier(
             PrimaryNavigationModifier(
+                icon: icon,
                 title: title,
+                isLargeTitle: isLargeTitle,
+                byline: byline,
+                trailing: trailing
+            )
+        )
+    }
+
+    /// Replacement for setting navigation items using component library styling.
+    /// - Parameters:
+    ///   - icon: Optional leading icon displayed in the navigation bar
+    ///   - title: Optional title displayed in the navigation bar
+    ///   - byline: Optional byline displayed under the title
+    ///   - trailing: Trailing views in navigation bar. Commonly `IconButton`, or `TextButton`.
+    ///               Multiple views are auto distributed along an HStack.
+    /// - Returns: `self`, otherwise unmodified.
+    public func primaryNavigation<Trailing: View>(
+        title: String? = nil,
+        isLargeTitle: Bool = false,
+        byline: String? = nil,
+        @ViewBuilder trailing: @escaping () -> Trailing
+    ) -> some View {
+        modifier(
+            PrimaryNavigationModifier(
+                icon: EmptyView.init,
+                title: title,
+                isLargeTitle: isLargeTitle,
+                byline: byline,
                 trailing: trailing
             )
         )
@@ -31,14 +64,23 @@ extension View {
     ///
     /// This function is specifically available for setting the title without changing trailing views.
     ///
-    /// - Parameter title: Title displayed in the navigation bar
+    /// - Parameters:
+    ///   - icon: Optional leading icon displayed in the navigation bar
+    ///   - title: Optional title displayed in the navigation bar
+    ///   - byline: Optional byline displayed under the title
     /// - Returns: `self`, otherwise unmodified.
-    public func primaryNavigation(
-        title: String? = nil
+    public func primaryNavigation<LeadingIcon: View>(
+        @ViewBuilder icon: @escaping () -> LeadingIcon,
+        title: String? = nil,
+        isLargeTitle: Bool = false,
+        byline: String? = nil
     ) -> some View {
         modifier(
-            PrimaryNavigationModifier<EmptyView>(
+            PrimaryNavigationModifier<LeadingIcon, EmptyView>(
+                icon: icon,
                 title: title,
+                isLargeTitle: isLargeTitle,
+                byline: byline,
                 trailing: nil
             )
         )
@@ -46,18 +88,25 @@ extension View {
 
     /// Replacement for setting navigation items using component library styling.
     ///
-    /// This function is specifically available for setting trailing views without changing the title.
+    /// This function is specifically available for setting the title without changing trailing views.
     ///
-    /// - Parameter trailing: Trailing views in navigation bar. Commonly `IconButton`, or `TextButton`.
-    ///                       Multiple views are auto distributed along an HStack.
+    /// - Parameters:
+    ///   - icon: Optional leading icon displayed in the navigation bar
+    ///   - title: Optional title displayed in the navigation bar
+    ///   - byline: Optional byline displayed under the title
     /// - Returns: `self`, otherwise unmodified.
-    public func primaryNavigation<Trailing: View>(
-        @ViewBuilder trailing: @escaping () -> Trailing
+    public func primaryNavigation(
+        title: String? = nil,
+        isLargeTitle: Bool = false,
+        byline: String? = nil
     ) -> some View {
         modifier(
-            PrimaryNavigationModifier(
-                title: nil,
-                trailing: trailing
+            PrimaryNavigationModifier<EmptyView, EmptyView>(
+                icon: EmptyView.init,
+                title: title,
+                isLargeTitle: isLargeTitle,
+                byline: byline,
+                trailing: nil
             )
         )
     }
@@ -141,8 +190,11 @@ extension EnvironmentValues {
 // MARK: - Private
 
 /// Modifier which applies custom navigation bar styling
-private struct PrimaryNavigationModifier<Trailing: View>: ViewModifier {
+private struct PrimaryNavigationModifier<LeadingIcon: View, Trailing: View>: ViewModifier {
+    let icon: () -> LeadingIcon
     let title: String?
+    let isLargeTitle: Bool
+    let byline: String?
     let trailing: (() -> Trailing)?
 
     // Custom variable required for this because `presentationMode.wrappedValue.isPresented`
@@ -171,10 +223,23 @@ private struct PrimaryNavigationModifier<Trailing: View>: ViewModifier {
                         #else
                         $0.toolbar {
                             ToolbarItem(placement: isSecondaryViewInNavigation ? .principal : .navigationBarLeading) {
-                                Text(title)
-                                    .typography(.title2)
-                                    .foregroundColor(.semantic.title)
-                                    .padding(.leading, Spacing.padding1)
+                                HStack(spacing: 8) {
+                                    icon()
+                                        .frame(width: 24, height: 24)
+
+                                    VStack(alignment: isSecondaryViewInNavigation ? .center : .leading, spacing: 0) {
+                                        Text(title)
+                                            .typography(titleTypography)
+                                            .foregroundColor(.semantic.title)
+
+                                        byline.map(Text.init)?
+                                            .typography(isSecondaryViewInNavigation ? .caption1 : .paragraph2)
+                                            .foregroundColor(
+                                                Color(light: .palette.grey600, dark: .palette.dark200)
+                                            )
+                                    }
+                                }
+                                .padding(.leading, Spacing.padding1)
                             }
                         }
                         #endif
@@ -199,6 +264,17 @@ private struct PrimaryNavigationModifier<Trailing: View>: ViewModifier {
                     )
                 #endif
             }
+    }
+
+    private var titleTypography: Typography {
+        switch (byline, isSecondaryViewInNavigation) {
+        case (.none, false):
+            return isLargeTitle ? .title2 : .title3 // First view, no byline
+        case (.none, true):
+            return .title3 // Back button visible, no byline
+        case (.some, _):
+            return .body2 // with byline in any view
+        }
     }
 }
 
@@ -325,11 +401,16 @@ struct PrimaryNavigation_Previews: PreviewProvider {
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.green)
-            .primaryNavigation(title: "Foo") {
-                IconButton(icon: .qrCode) {}
+            .primaryNavigation(
+                icon: { Icon.placeholder },
+                title: "Foo",
+                byline: "Byline",
+                trailing: {
+                    IconButton(icon: .qrCode) {}
 
-                IconButton(icon: .user) {}
-            }
+                    IconButton(icon: .user) {}
+                }
+            )
         }
 
         @ViewBuilder var secondary: some View {
@@ -342,7 +423,7 @@ struct PrimaryNavigation_Previews: PreviewProvider {
                     }
                 }
             }
-            .primaryNavigation(title: "Bar") {
+            .primaryNavigation(title: "Bar", byline: "Byline") {
                 IconButton(icon: .chat) {}
             }
         }

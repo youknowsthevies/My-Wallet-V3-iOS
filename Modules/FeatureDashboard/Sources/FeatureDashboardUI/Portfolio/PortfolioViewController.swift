@@ -151,12 +151,12 @@ public final class PortfolioViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
 
         presenter.sections
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .bindAndCatch(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
 
         presenter.isEmptyState
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .bind { [weak parent] isEmptyState in
                 guard let buyButtonRenderer = parent as? BuyButtonViewRenderer else { return }
                 buyButtonRenderer.render(buyButton: self.buyButton, isVisible: !isEmptyState)

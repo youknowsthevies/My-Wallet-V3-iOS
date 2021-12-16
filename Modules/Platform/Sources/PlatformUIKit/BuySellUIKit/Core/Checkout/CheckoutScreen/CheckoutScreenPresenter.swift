@@ -123,7 +123,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
                     )
                     self.contentReducer.setupDidSucceed(with: data)
                 },
-                onError: { [weak self] error in
+                onFailure: { [weak self] error in
                     self?.setupDidFail(with: error)
                 }
             )

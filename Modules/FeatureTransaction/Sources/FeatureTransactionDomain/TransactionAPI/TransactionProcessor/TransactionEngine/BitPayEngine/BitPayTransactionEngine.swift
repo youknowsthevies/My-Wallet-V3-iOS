@@ -152,7 +152,7 @@ final class BitPayTransactionEngine: TransactionEngine {
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         bitpayClientEngine
             .doPrepareTransaction(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
-            .subscribeOn(MainScheduler.instance)
+            .subscribe(on: MainScheduler.instance)
             .flatMap(weak: self) { (self, transaction) -> Single<String> in
                 self.doExecuteTransaction(
                     invoiceId: self.bitpayInvoice.invoiceId,
@@ -229,14 +229,14 @@ final class BitPayTransactionEngine: TransactionEngine {
             fatalError("Expected an Int value: \(timeRemaining)")
         }
         return Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
-            .takeUntil(stopCountdown)
+            .take(until: stopCountdown)
             .map { remaining - $0 }
             .do(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 _ = self.askForRefreshConfirmation(false)
                     .subscribe()
             })
-            .takeUntil(.inclusive, predicate: { $0 <= Int(Self.timeoutStop) })
+            .take(until: { $0 <= Int(Self.timeoutStop) }, behavior: .inclusive)
             .do(onCompleted: { [weak self] in
                 guard let self = self else { return }
                 Logger.shared.debug("BitPay Invoice Countdown expired")

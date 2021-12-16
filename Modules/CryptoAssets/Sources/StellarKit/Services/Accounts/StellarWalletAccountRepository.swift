@@ -4,6 +4,7 @@ import DIKit
 import MoneyKit
 import PlatformKit
 import RxSwift
+import WalletPayloadKit
 
 public protocol StellarWalletAccountRepositoryAPI {
     var defaultAccount: StellarWalletAccount? { get }
@@ -46,6 +47,9 @@ class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletA
     func loadKeyPair(with secondPassword: String?) -> Single<StellarKeyPair> {
         mnemonicAccessAPI
             .mnemonic(with: secondPassword)
+            .asObservable()
+            .take(1)
+            .asSingle()
             .map { mnemonic in
                 StellarKeyDerivationInput(mnemonic: mnemonic)
             }
@@ -57,6 +61,9 @@ class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletA
     func loadKeyPair() -> Maybe<StellarKeyPair> {
         mnemonicAccessAPI
             .mnemonicPromptingIfNeeded
+            .asObservable()
+            .take(1)
+            .asSingle()
             .map { mnemonic in
                 StellarKeyDerivationInput(mnemonic: mnemonic)
             }
@@ -78,7 +85,7 @@ class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletA
                 }
                 return Disposables.create()
             }
-            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
     }
 
     private func loadDefaultAccount() -> Maybe<WalletAccount> {
@@ -120,6 +127,6 @@ class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletA
             )
             return Disposables.create()
         }
-        .subscribeOn(MainScheduler.asyncInstance)
+        .subscribe(on: MainScheduler.asyncInstance)
     }
 }

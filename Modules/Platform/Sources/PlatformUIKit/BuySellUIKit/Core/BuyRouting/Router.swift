@@ -448,7 +448,7 @@ public final class Router: RouterAPI {
         }
         analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .buy))
         router.startFlow()
-            .takeUntil(.inclusive, predicate: { $0.isCloseEffect })
+            .take(until: { $0.isCloseEffect }, behavior: .inclusive)
             .skip { $0.shouldSkipEffect }
             .subscribe(onNext: { [weak self] effect in
                 guard let self = self else { return }

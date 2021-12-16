@@ -99,7 +99,8 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
         interactor: CardDetailsScreenInteractor,
         eventRecorder: AnalyticsEventRecorderAPI = resolve(),
         messageRecorder: MessageRecording = resolve(),
-        loadingViewPresenter: LoadingViewPresenting = resolve()
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        userDataRepository: DataRepositoryAPI = resolve()
     ) {
         self.interactor = interactor
         self.eventRecorder = eventRecorder
@@ -169,6 +170,12 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             ),
             verticalAlignment: .center
         )
+
+        userDataRepository.user
+            .map(\.personalDetails.fullName)
+            .asObservable()
+            .bindAndCatch(to: cardholderNameTextFieldViewModel.textRelay)
+            .disposed(by: disposeBag)
 
         super.init(interactable: interactor)
     }
@@ -241,7 +248,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
 
         buttonTapped
             .compactMap(\.successData)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, payload) in
                 if payload.isExist {
                     self.errorRelay.accept(.cardAlreadySaved)
@@ -257,7 +264,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
                 onSuccess: { [weak cardNumberValidator] cardTypes in
                     cardNumberValidator?.supportedCardTypesRelay.accept(cardTypes)
                 },
-                onError: { [weak errorRelay] _ in
+                onFailure: { [weak errorRelay] _ in
                     errorRelay?.accept(.generic)
                 }
             )

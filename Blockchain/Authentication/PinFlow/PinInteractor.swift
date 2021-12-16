@@ -73,7 +73,7 @@ final class PinInteractor: PinInteracting {
     //        maintenanceService.serverStatus
     //            .filter { $0.hasActiveMajorIncident }
     //            .asObservable()
-    //            .catchError { [weak self] (error) -> Observable<ServerIncidents> in
+    //            .catch { [weak self] (error) -> Observable<ServerIncidents> in
     //                self?.recorder.error(error)
     //                return .empty()
     //            }
@@ -91,10 +91,10 @@ final class PinInteractor: PinInteracting {
             .flatMapCompletable(weak: self) { (self, response) in
                 self.handleCreatePinResponse(response: response, payload: payload)
             }
-            .catchError { error in
+            .catch { error in
                 throw PinError.map(from: error)
             }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     /// Validates if the provided pin payload (i.e. pin code and pin key combination) is correct.
@@ -119,7 +119,7 @@ final class PinInteractor: PinInteracting {
                 guard let self = self else { throw PinError.unretainedSelf }
                 return try self.pinValidationStatus(from: response)
             }
-            .catchError { error in
+            .catch { error in
                 if let response = error as? PinStoreResponse {
                     // TODO: Check for invalid numerical value error by string comparison for now, should revisit when backend make necessary changes
                     if let error = response.error,
@@ -142,12 +142,12 @@ final class PinInteractor: PinInteracting {
                     throw PinError.map(from: error)
                 }
             }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     func password(from pinDecryptionKey: String) -> Single<String> {
         loginService.password(from: pinDecryptionKey)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     /// Keep the PIN value on the local pin store (i.e the keychain), for biometrics auth.

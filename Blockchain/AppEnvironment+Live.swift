@@ -53,6 +53,7 @@ extension AppEnvironment {
             urlSession: resolve(),
             mainQueue: .main,
             appStoreOpener: resolve(),
+            secondPasswordPrompter: resolve(),
             buildVersionProvider: Bundle.versionAndBuildNumber
         )
     }

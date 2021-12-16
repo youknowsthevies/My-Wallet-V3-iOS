@@ -18,19 +18,6 @@ import UIKit
 import WalletPayloadKit
 
 // swiftlint:disable file_length
-/// Used for canceling publishers
-private enum WalletCancelations {
-    struct FetchId: Hashable {}
-    struct DecryptId: Hashable {}
-    struct AuthenticationId: Hashable {}
-    struct InitializationId: Hashable {}
-    struct UpgradeId: Hashable {}
-    struct CreateId: Hashable {}
-    struct RestoreId: Hashable {}
-    struct RestoreFailedId: Hashable {}
-    struct AssetInitializationId: Hashable {}
-}
-
 public struct CoreAppState: Equatable {
     public var onboarding: Onboarding.State? = .init()
     public var loggedIn: LoggedIn.State?
@@ -66,15 +53,16 @@ public enum CoreAppAction: Equatable {
     case appForegrounded
     case deeplink(DeeplinkOutcome)
     case requirePin
+    case setupPin
 
     // Wallet Authentication
+    case wallet(WalletAction)
     case fetchWallet(password: String)
     case doFetchWallet(password: String)
     case authenticate
     case didDecryptWallet(WalletDecryption)
     case decryptionFailure(AuthenticationError)
     case authenticated(Result<Bool, AuthenticationError>)
-    case setupPin
     case initializeWallet
     case walletInitialized
     case walletNeedsUpgrade(Bool)
@@ -137,6 +125,7 @@ struct CoreAppEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var appStoreOpener: AppStoreOpening
     var walletService: WalletService
+    var secondPasswordPrompter: SecondPasswordPromptable
     var buildVersionProvider: () -> String
 }
 
@@ -333,7 +322,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                     .receive(on: mainQueue)
                     .catchToEffect()
                     .cancellable(id: WalletCancelations.FetchId(), cancelInFlight: true)
-                    .map { _ in CoreAppAction.walletInitialized }
+                    .map { CoreAppAction.wallet(.walletFetched($0)) }
             }
             .eraseToEffect()
 
@@ -850,14 +839,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
          .onboarding(.welcomeScreen(.restoreWallet(.resetPassword(.reset(let password))))):
         return Effect(value: .resetPassword(newPassword: password))
 
-    case .onboarding(.createAccountScreenClosed):
-        // cancel any authentication publishers in case the create wallet is closed
-        environment.loadingViewPresenter.hide()
-        return .merge(
-            .cancel(id: WalletCancelations.DecryptId()),
-            .cancel(id: WalletCancelations.AuthenticationId())
-        )
-
     case .onboarding(.walletUpgrade(.completed)):
         return Effect(
             value: CoreAppAction.prepareForLoggedIn
@@ -1057,8 +1038,11 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
          .authorizeDevice,
          .none:
         return .none
+    default:
+        return .none
     }
 }
+.walletReducer()
 
 // MARK: Private Methods
 

@@ -70,7 +70,7 @@ extension KYCVerifyIdentityInteractor: KYCVerifyIdentityInput {
     ) {
         guard let credentials = veriffCredentials else { return }
         disposable = veriffService.submitVerification(applicantId: credentials.applicantId)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .do(onDispose: { [weak self] in
                 self?.loadingViewPresenter.hide()
             })
@@ -82,12 +82,12 @@ extension KYCVerifyIdentityInteractor: KYCVerifyIdentityInput {
 
     func createCredentials(onSuccess: @escaping ((VeriffCredentials) -> Void), onError: @escaping ((Error) -> Void)) {
         disposable = veriffService.createCredentials()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] credentials in
                 guard let this = self else { return }
                 this.veriffCredentials = credentials
                 onSuccess(credentials)
-            }, onError: onError)
+            }, onFailure: onError)
     }
 
     func supportedDocumentTypes(
@@ -96,7 +96,7 @@ extension KYCVerifyIdentityInteractor: KYCVerifyIdentityInput {
         onError: @escaping ((Error) -> Void)
     ) {
         disposable = supportedDocumentTypes(countryCode)
-            .observeOn(MainScheduler.instance)
-            .subscribe(onSuccess: onSuccess, onError: onError)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onSuccess: onSuccess, onFailure: onError)
     }
 }

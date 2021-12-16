@@ -204,12 +204,11 @@ extension TransactionState {
         case (.none, .some(let amount)):
             /// Convert the `FiatValue` to a `CryptoValue` given the
             /// `quote` from the `sourceToFiatPair` exchange rate.
-            return .success(amount
-                .convertToCryptoValue(
-                    exchangeRate: quote,
-                    cryptoCurrency: currency
+            return .success(
+                amount.convert(
+                    usingInverse: quote,
+                    currency: currency.currencyType
                 )
-                .moneyValue
             )
         default:
             break
@@ -251,23 +250,21 @@ extension TransactionState {
             /// Convert the `fiatValue` amount entered into
             /// a `CryptoValue`
             return .success(
-                fiat.convertToCryptoValue(
-                    exchangeRate: destinationQuote,
-                    cryptoCurrency: cryptoPrice.currency
+                fiat.convert(
+                    usingInverse: destinationQuote,
+                    currency: cryptoPrice.currency.currencyType
                 )
-                .moneyValue
             )
         case (.some(let crypto), .none, _):
             /// Convert the `cryptoValue` input into a `fiatValue` type.
-            let fiat = crypto.convertToFiatValue(exchangeRate: sourceQuote)
+            let fiat = crypto.convert(using: sourceQuote)
             /// Convert the `fiatValue` input into a `cryptoValue` type
             /// given the `quote` of the `destinationCurrencyType`.
             return .success(
-                fiat.convertToCryptoValue(
-                    exchangeRate: destinationQuote,
-                    cryptoCurrency: currency
+                fiat.convert(
+                    usingInverse: destinationQuote,
+                    currency: currency.currencyType
                 )
-                .moneyValue
             )
         default:
             return .success(.zero(currency: currency))

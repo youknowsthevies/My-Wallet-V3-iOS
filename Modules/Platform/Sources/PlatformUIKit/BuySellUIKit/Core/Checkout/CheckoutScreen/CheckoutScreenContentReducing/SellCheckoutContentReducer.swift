@@ -44,7 +44,7 @@ final class SellCheckoutContentReducer: CheckoutScreenContentReducing {
 
         inputLabelContentPresenter = DefaultLabelContentPresenter(
             interactor: DefaultLabelContentInteractor(
-                knownValue: "\(data.order.inputValue.toDisplayString(includeSymbol: true))"),
+                knownValue: "\(data.order.inputValue.displayString)"),
             descriptors: .h1(accessibilityIdPrefix: "")
         )
 
@@ -74,7 +74,7 @@ final class SellCheckoutContentReducer: CheckoutScreenContentReducing {
         let totalLineItemCellInteractor: CellInteractor = .init(
             title: TitleLabelInteractor(knownValue: LocalizedLineItem.total),
             description: TitleLabelInteractor(
-                knownValue: data.order.outputValue.toDisplayString(includeSymbol: true)
+                knownValue: data.order.outputValue.displayString
             )
         )
 

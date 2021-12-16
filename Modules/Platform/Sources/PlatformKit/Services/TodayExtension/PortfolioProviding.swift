@@ -51,9 +51,9 @@ public final class PortfolioProvider: PortfolioProviding {
                         .coin(.bitcoinCash): bitcoinCash
                     ],
                     balanceChange: .init(
-                        balance: change.balance.displayMajorValue,
+                        balance: change.balance.amount,
                         changePercentage: change.changePercentage,
-                        change: change.change.displayMajorValue
+                        change: change.change.amount
                     ),
                     fiatCurrency: fiatCurrency
                 )
@@ -76,7 +76,7 @@ public final class PortfolioProvider: PortfolioProviding {
             .asObservable()
             .flatMap(\.balance)
             .map(\.amount)
-            .catchErrorJustReturn(.zero)
+            .catchAndReturn(.zero)
             .map(\.description)
             .map { Portfolio.Account(currency: currency, balance: $0) }
     }

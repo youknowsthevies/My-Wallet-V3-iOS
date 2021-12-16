@@ -84,9 +84,9 @@ final class LinkBankFlowRootInteractor: Interactor,
             .flatMapLatest { [linkedBankService, loadingViewPresenter] _ -> Single<Result<BankLinkageData?, BankLinkageError>> in
                 linkedBankService.bankLinkageStartup
                     .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
-                    .catchErrorJustReturn(.failure(.generic))
+                    .catchAndReturn(.failure(.generic))
             }
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: handleInitialRouting)
             .disposeOnDeactivate(interactor: self)
 

@@ -30,7 +30,7 @@ public final class ContentLabelView: UIView {
                     latest: false,
                     scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
                 )
-                .observeOn(MainScheduler.instance)
+                .observe(on: MainScheduler.instance)
                 .bindAndCatch(to: presenter.tapRelay)
                 .disposed(by: disposeBag)
         }

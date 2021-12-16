@@ -11,7 +11,7 @@ final class LaunchAnnouncementInteractor {
     /// Streams an `UpdateType` element
     var updateType: Single<LaunchAnnouncementType> {
         walletOptionsAPI.walletOptions
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .map { options in
                 if options.downForMaintenance {
                     return .maintenance(options)

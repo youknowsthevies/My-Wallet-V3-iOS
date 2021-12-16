@@ -173,7 +173,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             .state
             .distinctUntilChanged(\.step)
             .withPrevious()
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe { [weak self] previousState, newState in
                 self?.handleStateChange(previousState: previousState, newState: newState)
             }
@@ -182,7 +182,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         let requireSecondPassword: Single<Bool> = sourceAccount?.requireSecondPassword ?? .just(false)
 
         requireSecondPassword
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .map { [sourceAccount, target, action] passwordRequired -> TransactionAction in
                 switch action {
                 case .deposit:
@@ -233,7 +233,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 onSuccess: { [weak self] action in
                     self?.transactionModel.process(action: action)
                 },
-                onError: { [weak self] error in
+                onFailure: { [weak self] error in
                     Logger.shared.debug("Unable to configure transaction flow, aborting. \(String(describing: error))")
                     self?.finishFlow()
                 }

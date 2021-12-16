@@ -29,7 +29,7 @@ final class TierLimitsLabelContentInteractor: LabelContentInteracting {
     init(limitsProviding: TierLimitsProviding) {
         limitsProviding.tiers
             .map { _ in .loaded(next: .init(text: LocalizationConstants.KYC.accountLimits)) }
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }

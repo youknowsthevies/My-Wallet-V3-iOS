@@ -1,6 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import FeatureTransactionDomain
 import Localization
@@ -217,7 +222,7 @@ public struct CryptoCurrencySelectionView: View {
                 }
 
                 if viewStore.showDismissButton {
-                    SecondaryButton(title: LocalizedStrings.notNowButtonTitle) {
+                    MinimalButton(title: LocalizedStrings.notNowButtonTitle) {
                         viewStore.send(.skipButtonTapped)
                     }
                     .padding()

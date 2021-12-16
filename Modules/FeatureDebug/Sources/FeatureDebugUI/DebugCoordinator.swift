@@ -1,9 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import Examples
-import PlatformUIKit
-import RxCocoa
-import RxSwift
 import SwiftUI
 import ToolKit
 import UIKit
@@ -22,115 +20,75 @@ public protocol DebugCoordinating {
 
 final class DebugCoordinator: NSObject, DebugCoordinating {
 
-    private var disposeBag = DisposeBag()
+    private var motion: AnyCancellable?
 
-    private var screenLifetimeBag = DisposeBag()
-    private var navigationController: UINavigationController?
-
-    private var isDisplayed = PublishRelay<Bool>()
+    private var notificationCenter: NotificationCenter = .default
+    private var viewController: UIHostingController<DebugView>?
 
     private var window: UIWindow?
 
+    override init() {
+        super.init()
+        motion = notificationCenter.publisher(for: UIDevice.deviceDidShakeNotification)
+            .sink(to: DebugCoordinator.shake, on: self)
+    }
+
     func enableDebugMenu(for window: UIWindow?) {
         self.window = window
-        guard let window = window else { return }
-
-        let motionEnded = window.rx.motionEnded
-            .filter { $0 == .motionShake }
-            .share()
-
-        let isDisplayed = motionEnded
-            .map(weak: self) { (self, _) -> Bool in
-                self.navigationController == nil
-            }
-            .startWith(true)
-
-        motionEnded
-            .withLatestFrom(isDisplayed)
-            .filter { $0 }
-            .subscribe(onNext: { [weak self, window] _ in
-                guard let self = self else { return }
-                guard let topViewController = window.rootViewController?.topMostViewController else { return }
-                self.showMenu(in: topViewController)
-            })
-            .disposed(by: disposeBag)
     }
 
     func disableDebugMenu() {
-        disposeBag = DisposeBag()
+        window = nil
     }
 
-    private func showMenu(in rootController: UIViewController) {
-        let viewModel = DebugViewModel(itemsProvider: DebugItemType.provideAllItems)
-        let debugViewController = DebugViewController(viewModel: viewModel)
-        debugViewController.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        let navigationController = UINavigationController(rootViewController: debugViewController)
-        navigationController.presentationController?.delegate = self
-        self.navigationController = navigationController
-
-        viewModel.routeTo
-            .subscribe(onNext: { [weak self] effect in
-                self?.handle(effect)
-            })
-            .disposed(by: screenLifetimeBag)
-
-        rootController.present(navigationController, animated: true, completion: nil)
-    }
-
-    private func dismissDebugController() {
-        navigationController?.dismiss(animated: true, completion: { [weak self] in
-            self?.navigationController = nil
-            self?.screenLifetimeBag = DisposeBag()
-        })
-    }
-
-    private func handle(_ effect: DebugViewModel.Effects) {
-        switch effect {
-        case .route(let type):
-            route(to: type)
-        case .close:
-            dismissDebugController()
+    private func shake() {
+        guard viewController == nil else {
+            return dismiss()
         }
+        let hosting = UIHostingController(rootView: DebugView(window: window))
+        hosting.presentationController?.delegate = self
+        window?.rootViewController?.topMostViewController?.present(hosting, animated: true)
+        viewController = hosting
     }
 
-    private func route(to type: DebugItemType) {
-        switch type {
-        case .interalFeatureFlags:
-            let viewModel = InternalFeatureFlagViewModel()
-            let viewController = InternalFeatureFlagViewController(viewModel: viewModel)
-            navigationController?.pushViewController(viewController, animated: true)
-        case .componentLibraryExamples:
-            let view = Examples.RootView()
-            let viewController = UIHostingController(rootView: view)
-            navigationController?.pushViewController(viewController, animated: true)
-        case .colorScheme:
-            guard let window = window else { return }
-            switch window.overrideUserInterfaceStyle {
-            case .dark:
-                window.overrideUserInterfaceStyle = .light
-            default:
-                window.overrideUserInterfaceStyle = .dark
-            }
-        }
+    private func dismiss() {
+        viewController?.dismiss(animated: true)
+        viewController = nil
     }
 }
 
 extension DebugCoordinator: UIAdaptivePresentationControllerDelegate {
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        navigationController = nil
-        screenLifetimeBag = DisposeBag()
+        viewController = nil
     }
 }
 
-extension Reactive where Base: UIResponder {
-    var motionEnded: ControlEvent<UIEvent.EventSubtype> {
-        let source = methodInvoked(#selector(UIResponder.motionEnded(_:with:)))
-            .map { args -> UIEvent.EventSubtype in
-                guard let type = args.first as? Int else {
-                    return .none
-                }
-                return UIEvent.EventSubtype(rawValue: type) ?? .none
-            }
-        return ControlEvent(events: source)
+extension UIDevice {
+    static let deviceDidShakeNotification = Notification.Name(rawValue: "UIDeviceDidShakeNotification")
+}
+
+extension UIWindow {
+
+    @_dynamicReplacement(for: motionEnded)
+    func _motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        if motion == .motionShake {
+            NotificationCenter.default.post(name: UIDevice.deviceDidShakeNotification, object: nil)
+        }
+    }
+}
+
+extension UIViewController {
+
+    /// Returns the top-most visibly presented UIViewController in this UIViewController's hierarchy
+    @objc
+    public var topMostViewController: UIViewController? {
+        switch self {
+        case is UIAlertController:
+            return presentedViewController?.topMostViewController
+        case is UINavigationController:
+            return presentedViewController?.topMostViewController ?? self
+        default:
+            return presentedViewController?.topMostViewController ?? self
+        }
     }
 }

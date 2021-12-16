@@ -27,7 +27,7 @@ extension Reactive where Base: WalletManager {
             }
 
         return Observable.merge(success, failure)
-            .catchError { error -> Observable<Result<WalletCreation, WalletCreationError>> in
+            .catch { error -> Observable<Result<WalletCreation, WalletCreationError>> in
                 .just(
                     .failure(
                         .unknownError(
@@ -86,7 +86,7 @@ extension Reactive where Base: WalletManager {
 
         return Observable<Result<Bool, AuthenticationError>>
             .merge(success, decryptError, loadError)
-            .catchError { error -> Observable<Result<Bool, AuthenticationError>> in
+            .catch { error -> Observable<Result<Bool, AuthenticationError>> in
                 .just(
                     .failure(
                         AuthenticationError(

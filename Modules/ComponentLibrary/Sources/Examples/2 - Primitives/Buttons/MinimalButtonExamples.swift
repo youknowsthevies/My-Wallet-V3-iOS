@@ -15,6 +15,8 @@ struct MinimalButtonExamplesView: View {
                 .disabled(true)
 
             MinimalButton(title: "Loading", isLoading: true, action: {})
+
+            MinimalButton(title: "Custom Text Color", foregroundColor: .semantic.error, action: {})
         }
         .padding(Spacing.padding())
     }

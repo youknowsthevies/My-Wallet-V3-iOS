@@ -12,7 +12,7 @@ struct PrimaryNavigationExamples: View {
             Spacer()
 
             PrimaryNavigationLink(
-                destination: Text("Try swipe to go back").primaryNavigation(title: "Another view")
+                destination: DestinationView()
             ) {
                 Text("Tap to push another view")
                     .typography(.title3)
@@ -25,6 +25,17 @@ struct PrimaryNavigationExamples: View {
 
             IconButton(icon: .user) {}
         }
+    }
+}
+
+struct DestinationView: View {
+    var body: some View {
+        Text("Try swipe to go back")
+            .primaryNavigation(
+                icon: { Icon.placeholder.accentColor(.semantic.muted) },
+                title: "Another view",
+                byline: "With byline"
+            )
     }
 }
 

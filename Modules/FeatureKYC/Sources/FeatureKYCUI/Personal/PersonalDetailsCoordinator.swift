@@ -41,7 +41,7 @@ extension PersonalDetailsCoordinator: PersonalDetailsDelegate {
                 lastName: input.lastName,
                 birthday: input.birthday
             )
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .do(onSubscribe: onSubscribe)
             .subscribe(
                 onCompleted: {

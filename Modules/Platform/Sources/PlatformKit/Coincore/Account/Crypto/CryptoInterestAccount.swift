@@ -185,7 +185,7 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                     .map(\.isEligible)
                     .asSingle()
             }
-            .catchError { [label, asset] error in
+            .catch { [label, asset] error in
                 throw Error.loadingFailed(
                     asset: asset.code,
                     label: label,
@@ -194,7 +194,12 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
                 )
             }
             .recordErrors(on: errorRecorder)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
+    }
+
+    public func invalidateAccountBalance() {
+        balanceService
+            .invalidateInterestAccountBalances()
     }
 
     public func invalidateAccountBalance() {

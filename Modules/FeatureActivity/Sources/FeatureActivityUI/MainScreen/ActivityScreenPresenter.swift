@@ -136,14 +136,14 @@ final class ActivityScreenPresenter {
         interactor
             .selectedData
             .map { SelectionButtonViewModel.LeadingContent.content(from: $0) }
-            .catchErrorJustReturn(.none)
+            .catchAndReturn(.none)
             .bindAndCatch(to: selectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
 
         interactor
             .selectedData
             .map(\.label)
-            .catchErrorJustReturn("")
+            .catchAndReturn("")
             .bindAndCatch(to: selectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
 
@@ -165,7 +165,7 @@ final class ActivityScreenPresenter {
                 }
             }
             .map { .image($0) }
-            .catchErrorJustReturn(.empty)
+            .catchAndReturn(.empty)
             .bindAndCatch(to: selectionButtonViewModel.trailingContentRelay)
             .disposed(by: disposeBag)
 
@@ -177,7 +177,7 @@ final class ActivityScreenPresenter {
             .map { balance, fiatCurrency in
                 balance.toDisplayString(includeSymbol: true) + " \(fiatCurrency.displayCode)"
             }
-            .catchErrorJustReturn("")
+            .catchAndReturn("")
             .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
 

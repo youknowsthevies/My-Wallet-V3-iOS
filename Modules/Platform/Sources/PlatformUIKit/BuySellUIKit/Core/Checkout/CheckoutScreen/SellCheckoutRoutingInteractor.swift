@@ -12,12 +12,12 @@ public final class SellCheckoutRoutingInteractor: CheckoutRoutingInteracting {
 
     private lazy var setup: Void = {
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(to: interactor.previousRelay)
             .disposed(by: disposeBag)
 
         actionRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, action) in
                 self.handle(action: action)
             }

@@ -22,6 +22,8 @@ extension DependencyContainer {
 
         single { SeedPhraseValidator() as SeedPhraseValidatorAPI }
 
+        single { SharedKeyParsingService() }
+
         // MARK: - NabuAuthentication
 
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }

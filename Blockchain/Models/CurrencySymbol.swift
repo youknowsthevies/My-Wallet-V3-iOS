@@ -6,7 +6,7 @@ import ToolKit
 import UIKit
 
 class CurrencySymbol: NSObject {
-    @objc let conversion: Double
+    @objc let conversion: NSDecimalNumber
     @objc let code: String
     @objc let symbol: String
     let name: String
@@ -26,8 +26,7 @@ class CurrencySymbol: NSObject {
         }
         let satoshi = NSDecimalNumber(value: Constants.Conversions.satoshi)
         let lastDecimal = NSDecimalNumber(value: last)
-        let conversion = satoshi.dividing(by: lastDecimal)
-        self.conversion = conversion.doubleValue
+        conversion = satoshi.dividing(by: lastDecimal)
         self.code = code
         self.symbol = symbol
         name = fiatCurrency.name

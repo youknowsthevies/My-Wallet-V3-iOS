@@ -232,7 +232,7 @@ extension TransactionConfirmation.Model {
         public let type: TransactionConfirmation.Kind = .feeSelection
 
         public var formatted: (title: String, subtitle: String)? {
-            let subtitle = fee?.toDisplayString(includeSymbol: true) ?? ""
+            let subtitle = fee?.displayString ?? ""
             let title = LocalizedString.transactionFee(feeType: selectedLevel.title)
             return (title, subtitle)
         }
@@ -283,7 +283,7 @@ extension TransactionConfirmation.Model {
                 if let value = moneyValue {
                     message = String(
                         format: LocalizedString.Error.underMinLimit,
-                        value.toDisplayString(includeSymbol: true)
+                        value.displayString
                     )
                 } else {
                     message = LocalizedString.Error.underMinBitcoinFee

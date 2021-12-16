@@ -19,7 +19,7 @@ final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
                     .portfolio
                     .optional()
             }
-            .catchErrorJustReturn(nil)
+            .catchAndReturn(nil)
             .bindAndCatch(to: container.portfolioRelay)
             .disposed(by: disposeBag)
     }()

@@ -153,7 +153,7 @@ final class VerifyBackupScreenPresenter {
                 .milliseconds(500),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe { [weak self] _ in
                 self?.markBackupVerified()
             }
@@ -171,7 +171,7 @@ final class VerifyBackupScreenPresenter {
                 style: .circle,
                 text: LocalizationConstants.syncingWallet
             )
-            .catchError { _ in
+            .catch { _ in
                 // There was an error syncing wallet
                 // Ignore
                 .empty()

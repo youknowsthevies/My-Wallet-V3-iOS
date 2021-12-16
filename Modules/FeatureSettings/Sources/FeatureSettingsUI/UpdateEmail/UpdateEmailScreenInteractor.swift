@@ -87,7 +87,7 @@ final class UpdateEmailScreenInteractor {
             }
             .map { .loaded(next: $0) }
             .startWith(.loading)
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .bindAndCatch(to: interactionModelRelay)
             .disposed(by: disposeBag)
 

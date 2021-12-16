@@ -51,7 +51,7 @@ public final class CurrencyLabeledButtonViewModel: LabeledButtonViewModelAPI {
         style: LabeledButtonViewStyle = .currency,
         accessibilityId: String
     ) {
-        let amountString = amount.toDisplayString(includeSymbol: true)
+        let amountString = amount.displayString
         let text = String(format: format, amountString)
         let buttonContent = Self.buttonContent(from: style, text: text, amountString: amountString, accessibilityId: accessibilityId)
         self.init(amount: amount, style: style, buttonContent: buttonContent)

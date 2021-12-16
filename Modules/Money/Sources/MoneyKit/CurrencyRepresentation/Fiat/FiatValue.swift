@@ -22,21 +22,3 @@ public struct FiatValue: Fiat, Hashable {
 }
 
 extension FiatValue: MoneyOperating {}
-
-extension FiatValue {
-
-    // MARK: - Conversion
-
-    /// Converts the current fiat value into a crypto value, using a given exchange rate from the crypto curency to the fiat currency.
-    ///
-    /// - Parameters:
-    ///   - exchangeRate:   An exchange rate, representing one major unit of the crypto currency in the fiat currency.
-    ///   - cryptoCurrency: A destination crypto currency.
-    public func convertToCryptoValue(exchangeRate: FiatValue, cryptoCurrency: CryptoCurrency) -> CryptoValue {
-        guard !isZero, !exchangeRate.isZero else {
-            return .zero(currency: cryptoCurrency)
-        }
-        let conversionAmount = displayMajorValue / exchangeRate.displayMajorValue
-        return CryptoValue.create(major: conversionAmount, currency: cryptoCurrency)
-    }
-}

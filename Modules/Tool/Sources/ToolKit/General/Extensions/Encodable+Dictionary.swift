@@ -42,17 +42,17 @@ extension Encodable {
     public func tryToEncode(
         encoding: String.Encoding,
         onSuccess: (String) -> Void,
-        onError: () -> Void
+        onFailure: () -> Void
     ) {
         do {
             let encodedData = try encode()
             guard let string = String(data: encodedData, encoding: encoding) else {
-                onError()
+                onFailure()
                 return
             }
             onSuccess(string)
         } catch {
-            onError()
+            onFailure()
         }
     }
 }

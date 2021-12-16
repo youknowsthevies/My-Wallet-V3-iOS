@@ -1,5 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import SwiftUI
 
 /// A view which represents an error state
@@ -16,7 +21,7 @@ public struct ErrorStateView: View {
     }
 
     public var body: some View {
-        VStack {
+        VStack(spacing: Spacing.padding2) {
             Text(title)
                 .typography(.title3)
                 .foregroundTexture(.textTitle)

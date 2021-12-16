@@ -3,6 +3,7 @@
 import Foundation
 
 public enum MetadataSaveError: FromEncodingError {
+    case saveFailed(SaveMetadataError)
     case encodingError(EncodingError)
 
     public static func from(_ encodingError: EncodingError) -> Self {

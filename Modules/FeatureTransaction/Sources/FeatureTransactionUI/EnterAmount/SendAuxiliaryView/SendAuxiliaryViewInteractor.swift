@@ -28,14 +28,14 @@ final class SendAuxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI {
 
     func connect(stream: Observable<MoneyValue>) -> Disposable {
         stream
-            .map { $0.toDisplayString(includeSymbol: true) }
+            .map(\.displayString)
             .map { ValueCalculationState.value($0) }
             .bindAndCatch(to: contentLabelViewInteractor.stateSubject)
     }
 
     func connect(fee: Observable<MoneyValue>) -> Disposable {
         fee
-            .map { $0.toDisplayString(includeSymbol: true) }
+            .map(\.displayString)
             .map { ValueCalculationState.value($0) }
             .bindAndCatch(to: networkLabelViewInteractor.stateSubject)
     }

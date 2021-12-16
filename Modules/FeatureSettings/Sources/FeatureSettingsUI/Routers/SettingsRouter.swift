@@ -419,7 +419,7 @@ final class SettingsRouter: SettingsRouterAPI {
         }
         analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .settings))
         router.startFlow()
-            .takeUntil(.inclusive, predicate: { $0.isCloseEffect })
+            .take(until: { $0.isCloseEffect }, behavior: .inclusive)
             .skip { $0.shouldSkipEffect }
             .subscribe(onNext: { [weak self] effect in
                 guard case .closeFlow(let isInteractive) = effect, !isInteractive else {

@@ -27,7 +27,7 @@ struct IconButtonExamples: View {
                 Spacer()
             }
         }
-        .primaryNavigation { navigationBarItems }
+        .primaryNavigation(trailing: { navigationBarItems })
     }
 
     @ViewBuilder private var navigationBarItems: some View {

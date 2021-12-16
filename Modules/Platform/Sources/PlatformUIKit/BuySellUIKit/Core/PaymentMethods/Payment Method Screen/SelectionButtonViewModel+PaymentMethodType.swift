@@ -91,7 +91,7 @@ extension SelectionButtonViewModel {
                 )
             )
             title = data.topLimit.currency.name
-            subtitleRelay.accept("\(data.topLimit.toDisplayString(includeSymbol: true)) \(LocalizedString.Types.available)")
+            subtitleRelay.accept("\(data.topLimit.displayString) \(LocalizedString.Types.available)")
             accessibilityContent = AccessibilityContent(
                 id: Accessibility.Identifier.SimpleBuy.BuyScreen.selectPaymentMethodLabel,
                 label: title

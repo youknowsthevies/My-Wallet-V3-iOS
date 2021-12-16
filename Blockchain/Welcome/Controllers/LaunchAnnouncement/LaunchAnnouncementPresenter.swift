@@ -41,7 +41,7 @@ final class LaunchAnnouncementPresenter: VersionUpdateAlertDisplaying {
                         self.displayVersionUpdateAlertIfNeeded(for: update)
                     }
                 },
-                onError: { error in
+                onFailure: { error in
                     Logger.shared.error(error)
                 }
             )

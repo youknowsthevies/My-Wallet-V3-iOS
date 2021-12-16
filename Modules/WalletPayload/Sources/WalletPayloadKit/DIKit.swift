@@ -3,6 +3,7 @@
 import DIKit
 import Foundation
 import KeychainKit
+import MetadataKit
 
 struct WalletRepoKeychain {
     static let repoTag: String = "repo.tag"
@@ -47,14 +48,13 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> SecondPasswordServiceAPI in
+            SecondPasswordService(walletHolder: DIKit.resolve())
+        }
+
         factory { () -> ReleasableWalletAPI in
             let holder: WalletHolder = DIKit.resolve()
             return holder as ReleasableWalletAPI
-        }
-
-        factory { () -> InMemoryWalletProviderAPI in
-            let holder: WalletHolder = DIKit.resolve()
-            return holder as InMemoryWalletProviderAPI
         }
 
         factory { () -> WalletHolderAPI in
@@ -62,7 +62,34 @@ extension DependencyContainer {
             return holder as WalletHolderAPI
         }
 
+        factory { () -> WalletMetadataEntryServiceAPI in
+            let holder: WalletHolderAPI = DIKit.resolve()
+            let metadata: MetadataServiceAPI = DIKit.resolve()
+            return WalletMetadataEntryService(
+                walletHolder: holder,
+                metadataService: metadata
+            )
+        }
+
+        factory { () -> UserCredentialsFetcherAPI in
+            let metadataEntryService: WalletMetadataEntryServiceAPI = DIKit.resolve()
+            return UserCredentialsFetcher(
+                metadataEntryService: metadataEntryService
+            )
+        }
+
+        factory { () -> BitcoinCashEntryFetcherAPI in
+            let holder: WalletHolderAPI = DIKit.resolve()
+            let metadata: WalletMetadataEntryServiceAPI = DIKit.resolve()
+            return BitcoinCashEntryFetcher(
+                walletHolder: holder,
+                metadataEntryService: metadata
+            )
+        }
+
         single { WalletHolder() }
+
+        factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }
 
         single(tag: WalletRepoKeychain.repoTag) { () -> KeychainAccessAPI in
             KeychainAccess(service: "com.blockchain.wallet-repo")

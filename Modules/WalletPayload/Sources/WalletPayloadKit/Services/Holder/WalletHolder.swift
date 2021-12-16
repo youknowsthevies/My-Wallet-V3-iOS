@@ -40,7 +40,7 @@ enum WalletState {
 typealias WalletCreating = (BlockchainWallet) -> Wallet
 
 /// Responsible for holding a decoded wallet in memory
-final class WalletHolder: WalletHolderAPI, InMemoryWalletProviderAPI, ReleasableWalletAPI {
+final class WalletHolder: WalletHolderAPI, ReleasableWalletAPI {
 
     var walletStatePublisher: AnyPublisher<WalletState?, Never> {
         walletState.publisher
@@ -48,7 +48,7 @@ final class WalletHolder: WalletHolderAPI, InMemoryWalletProviderAPI, Releasable
 
     private(set) var walletState = Atomic<WalletState?>(nil)
 
-    func provideWallet() -> WalletState? {
+    func provideWalletState() -> WalletState? {
         walletState.value
     }
 

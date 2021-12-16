@@ -8,5 +8,6 @@ struct Context: Encodable {
     let os: OperatingSystem
     let locale: String
     let screen: Screen
+    let traits = Traits()
     let timezone: String?
 }

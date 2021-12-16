@@ -62,7 +62,7 @@ public enum TriageCryptoCurrency: Equatable {
 
     public func displayValue(amount: BigInt, locale: Locale = Locale.current) -> String {
         let divisor = BigInt(10).power(precision)
-        var majorValue = amount.decimalDivision(divisor: divisor)
+        var majorValue = amount.decimalDivision(by: divisor)
         majorValue = majorValue.roundTo(places: precision)
 
         let formatter = NumberFormatter.cryptoFormatter(

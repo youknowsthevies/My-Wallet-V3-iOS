@@ -11,17 +11,27 @@ final class WalletLogic {
     private let holder: WalletHolderAPI
     private let creator: WalletCreating
     private let metadata: MetadataServiceAPI
+    private let notificationCenter: NotificationCenter
+
+    #warning("TODO: This should be removed, pass opaque context from initialize methods instead")
+    private var tempPassword: String?
 
     init(
         holder: WalletHolderAPI,
         creator: @escaping WalletCreating = createWallet(from:),
-        metadata: MetadataServiceAPI = resolve()
+        metadata: MetadataServiceAPI = resolve(),
+        notificationCenter: NotificationCenter = .default
     ) {
         self.holder = holder
         self.creator = creator
         self.metadata = metadata
+        self.notificationCenter = notificationCenter
     }
 
+    /// Initialises a `Wallet` using the given payload data
+    /// - Parameter password: A `String` value representing user's password
+    /// - Parameter secondPassword: A `String` value representing user's second password
+    /// - Returns: `AnyPublisher<WalletState, WalletError>`
     func initialize(
         with password: String,
         secondPassword: String
@@ -34,9 +44,12 @@ final class WalletLogic {
                 return .just(walletState)
             }
             .map(\.wallet)
-            .flatMap { [initialiseMetadataWithSecondPassword] wallet
+            .flatMap { [initialiseMetadataWithSecondPassword, tempPassword] wallet
                 -> AnyPublisher<WalletState, WalletError> in
-                initialiseMetadataWithSecondPassword(wallet, password, secondPassword)
+                guard let tempPassword = tempPassword else {
+                    return .failure(.initialization(.unknown))
+                }
+                return initialiseMetadataWithSecondPassword(wallet, tempPassword, secondPassword)
             }
             .eraseToAnyPublisher()
     }
@@ -74,7 +87,7 @@ final class WalletLogic {
         guard wallet.doubleEncrypted else {
             fatalError("This method should only be called if a secondPassword is needed")
         }
-        return initialiseMetadata(with: wallet, password: password, secondPassword: nil)
+        return initialiseMetadata(with: wallet, password: password, secondPassword: secondPassword)
     }
 
     private func initialiseMetadata(
@@ -82,6 +95,7 @@ final class WalletLogic {
         password: String
     ) -> AnyPublisher<WalletState, WalletError> {
         if wallet.doubleEncrypted {
+            tempPassword = password
             return .failure(.initialization(.needsSecondPassword))
         }
         return initialiseMetadata(with: wallet, password: password, secondPassword: nil)
@@ -118,6 +132,11 @@ final class WalletLogic {
                 .setFailureType(to: WalletError.self)
                 .eraseToAnyPublisher()
         }
+        .handleEvents(receiveOutput: { [notificationCenter] _ in
+            // inform ReactiveWallet that we're initialised
+            notificationCenter.post(Notification(name: .walletInitialized))
+            notificationCenter.post(Notification(name: .walletMetadataLoaded))
+        })
         .eraseToAnyPublisher()
     }
 
@@ -142,7 +161,7 @@ func provideMetadataInput(
     secondPassword: String?,
     wallet: Wallet
 ) -> AnyPublisher<MetadataInput, WalletError> {
-    getSeedHex(wallet: wallet, secondPassword: secondPassword)
+    getSeedHex(from: wallet, secondPassword: secondPassword)
         .flatMap(masterKeyFrom(seedHex:))
         .map { masterKey -> MetadataInput in
             let credentials = Credentials(

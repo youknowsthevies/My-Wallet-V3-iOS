@@ -117,7 +117,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     isOpenBankingEnabled: isOpenBankingEnabled
                 )
             }
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     var preferredPaymentMethodType: Observable<PaymentMethodType?> {
@@ -201,7 +201,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .disposed(by: disposeBag)
 
         state
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .flatMapLatest(weak: self) { (self, state) -> Observable<AmountInteractorState> in
                 Single
                     .zip(
@@ -245,7 +245,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     effectRelay.accept(.failure(error))
                 }
             })
-            .catchError { error -> Observable<AmountInteractorState> in
+            .catch { error -> Observable<AmountInteractorState> in
                 .just(
                     AmountInteractorState.error(
                         message: String(describing: error)
@@ -262,7 +262,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
         pairsService.fetch()
             .map { .value($0) }
-            .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
+            .catchAndReturn(.invalid(.valueCouldNotBeCalculated))
             .startWith(.invalid(.empty))
             .bindAndCatch(to: pairsCalculationStateRelay)
             .disposed(by: disposeBag)
@@ -341,7 +341,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             }
             // Handle possible errors: it is unlikely to get here unless
             // there was a connection / BE error
-            .catchError { _ in
+            .catch { _ in
                 fiatCurrencyService.displayCurrencyPublisher
                     .asObservable()
                     .take(1)

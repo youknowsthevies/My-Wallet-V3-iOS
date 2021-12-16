@@ -81,7 +81,7 @@ public final class TodayAssetPriceViewPresenter {
     var state: Observable<PresentationState> {
         _ = setup
         return stateRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     var alignment: Driver<UIStackView.Alignment> {

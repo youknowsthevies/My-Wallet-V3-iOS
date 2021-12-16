@@ -5,7 +5,7 @@ import Charts
 extension PieChartData {
     public convenience init(with values: [AssetPieChart.Value.Interaction]) {
         let values = values.map { AssetPieChart.Value.Presentation(value: $0) }
-        let entries = values.map { PieChartDataEntry(value: $0.percentage, label: $0.debugDescription) }
+        let entries = values.map { PieChartDataEntry(value: $0.percentage.doubleValue, label: $0.debugDescription) }
         let set = PieChartDataSet(entries: entries, label: nil)
         set.drawIconsEnabled = false
         set.drawValuesEnabled = false

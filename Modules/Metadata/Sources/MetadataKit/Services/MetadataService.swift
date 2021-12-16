@@ -2,9 +2,26 @@
 
 import Combine
 import Foundation
-import ToolKit
 
 final class MetadataService: MetadataServiceAPI {
+
+    // MARK: - Private properties
+
+    private let initialize: Initialize
+    private let fetchEntry: FetchEntry
+    private let saveEntry: SaveNodeToMetadata
+
+    // MARK: - Init
+
+    init(
+        initialize: @escaping Initialize,
+        fetchEntry: @escaping FetchEntry,
+        saveEntry: @escaping SaveNodeToMetadata
+    ) {
+        self.initialize = initialize
+        self.fetchEntry = fetchEntry
+        self.saveEntry = saveEntry
+    }
 
     // MARK: - Public methods
 
@@ -13,14 +30,14 @@ final class MetadataService: MetadataServiceAPI {
         masterKey: MasterKey,
         payloadIsDoubleEncrypted: Bool
     ) -> AnyPublisher<MetadataState, MetadataInitialisationError> {
-        .just(MetadataState())
+        initialize(credentials, masterKey, payloadIsDoubleEncrypted)
     }
 
     func fetch(
         type: EntryType,
         state: MetadataState
     ) -> AnyPublisher<String, MetadataFetchError> {
-        .just("Metadata Entry Payload")
+        fetchEntry(type, state.metadataNodes)
     }
 
     func save(
@@ -28,6 +45,14 @@ final class MetadataService: MetadataServiceAPI {
         metadataType: EntryType,
         state: MetadataState
     ) -> AnyPublisher<Void, MetadataSaveError> {
-        .just(())
+        saveEntry(
+            .init(
+                payloadJson: jsonPayload,
+                type: metadataType,
+                nodes: state.metadataNodes
+            )
+        )
+        .mapError(MetadataSaveError.saveFailed)
+        .eraseToAnyPublisher()
     }
 }

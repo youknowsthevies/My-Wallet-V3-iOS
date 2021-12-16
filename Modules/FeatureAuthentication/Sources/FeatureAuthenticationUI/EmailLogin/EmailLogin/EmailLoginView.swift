@@ -1,6 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -61,11 +66,10 @@ public struct EmailLoginView: View {
 
                 PrimaryButton(
                     title: LocalizedString.Button._continue,
-                    action: {
-                        viewStore.send(.sendDeviceVerificationEmail)
-                    },
-                    loading: .constant(viewStore.isLoading)
-                )
+                    isLoading: viewStore.isLoading
+                ) {
+                    viewStore.send(.sendDeviceVerificationEmail)
+                }
                 .disabled(!viewStore.isEmailValid)
                 .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.continueButton)
             }

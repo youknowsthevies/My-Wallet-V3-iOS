@@ -55,7 +55,7 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
         super.viewDidLoad()
         interactor
             .verificationState
-            .takeWhile { $0 != .completed }
+            .take(while: { $0 != .completed })
             .map(weak: self) { (self, state) in
                 self.model(verificationState: state)
             }
@@ -72,7 +72,7 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
             .filter { $0 == .completed }
             .mapToVoid()
             // in case the user gets approved we need to dismiss/pop the view controller
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .do(onNext: { [weak self] in self?.dismissControllerOnSuccess() })
             .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)

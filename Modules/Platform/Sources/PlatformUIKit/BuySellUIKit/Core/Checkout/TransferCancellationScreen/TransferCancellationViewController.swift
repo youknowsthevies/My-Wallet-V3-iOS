@@ -41,7 +41,7 @@ final class TransferCancellationViewController: UIViewController {
         descriptionLabel.content = presenter.descriptionContent
 
         presenter.dismissalRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 self.dismiss(animated: true, completion: nil)
             }

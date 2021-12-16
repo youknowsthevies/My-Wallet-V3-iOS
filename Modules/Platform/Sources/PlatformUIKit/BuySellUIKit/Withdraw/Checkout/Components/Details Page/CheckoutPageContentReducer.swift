@@ -42,7 +42,7 @@ final class CheckoutPageContentReducer: CheckoutPageContentReducing {
 
         inputLabelContentPresenter = DefaultLabelContentPresenter(
             interactor: DefaultLabelContentInteractor(
-                knownValue: "\(data.amount.toDisplayString(includeSymbol: true))"),
+                knownValue: "\(data.amount.displayString)"),
             descriptors: .h1(accessibilityIdPrefix: "")
         )
 
@@ -63,14 +63,14 @@ final class CheckoutPageContentReducer: CheckoutPageContentReducing {
         let feeLineItemCellInteractor: CellInteractor = .init(
             title: TitleLabelInteractor(knownValue: LocalizedLineItem.fee),
             description: DescriptionLabelInteractor(
-                knownValue: "\(data.fee.toDisplayString(includeSymbol: true))"
+                knownValue: "\(data.fee.displayString)"
             )
         )
 
         let totalLineItemCellInteractor: CellInteractor = .init(
             title: TitleLabelInteractor(knownValue: LocalizedLineItem.total),
             description: TitleLabelInteractor(
-                knownValue: data.amount.toDisplayString(includeSymbol: true)
+                knownValue: data.amount.displayString
             )
         )
 
@@ -96,7 +96,7 @@ final class CheckoutPageContentReducer: CheckoutPageContentReducing {
 
         let continueButtonTitle = String(
             format: LocalizedString.Button.withdrawTitle,
-            data.amount.toDisplayString(includeSymbol: true)
+            data.amount.displayString
         )
         continueButtonViewModel = .primary(with: continueButtonTitle)
     }

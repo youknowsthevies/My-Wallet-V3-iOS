@@ -115,6 +115,6 @@ final class InterestAccountService: InterestAccountServiceAPI {
                     .fetchInterestAccountsBalance(fiatCurrency: fiatCurrency)
                     .asSingle()
             }
-            .catchErrorJustReturn(InterestAccountBalances.empty)
+            .catchAndReturn(InterestAccountBalances.empty)
     }
 }

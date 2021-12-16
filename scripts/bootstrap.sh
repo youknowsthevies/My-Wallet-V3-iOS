@@ -12,6 +12,8 @@ if [ ! -f ".env" ]; then
 	cp .env.default .env
 fi
 
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+
 echo "Running Carthage"
 sh ./scripts/carthage.sh bootstrap --use-ssh --cache-builds --platform iOS --use-xcframeworks --no-use-binaries
 
@@ -22,7 +24,7 @@ echo "Generating project"
 sh ./scripts/generate_projects.sh
 
 echo "Resolve Package Dependencies"
-xcodebuild -resolvePackageDependencies -clonedSourcePackagesDirPath ./SourcePackages -packageCachePath ${PWD}/PackageCache -disableAutomaticPackageResolution
+xcodebuild -resolvePackageDependencies -clonedSourcePackagesDirPath ./SourcePackages -packageCachePath ${PWD}/PackageCache
 
 echo "Install Mockingbird"
 sh ./scripts/install-mockingbird.sh

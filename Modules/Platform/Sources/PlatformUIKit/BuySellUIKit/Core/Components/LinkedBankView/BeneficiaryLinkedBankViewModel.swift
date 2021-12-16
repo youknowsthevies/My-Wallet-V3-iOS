@@ -62,7 +62,7 @@ public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
 
         var limitText = ""
         if let limit = data.limit {
-            limitText = "\(limit.toDisplayString(includeSymbol: true)) \(LocalizationConstants.Settings.Bank.dailyLimit)"
+            limitText = "\(limit.displayString) \(LocalizationConstants.Settings.Bank.dailyLimit)"
         }
 
         limitLabelContent = LabelContent(

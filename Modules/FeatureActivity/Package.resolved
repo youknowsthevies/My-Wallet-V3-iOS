@@ -20,12 +20,21 @@
         }
       },
       {
+        "package": "CheckoutEventLoggerKit",
+        "repositoryURL": "https://github.com/checkout/checkout-event-logger-ios-framework.git",
+        "state": {
+          "branch": null,
+          "revision": "917efddacf253a09c17921d268c0aa817a5011d5",
+          "version": "1.1.1"
+        }
+      },
+      {
         "package": "combine-schedulers",
         "repositoryURL": "https://github.com/pointfreeco/combine-schedulers",
         "state": {
           "branch": null,
-          "revision": "4cf088c29a20f52be0f2ca54992b492c54e0076b",
-          "version": "0.5.3"
+          "revision": "6bde3b0063ba8e7537b43744948535ca7e9e0dad",
+          "version": "0.5.2"
         }
       },
       {
@@ -47,6 +56,15 @@
         }
       },
       {
+        "package": "Frames",
+        "repositoryURL": "https://github.com/checkout/frames-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "021a6f500744f975306b73595bc4409f4a5b1a61",
+          "version": "3.5.2"
+        }
+      },
+      {
         "package": "Gifu",
         "repositoryURL": "https://github.com/kaishin/Gifu",
         "state": {
@@ -56,12 +74,21 @@
         }
       },
       {
+        "package": "MetadataHDWalletKit",
+        "repositoryURL": "https://github.com/jackpooleybc/MetadataHDWalletKit",
+        "state": {
+          "branch": null,
+          "revision": "f96abeee64dec17dc5a90769ff1393965bd827b7",
+          "version": null
+        }
+      },
+      {
         "package": "Nuke",
         "repositoryURL": "https://github.com/kean/Nuke.git",
         "state": {
           "branch": null,
-          "revision": "472a03c15f39592007d94f25abe554350bc8aa2b",
-          "version": "10.5.1"
+          "revision": "0db18dd34998cca18e9a28bcee136f84518007a0",
+          "version": "10.4.1"
         }
       },
       {
@@ -69,8 +96,8 @@
         "repositoryURL": "https://github.com/kean/NukeUI.git",
         "state": {
           "branch": null,
-          "revision": "08e953d8d80b409bebcd95ba0635fdd748934ce0",
-          "version": "0.7.0"
+          "revision": "0130ce2c1d140a426ced903a9abd68b4b8bf9790",
+          "version": "0.6.8"
         }
       },
       {
@@ -87,7 +114,7 @@
         "repositoryURL": "https://github.com/uber/RIBs.git",
         "state": {
           "branch": null,
-          "revision": "6cad1e953d9b60ab177a963dd63715806ed0d192",
+          "revision": "0103871f373a65e912868d7a3fc303a8095e81e1",
           "version": "0.12.1"
         }
       },
@@ -96,8 +123,8 @@
         "repositoryURL": "https://github.com/RxSwiftCommunity/RxDataSources.git",
         "state": {
           "branch": null,
-          "revision": "a18cee01c9ee55f04d0c7eb15c77a96c3648c88e",
-          "version": "4.0.1"
+          "revision": "90c29b48b628479097fe775ed1966d75ac374518",
+          "version": "5.0.2"
         }
       },
       {
@@ -105,8 +132,17 @@
         "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
         "state": {
           "branch": null,
-          "revision": "cec68169a048a079f461ba203fe85636548d7a89",
+          "revision": "7c17a6ccca06b5c107cfa4284e634562ddaf5951",
           "version": "6.2.0"
+        }
+      },
+      {
+        "package": "secp256k1",
+        "repositoryURL": "https://github.com/Boilertalk/secp256k1.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "823281fe9def21b384099b72a9a53ca988317b20",
+          "version": "0.1.4"
         }
       },
       {
@@ -119,12 +155,30 @@
         }
       },
       {
+        "package": "Stripe",
+        "repositoryURL": "https://github.com/stripe/stripe-ios",
+        "state": {
+          "branch": null,
+          "revision": "d9b1d736488056d69e7c7d19da6536ecc6ecb860",
+          "version": "21.9.1"
+        }
+      },
+      {
         "package": "swift-algorithms",
         "repositoryURL": "https://github.com/apple/swift-algorithms.git",
         "state": {
           "branch": null,
           "revision": "2327673b0e9c7e90e6b1826376526ec3627210e4",
           "version": "0.2.1"
+        }
+      },
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "state": {
+          "branch": null,
+          "revision": "83b23d940471b313427da226196661856f6ba3e0",
+          "version": "0.4.4"
         }
       },
       {
@@ -137,12 +191,21 @@
         }
       },
       {
+        "package": "cmark-gfm",
+        "repositoryURL": "https://github.com/apple/swift-cmark.git",
+        "state": {
+          "branch": "gfm",
+          "revision": "7fc530e5f12432db9768326ff74dc46de72a24e2",
+          "version": null
+        }
+      },
+      {
         "package": "swift-collections",
         "repositoryURL": "https://github.com/apple/swift-collections",
         "state": {
           "branch": null,
-          "revision": "2d33a0ea89c961dcb2b3da2157963d9c0370347e",
-          "version": "1.0.1"
+          "revision": "9d8719c8bebdc79740b6969c912ac706eb721d7a",
+          "version": "0.0.7"
         }
       },
       {
@@ -150,8 +213,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "599a2398adaaa7a4e3f5420cde7728c39e33677e",
-          "version": "0.28.1"
+          "revision": "921272e329372563d5cae14e2b904f7737019005",
+          "version": "0.29.0"
         }
       },
       {
@@ -159,8 +222,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
         "state": {
           "branch": null,
-          "revision": "21f8fdbb3226e5e28a1a2fffac3e0f3deec34bf0",
-          "version": "0.2.1"
+          "revision": "8655495733d8c712db8d9078f47d17f3555db79f",
+          "version": "0.1.2"
         }
       },
       {
@@ -168,8 +231,17 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-identified-collections",
         "state": {
           "branch": null,
-          "revision": "680bf440178a78a627b1c2c64c0855f6523ad5b9",
-          "version": "0.3.2"
+          "revision": "04502c882077cd838d380d05b127db9a6e48d8da",
+          "version": "0.2.0"
+        }
+      },
+      {
+        "package": "swift-markdown",
+        "repositoryURL": "https://github.com/apple/swift-markdown.git",
+        "state": {
+          "branch": null,
+          "revision": "1023300b1d6847360ac9ceebbcff2bccacbcf2a5",
+          "version": null
         }
       },
       {
@@ -195,8 +267,8 @@
         "repositoryURL": "https://github.com/Veriff/veriff-ios-spm.git",
         "state": {
           "branch": null,
-          "revision": "c5b656b1d1fbc25ff448162539db20a824c9e42f",
-          "version": "4.3.1"
+          "revision": "0c00e567e0f1317e7b2a5a80c419166b9202e5fd",
+          "version": "4.17.0"
         }
       },
       {

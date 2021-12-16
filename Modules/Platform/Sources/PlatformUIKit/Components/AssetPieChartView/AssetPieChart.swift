@@ -24,11 +24,11 @@ public enum AssetPieChart {
             let asset: CurrencyType
 
             /// Percentage that the asset takes off the total
-            let percentage: Double
+            let percentage: Decimal
 
-            init(asset: CurrencyType, percentage: MoneyValue) {
+            init(asset: CurrencyType, percentage: Decimal) {
                 self.asset = asset
-                self.percentage = percentage.displayMajorValue.doubleValue
+                self.percentage = percentage
             }
         }
 
@@ -41,7 +41,7 @@ public enum AssetPieChart {
             let color: UIColor
 
             /// The percentage of the asset from the total of 100%
-            let percentage: Double
+            let percentage: Decimal
 
             public init(value: Interaction) {
                 debugDescription = value.asset.displayCode

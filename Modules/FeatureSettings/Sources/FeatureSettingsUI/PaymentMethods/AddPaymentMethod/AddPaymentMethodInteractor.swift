@@ -42,12 +42,12 @@ final class AddPaymentMethodInteractor {
         self.tiersLimitsProvider = tiersLimitsProvider
 
         isAbleToAddNew = addNewInteractor.isAbleToAddNew
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
             .share(replay: 1)
 
         isKYCVerified = tiersLimitsProvider.tiers
             .map(\.isTier2Approved)
-            .catchErrorJustReturn(false)
+            .catchAndReturn(false)
             .share(replay: 1)
 
         isEnabledForUser = Observable.combineLatest(isAbleToAddNew, isKYCVerified)

@@ -19,7 +19,15 @@ import SwiftUI
 ///         Tag(text: "No Fees", variant: .success),
 ///         Tag(text: "Faster", variant: .success),
 ///         Tag(text: "Warning Alert", variant: .warning)
-///     ]
+///     ],
+///     isSelected: Binding(
+///         get: {
+///             selection == 0
+///         },
+///         set: { _ in
+///             selection = 0
+///         }
+///     )
 /// ) {
 ///     Icon.trade
 ///         .fixedSize()
@@ -47,6 +55,9 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     private let tags: [Tag]
     private let mainContentSpacing: CGFloat = 6
 
+    @Binding private var isSelected: Bool
+    private let isSelectable: Bool
+
     /// Create a Balance Row with the given data.
     ///
     /// LeadingSubtitle, TrailingDescriptionColor and graph are optional parameters and the row will form itself depending on the given data.
@@ -60,6 +71,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     ///   - trailingDescription: Description string on the trailing side of the row view
     ///   - trailingDescriptionColor: Optional color for the trailingDescription text
     ///   - tags: Optional array of tags object. They show up on the bottom part of the main vertical content view, and align themself horizontally
+    ///   - isSelected: Binding for the selection state
     ///   - leading: View on the leading side of the row.
     ///   - graph: View on the trailing side of the row.
     public init(
@@ -70,6 +82,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
         trailingDescription: String,
         trailingDescriptionColor: Color? = nil,
         tags: [Tag] = [],
+        isSelected: Binding<Bool>? = nil,
         @ViewBuilder leading: () -> Leading,
         @ViewBuilder graph: () -> Graph
     ) {
@@ -83,28 +96,31 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
             dark: .palette.dark200
         )
         self.tags = tags
+        isSelectable = isSelected != nil
+        _isSelected = isSelected ?? .constant(false)
         self.leading = leading()
         self.graph = graph()
     }
 
     public var body: some View {
-        HStack(alignment: .customRowVerticalAlignment, spacing: 16) {
-            leading
-            VStack(alignment: .leading, spacing: 8) {
-                mainContent()
-                if !tags.isEmpty {
-                    HStack(spacing: 8) {
-                        ForEach(0..<tags.count) { index in
-                            tags[index]
+        Button {
+            isSelected = true
+        } label: {
+            HStack(alignment: .customRowVerticalAlignment, spacing: 16) {
+                leading
+                VStack(alignment: .leading, spacing: 8) {
+                    mainContent()
+                    if !tags.isEmpty {
+                        HStack(spacing: 8) {
+                            ForEach(0..<tags.count) { index in
+                                tags[index]
+                            }
                         }
                     }
                 }
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, Spacing.padding3)
-        .padding(.vertical, Spacing.padding2)
-        .background(Color.semantic.background)
+        .buttonStyle(BalanceRowStyle(isSelectable: isSelectable))
     }
 
     @ViewBuilder private var leadingTitleView: some View {
@@ -223,6 +239,19 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     }
 }
 
+private struct BalanceRowStyle: ButtonStyle {
+
+    let isSelectable: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, Spacing.padding3)
+            .padding(.vertical, Spacing.padding2)
+            .background(configuration.isPressed && isSelectable ? Color.semantic.light : Color.semantic.background)
+    }
+}
+
 extension BalanceRow where Graph == EmptyView {
 
     public init(
@@ -233,6 +262,7 @@ extension BalanceRow where Graph == EmptyView {
         trailingDescription: String,
         trailingDescriptionColor: Color? = nil,
         tags: [Tag] = [],
+        isSelected: Binding<Bool>? = nil,
         @ViewBuilder leading: () -> Leading
     ) {
         self.init(
@@ -243,6 +273,7 @@ extension BalanceRow where Graph == EmptyView {
             trailingDescription: trailingDescription,
             trailingDescriptionColor: trailingDescriptionColor,
             tags: tags,
+            isSelected: isSelected,
             leading: leading
         ) {
             EmptyView()
@@ -254,105 +285,158 @@ extension BalanceRow where Graph == EmptyView {
 struct BalanceRow_Previews: PreviewProvider {
 
     static var previews: some View {
-        Group {
-            BalanceRow(
-                leadingTitle: "Bitcoin",
-                leadingDescription: "BTC",
-                trailingTitle: "$44,403.13",
-                trailingDescription: "↓ 12.32%",
-                trailingDescriptionColor: .semantic.error
-            ) {
-                Icon.trade
-                    .fixedSize()
-                    .accentColor(.semantic.warning)
-            }
+        PreviewController(selection: 0)
+            .frame(width: 375)
             .previewLayout(.sizeThatFits)
-            .previewDisplayName("Default Balance Row")
+    }
 
-            BalanceRow(
-                leadingTitle: "Trading Account",
-                leadingDescription: "Bitcoin",
-                trailingTitle: "$7,926.43",
-                trailingDescription: "0.00039387 BTC",
-                tags: [
-                    Tag(text: "No Fees", variant: .success),
-                    Tag(text: "Faster", variant: .success),
-                    Tag(text: "Warning Alert", variant: .warning)
-                ]
-            ) {
-                Icon.trade
-                    .fixedSize()
-                    .accentColor(.semantic.primary)
-            }
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Row with tags")
+    struct PreviewController: View {
 
-            BalanceRow(
-                leadingTitle: "BTC - USD",
-                leadingDescription: "Limit Buy - Open",
-                trailingTitle: "0.5736523 BTC",
-                trailingDescription: "$15,482.86"
-            ) {
-                Icon.moneyUSD
-                    .fixedSize()
-                    .accentColor(.semantic.warning)
-            }
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Default Balance Row")
+        @State var selection: Int
 
-            BalanceRow(
-                leadingTitle: "Bitcoin",
-                leadingSubtitle: "$15,879.90",
-                leadingDescription: "0.3576301941 BTC",
-                trailingTitle: "$44,403.13",
-                trailingDescription: "↓ 12.32%",
-                trailingDescriptionColor: .semantic.error,
-                leading: {
-                    Icon.trade
-                        .fixedSize()
-                        .accentColor(.semantic.warning)
-                },
-                graph: {
-                    graph
-                }
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Full Content")
-
-            BalanceRow(
-                leadingTitle: "Bitcoin",
-                leadingDescription: "0.3576301941 BTC",
-                trailingTitle: "$44,403.13",
-                trailingDescription: "↓ 12.32%",
-                trailingDescriptionColor: .semantic.error,
-                leading: {
-                    Icon.trade
-                        .fixedSize()
-                        .accentColor(.semantic.warning)
-                },
-                graph: {
-                    graph
-                }
-            )
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Full Content no leading subtitle")
-
-            BalanceRow(
-                leadingTitle: "Bitcoin",
-                leadingSubtitle: "$15,879.90",
-                leadingDescription: "0.3576301941 BTC",
-                trailingTitle: "$44,403.13",
-                trailingDescription: "↓ 12.32%",
-                trailingDescriptionColor: .semantic.error
-            ) {
-                Icon.trade
-                    .fixedSize()
-                    .accentColor(.semantic.warning)
-            }
-            .previewLayout(.sizeThatFits)
-            .previewDisplayName("Full Content no graph")
+        init(selection: Int) {
+            _selection = State(initialValue: selection)
         }
-        .frame(width: 375)
+
+        var body: some View {
+            Group {
+                ScrollView {
+                    BalanceRow(
+                        leadingTitle: "Bitcoin",
+                        leadingDescription: "BTC",
+                        trailingTitle: "$44,403.13",
+                        trailingDescription: "↓ 12.32%",
+                        trailingDescriptionColor: .semantic.error,
+                        isSelected: Binding(
+                            get: {
+                                selection == 0
+                            },
+                            set: { _ in
+                                selection = 0
+                            }
+                        )
+                    ) {
+                        Icon.trade
+                            .fixedSize()
+                            .accentColor(.semantic.warning)
+                    }
+
+                    BalanceRow(
+                        leadingTitle: "Trading Account",
+                        leadingDescription: "Bitcoin",
+                        trailingTitle: "$7,926.43",
+                        trailingDescription: "0.00039387 BTC",
+                        tags: [
+                            Tag(text: "No Fees", variant: .success),
+                            Tag(text: "Faster", variant: .success),
+                            Tag(text: "Warning Alert", variant: .warning)
+                        ],
+                        isSelected: Binding(
+                            get: {
+                                selection == 1
+                            },
+                            set: { _ in
+                                selection = 1
+                            }
+                        )
+                    ) {
+                        Icon.trade
+                            .fixedSize()
+                            .accentColor(.semantic.primary)
+                    }
+
+                    BalanceRow(
+                        leadingTitle: "BTC - USD",
+                        leadingDescription: "Limit Buy - Open",
+                        trailingTitle: "0.5736523 BTC",
+                        trailingDescription: "$15,482.86",
+                        isSelected: Binding(
+                            get: {
+                                selection == 2
+                            },
+                            set: { _ in
+                                selection = 2
+                            }
+                        )
+                    ) {
+                        Icon.moneyUSD
+                            .fixedSize()
+                            .accentColor(.semantic.warning)
+                    }
+
+                    BalanceRow(
+                        leadingTitle: "Bitcoin",
+                        leadingSubtitle: "$15,879.90",
+                        leadingDescription: "0.3576301941 BTC",
+                        trailingTitle: "$44,403.13",
+                        trailingDescription: "↓ 12.32%",
+                        trailingDescriptionColor: .semantic.error,
+                        isSelected: Binding(
+                            get: {
+                                selection == 3
+                            },
+                            set: { _ in
+                                selection = 3
+                            }
+                        ),
+                        leading: {
+                            Icon.trade
+                                .fixedSize()
+                                .accentColor(.semantic.warning)
+                        },
+                        graph: {
+                            graph
+                        }
+                    )
+
+                    BalanceRow(
+                        leadingTitle: "Bitcoin",
+                        leadingDescription: "0.3576301941 BTC",
+                        trailingTitle: "$44,403.13",
+                        trailingDescription: "↓ 12.32%",
+                        trailingDescriptionColor: .semantic.error,
+                        isSelected: Binding(
+                            get: {
+                                selection == 4
+                            },
+                            set: { _ in
+                                selection = 4
+                            }
+                        ),
+                        leading: {
+                            Icon.trade
+                                .fixedSize()
+                                .accentColor(.semantic.warning)
+                        },
+                        graph: {
+                            graph
+                        }
+                    )
+
+                    BalanceRow(
+                        leadingTitle: "Bitcoin",
+                        leadingSubtitle: "$15,879.90",
+                        leadingDescription: "0.3576301941 BTC",
+                        trailingTitle: "$44,403.13",
+                        trailingDescription: "↓ 12.32%",
+                        trailingDescriptionColor: .semantic.error,
+                        isSelected: Binding(
+                            get: {
+                                selection == 5
+                            },
+                            set: { _ in
+                                selection = 5
+                            }
+                        )
+                    ) {
+                        Icon.trade
+                            .fixedSize()
+                            .accentColor(.semantic.warning)
+                    }
+                }
+                .previewLayout(.sizeThatFits)
+            }
+        }
     }
 
     @ViewBuilder static var graph: some View {

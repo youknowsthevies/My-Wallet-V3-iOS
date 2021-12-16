@@ -312,7 +312,7 @@ final class TransactionModel {
                         self?.process(action: .sourceAccountSelected(first))
                     }
                 },
-                onError: { [weak self] error in
+                onFailure: { [weak self] error in
                     Logger.shared.error("!TRANSACTION!> Unable to get source accounts: \(String(describing: error))")
                     self?.process(action: .fatalTransactionError(error))
                 }
@@ -368,7 +368,7 @@ final class TransactionModel {
         interactor.createOrder()
             .subscribe { [weak self] order in
                 self?.process(action: .orderCreated(order))
-            } onError: { [weak self] error in
+            } onFailure: { [weak self] error in
                 self?.process(action: .fatalTransactionError(error))
             }
     }
@@ -400,7 +400,7 @@ final class TransactionModel {
                 default:
                     self?.process(action: .updateTransactionComplete)
                 }
-            }, onError: { [weak self] error in
+            }, onFailure: { [weak self] error in
                 Logger.shared.error("!TRANSACTION!> Unable to processExecuteTransaction: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))
             })
@@ -410,7 +410,7 @@ final class TransactionModel {
         interactor
             .pollOrderStatusUntilDoneOrTimeout(orderId: order.identifier)
             .asSingle()
-            .subscribeOn(MainScheduler.instance)
+            .subscribe(on: MainScheduler.instance)
             .subscribe { [weak self] finalOrderStatus in
                 switch finalOrderStatus {
                 case .cancelled, .expired:
@@ -430,7 +430,7 @@ final class TransactionModel {
                 case .finished:
                     self?.process(action: .updateTransactionComplete)
                 }
-            } onError: { [weak self] error in
+            } onFailure: { [weak self] error in
                 self?.process(action: .fatalTransactionError(error))
             }
     }

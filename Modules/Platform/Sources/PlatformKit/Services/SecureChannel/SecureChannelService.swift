@@ -135,7 +135,7 @@ final class SecureChannelService: SecureChannelAPI {
         .map { hasGuid, hasSharedKey, hasPassword in
             hasGuid && hasSharedKey && hasPassword
         }
-        .catchErrorJustReturn(false)
+        .catchAndReturn(false)
     }
 
     func didAcceptSecureChannel(details: SecureChannelConnectionDetails) -> Completable {

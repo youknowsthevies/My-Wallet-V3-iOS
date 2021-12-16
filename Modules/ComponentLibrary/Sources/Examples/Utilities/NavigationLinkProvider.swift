@@ -53,7 +53,7 @@ private struct NavigationLinkView<LinkableView: View>: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            PrimaryRow(title: title)
+            PrimaryRow(title: title, isSelected: $isActive)
                 .background(
                     PrimaryNavigationLink(
                         destination: ZStack { view }
@@ -63,9 +63,6 @@ private struct NavigationLinkView<LinkableView: View>: View {
                         label: { EmptyView() }
                     )
                 )
-                .onTapGesture {
-                    isActive = true
-                }
 
             PrimaryDivider()
         }
