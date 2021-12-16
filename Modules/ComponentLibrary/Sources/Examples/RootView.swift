@@ -41,7 +41,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: SearchBarExamples(), title: "🔎 SearchBar"),
             NavigationLinkProvider(view: AlertCardExamples(), title: "🌋 AlertCard"),
             NavigationLinkProvider(view: PromoCardExamples(), title: "🛎 PromoCard"),
-            NavigationLinkProvider(view: AnnouncementCardExamples(), title: "🎙 AnnouncementCard")
+            NavigationLinkProvider(view: AnnouncementCardExamples(), title: "🎙 AnnouncementCard"),
+            NavigationLinkProvider(view: LargeAnnouncementCardExamples(), title: "📡 LargeAnnouncementCard")
         ]
     ]
 
