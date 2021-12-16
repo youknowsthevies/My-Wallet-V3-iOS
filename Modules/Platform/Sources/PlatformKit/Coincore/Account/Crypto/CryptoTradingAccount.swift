@@ -352,9 +352,4 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         balanceService
             .invalidateTradingAccountBalances()
     }
-
-    public func invalidateAccountBalance() {
-        balanceService
-            .invalidateTradingAccountBalances()
-    }
 }

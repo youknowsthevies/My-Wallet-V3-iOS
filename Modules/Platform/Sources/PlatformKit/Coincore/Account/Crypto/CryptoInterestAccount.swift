@@ -201,9 +201,4 @@ public final class CryptoInterestAccount: CryptoAccount, InterestAccount {
         balanceService
             .invalidateInterestAccountBalances()
     }
-
-    public func invalidateAccountBalance() {
-        balanceService
-            .invalidateInterestAccountBalances()
-    }
 }
