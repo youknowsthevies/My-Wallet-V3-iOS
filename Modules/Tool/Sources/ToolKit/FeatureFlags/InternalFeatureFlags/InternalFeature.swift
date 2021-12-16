@@ -24,8 +24,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .newOnboardingTour:
-            return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
              .disableSSLPinning,

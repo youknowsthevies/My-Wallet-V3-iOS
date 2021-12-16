@@ -146,7 +146,6 @@ extension RootViewController {
         defaults.hasInteractedWithFrequentActionButton = true
     }
 
-    // swiftlint:disable:next cyclomatic_complexity
     func handle(state: RootViewState, action: RootViewAction) {
         switch action {
         case .frequentAction(let frequentAction):
