@@ -87,6 +87,15 @@ extension DependencyContainer {
             )
         }
 
+        factory { () -> BitcoinEntryFetcherAPI in
+            let holder: WalletHolderAPI = DIKit.resolve()
+            let metadata: WalletMetadataEntryServiceAPI = DIKit.resolve()
+            return BitcoinEntryFetcher(
+                walletHolder: holder,
+                metadataEntryService: metadata
+            )
+        }
+
         single { WalletHolder() }
 
         factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }

@@ -119,16 +119,6 @@ private func defaultLabel(using index: Int) -> String {
     return "Private Key Wallet \(suffix)"
 }
 
-#warning("Consolidate to use one DerivationType enum")
-func derivationType(from type: WalletPayloadKit.DerivationType) -> BitcoinChainKit.DerivationType {
-    switch type {
-    case .legacy:
-        return .legacy
-    case .segwit:
-        return .bech32
-    }
-}
-
 extension BitcoinCashWalletAccount {
     var isActive: Bool {
         !archived

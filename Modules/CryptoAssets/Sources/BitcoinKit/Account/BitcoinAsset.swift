@@ -19,7 +19,6 @@ final class BitcoinAsset: CryptoAsset {
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
         repository.defaultAccount
-            .asPublisher()
             .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .map { account in
                 BitcoinCryptoAccount(
@@ -139,11 +138,12 @@ final class BitcoinAsset: CryptoAsset {
 
     private var nonCustodialGroup: AnyPublisher<AccountGroup, Never> {
         repository.activeAccounts
-            .asPublisher()
+            .eraseToAnyPublisher()
+            .eraseError()
             .flatMap { [repository] accounts -> AnyPublisher<AccountsPayload, Error> in
                 repository.defaultAccount
-                    .asPublisher()
                     .map { .init(defaultAccount: $0, accounts: accounts) }
+                    .eraseError()
                     .eraseToAnyPublisher()
             }
             .map { accountPayload -> [SingleAccount] in

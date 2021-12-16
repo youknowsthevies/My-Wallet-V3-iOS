@@ -3,7 +3,7 @@
 import BitcoinChainKit
 import PlatformKit
 
-public struct BitcoinWalletAccount {
+public struct BitcoinWalletAccount: Equatable {
 
     // MARK: Public Properties
 
@@ -19,6 +19,13 @@ public struct BitcoinWalletAccount {
     }
 
     // MARK: Initializers
+
+    public init(index: Int, label: String?, archived: Bool, publicKeys: XPubs) {
+        self.index = index
+        self.label = label
+        self.archived = archived
+        self.publicKeys = publicKeys
+    }
 
     public init(index: Int, account: PayloadBitcoinWalletAccountV4) {
         self.index = index

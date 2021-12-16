@@ -70,7 +70,8 @@ let package = Package(
                 .product(name: "FeatureTransactionDomain", package: "FeatureTransaction"),
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),
         .target(
@@ -80,7 +81,8 @@ let package = Package(
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "DIKit", package: "DIKit"),
                 .product(name: "RxSwift", package: "RxSwift"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload")
             ]
         ),
         .target(
