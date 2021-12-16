@@ -136,7 +136,7 @@ public struct InstitutionList: View {
                         empty: {
                             NoSearchResults
                         }
-                    )
+                    ).background(Color.semantic.background)
                 case .failure(let error):
                     InfoView(
                         .init(
@@ -201,12 +201,12 @@ extension InstitutionList {
         }
 
         public var body: some View {
-            HStack {
+            PrimaryRow(title: title, leading: {
                 Group {
                     if let image = image {
                         ImageResourceView(
                             url: image,
-                            placeholder: { Color.viewPrimaryBackground }
+                            placeholder: { Color.semantic.background }
                         )
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -215,16 +215,9 @@ extension InstitutionList {
                     }
                 }
                 .frame(width: 12.vw, height: 12.vw, alignment: .center)
-                Text(title)
-                    .typography(.body2)
-                    .foregroundColor(.textTitle)
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .frame(width: 8.pt)
-                    .padding()
-                    .foregroundColor(.disclosureIndicator)
-            }
-            .frame(height: 9.5.vh, alignment: .center)
+            })
+                .frame(height: 9.5.vh, alignment: .center)
+                .background(Color.semantic.background)
         }
     }
 }

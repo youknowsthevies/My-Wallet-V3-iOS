@@ -1,6 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import SwiftUI
 import ToolKit
 
@@ -47,7 +52,7 @@ public struct SearchableList<Data, Content: View, Empty: View>: View where
                 Divider()
                 TextField(placeholder, text: $search.term)
                     .typography(.body2)
-                    .foregroundColor(.textDetail)
+                    .foregroundColor(.semantic.body)
                     .overlay(
                         accessoryOverlay,
                         alignment: .trailing
@@ -56,12 +61,12 @@ public struct SearchableList<Data, Content: View, Empty: View>: View where
                     .padding([.leading, .trailing], layout.searchBarLeadingTrailingPadding)
                 Divider()
             }
-            .frame(width: .infinity)
+            .frame(width: nil)
             if search.data.isEmpty {
                 empty()
             } else {
                 List(search.data) { item in
-                    content(item)
+                    content(item).listRowInsets(EdgeInsets())
                 }
             }
         }
@@ -71,11 +76,11 @@ public struct SearchableList<Data, Content: View, Empty: View>: View where
         if search.isSearching {
             Button(
                 action: { search.term = "" },
-                label: { clear.foregroundColor(.textDetail) }
+                label: { clear.foregroundColor(.semantic.body) }
             )
         } else {
             accessory
-                .foregroundColor(.textDetail)
+                .foregroundColor(.semantic.body)
         }
     }
 }

@@ -163,6 +163,7 @@ public struct BankView: View {
         }
         .navigationBarBackButtonHidden(true)
         .whiteNavigationBarStyle()
+        .background(Color.semantic.background)
     }
 
     private typealias ButtonState = ActionableView<

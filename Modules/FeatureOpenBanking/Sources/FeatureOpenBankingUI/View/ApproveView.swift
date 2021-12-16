@@ -113,6 +113,7 @@ public struct ApproveView: View {
             .navigationTitle(viewStore.bank.account.attributes.entity)
             .navigationRoute(in: store)
             .whiteNavigationBarStyle()
+            .background(Color.semantic.background)
             .trailingNavigationButton(.close) {
                 viewStore.send(.dismiss)
             }
@@ -138,7 +139,7 @@ public struct ApproveView: View {
             }
             .padding()
             .background(
-                Color.white
+                Color.semantic.background
                     .ignoresSafeArea(edges: [.bottom])
                     .shadow(color: .black.opacity(0.3), radius: 3, x: 0, y: 0)
             )
