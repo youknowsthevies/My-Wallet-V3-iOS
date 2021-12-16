@@ -20,7 +20,7 @@ final class OnboardingHostingController: UIViewController {
     private let alertViewPresenter: AlertViewPresenterAPI
     private let webViewService: WebViewServiceAPI
 
-    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
+    private let featureFlagService: FeatureFlagsServiceAPI
     private var currentController: UIViewController?
     private var cancellables: Set<AnyCancellable> = []
 
@@ -31,13 +31,13 @@ final class OnboardingHostingController: UIViewController {
         store: Store<Onboarding.State, Onboarding.Action>,
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         webViewService: WebViewServiceAPI = resolve(),
-        internalFeatureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
+        featureFlagService: FeatureFlagsServiceAPI = DIKit.resolve()
     ) {
         self.store = store
         viewStore = ViewStore(store)
         self.alertViewPresenter = alertViewPresenter
         self.webViewService = webViewService
-        self.internalFeatureFlagService = internalFeatureFlagService
+        self.featureFlagService = featureFlagService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -124,18 +124,10 @@ final class OnboardingHostingController: UIViewController {
 
     @ViewBuilder
     private func makeWelcomeView(store: Store<WelcomeState, WelcomeAction>) -> some View {
-        if internalFeatureFlagService.isEnabled(.newOnboardingTour) {
-            PrimaryNavigationView {
-                TourViewAdapter(store: store)
-                    .primaryNavigation()
-                    .navigationBarHidden(true)
-            }
-        } else {
-            PrimaryNavigationView {
-                WelcomeView(store: store)
-                    .primaryNavigation()
-                    .navigationBarHidden(true)
-            }
+        PrimaryNavigationView {
+            TourViewAdapter(store: store, featureFlagService: self.featureFlagService)
+                .primaryNavigation()
+                .navigationBarHidden(true)
         }
     }
 

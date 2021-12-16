@@ -15,9 +15,6 @@ public enum InternalFeature: String, CaseIterable {
     /// - Note: Old manual guid login screen is used only for internal builds
     case disableGUIDLogin
 
-    /// Enable new Onboarding Tour on the Welcome Flow
-    case newOnboardingTour
-
     /// Enable unified sign in (account upgrade)
     case unifiedSignIn
 
@@ -27,8 +24,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
-        case .newOnboardingTour:
-            return true
         case .disableGUIDLogin,
              .requestConsoleLogging,
              .disableSSLPinning,
@@ -54,8 +49,6 @@ extension InternalFeature {
             return "Disable SSL Pinning (Requires Restart)"
         case .disableGUIDLogin:
             return "Disable manual (guid) login option"
-        case .newOnboardingTour:
-            return "New Onboarding Tour"
         case .unifiedSignIn:
             return "Unified Sign In"
         case .nativeWalletPayload:
