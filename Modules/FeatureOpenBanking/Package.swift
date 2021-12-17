@@ -40,6 +40,7 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-case-paths",
             from: "0.7.0"
         ),
+        .package(path: "../Analytics"),
         .package(path: "../ComposableArchitectureExtensions"),
         .package(path: "../ComponentLibrary"),
         .package(path: "../Network"),

@@ -31,6 +31,8 @@ extension AnalyticsEvents.New {
             outputCurrency: String
         )
 
+        case linkBankClicked(origin: LinkBank.Origin)
+
         public enum PaymentType: String, StringRawRepresentable {
             case bankAccount = "BANK_ACCOUNT"
             case bankTransfer = "BANK_TRANSFER"
@@ -48,6 +50,12 @@ extension AnalyticsEvents.New {
                 case .funds:
                     self = .funds
                 }
+            }
+        }
+
+        public enum LinkBank {
+            public enum Origin: String, StringRawRepresentable {
+                case buy = "BUY"
             }
         }
 
