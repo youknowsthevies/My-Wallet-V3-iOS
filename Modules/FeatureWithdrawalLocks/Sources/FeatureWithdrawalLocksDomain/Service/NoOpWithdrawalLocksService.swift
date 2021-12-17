@@ -5,7 +5,7 @@ import Foundation
 
 public final class NoOpWithdrawalLocksService: WithdrawalLocksServiceAPI {
 
-    public var withdrawLocks: AnyPublisher<WithdrawalLocks, Never> = Empty().eraseToAnyPublisher()
+    public var withdrawalLocks: AnyPublisher<WithdrawalLocks, Never> = Empty().eraseToAnyPublisher()
 
     public init() {}
 }
