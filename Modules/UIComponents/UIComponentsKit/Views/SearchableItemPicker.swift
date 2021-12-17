@@ -2,7 +2,6 @@
 
 import ComponentLibrary
 import Foundation
-import Localization
 import SwiftUI
 import ToolKit
 
