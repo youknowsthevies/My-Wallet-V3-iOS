@@ -40,6 +40,7 @@ extension AppEnvironment {
             analyticsRecorder: resolve(),
             crashlyticsRecorder: resolve(tag: "CrashlyticsRecorder"),
             openBanking: resolve(),
+            cardService: resolve(),
             coincore: resolve(),
             erc20CryptoAssetService: resolve(),
             walletService: .live(fetcher: DIKit.resolve()),
