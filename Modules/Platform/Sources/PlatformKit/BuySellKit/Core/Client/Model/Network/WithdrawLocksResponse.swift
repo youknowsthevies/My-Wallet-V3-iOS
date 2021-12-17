@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct withdrawalLocksResponse: Decodable {
+struct WithdrawalLocksResponse: Decodable {
 
     struct Lock: Decodable {
         let expiresAt: String

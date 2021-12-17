@@ -406,7 +406,7 @@ final class APIClient: SimpleBuyClientAPI {
     func withdrawalLocksCheck(
         currency: FiatCurrency,
         paymentMethodType: PaymentMethodPayloadType
-    ) -> AnyPublisher<withdrawalLocksCheckResponse, NabuNetworkError> {
+    ) -> AnyPublisher<WithdrawalLocksCheckResponse, NabuNetworkError> {
         struct Payload: Encodable {
             let paymentMethod: String
             let currency: String
@@ -421,7 +421,7 @@ final class APIClient: SimpleBuyClientAPI {
 
     func withdrawalLocks(
         currency: FiatCurrency
-    ) -> AnyPublisher<withdrawalLocksResponse, NabuNetworkError> {
+    ) -> AnyPublisher<WithdrawalLocksResponse, NabuNetworkError> {
         let queryParameters = [
             URLQueryItem(
                 name: Parameter.currency,
