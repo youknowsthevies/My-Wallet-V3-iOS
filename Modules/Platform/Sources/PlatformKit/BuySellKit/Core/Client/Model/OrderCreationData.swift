@@ -227,9 +227,9 @@ extension OrderPayload.Response.Attributes.CardProvider {
         self.paymentState = OrderPayload.Response.Attributes.PaymentState(rawValue: paymentState) ?? .unknown
         let acquirerName = try container.decode(String.self, forKey: .cardAcquirerName)
         cardAcquirerName = CardPayload.Acquirer(acquirer: acquirerName)
-        cardAcquirerAccountCode = try container.decode(String.self, forKey: .cardAcquirerAccountCode)
-        clientSecret = try container.decode(String.self, forKey: .clientSecret)
-        publishableApiKey = try container.decode(String.self, forKey: .publishableApiKey)
+        cardAcquirerAccountCode = try container.decodeIfPresent(String.self, forKey: .cardAcquirerAccountCode)
+        clientSecret = try container.decodeIfPresent(String.self, forKey: .clientSecret)
+        publishableApiKey = try container.decodeIfPresent(String.self, forKey: .publishableApiKey)
     }
 }
 
