@@ -145,9 +145,9 @@ public struct AccountPickerView<
                         }
                     }
                 )
-                .listRowInsets(EdgeInsets())
             }
-            .environment(\.defaultMinListRowHeight, 0)
+            .listStyle(.plain)
+            .environment(\.defaultMinListRowHeight, 1)
             .animation(.easeInOut, value: isSearching)
         }
     }
