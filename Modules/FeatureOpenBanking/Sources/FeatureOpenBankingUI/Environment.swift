@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import CombineSchedulers
 import DIKit
@@ -21,6 +22,7 @@ public struct OpenBankingEnvironment {
     public var openURL: URLOpener
     public var fiatCurrencyFormatter: FiatCurrencyFormatter
     public var cryptoCurrencyFormatter: CryptoCurrencyFormatter
+    public var analytics: AnalyticsEventRecorderAPI
 
     public init(
         scheduler: AnySchedulerOf<DispatchQueue> = DispatchQueue.main.eraseToAnyScheduler(),
@@ -31,6 +33,7 @@ public struct OpenBankingEnvironment {
         openURL: URLOpener = resolve(),
         fiatCurrencyFormatter: FiatCurrencyFormatter = resolve(),
         cryptoCurrencyFormatter: CryptoCurrencyFormatter = resolve(),
+        analytics: AnalyticsEventRecorderAPI = resolve(),
         currency: String
     ) {
         self.scheduler = scheduler
@@ -41,6 +44,7 @@ public struct OpenBankingEnvironment {
         self.openURL = openURL
         self.fiatCurrencyFormatter = fiatCurrencyFormatter
         self.cryptoCurrencyFormatter = cryptoCurrencyFormatter
+        self.analytics = analytics
 
         openBanking.state.set(.currency, to: currency)
     }
