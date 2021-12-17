@@ -15,19 +15,14 @@ final class StellarAsset: CryptoAsset {
     let asset: CryptoCurrency = .coin(.stellar)
 
     var defaultAccount: AnyPublisher<SingleAccount, CryptoAssetError> {
-        Single.just(())
-            .observe(on: MainScheduler.asyncInstance)
-            .flatMap(weak: self) { (self, _) -> Maybe<StellarWalletAccount> in
-                self.accountRepository.initializeMetadataMaybe()
+        Just(())
+            .receive(on: DispatchQueue.main)
+            .flatMap { [accountRepository] _ -> AnyPublisher<StellarWalletAccount, CryptoAssetError> in
+                accountRepository.initializeMetadataMaybe()
+                    .mapError { _ in CryptoAssetError.noDefaultAccount }
+                    .eraseToAnyPublisher()
             }
-            .asObservable()
             .first()
-            .map { account -> StellarWalletAccount in
-                guard let account = account else {
-                    throw StellarAccountError.noDefaultAccount
-                }
-                return account
-            }
             .map { account -> SingleAccount in
                 StellarCryptoAccount(
                     publicKey: account.publicKey,
@@ -35,7 +30,6 @@ final class StellarAsset: CryptoAsset {
                     hdAccountIndex: account.index
                 )
             }
-            .asPublisher()
             .mapError(CryptoAssetError.failedToLoadDefaultAccount)
             .eraseToAnyPublisher()
     }

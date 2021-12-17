@@ -1,132 +1,226 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import MetadataKit
 import MoneyKit
 import PlatformKit
-import RxSwift
+import ToolKit
 import WalletPayloadKit
 
-public protocol StellarWalletAccountRepositoryAPI {
-    var defaultAccount: StellarWalletAccount? { get }
-
-    func initializeMetadataMaybe() -> Maybe<StellarWalletAccount>
-    func loadKeyPair() -> Maybe<StellarKeyPair>
-    func loadKeyPair(with secondPassword: String?) -> Single<StellarKeyPair>
+public enum StellarWalletAccountRepositoryError: Error {
+    case missingWallet
+    case saveFailure
+    case mnemonicFailure(MnemonicAccessError)
+    case metadataFetchError(WalletAssetFetchError)
+    case failedToDeriveInput(Error)
+    case failedToFetchAccount(Error)
 }
 
-class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletAccountInitializer {
+public protocol StellarWalletAccountRepositoryAPI {
+    var defaultAccount: AnyPublisher<StellarWalletAccount?, StellarWalletAccountRepositoryError> { get }
+
+    func initializeMetadataMaybe() -> AnyPublisher<StellarWalletAccount, StellarWalletAccountRepositoryError>
+    func loadKeyPair() -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError>
+    func loadKeyPair(with secondPassword: String?) -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError>
+}
+
+final class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI {
     typealias WalletAccount = StellarWalletAccount
 
+    private struct Key: Hashable {}
+
+    /// The default `StellarWallet`, will be nil if it has not yet been initialized
+    var defaultAccount: AnyPublisher<StellarWalletAccount?, StellarWalletAccountRepositoryError> {
+        accounts
+            .map(\.first)
+            .eraseToAnyPublisher()
+    }
+
+    private let accounts: AnyPublisher<[StellarWalletAccount], StellarWalletAccountRepositoryError>
+
     private let bridge: StellarWalletBridgeAPI
+    private let metadataEntryService: WalletMetadataEntryServiceAPI
     private let mnemonicAccessAPI: MnemonicAccessAPI
+    private let nativeWalletEnabled: () -> AnyPublisher<Bool, Never>
+
+    private let cachedValue: CachedValueNew<
+        Key,
+        [StellarWalletAccount],
+        StellarWalletAccountRepositoryError
+    >
+
     private let deriver = StellarKeyPairDeriver()
 
     init(
         bridge: StellarWalletBridgeAPI = resolve(),
-        mnemonicAccessAPI: MnemonicAccessAPI = resolve()
+        metadataEntryService: WalletMetadataEntryServiceAPI = resolve(),
+        mnemonicAccessAPI: MnemonicAccessAPI = resolve(),
+        nativeWalletEnabled: @escaping () -> AnyPublisher<Bool, Never> = { nativeWalletFlagEnabled() }
     ) {
         self.bridge = bridge
+        self.metadataEntryService = metadataEntryService
         self.mnemonicAccessAPI = mnemonicAccessAPI
-    }
+        self.nativeWalletEnabled = nativeWalletEnabled
 
-    func initializeMetadataMaybe() -> Maybe<WalletAccount> {
-        loadDefaultAccount().ifEmpty(
-            switchTo: createAndSaveStellarAccount()
+        let cache: AnyCache<Key, [StellarWalletAccount]> = InMemoryCache(
+            configuration: .onLoginLogout(),
+            refreshControl: PerpetualCacheRefreshControl()
+        ).eraseToAnyCache()
+
+        let fetch_old = { [bridge] () -> AnyPublisher<[StellarWalletAccount], StellarWalletAccountRepositoryError> in
+            Deferred {
+                Future { promise in
+                    let wallets = bridge.stellarWallets()
+                    promise(.success(wallets))
+                }
+            }
+            .subscribe(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+        }
+
+        let fetch_new = { () -> AnyPublisher<[StellarWalletAccount], StellarWalletAccountRepositoryError> in
+            metadataEntryService.fetchEntry(type: StellarEntryPayload.self)
+                .map(\.accounts)
+                .map { accounts in
+                    accounts.enumerated().map { index, account in
+                        StellarWalletAccount(
+                            index: index,
+                            publicKey: account.publicKey,
+                            label: account.label,
+                            archived: account.archived
+                        )
+                    }
+                }
+                .mapError(StellarWalletAccountRepositoryError.metadataFetchError)
+                .eraseToAnyPublisher()
+        }
+
+        cachedValue = CachedValueNew(
+            cache: cache,
+            fetch: { [nativeWalletEnabled] _ in
+                nativeWalletEnabled()
+                    .flatMap { isEnabled -> AnyPublisher<[StellarWalletAccount], StellarWalletAccountRepositoryError> in
+                        guard isEnabled else {
+                            return fetch_old()
+                        }
+                        return fetch_new()
+                    }
+                    .eraseToAnyPublisher()
+            }
         )
+
+        accounts = cachedValue.get(key: Key())
     }
 
-    /// The default `StellarWallet`, will be nil if it has not yet been initialized
-    var defaultAccount: StellarWalletAccount? {
-        accounts().first
+    func initializeMetadataMaybe() -> AnyPublisher<WalletAccount, StellarWalletAccountRepositoryError> {
+        let createAndSave = createAndSaveStellarAccount
+        return defaultAccount
+            .flatMap { account -> AnyPublisher<WalletAccount, StellarWalletAccountRepositoryError> in
+                guard let account = account else {
+                    return createAndSave().eraseToAnyPublisher()
+                }
+                return .just(account)
+            }
+            .eraseToAnyPublisher()
     }
 
-    func accounts() -> [WalletAccount] {
-        bridge.stellarWallets()
-    }
-
-    func loadKeyPair(with secondPassword: String?) -> Single<StellarKeyPair> {
+    func loadKeyPair(
+        with secondPassword: String?
+    ) -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError> {
         mnemonicAccessAPI
             .mnemonic(with: secondPassword)
-            .asObservable()
-            .take(1)
-            .asSingle()
+            .mapError(StellarWalletAccountRepositoryError.mnemonicFailure)
             .map { mnemonic in
                 StellarKeyDerivationInput(mnemonic: mnemonic)
             }
-            .flatMap(weak: self) { (self, input) -> Single<StellarKeyPair> in
-                self.derive(input: input)
+            .flatMap { [deriver] input -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError> in
+                derive(input: input, deriver: deriver)
             }
+            .eraseToAnyPublisher()
     }
 
-    func loadKeyPair() -> Maybe<StellarKeyPair> {
+    func loadKeyPair() -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError> {
         mnemonicAccessAPI
             .mnemonicPromptingIfNeeded
-            .asObservable()
-            .take(1)
-            .asSingle()
+            .mapError(StellarWalletAccountRepositoryError.mnemonicFailure)
             .map { mnemonic in
                 StellarKeyDerivationInput(mnemonic: mnemonic)
             }
-            .flatMap(weak: self) { (self, input) -> Maybe<StellarKeyPair> in
-                self.derive(input: input).asMaybe()
+            .flatMap { [deriver] input -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError> in
+                derive(input: input, deriver: deriver)
             }
+            .eraseToAnyPublisher()
     }
 
     // MARK: Private
 
-    private func derive(input: StellarKeyDerivationInput) -> Single<StellarKeyPair> {
-        Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                switch self.deriver.derive(input: input) {
-                case .success(let success):
-                    observer(.success(success))
-                case .failure(let error):
-                    observer(.error(error))
-                }
-                return Disposables.create()
+    private func createAndSaveStellarAccount() -> AnyPublisher<WalletAccount, StellarWalletAccountRepositoryError> {
+        let saveKeyPair = save
+        let save_old = loadKeyPair()
+            .flatMap { keyPair -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError> in
+                saveKeyPair(keyPair)
+                    .mapError { _ in StellarWalletAccountRepositoryError.saveFailure }
+                    .eraseToAnyPublisher()
             }
-            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
-    }
-
-    private func loadDefaultAccount() -> Maybe<WalletAccount> {
-        guard let defaultAccount = defaultAccount else {
-            return Maybe.empty()
-        }
-        return Maybe.just(defaultAccount)
-    }
-
-    private func createAndSaveStellarAccount() -> Maybe<WalletAccount> {
-        loadKeyPair()
-            .flatMap(weak: self) { (self, keyPair) -> Maybe<StellarKeyPair> in
-                self.save(keyPair: keyPair)
-                    .andThen(Maybe.just(keyPair))
-            }
-            .map { keyPair -> Account in
-                Account(
+            .map { keyPair -> WalletAccount in
+                WalletAccount(
                     index: 0,
                     publicKey: keyPair.accountID,
                     label: CryptoCurrency.coin(.stellar).defaultWalletName,
                     archived: false
                 )
             }
+
+        return nativeWalletFlagEnabled()
+            .flatMap { isEnabled -> AnyPublisher<WalletAccount, StellarWalletAccountRepositoryError> in
+                guard isEnabled else {
+                    return save_old
+                        .eraseToAnyPublisher()
+                }
+                #warning("saving on native wallet is not yet supported")
+                return .failure(StellarWalletAccountRepositoryError.saveFailure)
+                    .crashOnError()
+            }
+            .eraseToAnyPublisher()
     }
 
-    private func save(keyPair: StellarKeyPair) -> Completable {
-        Completable.create(weak: self) { (self, observer) -> Disposable in
-            self.bridge.save(
-                keyPair: keyPair,
-                label: CryptoCurrency.coin(.stellar).defaultWalletName,
-                completion: { result in
-                    switch result {
-                    case .success:
-                        observer(.completed)
-                    case .failure:
-                        observer(.error(StellarAccountError.unableToSaveNewAccount))
+    private func save(keyPair: StellarKeyPair) -> AnyPublisher<StellarKeyPair, StellarAccountError> {
+        Deferred { [bridge] in
+            Future { promise in
+                bridge.save(
+                    keyPair: keyPair,
+                    label: CryptoCurrency.coin(.stellar).defaultWalletName,
+                    completion: { result in
+                        switch result {
+                        case .success:
+                            promise(.success(keyPair))
+                        case .failure:
+                            promise(.failure(StellarAccountError.unableToSaveNewAccount))
+                        }
                     }
-                }
-            )
-            return Disposables.create()
+                )
+            }
         }
-        .subscribe(on: MainScheduler.asyncInstance)
+        .subscribe(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
     }
+}
+
+private func derive(
+    input: StellarKeyDerivationInput,
+    deriver: StellarKeyPairDeriver
+) -> AnyPublisher<StellarKeyPair, StellarWalletAccountRepositoryError> {
+    Deferred {
+        Future { promise in
+            switch deriver.derive(input: input) {
+            case .success(let success):
+                promise(.success(success))
+            case .failure(let error):
+                promise(.failure(StellarWalletAccountRepositoryError.failedToDeriveInput(error)))
+            }
+        }
+    }
+    .eraseToAnyPublisher()
 }
