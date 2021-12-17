@@ -210,21 +210,24 @@ extension InstitutionList {
         }
 
         public var body: some View {
-            PrimaryRow(title: title, leading: {
-                Group {
-                    if let image = image {
-                        ImageResourceView(
-                            url: image,
-                            placeholder: { Color.semantic.background }
-                        )
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    } else {
-                        Color.viewPrimaryBackground
+            PrimaryRow(
+                title: title,
+                leading: {
+                    Group {
+                        if let image = image {
+                            ImageResourceView(
+                                url: image,
+                                placeholder: { Color.semantic.background }
+                            )
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                        } else {
+                            Color.viewPrimaryBackground
+                        }
                     }
+                    .frame(width: 12.vw, height: 12.vw, alignment: .center)
                 }
-                .frame(width: 12.vw, height: 12.vw, alignment: .center)
-            })
+            )
             .frame(height: 9.5.vh, alignment: .center)
             .background(Color.semantic.background)
         }
