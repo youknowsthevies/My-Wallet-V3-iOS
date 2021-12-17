@@ -43,6 +43,7 @@ public protocol TransactionFlowViewControllable: ViewControllable {
 
 typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>
 
+// swiftlint:disable type_body_length
 final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRouting {
 
     private var paymentMethodLinker: PaymentMethodLinkerAPI
