@@ -262,6 +262,8 @@ extension LoggedInHostingController {
                     self?.walletConnectService.connect(url)
                 case .success(.deepLink):
                     break
+                case .success(.cryptoTargets):
+                    break
                 case .failure:
                     break
                 }
