@@ -47,5 +47,4 @@ final class TestEventRecorder: AnalyticsEventRecorderAPI {
             record(event: event)
         }
     }
-
 }
