@@ -92,10 +92,12 @@ final class BuySellSegmentedViewPresenter: SegmentedViewScreenPresenting {
         return [
             SegmentedViewScreenItem(
                 title: LocalizedStrings.buyTitle,
+                id: blockchain.ux.user.buy,
                 viewController: buyListViewController
             ),
             SegmentedViewScreenItem(
                 title: LocalizedStrings.sellTitle,
+                id: blockchain.ux.user.sell,
                 viewController: accountPickerRouter.viewControllable.uiviewController
             )
         ]

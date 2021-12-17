@@ -95,6 +95,15 @@ public final class SegmentedView: UISegmentedControl {
                 }
             }
 
+            for item in viewModel.items {
+                switch item.content {
+                case .title(let title):
+                    setAccessibilityIdentifier(String(describing: item.id.or(default: title)), for: title)
+                default:
+                    break
+                }
+            }
+
             guard isMomentary == false else { return }
             selectedSegmentIndex = viewModel.defaultSelectedSegmentIndex
             sendActions(for: .valueChanged)
@@ -120,5 +129,14 @@ public final class SegmentedView: UISegmentedControl {
     private func setup() {
         layer.borderWidth = 1
         selectedSegmentTintColor = .white
+    }
+
+    func setAccessibilityIdentifier(_ accessibilityIdentifier: String, for segmentTitle: String) {
+        guard let segment = subviews.first(
+            where: { $0.subviews.filter(UILabel.self).contains(where: { $0.text == segmentTitle }) }
+        ) else {
+            return
+        }
+        segment.accessibilityIdentifier = accessibilityIdentifier
     }
 }

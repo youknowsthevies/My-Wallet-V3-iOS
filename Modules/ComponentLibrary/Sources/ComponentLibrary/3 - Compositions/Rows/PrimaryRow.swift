@@ -41,6 +41,8 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     private let trailing: Trailing
 
     @Binding private var isSelected: Bool
+
+    private let action: (() -> Void)?
     private let isSelectable: Bool
 
     /// Create a default row with the given data.
@@ -61,32 +63,39 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         tags: [Tag] = [],
         isSelected: Binding<Bool>? = nil,
         @ViewBuilder leading: () -> Leading,
-        @ViewBuilder trailing: () -> Trailing
+        @ViewBuilder trailing: () -> Trailing,
+        action: (() -> Void)? = nil
     ) {
         self.title = title
         self.subtitle = subtitle
         self.description = description
         self.tags = tags
-        isSelectable = isSelected != nil
+        isSelectable = action != nil || isSelected != nil
         _isSelected = isSelected ?? .constant(false)
         self.leading = leading()
         self.trailing = trailing()
+        self.action = action
     }
 
     public var body: some View {
-        if isSelectable {
-            Button {
-                isSelected = true
-            } label: {
+        Group {
+            if isSelectable {
+                Button {
+                    action?()
+                    isSelected = true
+                } label: {
+                    horizontalContent
+                }
+                .buttonStyle(
+                    PrimaryRowStyle(isSelectable: isSelectable)
+                )
+            } else {
                 horizontalContent
+                    .background(Color.semantic.background)
             }
-            .buttonStyle(
-                PrimaryRowStyle(isSelectable: isSelectable)
-            )
-        } else {
-            horizontalContent
-                .background(Color.semantic.background)
         }
+        .accessibilityElement(children: .combine)
+        .accessibility(addTraits: .isButton)
     }
 
     var horizontalContent: some View {
@@ -172,7 +181,8 @@ extension PrimaryRow where Leading == EmptyView {
         description: String? = nil,
         tags: [Tag] = [],
         isSelected: Binding<Bool>? = nil,
-        @ViewBuilder trailing: () -> Trailing
+        @ViewBuilder trailing: () -> Trailing,
+        action: (() -> Void)? = nil
     ) {
         self.init(
             title: title,
@@ -181,7 +191,8 @@ extension PrimaryRow where Leading == EmptyView {
             tags: tags,
             isSelected: isSelected,
             leading: { EmptyView() },
-            trailing: trailing
+            trailing: trailing,
+            action: action
         )
     }
 }
@@ -202,7 +213,8 @@ extension PrimaryRow where Trailing == ChevronRight {
         description: String? = nil,
         tags: [Tag] = [],
         isSelected: Binding<Bool>? = nil,
-        @ViewBuilder leading: () -> Leading
+        @ViewBuilder leading: () -> Leading,
+        action: (() -> Void)? = nil
     ) {
         self.init(
             title: title,
@@ -230,7 +242,8 @@ extension PrimaryRow where Leading == EmptyView, Trailing == ChevronRight {
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
-        isSelected: Binding<Bool>? = nil
+        isSelected: Binding<Bool>? = nil,
+        action: (() -> Void)? = nil
     ) {
         self.init(
             title: title,
@@ -239,7 +252,8 @@ extension PrimaryRow where Leading == EmptyView, Trailing == ChevronRight {
             tags: tags,
             isSelected: isSelected,
             leading: { EmptyView() },
-            trailing: { ChevronRight() }
+            trailing: { ChevronRight() },
+            action: action
         )
     }
 }

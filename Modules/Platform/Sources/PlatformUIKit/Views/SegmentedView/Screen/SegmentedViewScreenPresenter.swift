@@ -11,10 +11,16 @@ public protocol SegmentedViewScreenViewController where Self: UIViewController {
 
 public struct SegmentedViewScreenItem {
     let title: String
+    let id: AnyHashable
     let viewController: SegmentedViewScreenViewController
 
-    public init(title: String, viewController: SegmentedViewScreenViewController) {
+    public init<H: Hashable>(
+        title: String,
+        id: H,
+        viewController: SegmentedViewScreenViewController
+    ) {
         self.title = title
+        self.id = id
         self.viewController = viewController
     }
 }
@@ -53,11 +59,11 @@ public protocol SegmentedViewScreenPresenting: AnyObject {
 extension SegmentedViewScreenPresenting {
     public func createSegmentedViewModelItems() -> [SegmentedViewModel.Item] {
         items
-            .map(\.title)
             .enumerated()
-            .map { index, title in
+            .map { index, item in
                 SegmentedViewModel.Item(
-                    content: .title(title),
+                    content: .title(item.title),
+                    id: item.id,
                     action: { [weak self] in
                         self?.itemIndexSelectedRelay.accept((index: index, animated: true))
                     }

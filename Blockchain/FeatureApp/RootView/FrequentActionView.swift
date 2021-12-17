@@ -73,6 +73,8 @@ extension FrequentAction {
 
 struct FrequentActionView: View {
 
+    @State var selection: Tag?
+
     var list: [FrequentAction]
     var buttons: [FrequentAction]
 
@@ -110,11 +112,11 @@ struct FrequentActionView: View {
                         item.icon.circle()
                             .accentColor(.semantic.primary)
                             .frame(width: 32.pt)
+                    },
+                    action: {
+                        action(item)
                     }
                 )
-                .onTapGesture {
-                    action(item)
-                }
                 .identity(item.tag)
             }
         }
@@ -126,11 +128,13 @@ struct FrequentActionView: View {
                         title: button.name,
                         action: { action(button) }
                     )
+                    .identity(button.tag)
                 default:
                     SecondaryButton(
                         title: button.name,
                         action: { action(button) }
                     )
+                    .identity(button.tag)
                 }
             }
         }
