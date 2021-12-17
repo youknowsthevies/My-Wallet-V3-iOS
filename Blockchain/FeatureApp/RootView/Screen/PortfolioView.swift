@@ -14,7 +14,7 @@ struct PortfolioView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {
         let viewController = PortfolioViewController(
             fiatBalanceCellProvider: fiatBalanceCellProvider,
-            presenter: PortfolioScreenPresenter()
+            presenter: PortfolioScreenPresenter(drawerRouter: NoDrawer())
         )
         viewController.automaticallyApplyNavigationBarStyle = false
         return viewController
