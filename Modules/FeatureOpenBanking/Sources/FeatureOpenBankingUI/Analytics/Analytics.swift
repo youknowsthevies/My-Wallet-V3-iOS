@@ -8,18 +8,18 @@ extension AnalyticsEvents.New {
     enum OpenBanking: AnalyticsEvent, Equatable {
 
         case bankAccountStateTriggered(
-                account: FeatureOpenBankingDomain.OpenBanking.BankAccount,
-                institution: String? = nil
-             )
+            account: FeatureOpenBankingDomain.OpenBanking.BankAccount,
+            institution: String? = nil
+        )
 
         case linkBankConditionsApproved(
-                account: FeatureOpenBankingDomain.OpenBanking.BankAccount,
-                institution: String
-             )
+            account: FeatureOpenBankingDomain.OpenBanking.BankAccount,
+            institution: String
+        )
 
         case linkBankSelected(
-                institution: String
-             )
+            institution: String
+        )
 
         var type: AnalyticsEventType { .nabu }
 

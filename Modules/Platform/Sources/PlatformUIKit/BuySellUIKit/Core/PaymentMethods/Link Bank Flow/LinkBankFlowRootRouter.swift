@@ -112,12 +112,13 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
             navigationController?.pushViewController(router.viewControllable.uiviewController, animated: true)
         case .yapily(let data):
             detachCurrentChild()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
-                presentingController?.present(
-                    startOpenBanking.link(
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                guard let self = self else { return }
+                self.presentingController?.present(
+                    self.startOpenBanking.link(
                         account: data,
                         currency: data.currency,
-                        listener: interactor
+                        listener: self.interactor
                     ),
                     animated: true
                 )

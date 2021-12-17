@@ -225,8 +225,8 @@ extension InstitutionList {
                 }
                 .frame(width: 12.vw, height: 12.vw, alignment: .center)
             })
-                .frame(height: 9.5.vh, alignment: .center)
-                .background(Color.semantic.background)
+            .frame(height: 9.5.vh, alignment: .center)
+            .background(Color.semantic.background)
         }
     }
 }
