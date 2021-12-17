@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import CombineSchedulers
 import FeatureOpenBankingTestFixture
@@ -25,9 +26,26 @@ extension OpenBankingEnvironment {
                 openURL: OpenURL(yield: openURL),
                 fiatCurrencyFormatter: NoFormatCurrencyFormatter(),
                 cryptoCurrencyFormatter: NoFormatCurrencyFormatter(),
+                analytics: TestEventRecorder(),
                 currency: "GBP"
             ),
             network
         )
     }
+}
+
+final class TestEventRecorder: AnalyticsEventRecorderAPI {
+
+    var recorded: [AnalyticsEvent] = []
+
+    func record(event: AnalyticsEvent) {
+        recorded.append(event)
+    }
+
+    func record(events: [AnalyticsEvent]) {
+        for event in events {
+            record(event: event)
+        }
+    }
+
 }
