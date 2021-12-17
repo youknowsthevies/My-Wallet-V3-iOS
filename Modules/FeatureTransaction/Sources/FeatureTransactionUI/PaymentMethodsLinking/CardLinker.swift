@@ -46,7 +46,7 @@ final class CardLinker: CardLinkerAPI {
             "Attempting to present \(type(of: self)) when an instance is already in use."
         )
         if cardRouter != nil {
-            ProbabilisticRunner.run(for: .pointZeroOnePercent) {
+            ProbabilisticRunner.run(for: .onePercent) {
                 fatalError("Attempting to present \(type(of: self)) when an instance is already in use.")
             }
             return
