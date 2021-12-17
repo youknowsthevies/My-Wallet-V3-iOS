@@ -265,7 +265,6 @@ extension VerticalAlignment {
 }
 
 // swiftlint:disable line_length
-// swiftlint:disable closure_body_length
 struct PrimaryRow_Previews: PreviewProvider {
 
     static var previews: some View {

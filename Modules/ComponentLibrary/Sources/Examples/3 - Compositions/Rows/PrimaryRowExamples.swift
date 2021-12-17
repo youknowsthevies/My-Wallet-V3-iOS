@@ -4,6 +4,7 @@ import ComponentLibrary
 import SwiftUI
 
 // swiftlint:disable line_length
+// swiftlint:disable closure_body_length
 struct PrimaryRowExamplesView: View {
 
     var body: some View {
