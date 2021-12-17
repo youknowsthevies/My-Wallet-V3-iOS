@@ -145,6 +145,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let sourceAccount: BlockchainAccount? // TODO: this should be removed and taken from TransactionModel
     private let target: TransactionTarget? // TODO: this should be removed and taken from TransactionModel
     private let analyticsHook: TransactionAnalyticsHook
+    private let messageRecorder: MessageRecording
 
     init(
         transactionModel: TransactionModel,
@@ -152,13 +153,15 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         sourceAccount: BlockchainAccount?,
         target: TransactionTarget?,
         presenter: TransactionFlowPresentable,
-        analyticsHook: TransactionAnalyticsHook = resolve()
+        analyticsHook: TransactionAnalyticsHook = resolve(),
+        messageRecorder: MessageRecording = resolve()
     ) {
         self.transactionModel = transactionModel
         self.action = action
         self.sourceAccount = sourceAccount
         self.target = target
         self.analyticsHook = analyticsHook
+        self.messageRecorder = messageRecorder
         super.init(presenter: presenter)
         presenter.listener = self
     }
@@ -374,6 +377,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     // swiftlint:disable cyclomatic_complexity
     private func showFlowStep(previousState: TransactionState?, newState: TransactionState) {
+        messageRecorder.record("Transaction Step: \(String(describing: previousState?.step)) -> \(newState.step)")
         guard previousState?.step != newState.step else {
             // if the step hasn't changed we have nothing to do
             return
