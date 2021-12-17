@@ -72,11 +72,11 @@ struct TradingCurrencySelector: View {
                                 PrimaryDivider()
                                 PrimaryRow(
                                     title: currency.name,
-                                    subtitle: currency.displayCode
+                                    subtitle: currency.displayCode,
+                                    action: {
+                                        viewStore.send(.didSelect(currency))
+                                    }
                                 )
-                                .onTapGesture {
-                                    viewStore.send(.didSelect(currency))
-                                }
                             }
                         }
                     }

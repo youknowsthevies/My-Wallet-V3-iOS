@@ -41,10 +41,9 @@ struct DebugView: View {
                         PrimaryRow(title: "📚 Component Library")
                     }
                     PrimaryDivider()
-                    PrimaryRow(title: "🤖 Pulse")
-                        .onTapGesture {
-                            pulse = true
-                        }
+                    PrimaryRow(title: "🤖 Pulse") {
+                        pulse = true
+                    }
                 }
                 .background(Color.semantic.background)
             }
