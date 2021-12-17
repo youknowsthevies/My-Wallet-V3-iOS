@@ -121,6 +121,9 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         if environment.openBanking.isAuthorising {
             return .none
         }
+        if environment.cardService.isEnteringDetails {
+            return .none
+        }
         return .merge(
             .fireAndForget {
                 if environment.walletManager.walletIsInitialized() {

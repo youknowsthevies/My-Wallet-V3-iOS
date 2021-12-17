@@ -127,7 +127,9 @@ let package = Package(
                 .product(name: "PlatformKit", package: "Platform"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "stellarsdk", package: "stellarsdk"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "WalletPayloadKit", package: "WalletPayload"),
+                .product(name: "MetadataKit", package: "Metadata")
             ]
         ),
         .target(

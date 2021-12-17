@@ -44,6 +44,7 @@ public struct AppEnvironment {
     var analyticsRecorder: AnalyticsEventRecorderAPI
     var crashlyticsRecorder: Recording
     var openBanking: OpenBanking
+    var cardService: CardServiceAPI
 
     var coincore: CoincoreAPI
     var erc20CryptoAssetService: ERC20CryptoAssetServiceAPI
@@ -97,6 +98,7 @@ public struct AppEnvironment {
         analyticsRecorder: AnalyticsEventRecorderAPI,
         crashlyticsRecorder: Recording,
         openBanking: OpenBanking,
+        cardService: CardServiceAPI,
         coincore: CoincoreAPI,
         erc20CryptoAssetService: ERC20CryptoAssetServiceAPI,
         walletService: WalletService,
@@ -155,5 +157,6 @@ public struct AppEnvironment {
         self.buildVersionProvider = buildVersionProvider
         self.walletRepoPersistence = walletRepoPersistence
         self.secondPasswordPrompter = secondPasswordPrompter
+        self.cardService = cardService
     }
 }

@@ -312,6 +312,8 @@ extension DependencyContainer {
 
         single { CardListService() as CardListServiceAPI }
 
+        single { CardService() as CardServiceAPI }
+
         factory { CardDeletionService() as PaymentMethodDeletionServiceAPI }
 
         // MARK: - Services - Linked Banks

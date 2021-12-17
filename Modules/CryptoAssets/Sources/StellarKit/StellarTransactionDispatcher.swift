@@ -74,7 +74,7 @@ final class StellarTransactionDispatcher {
     func sendFunds(sendDetails: SendDetails, secondPassword: String) -> Single<SendConfirmationDetails> {
         Single
             .zip(
-                accountRepository.loadKeyPair(with: secondPassword),
+                accountRepository.loadKeyPair(with: secondPassword).asObservable().take(1).asSingle(),
                 transaction(sendDetails: sendDetails)
             )
             .flatMap(weak: self) { (self, payload) -> Single<TransactionPostResponseEnum> in

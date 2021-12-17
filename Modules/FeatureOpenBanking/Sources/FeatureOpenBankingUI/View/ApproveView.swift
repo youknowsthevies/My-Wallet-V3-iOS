@@ -69,7 +69,14 @@ public let approveReducer = Reducer<ApproveState, ApproveAction, OpenBankingEnvi
             state.ui = .model(for: state.bank.data, in: environment)
             return .none
         case .approve:
-            return .navigate(to: .bank)
+            return .merge(
+                .navigate(to: .bank),
+                .fireAndForget { [state] in
+                    environment.analytics.record(
+                        event: .linkBankConditionsApproved(account: state.bank.account, institution: state.bank.name)
+                    )
+                }
+            )
         case .dismiss:
             return .fireAndForget(environment.dismiss)
         case .deny, .bank:

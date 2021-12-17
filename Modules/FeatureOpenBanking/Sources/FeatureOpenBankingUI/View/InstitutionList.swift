@@ -75,7 +75,11 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                     .eraseToEffect()
             case .fetched(let account):
                 state.result = .success(account)
-                return .none
+                return .fireAndForget {
+                    environment.analytics.record(
+                        event: .bankAccountStateTriggered(account: account)
+                    )
+                }
             case .showTransferDetails:
                 return .fireAndForget(environment.showTransferDetails)
             case .select(let account, let institution):
@@ -87,7 +91,12 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                         )
                     )
                 )
-                return .navigate(to: .approve)
+                return .merge(
+                    .navigate(to: .approve),
+                    .fireAndForget {
+                        environment.analytics.record(event: .linkBankSelected(institution: institution.name))
+                    }
+                )
             case .approve(.deny):
                 state.route = nil
                 return .none

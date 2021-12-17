@@ -19,10 +19,14 @@ final class StellarActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetc
     }
 
     func details(for identifier: String) -> Observable<StellarActivityItemEventDetails> {
-        guard let accountID = repository.defaultAccount?.publicKey else {
-            return .error(StellarAccountError.noDefaultAccount)
-        }
-        return details(operationID: identifier, accountID: accountID)
+        repository.defaultAccount
+            .asObservable()
+            .flatMap(weak: self) { (self, account) -> Observable<StellarActivityItemEventDetails> in
+                guard let accountID = account?.publicKey else {
+                    return .error(StellarAccountError.noDefaultAccount)
+                }
+                return self.details(operationID: identifier, accountID: accountID)
+            }
     }
 
     private func details(operationID: String, accountID: String) -> Observable<StellarActivityItemEventDetails> {
