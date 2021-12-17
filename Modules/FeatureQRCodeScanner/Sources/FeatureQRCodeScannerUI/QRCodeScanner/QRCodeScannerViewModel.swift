@@ -152,6 +152,25 @@ final class QRCodeScannerViewModel: QRCodeScannerViewModelProtocol {
                     }
                     .eraseToAnyPublisher()
             }
+            .flatMap { result -> AnyPublisher<QRCodeScannerResultType?, Never> in
+                switch result {
+                case .cryptoTargets(let targets):
+                    return adapter
+                        .presentAccountPicker(accounts: targets)
+                        .map(QRCodeScannerResultType.cryptoTarget)
+                        .replaceError(with: nil)
+                        .eraseToAnyPublisher()
+                case .walletConnect:
+                    return featureFlagsService
+                        .isEnabled(.remote(.walletConnectEnabled))
+                        .flatMap { isEnabled -> AnyPublisher<QRCodeScannerResultType?, Never> in
+                            isEnabled ? .just(result) : .just(nil)
+                        }
+                        .eraseToAnyPublisher()
+                default:
+                    return .just(result)
+                }
+            }
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] result in
                 guard let self = self else {

@@ -41,7 +41,7 @@ struct QRCodeScannerView: UIViewControllerRepresentable {
                     }
                 case .walletConnect(let url):
                     self.walletConnectService.connect(url)
-                case .deepLink:
+                case .deepLink, .cryptoTargets:
                     break
                 }
             }

@@ -65,13 +65,10 @@ public final class CryptoTargetQRCodeParser: QRCodeScannerParsing {
                         guard let target = targets.first else {
                             return .failure(.parserError(CryptoTargetParserError.noAvailableAccount))
                         }
-                        if targets.count > 1 {
-                            return adapter
-                                .presentAccountPicker(accounts: targets)
-                                .map(QRCodeScannerResultType.cryptoTarget)
-                                .eraseToAnyPublisher()
+                        if targets.count == 1 {
+                            return .just(.cryptoTarget(target))
                         }
-                        return .just(.cryptoTarget(target))
+                        return .just(.cryptoTargets(targets))
                     }
                     .eraseToAnyPublisher()
             }
