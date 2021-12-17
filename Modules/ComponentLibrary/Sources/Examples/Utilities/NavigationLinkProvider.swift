@@ -53,7 +53,7 @@ private struct NavigationLinkView<LinkableView: View>: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            PrimaryRow(title: title, isSelected: $isActive)
+            PrimaryRow(title: title)
                 .background(
                     PrimaryNavigationLink(
                         destination: ZStack { view }

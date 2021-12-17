@@ -73,8 +73,6 @@ extension FrequentAction {
 
 struct FrequentActionView: View {
 
-    @State var selection: Tag?
-
     var list: [FrequentAction]
     var buttons: [FrequentAction]
 
