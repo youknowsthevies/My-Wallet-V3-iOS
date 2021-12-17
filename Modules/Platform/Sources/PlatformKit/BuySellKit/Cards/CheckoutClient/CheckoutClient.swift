@@ -63,7 +63,7 @@ extension CardData {
             expiryYear: year,
             cvv: cvv,
             name: ownerName,
-            billingAddress: nil,
+            billingAddress: billingAddress?.checkoutAddress,
             phone: nil
         )
     }
