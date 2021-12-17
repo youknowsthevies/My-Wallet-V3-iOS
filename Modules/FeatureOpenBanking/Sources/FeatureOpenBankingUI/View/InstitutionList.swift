@@ -75,7 +75,11 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                     .eraseToEffect()
             case .fetched(let account):
                 state.result = .success(account)
-                return .none
+                return .fireAndForget {
+                    environment.analytics.record(
+                        event: .bankAccountStateTriggered(account: account)
+                    )
+                }
             case .showTransferDetails:
                 return .fireAndForget(environment.showTransferDetails)
             case .select(let account, let institution):
@@ -87,7 +91,12 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
                         )
                     )
                 )
-                return .navigate(to: .approve)
+                return .merge(
+                    .navigate(to: .approve),
+                    .fireAndForget {
+                        environment.analytics.record(event: .linkBankSelected(institution: institution.name))
+                    }
+                )
             case .approve(.deny):
                 state.route = nil
                 return .none
@@ -201,23 +210,26 @@ extension InstitutionList {
         }
 
         public var body: some View {
-            PrimaryRow(title: title, leading: {
-                Group {
-                    if let image = image {
-                        ImageResourceView(
-                            url: image,
-                            placeholder: { Color.semantic.background }
-                        )
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    } else {
-                        Color.viewPrimaryBackground
+            PrimaryRow(
+                title: title,
+                leading: {
+                    Group {
+                        if let image = image {
+                            ImageResourceView(
+                                url: image,
+                                placeholder: { Color.semantic.background }
+                            )
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                        } else {
+                            Color.viewPrimaryBackground
+                        }
                     }
+                    .frame(width: 12.vw, height: 12.vw, alignment: .center)
                 }
-                .frame(width: 12.vw, height: 12.vw, alignment: .center)
-            })
-                .frame(height: 9.5.vh, alignment: .center)
-                .background(Color.semantic.background)
+            )
+            .frame(height: 9.5.vh, alignment: .center)
+            .background(Color.semantic.background)
         }
     }
 }

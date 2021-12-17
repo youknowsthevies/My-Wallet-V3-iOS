@@ -100,11 +100,11 @@ extension FeatureOpenBankingUI.OpenBankingViewController {
                 showTransferDetails: {
                     app.showFundTrasferDetails(fiatCurrency: currency, isOriginDeposit: true)
                 },
-                dismiss: {
-                    listener.closeFlow(isInteractive: false)
+                dismiss: { [weak listener] in
+                    listener?.closeFlow(isInteractive: false)
                 },
-                cancel: {
-                    listener.closeFlow(isInteractive: false)
+                cancel: { [weak listener] in
+                    listener?.closeFlow(isInteractive: false)
                 },
                 currency: currency.code
             )
