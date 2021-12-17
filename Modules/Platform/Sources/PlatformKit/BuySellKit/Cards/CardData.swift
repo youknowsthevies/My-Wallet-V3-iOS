@@ -169,7 +169,7 @@ extension Array where Element == CardData {
 }
 
 extension CardData {
-    public static let maxCardCount = 3
+    public static let maxCardCount = 5
 }
 
 extension CardData {
