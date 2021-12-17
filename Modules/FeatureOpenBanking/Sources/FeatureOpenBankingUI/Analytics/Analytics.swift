@@ -42,8 +42,10 @@ extension AnalyticsEvents.New {
                     "partner": account.partner,
                     "provider": {
                         switch account.attributes.entity.lowercased() {
-                        case "fintecture": return "FINTECTURE"
-                        case "safeconnect(uk)", _: return "SAFE_CONNECT"
+                        case "fintecture":
+                            return "FINTECTURE"
+                        case "safeconnect(uk)", _:
+                            return "SAFE_CONNECT"
                         }
                     }()
                 ]
