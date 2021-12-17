@@ -146,7 +146,7 @@ public struct AccountPickerView<
                     }
                 )
             }
-            .listStyle(.plain)
+            .listStyle(PlainListStyle())
             .environment(\.defaultMinListRowHeight, 1)
             .animation(.easeInOut, value: isSearching)
         }
