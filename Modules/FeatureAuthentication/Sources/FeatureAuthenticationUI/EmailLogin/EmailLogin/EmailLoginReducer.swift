@@ -26,6 +26,7 @@ public enum EmailLoginAction: Equatable, NavigationAction {
     case onAppear
     case closeButtonTapped
     case route(RouteIntent<EmailLoginRoute>?)
+    case continueButtonTapped
 
     // MARK: - Email
 
@@ -36,6 +37,7 @@ public enum EmailLoginAction: Equatable, NavigationAction {
     case sendDeviceVerificationEmail
     case didSendDeviceVerificationEmail(Result<EmptyValue, DeviceVerificationServiceError>)
     case setupSessionToken
+    case setupSessionTokenReceived(Result<EmptyValue, SessionTokenServiceError>)
 
     // MARK: - Local Actions
 
@@ -157,7 +159,7 @@ let emailLoginReducer = Reducer.combine(
             environment.analyticsRecorder.record(
                 event: .loginViewed
             )
-            return Effect(value: .setupSessionToken)
+            return .none
 
         case .closeButtonTapped:
             // handled in welcome reducer
@@ -171,9 +173,12 @@ let emailLoginReducer = Reducer.combine(
             } else {
                 state.verifyDeviceState = nil
                 state.route = route
-                // TODO: resolve the ComposableNavigation delay issue to make onAppear work, and not reset token here
-                return Effect(value: .setupSessionToken)
+                return .none
             }
+
+        case .continueButtonTapped:
+            state.isLoading = true
+            return Effect(value: .setupSessionToken)
 
         // MARK: - Email
 
@@ -187,6 +192,7 @@ let emailLoginReducer = Reducer.combine(
         case .sendDeviceVerificationEmail,
              .verifyDevice(.sendDeviceVerificationEmail):
             guard state.isEmailValid else {
+                state.isLoading = false
                 return .none
             }
             state.isLoading = true
@@ -234,20 +240,26 @@ let emailLoginReducer = Reducer.combine(
             return environment
                 .sessionTokenService
                 .setupSessionToken()
+                .map { _ in EmptyValue.noValue }
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .map { result -> EmailLoginAction in
-                    if case .failure(let error) = result {
-                        environment.errorRecorder.error(error)
-                        return .alert(
-                            .show(
-                                title: EmailLoginLocalization.Alerts.GenericNetworkError.title,
-                                message: EmailLoginLocalization.Alerts.GenericNetworkError.message
-                            )
-                        )
-                    }
-                    return .none
-                }
+                .map(EmailLoginAction.setupSessionTokenReceived)
+
+        case .setupSessionTokenReceived(.success):
+            return Effect(value: .sendDeviceVerificationEmail)
+
+        case .setupSessionTokenReceived(.failure(let error)):
+            state.isLoading = false
+            environment.errorRecorder.error(error)
+            return Effect(
+                value:
+                .alert(
+                    .show(
+                        title: EmailLoginLocalization.Alerts.GenericNetworkError.title,
+                        message: EmailLoginLocalization.Alerts.GenericNetworkError.message
+                    )
+                )
+            )
 
         // MARK: - Local Reducers
 
