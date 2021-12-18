@@ -4,7 +4,7 @@ import Combine
 import Foundation
 
 public protocol WithdrawalLocksRepositoryAPI {
-    func withdrawLocks(
+    func withdrawalLocks(
         currencyCode: String
     ) -> AnyPublisher<WithdrawalLocks, Never>
 }
