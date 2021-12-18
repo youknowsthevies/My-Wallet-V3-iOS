@@ -1,9 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 @testable import MetadataDataKit
-import MetadataHDWalletKit
 @testable import MetadataKit
 import NetworkKit
 import TestKit

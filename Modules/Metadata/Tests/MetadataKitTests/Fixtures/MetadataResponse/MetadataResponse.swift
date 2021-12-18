@@ -7,6 +7,20 @@ import TestKit
 
 extension MetadataResponse {
 
+    static func fetchMagicResponse(
+        for address: String
+    ) -> MetadataResponse? {
+        let name = "fetch_magic_metadata_response_" + address
+        return Fixtures.load(
+            name: name,
+            in: .module
+        )
+    }
+
+    static var ethereumFetchMagicMetadataResponse: MetadataResponse {
+        fetchMagicResponse(for: "129GLwNB2EbNRrGMuNSRh9PM83xU2Mpn81")!
+    }
+
     static var ethereumEntryMetadataResponse: MetadataResponse {
         Fixtures.load(name: "ethereum_entry_response", in: .module)!
     }

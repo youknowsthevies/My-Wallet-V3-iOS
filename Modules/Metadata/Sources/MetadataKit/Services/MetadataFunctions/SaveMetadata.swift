@@ -115,8 +115,6 @@ func saveMetadata(
     let payloadJson = input.payloadJson
     let metadata = input.metadata
 
-    unimplemented("Entry saving needs to be further tested before being enabled")
-
     let writeMetadata: (Data) -> AnyPublisher<Void, SaveMetadataError> = { encrypted in
         let encryptedPayloadBytes = encrypted
             .base64EncodedString()
@@ -223,11 +221,4 @@ private func fetchMagic(
         }
         .map(Data.init(_:))
         .eraseToAnyPublisher()
-}
-
-func sign(
-    bitcoinMessage message: [UInt8],
-    with metadataNode: MetadataNode
-) -> Result<String, Error> {
-    metadataNode.node.sign(bitcoinMessage: message.toBase64())
 }

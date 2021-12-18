@@ -72,12 +72,17 @@ private func initMetadataNodes(
             -> AnyPublisher<MetadataState, MetadataInitialisationError> in
             switch nodeStatus {
             case .notYetCreated:
-                return generateNodes(
-                    input.masterKey,
-                    secondPasswordNode
+                return .failure(
+                    MetadataInitialisationError.failedToGenerateNodes(NSError())
                 )
-                .mapError(MetadataInitialisationError.failedToGenerateNodes)
-                .eraseToAnyPublisher()
+//                TODO: Uncomment this once we have better test coverage
+//                      for metadata write operations:
+//                return generateNodes(
+//                    input.masterKey,
+//                    secondPasswordNode
+//                )
+//                .mapError(MetadataInitialisationError.failedToGenerateNodes)
+//                .eraseToAnyPublisher()
             case .loaded(let metadataNodes):
                 return .just(
                     MetadataState(

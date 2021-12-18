@@ -1,10 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import Foundation
 @testable import MetadataDataKit
-import MetadataHDWalletKit
 @testable import MetadataKit
 import NetworkError
 import ToolKit
@@ -105,6 +103,8 @@ struct TestEnvironment {
     }
 
     var metadataNodeXPriv = Default.metadataNodeXPriv
+
+    var sharedMetadataNodeXPriv = Default.sharedMetadataNodeXPriv
 
     var credentials = Default.credentials
 

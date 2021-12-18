@@ -37,10 +37,7 @@ func generateNodes(
     secondPasswordNode: SecondPasswordNode,
     saveMetadata: @escaping SaveMetadata
 ) -> AnyPublisher<MetadataState, GenerateNodesError> {
-
-    unimplemented("Node generation needs to be further tested before being enabled")
-
-    return remoteMetadataHdNodes(masterKey: masterKey)
+    remoteMetadataHdNodes(masterKey: masterKey)
         .mapError()
         .flatMap { remoteNodes
             -> AnyPublisher<RemoteMetadataNodes, GenerateNodesError> in

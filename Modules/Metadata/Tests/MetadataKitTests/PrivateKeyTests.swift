@@ -1,23 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
-import DIKit
-@testable import MetadataHDWalletKit
 @testable import MetadataKit
 import XCTest
 
 final class PrivateKeyTests: XCTestCase {
-
-    var cancellables: Set<AnyCancellable>!
-
-    override func setUpWithError() throws {
-        try super.setUpWithError()
-    }
-
-    override func tearDownWithError() throws {
-
-        try super.tearDownWithError()
-    }
 
     func test_deriveKey() throws {
 

@@ -1,25 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
-import DIKit
 @testable import MetadataKit
 import XCTest
 
 final class MetadataUtilTests: XCTestCase {
-
-    var cancellables: Set<AnyCancellable>!
-
-    override func setUpWithError() throws {
-        try super.setUpWithError()
-
-        cancellables = []
-    }
-
-    override func tearDownWithError() throws {
-        cancellables = nil
-
-        try super.tearDownWithError()
-    }
 
     func testGetMessage() throws {
 
