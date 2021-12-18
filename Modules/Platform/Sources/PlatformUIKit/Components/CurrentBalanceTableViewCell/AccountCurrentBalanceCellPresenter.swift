@@ -43,7 +43,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
     public let multiBadgeViewModel = MultiBadgeViewModel(
         layoutMargins: UIEdgeInsets(
             top: 8,
-            left: 8,
+            left: 60,
             bottom: 16,
             right: 8
         ),

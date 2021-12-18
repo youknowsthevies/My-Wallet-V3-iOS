@@ -40,24 +40,20 @@ struct AccountPickerRowView<
                     fiatBalance: fiatBalance,
                     currencyCode: currencyCode
                 )
-                PrimaryDivider()
             case .button(let model):
                 ButtonRow(model: model) {
                     send(.accountPickerRowDidTap(model.id))
                 }
-                PrimaryDivider()
             case .linkedBankAccount(let model):
                 LinkedBankAccountRow(
                     model: model,
                     badgeView: badgeView(model.id),
                     multiBadgeView: multiBadgeView(model.id)
                 )
-                PrimaryDivider()
             case .paymentMethodAccount(let model):
                 PaymentMethodRow(
                     model: model
                 )
-                PrimaryDivider()
             case .singleAccount(let model):
                 SingleAccountRow(
                     model: model,
@@ -67,7 +63,6 @@ struct AccountPickerRowView<
                     fiatBalance: fiatBalance,
                     cryptoBalance: cryptoBalance
                 )
-                PrimaryDivider()
             case .withdrawalLocks:
                 withdrawalLocksView()
             }
