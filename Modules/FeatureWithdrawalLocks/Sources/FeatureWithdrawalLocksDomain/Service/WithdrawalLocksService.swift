@@ -5,20 +5,17 @@ import DIKit
 import Foundation
 
 public protocol WithdrawalLocksServiceAPI {
-    var withdrawLocks: AnyPublisher<WithdrawalLocks, Never> { get }
+    func withdrawalLocks() -> AnyPublisher<WithdrawalLocks, Never>
 }
 
 final class WithdrawalLocksService: WithdrawalLocksServiceAPI {
-
-    lazy var withdrawLocks: AnyPublisher<WithdrawalLocks, Never> = {
+    func withdrawalLocks() -> AnyPublisher<WithdrawalLocks, Never> {
         fiatCurrencyCodePublisher.defaultFiatCurrencyCode
             .flatMap { [repository] currencyCode in
-                repository.withdrawLocks(currencyCode: currencyCode)
+                repository.withdrawalLocks(currencyCode: currencyCode)
             }
-            .removeDuplicates()
-            .share()
             .eraseToAnyPublisher()
-    }()
+    }
 
     private let repository: WithdrawalLocksRepositoryAPI
     private let fiatCurrencyCodePublisher: FiatCurrencyCodeProviderAPI
