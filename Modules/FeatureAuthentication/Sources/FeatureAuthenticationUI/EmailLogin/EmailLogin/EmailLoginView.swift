@@ -68,7 +68,7 @@ public struct EmailLoginView: View {
                     title: LocalizedString.Button._continue,
                     isLoading: viewStore.isLoading
                 ) {
-                    viewStore.send(.sendDeviceVerificationEmail)
+                    viewStore.send(.continueButtonTapped)
                 }
                 .disabled(!viewStore.isEmailValid)
                 .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.continueButton)

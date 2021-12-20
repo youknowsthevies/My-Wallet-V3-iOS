@@ -54,14 +54,14 @@ final class EmailLoginReducerTests: XCTestCase {
         XCTAssertFalse(state.isEmailValid)
     }
 
-    func test_on_appear_should_setup_session_token() {
-        testStore.assert(
-            .send(.onAppear),
-            .receive(.setupSessionToken),
-            .do { self.mockMainQueue.advance() },
-            .receive(.none)
-        )
-    }
+//    func test_on_appear_should_setup_session_token() {
+//        testStore.assert(
+//            .send(.onAppear),
+//            .receive(.setupSessionToken),
+//            .do { self.mockMainQueue.advance() },
+//            .receive(.none)
+//        )
+//    }
 
     func test_send_device_verification_email_success() {
         let validEmail = "valid@example.com"

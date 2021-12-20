@@ -111,15 +111,15 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     }
 
     func updateNote(for transactionHash: String, note: String?) -> Completable {
-        let setNote = Completable.create { completable in
-            self.wallet?.setEthereumNote(for: transactionHash, note: note)
-            completable(.completed)
-            return Disposables.create()
-        }
-        return reactiveWallet
-            .waitUntilInitialized
-            .flatMap { setNote.asObservable() }
-            .asCompletable()
+        reactiveWallet
+            .waitUntilInitializedSingle
+            .flatMapCompletable { [wallet] in
+                Completable.create { completable in
+                    wallet?.setEthereumNote(for: transactionHash, note: note)
+                    completable(.completed)
+                    return Disposables.create()
+                }
+            }
     }
 
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {

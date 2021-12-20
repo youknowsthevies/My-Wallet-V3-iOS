@@ -221,9 +221,9 @@ let credentialsReducer = Reducer.combine(
             }
             if let type = info.twoFAType, type.isTwoFactor {
                 // authenticate with empty password to set GUID and send SMS if needed
-                return Effect(value: .walletPairing(.authenticate("")))
+                return Effect(value: .walletPairing(.approveEmailAuthorization(true)))
             }
-            return .none
+            return Effect(value: .walletPairing(.approveEmailAuthorization(false)))
 
         case .didAppear(.walletIdentifier(let guid)):
             state.walletPairingState.walletGuid = guid ?? ""
@@ -384,6 +384,7 @@ private func clearErrorStates(
     return .merge(effects)
 }
 
+// swiftlint:disable cyclomatic_complexity
 private func authenticateDidFail(
     _ error: LoginServiceError,
     _ state: inout CredentialsState,
@@ -398,7 +399,7 @@ private func authenticateDidFail(
             case true:
                 return Effect(value: .walletPairing(.needsEmailAuthorization))
             case false:
-                return Effect(value: .walletPairing(.approveEmailAuthorization))
+                return .none
             }
         case .sms:
             state.twoFAState = .init(
