@@ -41,6 +41,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     private let trailing: Trailing
 
     private let action: (() -> Void)?
+    private let highlight: Bool
     private let isSelectable: Bool
 
     /// Create a default row with the given data.
@@ -59,6 +60,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
+        highlight: Bool = true,
         @ViewBuilder leading: () -> Leading,
         @ViewBuilder trailing: () -> Trailing,
         action: (() -> Void)? = nil
@@ -67,6 +69,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         self.subtitle = subtitle
         self.description = description
         self.tags = tags
+        self.highlight = highlight
         isSelectable = action != nil
         self.leading = leading()
         self.trailing = trailing()
@@ -74,14 +77,20 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     }
 
     public var body: some View {
-        Button {
-            action?()
-        } label: {
+        if isSelectable {
+            Button {
+                action?()
+            } label: {
+                horizontalContent
+            }
+            .buttonStyle(
+                PrimaryRowStyle(isSelectable: highlight && isSelectable)
+            )
+        } else {
             horizontalContent
+                .background(Color.semantic.background)
+                .accessibilityElement(children: .combine)
         }
-        .buttonStyle(
-            PrimaryRowStyle(isSelectable: isSelectable)
-        )
     }
 
     var horizontalContent: some View {
