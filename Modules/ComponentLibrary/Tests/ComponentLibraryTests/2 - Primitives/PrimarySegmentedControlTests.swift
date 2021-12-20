@@ -21,4 +21,14 @@ final class PrimarySegmentedControlTests: XCTestCase {
             ]
         )
     }
+
+    func testRightToLeft() {
+        let view = VStack(spacing: Spacing.baseline) {
+            PrimarySegmentedControl_Previews.previews
+        }
+        .environment(\.layoutDirection, .rightToLeft)
+        .fixedSize()
+
+        assertSnapshot(matching: view, as: .image)
+    }
 }

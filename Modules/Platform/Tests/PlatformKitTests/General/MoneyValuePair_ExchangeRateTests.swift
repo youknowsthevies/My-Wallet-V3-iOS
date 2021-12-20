@@ -10,14 +10,14 @@ final class MoneyValuePairExchangeRateTests: XCTestCase {
         let originalPair = MoneyValuePair(
             base: .one(currency: .USD),
             exchangeRate: MoneyValue(
-                amount: 000003357,
+                amount: 3357,
                 currency: .crypto(.coin(.bitcoin))
             )
         )
         XCTAssertEqual(originalPair.quote.displayString, "0.00003357 BTC")
 
         // WHEN: Getting the inverse quote
-        let inversePair = originalPair.inverseExchangeRate
+        let inversePair = originalPair.inverseQuote
 
         // THEN: The inverted quote should be the equivalent value for BTC-USD (1 / the original quote)
         XCTAssertEqual(inversePair.quote.displayString, "$29,788.50")
@@ -40,7 +40,7 @@ final class MoneyValuePairExchangeRateTests: XCTestCase {
         XCTAssertEqual(originalPair.quote.displayString, "$29,788.50")
 
         // WHEN: Getting the inverse quote
-        let inversePair = originalPair.inverseExchangeRate
+        let inversePair = originalPair.inverseQuote
 
         // THEN: The inverted quote should be the equivalent value for USD-BTC (1 / the original quote)
         XCTAssertEqual(inversePair.quote.displayString, "0.00003357 BTC")
@@ -63,7 +63,7 @@ final class MoneyValuePairExchangeRateTests: XCTestCase {
         XCTAssertEqual(originalPair.quote.displayString, "$4,000.00")
 
         // WHEN: Getting the inverse quote
-        let inversePair = originalPair.inverseExchangeRate
+        let inversePair = originalPair.inverseQuote
 
         // THEN: The inverse should return a 1 based FX anyway
         let expectedInversePair = MoneyValuePair(

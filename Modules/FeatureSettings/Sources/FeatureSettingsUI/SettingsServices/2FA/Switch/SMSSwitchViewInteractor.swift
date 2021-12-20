@@ -28,7 +28,7 @@ final class SMSSwitchViewInteractor: SwitchViewInteracting {
             .map { ValueCalculationState.value($0) }
             .map { .init(with: $0) }
             .startWith(.loading)
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
 

@@ -85,7 +85,7 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
             context.evaluateScriptCheckIsOnMainQueue(JSFunction.V3Payload.upgrade(with: walletName))
             return Disposables.create()
         }
-        .subscribeOn(scheduler)
+        .subscribe(on: scheduler)
     }
 
     func upgradeToV4() -> Single<String> {
@@ -106,6 +106,6 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
             context.evaluateScriptCheckIsOnMainQueue(JSFunction.V4Payload.upgrade.rawValue)
             return Disposables.create()
         }
-        .subscribeOn(scheduler)
+        .subscribe(on: scheduler)
     }
 }

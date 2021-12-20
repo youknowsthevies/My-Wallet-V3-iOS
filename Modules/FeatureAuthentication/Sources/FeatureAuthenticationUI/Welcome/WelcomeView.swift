@@ -1,5 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import ComposableNavigation
 import FeatureAuthenticationDomain
@@ -193,7 +198,7 @@ public struct WelcomeView: View {
                 viewStore.send(.navigate(to: .createWallet))
             }
             .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.createWalletButton)
-            SecondaryButton(title: LocalizedString.Button.login) {
+            MinimalButton(title: LocalizedString.Button.login) {
                 viewStore.send(.enter(into: .emailLogin))
             }
             .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.emailLoginButton)

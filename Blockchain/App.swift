@@ -18,6 +18,7 @@ import FeatureWalletConnectUI
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
 import Firebase
+import MetadataDataKit
 import MetadataKit
 import PlatformDataKit
 import ToolKit
@@ -91,6 +92,7 @@ func defineDependencies() {
         DependencyContainer.networkKit
         DependencyContainer.walletPayloadKit
         DependencyContainer.metadataKit
+        DependencyContainer.metadataDataKit
         DependencyContainer.moneyKit
         DependencyContainer.platformKit
         DependencyContainer.platformDataKit

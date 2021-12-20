@@ -3,5 +3,9 @@
 import Foundation
 
 public enum MetadataInitialisationError: Error {
-    case unknown
+    case failedToDeriveSecondPasswordNode(DeriveSecondPasswordNodeError)
+    case failedToLoadRemoteMetadataNode(LoadRemoteMetadataError)
+    case failedToDecodeRemoteMetadataNode(DecodingError)
+    case failedToDeriveRemoteMetadataNode(MetadataInitError)
+    case failedToGenerateNodes(Error)
 }

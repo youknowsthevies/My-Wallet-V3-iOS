@@ -5,7 +5,7 @@ import RxSwift
 extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
 
     public func onErrorComplete() -> Completable {
-        catchError { _ in
+        `catch` { _ in
             .empty()
         }
     }

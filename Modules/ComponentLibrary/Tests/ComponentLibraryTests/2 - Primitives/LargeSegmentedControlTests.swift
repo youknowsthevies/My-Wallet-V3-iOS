@@ -22,4 +22,15 @@ final class LargeSegmentedControlTests: XCTestCase {
             ]
         )
     }
+
+    func testRightToLeft() {
+        let view = VStack(spacing: Spacing.baseline) {
+            LargeSegmentedControl_Previews.previews
+        }
+        .environment(\.layoutDirection, .rightToLeft)
+        .frame(width: 320)
+        .fixedSize()
+
+        assertSnapshot(matching: view, as: .image)
+    }
 }

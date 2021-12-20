@@ -25,9 +25,7 @@ class WalletPersistenceTests: XCTestCase {
             language: "en",
             authenticatorType: .standard
         ),
-        encryptedPayload: .init(pbkdf2IterationCount: 0, version: 0, payload: ""),
-        userId: "userId",
-        lifetimeToken: "lifetimeToken"
+        encryptedPayload: .init(pbkdf2IterationCount: 0, version: 0, payload: "")
     )
 
     override func setUp() {
@@ -188,7 +186,7 @@ class WalletPersistenceTests: XCTestCase {
             .store(in: &cancellables)
 
         // setting a value to the repo should trigger a write
-        walletRepo.set(keyPath: \.userId, value: "a-user-id")
+        walletRepo.set(keyPath: \.credentials.guid, value: "a-guid")
 
         wait(for: [expectation], timeout: 5)
     }
@@ -224,10 +222,10 @@ class WalletPersistenceTests: XCTestCase {
             .store(in: &cancellables)
 
         // setting a value to the repo should trigger a write
-        walletRepo.set(keyPath: \.userId, value: "a-user-id")
+        walletRepo.set(keyPath: \.credentials.guid, value: "a-guid")
 
         // setting the same value should not trigger another write
-        walletRepo.set(keyPath: \.userId, value: "a-user-id")
+        walletRepo.set(keyPath: \.credentials.guid, value: "a-guid")
 
         wait(for: [expectation], timeout: 5)
     }

@@ -57,7 +57,7 @@ final class ACHFlowRootInteractor: Interactor,
 
         paymentMethodService.paymentMethods
             .handleLoaderForLifecycle(loader: loadingViewPresenter, style: .circle)
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onSuccess: { paymentMethods in
                 if paymentMethods.isEmpty {
                     self.router?.route(to: .addPaymentMethod(asInitialScreen: true))
@@ -99,14 +99,14 @@ final class ACHFlowRootInteractor: Interactor,
     private func showFundsTransferDetailsIfNeeded(for currency: FiatCurrency) {
         paymentMethodService.isUserEligibleForFunds
             .handleLoaderForLifecycle(loader: loadingViewPresenter)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onSuccess: { [stateService] isEligibile in
                 if isEligibile {
                     stateService.showFundsTransferDetails(for: currency, isOriginDeposit: false)
                 } else {
                     stateService.kyc()
                 }
-            }, onError: { error in
+            }, onFailure: { error in
                 Logger.shared.error(error)
             })
             .disposeOnDeactivate(interactor: self)

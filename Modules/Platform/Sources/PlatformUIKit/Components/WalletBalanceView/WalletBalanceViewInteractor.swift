@@ -59,7 +59,7 @@ public final class WalletBalanceViewInteractor {
                     .loaded(next: WalletBalance(fiatValue: moneyValue.fiatValue!))
                 }
                 .startWith(.loading)
-                .catchErrorJustReturn(.loading)
+                .catchAndReturn(.loading)
         }
     }
 }

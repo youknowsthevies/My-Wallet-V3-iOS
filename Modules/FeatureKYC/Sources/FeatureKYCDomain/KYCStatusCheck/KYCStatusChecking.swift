@@ -49,7 +49,7 @@ final class KYCStatusChecker: KYCStatusChecking {
             .map { $0.latestApprovedTier > .tier0 }
 
         return Single.zip(hasAnyApprovedKYCTier, isCompletingKyc)
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .do(onSubscribe: whileLoading)
             .flatMap(weak: self) { _, payload -> Single<KYCStatus> in
                 let (hasAnyApprovedKYCTier, isCompletingKyc) = payload
@@ -62,6 +62,6 @@ final class KYCStatusChecker: KYCStatusChecking {
                     return .just(.verified)
                 }
             }
-            .catchErrorJustReturn(.failed)
+            .catchAndReturn(.failed)
     }
 }

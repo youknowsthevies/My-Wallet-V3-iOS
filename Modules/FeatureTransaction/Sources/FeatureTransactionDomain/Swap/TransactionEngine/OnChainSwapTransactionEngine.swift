@@ -168,7 +168,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                                     .asObservable()
                                     .ignoreElements()
                                     .asCompletable()
-                                    .catchError { _ in .empty() }
+                                    .catch { _ in .empty() }
                                     .andThen(.error(error))
                             }
                             .flatMap(weak: self) { (self, result) -> Single<TransactionResult> in
@@ -177,7 +177,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                                     .asObservable()
                                     .ignoreElements()
                                     .asCompletable()
-                                    .catchError { _ in .empty() }
+                                    .catch { _ in .empty() }
                                     .andThen(.just(result))
                             }
                     }

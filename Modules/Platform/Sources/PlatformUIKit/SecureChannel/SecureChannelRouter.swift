@@ -56,7 +56,7 @@ final class SecureChannelRouter: SecureChannelRouting {
     private func didRejectSecureChannel(to details: SecureChannelConnectionDetails) {
         service.didRejectSecureChannel(details: details)
             .handleLoaderForLifecycle(loader: loadingViewPresenter)
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(
                 onCompleted: { [weak self] in
                     self?.showResultScreen(state: .denied)
@@ -72,7 +72,7 @@ final class SecureChannelRouter: SecureChannelRouting {
         service
             .didAcceptSecureChannel(details: details)
             .handleLoaderForLifecycle(loader: loadingViewPresenter)
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(
                 onCompleted: { [weak self] in
                     self?.showResultScreen(state: .approved)
@@ -86,8 +86,8 @@ final class SecureChannelRouter: SecureChannelRouting {
 
     func didReceiveSecureChannelCandidate(_ candidate: SecureChannelConnectionCandidate) {
         service.isReadyForSecureChannel()
-            .catchErrorJustReturn(false)
-            .observeOn(MainScheduler.asyncInstance)
+            .catchAndReturn(false)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(
                 onSuccess: { [weak self] isReadyForSecureChannel in
                     self?.didReceiveSecureChannelCandidate(candidate, isReadyForSecureChannel: isReadyForSecureChannel)

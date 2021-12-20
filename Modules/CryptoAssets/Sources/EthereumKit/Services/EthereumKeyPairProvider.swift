@@ -4,6 +4,7 @@ import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 final class EthereumKeyPairProvider: KeyPairProviderAPI {
 
@@ -12,6 +13,9 @@ final class EthereumKeyPairProvider: KeyPairProviderAPI {
     func keyPair(with secondPassword: String?) -> Single<EthereumKeyPair> {
         mnemonicAccess
             .mnemonic(with: secondPassword)
+            .asObservable()
+            .take(1)
+            .asSingle()
             .flatMap(weak: self) { (self, mnemonic) -> Single<EthereumKeyPair> in
                 self.deriver.derive(
                     input: EthereumKeyDerivationInput(
@@ -25,6 +29,9 @@ final class EthereumKeyPairProvider: KeyPairProviderAPI {
     var keyPair: Single<EthereumKeyPair> {
         mnemonicAccess
             .mnemonicPromptingIfNeeded
+            .asObservable()
+            .take(1)
+            .asSingle()
             .flatMap(weak: self) { (self, mnemonic) -> Single<EthereumKeyPair> in
                 self.deriver.derive(
                     input: EthereumKeyDerivationInput(

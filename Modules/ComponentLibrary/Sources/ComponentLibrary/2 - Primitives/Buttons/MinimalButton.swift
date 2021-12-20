@@ -18,52 +18,57 @@ public struct MinimalButton<LeadingView: View>: View {
 
     private let title: String
     private let isLoading: Bool
+    private let foregroundColor: Color
     private let leadingView: LeadingView
     private let action: () -> Void
 
     @Environment(\.pillButtonSize) private var size
     @Environment(\.isEnabled) private var isEnabled
 
-    private let colorCombination = PillButtonStyle.ColorCombination(
-        enabled: PillButtonStyle.ColorSet(
-            foreground: .semantic.primary,
-            background: .semantic.background.opacity(0),
-            border: Color(
-                light: .semantic.medium,
-                dark: .palette.dark300
-            )
-        ),
-        pressed: PillButtonStyle.ColorSet(
-            foreground: .semantic.primary,
-            background: .semantic.light,
-            border: .semantic.primary
-        ),
-        disabled: PillButtonStyle.ColorSet(
-            foreground: Color(
-                light: .semantic.primary.opacity(0.7),
-                dark: .palette.grey600
+    private var colorCombination: PillButtonStyle.ColorCombination {
+        .init(
+            enabled: PillButtonStyle.ColorSet(
+                foreground: foregroundColor,
+                background: .semantic.background.opacity(0),
+                border: Color(
+                    light: .semantic.medium,
+                    dark: .palette.dark300
+                )
             ),
-            background: .semantic.background.opacity(0),
-            border: Color(
-                light: .semantic.light,
-                dark: .palette.grey700
+            pressed: PillButtonStyle.ColorSet(
+                foreground: foregroundColor,
+                background: .semantic.light,
+                border: .semantic.primary
+            ),
+            disabled: PillButtonStyle.ColorSet(
+                foreground: Color(
+                    light: foregroundColor.opacity(0.7),
+                    dark: .palette.grey600
+                ),
+                background: .semantic.background.opacity(0),
+                border: Color(
+                    light: .semantic.light,
+                    dark: .palette.grey700
+                )
+            ),
+            progressViewRail: .semantic.primary,
+            progressViewTrack: Color(
+                light: .semantic.blueBG,
+                dark: .palette.white.opacity(0.25)
             )
-        ),
-        progressViewRail: .semantic.primary,
-        progressViewTrack: Color(
-            light: .semantic.blueBG,
-            dark: .palette.white.opacity(0.25)
         )
-    )
+    }
 
     public init(
         title: String,
         isLoading: Bool = false,
+        foregroundColor: Color = .semantic.primary,
         @ViewBuilder leadingView: () -> LeadingView,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.isLoading = isLoading
+        self.foregroundColor = foregroundColor
         self.leadingView = leadingView()
         self.action = action
     }
@@ -100,11 +105,13 @@ extension MinimalButton where LeadingView == EmptyView {
     public init(
         title: String,
         isLoading: Bool = false,
+        foregroundColor: Color = .semantic.primary,
         action: @escaping () -> Void
     ) {
         self.init(
             title: title,
             isLoading: isLoading,
+            foregroundColor: foregroundColor,
             leadingView: { EmptyView() },
             action: action
         )
@@ -137,6 +144,10 @@ struct MinimalButton_Previews: PreviewProvider {
             MinimalButton(title: "Loading", isLoading: true, action: {})
                 .previewLayout(.sizeThatFits)
                 .previewDisplayName("Loading")
+
+            MinimalButton(title: "Custom Text Color", foregroundColor: .semantic.error, action: {})
+                .previewLayout(.sizeThatFits)
+                .previewDisplayName("Custom Color")
         }
         .padding()
     }

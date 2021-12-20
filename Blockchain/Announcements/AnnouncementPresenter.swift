@@ -130,7 +130,7 @@ final class AnnouncementPresenter {
                 let action = self.resolve(metadata: payload.0, preliminaryData: payload.1)
                 return .just(action)
             }
-            .catchErrorJustReturn(.hide)
+            .catchAndReturn(.hide)
             .asObservable()
             .bindAndCatch(to: announcementRelay)
             .disposed(by: disposeBag)

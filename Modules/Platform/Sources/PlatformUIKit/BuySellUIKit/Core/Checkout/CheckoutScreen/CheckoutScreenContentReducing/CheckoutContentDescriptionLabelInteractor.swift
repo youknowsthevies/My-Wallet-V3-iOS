@@ -18,8 +18,8 @@ final class CheckoutContentDescriptionLabelInteractor {
                 .asObservable()
                 .map(\.moneyValue)
                 // This should never happen.
-                .catchErrorJustReturn(.zero(currency: quoteCurrency.currencyType))
-                .map { $0.toDisplayString(includeSymbol: true) }
+                .catchAndReturn(.zero(currency: quoteCurrency.currencyType))
+                .map(\.displayString)
                 .map { .loaded(next: .init(text: $0)) }
                 .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)

@@ -1,8 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import Localization
 import SwiftUI
-import UIComponentsKit
 
 public struct TradingAccountWarningView: View {
 
@@ -64,7 +68,7 @@ public struct TradingAccountWarningView: View {
             .padding(.bottom, Layout.buttonBottomPadding)
             .accessibility(identifier: AccessibilityIdentifiers.TradingAccountWarningScreen.logoutButton)
 
-            SecondaryButton(title: LocalizedStrings.Button.cancel) {
+            MinimalButton(title: LocalizedStrings.Button.cancel) {
                 cancelButtonTapped?()
             }
             .accessibility(identifier: AccessibilityIdentifiers.TradingAccountWarningScreen.cancel)

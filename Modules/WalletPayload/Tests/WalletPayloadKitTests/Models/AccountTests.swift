@@ -55,9 +55,9 @@ class AccountTests: XCTestCase {
             receiveAccount: "xpub6F41z8MqNcJMvKQgAd5QE2QYo32cocYigWp1D8726ykMmaMqvtqLkvuL1NqGuUJvU3aWyJaV2J4V6sD7Pv59J3tYGZdYRSx8gU7EG8ZuPSY",
             changeAccount: "xpub6F41z8MqNcJMwmeUExdCv7UXvYBEgQB29SWq9jyxuZ7WefmSTWcwXB6NRAJkGCkB3L1Eu4ttzWnPVKZ6REissrQ4i6p8gTi9j5YwDLxmZ8p"
         )
-        let expectedDerivation = Derivation(
+        let expectedDerivation = WalletResponseModels.Derivation(
             type: .legacy,
-            purpose: Derivation.Format.legacy.purpose,
+            purpose: WalletResponseModels.Derivation.Format.legacy.purpose,
             xpriv: "xprv9yL1ousLjQQzGNBAYykaT8J3U626NV6zbLYkRv8rvUDpY4f1RnrvAXQneGXC9UNuNvGXX4j6oHBK5KiV2hKevRxY5ntis212oxjEL11ysuG",
             xpub: "xpub6CKNDRQEZmyHUrFdf1HapGEn27ramwpqxZUMEJYUUokoQrz9yLBAiKjGVWDuiCT39udj1r3whqQN89Tar5KrojH8oqSy7ytzJKW8gwmhwD3",
             addressLabels: [addressLabel],
@@ -89,7 +89,7 @@ class AccountTests: XCTestCase {
             receiveAccount: "xpub6",
             changeAccount: "xpub6"
         )
-        let derivation = Derivation(
+        let derivation = WalletResponseModels.Derivation(
             type: .legacy,
             purpose: 44,
             xpriv: "xprv9",
@@ -109,19 +109,6 @@ class AccountTests: XCTestCase {
         let decoded = try JSONDecoder().decode(AccountWrapper.Version4.self, from: encoded)
 
         XCTAssertEqual(decoded, accountVersion4)
-    }
-
-    func test_account_can_private_a_derivation_for_a_specific_format() throws {
-        let accountVersion4 = try JSONDecoder().decode(AccountWrapper.Version4.self, from: jsonV4)
-
-        let account = try decodeAccounts(
-            using: accountWrapperDecodingStrategy(version4:),
-            value: [accountVersion4]
-        ).get().first
-
-        XCTAssertNotNil(account)
-        let derivation = account!.derivation(for: .legacy)
-        XCTAssertNotNil(derivation)
     }
 }
 

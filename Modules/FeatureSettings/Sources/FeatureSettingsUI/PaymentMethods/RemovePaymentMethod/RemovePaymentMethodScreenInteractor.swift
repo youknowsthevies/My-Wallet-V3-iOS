@@ -59,6 +59,6 @@ final class RemovePaymentMethodScreenInteractor {
         deletionService.delete(by: data)
             .andThen(.just(.value(())))
             .startWith(.calculating)
-            .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
+            .catchAndReturn(.invalid(.valueCouldNotBeCalculated))
     }
 }

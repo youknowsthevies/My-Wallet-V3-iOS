@@ -66,7 +66,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
 
     private lazy var setup: Void = {
         descriptionValue()
-            .catchErrorJustReturn("")
+            .catchAndReturn("")
             .bindAndCatch(to: descriptionRelay)
             .disposed(by: disposeBag)
 
@@ -81,7 +81,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
                     return .hidden
                 }
             }
-            .catchErrorJustReturn(.hidden)
+            .catchAndReturn(.hidden)
             .bindAndCatch(to: pendingLabelVisibilityRelay)
             .disposed(by: disposeBag)
     }()

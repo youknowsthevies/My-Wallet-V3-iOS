@@ -43,7 +43,7 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
 
         // Action is a steam of events derived from a pblish relay
         interactor.action
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .previous(from: let state):
@@ -62,7 +62,7 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
             .filter { !$0 }
             .mapToVoid()
             .take(1)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 self.navigationRouter.dismiss(completion: nil)
             }

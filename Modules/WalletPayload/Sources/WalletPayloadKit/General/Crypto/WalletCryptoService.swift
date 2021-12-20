@@ -110,7 +110,7 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
             }
             return Disposables.create()
         }
-        .subscribeOn(MainScheduler.instance)
+        .subscribe(on: MainScheduler.instance)
     }
 
     private func encryptJS(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
@@ -128,7 +128,7 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
             }
             return Disposables.create()
         }
-        .subscribeOn(MainScheduler.instance)
+        .subscribe(on: MainScheduler.instance)
     }
 
     private func jsCrypto(

@@ -302,7 +302,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         analyticsRecorder.record(event: AnalyticsEvents.New.SimpleBuy.linkBankClicked(origin: .buy))
         router.startFlow()
             .withLatestFrom(transactionModel.state) { ($0, $1) }
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [topMostViewControllerProvider] effect, state in
                 topMostViewControllerProvider
                     .topMostViewController?
@@ -443,7 +443,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
             .state
             .take(1)
             .asSingle()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe { [securityRouter, showFailure] transactionState in
                 guard
                     let order = transactionState.order as? OrderDetails,
@@ -457,7 +457,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
                     from: presenter,
                     authorizationData: authorizationData
                 )
-            } onError: { [showFailure] error in
+            } onFailure: { [showFailure] error in
                 showFailure(error)
             }
             .disposed(by: disposeBag)

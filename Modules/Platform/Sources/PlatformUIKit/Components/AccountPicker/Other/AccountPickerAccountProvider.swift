@@ -49,7 +49,7 @@ public final class AccountPickerAccountProvider: AccountPickerAccountProviding {
             .flatMapFilter(
                 action: action,
                 failSequence: failSequence,
-                onError: { [action, errorRecorder] account, error in
+                onFailure: { [action, errorRecorder] account, error in
                     let error: Error = .loadingFailed(
                         account: account,
                         action: action,

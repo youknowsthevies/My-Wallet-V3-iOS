@@ -12,12 +12,12 @@ public final class BuyTransferCancellationRoutingInteractor: TransferOrderRoutin
 
     private lazy var setup: Void = {
         nextRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
 
         previousRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 self.analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderGoBack)
                 self.stateService.previousRelay.accept(())

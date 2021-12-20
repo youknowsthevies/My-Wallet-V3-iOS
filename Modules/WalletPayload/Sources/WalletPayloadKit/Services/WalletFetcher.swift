@@ -10,6 +10,10 @@ public protocol WalletFetcherAPI {
     /// Fetches and initializes a wallet using the given password
     /// - Parameter password: A `String` to be used as the password for fetching the wallet
     func fetch(using password: String) -> AnyPublisher<EmptyValue, WalletError>
+
+    /// Fetches and initializes a wallet using the given password and a second password
+    /// - Parameter password: A `String` to be used as the password for fetching the wallet
+    func fetch(using password: String, secondPassword: String) -> AnyPublisher<EmptyValue, WalletError>
 }
 
 final class WalletFetcher: WalletFetcherAPI {
@@ -58,11 +62,7 @@ final class WalletFetcher: WalletFetcherAPI {
                     .initialize(with: password, payload: data)
             }
             .flatMap { [walletRepo] walletState -> AnyPublisher<Wallet, WalletError> in
-                walletRepo
-                    .set(keyPath: \.credentials.sharedKey, value: walletState.wallet.sharedKey)
-                    .map { _ in walletState.wallet }
-                    .mapError()
-                    .eraseToAnyPublisher()
+                storeSharedKey(from: walletState, on: walletRepo)
             }
             .map { _ in .noValue }
             .eraseToAnyPublisher()
@@ -71,5 +71,30 @@ final class WalletFetcher: WalletFetcherAPI {
         // 4. Success (or failure)
     }
 
+    func fetch(using password: String, secondPassword: String) -> AnyPublisher<EmptyValue, WalletError> {
+        walletLogic.initialize(
+            with: password,
+            secondPassword: secondPassword
+        )
+        .flatMap { [walletRepo] walletState -> AnyPublisher<Wallet, WalletError> in
+            storeSharedKey(from: walletState, on: walletRepo)
+        }
+        .map { _ in .noValue }
+        .eraseToAnyPublisher()
+    }
+
     // MARK: - Private
+}
+
+/// Stores the sharedKey to the given WalletRepo
+/// - Parameters:
+///   - walletState: A `WalletState` that contains a decrypted wallet to get the shared key from
+///   - walletRepo: A `WalletRepo` which the sharedKey will be stored
+/// - Returns: An `AnyPublisher<Wallet, WalletError>`
+func storeSharedKey(from walletState: WalletState, on walletRepo: WalletRepo) -> AnyPublisher<Wallet, WalletError> {
+    walletRepo
+        .set(keyPath: \.credentials.sharedKey, value: walletState.wallet.sharedKey)
+        .mapError()
+        .map { _ in walletState.wallet }
+        .eraseToAnyPublisher()
 }

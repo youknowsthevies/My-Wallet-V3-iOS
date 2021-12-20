@@ -15,7 +15,7 @@ final class BanksSettingsSectionInteractor {
     var state: Observable<State> {
         _ = setup
         return stateRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .asObservable()
     }
 
@@ -35,7 +35,7 @@ final class BanksSettingsSectionInteractor {
     private var beneficiaries: Observable<[Beneficiary]> {
         beneficiariesService.beneficiaries
             .asObservable()
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     private let beneficiariesService: BeneficiariesServiceAPI

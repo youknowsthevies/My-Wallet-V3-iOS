@@ -80,7 +80,7 @@ final class SecureChannelNotificationRelay: SecureChannelNotificationRelaying {
                 onSuccess: { [weak self] candidate in
                     self?.router.didReceiveSecureChannelCandidate(candidate)
                 },
-                onError: { [weak self] error in
+                onFailure: { [weak self] error in
                     Logger.shared.debug("Secure Channel Error: \(String(describing: error))")
                     guard let secureChannelError = error as? SecureChannelError else {
                         return

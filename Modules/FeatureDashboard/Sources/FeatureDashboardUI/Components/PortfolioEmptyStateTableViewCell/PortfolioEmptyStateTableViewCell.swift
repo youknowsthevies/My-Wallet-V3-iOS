@@ -1,6 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -17,7 +22,7 @@ final class PortfolioEmptyStateTableViewCell: UITableViewCell {
     private let subtitle: UILabel = .init()
     private let cta: ButtonView = .init()
     private let presenter: PortfolioEmptyStatePresenter = .init()
-    private var minimalDoubleButton: UIHostingController<MinimalDoubleButton>!
+    private var minimalDoubleButton: UIHostingController<MinimalDoubleButton<Icon, Icon>>!
 
     // MARK: - Setup
 
@@ -32,14 +37,14 @@ final class PortfolioEmptyStateTableViewCell: UITableViewCell {
     private func setup() {
         minimalDoubleButton = UIHostingController(
             rootView: MinimalDoubleButton(
-                leftImage: .local(name: "Icon-qr", bundle: .platformUIKit),
-                leftTitle: "Receive",
-                leftAction: { [presenter] in
+                leadingTitle: "Receive",
+                leadingLeadingView: { Icon.qrCode },
+                leadingAction: { [presenter] in
                     presenter.didTapReceive.accept(())
                 },
-                rightImage: .local(name: "icon-bank", bundle: .platformUIKit),
-                rightTitle: "Deposit",
-                rightAction: { [presenter] in
+                trailingTitle: "Deposit",
+                trailingLeadingView: { Icon.bank },
+                trailingAction: { [presenter] in
                     presenter.didTapDeposit.accept(())
                 }
             )

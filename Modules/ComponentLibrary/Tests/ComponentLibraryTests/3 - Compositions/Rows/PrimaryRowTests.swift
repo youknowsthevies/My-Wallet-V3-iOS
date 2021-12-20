@@ -19,4 +19,14 @@ final class PrimaryRowTests: XCTestCase {
             ]
         )
     }
+
+    func testRightToLeft() {
+        let view = VStack(spacing: 0) {
+            PrimaryRow_Previews.previews
+        }
+        .environment(\.layoutDirection, .rightToLeft)
+        .fixedSize()
+
+        assertSnapshot(matching: view, as: .image)
+    }
 }

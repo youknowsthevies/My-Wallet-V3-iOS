@@ -23,15 +23,15 @@ final class MoneyValueConvertTests: XCTestCase {
         let exchangeRate = CryptoValue(
             amount: 400,
             currency: .coin(.bitcoin)
-        ).moneyValue
+        )
         let value = CryptoValue(
             amount: 10000,
             currency: .coin(mockCoin6Precision)
-        ).moneyValue
+        )
         let expected = CryptoValue(
             amount: 4,
             currency: .coin(.bitcoin)
-        ).moneyValue
+        )
         let result = value.convert(using: exchangeRate)
         XCTAssertEqual(result, expected)
     }
@@ -40,18 +40,18 @@ final class MoneyValueConvertTests: XCTestCase {
         let exchangeRate = CryptoValue(
             amount: 400,
             currency: .coin(.bitcoin)
-        ).moneyValue
+        )
         let value = CryptoValue(
             amount: 4,
             currency: .coin(.bitcoin)
-        ).moneyValue
+        )
         let expected = CryptoValue(
             amount: 10000,
             currency: .coin(mockCoin6Precision)
-        ).moneyValue
-        let result = value.convert(
+        )
+        let result: CryptoValue = value.convert(
             usingInverse: exchangeRate,
-            currencyType: .crypto(.coin(mockCoin6Precision))
+            currency: .coin(mockCoin6Precision)
         )
         XCTAssertEqual(result, expected)
     }

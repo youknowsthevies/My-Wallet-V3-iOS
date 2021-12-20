@@ -95,6 +95,7 @@ public let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     mainQueue: $0.mainQueue,
                     appStoreOpener: $0.appStoreOpener,
                     walletService: $0.walletService,
+                    secondPasswordPrompter: $0.secondPasswordPrompter,
                     buildVersionProvider: $0.buildVersionProvider
                 )
             }

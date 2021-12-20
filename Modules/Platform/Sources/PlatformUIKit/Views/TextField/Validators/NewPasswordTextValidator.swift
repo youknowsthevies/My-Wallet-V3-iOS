@@ -43,7 +43,7 @@ final class NewPasswordTextValidator: NewPasswordValidating {
                 )
             }
             // Ending up in an error state is fine (probably object deallocated)
-            .catchErrorJustReturn(.weak)
+            .catchAndReturn(.weak)
             .bindAndCatch(to: scoreRelay)
             .disposed(by: disposeBag)
 

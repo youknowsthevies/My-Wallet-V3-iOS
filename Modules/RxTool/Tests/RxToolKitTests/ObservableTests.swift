@@ -95,7 +95,7 @@ class ObservableAsPublisherTests: XCTestCase {
             let e = expectation(description: "\(i)")
             subjects[route]?
                 .asObservable()
-                .observeOn(MainScheduler.asyncInstance)
+                .observe(on: MainScheduler.asyncInstance)
                 .subscribe(onNext: { event in
                     actual.insert(event)
                     e.fulfill()

@@ -128,7 +128,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
         requiredValidationAction
             .withLatestFrom(sourceAccount) { ($0, $1) }
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] text, account in
                 self?.targetSelectionPageModel.process(action: .validateAddress(text, account))
             })
@@ -155,7 +155,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
         // As soon as something is inputted, we want to disable the 'next' action.
         textWhileTyping
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] _ in
                 self?.targetSelectionPageModel.process(action: .destinationDeselected)
             })
@@ -165,7 +165,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         textWhileTyping
             .debounce(.milliseconds(500), scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
             .withLatestFrom(sourceAccount) { ($0, $1) }
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] text, account in
                 self?.targetSelectionPageModel.process(action: .validateAddress(text, account))
             })
@@ -208,7 +208,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         /// triggers routing to a new screen or ending the flow
         transactionState
             .distinctUntilChanged(\.step)
-            .observeOn(MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] newState in
                 self?.handleStateChange(newState: newState)
             })
@@ -238,7 +238,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .disposeOnDeactivate(interactor: self)
 
         let interactorState = transactionState
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .scan(.empty) { [weak self] state, updater -> TargetSelectionPageInteractor.State in
                 guard let self = self else {
                     return state

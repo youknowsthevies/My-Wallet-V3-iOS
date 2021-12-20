@@ -21,7 +21,7 @@ public final class VerifyEmailPresenter {
 
     public var email: Single<String> {
         emailSettingsService.email
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     // MARK: - Private Properties
@@ -45,7 +45,7 @@ public final class VerifyEmailPresenter {
 
     public func waitForEmailConfirmation() {
         emailVerificationService.verifyEmail()
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(
                 onCompleted: { [weak view] in
                     guard let view = view as? EmailConfirmationInterface else {
@@ -68,7 +68,7 @@ public final class VerifyEmailPresenter {
         contextParameter: FlowContext? = nil
     ) {
         emailSettingsService.update(email: email, context: contextParameter)
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .do(
                 onSubscribed: { [weak view] in
                     view?.updateLoadingViewVisibility(.visible)

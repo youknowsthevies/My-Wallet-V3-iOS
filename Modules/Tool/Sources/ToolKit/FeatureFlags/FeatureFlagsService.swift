@@ -69,7 +69,14 @@ extension FeatureFlagsServiceAPI {
 }
 
 public protocol FeatureFetching: AnyObject {
-    func fetch<Feature: Decodable>(for key: AppFeature) -> AnyPublisher<Feature, FeatureFlagError>
+    func fetch<Feature: Decodable>(for key: AppFeature, as type: Feature.Type) -> AnyPublisher<Feature, FeatureFlagError>
+}
+
+extension FeatureFetching {
+
+    public func fetch<Feature: Decodable>(for key: AppFeature) -> AnyPublisher<Feature, FeatureFlagError> {
+        fetch(for: key, as: Feature.self)
+    }
 }
 
 class FeatureFlagsService: FeatureFlagsServiceAPI {

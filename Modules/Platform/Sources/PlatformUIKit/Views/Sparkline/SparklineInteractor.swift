@@ -24,14 +24,11 @@ public class SparklineInteractor: SparklineInteracting {
                 case .calculating, .invalid:
                     return .calculating
                 case .value(let value):
-                    let prices = value
-                        .historicalPrices
-                        .prices
-                        .map(\.moneyValue.displayMajorValue)
+                    let prices = value.historicalPrices.prices.map(\.moneyValue.displayMajorValue)
                     return .value(prices)
                 }
             }
-            .catchErrorJustReturn(.calculating)
+            .catchAndReturn(.calculating)
             .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }()

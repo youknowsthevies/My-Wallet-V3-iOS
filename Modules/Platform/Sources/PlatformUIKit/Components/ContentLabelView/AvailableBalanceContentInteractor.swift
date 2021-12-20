@@ -32,7 +32,7 @@ public final class AvailableBalanceContentInteractor: ContentLabelViewInteractor
             }
 
         contentCalculationState = balance
-            .map { .value($0.toDisplayString(includeSymbol: true)) }
+            .map { .value($0.displayString) }
             .share(replay: 1, scope: .whileConnected)
     }
 
@@ -41,7 +41,7 @@ public final class AvailableBalanceContentInteractor: ContentLabelViewInteractor
     init(account: BlockchainAccount) {
         contentCalculationState = account.balance
             .asObservable()
-            .map { .value($0.toDisplayString(includeSymbol: true)) }
+            .map { .value($0.displayString) }
             .share(replay: 1, scope: .whileConnected)
     }
 }

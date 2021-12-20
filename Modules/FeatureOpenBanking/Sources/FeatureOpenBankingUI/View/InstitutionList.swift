@@ -85,7 +85,10 @@ public let institutionListReducer = Reducer<InstitutionListState, InstitutionLis
             case .select(let account, let institution):
                 state.selection = .init(
                     bank: .init(
-                        data: .init(account: account, action: .link(institution: institution))
+                        data: .init(
+                            account: account,
+                            action: .link(institution: institution)
+                        )
                     )
                 )
                 return .merge(
@@ -142,7 +145,7 @@ public struct InstitutionList: View {
                         empty: {
                             NoSearchResults
                         }
-                    )
+                    ).background(Color.semantic.background)
                 case .failure(let error):
                     InfoView(
                         .init(
@@ -207,30 +210,26 @@ extension InstitutionList {
         }
 
         public var body: some View {
-            HStack {
-                Group {
-                    if let image = image {
-                        ImageResourceView(
-                            url: image,
-                            placeholder: { Color.viewPrimaryBackground }
-                        )
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                    } else {
-                        Color.viewPrimaryBackground
+            PrimaryRow(
+                title: title,
+                leading: {
+                    Group {
+                        if let image = image {
+                            ImageResourceView(
+                                url: image,
+                                placeholder: { Color.semantic.background }
+                            )
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                        } else {
+                            Color.viewPrimaryBackground
+                        }
                     }
+                    .frame(width: 12.vw, height: 12.vw, alignment: .center)
                 }
-                .frame(width: 12.vw, height: 12.vw, alignment: .center)
-                Text(title)
-                    .typography(.body2)
-                    .foregroundColor(.textTitle)
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .frame(width: 8.pt)
-                    .padding()
-                    .foregroundColor(.disclosureIndicator)
-            }
+            )
             .frame(height: 9.5.vh, alignment: .center)
+            .background(Color.semantic.background)
         }
     }
 }

@@ -166,7 +166,7 @@ public final class PortfolioScreenPresenter {
                         (currency, hasBalance)
                     }
                     .asObservable()
-                    .catchErrorJustReturn((currency, false))
+                    .catchAndReturn((currency, false))
             }
         return Observable
             .merge(cryptoStreams)

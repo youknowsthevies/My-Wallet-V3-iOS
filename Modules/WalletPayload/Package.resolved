@@ -38,12 +38,30 @@
         }
       },
       {
+        "package": "MetadataHDWalletKit",
+        "repositoryURL": "https://github.com/jackpooleybc/MetadataHDWalletKit",
+        "state": {
+          "branch": null,
+          "revision": "f96abeee64dec17dc5a90769ff1393965bd827b7",
+          "version": null
+        }
+      },
+      {
         "package": "RxSwift",
         "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
         "state": {
           "branch": null,
           "revision": "7c17a6ccca06b5c107cfa4284e634562ddaf5951",
           "version": "6.2.0"
+        }
+      },
+      {
+        "package": "secp256k1",
+        "repositoryURL": "https://github.com/Boilertalk/secp256k1.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "823281fe9def21b384099b72a9a53ca988317b20",
+          "version": "0.1.4"
         }
       },
       {

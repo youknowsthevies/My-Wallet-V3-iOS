@@ -47,8 +47,8 @@ class KYCVerifyPhoneNumberPresenter {
     func startVerification(number: String) {
         view?.showLoadingView(with: LocalizationConstants.loading)
         disposable = interactor.startVerification(number: number)
-            .subscribeOn(subscriptionScheduler)
-            .observeOn(MainScheduler.instance)
+            .subscribe(on: subscriptionScheduler)
+            .observe(on: MainScheduler.instance)
             .subscribe(onCompleted: { [unowned self] in
                 self.handleStartVerificationCodeSuccess()
             }, onError: { [unowned self] error in
@@ -59,8 +59,8 @@ class KYCVerifyPhoneNumberPresenter {
     func verifyNumber(with code: String) {
         view?.showLoadingView(with: LocalizationConstants.loading)
         disposable = interactor.verifyNumber(with: code)
-            .subscribeOn(subscriptionScheduler)
-            .observeOn(MainScheduler.instance)
+            .subscribe(on: subscriptionScheduler)
+            .observe(on: MainScheduler.instance)
             .subscribe(onCompleted: { [unowned self] in
                 self.handleVerifyCodeSuccess()
             }, onError: { [unowned self] error in

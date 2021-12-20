@@ -165,7 +165,7 @@ extension TransactionLimits {
         let destinationCurrency = quote.networkFee.currencyType
         let price = MoneyValue(amount: quote.price, currency: destinationCurrency)
         let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destinationCurrency)
-        let convertedFees = totalFees.convert(usingInverse: price, currencyType: currencyType)
+        let convertedFees: MoneyValue = totalFees.convert(usingInverse: price, currency: currencyType)
         let minimum = minimum ?? .zero(currency: destinationCurrency)
         return (try? minimum + convertedFees) ?? MoneyValue.zero(currency: destinationCurrency)
     }

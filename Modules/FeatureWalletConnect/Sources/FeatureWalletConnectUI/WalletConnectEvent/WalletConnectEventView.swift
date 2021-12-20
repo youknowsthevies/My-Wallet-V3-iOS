@@ -1,6 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import Combine
 import ComposableArchitecture
 import FeatureWalletConnectDomain
@@ -64,15 +69,12 @@ struct WalletConnectEventView: View {
                     if let secondaryButtonTitle = viewStore.secondaryButtonTitle,
                        let secondaryAction = viewStore.secondaryAction
                     {
-                        Button(secondaryButtonTitle) {
+                        MinimalButton(
+                            title: secondaryButtonTitle,
+                            foregroundColor: viewStore.secondaryButtonColor
+                        ) {
                             viewStore.send(secondaryAction)
                         }
-                        .buttonStyle(
-                            SecondaryButtonStyle(
-                                isEnabled: true,
-                                foregroundColor: viewStore.secondaryButtonColor
-                            )
-                        )
                     }
                     if let primaryButtonTitle = viewStore.primaryButtonTitle,
                        let primaryAction = viewStore.primaryAction

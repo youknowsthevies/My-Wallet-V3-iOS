@@ -252,9 +252,9 @@ extension TransactionEngine {
                 let amount = pendingTransaction.amount
                 let limits = pendingTransaction.normalizedLimits.convert(using: conversionRates.limitsToAmountRate)
                 let availableBalanceInWalletCurrency = try convertedBalance - convertedFee
-                let availableBalance = availableBalanceInWalletCurrency.convert(
+                let availableBalance: MoneyValue = availableBalanceInWalletCurrency.convert(
                     usingInverse: conversionRates.amountToWalletRate,
-                    currencyType: amount.currencyType
+                    currency: amount.currencyType
                 )
                 try self?.validate(amount, hasAmountUpToSourceLimit: availableBalance)
                 try self?.validate(amount, isWithin: limits, amountToWalletRate: conversionRates.amountToWalletRate)

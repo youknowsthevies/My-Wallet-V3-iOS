@@ -28,7 +28,7 @@ class EmailSwitchViewInteractor: SwitchViewInteracting {
         service.valueObservable
             .map { ValueCalculationState.value($0) }
             .map { .init(with: $0) }
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .startWith(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)

@@ -32,7 +32,7 @@ public final class WebLoginScreenPresenter {
             .qrCode
             .map { QRCode(string: $0) }
             .map { $0?.image }
-            .catchError { [weak self] _ in
+            .catch { [weak self] _ in
                 guard let alertPresenter = self?.alertPresenter else { return .just(nil) }
                 alertPresenter.notify(
                     content: .init(

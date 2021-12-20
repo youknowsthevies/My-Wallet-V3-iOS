@@ -79,28 +79,28 @@ extension AlertToast.Variant {
     public static let `default` = AlertToast.Variant(
         backgroundColor: .init(light: .palette.dark800, dark: .palette.grey300),
         textColor: .init(light: .palette.white, dark: .palette.grey900),
-        iconColor: .init(light: .palette.grey400, dark: .palette.grey600)
+        iconColor: .init(light: .palette.white, dark: .palette.grey900)
     )
 
     // success
     public static let success = AlertToast.Variant(
         backgroundColor: .init(light: .palette.dark800, dark: .palette.green600),
         textColor: .init(light: .palette.green400, dark: .palette.white),
-        iconColor: .init(light: .palette.grey400, dark: .palette.white.opacity(0.6))
+        iconColor: .init(light: .palette.green400, dark: .palette.white)
     )
 
     // warning
     public static let warning = AlertToast.Variant(
         backgroundColor: .init(light: .palette.dark800, dark: .palette.orange400),
-        textColor: .init(light: .palette.orange400, dark: .palette.grey900),
-        iconColor: .init(light: .palette.grey400, dark: .palette.overlay600)
+        textColor: .init(light: .palette.orange400, dark: .palette.dark800),
+        iconColor: .init(light: .palette.orange400, dark: .palette.dark800)
     )
 
     // error
     public static let error = AlertToast.Variant(
         backgroundColor: .init(light: .palette.dark800, dark: .palette.red600),
         textColor: .init(light: .palette.red400, dark: .palette.white),
-        iconColor: .init(light: .palette.grey400, dark: .palette.white.opacity(0.6))
+        iconColor: .init(light: .palette.red400, dark: .palette.white)
     )
 }
 

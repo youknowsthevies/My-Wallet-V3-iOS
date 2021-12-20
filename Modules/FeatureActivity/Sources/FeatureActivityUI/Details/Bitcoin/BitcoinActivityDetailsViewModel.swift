@@ -46,8 +46,8 @@ struct BitcoinActivityDetailsViewModel: Equatable {
 
         cryptoAmount = details.amount.displayString
         if let price = price {
-            value = details.amount.convertToFiatValue(exchangeRate: price).displayString
-            fee = "\(details.fee.displayString) / \(details.fee.convertToFiatValue(exchangeRate: price).displayString)"
+            value = details.amount.convert(using: price).displayString
+            fee = "\(details.fee.displayString) / \(details.fee.convert(using: price).displayString)"
         } else {
             value = ""
             fee = details.fee.displayString

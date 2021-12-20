@@ -1,5 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import Localization
 import SwiftUI
@@ -55,7 +60,7 @@ struct ImportWalletView: View {
                     viewStore.send(.importWalletButtonTapped)
                 }
                 .padding(.bottom, Layout.buttonBottomPadding)
-                SecondaryButton(title: LocalizedString.Button.goBack) {
+                MinimalButton(title: LocalizedString.Button.goBack) {
                     viewStore.send(.goBackButtonTapped)
                 }
             }

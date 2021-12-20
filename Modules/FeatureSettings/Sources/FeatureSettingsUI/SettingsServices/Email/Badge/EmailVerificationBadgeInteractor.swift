@@ -17,7 +17,7 @@ final class EmailVerificationBadgeInteractor: DefaultBadgeAssetInteractor {
             .map { $0 ? .verified : .unverified }
             .map { .loaded(next: $0) }
             // TODO: Error handing
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .startWith(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)

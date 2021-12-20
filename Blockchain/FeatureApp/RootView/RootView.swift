@@ -125,6 +125,7 @@ struct RootView: View {
             content()
                 .primaryNavigation(
                     title: tab.name,
+                    isLargeTitle: true,
                     trailing: navigationButtons
                 )
         }

@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-public struct StellarWalletAccount: WalletAccount, Codable {
+public struct StellarWalletAccount: WalletAccount, Equatable, Codable {
     public var index: Int
     public var publicKey: String
     public var label: String?

@@ -25,7 +25,7 @@ public struct TextStyle: ViewModifier {
 
         switch fontStyle {
         case .title:
-            textColor = .textTitle
+            textColor = .semantic.title
             fontWeight = .semibold
             fontSize = LayoutConstants.Text.FontSize.title
             lineSpacing = LayoutConstants.Text.LineSpacing.title
@@ -43,7 +43,7 @@ public struct TextStyle: ViewModifier {
             lineSpacing = LayoutConstants.Text.LineSpacing.subheading
             singleLineSpacing = 0
         case .body:
-            textColor = .textBody
+            textColor = .semantic.body
             fontWeight = .medium
             fontSize = LayoutConstants.Text.FontSize.body
             lineSpacing = LayoutConstants.Text.LineSpacing.body

@@ -191,7 +191,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
             .allAccounts
             .asSingle()
             .map { $0.accounts.filter { $0.currencyType == currency } }
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     func accounts(accountType: SingleAccountType) -> Single<[BlockchainAccount]> {
@@ -214,7 +214,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding, BlockchainAcc
                     }
                 }
             }
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     func accounts(for currency: CurrencyType, accountType: SingleAccountType) -> Single<[BlockchainAccount]> {

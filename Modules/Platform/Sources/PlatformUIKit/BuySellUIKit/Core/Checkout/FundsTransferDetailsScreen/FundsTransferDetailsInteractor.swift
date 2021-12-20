@@ -35,7 +35,7 @@ public final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetai
             .asObservable()
             .map { .value($0) }
             .startWith(.calculating)
-            .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
+            .catchAndReturn(.invalid(.valueCouldNotBeCalculated))
             .bindAndCatch(to: paymentAccountRelay)
             .disposed(by: disposeBag)
     }()

@@ -32,7 +32,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
                     [
                         AnalyticsEvent.sbBuyFormConfirmClick(
                             currencyCode: currencyType.code,
-                            amount: amount.toDisplayString(includeSymbol: true),
+                            amount: amount.displayString,
                             additionalParameters: additionalParameters
                         ),
                         NewAnalyticsEvent.buyAmountEntered(

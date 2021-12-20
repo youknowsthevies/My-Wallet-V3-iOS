@@ -18,7 +18,7 @@ public final class LinkView: UIView {
             }
             textView.viewModel = viewModel.textViewModel
             viewModel.textDidChange
-                .observeOn(MainScheduler.instance)
+                .observe(on: MainScheduler.instance)
                 .bindAndCatch(weak: textView) { _ in
                     self.textDidChange()
                 }

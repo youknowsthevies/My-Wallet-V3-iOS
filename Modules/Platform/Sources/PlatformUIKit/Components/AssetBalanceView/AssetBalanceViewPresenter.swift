@@ -14,7 +14,7 @@ public final class AssetBalanceViewPresenter {
     public var state: Observable<PresentationState> {
         _ = setup
         return stateRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     var alignment: Driver<UIStackView.Alignment> {
@@ -28,7 +28,7 @@ public final class AssetBalanceViewPresenter {
         //  and bind it to `stateRelay`.
         Observable
             .combineLatest(
-                interactor.state.catchErrorJustReturn(.loading),
+                interactor.state.catchAndReturn(.loading),
                 alignmentRelay.asObservable()
             )
             .map { [descriptors] state, alignment in

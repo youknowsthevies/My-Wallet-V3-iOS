@@ -19,7 +19,7 @@ public final class AssetPieChartPresenter {
     var state: Observable<AssetPieChart.State.Presentation> {
         _ = setup
         return stateRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
     }
 
     private lazy var setup: Void = {

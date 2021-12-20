@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
 import MoneyKit
 
 /// A historical price series in fiat, for one crypto currency, in a specific time range.
@@ -13,14 +14,14 @@ public struct HistoricalPriceSeries {
     /// The array of quoted prices.
     public let prices: [PriceQuoteAtTime]
 
-    /// The numeric difference, in major units, between the last price and the first price in the series.
-    public let fiatChange: Decimal
+    /// The numeric difference, in minor units, between the last price and the first price in the series.
+    public let fiatChange: BigInt
 
     /// The relative difference between the last price and the first price in the series.
-    public let delta: Double
+    public let delta: Decimal
 
     /// The percentage difference between the last price and the first price in the series.
-    public let deltaPercentage: Double
+    public let deltaPercentage: Decimal
 
     // MARK: - Setup
 
@@ -30,9 +31,9 @@ public struct HistoricalPriceSeries {
     ///   - currency: The crypto currency associated with `prices`.
     ///   - prices:   An array of quoted prices.
     public init(currency: CryptoCurrency, prices: [PriceQuoteAtTime]) {
-        if let first = prices.first, let latest = prices.last {
-            let fiatChange = latest.moneyValue.displayMajorValue - first.moneyValue.displayMajorValue
-            let delta = fiatChange.doubleValue / first.moneyValue.displayMajorValue.doubleValue
+        if let first = prices.first, let last = prices.last {
+            let fiatChange = last.moneyValue.amount - first.moneyValue.amount
+            let delta = fiatChange.decimalDivision(by: first.moneyValue.amount)
             self.init(
                 currency: currency,
                 prices: prices,
@@ -48,9 +49,9 @@ public struct HistoricalPriceSeries {
     private init(
         currency: CryptoCurrency,
         prices: [PriceQuoteAtTime],
-        fiatChange: Decimal,
-        delta: Double,
-        deltaPercentage: Double
+        fiatChange: BigInt,
+        delta: Decimal,
+        deltaPercentage: Decimal
     ) {
         self.currency = currency
         self.delta = delta

@@ -14,19 +14,11 @@ public struct WalletRepoState: Equatable, Codable {
     /// Returns the encrypted wallet payload - (Base64, AES 256)
     public var encryptedPayload: WalletPayloadWrapper
 
-    /// Returns the user id
-    public var userId: String?
-
-    /// Returns the lifetime token for the user id
-    public var lifetimeToken: String?
-
     /// Provides an empty state
     static let empty = WalletRepoState(
         credentials: .empty,
         properties: .empty,
-        encryptedPayload: .init(pbkdf2IterationCount: 0, version: 0, payload: ""),
-        userId: "",
-        lifetimeToken: ""
+        encryptedPayload: .init(pbkdf2IterationCount: 0, version: 0, payload: "")
     )
 }
 

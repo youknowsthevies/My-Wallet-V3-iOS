@@ -45,7 +45,7 @@ public final class LabeledButtonCollectionView<ViewModel: LabeledButtonViewModel
         contentInsetAdjustmentBehavior = .never
         register(CellType.self)
         viewModelsRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bind(
                 to: rx.items(
                     cellIdentifier: CellType.objectName,

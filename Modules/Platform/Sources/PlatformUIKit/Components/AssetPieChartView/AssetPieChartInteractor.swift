@@ -47,16 +47,16 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                             return .loaded(next: [])
                         }
 
-                        let states = try pairs.map { pair in
+                        let states = pairs.map { pair in
                             AssetPieChart.Value.Interaction(
                                 asset: pair.base.currency,
-                                percentage: try pair.quote / total
+                                percentage: pair.quote.amount.decimalDivision(by: total.amount)
                             )
                         }
                         return .loaded(next: states)
                     }
             }
-            .catchErrorJustReturn(.loading)
+            .catchAndReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()

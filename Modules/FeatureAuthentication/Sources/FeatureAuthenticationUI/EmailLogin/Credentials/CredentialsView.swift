@@ -1,6 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import FeatureAuthenticationDomain
 import Localization
@@ -137,15 +142,14 @@ public struct CredentialsView: View {
 
             PrimaryButton(
                 title: LocalizedString.Button._continue,
-                action: {
-                    if viewStore.isTwoFactorOTPVerified {
-                        viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState.password)))
-                    } else {
-                        viewStore.send(.continueButtonTapped)
-                    }
-                },
-                loading: viewStore.binding(get: \.isLoading, send: .none)
-            )
+                isLoading: viewStore.isLoading
+            ) {
+                if viewStore.isTwoFactorOTPVerified {
+                    viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState.password)))
+                } else {
+                    viewStore.send(.continueButtonTapped)
+                }
+            }
             .disabled(viewStore.walletPairingState.walletGuid.isEmpty)
 
             NavigationLink(

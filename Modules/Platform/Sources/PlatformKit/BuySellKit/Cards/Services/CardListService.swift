@@ -90,7 +90,7 @@ public final class CardListService: CardListServiceAPI {
             .do(onSuccess: { [weak self] (cards: [CardData]) in
                 self?.cardsRelay.accept(cards)
             })
-            .catchErrorJustReturn([])
+            .catchAndReturn([])
     }
 
     public func fetchCards() -> Single<[CardData]> {

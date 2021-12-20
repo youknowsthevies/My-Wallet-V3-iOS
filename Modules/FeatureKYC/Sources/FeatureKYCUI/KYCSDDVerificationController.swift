@@ -1,5 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import Combine
 import DIKit
 import FeatureKYCDomain
@@ -97,7 +102,7 @@ struct KYCSDDVerificationLoadingView: View {
                     Text(LocalizationConstants.KYC.verificationCompletedMessage)
                         .textStyle(.body)
                 }
-                SecondaryButton(title: LocalizationConstants.KYC.retryAction) {
+                MinimalButton(title: LocalizationConstants.KYC.retryAction) {
                     retryCallback?()
                 }
             }

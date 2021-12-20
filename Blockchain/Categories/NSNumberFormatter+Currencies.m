@@ -22,8 +22,7 @@
         @try {
             CurrencySymbol *currencySymbol = WalletManager.sharedInstance.latestMultiAddressResponse.symbol_local;
             NSDecimalNumber *valueDecimal = (NSDecimalNumber*)[NSDecimalNumber numberWithLongLong:value];
-            NSDecimalNumber *conversionDecimal = (NSDecimalNumber*)[NSDecimalNumber numberWithDouble:currencySymbol.conversion];
-            NSDecimalNumber *number = [valueDecimal decimalNumberByDividingBy:conversionDecimal];
+            NSDecimalNumber *number = [valueDecimal decimalNumberByDividingBy:currencySymbol.conversion];
             NSString *valueString = [NSNumberFormatter.localCurrencyFormatterWithGroupingSeparator stringFromNumber:number];
             return [currencySymbol.symbol stringByAppendingString:valueString];
         } @catch (NSException * e) {

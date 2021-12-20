@@ -28,7 +28,12 @@ final class ApproveTests: OpenBankingTestCase {
 
     var initialState: ApproveState {
         ApproveState(
-            bank: .init(data: .init(account: createAccount, action: .link(institution: institution)))
+            bank: .init(data: .init(
+                account: createAccount,
+                action: .link(
+                    institution: institution
+                )
+            ))
         )
     }
 
@@ -44,7 +49,9 @@ final class ApproveTests: OpenBankingTestCase {
                 state.ui = .model(
                     for: .init(
                         account: createAccount,
-                        action: .link(institution: institution)
+                        action: .link(
+                            institution: institution
+                        )
                     ),
                     in: environment
                 )

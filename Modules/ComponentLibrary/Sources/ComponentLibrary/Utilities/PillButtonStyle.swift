@@ -71,6 +71,7 @@ struct PillButtonStyle: ButtonStyle {
             RoundedRectangle(cornerRadius: cornerRadius)
                 .stroke(colorSet(for: configuration).border)
         )
+        .contentShape(Rectangle())
     }
 
     private func colorSet(for configuration: Configuration) -> ColorSet {

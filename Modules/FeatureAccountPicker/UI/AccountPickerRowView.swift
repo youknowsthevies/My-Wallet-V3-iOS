@@ -1,6 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
 import ComponentLibrary
+#endif
 import ComposableArchitecture
 import FeatureAccountPickerDomain
 import Localization
@@ -40,20 +44,24 @@ struct AccountPickerRowView<
                     fiatBalance: fiatBalance,
                     currencyCode: currencyCode
                 )
+                PrimaryDivider()
             case .button(let model):
                 ButtonRow(model: model) {
                     send(.accountPickerRowDidTap(model.id))
                 }
+                PrimaryDivider()
             case .linkedBankAccount(let model):
                 LinkedBankAccountRow(
                     model: model,
                     badgeView: badgeView(model.id),
                     multiBadgeView: multiBadgeView(model.id)
                 )
+                PrimaryDivider()
             case .paymentMethodAccount(let model):
                 PaymentMethodRow(
                     model: model
                 )
+                PrimaryDivider()
             case .singleAccount(let model):
                 SingleAccountRow(
                     model: model,
@@ -63,6 +71,7 @@ struct AccountPickerRowView<
                     fiatBalance: fiatBalance,
                     cryptoBalance: cryptoBalance
                 )
+                PrimaryDivider()
             case .withdrawalLocks:
                 withdrawalLocksView()
             }
@@ -125,7 +134,7 @@ private struct ButtonRow: View {
 
     var body: some View {
         VStack {
-            UIComponentsKit.SecondaryButton(title: model.text) {
+            MinimalButton(title: model.text) {
                 action()
             }
             .frame(height: 48)
@@ -367,7 +376,9 @@ struct AccountPickerRowView_Previews: PreviewProvider {
             .previewLayout(PreviewLayout.sizeThatFits)
             .padding()
             .previewDisplayName("LinkedBankAccountRow")
+        }
 
+        Group {
             AccountPickerRowView(
                 model: paymentMethodAccountRow,
                 send: { _ in },

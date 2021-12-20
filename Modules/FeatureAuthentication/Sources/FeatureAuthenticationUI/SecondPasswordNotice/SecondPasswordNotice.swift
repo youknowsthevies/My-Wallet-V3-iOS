@@ -1,5 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+#if canImport(SharedComponentLibrary)
+import SharedComponentLibrary
+#else
+import ComponentLibrary
+#endif
 import ComposableArchitecture
 import FeatureAuthenticationDomain
 import Localization
@@ -53,7 +58,7 @@ let secondPasswordNoticeReducer = Reducer<
 
 public struct SecondPasswordNoticeView: View {
 
-    private typealias LocalizedConstants = LocalizationConstants.SecondPasswordScreen
+    private typealias LocalizedConstants = LocalizationConstants.FeatureAuthentication.SecondPasswordScreen
     private typealias AccessibilityIdentifier = AccessibilityIdentifiers.SecondPasswordScreen
 
     private enum Layout {

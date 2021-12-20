@@ -161,14 +161,14 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         )
 
         cryptoAmountLabelPresenter.interactor.stateRelay.accept(
-            .loaded(next: .init(text: data.amount.toDisplayString(includeSymbol: true)))
+            .loaded(next: .init(text: data.amount.displayString))
         )
 
         exchangeRateLineItemCellPresenter.interactor.description.stateRelay.accept(
-            .loaded(next: .init(text: data.exchangeRate?.toDisplayString(includeSymbol: true) ?? ""))
+            .loaded(next: .init(text: data.exchangeRate?.displayString ?? ""))
         )
         cryptoPriceItemCellPresenter.interactor.description.stateRelay.accept(
-            .loaded(next: .init(text: data.exchangeRate?.toDisplayString(includeSymbol: true) ?? ""))
+            .loaded(next: .init(text: data.exchangeRate?.displayString ?? ""))
         )
         orderIdLineItemCellPresenter.interactor.description.stateRelay.accept(
             .loaded(next: .init(text: data.orderId))

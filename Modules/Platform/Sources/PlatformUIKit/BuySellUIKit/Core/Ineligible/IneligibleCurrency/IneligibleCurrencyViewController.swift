@@ -40,7 +40,7 @@ final class IneligibleCurrencyViewController: UIViewController {
         imageView.image = presenter.thumbnail
 
         presenter.dismissalRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 self.dismiss(animated: true) {
                     self.presenter.dismiss()
@@ -49,7 +49,7 @@ final class IneligibleCurrencyViewController: UIViewController {
             .disposed(by: disposeBag)
 
         presenter.restartRelay
-            .observeOn(MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
                 self.dismiss(animated: true) {
                     self.presenter.changeCurrency()

@@ -173,6 +173,7 @@ public struct BankView: View {
         }
         .navigationBarBackButtonHidden(true)
         .whiteNavigationBarStyle()
+        .background(Color.semantic.background)
     }
 
     private typealias ButtonState = ActionableView<
@@ -226,7 +227,10 @@ struct BankView_Previews: PreviewProvider {
             store: .init(
                 initialState: BankState(
                     ui: .linked(institution: "Monzo"),
-                    data: .init(account: .mock, action: .link(institution: .mock))
+                    data: .init(
+                        account: .mock,
+                        action: .link(institution: .mock)
+                    )
                 ),
                 reducer: bankReducer,
                 environment: .mock
