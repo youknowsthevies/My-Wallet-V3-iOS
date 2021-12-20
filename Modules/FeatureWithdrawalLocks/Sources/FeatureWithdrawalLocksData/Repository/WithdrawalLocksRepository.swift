@@ -23,7 +23,7 @@ final class WithdrawalLocksRepository: WithdrawalLocksRepositoryAPI {
         self.moneyValueFormatter = moneyValueFormatter
     }
 
-    func withdrawLocks(
+    func withdrawalLocks(
         currencyCode: String
     ) -> AnyPublisher<WithdrawalLocks, Never> {
         client.fetchWithdrawalLocks(currencyCode: currencyCode)

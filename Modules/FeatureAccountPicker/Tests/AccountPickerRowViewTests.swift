@@ -184,7 +184,7 @@ class AccountPickerRowViewTests: XCTestCase {
                     viewModel: .just(MultiBadgeViewModel(
                         layoutMargins: UIEdgeInsets(
                             top: 8,
-                            left: 72,
+                            left: 60,
                             bottom: 16,
                             right: 24
                         ),

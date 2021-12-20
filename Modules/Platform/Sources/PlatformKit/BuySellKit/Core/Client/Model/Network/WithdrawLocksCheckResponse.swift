@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct WithdrawLocksCheckResponse: Decodable {
+struct WithdrawalLocksCheckResponse: Decodable {
 
     struct Rule: Decodable {
 

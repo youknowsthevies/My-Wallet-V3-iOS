@@ -62,7 +62,7 @@ public struct EmailLoginView: View {
                 PrimaryButton(
                     title: LocalizedString.Button._continue,
                     action: {
-                        viewStore.send(.sendDeviceVerificationEmail)
+                        viewStore.send(.continueButtonTapped)
                     },
                     loading: .constant(viewStore.isLoading)
                 )

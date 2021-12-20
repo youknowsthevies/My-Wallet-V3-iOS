@@ -62,13 +62,14 @@ extension CardData {
 
         let billingDetails = STPPaymentMethodBillingDetails()
         billingDetails.name = ownerName
+        billingDetails.address = billingAddress?.stripeAddress
 
         return STPPaymentMethodParams(card: card, billingDetails: billingDetails, metadata: nil)
     }
 }
 
 extension BillingAddress {
-    private var stripeAddress: STPPaymentMethodAddress {
+    fileprivate var stripeAddress: STPPaymentMethodAddress {
         let address = STPPaymentMethodAddress()
         address.line1 = addressLine1
         address.line2 = addressLine2

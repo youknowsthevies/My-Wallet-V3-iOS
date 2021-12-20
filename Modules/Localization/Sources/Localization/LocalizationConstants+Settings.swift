@@ -78,8 +78,8 @@ extension LocalizationConstants.Settings {
     public enum Card {
         public static let add = NSLocalizedString("Add a Card", comment: "Add a Card")
         public static let maximum = NSLocalizedString(
-            "You can have a maximum of three cards",
-            comment: "You can have a maximum of three cards"
+            "You can have a maximum of five cards",
+            comment: "You can have a maximum of five cards"
         )
         public static let remove = NSLocalizedString("Remove Card", comment: "Remove Card")
         public static let unverified = NSLocalizedString("You must have Gold Level verification status to add a credit card.", comment: "You must have Gold Level verification status to add a credit card.")

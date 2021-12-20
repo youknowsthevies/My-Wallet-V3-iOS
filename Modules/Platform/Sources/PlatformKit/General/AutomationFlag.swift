@@ -4,7 +4,6 @@ import Foundation
 
 public enum AutomationFlag: String {
     case eraseWallet = "automation_erase_data"
-    case disableRatingPrompt = "automation_disable_rating_prompt"
 }
 
 extension ProcessInfo {

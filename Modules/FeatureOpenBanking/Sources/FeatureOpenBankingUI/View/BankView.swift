@@ -30,7 +30,7 @@ public struct BankState: Equatable {
 
     var account: OpenBanking.BankAccount { data.account }
 
-    var bankName: String {
+    var name: String {
         switch data.action {
         case .link(let institution):
             return institution.fullName
@@ -52,6 +52,7 @@ public enum BankAction: Hashable, FailureAction {
     case failure(OpenBanking.Error)
 }
 
+// swiftlint:disable closure_body_length
 public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> { state, action, environment in
 
     enum ID {
@@ -68,7 +69,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
             Effect(value: .request)
         )
     case .request:
-        state.ui = .communicating(to: state.bankName)
+        state.ui = .communicating(to: state.name)
         return .merge(
             .fireAndForget {
                 environment.openBanking.reset()
@@ -97,16 +98,28 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
             .cancellable(id: ID.LaunchBank())
 
     case .launchAuthorisation(let url):
-        state.ui = .waiting(for: state.bankName)
+        state.ui = .waiting(for: state.name)
         return .merge(
             .fireAndForget { environment.openURL.open(url) },
             .cancel(id: ID.LaunchBank())
         )
 
     case .finalise(let output):
+        let cancel: Effect<BankAction, Never> = .merge(
+            .cancel(id: ID.ConsentError()),
+            .cancel(id: ID.Request())
+        )
         switch output {
-        case .linked:
-            state.ui = .linked(institution: state.bankName)
+        case .linked(let account, let institution):
+            state.ui = .linked(institution: state.name)
+            return .merge(
+                cancel,
+                .fireAndForget { [state] in
+                    environment.analytics.record(
+                        event: .bankAccountStateTriggered(account: account, institution: state.name)
+                    )
+                }
+            )
         case .deposited(let payment):
             state.ui = .deposit(success: payment, in: environment)
         case .confirmed(let order) where order.state == .finished:
@@ -114,10 +127,7 @@ public let bankReducer = Reducer<BankState, BankAction, OpenBankingEnvironment> 
         case .confirmed(let order):
             state.ui = .buy(pending: order, in: environment)
         }
-        return .merge(
-            .cancel(id: ID.ConsentError()),
-            .cancel(id: ID.Request())
-        )
+        return cancel
 
     case .dismiss:
         return .fireAndForget(environment.dismiss)

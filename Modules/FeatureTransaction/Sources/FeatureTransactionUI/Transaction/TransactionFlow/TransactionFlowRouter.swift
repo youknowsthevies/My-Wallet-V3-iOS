@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 #if canImport(SharedComponentLibrary)
 import SharedComponentLibrary
@@ -42,6 +43,7 @@ public protocol TransactionFlowViewControllable: ViewControllable {
 
 typealias TransactionViewableRouter = ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>
 
+// swiftlint:disable type_body_length
 final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRouting {
 
     private var paymentMethodLinker: PaymentMethodLinkerAPI
@@ -55,6 +57,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
     private let kycRouter: PlatformUIKit.KYCRouting
     private let transactionsRouter: TransactionsRouterAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     private let bottomSheetPresenter = BottomSheetPresenting(ignoresBackgroundTouches: true)
 
@@ -75,7 +78,8 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         transactionsRouter: TransactionsRouterAPI = resolve(),
         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
-        featureFlagsService: FeatureFlagsServiceAPI = resolve()
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.paymentMethodLinker = paymentMethodLinker
         self.bankWireLinker = bankWireLinker
@@ -85,6 +89,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
         self.featureFlagsService = featureFlagsService
+        self.analyticsRecorder = analyticsRecorder
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
@@ -294,6 +299,7 @@ final class TransactionFlowRouter: TransactionViewableRouter, TransactionFlowRou
         let builder = LinkBankFlowRootBuilder()
         let router = builder.build()
         linkBankFlowRouter = router
+        analyticsRecorder.record(event: AnalyticsEvents.New.SimpleBuy.linkBankClicked(origin: .buy))
         router.startFlow()
             .withLatestFrom(transactionModel.state) { ($0, $1) }
             .observeOn(MainScheduler.instance)

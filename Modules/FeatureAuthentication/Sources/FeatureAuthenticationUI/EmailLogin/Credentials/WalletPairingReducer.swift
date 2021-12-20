@@ -8,7 +8,7 @@ import ToolKit
 // MARK: - Type
 
 public enum WalletPairingAction: Equatable {
-    case approveEmailAuthorization
+    case approveEmailAuthorization(_ has2FAEnabled: Bool)
     case authenticate(String)
     case authenticateDidFail(LoginServiceError)
     case authenticateWithTwoFactorOTP(String)
@@ -90,8 +90,8 @@ let walletPairingReducer = Reducer<
 > { state, action, environment in
     switch action {
 
-    case .approveEmailAuthorization:
-        return approveEmailAuthorization(state, environment)
+    case .approveEmailAuthorization(let has2FAEnabled):
+        return approveEmailAuthorization(state, has2FAEnabled, environment)
 
     case .authenticate(let password):
         // credentials reducer will set password here
@@ -133,6 +133,7 @@ let walletPairingReducer = Reducer<
 
 private func approveEmailAuthorization(
     _ state: WalletPairingState,
+    _ has2FAEnabled: Bool,
     _ environment: WalletPairingEnvironment
 ) -> Effect<WalletPairingAction, Never> {
     guard let emailCode = state.emailCode else {
@@ -156,6 +157,9 @@ private func approveEmailAuthorization(
                 case .missingSessionToken, .networkError, .recaptchaError, .missingWalletInfo:
                     break
                 }
+            }
+            guard has2FAEnabled else {
+                return .none
             }
             return .startPolling
         }
@@ -279,15 +283,18 @@ private func startPolling(
     _ environment: WalletPairingEnvironment
 ) -> Effect<WalletPairingAction, Never> {
     // Poll the Guid every 2 seconds
-    Effect
-        .timer(
-            id: WalletPairingCancelations.WalletIdentifierPollingTimerId(),
-            every: 2,
-            on: environment.pollingQueue
-        )
-        .map { _ in
-            .pollWalletIdentifier
-        }
-        .receive(on: environment.mainQueue)
-        .eraseToEffect()
+    .concatenate(
+        Effect(value: .pollWalletIdentifier),
+        Effect
+            .timer(
+                id: WalletPairingCancelations.WalletIdentifierPollingTimerId(),
+                every: 2,
+                on: environment.pollingQueue
+            )
+            .map { _ in
+                .pollWalletIdentifier
+            }
+            .receive(on: environment.mainQueue)
+            .eraseToEffect()
+    )
 }

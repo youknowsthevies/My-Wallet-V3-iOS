@@ -163,7 +163,7 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawRootInteractable>, WithdrawR
         let builder = LinkBankFlowRootBuilder()
         let router = builder.build()
         linkBankFlowRouter = router
-        analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .deposit))
+        analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .withdraw))
         router.startFlow()
             .subscribe(onNext: { [weak self] effect in
                 guard let self = self else { return }

@@ -43,7 +43,7 @@ final class BankLinkTests: OpenBankingTestCase {
 
         let state = initialState
         XCTAssertEqual(state.account, createAccount)
-        XCTAssertEqual(state.bankName, "Monzo")
+        XCTAssertEqual(state.name, "Monzo")
         XCTAssertNil(state.ui)
     }
 
@@ -55,7 +55,7 @@ final class BankLinkTests: OpenBankingTestCase {
 
         store.assert(
             .send(.request) { state in
-                state.ui = .communicating(to: state.bankName)
+                state.ui = .communicating(to: state.name)
             },
             .do { [self] in scheduler.advance(by: .seconds(1)) },
             .send(.failure(.timeout)) { state in
@@ -69,17 +69,17 @@ final class BankLinkTests: OpenBankingTestCase {
 
         try store.assert(
             .send(.request) { state in
-                state.ui = .communicating(to: state.bankName)
+                state.ui = .communicating(to: state.name)
             },
             .do { [self] in scheduler.advance() },
             .receive(.waitingForConsent),
             .receive(.launchAuthorisation(update.attributes.authorisationUrl.unwrap())) { state in
-                state.ui = .waiting(for: state.bankName)
+                state.ui = .waiting(for: state.name)
             },
             .do { [self] in state.set(.is.authorised, to: true) },
             .do { [self] in scheduler.advance() },
             .receive(.finalise(.linked(account, institution: institution))) { state in
-                state.ui = .linked(institution: state.bankName)
+                state.ui = .linked(institution: state.name)
             },
             .send(.cancel)
         )
@@ -150,7 +150,7 @@ final class BankPaymentTests: OpenBankingTestCase {
     func test_initial_state() throws {
         let state = initialState
         XCTAssertEqual(state.account, createAccount)
-        XCTAssertEqual(state.bankName, "Your Bank")
+        XCTAssertEqual(state.name, "Your Bank")
         XCTAssertNil(state.ui)
     }
 
@@ -158,12 +158,12 @@ final class BankPaymentTests: OpenBankingTestCase {
 
         try store.assert(
             .send(.request) { state in
-                state.ui = .communicating(to: state.bankName)
+                state.ui = .communicating(to: state.name)
             },
             .do { [self] in scheduler.advance() },
             .receive(.waitingForConsent),
             .receive(.launchAuthorisation(update.attributes.authorisationUrl.unwrap())) { state in
-                state.ui = .waiting(for: state.bankName)
+                state.ui = .waiting(for: state.name)
             },
             .do { [self] in state.set(.is.authorised, to: true) },
             .do { [self] in scheduler.advance() },

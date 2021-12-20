@@ -41,10 +41,16 @@ final class CardLinker: CardLinkerAPI {
         from presenter: UIViewController,
         completion: @escaping (CardLinkingFlowResult) -> Void
     ) {
-        precondition(
+        assert(
             cardRouter == nil,
             "Attempting to present \(type(of: self)) when an instance is already in use."
         )
+        if cardRouter != nil {
+            ProbabilisticRunner.run(for: .onePercent) {
+                fatalError("Attempting to present \(type(of: self)) when an instance is already in use.")
+            }
+            return
+        }
         // NOTE: the presenter is currently unused because of how the `CardRouter` is implemented but it should be refactored
         let interactor = CardRouterInteractor()
         interactor
