@@ -11,6 +11,7 @@ import FeatureTransactionUI
 import FeatureWalletConnectDomain
 import PlatformKit
 import PlatformUIKit
+import StoreKit
 import SwiftUI
 import ToolKit
 
@@ -20,18 +21,11 @@ final class RootViewController: UIHostingController<RootView> {
 
     var defaults: CacheSuite = UserDefaults.standard
     var send: (LoggedIn.Action) -> Void
+
+    var appStoreReview: AnyCancellable?
     var bag: Set<AnyCancellable> = []
 
     init(store global: Store<LoggedIn.State, LoggedIn.Action>) {
-
-        NotificationCenter.default.publisher(for: .transaction)
-            .prefix(1)
-            .delay(for: .seconds(1), scheduler: RunLoop.main, options: .none)
-            .receive(on: DispatchQueue.main)
-            .sink { _ in
-                StoreReviewController.requestReview()
-            }
-            .store(in: &bag)
 
         send = ViewStore(global).send
 
@@ -95,6 +89,24 @@ final class RootViewController: UIHostingController<RootView> {
     weak var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController?
 
     lazy var bottomSheetPresenter = BottomSheetPresenting()
+}
+
+extension RootViewController {
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        appStoreReview = NotificationCenter.default.publisher(for: .transaction)
+            .first()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let scene = self?.view.window?.windowScene else { return }
+                #if INTERNAL_BUILD
+                scene.peek("🧾 Show App Store Review Prompt!")
+                #else
+                SKStoreReviewController.requestReview(in: scene)
+                #endif
+            }
+    }
 }
 
 extension RootViewController {
