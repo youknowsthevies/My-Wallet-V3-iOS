@@ -30,7 +30,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: PageControlExamples(), title: "📑 PageControl"),
             NavigationLinkProvider(view: PrimarySliderExamples(), title: "🎚 Slider"),
             NavigationLinkProvider(view: RadioExamples(), title: "🔘 Radio"),
-            NavigationLinkProvider(view: ChartBalanceExamples(), title: "⚖️ Chart Balance")
+            NavigationLinkProvider(view: ChartBalanceExamples(), title: "⚖️ Chart Balance"),
+            NavigationLinkProvider(view: LineGraphExamples(), title: "📈 Line Graph")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
