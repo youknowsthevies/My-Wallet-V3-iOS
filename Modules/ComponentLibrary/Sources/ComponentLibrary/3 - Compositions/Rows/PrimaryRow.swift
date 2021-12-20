@@ -40,7 +40,7 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
     private let leading: Leading
     private let trailing: Trailing
 
-    @Binding private var isSelected: Bool
+    private let action: (() -> Void)?
     private let isSelectable: Bool
 
     /// Create a default row with the given data.
@@ -59,34 +59,29 @@ public struct PrimaryRow<Leading: View, Trailing: View>: View {
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
-        isSelected: Binding<Bool>? = nil,
         @ViewBuilder leading: () -> Leading,
-        @ViewBuilder trailing: () -> Trailing
+        @ViewBuilder trailing: () -> Trailing,
+        action: (() -> Void)? = nil
     ) {
         self.title = title
         self.subtitle = subtitle
         self.description = description
         self.tags = tags
-        isSelectable = isSelected != nil
-        _isSelected = isSelected ?? .constant(false)
+        isSelectable = action != nil
         self.leading = leading()
         self.trailing = trailing()
+        self.action = action
     }
 
     public var body: some View {
-        if isSelectable {
-            Button {
-                isSelected = true
-            } label: {
-                horizontalContent
-            }
-            .buttonStyle(
-                PrimaryRowStyle(isSelectable: isSelectable)
-            )
-        } else {
+        Button {
+            action?()
+        } label: {
             horizontalContent
-                .background(Color.semantic.background)
         }
+        .buttonStyle(
+            PrimaryRowStyle(isSelectable: isSelectable)
+        )
     }
 
     var horizontalContent: some View {
@@ -171,17 +166,17 @@ extension PrimaryRow where Leading == EmptyView {
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
-        isSelected: Binding<Bool>? = nil,
-        @ViewBuilder trailing: () -> Trailing
+        @ViewBuilder trailing: () -> Trailing,
+        action: (() -> Void)? = nil
     ) {
         self.init(
             title: title,
             subtitle: subtitle,
             description: description,
             tags: tags,
-            isSelected: isSelected,
             leading: { EmptyView() },
-            trailing: trailing
+            trailing: trailing,
+            action: action
         )
     }
 }
@@ -201,17 +196,17 @@ extension PrimaryRow where Trailing == ChevronRight {
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
-        isSelected: Binding<Bool>? = nil,
-        @ViewBuilder leading: () -> Leading
+        @ViewBuilder leading: () -> Leading,
+        action: (() -> Void)? = nil
     ) {
         self.init(
             title: title,
             subtitle: subtitle,
             description: description,
             tags: tags,
-            isSelected: isSelected,
             leading: leading,
-            trailing: { ChevronRight() }
+            trailing: { ChevronRight() },
+            action: action
         )
     }
 }
@@ -230,16 +225,16 @@ extension PrimaryRow where Leading == EmptyView, Trailing == ChevronRight {
         subtitle: String? = nil,
         description: String? = nil,
         tags: [Tag] = [],
-        isSelected: Binding<Bool>? = nil
+        action: (() -> Void)? = nil
     ) {
         self.init(
             title: title,
             subtitle: subtitle,
             description: description,
             tags: tags,
-            isSelected: isSelected,
             leading: { EmptyView() },
-            trailing: { ChevronRight() }
+            trailing: { ChevronRight() },
+            action: action
         )
     }
 }
@@ -270,7 +265,6 @@ extension VerticalAlignment {
 }
 
 // swiftlint:disable line_length
-// swiftlint:disable closure_body_length
 struct PrimaryRow_Previews: PreviewProvider {
 
     static var previews: some View {
@@ -290,35 +284,25 @@ struct PrimaryRow_Previews: PreviewProvider {
             Group {
                 PrimaryRow(
                     title: "Trading",
-                    subtitle: "Buy & Sell"
+                    subtitle: "Buy & Sell",
+                    action: {
+                        selection = 0
+                    }
                 )
-                .onTapGesture {
-                    selection = 0
-                }
                 PrimaryRow(
                     title: "Email Address",
                     subtitle: "satoshi@blockchain.com",
                     tags: [Tag(text: "Confirmed", variant: .success)],
-                    isSelected: Binding(
-                        get: {
-                            selection == 1
-                        },
-                        set: { _ in
-                            selection = 1
-                        }
-                    )
+                    action: {
+                        selection = 1
+                    }
                 )
                 PrimaryRow(
                     title: "From: BTC Trading Account",
                     subtitle: "To: 0x093871209487120934812027675",
-                    isSelected: Binding(
-                        get: {
-                            selection == 2
-                        },
-                        set: { _ in
-                            selection = 2
-                        }
-                    )
+                    action: {
+                        selection = 2
+                    }
                 )
             }
             .frame(width: 375)
@@ -331,14 +315,9 @@ struct PrimaryRow_Previews: PreviewProvider {
                         Tag(text: "Fastest", variant: .success),
                         Tag(text: "Warning Alert", variant: .warning)
                     ],
-                    isSelected: Binding(
-                        get: {
-                            selection == 3
-                        },
-                        set: { _ in
-                            selection = 3
-                        }
-                    )
+                    action: {
+                        selection = 3
+                    }
                 )
                 PrimaryRow(
                     title: "Cloud Backup",
@@ -349,14 +328,9 @@ struct PrimaryRow_Previews: PreviewProvider {
                 )
                 PrimaryRow(
                     title: "Features and Limits",
-                    isSelected: Binding(
-                        get: {
-                            selection == 5
-                        },
-                        set: { _ in
-                            selection = 5
-                        }
-                    )
+                    action: {
+                        selection = 5
+                    }
                 )
             }
             .frame(width: 375)
@@ -364,53 +338,38 @@ struct PrimaryRow_Previews: PreviewProvider {
                 PrimaryRow(
                     title: "Back Up Your Wallet",
                     subtitle: "Step 1",
-                    isSelected: Binding(
-                        get: {
-                            selection == 6
-                        },
-                        set: { _ in
-                            selection = 6
-                        }
-                    ),
                     leading: {
                         Icon.wallet
                             .fixedSize()
                             .accentColor(.semantic.dark)
+                    },
+                    action: {
+                        selection = 6
                     }
                 )
                 PrimaryRow(
                     title: "Gold Level",
                     subtitle: "Higher Trading Limits",
                     tags: [Tag(text: "Approved", variant: .success)],
-                    isSelected: Binding(
-                        get: {
-                            selection == 7
-                        },
-                        set: { _ in
-                            selection = 7
-                        }
-                    ),
                     leading: {
                         Icon.apple
                             .fixedSize()
                             .accentColor(.semantic.orangeBG)
+                    },
+                    action: {
+                        selection = 7
                     }
                 )
                 PrimaryRow(
                     title: "Trade",
                     subtitle: "BTC -> ETH",
-                    isSelected: Binding(
-                        get: {
-                            selection == 8
-                        },
-                        set: { _ in
-                            selection = 8
-                        }
-                    ),
                     leading: {
                         Icon.trade
                             .fixedSize()
                             .accentColor(.semantic.success)
+                    },
+                    action: {
+                        selection = 8
                     }
                 )
                 PrimaryRow(
@@ -421,34 +380,24 @@ struct PrimaryRow_Previews: PreviewProvider {
                         Tag(text: "Fastest", variant: .success),
                         Tag(text: "Warning Alert", variant: .warning)
                     ],
-                    isSelected: Binding(
-                        get: {
-                            selection == 9
-                        },
-                        set: { _ in
-                            selection = 9
-                        }
-                    ),
                     leading: {
                         Icon.bank
                             .fixedSize()
                             .accentColor(.semantic.primary)
+                    },
+                    action: {
+                        selection = 9
                     }
                 )
                 PrimaryRow(
                     title: "Features and Limits",
-                    isSelected: Binding(
-                        get: {
-                            selection == 10
-                        },
-                        set: { _ in
-                            selection = 10
-                        }
-                    ),
                     leading: {
                         Icon.blockchain
                             .fixedSize()
                             .accentColor(.semantic.primary)
+                    },
+                    action: {
+                        selection = 10
                     }
                 )
             }

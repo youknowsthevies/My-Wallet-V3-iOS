@@ -35,6 +35,7 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
     private(set) lazy var items: [SegmentedViewScreenItem] = [
         SegmentedViewScreenItem(
             title: LocalizedString.portfolio,
+            id: LocalizedString.portfolio,
             viewController: PortfolioViewController(
                 fiatBalanceCellProvider: fiatBalanceCellProvider,
                 presenter: dashboardScreenPresenter
@@ -42,6 +43,7 @@ final class DashboardSegmentedViewScreenPresenter: SegmentedViewScreenPresenting
         ),
         SegmentedViewScreenItem(
             title: LocalizedString.prices,
+            id: LocalizedString.prices,
             viewController: PricesViewController(
                 presenter: PricesScreenPresenter(
                     interactor: PricesScreenInteractor(

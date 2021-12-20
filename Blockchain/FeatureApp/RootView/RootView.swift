@@ -12,7 +12,7 @@ import SwiftUI
 
 struct Tab: Hashable, Identifiable {
     var id: Tag { tag }
-    var tag: Tag
+    var tag: Tag_blockchain_ux_user_story
     var name: String
     var icon: Icon
 }
@@ -137,6 +137,7 @@ struct RootView: View {
                 },
                 icon: { tab.icon.image }
             )
+            .identity(tab.tag.entry)
         }
         .tag(tab)
         .identity(tab.tag)
@@ -164,6 +165,7 @@ struct RootView: View {
             IconButton(icon: .qrCode) {
                 viewStore.send(.enter(into: .QR, context: .none))
             }
+            .identity(blockchain.ux.user.scan.qr.entry)
         }
     }
 
@@ -172,6 +174,7 @@ struct RootView: View {
             IconButton(icon: .user) {
                 viewStore.send(.enter(into: .account, context: .none))
             }
+            .identity(blockchain.ux.user.account.entry)
         }
     }
 }

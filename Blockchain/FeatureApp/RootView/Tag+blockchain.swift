@@ -12,13 +12,19 @@ class Tag_blockchain_ux: Tag {
 }
 
 class Tag_blockchain_ux_user: Tag {
-    var account: Tag { child() }
-    var activity: Tag { child() }
-    var buy_and_sell: Tag { child() }
+    var account: Tag_blockchain_ux_user_story { child() }
+    var activity: Tag_blockchain_ux_user_story { child() }
+    var buy_and_sell: Tag_blockchain_ux_user_story { child() }
+    var buy: Tag_blockchain_ux_user_story { child() }
+    var sell: Tag_blockchain_ux_user_story { child() }
     var fab: Tag_blockchain_ux_user_fab { child() }
-    var portfolio: Tag { child() }
-    var prices: Tag { child() }
+    var portfolio: Tag_blockchain_ux_user_story { child() }
+    var prices: Tag_blockchain_ux_user_story { child() }
     var scan: Tag_blockchain_ux_user_scan { child() }
+}
+
+class Tag_blockchain_ux_user_story: Tag {
+    var entry: Tag { child() }
 }
 
 class Tag_blockchain_ux_user_fab: Tag {
@@ -33,7 +39,7 @@ class Tag_blockchain_ux_user_fab: Tag {
 }
 
 class Tag_blockchain_ux_user_scan: Tag {
-    var qr: Tag { child() }
+    var qr: Tag_blockchain_ux_user_story { child() }
 }
 
 extension Tag {

@@ -134,11 +134,11 @@ public struct SearchableItemPicker<Identifier: Hashable>: View {
                 } else {
                     EmptyView()
                 }
+            },
+            action: {
+                onSelection(item)
             }
         )
-        .onTapGesture {
-            onSelection(item)
-        }
     }
 
     private func filtered(_ items: [SearchableItem<Identifier>]) -> [SearchableItem<Identifier>] {
