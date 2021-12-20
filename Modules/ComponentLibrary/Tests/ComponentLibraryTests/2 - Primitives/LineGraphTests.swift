@@ -15,7 +15,7 @@ final class LineGraphTests: XCTestCase {
 
         let data: [Double] = (0..<1000).map { _ in Double.random(in: 0..<100) }
         measure {
-            _ = data.points(in: CGRect(x: 0, y: 0, width: 400, height: 400))
+            _ = data.points(in: CGSize(width: 400, height: 400))
         }
     }
 
@@ -25,7 +25,7 @@ final class LineGraphTests: XCTestCase {
         // 0.002s on Xcode 12, iPhone 8 simulator, MacBookPro16,1
 
         let data: [Double] = (0..<1000).map { _ in Double.random(in: 0..<100) }
-        let points = data.points(in: CGRect(x: 0, y: 0, width: 400, height: 400))
+        let points = data.points(in: CGSize(width: 400, height: 400))
         measure {
             _ = cubicPath(from: points)
         }
@@ -36,6 +36,7 @@ final class LineGraphTests: XCTestCase {
             selectedIndex: .constant(nil),
             selectionTitle: nil,
             smoothingChunkSize: 7,
+            showsCurrentDot: false,
             data: oneYearData
         )
         .frame(width: 375)
@@ -56,7 +57,50 @@ final class LineGraphTests: XCTestCase {
             selectedIndex: .constant(300),
             selectionTitle: "Nov 12, 2021",
             smoothingChunkSize: 7,
+            showsCurrentDot: false,
             data: oneYearData
+        )
+        .frame(width: 375)
+        .fixedSize()
+
+        assertSnapshots(
+            matching: view,
+            as: [
+                .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark)),
+                .image(layout: .sizeThatFits, traits: UITraitCollection(layoutDirection: .rightToLeft))
+            ]
+        )
+    }
+
+    func testLiveUnselected() {
+        let view = LineGraph(
+            selectedIndex: .constant(nil),
+            selectionTitle: nil,
+            smoothingChunkSize: 7,
+            showsCurrentDot: true,
+            data: Array(oneYearData[0..<60])
+        )
+        .frame(width: 375)
+        .fixedSize()
+
+        assertSnapshots(
+            matching: view,
+            as: [
+                .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark)),
+                .image(layout: .sizeThatFits, traits: UITraitCollection(layoutDirection: .rightToLeft))
+            ]
+        )
+    }
+
+    func testLiveSelected() {
+        let view = LineGraph(
+            selectedIndex: .constant(50),
+            selectionTitle: "Nov 12, 2021",
+            smoothingChunkSize: 7,
+            showsCurrentDot: true,
+            data: Array(oneYearData[0..<60])
         )
         .frame(width: 375)
         .fixedSize()
