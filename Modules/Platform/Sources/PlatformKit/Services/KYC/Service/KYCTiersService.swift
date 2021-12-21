@@ -97,7 +97,16 @@ final class KYCTiersService: KYCTiersServiceAPI {
     // MARK: - Exposed Properties
 
     var tiers: AnyPublisher<KYC.UserTiers, KYCTierServiceError> {
-        cachedTiers.get(key: Key())
+        cachedTiers
+            .stream(key: Key())
+            .setFailureType(to: KYCTierServiceError.self)
+            .compactMap { result -> KYC.UserTiers? in
+                guard case .success(let tiers) = result else {
+                    return nil
+                }
+                return tiers
+            }
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Properties
@@ -124,7 +133,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
         self.analyticsRecorder = analyticsRecorder
 
         let cache: AnyCache<Key, KYC.UserTiers> = InMemoryCache(
-            configuration: .onLoginLogout(),
+            configuration: .onLoginLogoutKYCChanged(),
             refreshControl: PerpetualCacheRefreshControl()
         ).eraseToAnyCache()
         cachedTiers = CachedValueNew(

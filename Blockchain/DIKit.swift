@@ -395,6 +395,14 @@ extension DependencyContainer {
 
         // MARK: - UserInformationServiceProvider
 
+        factory { () -> UserAdapterAPI in
+            UserAdapter(
+                kycTiersService: DIKit.resolve(),
+                paymentMethodsService: DIKit.resolve(),
+                ordersService: DIKit.resolve()
+            )
+        }
+
         factory { () -> SettingsServiceAPI in
             let completeSettingsService: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettingsService

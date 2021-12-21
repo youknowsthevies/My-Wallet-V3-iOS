@@ -269,6 +269,7 @@ final class KYCRouter: KYCRouterAPI {
                 name: Constants.NotificationKeys.kycFinished,
                 object: nil
             )
+            NotificationCenter.default.post(name: .kycStatusChanged, object: nil)
         }
     }
 

@@ -1,9 +1,26 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import MoneyKit
 import NabuNetworkError
 
+struct AccumulatedTradeDetails: Equatable, Decodable {
+
+    enum TimePeriod: String, Equatable, Decodable {
+        case day = "DAY"
+        case week = "WEEK"
+        case month = "MONTH"
+        case year = "YEAR"
+        case all = "ALL"
+    }
+
+    let amount: MoneyValue
+    let period: TimePeriod
+}
+
 protocol OrderDetailsClientAPI: AnyObject {
+
+    func fetchAccumulatedTradeAmounts() -> AnyPublisher<[AccumulatedTradeDetails], NabuNetworkError>
 
     /// Fetch all Buy/Sell orders
     func orderDetails(
