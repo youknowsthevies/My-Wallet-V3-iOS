@@ -348,9 +348,10 @@ public final class AccountPickerViewController: BaseScreenViewController, Accoun
             initialState: .init(),
             reducer: withdrawalLocksReducer,
             environment: WithdrawalLocksEnvironment { [tableView] isVisible in
-                tableView.beginUpdates()
                 cell.updateRootView(height: isVisible ? 44 : 1)
-                tableView.endUpdates()
+                if let indexPath = tableView.indexPath(for: cell) {
+                    tableView.reloadRows(at: [indexPath], with: .automatic)
+                }
             }
         )
         cell.host(WithdrawalLocksView(store: store), parent: self, height: 1)

@@ -179,10 +179,11 @@ public final class PortfolioViewController: BaseScreenViewController {
         let store = Store<WithdrawalLocksState, WithdrawalLocksAction>(
             initialState: .init(),
             reducer: withdrawalLocksReducer,
-            environment: WithdrawalLocksEnvironment { [tableView] isVisible in
-                tableView.beginUpdates()
+            environment: WithdrawalLocksEnvironment { [tableView, cell] isVisible in
                 cell.updateRootView(height: isVisible ? 44 : 1)
-                tableView.endUpdates()
+                if let indexPath = tableView.indexPath(for: cell) {
+                    tableView.reloadRows(at: [indexPath], with: .automatic)
+                }
             }
         )
         cell.host(WithdrawalLocksView(store: store), parent: self, height: 1)
