@@ -150,6 +150,10 @@ public struct Input<Trailing: View>: View {
                 .padding(.top, 5)
                 .padding(.bottom, 6)
         }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            isFirstResponder = true
+        }
     }
 }
 
