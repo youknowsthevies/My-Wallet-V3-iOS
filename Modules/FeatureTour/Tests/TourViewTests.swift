@@ -25,16 +25,16 @@ class TourViewTests: XCTestCase {
                 logInAction: {}
             )
         )
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
 
         let brokerageView = TourView.Carousel.brokerage.makeView()
-        assertSnapshot(matching: brokerageView, as: .image(layout: .device(config: .iPhone8)))
+        assertSnapshot(matching: brokerageView, as: .image(layout: .device(config: .iPhone8)), record: false)
 
         let earnView = TourView.Carousel.earn.makeView()
-        assertSnapshot(matching: earnView, as: .image(layout: .device(config: .iPhone8)))
+        assertSnapshot(matching: earnView, as: .image(layout: .device(config: .iPhone8)), record: false)
 
         let keysView = TourView.Carousel.keys.makeView()
-        assertSnapshot(matching: keysView, as: .image(layout: .device(config: .iPhone8)))
+        assertSnapshot(matching: keysView, as: .image(layout: .device(config: .iPhone8)), record: false)
 
         let items = [
             Price(currency: .coin(.bitcoin), value: .loaded(next: "$55,343.76"), deltaPercentage: .loaded(next: 7.88)),
@@ -56,7 +56,7 @@ class TourViewTests: XCTestCase {
             store: tourStore,
             list: LivePricesList(store: tourStore)
         )
-        assertSnapshot(matching: livePricesView, as: .image(layout: .device(config: .iPhone8)))
+        assertSnapshot(matching: livePricesView, as: .image(layout: .device(config: .iPhone8)), record: false)
     }
 }
 

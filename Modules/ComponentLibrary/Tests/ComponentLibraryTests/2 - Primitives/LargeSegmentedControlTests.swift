@@ -19,7 +19,8 @@ final class LargeSegmentedControlTests: XCTestCase {
             as: [
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -31,6 +32,6 @@ final class LargeSegmentedControlTests: XCTestCase {
         .frame(width: 320)
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 }

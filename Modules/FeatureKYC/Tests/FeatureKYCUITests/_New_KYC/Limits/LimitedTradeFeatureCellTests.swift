@@ -75,7 +75,8 @@ final class LimitedTradeFeatureCellTests: XCTestCase {
                 as: [
                     .image(traits: UITraitCollection(userInterfaceStyle: .light)),
                     .image(traits: UITraitCollection(userInterfaceStyle: .dark))
-                ]
+                ],
+                record: false
             )
         }
     }

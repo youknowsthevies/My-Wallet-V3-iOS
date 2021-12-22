@@ -62,7 +62,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
 
         assertSnapshots(
@@ -76,7 +77,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -92,7 +94,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
 
         assertSnapshots(
@@ -106,7 +109,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -122,7 +126,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
 
         assertSnapshots(
@@ -136,7 +141,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhone8), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -152,7 +158,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
 
         assertSnapshots(
@@ -166,7 +173,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -182,7 +190,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
 
         assertSnapshots(
@@ -196,7 +205,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -212,7 +222,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
 
         assertSnapshots(
@@ -226,7 +237,8 @@ final class PrimaryNavigationTests: XCTestCase {
             as: [
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .device(config: .iPhoneX), traits: UITraitCollection(userInterfaceStyle: .dark))
-            ]
+            ],
+            record: false
         )
     }
 }

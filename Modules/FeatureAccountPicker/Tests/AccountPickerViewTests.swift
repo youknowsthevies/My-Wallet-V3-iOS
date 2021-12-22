@@ -125,6 +125,6 @@ class AccountPickerViewTests: XCTestCase {
             withdrawalLocksView: { EmptyView() }
         )
 
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
     }
 }

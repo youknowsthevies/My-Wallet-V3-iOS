@@ -48,7 +48,8 @@ final class LineGraphTests: XCTestCase {
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(layoutDirection: .rightToLeft))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -69,7 +70,8 @@ final class LineGraphTests: XCTestCase {
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(layoutDirection: .rightToLeft))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -90,7 +92,8 @@ final class LineGraphTests: XCTestCase {
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(layoutDirection: .rightToLeft))
-            ]
+            ],
+            record: false
         )
     }
 
@@ -111,7 +114,8 @@ final class LineGraphTests: XCTestCase {
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .dark)),
                 .image(layout: .sizeThatFits, traits: UITraitCollection(layoutDirection: .rightToLeft))
-            ]
+            ],
+            record: false
         )
     }
 }

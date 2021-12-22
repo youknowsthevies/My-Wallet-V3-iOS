@@ -13,6 +13,6 @@ final class EmptyStateViewTests: XCTestCase {
             image: ImageAsset.emptyActivity.image
         )
 
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)))
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone8)), record: false)
     }
 }

@@ -13,6 +13,6 @@ final class AlertToastTests: XCTestCase {
         }
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits))
+        assertSnapshot(matching: view, as: .image(layout: .sizeThatFits), record: false)
     }
 }

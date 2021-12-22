@@ -23,7 +23,7 @@ class HeaderViewTests: XCTestCase {
         )
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 
     func testNormalNoImage() {
@@ -40,7 +40,7 @@ class HeaderViewTests: XCTestCase {
         )
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 
     func testNormalNoTableTitle() {
@@ -57,7 +57,7 @@ class HeaderViewTests: XCTestCase {
         )
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 
     func testNormalSearch() {
@@ -74,7 +74,7 @@ class HeaderViewTests: XCTestCase {
         )
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 
     func testNormalSearchCollapsed() {
@@ -92,7 +92,7 @@ class HeaderViewTests: XCTestCase {
         .animation(nil)
         .frame(width: 375)
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 
     func testSimple() {
@@ -105,7 +105,7 @@ class HeaderViewTests: XCTestCase {
         )
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 
     func testNone() {
@@ -116,6 +116,6 @@ class HeaderViewTests: XCTestCase {
         )
         .fixedSize()
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 }

@@ -10,6 +10,6 @@ final class ChartBalanceTests: XCTestCase {
         let view = ChartBalance_Previews.previews
             .fixedSize()
 
-        assertSnapshot(matching: view, as: .image)
+        assertSnapshot(matching: view, as: .image, record: false)
     }
 }
