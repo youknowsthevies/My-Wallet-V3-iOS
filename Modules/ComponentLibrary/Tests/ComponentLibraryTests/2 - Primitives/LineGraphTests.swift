@@ -118,4 +118,64 @@ final class LineGraphTests: XCTestCase {
             record: false
         )
     }
+
+    func testTitleTrailingEdgeOffset() {
+        let view = LineGraph(
+            selectedIndex: .constant(oneYearData.count - 5),
+            selectionTitle: "Nov 12, 2021",
+            smoothingChunkSize: 7,
+            showsCurrentDot: false,
+            data: oneYearData
+        )
+        .frame(width: 375)
+        .fixedSize()
+
+        assertSnapshots(
+            matching: view,
+            as: [
+                .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(layout: .sizeThatFits, traits: UITraitCollection(layoutDirection: .rightToLeft))
+            ]
+        )
+    }
+
+    func testTitleLeadingEdgeOffset() {
+        let view = LineGraph(
+            selectedIndex: .constant(5),
+            selectionTitle: "Nov 12, 2021",
+            smoothingChunkSize: 7,
+            showsCurrentDot: false,
+            data: oneYearData
+        )
+        .frame(width: 375)
+        .fixedSize()
+
+        assertSnapshots(
+            matching: view,
+            as: [
+                .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(layout: .sizeThatFits, traits: UITraitCollection(layoutDirection: .rightToLeft))
+            ]
+        )
+    }
+
+    func testLiveTitleTrailingEdgeOffset() {
+        let view = LineGraph(
+            selectedIndex: .constant(oneYearData.count - 5),
+            selectionTitle: "Nov 12, 2021",
+            smoothingChunkSize: 7,
+            showsCurrentDot: true,
+            data: oneYearData
+        )
+        .frame(width: 375)
+        .fixedSize()
+
+        assertSnapshots(
+            matching: view,
+            as: [
+                .image(layout: .sizeThatFits, traits: UITraitCollection(userInterfaceStyle: .light)),
+                .image(layout: .sizeThatFits, traits: UITraitCollection(layoutDirection: .rightToLeft))
+            ]
+        )
+    }
 }

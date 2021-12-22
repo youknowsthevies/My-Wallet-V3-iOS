@@ -25,7 +25,10 @@ public struct LineGraph: View {
     // number of views, and can be switched in the future.
     private let smoothedPath: ([CGPoint]) -> Path = cubicPath(from:)
 
+    private let liveTrailingPadding: CGFloat = 26
+
     @State private var size: CGSize = .zero
+    @State private var titleWidth: CGFloat = 0
     @Environment(\.layoutDirection) private var layoutDirection
 
     /// Create a touchable line graph view
@@ -70,7 +73,6 @@ public struct LineGraph: View {
 
             verticalSelectionBar
         }
-        .background(Color.semantic.background)
         .background(
             GeometryReader { proxy in
                 Color.clear.onAppear {
@@ -79,12 +81,16 @@ public struct LineGraph: View {
             }
         )
         .frame(height: 240)
-        .padding(.trailing, showsCurrentDot ? 26 : 0)
+        .padding(.trailing, showsCurrentDot ? liveTrailingPadding : 0)
+        .background(Color.semantic.background)
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
                     // Find nearest data point to touch point
                     var percentage = value.location.x / size.width
+                    if showsCurrentDot, percentage > 1 {
+                        percentage = 1
+                    }
                     guard (0...1).contains(percentage) else {
                         selectedIndex = nil
                         return
@@ -186,20 +192,49 @@ public struct LineGraph: View {
 
     @ViewBuilder private var verticalSelectionBar: some View {
         if let index = selectedIndex {
-            Rectangle()
-                .fill(Color.semantic.title)
-                .frame(width: 1)
-                .ifLet(selectionTitle) { view, title in
-                    view.overlay(
-                        Text(title)
-                            .typography(.caption2)
-                            .foregroundColor(.semantic.title)
-                            .fixedSize()
-                            .background(Color.semantic.background),
-                        alignment: .top
-                    )
+            ZStack(alignment: .topLeading) {
+                Rectangle()
+                    .fill(Color.semantic.title)
+                    .frame(width: 1)
+                    .padding(.top, 20)
+                    .offset(x: selectedPosition(for: index))
+
+                if let title = selectionTitle {
+                    titleView(title, index: index)
+                        .onPreferenceChange(TitleWidthPreferenceKey.self) { value in
+                            titleWidth = value
+                        }
                 }
-                .offset(x: selectedPosition(for: index))
+            }
+        }
+    }
+
+    @ViewBuilder private func titleView(_ title: String, index: Int) -> some View {
+        GeometryReader { proxy in
+            Text(title)
+                .typography(.caption2)
+                .foregroundColor(.semantic.title)
+                .background(Color.semantic.background)
+                .padding(.horizontal, 1)
+                .offset(x: titleOffset(for: index))
+                .anchorPreference(key: TitleWidthPreferenceKey.self, value: .bounds) { anchor in
+                    proxy[anchor].size.width
+                }
+        }
+    }
+
+    // Find opposing x offset to avoid title clipping on edges
+    private func titleOffset(for index: Int) -> CGFloat {
+        let halfTitle = titleWidth / 2
+        let position = selectedPosition(for: index)
+        let totalWidth = showsCurrentDot ? size.width + liveTrailingPadding : size.width
+
+        if position + halfTitle > totalWidth { // trailing
+            return totalWidth - titleWidth
+        } else if position - halfTitle < 0 { // leading
+            return 0
+        } else {
+            return position - halfTitle
         }
     }
 
@@ -208,7 +243,7 @@ public struct LineGraph: View {
     private func selectedPosition(for index: Int) -> CGFloat {
         let result = (size.width / CGFloat(data.count - 1)) * CGFloat(index)
         var offset = result - 0.5
-        if index == data.index(before: data.endIndex) {
+        if !showsCurrentDot, index == data.index(before: data.endIndex) {
             offset -= 1
         }
         return offset
@@ -314,6 +349,17 @@ private struct Dot: View {
         point?.y += offset
 
         return point
+    }
+}
+
+private struct TitleWidthPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+
+    static func reduce(
+        value: inout CGFloat,
+        nextValue: () -> CGFloat
+    ) {
+        value = nextValue()
     }
 }
 
