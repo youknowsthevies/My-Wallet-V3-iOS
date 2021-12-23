@@ -18,7 +18,9 @@ struct ButtonExamplesView: View {
             NavigationLinkProvider(view: SmallMinimalButtonExamplesView(), title: "SmallMinimalButton"),
             NavigationLinkProvider(view: ExchangeBuyButtonExamplesView(), title: "ExchangeBuyButton"),
             NavigationLinkProvider(view: ExchangeSellButtonExamplesView(), title: "ExchangeSellButton"),
-            NavigationLinkProvider(view: AlertButtonExamplesView(), title: "AlertButton")
+            NavigationLinkProvider(view: AlertButtonExamplesView(), title: "AlertButton"),
+            NavigationLinkProvider(view: DestructivePrimaryButtonExamples(), title: "DestructivePrimaryButton"),
+            NavigationLinkProvider(view: DestructiveMinimalButtonExamples(), title: "DestructiveMinimalButton")
         ],
         "Multi Buttons": [
             NavigationLinkProvider(view: PrimaryDoubleButtonExamplesView(), title: "PrimaryDoubleButton"),
