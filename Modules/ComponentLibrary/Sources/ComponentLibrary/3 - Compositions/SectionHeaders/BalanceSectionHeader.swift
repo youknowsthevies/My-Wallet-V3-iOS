@@ -7,29 +7,25 @@ import SwiftUI
 /// # Figma
 ///
 ///  [Section Header](https://www.figma.com/file/nlSbdUyIxB64qgypxJkm74/03---iOS-%7C-Shared?node-id=209%3A11327)
-public struct BalanceSectionHeader: View {
+public struct BalanceSectionHeader<Trailing: View>: View {
 
     private let title: String
     private let subtitle: String
-    private let buttonTitle: String
-    private let buttonAction: () -> Void
+    private let trailing: Trailing
 
     /// Initialize a Balance Section Header
     /// - Parameters:
     ///   - title: Title of the header
     ///   - subtitle: Subtitle of the header
-    ///   - buttonTitle: Title that appears on the button of the header
-    ///   - buttonAction: Action to apply on button tap
+    ///   - trailing: Generic view displayed trailing in the header.
     public init(
         title: String,
         subtitle: String,
-        buttonTitle: String,
-        buttonAction: @escaping () -> Void
+        @ViewBuilder trailing: @escaping () -> Trailing
     ) {
         self.title = title
         self.subtitle = subtitle
-        self.buttonTitle = buttonTitle
-        self.buttonAction = buttonAction
+        self.trailing = trailing()
     }
 
     public var body: some View {
@@ -47,10 +43,9 @@ public struct BalanceSectionHeader: View {
                         )
                     )
             }
-            .frame(maxWidth: .infinity)
             Spacer()
-                .frame(maxWidth: .infinity)
-            PrimaryButton(title: buttonTitle, action: buttonAction)
+            trailing
+                .frame(maxHeight: 28)
         }
         .padding(24)
         .background(Color.semantic.background)
@@ -64,18 +59,20 @@ struct BalanceSectionHeader_Previews: PreviewProvider {
         Group {
             BalanceSectionHeader(
                 title: "$12,293.21",
-                subtitle: "0.1393819 BTC",
-                buttonTitle: "Buy BTC"
-            ) {}
-                .previewLayout(.sizeThatFits)
+                subtitle: "0.1393819 BTC"
+            ) {
+                IconButton(icon: .favorite) {}
+            }
+            .previewLayout(.sizeThatFits)
 
             BalanceSectionHeader(
                 title: "$12,293.21",
-                subtitle: "0.1393819 BTC",
-                buttonTitle: "Buy BTC"
-            ) {}
-                .previewLayout(.sizeThatFits)
-                .colorScheme(.dark)
+                subtitle: "0.1393819 BTC"
+            ) {
+                IconButton(icon: .favorite) {}
+            }
+            .previewLayout(.sizeThatFits)
+            .colorScheme(.dark)
         }
         .frame(width: 375)
     }

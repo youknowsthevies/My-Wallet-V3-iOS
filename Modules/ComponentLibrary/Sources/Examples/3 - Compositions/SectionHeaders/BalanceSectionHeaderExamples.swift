@@ -8,9 +8,11 @@ struct BalanceSectionHeaderExamples: View {
         VStack {
             BalanceSectionHeader(
                 title: "$12,293.21",
-                subtitle: "0.1393819 BTC",
-                buttonTitle: "Buy BTC"
-            ) {}
+                subtitle: "0.1393819 BTC"
+            ) {
+                IconButton(icon: .favorite) {}
+            }
+            .previewLayout(.sizeThatFits)
         }
     }
 }
