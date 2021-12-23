@@ -112,7 +112,8 @@ final class TiersStatusViewTests: XCTestCase {
                 environment: TiersStatusViewEnvironment(presentKYCFlow: { _ in })
             )
         )
-        .frame(width: 320, height: 480)
+        // fix the frame to a size that fits the content otherwise tests fail on CI
+        .frame(width: 320, height: 850)
         .fixedSize()
     }
 }
