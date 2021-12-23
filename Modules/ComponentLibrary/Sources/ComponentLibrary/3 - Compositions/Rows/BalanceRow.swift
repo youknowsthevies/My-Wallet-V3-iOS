@@ -52,6 +52,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     private let trailingTitle: String
     private let trailingDescription: String
     private let trailingDescriptionColor: Color
+    private let inlineTag: Tag?
     private let tags: [Tag]
     private let mainContentSpacing: CGFloat = 6
 
@@ -70,6 +71,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     ///   - trailingTitle: Title on the trailing side of the row
     ///   - trailingDescription: Description string on the trailing side of the row view
     ///   - trailingDescriptionColor: Optional color for the trailingDescription text
+    ///   - inlineTag: Optional tag shown at the right of the leading description text
     ///   - tags: Optional array of tags object. They show up on the bottom part of the main vertical content view, and align themself horizontally
     ///   - isSelected: Binding for the selection state
     ///   - leading: View on the leading side of the row.
@@ -81,6 +83,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
         trailingTitle: String,
         trailingDescription: String,
         trailingDescriptionColor: Color? = nil,
+        inlineTag: Tag? = nil,
         tags: [Tag] = [],
         isSelected: Binding<Bool>? = nil,
         @ViewBuilder leading: () -> Leading,
@@ -95,6 +98,7 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
             light: .palette.grey600,
             dark: .palette.dark200
         )
+        self.inlineTag = inlineTag
         self.tags = tags
         isSelectable = isSelected != nil
         _isSelected = isSelected ?? .constant(false)
@@ -138,14 +142,19 @@ public struct BalanceRow<Leading: View, Graph: View>: View {
     }
 
     @ViewBuilder private var leadingDescriptionView: some View {
-        Text(leadingDescription)
-            .typography(.paragraph1)
-            .foregroundColor(
-                Color(
-                    light: .palette.grey600,
-                    dark: .palette.dark200
+        HStack(spacing: 8) {
+            Text(leadingDescription)
+                .typography(.paragraph1)
+                .foregroundColor(
+                    Color(
+                        light: .palette.grey600,
+                        dark: .palette.dark200
+                    )
                 )
-            )
+            if let tag = inlineTag {
+                tag
+            }
+        }
     }
 
     @ViewBuilder private var trailingTitleView: some View {
@@ -261,6 +270,7 @@ extension BalanceRow where Graph == EmptyView {
         trailingTitle: String,
         trailingDescription: String,
         trailingDescriptionColor: Color? = nil,
+        inlineTag: Tag? = nil,
         tags: [Tag] = [],
         isSelected: Binding<Bool>? = nil,
         @ViewBuilder leading: () -> Leading
@@ -272,6 +282,7 @@ extension BalanceRow where Graph == EmptyView {
             trailingTitle: trailingTitle,
             trailingDescription: trailingDescription,
             trailingDescriptionColor: trailingDescriptionColor,
+            inlineTag: inlineTag,
             tags: tags,
             isSelected: isSelected,
             leading: leading
@@ -343,6 +354,27 @@ struct BalanceRow_Previews: PreviewProvider {
                         Icon.trade
                             .fixedSize()
                             .accentColor(.semantic.primary)
+                    }
+
+                    BalanceRow(
+                        leadingTitle: "Bitcoin",
+                        leadingDescription: "BTC",
+                        trailingTitle: "$44,403.13",
+                        trailingDescription: "↓ 12.32%",
+                        trailingDescriptionColor: .semantic.error,
+                        inlineTag: Tag(text: "Tradable", variant: .success),
+                        isSelected: Binding(
+                            get: {
+                                selection == 0
+                            },
+                            set: { _ in
+                                selection = 0
+                            }
+                        )
+                    ) {
+                        Icon.trade
+                            .fixedSize()
+                            .accentColor(.semantic.warning)
                     }
 
                     BalanceRow(

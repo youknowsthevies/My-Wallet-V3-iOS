@@ -65,6 +65,27 @@ struct BalanceRowExamplesView: View {
                 }
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
                 BalanceRow(
+                    leadingTitle: "Bitcoin",
+                    leadingDescription: "BTC",
+                    trailingTitle: "$44,403.13",
+                    trailingDescription: "↓ 12.32%",
+                    trailingDescriptionColor: .semantic.error,
+                    inlineTag: Tag(text: "Tradable", variant: .success),
+                    isSelected: Binding(
+                        get: {
+                            selection == 0
+                        },
+                        set: { _ in
+                            selection = 0
+                        }
+                    )
+                ) {
+                    Icon.trade
+                        .fixedSize()
+                        .accentColor(.semantic.warning)
+                }
+                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
+                BalanceRow(
                     leadingTitle: "BTC - USD",
                     leadingDescription: "Limit Buy - Open",
                     trailingTitle: "0.5736523 BTC",
