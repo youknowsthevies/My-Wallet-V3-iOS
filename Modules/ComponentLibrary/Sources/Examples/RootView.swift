@@ -31,7 +31,8 @@ public struct RootView: View {
             NavigationLinkProvider(view: PrimarySliderExamples(), title: "🎚 Slider"),
             NavigationLinkProvider(view: RadioExamples(), title: "🔘 Radio"),
             NavigationLinkProvider(view: ChartBalanceExamples(), title: "⚖️ Chart Balance"),
-            NavigationLinkProvider(view: LineGraphExamples(), title: "📈 Line Graph")
+            NavigationLinkProvider(view: LineGraphExamples(), title: "📈 Line Graph"),
+            NavigationLinkProvider(view: FilterExamples(), title: "🗳 Filter")
         ],
         "3 - Compositions": [
             NavigationLinkProvider(view: PrimaryNavigationExamples(), title: "✈️ Navigation"),
