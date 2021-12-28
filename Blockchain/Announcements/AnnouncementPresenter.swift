@@ -141,6 +141,10 @@ final class AnnouncementPresenter {
         metadata: AnnouncementsMetadata,
         preliminaryData: AnnouncementPreliminaryData
     ) -> AnnouncementDisplayAction {
+        // IOS-6127: wallets with no balance should show no announcements
+        guard preliminaryData.hasAnyWalletBalance else {
+            return .none
+        }
         // For other users, keep the current logic in place
         for type in metadata.order {
             let announcement: Announcement
