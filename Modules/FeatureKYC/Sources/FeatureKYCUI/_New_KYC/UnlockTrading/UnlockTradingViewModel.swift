@@ -1,6 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import Localization
+
+private typealias L10n = LocalizationConstants.NewKYC.UnlockTrading
 
 struct UnlockTradingViewModel: Equatable {
 
@@ -36,42 +39,30 @@ struct UnlockTradingViewModel: Equatable {
 extension UnlockTradingViewModel {
 
     static let unlockGoldTier = UnlockTradingViewModel(
-        title: NSLocalizedString("Unlock Gold Level Trading", comment: ""),
-        message: NSLocalizedString(
-            "Verify your identity, earn rewards and trade up to $10,000 a day.",
-            comment: ""
-        ),
+        title: L10n.title,
+        message: L10n.message,
         viewIconName: "icon-bank",
         topBackgroundImageName: "top-screen-pattern",
         benefits: [
             Benefit(
-                title: NSLocalizedString("Cash Accounts", comment: ""),
-                message: NSLocalizedString(
-                    "Store USD, GBP or EUR in your wallet. Use the balance to buy crypto. Sell crypto for cash at anytime.",
-                    comment: ""
-                ),
+                title: L10n.benefitCashAccounts_title,
+                message: L10n.benefitCashAccounts_message,
                 iconName: "icon-cash"
             ),
             Benefit(
-                title: NSLocalizedString("Link a Bank", comment: ""),
-                message: NSLocalizedString(
-                    "Connect your Wallet to any bank or credit union. Deposit and Withdraw Cash at anytyime.",
-                    comment: ""
-                ),
+                title: L10n.benefitLinkBankAccounts_title,
+                message: L10n.benefitLinkBankAccounts_message,
                 iconName: "icon-bank"
             ),
             Benefit(
-                title: NSLocalizedString("Earn Rewards", comment: ""),
-                message: NSLocalizedString(
-                    "Put your crypto to work. Earn up to 10% monthly by simply doing nothing. Instanly deposit and start earning.",
-                    comment: ""
-                ),
+                title: L10n.benefitEarnRewards_title,
+                message: L10n.benefitEarnRewards_message,
                 iconName: "icon-interest"
             )
         ],
         actions: [
             Action(
-                title: NSLocalizedString("Apply & Unlock Now", comment: ""),
+                title: L10n.ctaApplyToUnlock,
                 style: .primary,
                 action: { viewStore in
                     viewStore.send(.unlockButtonTapped)

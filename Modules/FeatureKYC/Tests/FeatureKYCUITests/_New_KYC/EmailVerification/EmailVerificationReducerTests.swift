@@ -6,9 +6,13 @@ import ComposableArchitecture
 @testable import FeatureKYCDomainMock
 @testable import FeatureKYCUI
 @testable import FeatureKYCUIMock
+import Localization
 import TestKit
 import XCTest
 
+private typealias L10n = LocalizationConstants.NewKYC
+
+// swiftlint:disable:next type_body_length
 final class EmailVerificationReducerTests: XCTestCase {
 
     fileprivate struct RecordedInvocations {
@@ -85,7 +89,13 @@ final class EmailVerificationReducerTests: XCTestCase {
                 self.testPollingQueue.advance(by: 4)
             },
             .receive(.loadVerificationState),
-            .receive(.didReceiveEmailVerficationResponse(.success(.init(emailAddress: "test@example.com", status: .unverified)))),
+            .receive(
+                .didReceiveEmailVerficationResponse(
+                    .success(
+                        .init(emailAddress: "test@example.com", status: .unverified)
+                    )
+                )
+            ),
             .receive(.presentStep(.verifyEmailPrompt)),
             .send(.didDisappear),
             .do {
@@ -111,7 +121,13 @@ final class EmailVerificationReducerTests: XCTestCase {
                 self.testPollingQueue.advance(by: 4)
             },
             .receive(.loadVerificationState),
-            .receive(.didReceiveEmailVerficationResponse(.success(.init(emailAddress: "test@example.com", status: .unverified)))),
+            .receive(
+                .didReceiveEmailVerficationResponse(
+                    .success(
+                        .init(emailAddress: "test@example.com", status: .unverified)
+                    )
+                )
+            ),
             .send(.didDisappear),
             .do {
                 // no more actions should be received after view disappears
@@ -127,7 +143,13 @@ final class EmailVerificationReducerTests: XCTestCase {
                 $0.flowStep = .loadingVerificationState
             },
             .receive(.loadVerificationState),
-            .receive(.didReceiveEmailVerficationResponse(.success(.init(emailAddress: "test@example.com", status: .unverified)))),
+            .receive(
+                .didReceiveEmailVerficationResponse(
+                    .success(
+                        .init(emailAddress: "test@example.com", status: .unverified)
+                    )
+                )
+            ),
             .receive(.presentStep(.verifyEmailPrompt)) {
                 $0.flowStep = .verifyEmailPrompt
             }
@@ -136,14 +158,20 @@ final class EmailVerificationReducerTests: XCTestCase {
 
     func test_loads_verificationStatus_when_app_opened_verified() throws {
         let mockService = testStore.environment.emailVerificationService as? MockEmailVerificationService
-        mockService?.stubbedResults.checkEmailVerificationStatus = .just(.init(emailAddress: "test@example.com", status: .verified))
+        mockService?.stubbedResults.checkEmailVerificationStatus = .just(
+            .init(emailAddress: "test@example.com", status: .verified)
+        )
         testStore.assert(
             .send(.didEnterForeground),
             .receive(.presentStep(.loadingVerificationState)) {
                 $0.flowStep = .loadingVerificationState
             },
             .receive(.loadVerificationState),
-            .receive(.didReceiveEmailVerficationResponse(.success(.init(emailAddress: "test@example.com", status: .verified)))),
+            .receive(
+                .didReceiveEmailVerficationResponse(
+                    .success(.init(emailAddress: "test@example.com", status: .verified))
+                )
+            ),
             .receive(.presentStep(.emailVerifiedPrompt)) {
                 $0.flowStep = .emailVerifiedPrompt
             }
@@ -167,7 +195,7 @@ final class EmailVerificationReducerTests: XCTestCase {
                         TextState(L10n.GenericError.retryButtonTitle),
                         action: .send(.loadVerificationState)
                     ),
-                    secondaryButton: AlertState.Button.cancel()
+                    secondaryButton: AlertState.Button.cancel(TextState(L10n.GenericError.cancelButtonTitle))
                 )
             },
             .receive(.presentStep(.verificationCheckFailed)) {
@@ -186,7 +214,7 @@ final class EmailVerificationReducerTests: XCTestCase {
                         TextState(L10n.GenericError.retryButtonTitle),
                         action: .send(.loadVerificationState)
                     ),
-                    secondaryButton: AlertState.Button.cancel()
+                    secondaryButton: AlertState.Button.cancel(TextState(L10n.GenericError.cancelButtonTitle))
                 )
             },
             .receive(.presentStep(.verificationCheckFailed)) {
@@ -367,7 +395,7 @@ final class EmailVerificationReducerTests: XCTestCase {
                         TextState(L10n.GenericError.retryButtonTitle),
                         action: .send(.save)
                     ),
-                    secondaryButton: .cancel()
+                    secondaryButton: .cancel(TextState(L10n.GenericError.cancelButtonTitle))
                 )
             },
             .send(.editEmailAddress(.dismissSaveEmailFailureAlert)) {
@@ -417,7 +445,7 @@ final class EmailVerificationReducerTests: XCTestCase {
                         TextState(L10n.GenericError.retryButtonTitle),
                         action: .send(.sendVerificationEmail)
                     ),
-                    secondaryButton: .cancel()
+                    secondaryButton: .cancel(TextState(L10n.GenericError.cancelButtonTitle))
                 )
             },
             .send(.emailVerificationHelp(.dismissEmailSendingFailureAlert)) {
