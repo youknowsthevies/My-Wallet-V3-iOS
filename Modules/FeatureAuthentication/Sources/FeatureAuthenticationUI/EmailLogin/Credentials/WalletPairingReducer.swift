@@ -16,6 +16,7 @@ public enum WalletPairingAction: Equatable {
     case decryptWalletWithPassword(String)
     case didResendSMSCode(Result<EmptyValue, SMSServiceError>)
     case didSetupSessionToken(Result<EmptyValue, SessionTokenServiceError>)
+    case didApproveEmailAuthorization(Result<EmptyValue, DeviceVerificationServiceError>, has2FAEnabled: Bool)
     case handleSMS
     case needsEmailAuthorization
     case pollWalletIdentifier
@@ -27,6 +28,10 @@ public enum WalletPairingAction: Equatable {
 }
 
 enum WalletPairingCancelations {
+    struct AuthorizeApproveId: Hashable {}
+    struct AuthenticateId: Hashable {}
+    struct ResendSMSId: Hashable {}
+    struct SessionTokenId: Hashable {}
     struct WalletIdentifierPollingTimerId: Hashable {}
     struct WalletIdentifierPollingId: Hashable {}
 }
@@ -102,7 +107,10 @@ let walletPairingReducer = Reducer<
         return authenticateWithTwoFactorOTP(code, state, environment)
 
     case .needsEmailAuthorization:
-        return needsEmailAuthorization()
+        return .merge(
+            .cancel(id: WalletPairingCancelations.AuthorizeApproveId()),
+            needsEmailAuthorization()
+        )
 
     case .pollWalletIdentifier:
         return pollWalletIdentifier(state, environment)
@@ -114,15 +122,41 @@ let walletPairingReducer = Reducer<
         return setupSessionToken(environment)
 
     case .startPolling:
-        return startPolling(environment)
+        return .merge(
+            .cancel(id: WalletPairingCancelations.AuthorizeApproveId()),
+            startPolling(environment)
+        )
 
-    case .authenticateDidFail,
-         .authenticateWithTwoFactorOTPDidFail,
-         .decryptWalletWithPassword,
-         .didResendSMSCode,
-         .didSetupSessionToken,
-         .handleSMS,
+    case .didApproveEmailAuthorization(let result, let has2FAEnabled):
+        if case .failure(let error) = result {
+            // If failed, an `Authorize Log In` will be sent to user for manual authorization
+            environment.errorRecorder.error(error)
+            // we only want to handle `.expiredEmailCode` case, other errors are ignored...
+            switch error {
+            case .expiredEmailCode:
+                return Effect(value: .needsEmailAuthorization)
+            case .missingSessionToken, .networkError, .recaptchaError, .missingWalletInfo:
+                break
+            }
+        }
+        guard has2FAEnabled else {
+            return .cancel(id: WalletPairingCancelations.AuthorizeApproveId())
+        }
+        return Effect(value: .startPolling)
+
+    case .decryptWalletWithPassword,
+         .authenticateDidFail,
          .twoFactorOTPDidVerified,
+         .authenticateWithTwoFactorOTPDidFail:
+        return .cancel(id: WalletPairingCancelations.AuthenticateId())
+
+    case .didResendSMSCode:
+        return .cancel(id: WalletPairingCancelations.ResendSMSId())
+
+    case .didSetupSessionToken:
+        return .cancel(id: WalletPairingCancelations.SessionTokenId())
+
+    case .handleSMS,
          .none:
         // handled in credentials reducer
         return .none
@@ -146,22 +180,12 @@ private func approveEmailAuthorization(
         .authorizeLogin(emailCode: emailCode)
         .receive(on: environment.mainQueue)
         .catchToEffect()
-        .map { result -> WalletPairingAction in
-            if case .failure(let error) = result {
-                // If failed, an `Authorize Log In` will be sent to user for manual authorization
-                environment.errorRecorder.error(error)
-                // we only want to handle `.expiredEmailCode` case, silent other errors...
-                switch error {
-                case .expiredEmailCode:
-                    return .needsEmailAuthorization
-                case .missingSessionToken, .networkError, .recaptchaError, .missingWalletInfo:
-                    break
-                }
-            }
-            guard has2FAEnabled else {
-                return .none
-            }
-            return .startPolling
+        .map { result in
+            result.map { _ in EmptyValue.noValue }
+        }
+        .cancellable(id: WalletPairingCancelations.AuthorizeApproveId(), cancelInFlight: true)
+        .map { result in
+            .didApproveEmailAuthorization(result, has2FAEnabled: has2FAEnabled)
         }
 }
 
@@ -180,6 +204,7 @@ private func authenticate(
             .login(walletIdentifier: state.walletGuid)
             .receive(on: environment.mainQueue)
             .catchToEffect()
+            .cancellable(id: WalletPairingCancelations.AuthenticateId(), cancelInFlight: true)
             .map { result -> WalletPairingAction in
                 switch result {
                 case .success:
@@ -207,6 +232,7 @@ private func authenticateWithTwoFactorOTP(
         )
         .receive(on: environment.mainQueue)
         .catchToEffect()
+        .cancellable(id: WalletPairingCancelations.AuthenticateId(), cancelInFlight: true)
         .map { result -> WalletPairingAction in
             switch result {
             case .success:
@@ -251,6 +277,7 @@ private func resendSMSCode(
         .request()
         .receive(on: environment.mainQueue)
         .catchToEffect()
+        .cancellable(id: WalletPairingCancelations.ResendSMSId(), cancelInFlight: true)
         .map { result -> WalletPairingAction in
             switch result {
             case .success:
@@ -269,6 +296,7 @@ private func setupSessionToken(
         .setupSessionToken()
         .receive(on: environment.mainQueue)
         .catchToEffect()
+        .cancellable(id: WalletPairingCancelations.SessionTokenId(), cancelInFlight: true)
         .map { result -> WalletPairingAction in
             switch result {
             case .success:

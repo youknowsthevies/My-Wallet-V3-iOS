@@ -303,6 +303,7 @@ let credentialsReducer = Reducer.combine(
             return Effect(value: .walletPairing(.decryptWalletWithPassword(password)))
 
         case .walletPairing(.approveEmailAuthorization),
+             .walletPairing(.didApproveEmailAuthorization),
              .walletPairing(.pollWalletIdentifier),
              .walletPairing(.resendSMSCode),
              .walletPairing(.setupSessionToken),
