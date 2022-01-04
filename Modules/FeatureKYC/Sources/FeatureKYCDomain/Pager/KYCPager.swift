@@ -100,16 +100,24 @@ extension KYCPageType {
         isSDDEligible: Bool,
         isSDDVerified: Bool
     ) -> KYCPageType {
-        if !user.email.verified {
+        guard user.email.verified else {
             return .enterEmail
         }
 
-        if user.address == nil {
+        guard user.address != nil else {
             return .country
         }
 
-        if user.address?.postalCode == nil {
+        guard user.address?.countryCode.lowercased() != "us" || user.address?.state != nil else {
+            return .states
+        }
+
+        guard user.personalDetails.isComplete else {
             return .profile
+        }
+
+        guard user.address?.postalCode != nil else {
+            return .address
         }
 
         if let mobile = user.mobile, mobile.verified {
@@ -164,18 +172,29 @@ extension KYCPageType {
         case .welcome:
             if let user = user {
                 // We can pass true here, as non-eligible users would get send to the Tier 2 upgrade path anyway
-                return KYCPageType.startingPage(forUser: user, tiersResponse: tiersResponse, isSDDEligible: true, isSDDVerified: false)
+                return KYCPageType.startingPage(
+                    forUser: user,
+                    tiersResponse: tiersResponse,
+                    isSDDEligible: true,
+                    isSDDVerified: false
+                )
             }
             return .enterEmail
         case .enterEmail:
             return .confirmEmail
         case .confirmEmail:
-            return .country
+            guard user?.address?.countryCode != nil else {
+                return .country
+            }
+            guard user?.personalDetails.isComplete == false else {
+                return .address
+            }
+            return .profile
         case .country:
-            if let country = country, country.states.count != 0 {
+            if let country = country, !country.states.isEmpty {
                 return .states
             }
-            if let user = user, user.personalDetails.isComplete == true {
+            if let user = user, user.personalDetails.isComplete {
                 return .address
             }
             return .profile

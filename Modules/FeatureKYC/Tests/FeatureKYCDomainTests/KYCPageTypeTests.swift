@@ -4,6 +4,7 @@ import FeatureKYCDomain
 import PlatformKit
 import XCTest
 
+// swiftlint:disable:next type_body_length
 class KYCPageTypeTests: XCTestCase {
 
     /// A `KYC.UserTiers` where the user has been verified for tier1
@@ -44,9 +45,58 @@ class KYCPageTypeTests: XCTestCase {
             )
         )
         XCTAssertEqual(
+            KYCPageType.states,
+            KYCPageType.startingPage(
+                forUser: createNabuUser(isEmailVerified: true, hasCountry: true, requireState: true),
+                tiersResponse: pendingTier2Response,
+                isSDDEligible: false,
+                isSDDVerified: false
+            )
+        )
+        XCTAssertEqual(
+            KYCPageType.profile,
+            KYCPageType.startingPage(
+                forUser: createNabuUser(isEmailVerified: true, hasCountry: true, requireState: false),
+                tiersResponse: pendingTier2Response,
+                isSDDEligible: false,
+                isSDDVerified: false
+            )
+        )
+        XCTAssertEqual(
+            KYCPageType.profile,
+            KYCPageType.startingPage(
+                forUser: createNabuUser(
+                    isEmailVerified: true,
+                    hasCountry: true,
+                    hasState: true
+                ),
+                tiersResponse: pendingTier2Response,
+                isSDDEligible: false,
+                isSDDVerified: false
+            )
+        )
+        XCTAssertEqual(
+            KYCPageType.address,
+            KYCPageType.startingPage(
+                forUser: createNabuUser(
+                    isEmailVerified: true,
+                    hasPersonalDetails: true,
+                    hasCountry: true,
+                    hasState: true
+                ),
+                tiersResponse: pendingTier2Response,
+                isSDDEligible: false,
+                isSDDVerified: false
+            )
+        )
+        XCTAssertEqual(
             KYCPageType.enterPhone,
             KYCPageType.startingPage(
-                forUser: createNabuUser(isEmailVerified: true, hasAddress: true),
+                forUser: createNabuUser(
+                    isEmailVerified: true,
+                    hasPersonalDetails: true,
+                    hasAddress: true
+                ),
                 tiersResponse: pendingTier2Response,
                 isSDDEligible: false,
                 isSDDVerified: false
@@ -58,6 +108,7 @@ class KYCPageTypeTests: XCTestCase {
                 forUser: createNabuUser(
                     isMobileVerified: true,
                     isEmailVerified: true,
+                    hasPersonalDetails: true,
                     hasAddress: true
                 ),
                 tiersResponse: noTiersResponse,
@@ -70,19 +121,39 @@ class KYCPageTypeTests: XCTestCase {
     func testNextPageTier1() {
         XCTAssertEqual(
             KYCPageType.confirmEmail,
-            KYCPageType.enterEmail.nextPage(forTier: .tier1, user: nil, country: nil, tiersResponse: pendingTier2Response)
+            KYCPageType.enterEmail.nextPage(
+                forTier: .tier1,
+                user: nil,
+                country: nil,
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
             KYCPageType.country,
-            KYCPageType.confirmEmail.nextPage(forTier: .tier1, user: nil, country: nil, tiersResponse: pendingTier2Response)
+            KYCPageType.confirmEmail.nextPage(
+                forTier: .tier1,
+                user: nil,
+                country: nil,
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
             KYCPageType.states,
-            KYCPageType.country.nextPage(forTier: .tier1, user: nil, country: createKycCountry(hasStates: true), tiersResponse: pendingTier2Response)
+            KYCPageType.country.nextPage(
+                forTier: .tier1,
+                user: nil,
+                country: createKycCountry(hasStates: true),
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
             KYCPageType.profile,
-            KYCPageType.country.nextPage(forTier: .tier1, user: nil, country: createKycCountry(hasStates: false), tiersResponse: pendingTier2Response)
+            KYCPageType.country.nextPage(
+                forTier: .tier1,
+                user: nil,
+                country: createKycCountry(hasStates: false),
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
             KYCPageType.profile,
@@ -101,19 +172,39 @@ class KYCPageTypeTests: XCTestCase {
     func testNextPageTier2() {
         XCTAssertEqual(
             KYCPageType.confirmEmail,
-            KYCPageType.enterEmail.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
+            KYCPageType.enterEmail.nextPage(
+                forTier: .tier2,
+                user: nil,
+                country: nil,
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
             KYCPageType.country,
-            KYCPageType.confirmEmail.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
+            KYCPageType.confirmEmail.nextPage(
+                forTier: .tier2,
+                user: nil,
+                country: nil,
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
             KYCPageType.states,
-            KYCPageType.country.nextPage(forTier: .tier2, user: nil, country: createKycCountry(hasStates: true), tiersResponse: pendingTier2Response)
+            KYCPageType.country.nextPage(
+                forTier: .tier2,
+                user: nil,
+                country: createKycCountry(hasStates: true),
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
             KYCPageType.profile,
-            KYCPageType.country.nextPage(forTier: .tier2, user: nil, country: createKycCountry(hasStates: false), tiersResponse: pendingTier2Response)
+            KYCPageType.country.nextPage(
+                forTier: .tier2,
+                user: nil,
+                country: createKycCountry(hasStates: false),
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
             KYCPageType.profile,
@@ -129,19 +220,39 @@ class KYCPageTypeTests: XCTestCase {
         )
         XCTAssertEqual(
             KYCPageType.sddVerificationCheck,
-            KYCPageType.address.nextPage(forTier: .tier2, user: createNabuUser(isMobileVerified: true), country: nil, tiersResponse: noTiersResponse)
+            KYCPageType.address.nextPage(
+                forTier: .tier2,
+                user: createNabuUser(isMobileVerified: true),
+                country: nil,
+                tiersResponse: noTiersResponse
+            )
         )
         XCTAssertEqual(
             KYCPageType.confirmPhone,
-            KYCPageType.enterPhone.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
+            KYCPageType.enterPhone.nextPage(
+                forTier: .tier2,
+                user: nil,
+                country: nil,
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
             KYCPageType.verifyIdentity,
-            KYCPageType.confirmPhone.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
+            KYCPageType.confirmPhone.nextPage(
+                forTier: .tier2,
+                user: nil,
+                country: nil,
+                tiersResponse: pendingTier2Response
+            )
         )
         XCTAssertEqual(
             KYCPageType.accountStatus,
-            KYCPageType.verifyIdentity.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
+            KYCPageType.verifyIdentity.nextPage(
+                forTier: .tier2,
+                user: nil,
+                country: nil,
+                tiersResponse: pendingTier2Response
+            )
         )
     }
 
@@ -150,22 +261,53 @@ class KYCPageTypeTests: XCTestCase {
         return CountryData(code: "test", name: "Test Country", regions: [], scopes: nil, states: states)
     }
 
-    private func createNabuUser(isMobileVerified: Bool = false, isEmailVerified: Bool = false, hasAddress: Bool = false) -> NabuUser {
+    private func createNabuUser(
+        isMobileVerified: Bool = false,
+        isEmailVerified: Bool = false,
+        hasPersonalDetails: Bool = false,
+        hasCountry: Bool = false,
+        hasState: Bool = false,
+        requireState: Bool = true,
+        hasAddress: Bool = false
+    ) -> NabuUser {
         let mobile = Mobile(phone: "1234567890", verified: isMobileVerified)
-        var address: UserAddress?
+        let address: UserAddress?
         if hasAddress {
             address = UserAddress(
                 lineOne: "Address",
                 lineTwo: "Address 2",
                 postalCode: "123",
                 city: "City",
-                state: "CA",
+                state: "US-CA",
                 countryCode: "US"
             )
+        } else if hasCountry {
+            address = UserAddress(
+                lineOne: nil,
+                lineTwo: nil,
+                postalCode: nil,
+                city: nil,
+                state: hasState ? "US-CA" : nil,
+                countryCode: requireState ? "US" : "GB"
+            )
+        } else {
+            address = nil
         }
+        let personalDetails: PersonalDetails
+        if hasPersonalDetails {
+            personalDetails = PersonalDetails(
+                id: "1234",
+                first: "Johnny",
+                last: "Appleseed",
+                birthday: Date(timeIntervalSince1970: 0)
+            )
+        } else {
+            personalDetails = PersonalDetails(id: nil, first: nil, last: nil, birthday: nil)
+        }
+
         return NabuUser(
             identifier: "identifier",
-            personalDetails: PersonalDetails(id: nil, first: nil, last: nil, birthday: nil),
+            personalDetails: personalDetails,
             address: address,
             email: Email(address: "test", verified: isEmailVerified),
             mobile: mobile,

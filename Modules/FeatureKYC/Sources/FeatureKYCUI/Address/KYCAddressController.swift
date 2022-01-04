@@ -76,9 +76,6 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
     fileprivate var locationCoordinator: LocationSuggestionCoordinator!
     fileprivate var dataProvider: LocationDataProvider!
-    private var user: NabuUser?
-    private var country: CountryData?
-    private var states: [KYCState] = []
 
     private static let restrictedCountryIdentifiers: Set<String> = ["CU", "IR", "KP", "SY"]
     private static let countries: [ValidationPickerField.PickerItem] = {
@@ -101,10 +98,12 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     // MARK: KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
-        guard case .address(let user, let country, let states) = model else { return }
-        self.user = user
-        self.country = country
-        self.states = states
+        guard case .address(let user, let country, _) = model else { return }
+        let countryCode: String? = user.address?.countryCode ?? country?.code
+        let state: String? = user.address?.state
+
+        validationFieldsPlaceholderSetup(countryCode)
+        updateStateAndRegionFieldsVisibility()
 
         regionTextField.options = KYCAddressController.countries
         regionTextField.onSelection = { [weak self] country in
@@ -112,12 +111,17 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
             self?.validationFieldsPlaceholderSetup(country?.id)
         }
 
+        if let countryCode = countryCode {
+            regionTextField.selectedOption = regionTextField.options.first { $0.id == countryCode }
+        }
+
         stateTextField.options = UnitedStates.states
             .map(ValidationPickerField.PickerItem.init)
             .sorted(by: { $0.title.localizedCompare($1.title) == .orderedAscending })
 
-        validationFieldsPlaceholderSetup(country?.code)
-        updateStateAndRegionFieldsVisibility()
+        if let state = state {
+            stateTextField.selectedOption = stateTextField.options.first { $0.id == state }
+        }
 
         // NOTE: address is not prefilled. Bug?
         guard let address = user.address else { return }
@@ -125,8 +129,6 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
         apartmentTextField.text = address.lineTwo
         postalCodeTextField.text = address.postalCode
         cityTextField.text = address.city
-        stateTextField.text = address.state
-        regionTextField.text = address.state
     }
 
     // MARK: Lifecycle

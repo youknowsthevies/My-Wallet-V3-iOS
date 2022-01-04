@@ -42,14 +42,11 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
     fileprivate var detailsCoordinator: PersonalDetailsCoordinator!
     private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
-    private var user: NabuUser?
-
     // MARK: Overrides
 
     override class func make(with coordinator: KYCRouter) -> KYCPersonalDetailsController {
         let controller = makeFromStoryboard(in: .module)
         controller.router = coordinator
-        controller.user = coordinator.user
         controller.pageType = .profile
         return controller
     }
@@ -57,12 +54,15 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
     override func apply(model: KYCPageModel) {
         guard case .personalDetails(let user) = model else { return }
 
-        self.user = user
-
-        firstNameField.text = firstNameField.text ?? user.personalDetails.firstName
-        lastNameField.text = lastNameField.text ?? user.personalDetails.lastName
         firstNameField.contentType = .givenName
         lastNameField.contentType = .familyName
+
+        if firstNameField.text == nil || firstNameField.text?.isEmpty == true {
+            firstNameField.text = user.personalDetails.firstName
+        }
+        if lastNameField.text == nil || lastNameField.text?.isEmpty == true {
+            lastNameField.text = user.personalDetails.lastName
+        }
 
         firstNameField.accessibilityIdentifier = "kyc.info.first_name_field"
         lastNameField.accessibilityIdentifier = "kyc.info.last_name_field"
