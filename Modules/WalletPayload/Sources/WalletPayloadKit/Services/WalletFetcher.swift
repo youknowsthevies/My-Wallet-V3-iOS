@@ -66,9 +66,6 @@ final class WalletFetcher: WalletFetcherAPI {
             }
             .map { _ in .noValue }
             .eraseToAnyPublisher()
-        // 2. save the guid to metadata (metadata can get this from WalletRepo)
-        // 3. load the metadata (lazy)
-        // 4. Success (or failure)
     }
 
     func fetch(using password: String, secondPassword: String) -> AnyPublisher<EmptyValue, WalletError> {
@@ -92,9 +89,12 @@ final class WalletFetcher: WalletFetcherAPI {
 ///   - walletRepo: A `WalletRepo` which the sharedKey will be stored
 /// - Returns: An `AnyPublisher<Wallet, WalletError>`
 func storeSharedKey(from walletState: WalletState, on walletRepo: WalletRepo) -> AnyPublisher<Wallet, WalletError> {
-    walletRepo
-        .set(keyPath: \.credentials.sharedKey, value: walletState.wallet.sharedKey)
+    guard let wallet = walletState.wallet else {
+        return .failure(.initialization(.missingWallet))
+    }
+    return walletRepo
+        .set(keyPath: \.credentials.sharedKey, value: wallet.sharedKey)
         .mapError()
-        .map { _ in walletState.wallet }
+        .map { _ in wallet }
         .eraseToAnyPublisher()
 }

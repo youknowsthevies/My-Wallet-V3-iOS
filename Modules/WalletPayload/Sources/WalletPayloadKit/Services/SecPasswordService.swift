@@ -17,10 +17,10 @@ public protocol SecondPasswordServiceAPI {
 final class SecondPasswordService: SecondPasswordServiceAPI {
 
     var walletRequiresSecondPassword: Bool {
-        guard let state = walletHolder.provideWalletState() else {
+        guard let wallet = walletHolder.provideWalletState()?.wallet else {
             return false
         }
-        return state.wallet.doubleEncrypted
+        return wallet.doubleEncrypted
     }
 
     private let walletHolder: WalletHolderAPI
@@ -30,12 +30,12 @@ final class SecondPasswordService: SecondPasswordServiceAPI {
     }
 
     func validate(secondPassword: String) -> Bool {
-        guard let state = walletHolder.provideWalletState() else {
+        guard let wallet = walletHolder.provideWalletState()?.wallet else {
             return false
         }
         return isValid(
             secondPassword: secondPassword,
-            wallet: state.wallet
+            wallet: wallet
         )
     }
 }

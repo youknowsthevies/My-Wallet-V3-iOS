@@ -35,10 +35,10 @@ public final class MnemonicAccessService: MnemonicAccessAPI {
     public var mnemonic: AnyPublisher<Mnemonic, MnemonicAccessError> {
         walletHolder.walletStatePublisher
             .flatMap { state -> AnyPublisher<Wallet, MnemonicAccessError> in
-                guard let state = state else {
+                guard let wallet = state?.wallet else {
                     return .failure(.generic)
                 }
-                return .just(state.wallet)
+                return .just(wallet)
             }
             .flatMap { wallet -> AnyPublisher<Mnemonic, MnemonicAccessError> in
                 getMnemonic(from: wallet)
@@ -97,10 +97,10 @@ private func retrieveMnemonic(
 ) -> AnyPublisher<Mnemonic, MnemonicAccessError> {
     walletHolder.walletStatePublisher
         .flatMap { state -> AnyPublisher<Wallet, MnemonicAccessError> in
-            guard let state = state else {
+            guard let wallet = state?.wallet else {
                 return .failure(.generic)
             }
-            return .just(state.wallet)
+            return .just(wallet)
         }
         .flatMap { wallet -> AnyPublisher<Mnemonic, MnemonicAccessError> in
             getMnemonic(from: wallet, secondPassword: secondPassword)

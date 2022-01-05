@@ -34,6 +34,12 @@ final class MetadataService: MetadataServiceAPI {
         initialize(credentials, masterKey, payloadIsDoubleEncrypted)
     }
 
+    func initialize(
+        mnemonic: String
+    ) -> AnyPublisher<MetadataState, MetadataInitialisationError> {
+        unimplemented("should provide implementation for wallet recovery")
+    }
+
     func fetch(
         type: EntryType,
         state: MetadataState

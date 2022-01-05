@@ -8,6 +8,7 @@ public enum WalletError: LocalizedError, Equatable {
     case payloadNotFound
     case initialization(WalletInitializationError)
     case decryption(WalletDecryptionError)
+    case recovery(WalletRecoverError)
 
     public var errorDescription: String? {
         switch self {
@@ -17,6 +18,8 @@ public enum WalletError: LocalizedError, Equatable {
         case .decryption(let error):
             return error.errorDescription
         case .initialization(let error):
+            return error.errorDescription
+        case .recovery(let error):
             return error.errorDescription
         case .unknown:
             return ""
@@ -49,6 +52,7 @@ public enum WalletError: LocalizedError, Equatable {
 
 public enum WalletInitializationError: LocalizedError, Equatable {
     case unknown
+    case missingWallet
     case missingSeedHex
     case metadataInitialization
     case needsSecondPassword
@@ -58,6 +62,8 @@ public enum WalletInitializationError: LocalizedError, Equatable {
         switch self {
         case .unknown:
             return ""
+        case .missingWallet:
+            return ""
         case .missingSeedHex:
             return ""
         case .metadataInitialization:
@@ -65,6 +71,20 @@ public enum WalletInitializationError: LocalizedError, Equatable {
         case .needsSecondPassword:
             return ""
         case .invalidSecondPassword:
+            return ""
+        }
+    }
+}
+
+public enum WalletRecoverError: LocalizedError, Equatable {
+    case unknown
+    case invalidSeedPhrase
+
+    public var errorDescription: String? {
+        switch self {
+        case .unknown:
+            return ""
+        case .invalidSeedPhrase:
             return ""
         }
     }
