@@ -92,11 +92,11 @@ final class PinScreenPresenter {
     var barStyle: Screen.Style.Bar {
         switch flow {
         case .authenticate(from: .background, logoutRouting: _):
-            return .lightContent(ignoresStatusBar: true, isTranslucent: true, background: .clear)
+            return .lightContent(ignoresStatusBar: true, background: .clear)
         case .change(logoutRouting: _):
-            return .lightContent(isTranslucent: true, background: .primary)
+            return .lightContent(background: .primary)
         default:
-            return .lightContent(isTranslucent: true, background: .clear)
+            return .lightContent(background: .clear)
         }
     }
 

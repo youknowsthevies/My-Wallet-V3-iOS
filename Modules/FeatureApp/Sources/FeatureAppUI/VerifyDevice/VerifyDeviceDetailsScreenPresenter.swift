@@ -20,7 +20,7 @@ public final class VerifyDeviceDetailsScreenPresenter: DetailsScreenPresenterAPI
     public var navigationBarAppearance: DetailsScreen.NavigationBarAppearance = .custom(
         leading: .none,
         trailing: .close,
-        barStyle: .darkContent(isTranslucent: true, background: .clear)
+        barStyle: .darkContent(background: .clear)
     )
     public var navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction = .default
     public var navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction = .default

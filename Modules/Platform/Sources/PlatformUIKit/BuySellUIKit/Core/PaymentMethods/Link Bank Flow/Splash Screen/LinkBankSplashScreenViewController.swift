@@ -41,7 +41,7 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         set(
-            barStyle: .darkContent(ignoresStatusBar: true, isTranslucent: true, background: .clear),
+            barStyle: .darkContent(ignoresStatusBar: true, background: .clear),
             leadingButtonStyle: .none,
             trailingButtonStyle: .close
         )
@@ -104,7 +104,7 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
 
     func setupUI() {
         set(
-            barStyle: .darkContent(ignoresStatusBar: true, isTranslucent: true, background: .clear),
+            barStyle: .darkContent(ignoresStatusBar: true, background: .clear),
             leadingButtonStyle: .none,
             trailingButtonStyle: .close
         )

@@ -204,7 +204,6 @@ let appDelegateReducer = Reducer<
         return .fireAndForget {
             let navigationBarAppearance = UINavigationBar.appearance()
             navigationBarAppearance.shadowImage = UIImage()
-            navigationBarAppearance.isTranslucent = barStyle.isTranslucent
             navigationBarAppearance.titleTextAttributes = barStyle.titleTextAttributes
             navigationBarAppearance.barTintColor = barStyle.backgroundColor
             navigationBarAppearance.tintColor = barStyle.tintColor
