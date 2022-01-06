@@ -64,6 +64,10 @@ extension KYC {
 
 extension KYC.UserTiers {
 
+    public func canRequestSDDPaymentMethods(isSDDEligible: Bool) -> Bool {
+        latestApprovedTier < .tier2 && isSDDEligible
+    }
+
     public func canPurchaseCrypto(isSDDVerified: Bool) -> Bool {
         isTier2Approved || (latestApprovedTier == .tier1 && isSDDVerified)
     }
