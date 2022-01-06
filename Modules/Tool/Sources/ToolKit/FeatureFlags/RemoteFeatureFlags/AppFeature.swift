@@ -178,7 +178,7 @@ extension AppFeature {
         case .newLimitsUIEnabled:
             return true
         case .newQuoteForSimpleBuy:
-            return false
+            return true
         case .swiftUIAccountPicker:
             return true
         case .walletConnectEnabled:
