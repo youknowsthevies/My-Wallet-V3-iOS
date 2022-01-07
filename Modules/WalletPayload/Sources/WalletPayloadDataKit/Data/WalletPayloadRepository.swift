@@ -2,7 +2,7 @@
 
 import Combine
 import DIKit
-import FeatureAuthenticationDomain
+import WalletPayloadKit
 
 final class WalletPayloadRepository: WalletPayloadRepositoryAPI {
 

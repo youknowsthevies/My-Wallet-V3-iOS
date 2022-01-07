@@ -9,8 +9,8 @@ enum AccountWrapper {
         let archived: Bool
         let xpriv: String
         let xpub: String
-        let addressLabels: [AddressLabel]
-        let cache: AddressCache
+        let addressLabels: [AddressLabelResponse]
+        let cache: AddressCacheResponse
 
         enum CodingKeys: String, CodingKey {
             case label
@@ -26,7 +26,7 @@ enum AccountWrapper {
         let label: String
         let archived: Bool
         let defaultDerivation: String
-        let derivations: [WalletResponseModels.Derivation]
+        let derivations: [DerivationResponse]
 
         enum CodingKeys: String, CodingKey {
             case label

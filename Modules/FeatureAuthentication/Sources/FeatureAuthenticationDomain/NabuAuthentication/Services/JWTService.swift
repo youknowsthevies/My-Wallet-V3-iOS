@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import NetworkError
 import ToolKit
+import WalletPayloadKit
 
 public enum JWTServiceError: Error, Equatable {
     case failedToRetrieveCredentials(MissingCredentialsError)

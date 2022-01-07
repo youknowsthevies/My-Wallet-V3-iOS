@@ -2,12 +2,10 @@
 
 import Combine
 import DIKit
-import FeatureAuthenticationDomain
 import Foundation
 import NetworkKit
 import WalletPayloadKit
 
-// TODO: fetch using a `sharedKey`
 public final class WalletPayloadClient: WalletPayloadClientAPI {
 
     // MARK: - Types

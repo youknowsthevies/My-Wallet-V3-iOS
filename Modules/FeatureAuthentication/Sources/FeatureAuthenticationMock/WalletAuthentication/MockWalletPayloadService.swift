@@ -4,6 +4,8 @@ import Combine
 @testable import FeatureAuthenticationData
 import FeatureAuthenticationDomain
 import Foundation
+@testable import WalletPayloadDataKit
+@testable import WalletPayloadKit
 
 final class MockWalletPayloadClient: WalletPayloadClientAPI {
 

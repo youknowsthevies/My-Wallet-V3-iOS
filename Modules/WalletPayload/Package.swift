@@ -9,6 +9,7 @@ let package = Package(
     ],
     products: [
         .library(name: "WalletPayloadKit", targets: ["WalletPayloadKit"]),
+        .library(name: "WalletPayloadDataKit", targets: ["WalletPayloadDataKit"]),
         .library(name: "WalletPayloadKitMock", targets: ["WalletPayloadKitMock"])
     ],
     dependencies: [
@@ -25,6 +26,8 @@ let package = Package(
         .package(path: "../Localization"),
         .package(path: "../CommonCrypto"),
         .package(path: "../Keychain"),
+        .package(path: "../Network"),
+        .package(path: "../NetworkErrors"),
         .package(path: "../Metadata"),
         .package(path: "../Test"),
         .package(path: "../Tool"),
@@ -44,6 +47,16 @@ let package = Package(
             ]
         ),
         .target(
+            name: "WalletPayloadDataKit",
+            dependencies: [
+                .target(name: "WalletPayloadKit"),
+                .product(name: "DIKit", package: "DIKit"),
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "NetworkError", package: "NetworkErrors"),
+                .product(name: "NetworkKit", package: "Network")
+            ]
+        ),
+        .target(
             name: "WalletPayloadKitMock",
             dependencies: [
                 .target(name: "WalletPayloadKit"),
@@ -54,6 +67,7 @@ let package = Package(
         .testTarget(
             name: "WalletPayloadKitTests",
             dependencies: [
+                .target(name: "WalletPayloadDataKit"),
                 .target(name: "WalletPayloadKit"),
                 .target(name: "WalletPayloadKitMock"),
                 .product(name: "KeychainKitMock", package: "Keychain"),

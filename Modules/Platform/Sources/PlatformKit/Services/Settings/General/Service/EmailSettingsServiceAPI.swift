@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import FeatureAuthenticationDomain
 import NetworkError
 import RxSwift
+import WalletPayloadKit
 
 public enum EmailSettingsServiceError: Error {
     case credentialsError(MissingCredentialsError)

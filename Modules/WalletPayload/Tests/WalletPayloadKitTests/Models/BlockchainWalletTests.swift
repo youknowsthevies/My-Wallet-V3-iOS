@@ -1,8 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import WalletPayloadDataKit
+
 import Foundation
 import TestKit
-@testable import WalletPayloadKit
 import XCTest
 
 class BlockchainWalletTests: XCTestCase {
@@ -12,13 +13,13 @@ class BlockchainWalletTests: XCTestCase {
 
     func test_it_should_be_able_to_be_decoded_from_json_version4() throws {
         XCTAssertNoThrow(
-            try JSONDecoder().decode(BlockchainWallet.self, from: jsonV4)
+            try JSONDecoder().decode(WalletResponse.self, from: jsonV4)
         )
     }
 
     func test_it_should_be_able_to_be_decoded_from_json_version3() throws {
         XCTAssertNoThrow(
-            try JSONDecoder().decode(BlockchainWallet.self, from: jsonV3)
+            try JSONDecoder().decode(WalletResponse.self, from: jsonV3)
         )
     }
 }

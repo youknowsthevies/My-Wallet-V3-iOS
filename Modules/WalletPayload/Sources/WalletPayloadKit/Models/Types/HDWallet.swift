@@ -2,28 +2,34 @@
 
 import Foundation
 
-struct HDWallet: Equatable {
-    let seedHex: String
-    let passphrase: String
-    let mnemonicVerified: Bool
-    let defaultAccountIndex: Int
-    let accounts: [Account]
+public final class HDWallet: Equatable {
+    var seedHex: String
+    var passphrase: String
+    var mnemonicVerified: Bool
+    var defaultAccountIndex: Int
+    var accounts: [Account]
 
-    init(from model: WalletResponseModels.HDWallet) {
-        seedHex = model.seedHex
-        passphrase = model.passphrase
-        mnemonicVerified = model.mnemonicVerified
-        defaultAccountIndex = model.defaultAccountIndex
+    public init(
+        seedHex: String,
+        passphrase: String,
+        mnemonicVerified: Bool,
+        defaultAccountIndex: Int,
+        accounts: [Account]
+    ) {
+        self.seedHex = seedHex
+        self.passphrase = passphrase
+        self.mnemonicVerified = mnemonicVerified
+        self.defaultAccountIndex = defaultAccountIndex
+        self.accounts = accounts
+    }
+}
 
-        accounts = model.accounts.enumerated()
-            .map { index, account in
-                Account(
-                    index: index,
-                    label: account.label,
-                    archived: account.archived,
-                    defaultDerivation: DerivationType.create(from: account.defaultDerivation),
-                    derivations: account.derivations.map(Derivation.init(from:))
-                )
-            }
+extension HDWallet {
+    public static func == (lhs: HDWallet, rhs: HDWallet) -> Bool {
+        lhs.seedHex == rhs.seedHex
+            && lhs.passphrase == rhs.passphrase
+            && lhs.mnemonicVerified == rhs.mnemonicVerified
+            && lhs.defaultAccountIndex == rhs.defaultAccountIndex
+            && lhs.accounts == rhs.accounts
     }
 }

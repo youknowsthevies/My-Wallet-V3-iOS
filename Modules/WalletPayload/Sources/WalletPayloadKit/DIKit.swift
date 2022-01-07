@@ -42,24 +42,17 @@ extension DependencyContainer {
             )
         }
 
-        factory {
-            WalletLogic(
-                holder: DIKit.resolve()
+        factory { () -> WalletLogic in
+            let walletCreator: WalletCreatorAPI = DIKit.resolve()
+            let creator = walletCreator.createWallet(from:)
+            return WalletLogic(
+                holder: DIKit.resolve(),
+                creator: creator
             )
         }
 
         factory { () -> SecondPasswordServiceAPI in
             SecondPasswordService(walletHolder: DIKit.resolve())
-        }
-
-        factory { () -> ReleasableWalletAPI in
-            let holder: WalletHolder = DIKit.resolve()
-            return holder as ReleasableWalletAPI
-        }
-
-        factory { () -> WalletHolderAPI in
-            let holder: WalletHolder = DIKit.resolve()
-            return holder as WalletHolderAPI
         }
 
         factory { () -> WalletMetadataEntryServiceAPI in
@@ -95,8 +88,6 @@ extension DependencyContainer {
                 metadataEntryService: metadata
             )
         }
-
-        single { WalletHolder() }
 
         factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }
 

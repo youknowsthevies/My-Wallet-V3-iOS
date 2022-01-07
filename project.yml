@@ -478,6 +478,8 @@ targets:
         product: UIComponents
       - package: WalletPayload
         product: WalletPayloadKit
+      - package: WalletPayload
+        product: WalletPayloadDataKit
 
       - target: TodayExtension
     platform: iOS

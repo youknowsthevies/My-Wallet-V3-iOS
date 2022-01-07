@@ -5,15 +5,16 @@ import ToolKit
 import WalletCore
 
 /// The derived Wallet from the response model, `BlockchainWallet`
-final class Wallet {
+/// Note: This should be renamed to `Wallet` once we finalise the migration to native code.
+public final class NativeWallet: Equatable {
     var guid: String
     var sharedKey: String
     var doubleEncrypted: Bool
     var doublePasswordHash: String?
     var metadataHDNode: String?
-
     var options: Options
     var hdWallets: [HDWallet]
+    var addresses: [Address]
 
     /// Returns the default HDWallet from the list
     /// - NOTE: We never add multiple HDWallet(s)
@@ -21,23 +22,43 @@ final class Wallet {
         hdWallets.first
     }
 
-    var addresses: [Address]
-
     var spendableActiveAddresses: [String] {
         addresses.lazy
             .filter { !$0.isArchived && !$0.isWatchOnly }
             .map(\.addr)
     }
 
-    init(from blockchainWallet: BlockchainWallet) {
-        guid = blockchainWallet.guid
-        sharedKey = blockchainWallet.sharedKey
-        doubleEncrypted = blockchainWallet.doubleEncryption
-        doublePasswordHash = blockchainWallet.doublePasswordHash
-        metadataHDNode = blockchainWallet.metadataHDNode
-        options = blockchainWallet.options
-        hdWallets = blockchainWallet.hdWallets.map(HDWallet.init(from:))
-        addresses = blockchainWallet.addresses.map(Address.init(from:))
+    public init(
+        guid: String,
+        sharedKey: String,
+        doubleEncrypted: Bool,
+        doublePasswordHash: String?,
+        metadataHDNode: String?,
+        options: Options,
+        hdWallets: [HDWallet],
+        addresses: [Address]
+    ) {
+        self.guid = guid
+        self.sharedKey = sharedKey
+        self.doubleEncrypted = doubleEncrypted
+        self.doublePasswordHash = doublePasswordHash
+        self.metadataHDNode = metadataHDNode
+        self.options = options
+        self.hdWallets = hdWallets
+        self.addresses = addresses
+    }
+}
+
+extension NativeWallet {
+    public static func == (lhs: NativeWallet, rhs: NativeWallet) -> Bool {
+        lhs.guid == rhs.guid
+            && lhs.sharedKey == rhs.sharedKey
+            && lhs.doubleEncrypted == rhs.doubleEncrypted
+            && lhs.doublePasswordHash == rhs.doublePasswordHash
+            && lhs.metadataHDNode == rhs.metadataHDNode
+            && lhs.options == rhs.options
+            && lhs.hdWallets == rhs.hdWallets
+            && lhs.addresses == rhs.addresses
     }
 }
 
@@ -47,7 +68,7 @@ final class Wallet {
 ///   - secondPassword: A optional `String` representing the second password of the wallet
 /// - Returns: A `Mnemonic` phrase
 func getMnemonic(
-    from wallet: Wallet,
+    from wallet: NativeWallet,
     secondPassword: String? = nil
 ) -> Result<String, WalletError> {
     getSeedHex(from: wallet, secondPassword: secondPassword)
@@ -62,7 +83,7 @@ func getMnemonic(
 ///   - secondPassword: An optional String representing the second password
 /// - Returns: `Result<String, WalletError>`
 func getSeedHex(
-    from wallet: Wallet,
+    from wallet: NativeWallet,
     secondPassword: String? = nil
 ) -> Result<String, WalletError> {
     guard let seedHex = wallet.defaultHDWallet?.seedHex else {
@@ -91,7 +112,7 @@ func getSeedHex(
 /// - Returns: A `Result<String, WalletError>` with a decrypted value or a failure
 func decryptValue(
     secondPassword: String,
-    wallet: Wallet,
+    wallet: NativeWallet,
     value: String
 ) -> Result<String, WalletError> {
     validateSecondPassword(
@@ -116,8 +137,8 @@ func decryptValue(
 /// - Returns: `Result<Value, WalletError>`
 func validateSecondPassword<Value>(
     password: String,
-    wallet: Wallet,
-    perform: (Wallet) -> Result<Value, WalletError>
+    wallet: NativeWallet,
+    perform: (NativeWallet) -> Result<Value, WalletError>
 ) -> Result<Value, WalletError> {
     guard isValid(secondPassword: password, wallet: wallet) else {
         return .failure(.initialization(.invalidSecondPassword))
@@ -130,7 +151,7 @@ func validateSecondPassword<Value>(
 ///   - secondPassword: A `String` for the second password
 ///   - wallet: A `Wallet` value
 /// - Returns: `true` if the given secondPassword matches the stored one, otherwise `false`
-func isValid(secondPassword: String, wallet: Wallet) -> Bool {
+func isValid(secondPassword: String, wallet: NativeWallet) -> Bool {
     guard wallet.doubleEncrypted else {
         return false
     }

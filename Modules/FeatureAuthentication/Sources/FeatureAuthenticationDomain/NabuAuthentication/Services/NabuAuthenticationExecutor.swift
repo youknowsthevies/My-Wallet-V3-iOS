@@ -5,6 +5,7 @@ import DIKit
 import Foundation
 import NetworkKit
 import ToolKit
+import WalletPayloadKit
 
 public protocol NabuAuthenticationExecutorAPI {
 

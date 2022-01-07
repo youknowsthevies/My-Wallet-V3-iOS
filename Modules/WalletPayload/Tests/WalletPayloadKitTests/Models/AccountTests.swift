@@ -1,8 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import WalletPayloadDataKit
+
 import Foundation
 import TestKit
-@testable import WalletPayloadKit
 import XCTest
 
 // swiftlint:disable line_length
@@ -27,10 +28,10 @@ class AccountTests: XCTestCase {
 
         XCTAssertEqual(
             accountVersion3.addressLabels,
-            [AddressLabel(index: 0, label: "labeled_address")]
+            [AddressLabelResponse(index: 0, label: "labeled_address")]
         )
 
-        let expectedCache = AddressCache(
+        let expectedCache = AddressCacheResponse(
             receiveAccount: "xpub6F41z8MqNcJMvKQgAd5QE2QYo32cocYigWp1D8726ykMmaMqvtqLkvuL1NqGuUJvU3aWyJaV2J4V6sD7Pv59J3tYGZdYRSx8gU7EG8ZuPSY",
             changeAccount: "xpub6F41z8MqNcJMwmeUExdCv7UXvYBEgQB29SWq9jyxuZ7WefmSTWcwXB6NRAJkGCkB3L1Eu4ttzWnPVKZ6REissrQ4i6p8gTi9j5YwDLxmZ8p"
         )
@@ -50,14 +51,14 @@ class AccountTests: XCTestCase {
         XCTAssertFalse(accountVersion4.derivations.isEmpty)
         XCTAssertEqual(accountVersion4.derivations.count, 1)
 
-        let addressLabel = AddressLabel(index: 0, label: "labeled_address")
-        let addressCache = AddressCache(
+        let addressLabel = AddressLabelResponse(index: 0, label: "labeled_address")
+        let addressCache = AddressCacheResponse(
             receiveAccount: "xpub6F41z8MqNcJMvKQgAd5QE2QYo32cocYigWp1D8726ykMmaMqvtqLkvuL1NqGuUJvU3aWyJaV2J4V6sD7Pv59J3tYGZdYRSx8gU7EG8ZuPSY",
             changeAccount: "xpub6F41z8MqNcJMwmeUExdCv7UXvYBEgQB29SWq9jyxuZ7WefmSTWcwXB6NRAJkGCkB3L1Eu4ttzWnPVKZ6REissrQ4i6p8gTi9j5YwDLxmZ8p"
         )
-        let expectedDerivation = WalletResponseModels.Derivation(
+        let expectedDerivation = DerivationResponse(
             type: .legacy,
-            purpose: WalletResponseModels.Derivation.Format.legacy.purpose,
+            purpose: DerivationResponse.Format.legacy.purpose,
             xpriv: "xprv9yL1ousLjQQzGNBAYykaT8J3U626NV6zbLYkRv8rvUDpY4f1RnrvAXQneGXC9UNuNvGXX4j6oHBK5KiV2hKevRxY5ntis212oxjEL11ysuG",
             xpub: "xpub6CKNDRQEZmyHUrFdf1HapGEn27ramwpqxZUMEJYUUokoQrz9yLBAiKjGVWDuiCT39udj1r3whqQN89Tar5KrojH8oqSy7ytzJKW8gwmhwD3",
             addressLabels: [addressLabel],
@@ -73,8 +74,8 @@ class AccountTests: XCTestCase {
             archived: false,
             xpriv: "xprv9y",
             xpub: "xpub6",
-            addressLabels: [AddressLabel(index: 0, label: "label")],
-            cache: AddressCache(receiveAccount: "receiveAccount", changeAccount: "changeAccount")
+            addressLabels: [AddressLabelResponse(index: 0, label: "label")],
+            cache: AddressCacheResponse(receiveAccount: "receiveAccount", changeAccount: "changeAccount")
         )
 
         let encoded = try JSONEncoder().encode(accountVersion3)
@@ -84,12 +85,12 @@ class AccountTests: XCTestCase {
     }
 
     func test_version4_account_can_be_encoded_to_json() throws {
-        let addressLabel = AddressLabel(index: 0, label: "labeled_address")
-        let addressCache = AddressCache(
+        let addressLabel = AddressLabelResponse(index: 0, label: "labeled_address")
+        let addressCache = AddressCacheResponse(
             receiveAccount: "xpub6",
             changeAccount: "xpub6"
         )
-        let derivation = WalletResponseModels.Derivation(
+        let derivation = DerivationResponse(
             type: .legacy,
             purpose: 44,
             xpriv: "xprv9",

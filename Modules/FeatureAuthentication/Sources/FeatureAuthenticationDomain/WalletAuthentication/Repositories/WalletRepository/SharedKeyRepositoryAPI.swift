@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import WalletPayloadKit
 
 public protocol SharedKeyRepositoryAPI: AnyObject {
     /// Streams `Bool` indicating whether the shared key is currently cached in the repo

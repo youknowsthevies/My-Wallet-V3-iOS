@@ -2,11 +2,8 @@
 
 import Combine
 import Foundation
-import MetadataKit
 import ToolKit
-import WalletCore
-
-typealias WalletCreating = (BlockchainWallet) -> Wallet
+import WalletPayloadKit
 
 /// Responsible for holding a decoded wallet in memory
 final class WalletHolder: WalletHolderAPI, ReleasableWalletAPI {
@@ -40,13 +37,4 @@ final class WalletHolder: WalletHolderAPI, ReleasableWalletAPI {
         // TODO: It might be more than just this... revisit
         walletState.mutate { $0 = nil }
     }
-}
-
-/// Creates a new `Wallet` object
-/// - Parameter blockchainWallet: A value of `BlockchainWallet`
-/// - Returns: A function that provides a new `Wallet` object
-func createWallet(
-    from blockchainWallet: BlockchainWallet
-) -> Wallet {
-    Wallet(from: blockchainWallet)
 }

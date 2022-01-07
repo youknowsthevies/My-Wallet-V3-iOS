@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import FeatureAuthenticationDomain
+import WalletPayloadKit
 
 public protocol WalletPayloadClientAPI: AnyObject {
     /// request a wallet payload from the client which contains different data for decryption

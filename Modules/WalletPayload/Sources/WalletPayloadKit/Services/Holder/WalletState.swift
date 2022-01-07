@@ -16,21 +16,21 @@ import MetadataKit
 ///    - Using the pin we have already fetched the `Wallet`, after we decrypt using the password we store it
 ///    and then initialize the `MetadataState`
 ///
-enum WalletState {
-    enum PartiallyLoaded {
+public enum WalletState {
+    public enum PartiallyLoaded {
         case justMetadata(MetadataState)
-        case justWallet(Wallet)
+        case justWallet(NativeWallet)
     }
 
     case partially(loaded: PartiallyLoaded)
-    case loaded(wallet: Wallet, metadata: MetadataState)
+    case loaded(wallet: NativeWallet, metadata: MetadataState)
 
     /// Returns `true` if both metadata and wallet has been initialized, otherwise `false`
     var isInitialised: Bool {
         isMetadataInitialised && walletInitialized
     }
 
-    var wallet: Wallet? {
+    var wallet: NativeWallet? {
         switch self {
         case .partially(loaded: .justWallet(let wallet)):
             return wallet

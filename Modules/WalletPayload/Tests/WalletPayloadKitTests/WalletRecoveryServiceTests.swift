@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import MetadataKit
+@testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
 
 import Combine
@@ -24,16 +25,17 @@ class WalletRecoveryServiceTests: XCTestCase {
         try XCTSkipIf(true, "not yet finalised")
         let walletHolder = WalletHolder()
         var walletCreatorCalled = false
-        let walletCreator: WalletCreating = { blockchainWallet in
+        let walletCreator: WalletCreatorAPI = WalletCreator()
+        let creator: WalletCreating = { [walletCreator] blockchainWallet in
             walletCreatorCalled = true
-            return Wallet(from: blockchainWallet)
+            return walletCreator.createWallet(from: blockchainWallet)
         }
 
         let mockMetadata = MockMetadataService()
 
         let walletLogic = WalletLogic(
             holder: walletHolder,
-            creator: walletCreator,
+            creator: creator,
             metadata: mockMetadata
         )
 
@@ -55,5 +57,7 @@ class WalletRecoveryServiceTests: XCTestCase {
             .store(in: &cancellables)
 
         wait(for: [expectation], timeout: 2)
+
+        XCTAssertTrue(walletCreatorCalled)
     }
 }

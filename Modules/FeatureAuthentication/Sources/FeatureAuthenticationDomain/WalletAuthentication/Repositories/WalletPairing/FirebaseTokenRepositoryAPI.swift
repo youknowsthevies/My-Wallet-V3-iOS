@@ -2,6 +2,7 @@
 
 import Combine
 import NetworkError
+import WalletPayloadKit
 
 public enum PushNotificationsRepositoryError: Error {
     case networkError(NetworkError)

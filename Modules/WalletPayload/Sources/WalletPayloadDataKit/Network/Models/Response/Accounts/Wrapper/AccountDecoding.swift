@@ -19,9 +19,9 @@ enum AccountDecodingError: Error {
 /// - Throws: `AccountDecodingError`
 /// - Returns: A newly created `Account`
 func decodeAccounts<Version>(
-    using strategy: (Version) -> Result<WalletResponseModels.Account, AccountStrategyDecodingError>,
+    using strategy: (Version) -> Result<AccountResponse, AccountStrategyDecodingError>,
     value: [Version]
-) -> Result<[WalletResponseModels.Account], AccountDecodingError> {
+) -> Result<[AccountResponse], AccountDecodingError> {
     Result {
         try value.compactMap { try strategy($0).get() }
     }
@@ -39,17 +39,17 @@ func decodeAccounts<Version>(
 /// - Returns: `Account`
 func accountWrapperDecodingStrategy(
     version3: AccountWrapper.Version3
-) -> Result<WalletResponseModels.Account, AccountStrategyDecodingError> {
-    let derivation = WalletResponseModels.Derivation(
+) -> Result<AccountResponse, AccountStrategyDecodingError> {
+    let derivation = DerivationResponse(
         type: .legacy,
-        purpose: WalletResponseModels.Derivation.Format.legacy.purpose,
+        purpose: DerivationResponse.Format.legacy.purpose,
         xpriv: version3.xpriv,
         xpub: version3.xpub,
         addressLabels: version3.addressLabels,
         cache: version3.cache
     )
     return .success(
-        WalletResponseModels.Account(
+        AccountResponse(
             label: version3.label,
             archived: version3.archived,
             defaultDerivation: .legacy,
@@ -64,16 +64,16 @@ func accountWrapperDecodingStrategy(
 /// - Returns: `Account`
 func accountWrapperDecodingStrategy(
     version4: AccountWrapper.Version4
-) -> Result<WalletResponseModels.Account, AccountStrategyDecodingError> {
+) -> Result<AccountResponse, AccountStrategyDecodingError> {
     Result {
-        try WalletResponseModels.Derivation.Format(
+        try DerivationResponse.Format(
             rawValue: version4.defaultDerivation
         )
         .or(throw: AccountStrategyDecodingError.unknownDerivationType)
     }
     .replaceError(with: AccountStrategyDecodingError.unknownDerivationType)
     .map { defaultDerivationType in
-        WalletResponseModels.Account(
+        AccountResponse(
             label: version4.label,
             archived: version4.archived,
             defaultDerivation: defaultDerivationType,

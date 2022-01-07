@@ -23,6 +23,7 @@ import MetadataKit
 import PlatformDataKit
 import ToolKit
 import UIKit
+import WalletPayloadDataKit
 
 @UIApplicationMain
 final class AppDelegate: NSObject, UIApplicationDelegate {
@@ -91,6 +92,7 @@ func defineDependencies() {
         DependencyContainer.toolKit
         DependencyContainer.networkKit
         DependencyContainer.walletPayloadKit
+        DependencyContainer.walletPayloadDataKit
         DependencyContainer.metadataKit
         DependencyContainer.metadataDataKit
         DependencyContainer.moneyKit

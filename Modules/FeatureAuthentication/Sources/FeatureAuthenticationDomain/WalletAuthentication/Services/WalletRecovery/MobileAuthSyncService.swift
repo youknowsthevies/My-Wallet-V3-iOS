@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import NetworkError
+import WalletPayloadKit
 
 public enum MobileAuthSyncServiceError: Error {
     case missingCredentials(MissingCredentialsError)

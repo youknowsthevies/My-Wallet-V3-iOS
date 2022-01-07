@@ -28,10 +28,10 @@ struct ResetPasswordView: View {
     private let store: Store<ResetPasswordState, ResetPasswordAction>
     @ObservedObject private var viewStore: ViewStore<ResetPasswordState, ResetPasswordAction>
 
-    @State private var isNewPasswordFieldFirstResponder: Bool = true
-    @State private var isConfirmNewPasswordFieldFirstResponder: Bool = false
-    @State private var isPasswordVisible: Bool = false
-    @State private var isConfirmNewPasswordVisible: Bool = false
+    @State private var isNewPasswordFieldFirstResponder = true
+    @State private var isConfirmNewPasswordFieldFirstResponder = false
+    @State private var isPasswordVisible = false
+    @State private var isConfirmNewPasswordVisible = false
 
     init(
         store: Store<ResetPasswordState, ResetPasswordAction>
