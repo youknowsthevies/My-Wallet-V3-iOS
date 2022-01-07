@@ -232,7 +232,7 @@ packages:
     version: 1.9.0
   ComposableArchitecture:
     url: https://github.com/pointfreeco/swift-composable-architecture
-    version: 0.28.1
+    version: 0.32.0
   ZendeskChatSDK:
     url: https://github.com/zendesk/chat_sdk_ios.git
     version: 2.11.1

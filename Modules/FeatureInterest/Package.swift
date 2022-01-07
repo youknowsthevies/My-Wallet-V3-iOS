@@ -16,7 +16,7 @@ let package = Package(
         .package(
             name: "swift-composable-architecture",
             url: "https://github.com/pointfreeco/swift-composable-architecture",
-            from: "0.28.1"
+            from: "0.32.0"
         ),
         .package(
             name: "DIKit",
