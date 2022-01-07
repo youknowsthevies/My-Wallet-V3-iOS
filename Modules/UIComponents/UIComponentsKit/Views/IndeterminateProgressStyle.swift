@@ -15,19 +15,22 @@ public struct IndeterminateProgressStyle: ProgressViewStyle {
     public var lineWidth: Length
     public var duration: TimeInterval
     public var indeterminate: Bool
+    public var lineCap: CGLineCap
 
     public init(
         stroke: Color = Color.blue,
         background: Color = Color.blue.opacity(0.3),
         lineWidth: Length = 12.5.pmin,
         duration: TimeInterval = 1,
-        indeterminate: Bool = true
+        indeterminate: Bool = true,
+        lineCap: CGLineCap = .butt
     ) {
         self.stroke = stroke
         self.background = background
         self.lineWidth = lineWidth
         self.duration = duration
         self.indeterminate = indeterminate
+        self.lineCap = lineCap
     }
 
     @State private var angle: Angle = .degrees(-90)
@@ -38,7 +41,7 @@ public struct IndeterminateProgressStyle: ProgressViewStyle {
             ZStack {
                 let style = StrokeStyle(
                     lineWidth: lineWidth,
-                    lineCap: .butt
+                    lineCap: lineCap
                 )
                 Circle()
                     .stroke(background, style: style)

@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import FeatureTransactionUI
 import PlatformKit
+import UIKit
 
 /// Represents all types of transactions the user can perform.
 enum TransactionType: Equatable {

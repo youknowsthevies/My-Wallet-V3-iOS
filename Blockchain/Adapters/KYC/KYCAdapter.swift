@@ -10,6 +10,7 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
+import UIKit
 
 final class KYCAdapter {
 
@@ -29,11 +30,13 @@ final class KYCAdapter {
 
     func presentEmailVerificationAndKYCIfNeeded(
         from presenter: UIViewController,
+        requireEmailVerification: Bool,
         requiredTier: KYC.Tier
     ) -> AnyPublisher<FeatureKYCUI.FlowResult, FeatureKYCUI.RouterError> {
         router
             .presentEmailVerificationAndKYCIfNeeded(
                 from: presenter,
+                requireEmailVerification: requireEmailVerification,
                 requiredTier: requiredTier
             )
             .eraseToAnyPublisher()
@@ -54,6 +57,24 @@ final class KYCAdapter {
         router
             .presentKYCIfNeeded(from: presenter, requiredTier: requiredTier)
             .eraseToAnyPublisher()
+    }
+}
+
+extension KYCAdapter {
+
+    func presentKYCIfNeeded(
+        from presenter: UIViewController,
+        requireEmailVerification: Bool,
+        requiredTier: KYC.Tier,
+        completion: @escaping (FeatureKYCUI.FlowResult) -> Void
+    ) {
+        presentEmailVerificationAndKYCIfNeeded(
+            from: presenter,
+            requireEmailVerification: requireEmailVerification,
+            requiredTier: requiredTier
+        )
+        .sink(receiveValue: completion)
+        .store(in: &cancellables)
     }
 }
 
@@ -91,10 +112,14 @@ extension KYCAdapter: PlatformUIKit.KYCRouting {
         from presenter: UIViewController,
         requiredTier: KYC.Tier
     ) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
-        presentEmailVerificationAndKYCIfNeeded(from: presenter, requiredTier: requiredTier)
-            .mapError(KYCRouterError.init)
-            .map(KYCRoutingResult.init)
-            .eraseToAnyPublisher()
+        presentEmailVerificationAndKYCIfNeeded(
+            from: presenter,
+            requireEmailVerification: false,
+            requiredTier: requiredTier
+        )
+        .mapError(KYCRouterError.init)
+        .map(KYCRoutingResult.init)
+        .eraseToAnyPublisher()
     }
 
     func presentEmailVerificationIfNeeded(

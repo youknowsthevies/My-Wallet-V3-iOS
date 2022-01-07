@@ -511,6 +511,10 @@ extension DependencyContainer {
 
         // MARK: Transactions Module
 
+        factory { () -> PaymentMethodsLinkingAdapterAPI in
+            PaymentMethodsLinkingAdapter()
+        }
+
         factory { () -> TransactionsAdapterAPI in
             TransactionsAdapter()
         }

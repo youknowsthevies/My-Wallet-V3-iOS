@@ -4,11 +4,14 @@ import Combine
 import DIKit
 import FeatureOpenBankingDomain
 import FeatureOpenBankingUI
-import FeatureSettingsUI
 import FeatureTransactionUI
 import MoneyKit
 import PlatformKit
 import PlatformUIKit
+
+public protocol AppCoordinating: AnyObject {
+    func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool)
+}
 
 struct FiatCurrencyFormatter: FeatureOpenBankingUI.FiatCurrencyFormatter {
 

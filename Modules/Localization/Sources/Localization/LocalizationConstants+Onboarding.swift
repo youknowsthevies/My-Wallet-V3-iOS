@@ -9,6 +9,70 @@ extension LocalizationConstants {
 }
 
 extension LocalizationConstants.Onboarding {
+
+    public enum ChecklistOverview {
+
+        public static let title = NSLocalizedString(
+            "Complete Your Profile",
+            comment: "Onboarding checklist overview title"
+        )
+
+        public static let subtitle = NSLocalizedString(
+            "Buy Crypto Today",
+            comment: "Onboarding checklist overview subtitle"
+        )
+    }
+
+    public enum Checklist {
+
+        public static let screenTitle = NSLocalizedString(
+            "Complete Your Profile.\nBuy Crypto Today.",
+            comment: "Onboarding checklist view title"
+        )
+
+        public static let screenSubtitle = NSLocalizedString(
+            "Finish setting up your Blockchain.com account and start buying crypto today.",
+            comment: "Onboarding checklist view subtitle"
+        )
+
+        public static let listTitle = NSLocalizedString(
+            "Your steps towards owning the future.",
+            comment: "Onboarding checklist title"
+        )
+
+        public static let verifyIdentityTitle = NSLocalizedString(
+            "Verify Your ID",
+            comment: "Onboarding checklist item title - verify identity"
+        )
+
+        public static let verifyIdentitySubtitle = NSLocalizedString(
+            "3 Minutes",
+            comment: "Onboarding checklist item subtitle - verify identity"
+        )
+
+        public static let linkPaymentMethodsTitle = NSLocalizedString(
+            "Link a Bank or Card",
+            comment: "Onboarding checklist item title - link payment methods"
+        )
+
+        public static let linkPaymentMethodsSubtitle = NSLocalizedString(
+            "2 Minutes",
+            comment: "Onboarding checklist item subtitle - link payment methods"
+        )
+
+        public static let butCryptoTitle = NSLocalizedString(
+            "Buy Crypto",
+            comment: "Onboarding checklist item title - buy crypto"
+        )
+
+        public static let butCryptoSubtitle = NSLocalizedString(
+            "10 Seconds",
+            comment: "Onboarding checklist item subtitle - buy crypto"
+        )
+    }
+}
+
+extension LocalizationConstants.Onboarding {
     public enum CreateWalletScreen {
         public static let title = NSLocalizedString(
             "Buy Crypto Now",

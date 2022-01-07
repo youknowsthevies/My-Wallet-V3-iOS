@@ -29,7 +29,8 @@ final class KYCAdapterTests: XCTestCase {
 
     func test_redirectsToRouter_for_emailVerification() {
         // WHEN: the adapter is asked to present email verification
-        let _: AnyPublisher<FeatureKYCUI.FlowResult, FeatureKYCUI.RouterError> = adapter.presentEmailVerificationIfNeeded(from: UIViewController())
+        let _: AnyPublisher<FeatureKYCUI.FlowResult, FeatureKYCUI.RouterError> = adapter
+            .presentEmailVerificationIfNeeded(from: UIViewController())
         // THEN: it should defer to the KYC Module's router to do it
         XCTAssertEqual(mockRouter.recordedInvocations.presentEmailVerificationIfNeeded.count, 1)
     }
@@ -46,10 +47,12 @@ final class KYCAdapterTests: XCTestCase {
 
     func test_redirectsToRouter_for_emailVerificationAndKYC() {
         // WHEN: the adapter is asked to present both email verification and the KYC flow
-        let _: AnyPublisher<FeatureKYCUI.FlowResult, FeatureKYCUI.RouterError> = adapter.presentEmailVerificationAndKYCIfNeeded(
-            from: UIViewController(),
-            requiredTier: .tier2
-        )
+        let _: AnyPublisher<FeatureKYCUI.FlowResult, FeatureKYCUI.RouterError> = adapter
+            .presentEmailVerificationAndKYCIfNeeded(
+                from: UIViewController(),
+                requireEmailVerification: false,
+                requiredTier: .tier2
+            )
         // THEN: it should defer to the KYC Module's router to do it
         XCTAssertEqual(mockRouter.recordedInvocations.presentEmailVerificationAndKYCIfNeeded.count, 1)
     }
@@ -60,7 +63,8 @@ final class KYCAdapterTests: XCTestCase {
         // GIVEN: Email Verification fails
         mockRouter.stubbedResults.presentEmailVerificationIfNeeded = .failure(.emailVerificationFailed)
         // WHEN: the adapter is asked to present the email verification flow for Onboarding
-        let publisher: AnyPublisher<KYCRoutingResult, KYCRouterError> = adapter.presentEmailVerificationIfNeeded(from: UIViewController())
+        let publisher: AnyPublisher<KYCRoutingResult, KYCRouterError> = adapter
+            .presentEmailVerificationIfNeeded(from: UIViewController())
         // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
         var error: KYCRouterError?
         let e = expectation(description: "Wait for publisher to complete")
@@ -134,7 +138,8 @@ final class KYCAdapterTests: XCTestCase {
         // GIVEN: Email Verification fails
         mockRouter.stubbedResults.presentEmailVerificationIfNeeded = .failure(.emailVerificationFailed)
         // WHEN: the adapter is asked to present the email verification flow for Onboarding
-        let publisher: AnyPublisher<OnboardingResult, Never> = adapter.presentEmailVerification(from: UIViewController())
+        let publisher: AnyPublisher<OnboardingResult, Never> = adapter
+            .presentEmailVerification(from: UIViewController())
         // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
         var result: OnboardingResult?
         let e = expectation(description: "Wait for publisher to complete")
@@ -151,7 +156,8 @@ final class KYCAdapterTests: XCTestCase {
         // GIVEN: Email Verification fails
         mockRouter.stubbedResults.presentEmailVerificationIfNeeded = .just(.completed)
         // WHEN: the adapter is asked to present the email verification flow for Onboarding
-        let publisher: AnyPublisher<OnboardingResult, Never> = adapter.presentEmailVerification(from: UIViewController())
+        let publisher: AnyPublisher<OnboardingResult, Never> = adapter
+            .presentEmailVerification(from: UIViewController())
         // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
         var result: OnboardingResult?
         let e = expectation(description: "Wait for publisher to complete")
@@ -168,7 +174,8 @@ final class KYCAdapterTests: XCTestCase {
         // GIVEN: Email Verification fails
         mockRouter.stubbedResults.presentEmailVerificationIfNeeded = .just(.abandoned)
         // WHEN: the adapter is asked to present the email verification flow for Onboarding
-        let publisher: AnyPublisher<OnboardingResult, Never> = adapter.presentEmailVerification(from: UIViewController())
+        let publisher: AnyPublisher<OnboardingResult, Never> = adapter
+            .presentEmailVerification(from: UIViewController())
         // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
         var result: OnboardingResult?
         let e = expectation(description: "Wait for publisher to complete")

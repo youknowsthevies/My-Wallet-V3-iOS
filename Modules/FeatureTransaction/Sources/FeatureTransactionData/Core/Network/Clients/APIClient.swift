@@ -23,8 +23,6 @@ typealias FeatureTransactionDomainClientAPI = CustodialQuoteAPI &
 /// FeatureTransactionDomain network client
 final class APIClient: FeatureTransactionDomainClientAPI {
 
-    // MARK: - Types
-
     fileprivate enum Parameter {
         static let minor = "minor"
         static let networkFee = "networkFee"
@@ -68,14 +66,10 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         }
     }
 
-    // MARK: - Properties
-
     private let retailNetworkAdapter: NetworkAdapterAPI
     private let retailRequestBuilder: RequestBuilder
     private let defaultNetworkAdapter: NetworkAdapterAPI
     private let defaultRequestBuilder: RequestBuilder
-
-    // MARK: - Setup
 
     init(
         retailNetworkAdapter: NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail),
@@ -88,8 +82,11 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         self.defaultNetworkAdapter = defaultNetworkAdapter
         self.defaultRequestBuilder = defaultRequestBuilder
     }
+}
 
-    // MARK: - AvailablePairsClientAPI
+// MARK: - AvailablePairsClientAPI
+
+extension APIClient {
 
     var availableOrderPairs: AnyPublisher<AvailableTradingPairsResponse, NabuNetworkError> {
         let request = retailRequestBuilder.get(
@@ -98,8 +95,11 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         )!
         return retailNetworkAdapter.perform(request: request)
     }
+}
 
-    // MARK: - CustodialQuoteAPI
+// MARK: - CustodialQuoteAPI
+
+extension APIClient {
 
     func fetchQuoteResponse(
         with request: OrderQuoteRequest
@@ -111,8 +111,11 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         )!
         return retailNetworkAdapter.perform(request: request)
     }
+}
 
-    // MARK: - OrderCreationClientAPI
+// MARK: - OrderCreationClientAPI
+
+extension APIClient {
 
     func create(
         direction: OrderDirection,
@@ -170,8 +173,11 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         )!
         return retailNetworkAdapter.perform(request: request)
     }
+}
 
-    // MARK: - OrderUpdateClientAPI
+// MARK: - OrderUpdateClientAPI
+
+extension APIClient {
 
     func updateOrder(
         with transactionId: String,
@@ -185,8 +191,11 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         )!
         return retailNetworkAdapter.perform(request: request)
     }
+}
 
-    // MARK: - OrderFetchingClientAPI
+// MARK: - OrderFetchingClientAPI
+
+extension APIClient {
 
     func fetchTransaction(
         with transactionId: String
@@ -197,8 +206,11 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         )!
         return retailNetworkAdapter.perform(request: request)
     }
+}
 
-    // MARK: - CustodialTransferClientAPI
+// MARK: - CustodialTransferClientAPI
+
+extension APIClient {
 
     func send(
         transferRequest: CustodialTransferRequest
@@ -242,8 +254,11 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         )!
         return retailNetworkAdapter.perform(request: request)
     }
+}
 
-    // MARK: - BankTransferClientAPI
+// MARK: - BankTransferClientAPI
+
+extension APIClient {
 
     func startBankTransfer(
         id: String,
@@ -277,8 +292,11 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         )!
         return retailNetworkAdapter.perform(request: request)
     }
+}
 
-    // MARK: - BitPayClientAPI
+// MARK: - BitPayClientAPI
+
+extension APIClient {
 
     func bitpayPaymentRequest(
         invoiceId: String,
@@ -360,8 +378,11 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         )
         return retailNetworkAdapter.perform(request: request)
     }
+}
 
-    // MARK: - TransactionLimitsClientAPI
+// MARK: - TransactionLimitsClientAPI
+
+extension APIClient {
 
     func fetchTradeLimits(
         currency: CurrencyType,
@@ -429,8 +450,11 @@ final class APIClient: FeatureTransactionDomainClientAPI {
         )!
         return retailNetworkAdapter.perform(request: request)
     }
+}
 
-    // MARK: - BlockchainNameResolutionRepositoryAPI
+// MARK: - BlockchainNameResolutionRepositoryAPI
+
+extension APIClient {
 
     func resolve(
         domainName: String,

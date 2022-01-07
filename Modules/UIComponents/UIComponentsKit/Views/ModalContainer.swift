@@ -13,6 +13,7 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
 
     public enum HeaderStyle {
         case small
+        case medium
         case large
     }
 
@@ -55,6 +56,8 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
         switch headerStyle {
         case .small:
             smallHeader
+        case .medium:
+            mediumHeader
         case .large:
             largeHeader
         }
@@ -82,6 +85,36 @@ public struct ModalContainer<TopAccessory: View, Content: View>: View {
                 closeButton
             }
         }
+    }
+
+    private var mediumHeader: some View {
+        VStack(spacing: Spacing.padding2) {
+            VStack(spacing: Spacing.padding1) {
+                closeHandle
+
+                HStack(alignment: .top) {
+                    Spacer()
+                    closeButton
+                }
+            }
+
+            topAccessory()
+
+            if title != nil || subtitle != nil {
+                VStack(spacing: Spacing.baseline) {
+                    if let title = title {
+                        Text(title)
+                            .typography(.title3)
+                    }
+
+                    if let subtitle = subtitle {
+                        Text(subtitle)
+                            .typography(.paragraph1)
+                    }
+                }
+            }
+        }
+        .multilineTextAlignment(.center)
     }
 
     private var largeHeader: some View {

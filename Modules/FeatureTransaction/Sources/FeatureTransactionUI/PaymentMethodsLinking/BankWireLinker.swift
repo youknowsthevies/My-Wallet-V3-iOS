@@ -10,7 +10,17 @@ import RxSwift
 import ToolKit
 import UIKit
 
+/// This protocol provides an interface to present a screen with bank wiring instructions to link a bank account to a user's account
+/// by having them send a bank transfer to Blockchain's custodial services. The bank account can then be used to deposit and withdraw funds.
+///
+/// This stand-alone piece is wrapping the entire flow required to provide the region-specific bank account details to the user for wiring funds into their
+/// fiat account's balance.
+///
+/// - IMPORTANT: Do NOT use this protocol directly. Use `PaymentMethodLinkingRouterAPI` instead!
 protocol BankWireLinkerAPI {
+
+    /// Presents a view controller with bank transfer instructions so the user can send funds to Blockchain's custodial services and thus link their bank account
+    /// with their wallet account. That account can then be used to deposit and withdraw funds.
     func present(from presenter: UIViewController, completion: @escaping () -> Void)
 }
 

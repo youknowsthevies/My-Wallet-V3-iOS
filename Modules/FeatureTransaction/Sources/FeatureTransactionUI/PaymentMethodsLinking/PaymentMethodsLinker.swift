@@ -5,13 +5,17 @@ import PlatformKit
 import PlatformUIKit
 import UIKit
 
-public enum PaymentMethodLinkingFlowResult {
+enum PaymentMethodLinkingFlowResult {
     case abandoned
     case completed(PlatformKit.PaymentMethod)
 }
 
-/// Use this protocol to present the flow to link a payment method to a user's account.
-public protocol PaymentMethodLinkerAPI {
+/// This protocol provides methods to present a list of available payment method types that can be linked  to the  user's account.
+///
+/// This stand-alone piece is wrapping the logic for loading and presenting a list of payment method types the user is eligible to link to their account.
+///
+/// - IMPORTANT: Do NOT use this protocol directly. Use `PaymentMethodLinkingRouterAPI` instead!
+protocol PaymentMethodLinkerAPI {
 
     init(selectPaymentMethodService: SelectPaymentMethodService)
 
