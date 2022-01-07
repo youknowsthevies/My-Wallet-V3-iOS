@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
         "state": {
           "branch": null,
-          "revision": "b9810df6aeddf2360fea0165e055afeec77ea579",
-          "version": "2.6.34"
+          "revision": "e29ec9324dc03ec4eed39dd6126a8b0d8ef2f209",
+          "version": "2.6.36"
         }
       },
       {

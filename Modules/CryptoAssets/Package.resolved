@@ -74,6 +74,15 @@
         }
       },
       {
+        "package": "MetadataHDWalletKit",
+        "repositoryURL": "https://github.com/jackpooleybc/MetadataHDWalletKit",
+        "state": {
+          "branch": null,
+          "revision": "f96abeee64dec17dc5a90769ff1393965bd827b7",
+          "version": null
+        }
+      },
+      {
         "package": "Nuke",
         "repositoryURL": "https://github.com/kean/Nuke.git",
         "state": {
@@ -105,7 +114,7 @@
         "repositoryURL": "https://github.com/uber/RIBs.git",
         "state": {
           "branch": null,
-          "revision": "6cad1e953d9b60ab177a963dd63715806ed0d192",
+          "revision": "0103871f373a65e912868d7a3fc303a8095e81e1",
           "version": "0.12.1"
         }
       },
@@ -114,8 +123,8 @@
         "repositoryURL": "https://github.com/RxSwiftCommunity/RxDataSources.git",
         "state": {
           "branch": null,
-          "revision": "a18cee01c9ee55f04d0c7eb15c77a96c3648c88e",
-          "version": "4.0.1"
+          "revision": "90c29b48b628479097fe775ed1966d75ac374518",
+          "version": "5.0.2"
         }
       },
       {
@@ -123,8 +132,17 @@
         "repositoryURL": "https://github.com/ReactiveX/RxSwift.git",
         "state": {
           "branch": null,
-          "revision": "cec68169a048a079f461ba203fe85636548d7a89",
+          "revision": "7c17a6ccca06b5c107cfa4284e634562ddaf5951",
           "version": "6.2.0"
+        }
+      },
+      {
+        "package": "secp256k1",
+        "repositoryURL": "https://github.com/Boilertalk/secp256k1.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "823281fe9def21b384099b72a9a53ca988317b20",
+          "version": "0.1.4"
         }
       },
       {
@@ -195,8 +213,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "599a2398adaaa7a4e3f5420cde7728c39e33677e",
-          "version": "0.28.1"
+          "revision": "313dd217dcd1d0478118ec5d15225fd473c1564a",
+          "version": "0.32.0"
         }
       },
       {
@@ -204,8 +222,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
         "state": {
           "branch": null,
-          "revision": "21f8fdbb3226e5e28a1a2fffac3e0f3deec34bf0",
-          "version": "0.2.1"
+          "revision": "51698ece74ecf31959d3fa81733f0a5363ef1b4e",
+          "version": "0.3.0"
         }
       },
       {
@@ -249,17 +267,17 @@
         "repositoryURL": "https://github.com/Veriff/veriff-ios-spm.git",
         "state": {
           "branch": null,
-          "revision": "c5b656b1d1fbc25ff448162539db20a824c9e42f",
-          "version": "4.3.1"
+          "revision": "0c00e567e0f1317e7b2a5a80c419166b9202e5fd",
+          "version": "4.17.0"
         }
       },
       {
         "package": "WalletCore",
-        "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
+        "repositoryURL": "https://github.com/trustwallet/wallet-core",
         "state": {
           "branch": null,
-          "revision": "b9810df6aeddf2360fea0165e055afeec77ea579",
-          "version": "2.6.34"
+          "revision": "e29ec9324dc03ec4eed39dd6126a8b0d8ef2f209",
+          "version": "2.6.36"
         }
       },
       {
