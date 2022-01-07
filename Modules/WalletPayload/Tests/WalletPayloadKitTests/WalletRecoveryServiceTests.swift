@@ -21,7 +21,7 @@ class WalletRecoveryServiceTests: XCTestCase {
     }
 
     // TODO: Dimitris to fix
-    func test_wallet_recovery_returns_an_error_on_invalid_seed_phrase() throws {
+    func test_wallet_recovery_returns_an_error_on_invalid_mnemonic() throws {
         try XCTSkipIf(true, "not yet finalised")
         let walletHolder = WalletHolder()
         var walletCreatorCalled = false
@@ -45,11 +45,11 @@ class WalletRecoveryServiceTests: XCTestCase {
         )
 
         let expectation = expectation(description: "wallet holding")
-        let invalidSeedPhrase = "this is invalid"
+        let invalidMnemonic = "this is invalid"
 
-        walletRecoveryService.recover(from: invalidSeedPhrase)
+        walletRecoveryService.recover(from: invalidMnemonic)
             .sink { completion in
-                XCTAssertEqual(completion, .failure(.recovery(.invalidSeedPhrase)))
+                XCTAssertEqual(completion, .failure(.recovery(.invalidMnemonic)))
                 expectation.fulfill()
             } receiveValue: { _ in
                 XCTFail("invalid seed phrase should fail")

@@ -78,13 +78,13 @@ public enum WalletInitializationError: LocalizedError, Equatable {
 
 public enum WalletRecoverError: LocalizedError, Equatable {
     case unknown
-    case invalidSeedPhrase
+    case invalidMnemonic
 
     public var errorDescription: String? {
         switch self {
         case .unknown:
             return ""
-        case .invalidSeedPhrase:
+        case .invalidMnemonic:
             return ""
         }
     }

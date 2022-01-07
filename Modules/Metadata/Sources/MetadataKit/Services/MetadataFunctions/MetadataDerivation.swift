@@ -6,7 +6,7 @@ import Foundation
 import MetadataHDWalletKit
 import ToolKit
 
-enum MetadataDerivationError: Error {
+public enum MetadataDerivationError: Error {
     case derivationFailed
 }
 

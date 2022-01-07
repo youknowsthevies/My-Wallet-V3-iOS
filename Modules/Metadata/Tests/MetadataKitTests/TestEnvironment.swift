@@ -16,13 +16,11 @@ struct TestEnvironment {
         static let sharedKey = "858dc73f-4877-483a-a10e-54a97e1197ea"
         static let password = "P5E5LZjwmzsv4rZJhd8mVMdVhYfKUHUn"
 
-        static let credentials: Credentials = {
-            Credentials(
-                guid: guid,
-                sharedKey: sharedKey,
-                password: password
-            )
-        }()
+        static let credentials = Credentials(
+            guid: guid,
+            sharedKey: sharedKey,
+            password: password
+        )
 
         // swiftlint:disable:next line_length
         static let metadataNodeXPriv = "xprv9usvuXHXKk2VR4igogrz9JXxyCEKhauoy4JbHT5TM8HTebb4RUTEtBqwXx1tQApuwYHT1oBM5CLdYTYvqxD8m7P98JC3LcHKRgPMhXpgaHH"
@@ -51,15 +49,13 @@ struct TestEnvironment {
             )
         }()
 
-        static let metadataState: MetadataState = {
-            MetadataState(
-                metadataNodes: metadataNodes,
-                secondPasswordNode: secondPasswordNode
-            )
-        }()
+        static let metadataState = MetadataState(
+            metadataNodes: metadataNodes,
+            secondPasswordNode: secondPasswordNode
+        )
 
         // swiftlint:disable:next line_length
-        static let masterKeyXPrv: String = "xprv9s21ZrQH143K3rKpAbXs4ymfdYnj3ka7Q5VmWRVr64TCzw8GVs1XH6kJfdDw38f1SkM1Lp4YboZswrFsnrR8xzdN8e3xzbPng65euu7Avcf"
+        static let masterKeyXPrv = "xprv9s21ZrQH143K3rKpAbXs4ymfdYnj3ka7Q5VmWRVr64TCzw8GVs1XH6kJfdDw38f1SkM1Lp4YboZswrFsnrR8xzdN8e3xzbPng65euu7Avcf"
 
         static let masterKey: MasterKey = {
             // swiftlint:disable force_try

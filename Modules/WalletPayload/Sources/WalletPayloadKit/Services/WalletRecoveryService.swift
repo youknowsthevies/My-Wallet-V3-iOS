@@ -7,10 +7,10 @@ import WalletCore
 
 public protocol WalletRecoveryServiceAPI {
 
-    /// Recovers a wallet account using the given seed phrase (mnemonic)
+    /// Recovers a wallet account using the given mnemonic
     /// - Returns: `AnyPublisher<WalletState, WalletError>`
     func recover(
-        from seedPhrase: String
+        from mnemonic: String
     ) -> AnyPublisher<EmptyValue, WalletError>
 }
 
@@ -28,13 +28,13 @@ final class WalletRecoveryService: WalletRecoveryServiceAPI {
     }
 
     func recover(
-        from seedPhrase: String
+        from mnemonic: String
     ) -> AnyPublisher<EmptyValue, WalletError> {
-        guard WalletCore.Mnemonic.isValid(mnemonic: seedPhrase) else {
-            return .failure(.recovery(.invalidSeedPhrase))
+        guard WalletCore.Mnemonic.isValid(mnemonic: mnemonic) else {
+            return .failure(.recovery(.invalidMnemonic))
         }
         return walletLogic
-            .initialize(with: seedPhrase)
+            .initialize(with: mnemonic)
             .map { _ in .noValue }
             .eraseToAnyPublisher()
     }

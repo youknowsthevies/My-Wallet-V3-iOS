@@ -59,6 +59,9 @@ final class MetadataServiceTests: XCTestCase {
                 fetch: fetch,
                 put: put
             ),
+            initializeAndRecoverCredentials: provideInitializeAndRecoverCredentials(
+                fetch: fetch
+            ),
             fetchEntry: provideFetchEntry(fetch: fetch),
             saveEntry: provideSave(fetch: fetch, put: put)
         )
@@ -124,6 +127,9 @@ final class MetadataServiceTests: XCTestCase {
             initialize: provideInitialize(
                 fetch: fetch,
                 put: put
+            ),
+            initializeAndRecoverCredentials: provideInitializeAndRecoverCredentials(
+                fetch: fetch
             ),
             fetchEntry: provideFetchEntry(fetch: fetch),
             saveEntry: provideSave(fetch: fetch, put: put)

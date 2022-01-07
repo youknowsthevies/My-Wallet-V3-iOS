@@ -15,6 +15,9 @@ extension DependencyContainer {
             let put = repository.put(at:with:)
             return MetadataService(
                 initialize: provideInitialize(fetch: fetch, put: put),
+                initializeAndRecoverCredentials: provideInitializeAndRecoverCredentials(
+                    fetch: fetch
+                ),
                 fetchEntry: provideFetchEntry(fetch: fetch),
                 saveEntry: provideSave(fetch: fetch, put: put)
             )

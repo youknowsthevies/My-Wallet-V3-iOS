@@ -18,16 +18,17 @@ protocol WalletLogicAPI {
 
     /// Initialises a `Wallet` using the given payload data
     /// - Parameter payload: A `Data` value representing a valid decrypted wallet payload
-    /// - Returns: `AnyPublisher<EmptyValue, WalletError>`
+    /// - Returns: `AnyPublisher<WalletState, WalletError>`
     func initialize(
         with password: String,
         payload: Data
     ) -> AnyPublisher<WalletState, WalletError>
 
     /// Initialises a `Wallet` from metadata using the given seed phrase
-    /// - Returns: `AnyPublisher<EmptyValue, WalletError>`
+    /// - Parameter mnemonic: A `String` value representing the users mnemonic words
+    /// - Returns: `AnyPublisher<WalletState, WalletError>`
     func initialize(
-        with seedPhrase: String
+        with mnemonic: String
     ) -> AnyPublisher<Credentials, WalletError>
 }
 
@@ -104,29 +105,15 @@ final class WalletLogic: WalletLogicAPI {
     }
 
     func initialize(
-        with seedPhrase: String
+        with mnemonic: String
     ) -> AnyPublisher<Credentials, WalletError> {
-        metadata.initialize(mnemonic: seedPhrase)
+        metadata.initializeAndRecoverCredentials(from: mnemonic)
             .mapError { _ in WalletError.initialization(.metadataInitialization) }
-            .flatMap { [holder] state -> AnyPublisher<WalletState, WalletError> in
+            .flatMap { [holder] state, credentials -> AnyPublisher<Credentials, WalletError> in
                 holder.hold(walletState: .partially(loaded: .justMetadata(state)))
                     .setFailureType(to: WalletError.self)
+                    .replaceOutput(with: credentials)
                     .eraseToAnyPublisher()
-            }
-            .flatMap { [metadata] walletState -> AnyPublisher<WalletCredentialsEntryPayload, WalletError> in
-                guard let metadataState = walletState.metadata else {
-                    return .failure(.initialization(.metadataInitialization))
-                }
-                return metadata.fetch(type: WalletCredentialsEntryPayload.type, with: metadataState)
-                    .mapError { _ in WalletError.initialization(.metadataInitialization) }
-                    .eraseToAnyPublisher()
-            }
-            .map { payload in
-                Credentials(
-                    guid: payload.guid,
-                    sharedKey: payload.sharedKey,
-                    password: payload.password
-                )
             }
             .eraseToAnyPublisher()
     }

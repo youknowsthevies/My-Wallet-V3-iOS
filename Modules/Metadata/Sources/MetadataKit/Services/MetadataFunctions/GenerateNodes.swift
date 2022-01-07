@@ -7,7 +7,7 @@ import NetworkError
 import ToolKit
 
 public enum GenerateNodesError: Error {
-    case failedToDeriveRemoteNodes
+    case failedToDeriveRemoteNodes(MetadataDerivationError)
     case failedToEncodeToJSONString(EncodingError)
     case failedToSaveNode(SaveMetadataError)
 }
@@ -37,15 +37,9 @@ func generateNodes(
     secondPasswordNode: SecondPasswordNode,
     saveMetadata: @escaping SaveMetadata
 ) -> AnyPublisher<MetadataState, GenerateNodesError> {
-    remoteMetadataHdNodes(masterKey: masterKey)
-        .mapError()
-        .flatMap { remoteNodes
-            -> AnyPublisher<RemoteMetadataNodes, GenerateNodesError> in
-            guard let remoteNodes = remoteNodes else {
-                return .failure(.failedToDeriveRemoteNodes)
-            }
-            return .just(remoteNodes)
-        }
+    deriveRemoteMetadataHdNodes(from: masterKey)
+        .publisher
+        .mapError(GenerateNodesError.failedToDeriveRemoteNodes)
         .eraseToAnyPublisher()
         .flatMap { remoteMetadataHdNodes
             -> AnyPublisher<MetadataState, GenerateNodesError> in
@@ -77,26 +71,5 @@ func generateNodes(
                 }
                 .eraseToAnyPublisher()
         }
-        .eraseToAnyPublisher()
-}
-
-private func remoteMetadataHdNodes(
-    masterKey: MasterKey
-) -> AnyPublisher<RemoteMetadataNodes?, Never> {
-    MetadataDerivation().deriveMetadataNode(node: masterKey)
-        .flatMap { metadataNode -> Result<RemoteMetadataNodes, MetadataDerivationError> in
-            MetadataDerivation().deriveSharedMetadataNode(node: masterKey)
-                .map { sharedMetadataNode -> RemoteMetadataNodes in
-                    RemoteMetadataNodes(
-                        sharedMetadataNode: sharedMetadataNode,
-                        metadataNode: metadataNode
-                    )
-                }
-        }
-        .map { $0 }
-        .flatMapError { _ -> Result<RemoteMetadataNodes?, Never> in
-            .success(nil)
-        }
-        .publisher
         .eraseToAnyPublisher()
 }
