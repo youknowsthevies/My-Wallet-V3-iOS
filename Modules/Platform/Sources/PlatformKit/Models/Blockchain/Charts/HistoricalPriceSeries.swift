@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import Foundation
 import MoneyKit
 
 /// A historical price series in fiat, for one crypto currency, in a specific time range.
@@ -33,7 +34,12 @@ public struct HistoricalPriceSeries {
     public init(currency: CryptoCurrency, prices: [PriceQuoteAtTime]) {
         if let first = prices.first, let last = prices.last {
             let fiatChange = last.moneyValue.amount - first.moneyValue.amount
-            let delta = fiatChange.decimalDivision(by: first.moneyValue.amount)
+            let delta: Decimal
+            if first.moneyValue.isZero {
+                delta = .zero
+            } else {
+                delta = fiatChange.decimalDivision(by: first.moneyValue.amount)
+            }
             self.init(
                 currency: currency,
                 prices: prices,
