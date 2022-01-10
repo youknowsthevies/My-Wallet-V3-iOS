@@ -45,13 +45,13 @@ let interestAccountListReducer = Reducer.combine(
         case .didReceiveInterestAccountResponse(let response):
             switch response {
             case .success(let accountOverviews):
-                let details: [InterestAccountDetails] = accountOverviews.map { accountOverview in
+                let details: [InterestAccountDetails] = accountOverviews.map {
                     .init(
-                        ineligibilityReason: accountOverview.ineligibilityReason,
-                        currency: accountOverview.currency,
-                        balance: accountOverview.balance,
-                        interestEarned: accountOverview.totalEarned,
-                        rate: accountOverview.interestAccountRate.rate
+                        ineligibilityReason: $0.ineligibilityReason,
+                        currency: $0.currency,
+                        balance: $0.balance,
+                        interestEarned: $0.totalEarned,
+                        rate: $0.interestAccountRate.rate
                     )
                 }
                 .sorted { $0.balance.isPositive && !$1.balance.isPositive }
