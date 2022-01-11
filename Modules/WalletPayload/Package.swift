@@ -60,6 +60,7 @@ let package = Package(
             name: "WalletPayloadKitMock",
             dependencies: [
                 .target(name: "WalletPayloadKit"),
+                .target(name: "WalletPayloadDataKit"),
                 .product(name: "RxSwift", package: "RxSwift"),
                 .product(name: "RxCocoa", package: "RxSwift")
             ]

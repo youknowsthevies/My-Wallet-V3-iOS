@@ -1,9 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import WalletPayloadKit
 
-public struct WalletPayload {
+public struct WalletPayload: Equatable {
 
     public let guid: String
     public let authType: Int
@@ -26,5 +25,11 @@ public struct WalletPayload {
         self.shouldSyncPubKeys = shouldSyncPubKeys
         self.time = time
         self.payload = payload
+    }
+}
+
+extension WalletPayload {
+    var authenticatorType: WalletAuthenticatorType {
+        WalletAuthenticatorType(rawValue: authType) ?? .standard
     }
 }

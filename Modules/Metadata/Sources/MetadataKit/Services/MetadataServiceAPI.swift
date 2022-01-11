@@ -24,7 +24,7 @@ public protocol MetadataServiceAPI {
     /// - Returns: A `Publisher` of root metadata state and wallet credentials or error
     func initializeAndRecoverCredentials(
         from mnemonic: String
-    ) -> AnyPublisher<(MetadataState, Credentials), MetadataInitialisationAndRecoveryError>
+    ) -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError>
 
     /// Fetches a the specified metadata entry
     /// - Parameters:

@@ -3,6 +3,7 @@
 @testable import MetadataKit
 @testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
+@testable import WalletPayloadKitMock
 
 import Combine
 import TestKit
@@ -13,16 +14,16 @@ class WalletRecoveryServiceTests: XCTestCase {
 
     private let jsonV4 = Fixtures.loadJSONData(filename: "wallet.v4", in: .module)!
 
+    private var walletRepo: WalletRepo!
     private var cancellables: Set<AnyCancellable>!
 
     override func setUp() {
         super.setUp()
+        walletRepo = WalletRepo(initialState: .empty)
         cancellables = []
     }
 
-    // TODO: Dimitris to fix
-    func test_wallet_recovery_returns_an_error_on_invalid_mnemonic() throws {
-        try XCTSkipIf(true, "not yet finalised")
+    func test_wallet_recovery_returns_an_error_on_invalid_seed_phrase() throws {
         let walletHolder = WalletHolder()
         var walletCreatorCalled = false
         let walletCreator: WalletCreatorAPI = WalletCreator()
@@ -36,12 +37,19 @@ class WalletRecoveryServiceTests: XCTestCase {
         let walletLogic = WalletLogic(
             holder: walletHolder,
             creator: creator,
-            metadata: mockMetadata
+            metadata: mockMetadata,
+            notificationCenter: .default
         )
 
+        var mockWalletPayloadClient = MockWalletPayloadClient(result: .failure(.from(.payloadError(.emptyData))))
+        let walletPayloadRepository = WalletPayloadRepository(apiClient: mockWalletPayloadClient)
+        let queue = DispatchQueue(label: "temp.recovery.queue")
         let walletRecoveryService = WalletRecoveryService(
-            walletHolder: walletHolder,
-            walletLogic: walletLogic
+            walletLogic: walletLogic,
+            payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
+            walletRepo: walletRepo,
+            walletPayloadRepository: walletPayloadRepository,
+            operationsQueue: queue
         )
 
         let expectation = expectation(description: "wallet holding")
@@ -58,6 +66,40 @@ class WalletRecoveryServiceTests: XCTestCase {
 
         wait(for: [expectation], timeout: 2)
 
-        XCTAssertTrue(walletCreatorCalled)
+        XCTAssertFalse(walletCreatorCalled)
+    }
+
+    func test_wallet_recovery_returns_correct_value_on_success() throws {
+        try XCTSkipIf(true, "not yet finalised")
+        let walletHolder = WalletHolder()
+        var walletCreatorCalled = false
+        let walletCreator: WalletCreatorAPI = WalletCreator()
+        let creator: WalletCreating = { [walletCreator] blockchainWallet in
+            walletCreatorCalled = true
+            return walletCreator.createWallet(from: blockchainWallet)
+        }
+
+        let mockMetadata = MockMetadataService()
+
+        let walletLogic = WalletLogic(
+            holder: walletHolder,
+            creator: creator,
+            metadata: mockMetadata,
+            notificationCenter: .default
+        )
+
+        var mockWalletPayloadClient = MockWalletPayloadClient(result: .failure(.from(.payloadError(.emptyData))))
+        let walletPayloadRepository = WalletPayloadRepository(apiClient: mockWalletPayloadClient)
+        let queue = DispatchQueue(label: "temp.recovery.queue")
+        let walletRecoveryService = WalletRecoveryService(
+            walletLogic: walletLogic,
+            payloadCrypto: PayloadCrypto(cryptor: AESCryptor()),
+            walletRepo: walletRepo,
+            walletPayloadRepository: walletPayloadRepository,
+            operationsQueue: queue
+        )
+
+        let expectation = expectation(description: "wallet holding")
+        let validSeedPhrase = "nuclear bunker sphaghetti monster dim sum sauce"
     }
 }

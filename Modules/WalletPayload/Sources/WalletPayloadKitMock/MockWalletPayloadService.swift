@@ -1,11 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
-@testable import FeatureAuthenticationData
-import FeatureAuthenticationDomain
-import Foundation
 @testable import WalletPayloadDataKit
 @testable import WalletPayloadKit
+
+import Combine
+import Foundation
 
 final class MockWalletPayloadClient: WalletPayloadClientAPI {
 

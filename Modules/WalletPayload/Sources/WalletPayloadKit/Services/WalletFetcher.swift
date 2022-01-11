@@ -36,7 +36,6 @@ final class WalletFetcher: WalletFetcherAPI {
     }
 
     func fetch(using password: String) -> AnyPublisher<EmptyValue, WalletError> {
-        // 0. load the payload
         walletRepo
             .map(\.encryptedPayload)
             .first()
@@ -45,7 +44,6 @@ final class WalletFetcher: WalletFetcherAPI {
                 guard !payloadWrapper.payload.isEmpty else {
                     return .failure(WalletError.payloadNotFound)
                 }
-                // 1. decrypt the payload
                 return payloadCrypto.decryptWallet(
                     walletWrapper: payloadWrapper,
                     password: password

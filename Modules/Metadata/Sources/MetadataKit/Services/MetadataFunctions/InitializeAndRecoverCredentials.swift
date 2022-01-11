@@ -5,7 +5,7 @@ import Foundation
 import ToolKit
 
 typealias InitializeAndRecoverCredentials =
-    (Mnemonic) -> AnyPublisher<(MetadataState, Credentials), MetadataInitialisationAndRecoveryError>
+    (Mnemonic) -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError>
 
 func provideInitializeAndRecoverCredentials(
     fetch: @escaping FetchMetadataEntry
@@ -29,7 +29,7 @@ func provideInitializeAndRecoverCredentials(
 private func initializeAndRecoverCredentials(
     from mnemonic: Mnemonic,
     fetchEntry: @escaping FetchEntry
-) -> AnyPublisher<(MetadataState, Credentials), MetadataInitialisationAndRecoveryError> {
+) -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> {
     generateMasterKey(from: mnemonic)
         .publisher
         .mapError(MetadataInitialisationAndRecoveryError.failedToDeriveMasterKey)
@@ -43,14 +43,19 @@ private func initializeAndRecoverCredentials(
                 .eraseToAnyPublisher()
         }
         .flatMap { remoteMetadataNodes
-            -> AnyPublisher<(MetadataState, Credentials), MetadataInitialisationAndRecoveryError> in
+            -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> in
             recoverSecondPasswordNode(with: remoteMetadataNodes, fetchEntry: fetchEntry)
                 .map { credentials, secondPasswordNode in
                     let metadataState = MetadataState(
                         metadataNodes: remoteMetadataNodes,
                         secondPasswordNode: secondPasswordNode
                     )
-                    return (metadataState, credentials)
+                    return RecoveryContext(
+                        metadataState: metadataState,
+                        guid: credentials.guid,
+                        sharedKey: credentials.sharedKey,
+                        password: credentials.password
+                    )
                 }
                 .eraseToAnyPublisher()
         }

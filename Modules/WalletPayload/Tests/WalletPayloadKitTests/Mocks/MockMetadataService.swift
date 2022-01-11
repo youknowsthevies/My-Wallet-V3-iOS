@@ -21,7 +21,7 @@ class MockMetadataService: MetadataServiceAPI {
 
     func initializeAndRecoverCredentials(
         from mnemonic: String
-    ) -> AnyPublisher<(MetadataState, Credentials), MetadataInitialisationAndRecoveryError> {
+    ) -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> {
         .empty()
     }
 

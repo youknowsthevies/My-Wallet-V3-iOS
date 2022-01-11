@@ -26,11 +26,11 @@ public enum WalletState {
     case loaded(wallet: NativeWallet, metadata: MetadataState)
 
     /// Returns `true` if both metadata and wallet has been initialized, otherwise `false`
-    var isInitialised: Bool {
+    public var isInitialised: Bool {
         isMetadataInitialised && walletInitialized
     }
 
-    var wallet: NativeWallet? {
+    public var wallet: NativeWallet? {
         switch self {
         case .partially(loaded: .justWallet(let wallet)):
             return wallet
@@ -41,7 +41,7 @@ public enum WalletState {
         }
     }
 
-    var metadata: MetadataState? {
+    public var metadata: MetadataState? {
         switch self {
         case .partially(loaded: .justWallet):
             return nil
@@ -52,11 +52,11 @@ public enum WalletState {
         }
     }
 
-    private var isMetadataInitialised: Bool {
+    public var isMetadataInitialised: Bool {
         metadata != nil
     }
 
-    private var walletInitialized: Bool {
+    public var walletInitialized: Bool {
         wallet != nil
     }
 }

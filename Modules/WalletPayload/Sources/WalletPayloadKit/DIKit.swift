@@ -5,8 +5,12 @@ import Foundation
 import KeychainKit
 import MetadataKit
 
-struct WalletRepoKeychain {
-    static let repoTag: String = "repo.tag"
+enum WalletRepoKeychain {
+    static let repoTag = "repo.tag"
+}
+
+enum WalletRepoOperationsQueue {
+    static let queueTag = "op.queue.tag"
 }
 
 extension DependencyContainer {
@@ -14,6 +18,10 @@ extension DependencyContainer {
     // MARK: - WalletPayloadKit Module
 
     public static var walletPayloadKit = module {
+
+        single(tag: WalletRepoOperationsQueue.queueTag) { () -> DispatchQueue in
+            DispatchQueue(label: "wallet.payload.operations.queue")
+        }
 
         single { () -> WalletRepo in
             let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: WalletRepoKeychain.repoTag)
@@ -23,7 +31,8 @@ extension DependencyContainer {
 
         single { () -> WalletRepoPersistenceAPI in
             let repo: WalletRepo = DIKit.resolve()
-            let queue = DispatchQueue(label: "wallet.persistence.queue", qos: .default)
+            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
+            let queue = DispatchQueue(label: "wallet.persistence.queue", qos: .default, target: targetQueue)
             let keychainAccess: KeychainAccessAPI = DIKit.resolve(tag: WalletRepoKeychain.repoTag)
             return WalletRepoPersistence(
                 repo: repo,
@@ -33,7 +42,8 @@ extension DependencyContainer {
         }
 
         factory { () -> WalletFetcherAPI in
-            let queue = DispatchQueue(label: "wallet.fetching.op.queue", qos: .userInitiated)
+            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
+            let queue = DispatchQueue(label: "wallet.fetching.op.queue", qos: .userInitiated, target: targetQueue)
             return WalletFetcher(
                 walletRepo: DIKit.resolve(),
                 payloadCrypto: DIKit.resolve(),
@@ -47,7 +57,25 @@ extension DependencyContainer {
             let creator = walletCreator.createWallet(from:)
             return WalletLogic(
                 holder: DIKit.resolve(),
-                creator: creator
+                creator: creator,
+                metadata: DIKit.resolve(),
+                notificationCenter: .default
+            )
+        }
+
+        factory { () -> WalletRecoveryServiceAPI in
+            let walletLogic: WalletLogic = DIKit.resolve()
+            let payloadCrypto: PayloadCryptoAPI = DIKit.resolve()
+            let repo: WalletRepo = DIKit.resolve()
+            let payloadRepository: WalletPayloadRepositoryAPI = DIKit.resolve()
+            let targetQueue: DispatchQueue = DIKit.resolve(tag: WalletRepoOperationsQueue.queueTag)
+            let queue = DispatchQueue(label: "wallet.recovery.op.queue", qos: .userInitiated, target: targetQueue)
+            return WalletRecoveryService(
+                walletLogic: walletLogic,
+                payloadCrypto: payloadCrypto,
+                walletRepo: repo,
+                walletPayloadRepository: payloadRepository,
+                operationsQueue: queue
             )
         }
 

@@ -89,7 +89,8 @@ let package = Package(
                 .target(name: "FeatureAuthenticationData"),
                 .target(name: "FeatureAuthenticationDomain"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
-                .product(name: "WalletPayloadDataKit", package: "WalletPayload")
+                .product(name: "WalletPayloadDataKit", package: "WalletPayload"),
+                .product(name: "WalletPayloadKitMock", package: "WalletPayload")
             ]
         ),
         .testTarget(
@@ -99,6 +100,7 @@ let package = Package(
                 .target(name: "FeatureAuthenticationMock"),
                 .product(name: "WalletPayloadKit", package: "WalletPayload"),
                 .product(name: "WalletPayloadDataKit", package: "WalletPayload"),
+                .product(name: "WalletPayloadKitMock", package: "WalletPayload"),
                 .product(name: "TestKit", package: "Test")
             ]
         ),

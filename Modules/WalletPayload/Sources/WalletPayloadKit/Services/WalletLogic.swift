@@ -29,7 +29,16 @@ protocol WalletLogicAPI {
     /// - Returns: `AnyPublisher<WalletState, WalletError>`
     func initialize(
         with mnemonic: String
-    ) -> AnyPublisher<Credentials, WalletError>
+    ) -> AnyPublisher<MetadataRecoveryCredentials, WalletError>
+
+    /// Initialises a `Wallet` after recovery using the given payload data
+    /// - Parameter password: A `String` value representing user's password
+    /// - Parameter payload: A `Data` value representing a valid decrypted wallet payload
+    /// - Returns: `AnyPublisher<WalletState, WalletError>`
+    func initializeAfterMetadataRecovery(
+        with password: String,
+        payload: Data
+    ) -> AnyPublisher<WalletState, WalletError>
 }
 
 final class WalletLogic: WalletLogicAPI {
@@ -45,8 +54,8 @@ final class WalletLogic: WalletLogicAPI {
     init(
         holder: WalletHolderAPI,
         creator: @escaping WalletCreating,
-        metadata: MetadataServiceAPI = resolve(),
-        notificationCenter: NotificationCenter = .default
+        metadata: MetadataServiceAPI,
+        notificationCenter: NotificationCenter
     ) {
         self.holder = holder
         self.creator = creator
@@ -61,7 +70,7 @@ final class WalletLogic: WalletLogicAPI {
         holder.walletStatePublisher
             .flatMap { walletState -> AnyPublisher<WalletState, WalletError> in
                 guard let walletState = walletState else {
-                    return .failure(.payloadNotFound) // TODO:
+                    return .failure(.payloadNotFound)
                 }
                 return .just(walletState)
             }
@@ -104,16 +113,54 @@ final class WalletLogic: WalletLogicAPI {
             .eraseToAnyPublisher()
     }
 
+    func initializeAfterMetadataRecovery(
+        with password: String,
+        payload: Data
+    ) -> AnyPublisher<WalletState, WalletError> {
+        holder.walletStatePublisher
+            .first()
+            .flatMap { walletState -> AnyPublisher<MetadataState, WalletError> in
+                guard let metadataState = walletState?.metadata else {
+                    return .failure(.initialization(.metadataInitialization))
+                }
+                return .just(metadataState)
+            }
+            .flatMap { [creator] metadataState -> AnyPublisher<(NativeWallet, MetadataState), WalletError> in
+                creator(payload)
+                    .map { ($0, metadataState) }
+                    .eraseToAnyPublisher()
+            }
+            .flatMap { [holder] wallet, metadataState -> AnyPublisher<WalletState, WalletError> in
+                holder.hold(walletState: .loaded(wallet: wallet, metadata: metadataState))
+                    .first()
+                    .mapError()
+                    .eraseToAnyPublisher()
+            }
+            .handleEvents(receiveOutput: { [notifyReactiveWallet] _ in
+                // inform ReactiveWallet that we're initialised
+                notifyReactiveWallet()
+            })
+            .eraseToAnyPublisher()
+    }
+
     func initialize(
         with mnemonic: String
-    ) -> AnyPublisher<Credentials, WalletError> {
+    ) -> AnyPublisher<MetadataRecoveryCredentials, WalletError> {
         metadata.initializeAndRecoverCredentials(from: mnemonic)
             .mapError { _ in WalletError.initialization(.metadataInitialization) }
-            .flatMap { [holder] state, credentials -> AnyPublisher<Credentials, WalletError> in
-                holder.hold(walletState: .partially(loaded: .justMetadata(state)))
+            .flatMap { [holder] context -> AnyPublisher<RecoveryContext, WalletError> in
+                holder.hold(walletState: .partially(loaded: .justMetadata(context.metadataState)))
                     .setFailureType(to: WalletError.self)
-                    .replaceOutput(with: credentials)
+                    .map { _ in context }
+                    .first()
                     .eraseToAnyPublisher()
+            }
+            .map { context in
+                MetadataRecoveryCredentials(
+                    guid: context.guid,
+                    sharedKey: context.sharedKey,
+                    password: context.password
+                )
             }
             .eraseToAnyPublisher()
     }
@@ -173,12 +220,16 @@ final class WalletLogic: WalletLogicAPI {
                 .setFailureType(to: WalletError.self)
                 .eraseToAnyPublisher()
         }
-        .handleEvents(receiveOutput: { [notificationCenter] _ in
+        .handleEvents(receiveOutput: { [notifyReactiveWallet] _ in
             // inform ReactiveWallet that we're initialised
-            notificationCenter.post(Notification(name: .walletInitialized))
-            notificationCenter.post(Notification(name: .walletMetadataLoaded))
+            notifyReactiveWallet()
         })
         .eraseToAnyPublisher()
+    }
+
+    private func notifyReactiveWallet() {
+        notificationCenter.post(Notification(name: .walletInitialized))
+        notificationCenter.post(Notification(name: .walletMetadataLoaded))
     }
 }
 

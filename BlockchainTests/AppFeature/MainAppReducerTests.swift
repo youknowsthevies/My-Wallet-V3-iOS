@@ -101,7 +101,8 @@ final class MainAppReducerTests: XCTestCase {
 
         mockWalletService = WalletService(
             fetch: { _ in .empty() },
-            fetchUsingSecPassword: { _, _ in .empty() }
+            fetchUsingSecPassword: { _, _ in .empty() },
+            recoverFromMetadata: { _ in .empty() }
         )
 
         testStore = TestStore(

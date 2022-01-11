@@ -39,12 +39,12 @@ final class MetadataService: MetadataServiceAPI {
 
     func initializeAndRecoverCredentials(
         from mnemonic: String
-    ) -> AnyPublisher<(MetadataState, Credentials), MetadataInitialisationAndRecoveryError> {
+    ) -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> {
         Mnemonic.from(mnemonicString: mnemonic)
             .mapError(MetadataInitialisationAndRecoveryError.invalidMnemonic)
             .publisher
             .flatMap { [initializeAndRecoverCredentials] mnemonic
-                -> AnyPublisher<(MetadataState, Credentials), MetadataInitialisationAndRecoveryError> in
+                -> AnyPublisher<RecoveryContext, MetadataInitialisationAndRecoveryError> in
                 initializeAndRecoverCredentials(mnemonic)
             }
             .eraseToAnyPublisher()
