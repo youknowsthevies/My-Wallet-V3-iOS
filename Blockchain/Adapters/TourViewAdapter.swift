@@ -30,8 +30,8 @@ public struct TourViewAdapter: View {
                     TourView(
                         environment: TourEnvironment(
                             createAccountAction: { viewStore.send(.navigate(to: .createWallet)) },
-                            restoreAction: { viewStore.send(.enter(into: .restoreWallet)) },
-                            logInAction: { viewStore.send(.enter(into: .emailLogin)) }
+                            restoreAction: { viewStore.send(.navigate(to: .restoreWallet)) },
+                            logInAction: { viewStore.send(.navigate(to: .emailLogin)) }
                         )
                     )
                 }

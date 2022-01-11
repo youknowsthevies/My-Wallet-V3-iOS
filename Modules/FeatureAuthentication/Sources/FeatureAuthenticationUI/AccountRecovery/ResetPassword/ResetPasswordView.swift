@@ -33,6 +33,12 @@ struct ResetPasswordView: View {
     @State private var isPasswordVisible = false
     @State private var isConfirmNewPasswordVisible = false
 
+    private var continueDisabled: Bool {
+        viewStore.newPassword.isEmpty
+            || viewStore.newPassword != viewStore.confirmNewPassword
+            || viewStore.passwordStrength == .weak
+    }
+
     init(
         store: Store<ResetPasswordState, ResetPasswordAction>
     ) {
@@ -72,11 +78,10 @@ struct ResetPasswordView: View {
             ) {
                 viewStore.send(.reset(password: viewStore.newPassword))
             }
-            .disabled(viewStore.newPassword.isEmpty || viewStore.newPassword != viewStore.confirmNewPassword ||
-                viewStore.passwordStrength == .weak)
+            .disabled(continueDisabled)
             .accessibility(identifier: AccessibilityIdentifiers.ResetPasswordScreen.resetPasswordButton)
 
-            NavigationLink(
+            PrimaryNavigationLink(
                 destination: IfLetStore(
                     store.scope(
                         state: \.resetAccountFailureState,
@@ -93,8 +98,19 @@ struct ResetPasswordView: View {
                 label: EmptyView.init
             )
         }
-        .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
-        .hideBackButtonTitle()
+        .primaryNavigation(title: LocalizedString.navigationTitle) {
+            Button {
+                viewStore.send(.reset(password: viewStore.newPassword))
+            } label: {
+                Text(LocalizedString.Button.next)
+                    .typography(.paragraph2)
+                    .foregroundColor(
+                        continueDisabled ? .semantic.muted : .semantic.primary
+                    )
+            }
+            .disabled(continueDisabled)
+            .accessibility(identifier: AccessibilityIdentifiers.SeedPhraseScreen.nextButton)
+        }
         .padding(
             EdgeInsets(
                 top: Layout.topPadding,

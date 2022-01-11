@@ -219,6 +219,10 @@ extension LocalizationConstants.FeatureAuthentication {
                 "Continue with Google",
                 comment: "Login screen: sign in with Google CTA button"
             )
+            public static let next = NSLocalizedString(
+                "Next",
+                comment: "Login screen: next button"
+            )
             public static let _continue = NSLocalizedString(
                 "Continue",
                 comment: "Login screen: continue CTA button"
@@ -572,6 +576,10 @@ extension LocalizationConstants.FeatureAuthentication {
             "Log In",
             comment: "Seed phrase screen: login CTA button"
         )
+        public static let next = NSLocalizedString(
+            "Next",
+            comment: "Seed phrase screen: next button"
+        )
     }
 
     // MARK: - Reset Account Warning
@@ -689,6 +697,10 @@ extension LocalizationConstants.FeatureAuthentication {
             public static let learnMore = NSLocalizedString(
                 "Learn more",
                 comment: "Reset password screen: learn more: identity verification."
+            )
+            public static let next = NSLocalizedString(
+                "Next",
+                comment: "Reset password screen: next button"
             )
         }
     }

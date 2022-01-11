@@ -33,6 +33,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let prefix = "EmailLoginScreen."
 
         static let emailGroup = "\(prefix)emailGroup"
+        static let nextButton = "\(prefix)nextButton"
         static let continueButton = "\(prefix)continueButton"
         static let loginTitleText = "\(prefix)loginTitleText"
     }
@@ -66,6 +67,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let resendSMSButton = "\(prefix)resendSMSButton"
         static let resetTwoFAButton = "\(prefix)resetTwoFAButton"
         static let hardwareKeyGroup = "\(prefix)hardwareKeyGroup"
+        static let nextButton = "\(prefix)nextButton"
     }
 
     // MARK: - Account Recovery
@@ -80,6 +82,7 @@ final class AccessibilityIdentifiers: NSObject {
         static let resetAccountButton = "\(prefix)resetAccountButton"
         static let contactSupportButton = "\(prefix)contactSupportButton"
         static let continueButton = "\(prefix)continueButton"
+        static let nextButton = "\(prefix)nextButton"
     }
 
     enum ResetAccountWarningScreen {

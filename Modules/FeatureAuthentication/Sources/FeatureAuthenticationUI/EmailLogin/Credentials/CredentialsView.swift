@@ -152,7 +152,7 @@ public struct CredentialsView: View {
             }
             .disabled(viewStore.walletPairingState.walletGuid.isEmpty)
 
-            NavigationLink(
+            PrimaryNavigationLink(
                 destination: IfLetStore(
                     store.scope(
                         state: \.seedPhraseState,
@@ -177,8 +177,23 @@ public struct CredentialsView: View {
                 trailing: Layout.trailingPadding
             )
         )
-        .navigationBarTitle(LocalizedString.navigationTitle, displayMode: .inline)
-        .hideBackButtonTitle()
+        .primaryNavigation(title: LocalizedString.navigationTitle) {
+            Button {
+                if viewStore.isTwoFactorOTPVerified {
+                    viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState.password)))
+                } else {
+                    viewStore.send(.continueButtonTapped)
+                }
+            } label: {
+                Text(LocalizedString.Button.next)
+                    .typography(.paragraph2)
+                    .foregroundColor(
+                        viewStore.walletPairingState.walletGuid.isEmpty ? .semantic.muted : .semantic.primary
+                    )
+            }
+            .disabled(viewStore.walletPairingState.walletGuid.isEmpty)
+            .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.nextButton)
+        }
         .onAppear {
             viewStore.send(.didAppear(context: context))
         }

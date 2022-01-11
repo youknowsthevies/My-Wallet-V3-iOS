@@ -66,7 +66,7 @@ struct LostFundsWarningView: View {
             }
             .accessibility(identifier: AccessibilityIdentifiers.LostFundsWarningScreen.goBackButton)
 
-            NavigationLink(
+            PrimaryNavigationLink(
                 destination: IfLetStore(
                     store.scope(
                         state: \.resetPasswordState,
