@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 // swiftformat:disable redundantSelf
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -18,6 +19,7 @@ import FeatureWalletConnectUI
 import FeatureWithdrawalLocksData
 import FeatureWithdrawalLocksDomain
 import Firebase
+import FirebaseCrashlytics
 import MetadataDataKit
 import MetadataKit
 import PlatformDataKit
@@ -157,8 +159,14 @@ private func bootstrap() {
         false
         #endif
     }()
+
     FirebaseApp.configure()
     defineDependencies()
+
+    SystemEventAnalytics.start(
+        recordingOn: resolve(),
+        didCrashOnPreviousExecution: FirebaseCrashlytics.Crashlytics.crashlytics().didCrashDuringPreviousExecution
+    )
 }
 
 private func eraseWalletForUITestsIfNeeded() {

@@ -33,7 +33,13 @@ extension AnalyticsEvent {
         }
         Mirror(reflecting: associated.value).children
             .forEach {
-                if let label = $0.label?.camelCaseToSnakeCase() {
+                if let encodable = $0.value as? AnalyticsEventParameters {
+                    do {
+                        try params.merge(encodable.encode(), uniquingKeysWith: { $1 })
+                    } catch {
+                        assertionFailure("Failed to encode parameters: \(error)")
+                    }
+                } else if let label = $0.label?.camelCaseToSnakeCase() {
                     if let value = $0.value as? StringRawRepresentable {
                         params[label] = value.rawValue
                     } else {
@@ -47,6 +53,37 @@ extension AnalyticsEvent {
 
 public protocol StringRawRepresentable {
     var rawValue: String { get }
+}
+
+public protocol AnalyticsEventParameters: Encodable {}
+
+enum AnalyticsEventParameterEncodingError: Error {
+    case typeMismatch(expected: Any.Type, actual: Any.Type)
+}
+
+extension AnalyticsEventParameters {
+
+    func encode(
+        using encoder: JSONEncoder = JSONEncoder(keyEncodingStrategy: .convertToSnakeCase)
+    ) throws -> [String: Any] {
+        let data = try encoder.encode(self)
+        let json = try JSONSerialization.jsonObject(with: data)
+        guard let paramaters = json as? [String: Any] else {
+            throw AnalyticsEventParameterEncodingError.typeMismatch(
+                expected: [String: Any].self,
+                actual: type(of: json)
+            )
+        }
+        return paramaters
+    }
+}
+
+extension JSONEncoder {
+
+    convenience init(keyEncodingStrategy: KeyEncodingStrategy) {
+        self.init()
+        self.keyEncodingStrategy = keyEncodingStrategy
+    }
 }
 
 extension String {
