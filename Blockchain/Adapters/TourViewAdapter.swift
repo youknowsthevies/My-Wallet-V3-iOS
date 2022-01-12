@@ -14,6 +14,7 @@ public struct TourViewAdapter: View {
     private let featureFlagService: FeatureFlagsServiceAPI
 
     @State var newTourEnabled: Bool?
+    @State var manualLoginEnabled: Bool = false
 
     public init(store: Store<WelcomeState, WelcomeAction>, featureFlagService: FeatureFlagsServiceAPI) {
         self.store = store
@@ -31,8 +32,10 @@ public struct TourViewAdapter: View {
                         environment: TourEnvironment(
                             createAccountAction: { viewStore.send(.navigate(to: .createWallet)) },
                             restoreAction: { viewStore.send(.navigate(to: .restoreWallet)) },
-                            logInAction: { viewStore.send(.navigate(to: .emailLogin)) }
-                        )
+                            logInAction: { viewStore.send(.navigate(to: .emailLogin)) },
+                            manualLoginAction: { viewStore.send(.navigate(to: .manualLogin)) }
+                        ),
+                        manualLoginEnabled: manualLoginEnabled
                     )
                 }
                 .navigationRoute(in: store)
@@ -44,6 +47,9 @@ public struct TourViewAdapter: View {
         }
         .onReceive(featureFlagService.isEnabled(.remote(.newOnboardingTour))) { isEnabled in
             newTourEnabled = isEnabled
+        }
+        .onReceive(featureFlagService.isEnabled(.local(.disableGUIDLogin))) { isDisabled in
+            manualLoginEnabled = !isDisabled
         }
     }
 }
