@@ -29,15 +29,6 @@
         }
       },
       {
-        "package": "CryptoSwift",
-        "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
-        "state": {
-          "branch": null,
-          "revision": "4b0565384d3c4c588af09e660535b2c7c9bf5b39",
-          "version": "1.4.2"
-        }
-      },
-      {
         "package": "DIKit",
         "repositoryURL": "https://github.com/jackpooleybc/DIKit.git",
         "state": {
@@ -123,8 +114,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "23155a04fe426a5ee18befa29bd2627dbf79e653",
-          "version": "0.30.0"
+          "revision": "ba9c626ab1b2b6af8cf684eebb2ab472fa5b6753",
+          "version": "0.33.1"
         }
       },
       {
@@ -173,30 +164,12 @@
         }
       },
       {
-        "package": "WalletCore",
-        "repositoryURL": "https://github.com/oliveratkinson-bc/wallet-core.git",
-        "state": {
-          "branch": null,
-          "revision": "befbeee4af4c192cf44bd55f40faf88230ce7080",
-          "version": "2.6.35"
-        }
-      },
-      {
         "package": "xctest-dynamic-overlay",
         "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
         "state": {
           "branch": null,
           "revision": "50a70a9d3583fe228ce672e8923010c8df2deddd",
           "version": "0.2.1"
-        }
-      },
-      {
-        "package": "Zxcvbn",
-        "repositoryURL": "https://github.com/oliveratkinson-bc/zxcvbn-ios.git",
-        "state": {
-          "branch": "swift-package-manager",
-          "revision": "c0db9d5278bbc07b28937278406cc042e4bebf68",
-          "version": null
         }
       }
     ]

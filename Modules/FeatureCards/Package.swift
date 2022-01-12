@@ -53,8 +53,11 @@ let package = Package(
         .target(
             name: "FeatureCardsDomain",
             dependencies: [
+                .product(name: "NabuNetworkError", package: "NetworkErrors"),
                 .product(name: "NetworkError", package: "NetworkErrors"),
-                .product(name: "ToolKit", package: "Tool")
+                .product(name: "NetworkKit", package: "Network"),
+                .product(name: "ToolKit", package: "Tool"),
+                .product(name: "MoneyKit", package: "Money")
             ]
         ),
         .target(

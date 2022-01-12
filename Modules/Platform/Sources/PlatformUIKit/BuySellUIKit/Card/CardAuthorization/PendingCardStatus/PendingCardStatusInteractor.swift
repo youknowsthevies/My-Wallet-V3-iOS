@@ -44,7 +44,7 @@ final class PendingCardStatusInteractor: Interactor {
             .asSingle()
             .flatMap(weak: self) { (self, result) -> Single<State> in
                 switch result {
-                case .final(let state):
+                case .success(let state):
                     switch state {
                     case .active(let data):
                         return self.paymentMethodTypesService
@@ -53,9 +53,10 @@ final class PendingCardStatusInteractor: Interactor {
                     case .pending, .inactive:
                         return .just(.inactive)
                     }
-                case .cancel:
-                    return .just(.inactive)
-                case .timeout:
+                case .failure(let error):
+                    guard case .timeout = error else {
+                        return .just(.inactive)
+                    }
                     return .just(.timeout)
                 }
             }

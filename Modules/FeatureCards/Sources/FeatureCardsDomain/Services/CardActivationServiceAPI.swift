@@ -2,14 +2,18 @@
 
 import Combine
 import Foundation
-import RxToolKit
+import NabuNetworkError
 import ToolKit
+
+public enum CardActivationServiceError: Swift.Error, TimeoutFailure {
+    case nabu(NabuNetworkError)
+    case timeout
+}
 
 public protocol CardActivationServiceAPI: AnyObject {
 
-    /// Cancel polling
-    var cancel: AnyPublisher<Void, Error> { get }
-
     /// Poll for activation
-    func waitForActivation(of cardId: String) -> AnyPublisher<PollResult<CardActivationState>, Error>
+    func waitForActivation(
+        of cardId: String
+    ) -> AnyPublisher<Result<CardActivationState, CardActivationServiceError>, Never>
 }
