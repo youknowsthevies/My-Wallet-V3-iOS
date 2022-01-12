@@ -14,6 +14,7 @@ import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
+import UIComponentsKit
 
 /// Acts as a container for the Home screen
 final class LoggedInHostingController: UIViewController, LoggedInBridge {

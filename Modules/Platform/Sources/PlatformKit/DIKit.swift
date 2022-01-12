@@ -2,6 +2,7 @@
 
 import DIKit
 import FeatureAuthenticationDomain
+import FeatureCardsDomain
 import MoneyKit
 import NetworkKit
 import ToolKit
@@ -231,6 +232,11 @@ extension DependencyContainer {
             return client as PaymentEligibleMethodsClientAPI
         }
 
+        factory { () -> EligibleCardAcquirersAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client as EligibleCardAcquirersAPI
+        }
+
         factory { () -> LinkedBanksClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as LinkedBanksClientAPI
@@ -239,27 +245,6 @@ extension DependencyContainer {
         factory { () -> OrdersActivityClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as OrdersActivityClientAPI
-        }
-
-        // MARK: - Clients - Cards
-
-        factory { CardClient() as CardClientAPI }
-
-        factory { EveryPayClient() as EveryPayClientAPI }
-
-        factory { () -> CardListClientAPI in
-            let client: CardClientAPI = DIKit.resolve()
-            return client as CardListClientAPI
-        }
-
-        factory { () -> CardDeletionClientAPI in
-            let client: CardClientAPI = DIKit.resolve()
-            return client as CardDeletionClientAPI
-        }
-
-        factory { () -> CardDetailClientAPI in
-            let client: CardClientAPI = DIKit.resolve()
-            return client as CardDetailClientAPI
         }
 
         // MARK: - Services - General
@@ -294,6 +279,8 @@ extension DependencyContainer {
 
         single { LinkedBanksService() as LinkedBanksServiceAPI }
 
+        factory { CardDeletionService() as PaymentMethodDeletionServiceAPI }
+
         // MARK: - Services - Payment Methods
 
         single { BeneficiariesServiceUpdater() as BeneficiariesServiceUpdaterAPI }
@@ -303,18 +290,6 @@ extension DependencyContainer {
         single { PaymentMethodTypesService() as PaymentMethodTypesServiceAPI }
 
         single { EligiblePaymentMethodsService() as PaymentMethodsServiceAPI }
-
-        // MARK: - Services - Cards
-
-        factory { CardActivationService() as CardActivationServiceAPI }
-
-        factory { CardUpdateService() as CardUpdateServiceAPI }
-
-        single { CardListService() as CardListServiceAPI }
-
-        single { CardService() as CardServiceAPI }
-
-        factory { CardDeletionService() as PaymentMethodDeletionServiceAPI }
 
         // MARK: - Services - Linked Banks
 

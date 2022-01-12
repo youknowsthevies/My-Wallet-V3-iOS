@@ -2,8 +2,10 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureCardsDomain
 import PlatformKit
 import ToolKit
+import UIKit
 
 public protocol CardComponentBuilderAPI: AnyObject {
 
@@ -114,3 +116,5 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
         return viewController
     }
 }
+
+extension CardAuthorizationScreenPresenter: CardAuthorizationScreenPresenterAPI {}

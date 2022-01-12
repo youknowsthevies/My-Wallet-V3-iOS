@@ -4,6 +4,7 @@ import DIKit
 import Foundation
 import RxRelay
 import ToolKit
+import UIComponentsKit
 
 /// Emits a command to return to the previous state
 public protocol RoutingPreviousStateEmitterAPI: AnyObject {

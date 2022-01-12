@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureCardsDomain
 import MoneyKit
 import ToolKit
 
@@ -10,7 +11,7 @@ public enum Order {
     }
 }
 
-enum OrderPayload {
+public enum OrderPayload {
 
     enum CreateActionType: String, Encodable {
         case confirm
@@ -124,14 +125,14 @@ enum OrderPayload {
         }
     }
 
-    struct Response: Decodable {
+    public struct Response: Decodable {
         enum Side: String, Decodable {
             case buy = "BUY"
             case sell = "SELL"
         }
 
-        struct Attributes: Decodable {
-            enum PaymentState: String, Decodable {
+        public struct Attributes: Decodable {
+            public enum PaymentState: String, Decodable {
                 /// Should never happen. It means a case was forgotten by backend
                 case initial = "INITIAL"
 
@@ -157,22 +158,22 @@ enum OrderPayload {
                 case unknown
             }
 
-            struct EveryPay: Decodable {
-                let paymentLink: String
-                let paymentState: PaymentState
+            public struct EveryPay: Decodable {
+                public let paymentLink: String
+                public let paymentState: PaymentState
             }
 
-            struct CardProvider: Decodable {
-                let cardAcquirerName: CardPayload.Acquirer
-                let cardAcquirerAccountCode: String?
-                let paymentLink: String?
-                let paymentState: PaymentState
-                let clientSecret: String?
-                let publishableApiKey: String?
+            public struct CardProvider: Decodable {
+                public let cardAcquirerName: CardPayload.Acquirer
+                public let cardAcquirerAccountCode: String?
+                public let paymentLink: String?
+                public let paymentState: PaymentState
+                public let clientSecret: String?
+                public let publishableApiKey: String?
             }
 
-            let everypay: EveryPay?
-            let cardProvider: CardProvider?
+            public let everypay: EveryPay?
+            public let cardProvider: CardProvider?
         }
 
         let state: String
@@ -192,9 +193,9 @@ enum OrderPayload {
         let fee: String?
 
         let paymentType: String
-        let paymentMethodId: String?
+        public let paymentMethodId: String?
         let side: Side
-        let attributes: Attributes?
+        public let attributes: Attributes?
 
         let processingErrorType: String?
     }
@@ -207,7 +208,7 @@ extension OrderPayload.Response.Attributes.EveryPay {
         case paymentState
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         paymentLink = try container.decode(String.self, forKey: .paymentLink)
         let paymentState = try container.decode(String.self, forKey: .paymentState)
@@ -226,7 +227,7 @@ extension OrderPayload.Response.Attributes.CardProvider {
         case publishableApiKey
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         paymentLink = try container.decodeIfPresent(String.self, forKey: .paymentLink)
         let paymentState = try container.decode(String.self, forKey: .paymentState)
@@ -240,7 +241,7 @@ extension OrderPayload.Response.Attributes.CardProvider {
 }
 
 extension OrderPayload.Response {
-    var authorizationState: PartnerAuthorizationData.State {
+    public var authorizationState: PartnerAuthorizationData.State {
         if let everypay = attributes?.everypay {
             switch everypay.paymentState {
             case .waitingFor3DS:

@@ -9,6 +9,7 @@ import RIBs
 import RxCocoa
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 protocol WithdrawRootInteractable: Interactable,
     TransactionFlowListener,

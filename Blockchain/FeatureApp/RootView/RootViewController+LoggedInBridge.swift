@@ -6,6 +6,7 @@ import MoneyKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
+import UIComponentsKit
 
 extension RootViewController: LoggedInBridge {
 

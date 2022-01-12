@@ -17,6 +17,7 @@ import RIBs
 import RxSwift
 import SwiftUI
 import ToolKit
+import UIComponentsKit
 
 protocol TransactionFlowInteractable: Interactable,
     EnterAmountPageListener,

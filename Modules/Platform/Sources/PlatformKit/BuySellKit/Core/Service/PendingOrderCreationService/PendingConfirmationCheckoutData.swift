@@ -8,7 +8,7 @@ public struct PendingConfirmationCheckoutData {
         .init(quote: quote, checkoutData: checkoutData)
     }
 
-    init(quote: Quote, checkoutData: CheckoutData) {
+    public init(quote: Quote, checkoutData: CheckoutData) {
         self.quote = quote
         self.checkoutData = checkoutData
     }

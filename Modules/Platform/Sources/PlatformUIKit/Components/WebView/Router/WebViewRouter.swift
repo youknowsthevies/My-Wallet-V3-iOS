@@ -4,6 +4,7 @@ import DIKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import UIComponentsKit
 
 public final class WebViewRouter: WebViewRouterAPI {
 

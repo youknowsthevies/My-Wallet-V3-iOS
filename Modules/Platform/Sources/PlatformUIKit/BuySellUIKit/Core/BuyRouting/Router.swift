@@ -3,6 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import FeatureCardsDomain
 import FeatureOpenBankingUI
 import Localization
 import MoneyKit
@@ -10,6 +11,7 @@ import PlatformKit
 import RxSwift
 import SafariServices
 import ToolKit
+import UIComponentsKit
 
 public enum RouterError: Error {
     case kyc(KYCRouterError)

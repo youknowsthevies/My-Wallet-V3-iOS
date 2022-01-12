@@ -8,6 +8,7 @@ import PlatformUIKit
 import RIBs
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 protocol DepositRootInteractable: Interactable,
     TransactionFlowListener,

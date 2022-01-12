@@ -9,6 +9,7 @@ import FeatureAuthenticationUI
 import PlatformUIKit
 import SwiftUI
 import ToolKit
+import UIComponentsKit
 import UIKit
 
 /// Acts as a container for Pin screen and Login screen

@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureCardsDomain
 import RxSwift
 
 /// Used to execute the order once created

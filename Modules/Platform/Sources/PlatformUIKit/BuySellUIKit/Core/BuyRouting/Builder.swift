@@ -6,6 +6,7 @@ import MoneyKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import UIComponentsKit
 import UIKit
 
 public protocol Buildable: AnyObject {

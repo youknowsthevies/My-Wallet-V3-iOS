@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import FeatureAuthenticationDomain
+import FeatureCardsDomain
 import MoneyKit
 import RxSwift
 
@@ -91,6 +93,7 @@ public final class CardOrderCheckoutInteractor {
                         )
                         return (interactionData, checkoutData)
                     }
+                    .asSingle()
             }
     }
 
@@ -119,6 +122,7 @@ public final class CardOrderCheckoutInteractor {
 
         return cardListService
             .card(by: paymentMethodId)
+            .asSingle()
             .map { card in
                 CheckoutInteractionData(
                     creationDate: order.creationDate,

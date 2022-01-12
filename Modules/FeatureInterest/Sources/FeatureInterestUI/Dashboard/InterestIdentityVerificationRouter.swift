@@ -3,6 +3,7 @@
 import DIKit
 import PlatformUIKit
 import SafariServices
+import UIComponentsKit
 
 public final class InterestDashboardAnnouncementRouter: InterestDashboardAnnouncementRouting {
 

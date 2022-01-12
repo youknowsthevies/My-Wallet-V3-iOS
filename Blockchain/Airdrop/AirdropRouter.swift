@@ -2,6 +2,7 @@
 
 import DIKit
 import PlatformUIKit
+import UIComponentsKit
 
 protocol AirdropRouterAPI: AnyObject {
 

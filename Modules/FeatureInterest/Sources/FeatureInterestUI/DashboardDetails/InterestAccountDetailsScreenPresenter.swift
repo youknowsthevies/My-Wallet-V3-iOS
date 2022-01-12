@@ -7,6 +7,7 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 public final class InterestAccountDetailsScreenPresenter {
 

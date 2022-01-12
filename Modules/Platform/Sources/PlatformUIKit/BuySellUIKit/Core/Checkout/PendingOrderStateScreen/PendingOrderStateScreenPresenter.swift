@@ -8,6 +8,7 @@ import PlatformKit
 import RxCocoa
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePresenterAPI {
 

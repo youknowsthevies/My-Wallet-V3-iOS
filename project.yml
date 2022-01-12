@@ -284,6 +284,8 @@ packages:
     path: Modules/FeatureActivity
   FeatureAuthentication:
     path: Modules/FeatureAuthentication
+  FeatureCards:
+    path: Modules/FeatureCards
   FeatureDashboard:
     path: Modules/FeatureDashboard
   FeatureDebug:
@@ -397,6 +399,7 @@ targets:
       - package: FeatureActivity
       - package: FeatureApp
       - package: FeatureAuthentication
+      - package: FeatureCards
       - package: FeatureDashboard
       - package: FeatureDebug
       - package: FeatureInterest

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import FeatureCardsDomain
 import MoneyKit
 @testable import PlatformKit
 
@@ -53,23 +54,10 @@ extension APIClient {
             CardPayload(
                 identifier: "a4e4c08d-b9e4-443d-b54e-47a3d2886dcf",
                 partner: "EVERYPAY",
-                address: .init(
-                    line1: "18 Golders Green Circle",
-                    line2: "Flat 1",
-                    postCode: "NW11 1EQ",
-                    city: "London",
-                    state: nil,
-                    country: "United Kingdom"
-                ),
+                address: nil,
                 currency: "GBP",
                 state: .active,
-                card: .init(
-                    number: "1234",
-                    month: "10",
-                    year: "2021",
-                    type: "VISA",
-                    label: "Visa Card 1234"
-                ),
+                card: nil,
                 additionDate: "2020-04-07T23:23:26.761Z"
             )
         ]

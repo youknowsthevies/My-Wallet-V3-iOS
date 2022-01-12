@@ -30,7 +30,8 @@ let package = Package(
         .package(path: "../NetworkErrors"),
         .package(path: "../Platform"),
         .package(path: "../Tool"),
-        .package(path: "../WalletPayload")
+        .package(path: "../WalletPayload"),
+        .package(path: "../FeatureCards")
     ],
     targets: [
         .target(
@@ -68,7 +69,8 @@ let package = Package(
             name: "FeatureActivityUI",
             dependencies: [
                 .target(name: "FeatureActivityDomain"),
-                .product(name: "FeatureKYCUI", package: "FeatureKYC")
+                .product(name: "FeatureKYCUI", package: "FeatureKYC"),
+                .product(name: "FeatureCardsDomain", package: "FeatureCards")
             ]
         ),
         .testTarget(

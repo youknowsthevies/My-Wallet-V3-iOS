@@ -7,6 +7,7 @@ import RIBs
 import RxSwift
 import SafariServices
 import ToolKit
+import UIComponentsKit
 
 public final class LegacySellRouter: RIBs.Router<SellRouterInteractor> {
 

@@ -4,6 +4,7 @@ import DIKit
 import Localization
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 @objc
 public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {

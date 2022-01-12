@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import FeatureCardsDomain
 import MoneyKit
 
 public struct BuyOrderDetails {
@@ -83,3 +84,5 @@ public struct BuyOrderDetails {
         }
     }
 }
+
+extension OrderPayload.Response: OrderPayloadResponseAPI {}

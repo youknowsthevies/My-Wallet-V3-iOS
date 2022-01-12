@@ -6,6 +6,7 @@ import PlatformUIKit
 import RIBs
 import RxSwift
 import ToolKit
+import UIComponentsKit
 
 protocol SendRootViewControllable: ViewControllable {
     func replaceRoot(viewController: ViewControllable?)

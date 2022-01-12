@@ -12,6 +12,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
+import UIComponentsKit
 import UIKit
 
 enum KYCEvent {

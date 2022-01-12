@@ -4,6 +4,7 @@ import AnalyticsKit
 import Combine
 import DIKit
 import FeatureAuthenticationDomain
+import FeatureCardsDomain
 import FeatureSettingsDomain
 import Localization
 import MoneyKit
@@ -159,6 +160,7 @@ final class SettingsRouter: SettingsRouterAPI {
             .bindAndCatch(weak: self) { (self) in
                 cardListService
                     .fetchCards()
+                    .asSingle()
                     .subscribe()
                     .disposed(by: self.disposeBag)
             }

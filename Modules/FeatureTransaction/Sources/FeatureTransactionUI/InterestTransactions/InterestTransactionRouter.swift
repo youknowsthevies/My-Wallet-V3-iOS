@@ -6,6 +6,7 @@ import PlatformKit
 import PlatformUIKit
 import RIBs
 import ToolKit
+import UIComponentsKit
 
 protocol InterestTransactionInteractable: Interactable, TransactionFlowListener {
     var router: InterestTransactionRouting? { get set }

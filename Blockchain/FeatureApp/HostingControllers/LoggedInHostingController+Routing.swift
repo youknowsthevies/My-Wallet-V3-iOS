@@ -16,6 +16,7 @@ import PlatformKit
 import PlatformUIKit
 import SwiftUI
 import ToolKit
+import UIComponentsKit
 
 // Provides necessary methods for several protocols and tab swapping
 // most, if not all, is copied over from `AppCoordinator`, which was deprecated and removed

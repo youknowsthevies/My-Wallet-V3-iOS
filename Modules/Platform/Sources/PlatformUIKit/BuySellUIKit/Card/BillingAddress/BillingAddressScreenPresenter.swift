@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import DIKit
+import FeatureCardsDomain
 import Localization
 import PlatformKit
 import RxCocoa
@@ -26,7 +27,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             cellTypes.count
         }
 
-        init(country: Country) {
+        init(country: FeatureCardsDomain.Country) {
             var cellTypes: [CellType] = [
                 .selectionView,
                 .textField(.personFullName),

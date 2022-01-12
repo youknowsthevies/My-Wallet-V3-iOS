@@ -20,6 +20,7 @@ Modules/FeatureAccountPicker/ @mjarvis-bc
 Modules/FeatureActivity/ @thisisalexmcgregor @oliveratkinson-bc
 Modules/FeatureApp/ @dchatzieleftheriou-bc
 Modules/FeatureAuthentication/ @grayson-bc @dchatzieleftheriou-bc
+Modules/FeatureCards/ @crucheton-bc
 Modules/FeatureDashboard/ @paulo-bc @dchatzieleftheriou-bc
 Modules/FeatureDebug/ @dchatzieleftheriou-bc
 Modules/FeatureInterest/ @thisisalexmcgregor

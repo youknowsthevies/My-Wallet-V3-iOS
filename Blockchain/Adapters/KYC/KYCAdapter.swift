@@ -10,6 +10,7 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
+import UIComponentsKit
 import UIKit
 
 final class KYCAdapter {

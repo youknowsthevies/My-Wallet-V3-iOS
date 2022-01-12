@@ -5,6 +5,7 @@ import DIKit
 import PlatformUIKit
 import RIBs
 import ToolKit
+import UIComponentsKit
 
 public protocol SwapRootViewControllable: ViewControllable {
     func replaceRoot(viewController: ViewControllable?)
